@@ -852,11 +852,13 @@ function GarrisonMission:CheckCompleteMissions(onShow)
 	self.MissionTab.MissionList:UpdateCombatAllyMission();
 	if ( #self.MissionComplete.completeMissions > 0 ) then
 		if ( self:IsShown() ) then
-			self:GetCompleteDialog().BorderFrame.Model.Summary:SetFormattedText(GARRISON_NUM_COMPLETED_MISSIONS, #self.MissionComplete.completeMissions);
-			self:GetCompleteDialog():Show();
-			self:CheckTutorials();
-			self:GetCompleteDialog().BorderFrame.ViewButton:SetEnabled(true);
-			self:GetCompleteDialog().BorderFrame.LoadingFrame:Hide();
+			if ( GarrisonFollowerOptions[self.followerTypeID].showCompleteDialog ) then
+				self:GetCompleteDialog().BorderFrame.Model.Summary:SetFormattedText(GARRISON_NUM_COMPLETED_MISSIONS, #self.MissionComplete.completeMissions);
+				self:GetCompleteDialog():Show();
+				self:CheckTutorials();
+				self:GetCompleteDialog().BorderFrame.ViewButton:SetEnabled(true);
+				self:GetCompleteDialog().BorderFrame.LoadingFrame:Hide();
+			end
 			return true;
 		end
 	end

@@ -506,13 +506,13 @@ end
 function TradeSkillDetailsMixin:OnOptionalReagentMouseEnter(reagentButton)
 	GameTooltip:SetOwner(reagentButton, "ANCHOR_TOPLEFT");
 
-	local reagentName, bonusText, reagentQuality, reagentTexture, reagentCount, playerReagentCount, itemID, tooltipText = self:GetOptionalReagent(reagentButton.optionalReagentIndex);
+	local reagentName, bonusText, reagentQuality, reagentTexture, reagentCount, playerReagentCount, itemID = self:GetOptionalReagent(reagentButton.optionalReagentIndex);
 	if reagentName then
 		local itemQualityColor = ITEM_QUALITY_COLORS[reagentQuality];
 		GameTooltip_SetTitle(GameTooltip, reagentName, itemQualityColor.color);
 
 		local wrap = true;
-		GameTooltip_AddHighlightLine(GameTooltip, tooltipText or bonusText, wrap);
+		GameTooltip_AddHighlightLine(GameTooltip, bonusText, wrap);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE, wrap);
 	else
@@ -617,8 +617,7 @@ function TradeSkillDetailsMixin:GetOptionalReagent(optionalReagentIndex)
 	if itemName then
 		local itemCount = ItemUtil.GetOptionalReagentCount(info.itemID);
 		local bonusText = self:GetOptionalReagentBonusText(info.itemID, optionalReagentIndex);
-		local tooltipText = self:GetOptionalReagentTooltipText(info.itemID, optionalReagentIndex);
-		return itemName, bonusText, itemQuality, itemIcon, info.count, itemCount, info.itemID, tooltipText;
+		return itemName, bonusText, itemQuality, itemIcon, info.count, itemCount, info.itemID;
 	else
 		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 		return RETRIEVING_ITEM_INFO, nil, nil, "Interface\\Icons\\INV_Misc_QuestionMark", 0, 0, info.itemID;
@@ -672,11 +671,6 @@ end
 function TradeSkillDetailsMixin:GetOptionalReagentBonusText(itemID, slot)
 	local optionalReagents, optionalReagentIndex = self:GetOptionalReagentsPreview(itemID, slot);
 	return C_TradeSkillUI.GetOptionalReagentBonusText(self.selectedRecipeID, optionalReagentIndex, optionalReagents);
-end
-
-function TradeSkillDetailsMixin:GetOptionalReagentTooltipText(itemID, slot)
-	local optionalReagents, optionalReagentIndex = self:GetOptionalReagentsPreview(itemID, slot);
-	return C_TradeSkillUI.GetOptionalReagentTooltipText(self.selectedRecipeID, optionalReagentIndex, optionalReagents);
 end
 
 function TradeSkillDetailsMixin:OnStarsMouseEnter(starsFrame)

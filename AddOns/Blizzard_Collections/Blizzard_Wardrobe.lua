@@ -61,7 +61,14 @@ function WardrobeTransmogFrame_OnEvent(self, event, ...)
 			-- specs button tutorial
 			if ( hasPending and not hasUndo ) then
 				if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON) ) then
-					self.SpecHelpBox:Show();
+					local helpTipInfo = {
+						text = TRANSMOG_SPECS_BUTTON_TUTORIAL,
+						buttonStyle = HelpTip.ButtonStyle.Close,
+						cvarBitfield = "closedInfoFrames",
+						bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON,
+						targetPoint = HelpTip.Point.BottomEdgeCenter,
+					};
+					HelpTip:Show(self, helpTipInfo, self.SpecButton);
 				end
 			end
 		end
@@ -124,8 +131,6 @@ function WardrobeTransmogFrame_OnHide(self)
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 	C_Transmog.Close();
-	self.OutfitHelpBox:Hide();
-	self.SpecHelpBox:Hide();
 end
 
 function WardrobeTransmogFrame_OnUpdate(self)
@@ -437,7 +442,15 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN) ) then
 				local outfits = C_TransmogCollection.GetOutfits();
 				if ( #outfits == 0 ) then
-					WardrobeTransmogFrame.OutfitHelpBox:Show();
+					local helpTipInfo = {
+						text = TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL,
+						buttonStyle = HelpTip.ButtonStyle.Close,
+						cvarBitfield = "closedInfoFrames",
+						bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN,
+						targetPoint = HelpTip.Point.RightEdgeCenter,
+						offsetX = -18,
+					};
+					HelpTip:Show(WardrobeTransmogFrame, helpTipInfo, WardrobeTransmogFrame.OutfitDropDown);
 				end
 			end
 		else
@@ -799,8 +812,6 @@ function WardrobeCollectionFrame_SetContainer(parent)
 		collectionFrame.ItemsTab:SetPoint("TOPLEFT", 8, -28);
 		WardrobeCollectionFrame_SetTab(collectionFrame.selectedTransmogTab);
 	end
-	-- changing the parent of a frame resets frame stratas and levels of all children
-	collectionFrame.ItemsCollectionFrame.HelpBox:SetFrameStrata("DIALOG");
 	collectionFrame:Show();
 end
 
@@ -1044,18 +1055,18 @@ function WardrobeItemsCollectionMixin:OnLoad()
 	self:CheckLatestAppearance();
 end
 
-function WardrobeItemsCollectionMixin:ShouldShowSetsHelpTip()
+function WardrobeItemsCollectionMixin:CheckHelpTip()
 	if (WardrobeFrame_IsAtTransmogrifier()) then
 		if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB)) then
-			return false;
+			return;
 		end
 
 		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON)) then
-			return false;
+			return;
 		end
 
 		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN)) then
-			return false;
+			return;
 		end
 
 		local sets = C_TransmogSets.GetAllSets();
@@ -1069,24 +1080,34 @@ function WardrobeItemsCollectionMixin:ShouldShowSetsHelpTip()
 			end
 		end
 		if (not hasCollected) then
-			return false;
+			return;
 		end
 
-		self:GetParent().SetsTabHelpBox.BigText:SetText(TRANSMOG_SETS_VENDOR_TUTORIAL);
-		self:GetParent().SetsTabHelpBox:SetHeight(self:GetParent().SetsTabHelpBox.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
-		return true;
+		local helpTipInfo = {
+			text = TRANSMOG_SETS_VENDOR_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+		};
+		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	else
 		if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB)) then
-			return false;
+			return;
 		end
 
 		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK)) then
-			return false;
+			return;
 		end
 
-		self:GetParent().SetsTabHelpBox.BigText:SetText(TRANSMOG_SETS_TAB_TUTORIAL);
-		self:GetParent().SetsTabHelpBox:SetHeight(self:GetParent().SetsTabHelpBox.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
-		return true;
+		local helpTipInfo = {
+			text = TRANSMOG_SETS_TAB_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+		};
+		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	end
 end
 
@@ -1125,7 +1146,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 
 	-- tab tutorial
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true);
-	self:GetParent().SetsTabHelpBox:SetShown(self:ShouldShowSetsHelpTip());
+	self:CheckHelpTip();
 end
 
 function WardrobeItemsCollectionMixin:OnHide()
@@ -1809,10 +1830,16 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 		end
 	end
 	if ( tutorialAnchorFrame ) then
-		self.HelpBox:SetPoint("TOP", tutorialAnchorFrame, "BOTTOM", 0, -22);
-		self.HelpBox:Show();
+		local helpTipInfo = {
+			text = TRANSMOG_MOUSE_CLICK_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+		};
+		HelpTip:Show(self, helpTipInfo, tutorialAnchorFrame);
 	else
-		self.HelpBox:Hide();
+		HelpTip:Hide(self, TRANSMOG_MOUSE_CLICK_TUTORIAL);
 	end
 end
 
@@ -2653,7 +2680,7 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 	end
 	C_TransmogCollection.SetIsAppearanceFavorite(visualID, set);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
-	WardrobeCollectionFrame.ItemsCollectionFrame.HelpBox:Hide();
+	HelpTip:Hide(WardrobeCollectionFrame.ItemsCollectionFrame, TRANSMOG_MOUSE_CLICK_TUTORIAL);
 end
 
 -- ***** WEAPON DROPDOWN
@@ -3368,8 +3395,8 @@ function WardrobeSetsCollectionMixin:OnShow()
 	self:UpdateProgressBar();
 	self:RefreshCameras();
 
-	if (self:GetParent().SetsTabHelpBox:IsShown()) then
-		self:GetParent().SetsTabHelpBox:Hide()
+	if HelpTip:IsShowing(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL) then
+		HelpTip:Hide(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
 	end
 end
@@ -3993,8 +4020,8 @@ function WardrobeSetsTransmogMixin:OnShow()
 	self:UpdateProgressBar();
 	self.sourceQualityTable = { };
 
-	if (self:GetParent().SetsTabHelpBox:IsShown()) then
-		self:GetParent().SetsTabHelpBox:Hide();
+	if HelpTip:IsShowing(WardrobeCollectionFrame, TRANSMOG_SETS_VENDOR_TUTORIAL) then
+		HelpTip:Hide(WardrobeCollectionFrame, TRANSMOG_SETS_VENDOR_TUTORIAL);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB, true);
 	end
 end

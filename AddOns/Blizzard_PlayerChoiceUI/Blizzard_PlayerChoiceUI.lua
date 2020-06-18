@@ -323,6 +323,10 @@ local function SetupBorder(self, layout, textureKit)
 	self.CloseButton:SetShown(not layout.hideCloseButton);
 end
 
+local function JailersTowerBuffsContainerActive()
+	return IsInJailersTower() and ScenarioBlocksFrame and ScenarioBlocksFrame.MawBuffsBlock:IsShown();
+end 
+
 PlayerChoiceFrameMixin = { };
 function PlayerChoiceFrameMixin:OnLoad()
 	self.QuestionText = self.Title.Text;
@@ -346,13 +350,8 @@ function PlayerChoiceFrameMixin:OnShow()
 		PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 	end
 
-	--TODO: AChurchill Change this section when you work on the maw buffs.
-	if IsInJailersTower() then
-		if MawBuffsContainer then
-			MawBuffsContainer.List:Show()
-			MawBuffsContainer:Disable()
-			MawBuffsContainer.Icon:SetDesaturated(true)
-		end
+	if JailersTowerBuffsContainerActive() then
+		ScenarioBlocksFrame.MawBuffsBlock.Container:UpdateListState(true);
 	end
 end
 
@@ -368,12 +367,8 @@ function PlayerChoiceFrameMixin:OnHide()
 		self:UpdateOptionWidgetRegistration(option, nil);
 	end
 
-	if IsInJailersTower() then
-		if MawBuffsContainer then
-			MawBuffsContainer.List:Hide()
-			MawBuffsContainer:Enable()
-			MawBuffsContainer.Icon:SetDesaturated(false)
-		end
+	if JailersTowerBuffsContainerActive() then
+		ScenarioBlocksFrame.MawBuffsBlock.Container:UpdateListState(false);
 	end
 
 	if(PlayerChoiceToggleButton:IsShown()) then
@@ -709,13 +704,19 @@ function PlayerChoiceFrameMixin:Update()
 			option:ResetOption();
 
 			local optionInfo = self.optionData[i];
-			option.rarity = optionInfo.rarity;
 
+			option.rarity = optionInfo.rarity;
+			if(option.rarity) then 
+				optionInfo.description = option:SetupRarityDescription(optionInfo.description); 
+			end 
 			option.hasDesaturatedArt = optionInfo.desaturatedArt;
 			option.Artwork:SetDesaturated(option.hasDesaturatedArt);
 			option.ArtworkBorder:SetShown(not option.hasDesaturatedArt and optionInfo.choiceArtID > 0 );
 			option.ArtworkBorderDisabled:SetShown(option.hasDesaturatedArt);
 			option.uiTextureKit = optionInfo.uiTextureKit;
+
+			option.maxStacks = optionInfo.maxStacks;
+			option.spellID = optionInfo.spellID; 
 
 			option:ConfigureHeader(optionInfo.header, optionInfo.headerIconAtlasElement);
 			option:UpdateOptionSize();
@@ -899,6 +900,20 @@ function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 	if not mouseOver then
 		self:SetScript("OnUpdate", nil);
 		self:OnLeaveOverride();
+		return;
+	end
+
+	if(not GameTooltip:IsShown()) then 
+		if JailersTowerBuffsContainerActive() then
+			if(self.maxStacks and self.spellID) then 
+				if(self.maxStacks ~= 1) then -- 1 is the only case we care about because that's the only case where it is not stackable. 
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, -50);
+					GameTooltip_AddNormalLine(GameTooltip, PLAYER_CHOICE_STACKABLE_CHOICE); 
+					GameTooltip:Show(); 
+				end
+				ScenarioBlocksFrame.MawBuffsBlock.Container:HighlightBuffAndShow(self.spellID, self.maxStacks);
+			end
+		end
 	end
 end
 
@@ -961,7 +976,12 @@ function PlayerChoiceOptionFrameMixin:OnLeaveOverride()
 	end
 
 	self.BackgroundGlowAnimationOut:Play();
-
+	if JailersTowerBuffsContainerActive() then
+		if(self.maxStacks and self.spellID) then 
+			ScenarioBlocksFrame.MawBuffsBlock.Container:HideBuffHighlight(self.spellID);
+		end
+	end
+	GameTooltip:Hide(); 
 end
 
 function PlayerChoiceOptionFrameMixin:UpdateOptionSize()
@@ -1233,6 +1253,26 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 		end
 	end
 end
+
+function PlayerChoiceOptionFrameMixin:GetRarityDescriptionString()
+	if (self.rarity == Enum.PlayerChoiceRarity.Common) then
+		return PLAYER_CHOICE_QUALITY_STRING_COMMON;
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Uncommon) then
+		return PLAYER_CHOICE_QUALITY_STRING_UNCOMMON;
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Rare) then
+		return PLAYER_CHOICE_QUALITY_STRING_RARE;
+	elseif (self.rarity == Enum.PlayerChoiceRarity.Epic) then
+		return PLAYER_CHOICE_QUALITY_STRING_EPIC;
+	end
+end 
+
+function PlayerChoiceOptionFrameMixin:SetupRarityDescription(description)
+	if(not description) then 
+		return self:GetRarityDescriptionString();
+	else	
+		return (description .. self:GetRarityDescriptionString());
+	end 
+end 
 
 PlayerChoiceOptionButtonContainerMixin = {};
 

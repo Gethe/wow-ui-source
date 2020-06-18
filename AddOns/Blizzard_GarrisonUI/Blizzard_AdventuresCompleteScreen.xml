@@ -89,7 +89,11 @@
 				</Anchors>
 			</Frame>
 
-			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="1500" setAllPoints="true"/>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="1500" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="useViewInsetNormalization" value="false" type="boolean"/>
+				</KeyValues>
+			</ModelScene>
 
 			<Frame parentKey="CompleteFrame" inherits="ResizeLayoutFrame" frameLevel="3000">
 				<Anchors>

@@ -65,6 +65,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0] = {
 	useAbilityTooltipStyleWithoutCounters = false,
 	usesOvermaxMechanic = false,
 	allowEquipmentCounterToShow = false,
+	showCompleteDialog = true,
 }
 
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
@@ -118,6 +119,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
 	useAbilityTooltipStyleWithoutCounters = false,
 	usesOvermaxMechanic = false,
 	allowEquipmentCounterToShow = true,
+	showCompleteDialog = true,
 }
 
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
@@ -173,6 +175,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
 	useAbilityTooltipStyleWithoutCounters = true,
 	usesOvermaxMechanic = true,
 	allowEquipmentCounterToShow = false,
+	showCompleteDialog = true,
 }
 
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
@@ -228,6 +231,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
 	useAbilityTooltipStyleWithoutCounters = true,
 	usesOvermaxMechanic = true,
 	allowEquipmentCounterToShow = false,
+	showCompleteDialog = true,
 }
 
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0] = {
@@ -283,6 +287,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0] = {
 	useAbilityTooltipStyleWithoutCounters = true,
 	usesOvermaxMechanic = false,
 	allowEquipmentCounterToShow = false,
+	showCompleteDialog = false,
 }
 
 function GetPrimaryGarrisonFollowerType(garrTypeID)

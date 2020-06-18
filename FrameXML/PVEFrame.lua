@@ -62,7 +62,8 @@ function PVEFrame_OnEvent(self, event, ...)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
-	if ( (not C_LFGInfo.CanPlayerUseLFD() and not C_LFGInfo.CanPlayerUsePVP()) or Kiosk.IsEnabled() ) then
+	local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+	if ( not canUse or Kiosk.IsEnabled() ) then
 		return;
 	end
 	local self = PVEFrame;
@@ -254,6 +255,15 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 	else
 		self.groupButton3.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
+	end
+
+	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
+	if not canUse then
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
+		self.groupButton4.tooltip = self.groupButton4.tooltip or failureReason;
+	else
+		self.groupButton4.tooltip = nil;
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
 	end
 
 	GroupFinderFrame_UpdateButtonAnchors(self);

@@ -57,22 +57,6 @@ local TradeSkillUI =
 			},
 		},
 		{
-			Name = "GetOptionalReagentTooltipText",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "recipeSpellID", Type = "number", Nilable = false },
-				{ Name = "optionalReagentIndex", Type = "number", Nilable = false },
-				{ Name = "optionalReagents", Type = "table", InnerType = "OptionalReagentInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "tooltipText", Type = "string", Nilable = true },
-			},
-		},
-		{
 			Name = "GetRecipeRepeatCount",
 			Type = "Function",
 
@@ -212,9 +196,9 @@ local TradeSkillUI =
 			LiteralName = "TRADE_SKILL_NAME_UPDATE",
 		},
 		{
-			Name = "TradeSkillOptionalReagentTooltipUpdated",
+			Name = "TradeSkillOptionalReagentBonusTextUpdated",
 			Type = "Event",
-			LiteralName = "TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED",
+			LiteralName = "TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED",
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -234,6 +218,17 @@ local TradeSkillUI =
 
 	Tables =
 	{
+		{
+			Name = "OptionalReagentItemFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "TooltipShowsAsStatModifications", Type = "OptionalReagentItemFlag", EnumValue = 0 },
+			},
+		},
 		{
 			Name = "OptionalReagentSlot",
 			Type = "Structure",

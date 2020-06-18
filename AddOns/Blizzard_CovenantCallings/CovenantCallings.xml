@@ -11,15 +11,15 @@
 		<Layers>
 			<Layer level="BACKGROUND" textureSublevel="-1">
 				<Texture parentKey="Glow" atlas="Callings-Glow" hidden="true">
-					<Size x="64" y="64"/>
+					<Size x="78" y="78"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="3"/>
+						<Anchor point="CENTER" x="0" y="4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon">
-					<Size x="126" y="126"/>
+					<Size x="150" y="150"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -35,7 +35,7 @@
 				<Texture parentKey="Bang">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-15" y="0"/>
+						<Anchor point="LEFT" x="-20" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -168,6 +168,7 @@ VignetteInfoDocumentation.lua
 VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
+WeeklyRewardsDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua

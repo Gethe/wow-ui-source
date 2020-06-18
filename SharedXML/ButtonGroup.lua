@@ -75,6 +75,15 @@ function ButtonGroupBaseMixin:RegisterUnselectedCallback(func, owner, ...)
 	self:RegisterCallback(ButtonGroupBaseMixin.Event.Unselected, func, owner, ...);
 end
 
+function ButtonGroupBaseMixin:FindButtonByPredicate(pred)
+	for buttonIndex, button in ipairs(self.buttons) do
+		if pred(button) then
+			return button;
+		end
+	end
+	return nil;
+end
+
 function ButtonGroupBaseMixin:GetButtonsByPredicate(pred)
 	local buttons = {};
 	for buttonIndex, button in ipairs(self.buttons) do

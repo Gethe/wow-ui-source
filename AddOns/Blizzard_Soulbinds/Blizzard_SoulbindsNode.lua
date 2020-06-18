@@ -50,15 +50,35 @@ function SoulbindTreeNodeMixin:LoadTooltip()
 end
 
 function SoulbindTreeNodeMixin:Init(node)
-	self.node = node;
-	self.spell = Spell:CreateFromSpellID(self:GetSpellID());
+	self:SetNode(node);
+	
+	if not self.spell then
+		self.spell = Spell:CreateFromSpellID(self:GetSpellID());
+	end
 
 	self:UpdateVisuals();
 end
 
+function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
+	if oldState == Enum.SoulbindNodeState.Selectable and newState == Enum.SoulbindNodeState.Selected then
+		local NODE_SELECTION_FX_1 = 42;
+		local NODE_SELECTION_FX_2 = 43;
+		local modelScene = self:GetFxModelScene();
+		modelScene:AddEffect(NODE_SELECTION_FX_1, self);
+		modelScene:AddEffect(NODE_SELECTION_FX_2, self);
+	end
+end
+
+function SoulbindTreeNodeMixin:GetFxModelScene()
+	return self.FxModelScene;
+end
+
 function SoulbindTreeNodeMixin:Reset()
+	self.node = nil;
+	self.spell = nil;
 	self.linkFrames = {};
 	self.RingOverlay.Pulse:Stop();
+	self:GetFxModelScene():ClearEffects();
 	self:UnregisterEvents();
 end
 
@@ -67,18 +87,22 @@ function SoulbindTreeNodeMixin:UpdateVisuals()
 		self.Icon:SetDesaturated(true);
 		self.IconOverlay:Show();
 		self.Ring:SetDesaturated(false);
+		self.MouseOverlay:SetDesaturated(false);
 	elseif self:IsUnselectable() then
 		self.Icon:SetDesaturated(false);
 		self.IconOverlay:Show();
 		self.Ring:SetDesaturated(true);
+		self.MouseOverlay:SetDesaturated(true);
 	elseif self:IsSelectable() then
 		self.Icon:SetDesaturated(false);
 		self.IconOverlay:Hide();
 		self.Ring:SetDesaturated(false);
+		self.MouseOverlay:SetDesaturated(false);
 	elseif self:IsSelected() then
 		self.Icon:SetDesaturated(false);
 		self.IconOverlay:Hide();
 		self.Ring:SetDesaturated(false);
+		self.MouseOverlay:SetDesaturated(false);
 	end
 end
 
@@ -103,11 +127,20 @@ function SoulbindTreeNodeMixin:IsUnavailable()
 end
 
 function SoulbindTreeNodeMixin:GetState()
-	return self.node.state;
+	return self.node and self.node.state or nil;
 end
 
 function SoulbindTreeNodeMixin:GetNode()
 	return self.node;
+end
+
+function SoulbindTreeNodeMixin:SetNode(node)
+	local oldState = self:GetState();
+	self.node = node;
+	local newState = self:GetState();
+	if oldState and oldState ~= newState then
+		self:OnStateTransition(oldState, newState);
+	end
 end
 
 function SoulbindTreeNodeMixin:AddLink(linkFrame)
@@ -263,6 +296,9 @@ function SoulbindConduitNodeMixin:SetConduitID(conduitID)
 	if conduitID > 0 then
 		self:PlayInstallAnim();
 		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_INSTALLED);
+
+		local CONDUIT_INSTALL_FX = 45;
+		self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX, self);
 	end
 
 	if GameTooltip:IsShown() then

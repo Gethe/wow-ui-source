@@ -1240,36 +1240,36 @@ function GarrisonShipyardMap_UpdateMissions()
 	end
 end
 
-function GarrisonMissionFrame_OnClickShipyardTutorialButton(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	GarrisonMissionTutorialFrame:Hide();
-	GarrisonShipyardMap_CheckTutorials();
+function GarrisonMissionFrame_OnCloseShipyardTutorial(userAction)
+	if userAction then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		GarrisonMissionTutorialFrame:Hide();
+		GarrisonShipyardMap_CheckTutorials();
+	end
 end
 
 function GarrisonShipyardMap_ShowTutorial(missionFrame, text)
 	local tutorialFrame = GarrisonMissionTutorialFrame;
-	tutorialFrame.GlowBox.Button:SetScript("OnClick", GarrisonMissionFrame_OnClickShipyardTutorialButton);
 	tutorialFrame:SetParent(GarrisonShipyardFrame.MissionTab.MissionList);
 	tutorialFrame:SetFrameStrata("DIALOG");
 	tutorialFrame:SetPoint("TOPLEFT", GarrisonShipyardFrame, 0, -21);
 	tutorialFrame:SetPoint("BOTTOMRIGHT", GarrisonShipyardFrame);
-
-	local height = 58;	-- button height + top and bottom padding + spacing between text and button
-	local glowBox = tutorialFrame.GlowBox;
-	glowBox.BigText:SetText(text);
-	height = height + glowBox.BigText:GetHeight();
-	glowBox.SmallText:Hide();
-	glowBox:SetHeight(height);
-	glowBox:ClearAllPoints();
-	glowBox:SetPoint("BOTTOM", missionFrame, "TOP", 0, 16);
-	glowBox.ArrowUp:Hide();
-	glowBox.ArrowGlowUp:Hide();
-	glowBox.ArrowDown:Show();
-	glowBox.ArrowGlowDown:Show();
 	tutorialFrame:Show();
+
+	local helpTipInfo = {
+		text = text,
+		buttonStyle = HelpTip.ButtonStyle.Next,
+		targetPoint = HelpTip.Point.TopEdgeCenter,
+		offsetY = -8,
+		onHideCallback = GarrisonMissionFrame_OnCloseShipyardTutorial,
+	};
+	HelpTip:Show(tutorialFrame, helpTipInfo, missionFrame);
 end
 
 function GarrisonShipyardMap_CheckTutorials()
+	if not GarrisonShipyardFrame:IsShown() then
+		return;
+	end
 	local missionList = GarrisonShipyardFrame.MissionTab.MissionList;
 	if ( missionList.CompleteDialog:IsShown() or GarrisonShipyardFrame.MissionComplete:IsShown() or
 		(GarrisonMissionTutorialFrame:GetParent() == missionList and GarrisonMissionTutorialFrame:IsShown()) ) then

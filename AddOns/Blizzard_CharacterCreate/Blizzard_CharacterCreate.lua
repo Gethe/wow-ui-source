@@ -200,7 +200,7 @@ end
 function CharacterCreateMixin:OnUpdateMouseRotate()
 	local x = GetCursorPosition();
 	if x ~= self.lastCursorPosX then
-		RaceAndClassFrame.allowClassAnimationsAfterSeconds = nil;
+		RaceAndClassFrame:ClearClassAnimationCountdown();
 
 		local diff = (x - self.lastCursorPosX) * CHARACTER_ROTATION_CONSTANT;
 		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
@@ -708,7 +708,7 @@ function CharacterCreateClassButtonMixin:SetEnabledState(enabled)
 	self.ClassName:SetFontObject(enabled and "GameFontNormalMed3" or "GameFontDisableMed3");
 end
 
-CharacterCreateRaceButtonMixin = CreateFromMixins(CharCustomizeFrameWithExpandableTooltipMixin, CharCustomizeMaskedButtonMixin);
+CharacterCreateRaceButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin, CharCustomizeFrameWithExpandableTooltipMixin);
 
 function CharacterCreateRaceButtonMixin:GetAppropriateTooltip()
 	return CharCustomizeTooltip;
@@ -749,6 +749,20 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 
 	self:AddExpandedTooltipFrame(RaceAndClassFrame.RacialAbilityList);
 
+	if not raceData.enabled then
+		local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
+		if requirements then
+			self:AddPostTooltipLine(ALLIED_RACE_UNLOCK_TEXT, RED_FONT_COLOR);
+
+			for _, requirement in ipairs(requirements) do
+				self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
+			end
+
+			local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
+			self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
+		end
+	end
+
 	if selectedRaceID == raceData.raceID and selectedFaction == self.faction then
 		self:SetChecked(true);
 	else
@@ -760,7 +774,7 @@ end
 
 function CharacterCreateRaceButtonMixin:OnEnter()
 	RaceAndClassFrame.RacialAbilityList:SetupRacialAbilties(self.raceData.racialAbilities);
-	CharCustomizeFrameWithExpandableTooltipMixin.OnEnter(self);
+	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
 end
 
 function CharacterCreateRaceButtonMixin:OnClick()
@@ -897,6 +911,9 @@ function CharacterCreateRaceAndClassMixin:StopClassAnimations()
 	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
 end
 
+function CharacterCreateRaceAndClassMixin:StopActiveGroundEffect()
+end
+
 function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisualKitID)
 end
 
@@ -915,6 +932,9 @@ function CharacterCreateRaceAndClassMixin:IsPlayingClassAnimtion()
 end
 
 function CharacterCreateRaceAndClassMixin:ClearCurrentSpellVisualKit()
+end
+
+function CharacterCreateRaceAndClassMixin:ClearClassAnimationCountdown()
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
@@ -962,6 +982,7 @@ function CharacterCreateRaceAndClassMixin:SetCharacterClass(classID)
 		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedClass(classID);
 	elseif not self:IsPlayingClassAnimtion() then
+		self:StopActiveGroundEffect();
 		self:ClearCurrentSpellVisualKit();
 		self:PlayClassAnimations();
 	end

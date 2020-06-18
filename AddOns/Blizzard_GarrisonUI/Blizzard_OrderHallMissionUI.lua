@@ -845,7 +845,7 @@ local function CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, mec
 	return foundIndex and missionFrame.MissionTab.MissionPage.Enemies[foundIndex].MechanicEffect.CrossLeft:IsShown();
 end
 
-local function PositionAtMechanicEffect(missionFrame, glowBox, tutorial, mechanicEffectID)
+local function PositionAtMechanicEffect(missionFrame, mechanicEffectID)
 	local foundMechanic;
 	local foundIndex;
 	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
@@ -858,22 +858,18 @@ local function PositionAtMechanicEffect(missionFrame, glowBox, tutorial, mechani
 
 	if (foundIndex) then
 		if (foundIndex < 3) then
-			tutorial.leftArrow = true;
-			tutorial.rightArrow = false;
-			glowBox:SetPoint("LEFT", missionFrame.MissionTab.MissionPage.Enemies[foundIndex], "RIGHT", 30, -20);
+			return HelpTip.Point.RightEdgeCenter, 6, -20, missionFrame.MissionTab.MissionPage.Enemies[foundIndex];
 		else
-			tutorial.leftArrow = false;
-			tutorial.rightArrow = true;
-			glowBox:SetPoint("RIGHT", missionFrame.MissionTab.MissionPage.Enemies[foundIndex], "LEFT", -30, -20);
+			return HelpTip.Point.LeftEdgeCenter, -6, -20, missionFrame.MissionTab.MissionPage.Enemies[foundIndex];
 		end
 	end
 end
 
-local function PositionAtFirstEnemy(missionFrame, glowBox, tutorial)
-	glowBox:SetPoint("LEFT", missionFrame.MissionTab.MissionPage.Enemy1, "RIGHT", 30, 0);
+local function PositionAtFirstEnemy(missionFrame)
+	return HelpTip.Point.RightEdgeCenter, 6, 0, missionFrame.MissionTab.MissionPage.Enemy1;
 end
 
-local function PositionAtFirstTroop(missionFrame, glowBox, tutorial)
+local function PositionAtFirstTroop(missionFrame)
 	local troopButtonIndex;
 
 	-- find a follower that is a troop
@@ -890,10 +886,18 @@ local function PositionAtFirstTroop(missionFrame, glowBox, tutorial)
 	end
 
 	if (troopButtonIndex) then
-		glowBox:SetPoint("BOTTOM", OrderHallMissionFrame.FollowerList.listScroll.buttons[troopButtonIndex].Follower.DurabilityFrame, "TOP", 0, 50);
+		return HelpTip.Point.TopEdgeCenter, 8, 25, OrderHallMissionFrame.FollowerList.listScroll.buttons[troopButtonIndex].Follower.DurabilityFrame;
 	else
-		glowBox:SetPoint("TOPLEFT", tutorial.xOffset, tutorial.yOffset);
+		return HelpTip.Point.TopEdgeCenter, -10, -520, OrderHallMissionFrame.FollowerList.listScroll;
 	end
+end
+
+local function PositionAtFirstMission(missionFrame)
+	return HelpTip.Point.BottomEdgeCenter, -120, 6, missionFrame.MissionTab.MissionList.listScroll.buttons[1];
+end
+
+local function PositionAtCombatAlly(missionFrame)
+	return HelpTip.Point.RightEdgeCenter, -1, 4, missionFrame.MissionTab.MissionList.CombatAllyUI.Available.AddFollowerButton;
 end
 
 local function TextBossSpec(missionFrame, tutorial)
@@ -933,103 +937,81 @@ local tutorials = {
 	-- Click to view mission details
 	[1] = {
 		id = 1,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_VIEW_DETAILS,
-		xOffset = 240,
-		yOffset = -150,
+		text = ORDER_HALL_MISSION_TUTORIAL_VIEW_DETAILS,
 		parent = "MissionList",
 		openConditionFunc = CheckHasMissions,
 		closeConditionFunc = CheckOpenMissionPage,
 		cancelConditionFunc = CheckOpenMissionCompleteOrHasNoMissions,
-		upArrow = true,
+		positionFunc = PositionAtFirstMission,
 		advanceOnClick = true,
 	},
 	-- This boss can be countered by specialization
 	[2] = {
 		id = 2,
-		xOffset = 30,
-		yOffset = 0,
 		parent = "MissionPage",
 		openConditionFunc = CheckOpenMissionPageAndHasBossMechanic,
 		closeConditionFunc = CheckOpenMissionPageAndBossCountered,
 		cancelConditionFunc = CheckNotOpenMissionPage,
 		positionFunc = PositionAtFirstEnemy,
 		textFunc = TextBossSpec,
-		leftArrow = true,
 		advanceOnClick = true,
 	},
 	-- Click on Combat Ally
 	[3] = {
 		id = 3,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_COMBAT_ALLY,
-		xOffset = 150,
-		yOffset = -500,
+		text = ORDER_HALL_MISSION_TUTORIAL_COMBAT_ALLY,
 		parent = "MissionList",
 		openConditionFunc = CheckHasCombatAllyMission,
 		closeConditionFunc = CheckOpenZoneSupportMissionPage,
 		cancelConditionFunc = CheckNotHasCombatAllyMission,
-		leftArrow = true,
+		positionFunc = PositionAtCombatAlly,
 		advanceOnClick = true,
 	 },
 	-- Troops have abilities that can increase your success chance
 	[4] = {
 		id = 4,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_TROOPS,
-		xOffset = 150,
-		yOffset = -500,
+		text = ORDER_HALL_MISSION_TUTORIAL_TROOPS,
 		parent = "MissionPage",
 		openConditionFunc = CheckOpenMissionPageAndHasTroopInList,
 		closeConditionFunc = CheckOpenMissionPageAndTroopInMission,
 		positionFunc = PositionAtFirstTroop,
-		downArrow = true,
 		advanceOnClick = true,
 	},
 	-- Lethal will always kill a troop if not countered.
 	[0x10000] = {
 		id = 0x10000,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_LETHAL,
-		xOffset = 0,
-		yOffset = 0,
+		text = ORDER_HALL_MISSION_TUTORIAL_LETHAL,
 		parent = "MissionPage",
 		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, lethalMechanicEffectID); end,
 		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, lethalMechanicEffectID); end,
-		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, lethalMechanicEffectID); end,
-		leftArrow = true,
+		positionFunc = function(missionFrame) return PositionAtMechanicEffect(missionFrame, lethalMechanicEffectID); end,
 	},
 	-- Cursed will not provide a bonus loot if not countered.
 	[0x20000] = {
 		id = 0x20000,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_CURSED,
-		xOffset = 0,
-		yOffset = 0,
+		text = ORDER_HALL_MISSION_TUTORIAL_CURSED,
 		parent = "MissionPage",
 		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, cursedMechanicEffectID); end,
 		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, cursedMechanicEffectID); end,
-		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, cursedMechanicEffectID); end,
-		leftArrow = true,
+		positionFunc = function(missionFrame) return PositionAtMechanicEffect(missionFrame, cursedMechanicEffectID); end,
 	},
 	-- Slowing increases the mission duration if not countered.
 	[0x40000] = {
 		id = 0x40000,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_SLOWING,
-		xOffset = 0,
-		yOffset = 0,
+		text = ORDER_HALL_MISSION_TUTORIAL_SLOWING,
 		parent = "MissionPage",
 		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, slowingMechanicEffectID); end,
 		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, slowingMechanicEffectID); end,
-		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, slowingMechanicEffectID); end,
-		leftArrow = true,
+		positionFunc = function(missionFrame) return PositionAtMechanicEffect(missionFrame, slowingMechanicEffectID); end,
 	},
 	-- Disorienting increases the mission cost if not countered.
 	[0x80000] = {
 		id = 0x80000,
-		text1 = ORDER_HALL_MISSION_TUTORIAL_DISORIENTING,
-		xOffset = 0,
-		yOffset = 0,
+		text = ORDER_HALL_MISSION_TUTORIAL_DISORIENTING,
 		parent = "MissionPage",
 		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, disorientingMechanicEffectID); end,
 		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, disorientingMechanicEffectID); end,
-		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, disorientingMechanicEffectID); end,
-		leftArrow = true,
+		positionFunc = function(missionFrame) return PositionAtMechanicEffect(missionFrame, disorientingMechanicEffectID); end,
 	},
 
 };
@@ -1108,43 +1090,26 @@ function OrderHallMission:CheckTutorials(advance)
 			OrderHallMissionTutorialFrame:SetPoint("TOPLEFT", self, 0, -21);
 			OrderHallMissionTutorialFrame:SetPoint("BOTTOMRIGHT", self);
 			OrderHallMissionTutorialFrame.id = id;
-			local height = 58;	-- button height + top and bottom padding + spacing between text and button
-			local glowBox = OrderHallMissionTutorialFrame.GlowBox;
-			if (tutorial.textFunc) then
-				glowBox.BigText:SetText(tutorial.textFunc(self, tutorial));
-			else
-				glowBox.BigText:SetText(tutorial.text1);
+
+			local text = tutorial.text;
+			if tutorial.textFunc then
+				text = tutorial.textFunc(self, tutorial);
 			end
+			local targetPoint, offsetX, offsetY, relativeFrame = tutorial.positionFunc(self);
+			if targetPoint then
+				local helpTipInfo = {
+					text = text,
+					buttonStyle = HelpTip.ButtonStyle.Close,
+					targetPoint = targetPoint,
+					offsetX = offsetX,
+					offsetY = offsetY,
+					onHideCallback = GenerateClosure(self.CheckTutorials, self),
+				};
+				HelpTip:Show(OrderHallMissionTutorialFrame, helpTipInfo, relativeFrame);
 
-			height = height + glowBox.BigText:GetHeight();
-			if ( tutorial.text2 ) then
-				glowBox.SmallText:SetText(tutorial.text2);
-				height = height + 12 + glowBox.SmallText:GetHeight();
-				glowBox.SmallText:Show();
-			else
-				glowBox.SmallText:Hide();
+				OrderHallMissionTutorialFrame:Show();
+				break;
 			end
-			glowBox:SetHeight(height);
-			glowBox:ClearAllPoints();
-			if ( tutorial.positionFunc ) then
-				tutorial.positionFunc(self, glowBox, tutorial);
-			else
-				glowBox:SetPoint("TOPLEFT", tutorial.xOffset, tutorial.yOffset);
-			end
-			glowBox.ArrowUp:SetShown(tutorial.upArrow);
-			glowBox.ArrowGlowUp:SetShown(tutorial.upArrow);
-
-			glowBox.ArrowDown:SetShown(tutorial.downArrow);
-			glowBox.ArrowGlowDown:SetShown(tutorial.downArrow);
-
-			glowBox.ArrowLeft:SetShown(tutorial.leftArrow);
-			glowBox.ArrowGlowLeft:SetShown(tutorial.leftArrow);
-
-			glowBox.ArrowRight:SetShown(tutorial.rightArrow);
-			glowBox.ArrowGlowRight:SetShown(tutorial.rightArrow);
-
-			OrderHallMissionTutorialFrame:Show();
-			break;
 		end
 	end
 end

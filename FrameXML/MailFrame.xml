@@ -756,6 +756,9 @@
 									<OnLoad>
 										MoneyInputFrame_SetOnValueChangedFunc(self, SendMailFrame_CanSend);
 									</OnLoad>
+									<OnHide>
+										MoneyInputFrame_ResetMoney(self);
+									</OnHide>
 								</Scripts>
 							</Frame>
 							<CheckButton name="SendMailSendMoneyButton" inherits="SendMailRadioButtonTemplate" id="1">

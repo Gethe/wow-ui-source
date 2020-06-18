@@ -94,7 +94,11 @@
           <OnLeave method="OnLeave"/>
         </Scripts>
 				<Frames>
-					<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false"/>
+					<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false">
+						<KeyValues>
+							<KeyValue key="useViewInsetNormalization" value="false" type="boolean"/>
+						</KeyValues>
+					</ModelScene>
 				</Frames>
       </Button>
       <Frame parentKey="ReinforceInfoFrame" mixin="ReinforceInfoFrameMixin" frameLevel="512">

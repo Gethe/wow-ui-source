@@ -14,16 +14,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="GameFontNormal_NoShadow">
+				<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="GameFontNormal">
 					<Size x="190" y="0"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="15" y="16"/>
+						<Anchor point="BOTTOMLEFT" x="18" y="17"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<NormalTexture atlas="ChromieTime-Button-Frame"/>
-		<HighlightTexture atlas="ChromieTime-Button-Highlight" useAtlasSize="true" alpha=".5">
+		<HighlightTexture atlas="ChromieTime-Button-Highlight" useAtlasSize="true" alpha="1" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>

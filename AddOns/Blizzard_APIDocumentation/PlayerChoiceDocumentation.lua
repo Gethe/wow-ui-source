@@ -123,6 +123,8 @@ local PlayerChoice =
 				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = false },
 				{ Name = "typeArtID", Type = "number", Nilable = true },
 				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "maxStacks", Type = "number", Nilable = false },
 			},
 		},
 		{

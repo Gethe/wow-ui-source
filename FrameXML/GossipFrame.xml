@@ -186,7 +186,7 @@
 			<OnEvent function="GossipFrame_OnEvent"/>
 			<OnHide>
 				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-				CloseGossip();
+				C_GossipInfo.CloseGossip();
 			</OnHide>
 			<OnMouseWheel function=""/>
 		</Scripts>

@@ -167,10 +167,10 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetGossipBindIndex()
-	local gossipOptions = { GetGossipOptions() };
-	for i = 1, #gossipOptions, 1 do
-		if gossipOptions[i] == "binder" then
-			return i / 2;
+	local GossipOptions = C_GossipInfo.GetOptions();
+	for i, gossipOption in ipairs(GossipOptions) do
+		if gossipOption.type == "binder" then
+			return i;
 		end
 	end
 end
@@ -2300,8 +2300,8 @@ function Class_GossipWatcher:OnBegin()
 end
 
 function Class_GossipWatcher:GOSSIP_SHOW()
-	local numActiveQuests = GetNumGossipActiveQuests(); -- (?) quests ready to turn in
-	local numAvailabelQuests = GetNumGossipAvailableQuests(); -- (!) quests available to pick up
+	local numActiveQuests = C_GossipInfo.GetNumActiveQuests(); -- (?) quests ready to turn in
+	local numAvailabelQuests = C_GossipInfo.GetNumAvailableQuests(); -- (!) quests available to pick up
 	local shouldBind = TutorialHelper:GetGossipBindIndex() and (GetBindLocation() ~= GetMinimapZoneText());
 
 	if ((numActiveQuests + numAvailabelQuests) > 0) then
@@ -2337,17 +2337,18 @@ function Class_GossipQuestPointer:OnBegin()
 
 	Dispatcher:RegisterEvent("GOSSIP_CLOSED", function() self:Complete() end, true);
 
-	local numActiveQuests = GetNumGossipActiveQuests(); -- (?) quests ready to turn in
-	local numAvailabelQuests = GetNumGossipAvailableQuests(); -- (!) quests available to pick up
+	local numActiveQuests = C_GossipInfo.GetNumActiveQuests(); -- (?) quests ready to turn in
+	local numAvailabelQuests = C_GossipInfo.GetNumAvailableQuests(); -- (!) quests available to pick up
 
 	local questText;
 	local pointerText;
 
-	if ((numActiveQuests > 0) and (select(4, GetGossipActiveQuests()))) then
-		questText = GetGossipActiveQuests();
+	local gossipQuests = C_GossipInfo.GetActiveQuests();
+	if ((numActiveQuests > 0) and (gossipQuests[1].isComplete)) then
+		questText = gossipQuests[1].title;
 		pointerText = formatStr(NPE_GOSSIPQUESTACTIVE);
 	elseif (numAvailabelQuests > 0) then
-		questText = GetGossipAvailableQuests();
+		questText =	gossipQuests[1].title;
 		pointerText	 = formatStr(NPE_GOSSIPQUESTAVAILABLE);
 	end
 

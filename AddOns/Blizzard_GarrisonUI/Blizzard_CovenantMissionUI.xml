@@ -362,7 +362,7 @@
 			</Frame>
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>
-					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" mixin="OrderHallMissionListMixin" name="$parentMissions">
+					<Frame parentKey="MissionList" inherits="CovenantMissionListTemplate" mixin="CovenantMissionListMixin" name="$parentMissions">
 						<Scripts>
 							<OnLoad inherit="prepend">
 								self.CompleteDialog.Background:ClearAllPoints();

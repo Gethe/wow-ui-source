@@ -1077,6 +1077,8 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_OpenMap = class("Intro_OpenMap", Class_TutorialBase);
 function Class_Intro_OpenMap:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+
 	local key = TutorialHelper:GetMapBinding();
 	Dispatcher:RegisterScript(WorldMapFrame, "OnShow", function()
 		if self.Timer then
@@ -1085,13 +1087,21 @@ function Class_Intro_OpenMap:OnBegin()
 		self:Complete();
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function()
-		local content = {text = NPEV2_OPENMAP, icon=nil, keyText=key};
-		self:ShowSingleKeyTutorial(content);
+	local content = {text = NPEV2_OPENMAP, icon=nil, keyText=key};
+	self:ShowSingleKeyTutorial(content);
+
+	self.Timer = C_Timer.NewTimer(12, function()
+		self:Complete();
 	end);
 end
 
+function Class_Intro_OpenMap:PLAYER_DEAD()
+	self:Complete();
+end
+
 function Class_Intro_OpenMap:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+
 	if self.Timer then
 		self.Timer:Cancel()
 	end
@@ -1136,7 +1146,9 @@ function Class_Intro_MapHighlights:Display()
 			end
 		 end
 	end
-	self.MapPointerTutorialID = self:AddPointerTutorial(TutorialHelper:FormatString(self.Prompt), "UP", targetPin or WorldMapFrame.ScrollContainer, 0, 0, nil);
+	if targetPin then
+		self.MapPointerTutorialID = self:AddPointerTutorial(TutorialHelper:FormatString(self.Prompt), "UP", targetPin, 0, 0, nil);
+	end
 end
 
 function Class_Intro_MapHighlights:OnSuppressed()
@@ -1854,8 +1866,20 @@ function Class_EquipTutorial:OnComplete()
 		self.EquipmentChangedTimer:Cancel();
 	end
 
+	EventRegistry:UnregisterCallback("ContainerFrame.AllBagsClosed", self);
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+	EventRegistry:UnregisterCallback("ContainerFrame.CloseBag", self);
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBackpack", self);
+	EventRegistry:UnregisterCallback("ContainerFrame.CloseBackpack", self);
+
 	if self.onShowID then
 		Dispatcher:UnregisterScript(CharacterFrame, "OnShow", self.onShowID);
+		self.onShowID = nil;
+	end
+
+	if self.onHideID then
+		Dispatcher:UnregisterScript(CharacterFrame, "OnHide", self.onHideID);
+		self.onHideID = nil;
 	end
 
 	self.Timer = C_Timer.NewTimer(0.1, function()
@@ -2274,9 +2298,17 @@ end
 
 Class_EatFood = class("EatFood", Class_TutorialBase);
 function Class_EatFood:OnBegin(inCombat)
+	if self.tutorialSuccess == true then
+		self:Complete();
+		return;
+	end
+
 	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
 	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+	Dispatcher:RegisterEvent("UNIT_HEALTH", self);
 	self.inCombat = inCombat or false;
+	self.tutorialSuccess = false;
 
 	if not self.inCombat then
 		local key = TutorialHelper:GetBagBinding();
@@ -2288,6 +2320,17 @@ function Class_EatFood:OnBegin(inCombat)
 
 		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 		Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
+	end
+end
+
+function Class_EatFood:UNIT_HEALTH(arg1)
+	if ( arg1 == "player" ) then
+		local health = UnitHealth(arg1);
+		local maxHealth = UnitHealthMax(arg1);
+
+		if (health == maxHealth) and (self.tutorialSuccess == false) then
+			self:Reset();
+		end
 	end
 end
 
@@ -2310,6 +2353,7 @@ function Class_EatFood:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	local tutorialData = TutorialHelper:GetFactionData();
 	if spellID == tutorialData.FoodSpellCast then
 		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+		self.tutorialSuccess = true;
 		self:HidePointerTutorials();
 		local content = {text = TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_SUCCEEDED), icon=nil};
 		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
@@ -2319,11 +2363,22 @@ function Class_EatFood:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	end
 end
 
+function Class_EatFood:Reset()
+	if not self.tutorialSuccess then
+		self:Complete();
+		Tutorials.LowHealthWatcher:Begin();
+	end
+end
+
+function Class_EatFood:PLAYER_DEAD()
+	-- if we get interrupted by Death, start over
+	self:Reset();
+end
+
 function Class_EatFood:PLAYER_REGEN_DISABLED()
 	-- if we get interrupted by Combat, start over
 	self.inCombat = true;
-	self:Complete();
-	Tutorials.LowHealthWatcher:Begin();
+	self:Reset();
 end
 
 function Class_EatFood:PLAYER_REGEN_ENABLED()
@@ -2331,6 +2386,11 @@ function Class_EatFood:PLAYER_REGEN_ENABLED()
 end
 
 function Class_EatFood:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_REGEN_DISABLED", self);
+	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+	Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
+
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 end
@@ -2465,70 +2525,177 @@ function Class_Vendor_Watcher:OnComplete()
 	self:HidePointerTutorials();
 end
 
+
+-- ------------------------------------------------------------------------------------------------------------
+-- LFG Status Watcher
+-- ------------------------------------------------------------------------------------------------------------
+Class_LFGStatusWatcher = class("LFGStatusWatcher", Class_TutorialBase);
+function Class_LFGStatusWatcher:OnBegin()
+	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
+	self.onShowID = Dispatcher:RegisterScript(PVEFrame, "OnShow", 
+		function()
+			C_Timer.After(0.1, function()
+				self:ShowLFG() 
+			end);
+		end, 
+		false);
+	self.onHideID = Dispatcher:RegisterScript(PVEFrame, "OnHide", function() self:HideLFG() end, false);
+	
+	Tutorials.LookingForGroup:Begin();
+	self:Restart();
+end
+
+function Class_LFGStatusWatcher:QUEST_REMOVED(questIDRemoved)
+	local questID = TutorialHelper:GetFactionData().LookingForGroupQuest;
+	if questID == questIDRemoved then
+		self:Complete();
+	end
+end
+
+function Class_LFGStatusWatcher:Restart()
+	ActionButton_ShowOverlayGlow(LFDMicroButton);
+	self:ShowPointerTutorial(NPEV2_LFD_INTRO, "DOWN", LFDMicroButton, 0, 10, nil, "DOWN");
+end
+
+function Class_LFGStatusWatcher:ShowLFG()
+	self:HidePointerTutorials();
+	ActionButton_HideOverlayGlow(LFDMicroButton);
+	Tutorials.LookingForGroup:ShowDungeonSelectionInfo();
+end
+
+function Class_LFGStatusWatcher:HideLFG()
+	self:HidePointerTutorials();
+	self:HideScreenTutorial();
+
+	if Tutorials.LookingForGroup.inQueue then
+		-- the player is queued for the dungeon
+		return;
+	elseif self.tutorialSuccess then
+		-- the tutorial is over
+		self:Complete();
+		return;
+	end
+	self:Restart();
+end
+
+function Class_LFGStatusWatcher:OnComplete()
+	if self.onHideID then
+		Dispatcher:UnregisterScript(PVEFrame, "OnHide", self.onHideID);
+		self.onHideID = nil;
+	end
+
+	if self.onShowID then
+		Dispatcher:UnregisterScript(PVEFrame, "OnShow", self.onShowID);
+		self.onShowID = nil;
+	end
+
+	ActionButton_HideOverlayGlow(LFDMicroButton);
+
+	if not self.tutorialSuccess then
+		local questID = TutorialHelper:GetFactionData().LookingForGroupQuest
+		if (C_QuestLog.GetLogIndexForQuestID(questID)) then
+			self:Restart();
+		end
+	end
+end
+
 -- ------------------------------------------------------------------------------------------------------------
 -- Looking For Group
 -- ------------------------------------------------------------------------------------------------------------
 Class_LookingForGroup = class("LookingForGroup", Class_TutorialBase);
 function Class_LookingForGroup:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-	Dispatcher:RegisterScript(PVEFrame, "OnShow", function() self:ShowLFG() end, true);
-	Dispatcher:RegisterScript(PVEFrame, "OnHide", function() self:HideLFG() end, true);
-	
-	EventRegistry:RegisterCallback("LFGDungeonListCheckButton_OnClick.DungeonChecked", self.DungeonChecked, self);
-
 	Dispatcher:RegisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+	Dispatcher:RegisterEvent("LFG_UPDATE", self);
 
-	ActionButton_ShowOverlayGlow(LFDMicroButton);
-	self:ShowPointerTutorial(NPEV2_LFD_INTRO, "DOWN", LFDMicroButton, 0, 10, nil, "DOWN");
+	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self.EmptyDungeonList, self);
+	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self.ReadyDungeonList, self);
+	EventRegistry:RegisterCallback("LFGDungeonList.DungeonEnabled", self.DungeonEnabled, self);
+	EventRegistry:RegisterCallback("LFGDungeonList.DungeonDisabled", self.DungeonDisabled, self);
 end
 
-function Class_LookingForGroup:ShowLFG()
-	ActionButton_HideOverlayGlow(LFDMicroButton);
-	self:HidePointerTutorials();
-	C_Timer.After(0.1, function()
-		self:ShowDungeonSelectionInfo();
-	end);
+function Class_LookingForGroup:DungeonEnabled(dungeonID)
+	if LFDQueueFrameFindGroupButton:IsEnabled() then
+		NPE_TutorialButtonPulseGlow:Show(LFDQueueFrameFindGroupButton);
+		self:HidePointerTutorials();
+	end
 end
 
-function Class_LookingForGroup:HideLFG()
-	self:HidePointerTutorials();
-	self:HideScreenTutorial();
+function Class_LookingForGroup:DungeonDisabled(dungeonID)
+	NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
 end
 
-function Class_LookingForGroup:ShowDungeonSelectionInfo()
-	self:HidePointerTutorial(self.rolePointerID);
+function Class_LookingForGroup:ReadyDungeonList()
+	self.dungeonListReady = true;
+	self:UpdateDungeonPointer();
+end
+
+function Class_LookingForGroup:EmptyDungeonList()
+	self.dungeonListReady = false;
+	self:UpdateDungeonPointer();
+end
+
+function Class_LookingForGroup:UpdateDungeonPointer()
 	if self.pointerID then
 		self:HidePointerTutorial(self.pointerID);
 	end
 
 	if LFDQueueFrameSpecific:IsVisible() then
-		self.pointerID = self:AddPointerTutorial(NPEV2_LFD_SPECIFIC_DUNGEON, "LEFT", LFDQueueFrameSpecific, 0, 10, nil, "LEFT");
+		local message;
+		if self.dungeonListReady == false then
+			message = NPEV2_LFD_SPECIFIC_DUNGEON_ERROR;
+		else
+			local tutorialDungeonChecked = LFGEnabledList[TutorialData.NPEDungeonID];
+			if not tutorialDungeonChecked then
+				message = NPEV2_LFD_SPECIFIC_DUNGEON;
+			end
+		end
+		if message then
+			self.pointerID = self:AddPointerTutorial(message, "LEFT", LFDQueueFrameSpecific, 0, 10, nil, "LEFT");
+		end
 	end
 end
 
-function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE()
-	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+function Class_LookingForGroup:ShowDungeonSelectionInfo()
+	if self.inQueue == true then
+		return;
+	end
+	self:UpdateDungeonPointer();
+end
+
+function Class_LookingForGroup:LFG_UPDATE(args)
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
+	if mode and mode == "queued" then
+		self.inQueue = true;
+	else
+		self.inQueue = false;
+	end
+end
+
+function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
+	--Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 	NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
+
+	self:HidePointerTutorials();
 
 	if QueueStatusMinimapButton:IsVisible() then
 		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 0, 10, nil, "RIGHT"); 
 	end
 
 	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
-end
-
-function Class_LookingForGroup:DungeonChecked()
-	if LFDQueueFrameFindGroupButton:IsEnabled() then
-		NPE_TutorialButtonPulseGlow:Show(LFDQueueFrameFindGroupButton);
-		self:HidePointerTutorials();
-	else
-		NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
-	end
+	Dispatcher:RegisterEvent("LFG_PROPOSAL_FAILED", self);
 end
 
 function Class_LookingForGroup:LFG_PROPOSAL_SHOW()
 	Dispatcher:UnregisterEvent("LFG_PROPOSAL_SHOW", self);
+
+	-- if the player reaches this part, they have succeeded
+	Tutorials.LFGStatusWatcher.tutorialSuccess = true;
+
 	self:Complete();
+end
+
+function Class_LookingForGroup:LFG_PROPOSAL_FAILED()
 end
 
 function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
@@ -2540,6 +2707,7 @@ end
 
 function Class_LookingForGroup:OnComplete()
 	NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
+
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 end

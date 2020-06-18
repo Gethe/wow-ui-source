@@ -26,9 +26,9 @@ local ScriptedAnimations =
 		{
 			Name = "ScriptedAnimationBehavior",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "None", Type = "ScriptedAnimationBehavior", EnumValue = 0 },
@@ -36,6 +36,7 @@ local ScriptedAnimations =
 				{ Name = "TargetKnockBack", Type = "ScriptedAnimationBehavior", EnumValue = 2 },
 				{ Name = "SourceRecoil", Type = "ScriptedAnimationBehavior", EnumValue = 3 },
 				{ Name = "SourceCollideWithTarget", Type = "ScriptedAnimationBehavior", EnumValue = 4 },
+				{ Name = "UIParentShake", Type = "ScriptedAnimationBehavior", EnumValue = 5 },
 			},
 		},
 		{

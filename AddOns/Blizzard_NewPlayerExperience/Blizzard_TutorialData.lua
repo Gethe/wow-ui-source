@@ -131,6 +131,7 @@ TutorialData.RogueStealthSpells = {1833, 8676};
 
 TutorialData.HunterTamePetSpells = {883, 1515};
 
+TutorialData.NPEDungeonID = 2043;
 
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.ClassData = {

@@ -102,7 +102,7 @@ function ChromieTimeExpansionButtonMixin:SetupButton(buttonInfo)
 	if(not buttonInfo) then 
 		return; 
 	end 
-	self.Name:SetText(buttonInfo.name); 
+	self.Name:SetText(buttonInfo.name);
 	self.Background:SetAtlas(buttonInfo.previewAtlas);
 	self.buttonInfo = buttonInfo; 
 	self:Show(); 

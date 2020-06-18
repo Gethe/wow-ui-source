@@ -71,10 +71,10 @@ end
 function GossipFrame_OnEvent(self, event, ...)
 	if ( event == "GOSSIP_SHOW" ) then
 		-- if there is only a non-gossip option, then go to it directly
-		if ( (GetNumGossipAvailableQuests() == 0) and (GetNumGossipActiveQuests() == 0) and (GetNumGossipOptions() == 1) and not ForceGossip() ) then
-			local text, gossipType = GetGossipOptions();
-			if ( gossipType ~= "gossip" ) then
-				SelectGossipOption(1);
+		if ( (C_GossipInfo.GetNumAvailableQuests() == 0) and (C_GossipInfo.GetNumActiveQuests()  == 0) and (C_GossipInfo.GetNumOptions() == 1) and not C_GossipInfo.ForceGossip() ) then
+			local gossipInfoTable = C_GossipInfo.GetOptions();
+			if ( gossipInfoTable[1].type ~= "gossip" ) then
+				C_GossipInfo.SelectOption(1);
 				return;
 			end
 		end
@@ -82,7 +82,7 @@ function GossipFrame_OnEvent(self, event, ...)
 		if ( not GossipFrame:IsShown() ) then
 			ShowUIPanel(self);
 			if ( not self:IsShown() ) then
-				CloseGossip();
+				C_GossipInfo.CloseGossip();
 				return;
 			end
 		end
@@ -99,10 +99,10 @@ function GossipFrameUpdate()
 	GossipFrame.titleButtonPool:ReleaseAll();
 	GossipFrame.buttons = {};
 
-	GossipGreetingText:SetText(GetGossipText());
-	GossipFrameAvailableQuestsUpdate(GetGossipAvailableQuests());
-	GossipFrameActiveQuestsUpdate(GetGossipActiveQuests());
-	GossipFrameOptionsUpdate(GetGossipOptions());
+	GossipGreetingText:SetText(C_GossipInfo.GetText());
+	GossipFrameAvailableQuestsUpdate();
+	GossipFrameActiveQuestsUpdate();
+	GossipFrameOptionsUpdate();
 	GossipFrameNpcNameText:SetText(UnitName("npc"));
 	if ( UnitExists("npc") ) then
 		SetPortraitTexture(GossipFramePortrait, "npc");
@@ -123,7 +123,7 @@ function GossipFrameUpdate()
 end
 
 function GossipFrame_GetTitleButtonCount()
-	return #GossipFrame.buttons;
+	return GossipFrame.buttons and #GossipFrame.buttons or 0;
 end
 
 function GossipFrame_GetTitleButton(index)
@@ -155,55 +155,47 @@ end
 
 function GossipTitleButton_OnClick(self, button)
 	if ( self.type == "Available" ) then
-		SelectGossipAvailableQuest(self:GetID());
+		C_GossipInfo.SelectAvailableQuest(self:GetID());
 	elseif ( self.type == "Active" ) then
-		SelectGossipActiveQuest(self:GetID());
+		C_GossipInfo.SelectActiveQuest(self:GetID());
 	else
-		SelectGossipOption(self:GetID());
+		C_GossipInfo.SelectOption(self:GetID());
 	end
 end
 
-function GossipFrameAvailableQuestsUpdate(...)
-	local titleIndex = 1;
-	for i=1, select("#", ...), 8 do
+function GossipFrameAvailableQuestsUpdate()
+	local GossipQuests = C_GossipInfo.GetAvailableQuests(); 
+	for titleIndex, questInfo in ipairs(GossipQuests) do
 		local button = GossipFrame_AcquireTitleButton();
-		button:SetQuest(select(i, ...));
-
+		button:SetQuest(questInfo.title, questInfo.questLevel, questInfo.isTrivial, questInfo.frequency, questInfo.repeatable, questInfo.isLegendary, questInfo.isIgnored, questInfo.questID);
 		button:SetID(titleIndex);
-		titleIndex = titleIndex + 1;
-
 		GossipFrame_AnchorTitleButton(button);
 	end
 end
 
-function GossipFrameActiveQuestsUpdate(...)
+function GossipFrameActiveQuestsUpdate()
+	local gossipQuests = C_GossipInfo.GetActiveQuests(); 
 	GossipFrame_InsertTitleSeparator();
 
-	local titleIndex = 1;
-	local numActiveQuestData = select("#", ...);
-	GossipFrame.hasActiveQuests = (numActiveQuestData > 0);
-	for i=1, numActiveQuestData, 7 do
+	GossipFrame.hasActiveQuests = (#gossipQuests > 0);
+	for titleIndex, questInfo in ipairs(gossipQuests) do
 		local button = GossipFrame_AcquireTitleButton();
-		button:SetActiveQuest(select(i, ...));
-
+		button:SetActiveQuest(questInfo.title, questInfo.questLevel, questInfo.isTrivial, questInfo.isComplete, questInfo.isLegendary, questInfo.isIgnored, questInfo.questID);
 		button:SetID(titleIndex);
-		titleIndex = titleIndex + 1;
-
 		GossipFrame_AnchorTitleButton(button);
 	end
 end
 
-function GossipFrameOptionsUpdate(...)
+function GossipFrameOptionsUpdate()
+	local gossipOptions = C_GossipInfo.GetOptions();
 	GossipFrame_InsertTitleSeparator();
 
 	local titleIndex = 1;
-	for i=1, select("#", ...), 2 do
+	for titleIndex, optionInfo in ipairs(gossipOptions) do
 		local button = GossipFrame_AcquireTitleButton();
-		button:SetOption(select(i, ...));
+		button:SetOption(optionInfo.name, optionInfo.type);
 
 		button:SetID(titleIndex);
-		titleIndex = titleIndex + 1;
-
 		GossipFrame_AnchorTitleButton(button);
 	end
 end

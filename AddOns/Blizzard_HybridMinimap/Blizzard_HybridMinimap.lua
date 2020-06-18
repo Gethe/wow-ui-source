@@ -24,12 +24,14 @@ function HybridMinimapMixin:OnShow()
 	self:CheckMap();
 	self.MapCanvas:Show();
 	C_Minimap.SetDrawGroundTextures(false);
+	C_Minimap.SetIgnoreRotateMinimap(true);
 end
 
 function HybridMinimapMixin:OnHide()
 	self:UnregisterEvent("MINIMAP_UPDATE_ZOOM");
 	self.MapCanvas:Hide();
 	C_Minimap.SetDrawGroundTextures(true);
+	C_Minimap.SetIgnoreRotateMinimap(false);
 end
 
 function HybridMinimapMixin:OnEvent(event)

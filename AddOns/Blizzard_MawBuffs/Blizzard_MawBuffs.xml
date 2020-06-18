@@ -22,6 +22,20 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Border" atlas="jailerstower-animapowerlist-powerborder">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightBorder" hidden="true" atlas="jailerstower-animapowerlist-highlight">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="CountRing" atlas="jailerstower-animapowerlist-rank" useAtlasSize="true">
 					<Anchors>
@@ -35,10 +49,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<HighlightTexture atlas="pvptalents-list-background-mouseover" alphaMode="ADD"/>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 	<Frame name="MawBuffsList" mixin="MawBuffsListMixin" virtual="true">

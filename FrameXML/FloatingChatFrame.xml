@@ -652,6 +652,24 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="NewcomerHelpBannerTemplate" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="ChatFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" x="5"/>
+					</Anchors>
+					<Color color="DISABLED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<!-- Main chat window -->
 	<Button name="ChatFrame1Tab" inherits="ChatTabTemplate" id="1"/>
 	<ScrollingMessageFrame name="ChatFrame1" hidden="false" inherits="FloatingChatFrameTemplate" id="1">

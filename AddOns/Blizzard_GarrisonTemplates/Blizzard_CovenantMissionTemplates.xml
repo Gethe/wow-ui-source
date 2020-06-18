@@ -481,4 +481,297 @@
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="CovenantListTemplate" inherits="CovenantMissionBaseFrameTemplate" virtual="true">
+		<Size x="300" y="575"/>
+		<Frames>
+			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-28" y="-22"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-28" y="22"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.trackBG:Show();
+								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+								self.doNotHide = true;
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CovenantMissionListTemplate" inherits="CovenantListTemplate" virtual="true" mixin="GarrisonMissionListMixin, CovenantMissionListMixin">
+		<Size x="890" y="525"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="35" y="-65"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="EmptyListString" inherits="GameFontNormalHuge" text="GARRISON_EMPTY_MISSION_LIST">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+				<Size x="306" y="43"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-20"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="CompleteDialog" enableMouse="true" hidden="true" frameLevel="10">
+				<Size x="956" y="637"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-33" y="43"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="BorderFrame" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteDialogTemplate, GarrisonMissionTopBorderTemplate">
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CovenantMissionListButtonTemplate" virtual="true">
+		<Size x="832" y="80"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="GarrMission_MissionParchment" useAtlasSize="true" vertTile="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture atlas="!GarrMission_Bg-Edge" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10"/>
+						<Anchor point="BOTTOMLEFT"  x="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!GarrMission_Bg-Edge" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture atlas="_GarrMission_MissionListTopHighlight" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3"/>
+						<Anchor point="TOPRIGHT" x="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_GarrMission_Bg-BottomEdgeSmall" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="IconBG" atlas="Garr_MissionList-IconBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.4"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="4"/>
+						<Anchor point="TOPRIGHT" x="-20" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="20" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="LocBG">
+					<Size x="792" y="78"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RareOverlay" atlas="GarrMission_RareOverlay" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RareText" inherits="QuestFont_Huge" justifyH="LEFT" text="GARRISON_MISSION_RARE">
+					<Size x="290" y="15"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.RareOverlay" x="25" y="11"/>
+					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Color r="0.098" g="0.537" b="0.969" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Level" inherits="Game30Font">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPLEFT" x="40" y="-36"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat">
+					<Size x="75" y="75"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="68" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="LEFT" x="165" y="0"/>
+					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="Summary" inherits="GameFontNormalLarge2" justifyH="LEFT">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="8" y="0"/>
+					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8"/>
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightT" atlas="_GarrMission_TopBorder-Highlight" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="21" y="4"/>
+						<Anchor point="TOPRIGHT" x="-22" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightB" atlas="_GarrMission_TopBorder-Highlight" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="21" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-22" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT" textureSubLevel="1">
+				<Texture parentKey="HighlightTL" atlas="GarrMission_TopBorderCorner-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightTR" atlas="GarrMission_TopBorderCorner-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="HighlightBL" atlas="GarrMission_TopBorderCorner-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="HighlightBR" atlas="GarrMission_TopBorderCorner-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="Highlight" atlas="GarrMission_ListGlow-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="0"/>
+						<Anchor point="TOPRIGHT" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentArray="Rewards" inherits="GarrisonMissionListButtonRewardTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RewardsBG"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Overlay" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" setAllPoints="true">
+							<Color r="0" g="0" b="0" a=".4"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick function="CovenantMissionButton_OnClick"/>
+			<OnEnter function="CovenantMissionButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
 </Ui>

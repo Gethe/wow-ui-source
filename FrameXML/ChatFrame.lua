@@ -3065,6 +3065,10 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.defaultLanguage = GetDefaultLanguage();
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
+
+		local isInitialLogin = select(1, ...);
+		self.needsMentorChatExplanation = isInitialLogin;
+		ChatFrame_CheckShowNewcomerHelpBanner(self);
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3293,6 +3297,14 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	return false;
 end
 
+local function IsActivePlayerMentor()
+	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor;
+end
+
+local function IsActivePlayerNewcomer()
+	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Newcomer;
+end
+
 local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
 	-- Renaming for clarity:
 	local specialFlag = arg6;
@@ -3304,17 +3316,12 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 			-- Add Blizzard Icon if  this was sent by a GM/DEV
 			return "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 		elseif specialFlag == "GUIDE" then
-			-- Guide icons only show in the channels with the appropriate rulesets
-			if C_ChatInfo.GetChannelRuleset(localChannelID) == Enum.ChatChannelRuleset.Mentor then
-				return CreateAtlasMarkup("VignetteKill");
+			if IsActivePlayerNewcomer() then
+				return NPEV2_CHAT_USER_TAG_GUIDE .. " "; -- possibly unable to save global string with trailing whitespace...
 			end
 		elseif specialFlag == "NEWCOMER" then
-			-- Newcomer icons only show in zone channels without special rulesets, and then only if the active player is a guide.
-			if zoneChannelID ~= 0 and
-				C_ChatInfo.GetChannelRuleset(localChannelID) ~= Enum.ChatChannelRuleset.Mentor and
-				C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor
-			then
-				return CreateAtlasMarkup("Islands-QuestTurnin");
+			if IsActivePlayerMentor() then
+				return NPEV2_CHAT_USER_TAG_NEWCOMER .. " ";
 			end
 		else
 			return _G["CHAT_FLAG_"..specialFlag];
@@ -3322,6 +3329,44 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 	end
 
 	return "";
+end
+
+-- NOTE: The leave channel event happens before the channel info is removed from the client, so excludeChannels that you're leaving if you don't
+-- want to count them.
+local function GetFirstChannelIndexOfChannelMatchingRuleset(ruleset, excludeChannel)
+	for i = 1, GetNumDisplayChannels() do
+		local index = select(4, GetChannelDisplayInfo(i));
+		if index and index > 0 and index ~= excludeChannel then
+			if C_ChatInfo.GetChannelRuleset(index) == ruleset then
+				return index;
+			end
+		end
+	end
+
+	return false;
+end
+
+local function GetSlashCommandForChannelOpenChat(channelIndex)
+  	return "/" .. channelIndex; -- This must match OPENCHATSLASH binding text.
+end
+
+function ChatFrame_CheckShowNewcomerHelpBanner(self, excludeChannel)
+	if IsActivePlayerNewcomer() then
+		if not self.NewcomerHelpBanner then
+			self.NewcomerHelpBanner = CreateFrame("Frame", nil, self, "NewcomerHelpBannerTemplate");
+			self.NewcomerHelpBanner:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.NewcomerHelpBanner:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0);
+		end
+
+		local channelIndex = GetFirstChannelIndexOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor, excludeChannel);
+		self.NewcomerHelpBanner:SetShown(channelIndex);
+		if channelIndex then
+			self.NewcomerHelpBanner.Text:SetText(NPEV2_CHAT_HELP_BANNER:format(GetSlashCommandForChannelOpenChat(channelIndex)));
+			self.NewcomerHelpBanner:SetHeight(self.NewcomerHelpBanner.Text:GetStringHeight() + 6);
+		end
+	elseif self.NewcomerHelpBanner then
+		self.NewcomerHelpBanner:Hide();
+	end
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
@@ -3515,22 +3560,42 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE") then
-			local globalstring;
-			if ( arg1 == "TRIAL_RESTRICTED" ) then
-				globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
-			else
-				globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
-				if ( not globalstring ) then
-					globalstring = _G["CHAT_"..arg1.."_NOTICE"];
-					if not globalstring then
-						GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE"));
-						return;
-					end
-				end
-			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
-			self:AddMessage(format(globalstring, arg8, ChatFrame_ResolvePrefixedChannelName(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+
+			if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
+				ChatFrame_CheckShowNewcomerHelpBanner(self);
+
+				if self.needsMentorChatExplanation then
+					self.needsMentorChatExplanation = nil;
+
+					local channelSlashCommand = GetSlashCommandForChannelOpenChat(arg8);
+					local noticeInfo = ChatTypeInfo["SYSTEM"];
+					if IsActivePlayerMentor() then
+						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
+					elseif IsActivePlayerNewcomer() then
+						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
+					end
+				end
+			elseif arg1 == "YOU_LEFT" then
+				ChatFrame_CheckShowNewcomerHelpBanner(self, arg8);
+			else
+				local globalstring;
+				if ( arg1 == "TRIAL_RESTRICTED" ) then
+					globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
+				else
+					globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
+					if ( not globalstring ) then
+						globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+						if not globalstring then
+							GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE"));
+							return;
+						end
+					end
+				end
+
+				self:AddMessage(format(globalstring, arg8, ChatFrame_ResolvePrefixedChannelName(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+			end
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			if not globalstring then

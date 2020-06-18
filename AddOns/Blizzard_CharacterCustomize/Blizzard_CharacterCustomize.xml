@@ -198,7 +198,7 @@
 	</Frame>
 
 	<Frame name="CharCustomizeOptionCheckButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionCheckButtonMixin" virtual="true">
-		<Size x="34" y="32"/>
+		<Size x="32" y="32"/>
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
 			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
@@ -206,9 +206,9 @@
 		</KeyValues>
 		<Frames>
 			<CheckButton parentKey="Button">
-				<Size x="28" y="28"/>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="6" y="-2"/>
+					<Anchor point="TOPLEFT" x="-1" y="0"/>
 				</Anchors>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -235,7 +235,7 @@
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="-50"/>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-34"/>
 					</Anchors>
 				</FontString>
 			</Layer>

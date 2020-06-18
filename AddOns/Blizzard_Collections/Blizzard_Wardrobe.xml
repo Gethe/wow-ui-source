@@ -369,53 +369,6 @@
 					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="SetsTabHelpBox" inherits="GlowBoxTemplate" hidden="true" frameLevel="6">
-				<Size x="230" y="65"/>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentTab2" x="0" y="-20"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="BigText" inherits="GameFontHighlight" justifyH="LEFT">
-							<Size x="186" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="-10" y="-12"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():Hide();
-								if (WardrobeFrame_IsAtTransmogrifier()) then
-									SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB, true);
-								else
-									SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
 			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>
 				<Anchors>
@@ -930,48 +883,6 @@
 								<Alpha childKey="Smoke4" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
 							</AnimationGroup>
 						</Animations>
-					</Frame>					
-					<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="220" y="100"/>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_MOUSE_CLICK_TUTORIAL">
-									<Size x="188" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-24"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="6" y="6"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():Hide();
-										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								SetClampedTextureRotation(self.Arrow.Arrow, 180);
-								SetClampedTextureRotation(self.Arrow.Glow, 180);
-								self.Arrow.Glow:ClearAllPoints();
-								self.Arrow.Glow:SetPoint("BOTTOM", self, "TOP", 0, -3);
-							</OnLoad>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight() + 42);
-							</OnShow>
-						</Scripts>
 					</Frame>
 					<CheckButton parentKey="RightShoulderCheckbox" mixin="RightShoulderCheckboxMixin" hidden="true">
 						<Size x="30" y="30"/>
@@ -1826,51 +1737,6 @@
 							<Anchor point="TOPLEFT" x="-14" y="28"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="OutfitHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="220" y="100"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.OutfitDropDown" relativePoint="RIGHT" x="3" y="-2"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL">
-									<Size x="188" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-22"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="6" y="6"/>
-								</Anchors>
-								<Scripts>
-									<OnClick inherit="append">
-										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-								<Anchors>
-									<Anchor point="RIGHT" relativePoint="LEFT" x="36" y="16"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								SetClampedTextureRotation(self.Arrow.Arrow, 90);
-								SetClampedTextureRotation(self.Arrow.Glow, 90);
-								self.Arrow.Glow:ClearAllPoints();
-								self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -3, 0);
-							</OnLoad>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight()+42);
-							</OnShow>
-						</Scripts>
-					</Frame>
-
 					<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
@@ -2097,7 +1963,7 @@
 								UIMenuButtonStretchMixin.OnMouseDown(self, button);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self, 0, 0);
-								self:GetParent().SpecHelpBox:Hide();
+								HelpTip:Hide(self:GetParent(), TRANSMOG_SPECS_BUTTON_TUTORIAL);
 								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
 								self.Icon:SetPoint("CENTER", -1, -1);
 							</OnMouseDown>
@@ -2106,51 +1972,6 @@
 							</OnMouseUp>
 						</Scripts>
 					</DropDownToggleButton>
-					<Frame parentKey="SpecHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="220" y="100"/>
-						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.SpecButton" relativePoint="BOTTOM" x="0" y="-22"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_SPECS_BUTTON_TUTORIAL">
-									<Size x="188" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-24"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="6" y="6"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():Hide();
-										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								SetClampedTextureRotation(self.Arrow.Arrow, 180);
-								SetClampedTextureRotation(self.Arrow.Glow, 180);
-								self.Arrow.Glow:ClearAllPoints();
-								self.Arrow.Glow:SetPoint("BOTTOM", self, "TOP", 0, -3);
-							</OnLoad>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight() + 42);
-							</OnShow>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="WardrobeTransmogFrame_OnLoad"/>

@@ -224,23 +224,32 @@ function CharCustomizeRotateButtonMixin:DoHoldAction(elapsed)
 	CharCustomizeFrame:RotateCharacter(self.holdAmountPerSecond * elapsed);
 end
 
-CharCustomizeFrameWithExpandableTooltipMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
+CharCustomizeFrameWithExpandableTooltipMixin = {};
 
 function CharCustomizeFrameWithExpandableTooltipMixin:ClearTooltipLines()
 	self.tooltipLines = nil;
 	self.expandedTooltipFrame = nil;
+	self.postTooltipLines = nil;
 end
 
 function CharCustomizeFrameWithExpandableTooltipMixin:AddExpandedTooltipFrame(frame)
 	self.expandedTooltipFrame = frame;
 end
 
+function CharCustomizeFrameWithExpandableTooltipMixin:AddPostTooltipLine(lineText, lineColor)
+	if not self.postTooltipLines then
+		self.postTooltipLines = {};
+	end
+
+	table.insert(self.postTooltipLines, {text = lineText, color = lineColor or NORMAL_FONT_COLOR});
+end
+
 local tooltipsExpanded = false;
 
 function CharCustomizeFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
-	if self.expandedTooltipFrame then
-		local tooltip = self:GetAppropriateTooltip();
+	local tooltip = self:GetAppropriateTooltip();
 
+	if self.expandedTooltipFrame then
 		if tooltipsExpanded then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_InsertFrame(tooltip, self.expandedTooltipFrame);
@@ -249,6 +258,14 @@ function CharCustomizeFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
 		else
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddDisabledLine(tooltip, RIGHT_CLICK_FOR_MORE);
+		end
+	end
+
+	if self.postTooltipLines then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+
+		for _, lineInfo in ipairs(self.postTooltipLines) do
+			GameTooltip_AddColoredLine(tooltip, lineInfo.text, lineInfo.color);
 		end
 	end
 end
@@ -333,7 +350,7 @@ function CharCustomizeMaskedButtonMixin:UpdateHighlightTexture()
 	end
 end
 
-CharCustomizeAlteredFormButtonMixin = CreateFromMixins(CharCustomizeFrameWithExpandableTooltipMixin, CharCustomizeMaskedButtonMixin);
+CharCustomizeAlteredFormButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
 
 function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, selectedSexID, isSelected, isAlteredForm, layoutIndex)
 	self.layoutIndex = layoutIndex;

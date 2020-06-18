@@ -22,21 +22,9 @@ local covenantGarrisonStyleData =
 
 local CovenantPlacer = GarrisonFollowerPlacer;
 
-local function SetupMissionTab(tab, styleData)
-	tab.Left:SetAtlas(styleData.TabLeft, true);
-	tab.Right:SetAtlas(styleData.TabRight, true);
-	tab.Middle:SetAtlas(styleData.TabMiddle, true);
-	tab.Middle:SetHorizTile(false);
-
-	tab.SelectedLeft:SetAtlas(styleData.TabSelectLeft, true);
-	tab.SelectedRight:SetAtlas(styleData.TabSelectRight, true);
-	tab.SelectedMid:SetAtlas(styleData.TabSelectMiddle, true);
-	tab.SelectedMid:SetHorizTile(false);
-end
-
 local function SetupMissionList(self, styleData)
-	SetupMissionTab(self.MissionTab.MissionList.Tab1, styleData);
-	SetupMissionTab(self.MissionTab.MissionList.Tab2, styleData);
+	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "CovenantMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
+	self.MissionTab.MissionList:Update();
 end
 
 local function SetupBorder(self, styleData)
@@ -88,7 +76,6 @@ function CovenantMission:OnLoadMainFrame()
 
 	self.TitleText:Hide();
 
-	self:SetupMissionList();
 	self:SetupCompleteDialog();
 	self:UpdateCurrencyInfo();
 	self:UpdateTextures();
@@ -116,7 +103,7 @@ local COVENANT_MISSION_EVENTS = {
 };
 
 function CovenantMission:OnShowMainFrame()
-	GarrisonFollowerMission.OnShowMainFrame(self);
+	GarrisonMission.OnShowMainFrame(self);
 	FrameUtil.RegisterFrameForEvents(self, COVENANT_MISSION_EVENTS); 
 
 	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameMouseUp, self.OnMouseUpMissionFollower, self);
@@ -124,7 +111,13 @@ function CovenantMission:OnShowMainFrame()
 	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameDragStop, self.OnFollowerFrameDragStop, self);
 	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameReceiveDrag, self.OnFollowerFrameReceiveDrag, self);
 
+	if (self.FollowerList.followerType ~= self.followerTypeID) then
+		self.FollowerList:Initialize(self.followerTypeID);
+	end
+
 	self:SetupTabs();
+
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
 end
 
 function CovenantMission:OnHideMainFrame()
@@ -243,6 +236,19 @@ function CovenantMission:MissionCompleteInitialize(missionList, index)
    	self.MissionComplete:SetCurrentMission(mission);
    	return true;
 end
+
+function CovenantMission:InitiateMissionCompletion(missionInfo)
+	self.MissionComplete:SetCurrentMission(missionInfo);
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_VIEW_MISSION_REPORT);
+
+	self:GetCompleteDialog():Hide();
+	self.FollowerTab:Hide();
+	self.FollowerList:Hide();
+	HelpPlate_Hide();
+	self.MissionComplete:Show();
+	self.MissionCompleteBackground:Show();
+end
+
 
 function CovenantMission:OnClickFollowerPlacerFrame(button, info)
 	if button == "LeftButton" then
@@ -495,4 +501,3 @@ function CovenantMissionPage_OnHide(self)
 
 	self.lastUpdate = nil;
 end
-

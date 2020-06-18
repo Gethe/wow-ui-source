@@ -2889,11 +2889,11 @@ StaticPopupDialogs["XP_LOSS"] = {
 	OnUpdate = function(self, elapsed)
 		if ( not CheckSpiritHealerDist() ) then
 			self:Hide();
-			CloseGossip();
+			C_GossipInfo.CloseGossip();
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_GossipInfo.CloseGossip();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2917,11 +2917,11 @@ StaticPopupDialogs["XP_LOSS_NO_DURABILITY"] = {
 	OnUpdate = function(self, elapsed)
 		if ( not CheckSpiritHealerDist() ) then
 			self:Hide();
-			CloseGossip();
+			C_GossipInfo.CloseGossip();
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_GossipInfo.CloseGossip();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2945,11 +2945,11 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 	OnUpdate = function(self, dialog)
 		if ( not CheckSpiritHealerDist() ) then
 			self:Hide();
-			CloseGossip();
+			C_GossipInfo.CloseGossip();
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_GossipInfo.CloseGossip();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2967,11 +2967,11 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 	OnUpdate = function(self, dialog)
 		if ( not CheckSpiritHealerDist() ) then
 			self:Hide();
-			CloseGossip();
+			C_GossipInfo.CloseGossip();
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_GossipInfo.CloseGossip();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3422,7 +3422,7 @@ StaticPopupDialogs["GOSSIP_CONFIRM"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		SelectGossipOption(data, "", true);
+		C_GossipInfo.SelectOption(data, "", true);
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
@@ -3435,7 +3435,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	OnAccept = function(self, data)
-		SelectGossipOption(data, self.editBox:GetText(), true);
+		C_GossipInfo.SelectOption(data, self.editBox:GetText(), true);
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -3446,7 +3446,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	end,
 	EditBoxOnEnterPressed = function(self, data)
 		local parent = self:GetParent();
-		SelectGossipOption(data, parent.editBox:GetText());
+		C_GossipInfo.SelectOption(data, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -4691,6 +4691,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 				StaticPopupItemFrame_RetrieveInfo(dialog.ItemFrame, data);
 			end
 			StaticPopupItemFrame_DisplayInfo(dialog.ItemFrame, data.link, data.name, data.color, data.texture, data.count);
+			dialog.ItemFrame:SetPoint("BOTTOM", -60, bottomSpace + 29);
 		end
 	else
 		dialog.ItemFrame:Hide();

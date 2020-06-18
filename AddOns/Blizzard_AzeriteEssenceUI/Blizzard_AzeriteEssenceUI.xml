@@ -616,31 +616,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-26" y="2"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="Tutorial" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="210" y="100"/>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="-19"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_ESSENCE_TUTORIAL_FIRST_ESSENCE">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="10" y="-18"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self:SetHeight(self.Text:GetHeight() + 34);
-							</OnLoad>
-						</Scripts>
-					</Frame>
 					<ModelScene parentKey="LearnEssenceModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
 						<Size x="650" y="650"/>
 					</ModelScene>

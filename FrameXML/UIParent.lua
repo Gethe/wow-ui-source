@@ -463,6 +463,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Runeforge UI 
 	self:RegisterEvent("RUNEFORGE_LEGENDARY_CRAFTING_OPENED");
+
+	-- Event(s) for Weekly Rewards UI 
+	self:RegisterEvent("WEEKLY_REWARDS_SHOW");	
 end
 
 function UIParent_OnShow(self)
@@ -704,6 +707,10 @@ function CovenantSanctum_LoadUI()
 	UIParentLoadAddOn("Blizzard_CovenantSanctum");
 end
 
+function WeeklyRewards_LoadUI()
+	UIParentLoadAddOn("Blizzard_WeeklyRewards");
+end
+
 --[[
 function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
@@ -786,8 +793,6 @@ function NPETutorial_AttemptToBegin(event)
 	if ( playerEnteredWorld and varsLoaded ) then
 		if C_PlayerInfo.IsPlayerNPERestricted() then
 			NPE_LoadUI();
-		else
-			Tutorial_LoadUI();
 		end
 	end
 end
@@ -958,7 +963,8 @@ function ToggleLFDParentFrame()
 		return;
 	end
 
-	if C_LFGInfo.CanPlayerUseLFD() or C_LFGInfo.CanPlayerUsePVP() then
+	local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+	if canUse then
 		PVEFrame_ToggleFrame("GroupFinderFrame", LFDParentFrame);
 	end
 end
@@ -1093,7 +1099,8 @@ function TogglePVPUI()
 		return;
 	end
 
-	if C_LFGInfo.CanPlayerUseLFD() or C_LFGInfo.CanPlayerUsePVP() then
+	local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+	if canUse then
 		PVEFrame_ToggleFrame("PVPUIFrame", nil);
 	end
 end
@@ -2326,6 +2333,11 @@ function UIParent_OnEvent(self, event, ...)
 			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
+	elseif (event == "WEEKLY_REWARDS_SHOW") then
+		if not WeeklyRewardsFrame then
+			WeeklyRewards_LoadUI();
+		end
+		ShowUIPanel(WeeklyRewardsFrame);
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 

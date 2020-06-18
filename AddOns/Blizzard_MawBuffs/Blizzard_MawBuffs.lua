@@ -16,14 +16,14 @@ function MawBuffsContainerMixin:Update()
 	local mawBuffs = {};
 	local totalCount = 0;
 	for i=1, BUFF_MAX_DISPLAY do
-		local _, icon, count = UnitAura("player", i, "MAW");
+		local _, icon, count, _, _, _, _, _, _, spellID = UnitAura("player", i, "MAW");
 		if icon then
 			if count == 0 then
 				count = 1;
 			end
 
 			totalCount = totalCount + count;
-			table.insert(mawBuffs, {icon = icon, count = count, slot = i});
+			table.insert(mawBuffs, {icon = icon, count = count, slot = i, spellID = spellID});
 		end
 	end
 
@@ -45,9 +45,22 @@ function MawBuffsContainerMixin:Update()
 	end
 end
 
+function MawBuffsContainerMixin:UpdateListState(shouldShow) 
+	self:SetEnabled(not shouldShow); 
+	self.List:SetShown(shouldShow and self.buffCount > 0); 
+end 
+
 function MawBuffsContainerMixin:OnClick()
 	self.List:SetShown(not self.List:IsShown());
 end
+
+function MawBuffsContainerMixin:HighlightBuffAndShow(spellID, maxStacks)
+	self.List:HighlightBuffAndShow(spellID, maxStacks)
+end 
+
+function MawBuffsContainerMixin:HideBuffHighlight(spellID)
+	self.List:HideBuffHighlight(spellID)
+end 
 
 MawBuffsListMixin = {};
 
@@ -77,6 +90,33 @@ function MawBuffsListMixin:OnHide()
 	self.button:SetWidth(253);
 	self.button:SetPushedTextOffset(2, -1);
 	self.button:SetButtonState("NORMAL", false);
+end
+
+function MawBuffsListMixin:HighlightBuffAndShow(spellID, maxStackCount)
+	if(not spellID or not maxStackCount or not self.buffPool) then 
+		return;
+	end 
+	for mawBuff in self.buffPool:EnumerateActive() do
+		if(mawBuff.spellID == spellID and mawBuff.count < maxStackCount) then 
+			if( not self:IsShown()) then 
+				self:Show(); 
+			end
+			mawBuff.HighlightBorder:Show(); 
+			return; 
+		end 
+	end
+end
+
+function MawBuffsListMixin:HideBuffHighlight(spellID)
+	if(not spellID or not self.buffPool) then 
+		return;
+	end 
+
+	for mawBuff in self.buffPool:EnumerateActive() do
+		if(mawBuff.spellID == spellID) then 
+			mawBuff.HighlightBorder:Hide(); 
+		end 
+	end
 end
 
 function MawBuffsListMixin:Update(mawBuffs)
@@ -115,6 +155,8 @@ MawBuffMixin = {};
 function MawBuffMixin:SetBuffInfo(buffInfo)
 	self.Icon:SetTexture(buffInfo.icon);
 	self.slot = buffInfo.slot;
+	self.count = buffInfo.count;
+	self.spellID = buffInfo.spellID; 
 	local showCount = buffInfo.count > 1;
 
 	if (showCount) then
@@ -135,4 +177,10 @@ function MawBuffMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetUnitAura("player", self.slot, "MAW");
 	GameTooltip:Show();
+	self.HighlightBorder:Show(); 
+end
+
+function MawBuffMixin:OnLeave()
+	GameTooltip_Hide(); 
+	self.HighlightBorder:Hide(); 
 end

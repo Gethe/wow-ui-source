@@ -427,8 +427,8 @@ function WardrobeOutfitButtonMixin:OnClick()
 	if ( self.outfitID ) then
 		WardrobeOutfitFrame.dropDown:SelectOutfit(self.outfitID, true);
 	else
-		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.OutfitHelpBox:IsShown() ) then
-			WardrobeTransmogFrame.OutfitHelpBox:Hide();
+		if ( WardrobeTransmogFrame and HelpTip:IsShowing(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL) ) then
+			HelpTip:Hide(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
 		end
 		WardrobeOutfitFrame.dropDown:CheckOutfitForSave();

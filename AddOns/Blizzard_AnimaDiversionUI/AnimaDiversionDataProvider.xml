@@ -16,6 +16,9 @@
 	<Frame name="AnimaDiversionModelScenePinTemplate" mixin="AnimaDiversionModelScenePinMixin" virtual="true">
 		<Frames>
 			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" enableMouse="false">
+				<KeyValues>
+					<KeyValue key="useViewInsetNormalization" value="false" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>

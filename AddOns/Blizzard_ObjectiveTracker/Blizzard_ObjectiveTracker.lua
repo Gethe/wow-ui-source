@@ -1128,7 +1128,7 @@ end
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	-- If this module is collapsed, don't process anything, it will result in the entire module being hidden, since just the header
 	-- is showing, there's nothing to update.
-	if self.collapsed then
+	if self.collapsed and not self.Header.added then
 		ObjectiveTracker_AddHeader(self.Header); -- the header was marked as not being added, make sure to add it again...
 		return;
 	end

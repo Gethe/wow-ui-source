@@ -42,6 +42,10 @@ function SoulbindsSelectButtonMixin:Reset()
 	self:SetHighlightUnselected();
 end
 
+function SoulbindsSelectButtonMixin:GetFxModelScene()
+	return self.FxModelScene;
+end
+
 function SoulbindsSelectButtonMixin:GetSoulbindID()
 	return self.soulbindID;
 end
@@ -103,6 +107,11 @@ function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
 	end
 end
 
-function SoulbindsSelectButtonMixin:SetActiveMarker(enabled)
+function SoulbindsSelectButtonMixin:SetActiveMarkerShown(enabled)
 	self.ModelScene.Active:SetShown(enabled);
+end
+
+function SoulbindsSelectButtonMixin:PlayActiveMarkerFx()
+	local ACTIVATED_FX = 46;
+	self:GetFxModelScene():AddEffect(ACTIVATED_FX, self.ModelScene.Active);
 end

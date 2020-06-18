@@ -279,7 +279,6 @@ function PlayerTalentFrame_OnShow(self)
 end
 
 function PlayerTalentFrame_OnHide()
-	HelpPlate_Hide();
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	-- clear caches
@@ -352,26 +351,6 @@ end
 
 function PlayerTalentFrame_HidePetSpecTab()
 	PlayerTalentFramePetSpecialization:Hide();
-end
-
-function PlayerTalentFrame_GetTutorial()
-	local tutorial;
-	local helpPlate;
-	local mainHelpButton;
-
-	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
-	if (selectedTab == TALENTS_TAB) then
-		tutorial = LE_FRAME_TUTORIAL_TALENT;
-		helpPlate = PlayerTalentFrame_HelpPlate;
-		mainHelpButton = PlayerTalentFrameTalents.MainHelpButton;
-	elseif (selectedTab == SPECIALIZATION_TAB) then
-		tutorial = LE_FRAME_TUTORIAL_SPEC;
-		helpPlate = PlayerSpecFrame_HelpPlate;
-		mainHelpButton = PlayerTalentFrameSpecialization.MainHelpButton;
-	elseif (selectedTab == PET_SPECIALIZATION_TAB) then
-		tutorial = LE_FRAME_TUTORIAL_SPEC;
-	end
-	return tutorial, helpPlate, mainHelpButton;
 end
 
 function PlayerTalentFrame_SetExpanded(expanded)
@@ -535,31 +514,6 @@ function PlayerTalentFrame_GetTalentSelections()
 	return unpack(talents);
 end
 
-PlayerSpecFrame_HelpPlate = {
-	FramePos = { x = 0,	y = -22 },
-	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 8, y = -30, width = 204, height = 382 },	ToolTipDir = "UP",		ToolTipText = SPEC_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 224, y = -6, width = 414, height = 408 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_2 },
-	[3] = { ButtonPos = { x = 355,	y = -409}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
-}
-
-PlayerTalentFrame_HelpPlate = {
-	FramePos = { x = 0,	y = -22 },
-	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 8, y = -48, width = 627, height = 55 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 15,	y = -206 }, HighLightBox = { x = 8, y = -105, width = 627, height = 308 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
-}
-
-function PlayerTalentFrame_ToggleTutorial()
-	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
-
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and PlayerTalentFrame:IsShown()) then
-		HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton );
-		SetCVarBitfield( "closedInfoFrames", tutorial, true );
-	else
-		HelpPlate_Hide(true);
-	end
-end
 
 -- PlayerTalentFrameRows
 
@@ -803,14 +757,6 @@ function PlayerTalentFrameTab_OnClick(self)
 	PanelTemplates_SetTab(PlayerTalentFrame, id);
 	PlayerTalentFrame_Refresh();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-
-	HelpPlate_Hide();
-	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
-	if ( helpPlate and tutorial and not GetCVarBitfield("closedInfoFrames", tutorial)
-		and GetCVarBool("showTutorials") and PlayerTalentFrame:IsShown()) then
-		HelpPlate_ShowTutorialPrompt( helpPlate, mainHelpButton );
-		SetCVarBitfield( "closedInfoFrames", tutorial, true );
-	end
 end
 
 function PlayerTalentFrameTab_OnEnter(self)
@@ -1337,10 +1283,8 @@ function PlayerTalentFrameTalents_OnShow(self)
 		PlayerTalentFrameLockInfo:Show();
 		PlayerTalentFrameLockInfo.Title:SetText(TALENTS_FRAME_TALENT_LOCK_TITLE);
 		PlayerTalentFrameLockInfo.Text:SetText(TALENTS_FRAME_TALENT_LOCK_DESC)
-		PlayerTalentFrameTalentsTutorialButton:Hide();
 	else
 		PlayerTalentFrameLockInfo:Hide();
-		PlayerTalentFrameTalentsTutorialButton:Show();
 	end
 end
 

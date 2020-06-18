@@ -10,13 +10,13 @@ local OptionalReagentListLineState = {
 
 function OptionalReagentListLineMixin:OnHide()
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
-	self:UnregisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED");
+	self:UnregisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED");
 end
 
 function OptionalReagentListLineMixin:OnEvent(event, ...)
 	if event == "GET_ITEM_INFO_RECEIVED" then
 		self:UpdateDisplay();
-	elseif event == "TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED" then
+	elseif event == "TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED" then
 		local itemID = ...;
 		if itemID == self:GetItemID() and self:IsMouseOver() then
 			self:OnEnter();
@@ -40,13 +40,13 @@ function OptionalReagentListLineMixin:OnEnter()
 
 	GameTooltip:Show();
 
-	self:RegisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED");
+	self:RegisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED");
 end
 
 function OptionalReagentListLineMixin:OnLeave()
 	GameTooltip_Hide();
 
-	self:UnregisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED");
+	self:UnregisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED");
 end
 
 function OptionalReagentListLineMixin:InitLine(optionalReagentList)
@@ -138,7 +138,7 @@ function OptionalReagentListLineMixin:GetTooltipText()
 	end
 
 	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
-	return itemQualityColor.color:WrapTextInColorCode(itemName), option.tooltipText or option.bonusText;
+	return itemQualityColor.color:WrapTextInColorCode(itemName), option.bonusText;
 end
 
 
@@ -146,7 +146,7 @@ OptionalReagentListMixin = {};
 
 local OptionalReagentListEvents = {
 	"TRADE_SKILL_LIST_UPDATE",
-	"TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED",
+	"TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED",
 };
 
 function OptionalReagentListMixin:OnLoad()
@@ -185,11 +185,11 @@ end
 function OptionalReagentListMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_LIST_UPDATE" then
 		self:RefreshScrollFrame();
-	elseif event == "TRADE_SKILL_OPTIONAL_REAGENT_TOOLTIP_UPDATED" then
+	elseif event == "TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED" then
 		local itemID = ...;
 		for i, info in ipairs(self.listedOptions) do
 			if info.itemID == itemID then
-				info.tooltipText = self:GetTradeSkillUI():GetOptionalReagentTooltipText(itemID, self.optionalReagentIndex);
+				info.bonusText = self:GetTradeSkillUI():GetOptionalReagentBonusTextText(itemID, self.optionalReagentIndex);
 			end
 		end
 	end
@@ -322,8 +322,7 @@ function OptionalReagentListMixin:RefreshListedItems()
 	for i, itemID in ipairs(pendingListedOptions) do
 		local listedOption = itemID;
 		local bonusText = self:GetTradeSkillUI():GetOptionalReagentBonusText(listedOption, self.optionalReagentIndex);
-		local tooltipText = self:GetTradeSkillUI():GetOptionalReagentTooltipText(listedOption, self.optionalReagentIndex);
-		self.listedOptions[i] = { itemID = itemID, bonusText = bonusText, tooltipText = tooltipText, };
+		self.listedOptions[i] = { itemID = itemID, bonusText = bonusText, };
 	end
 
 	local skipUpdates = true;

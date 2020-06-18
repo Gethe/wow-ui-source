@@ -25,12 +25,30 @@ local Minimap =
 			},
 		},
 		{
+			Name = "IsRotateMinimapIgnored",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetDrawGroundTextures",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "draw", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetIgnoreRotateMinimap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
 			},
 		},
 		{

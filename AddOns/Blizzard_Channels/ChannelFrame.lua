@@ -214,15 +214,21 @@ function ChannelFrameMixin:CheckShowTutorial()
 		local channels = self:GetList();
 		local channelButton = channels:GetButtonForAnyVoiceChannel();
 		if channelButton then
-			self.Tutorial:ClearAllPoints();
-			self.Tutorial:SetPoint("LEFT", channelButton, "RIGHT", 20, -1);
-			self.Tutorial:Show();
+			local helpTipInfo = {
+				text = TUTORIAL_VOICE,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_CHAT_CHANNELS,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -4,
+			};
+			HelpTip:Show(self, helpTipInfo, channelButton);
 		end
 	end
 end
 
 function ChannelFrameMixin:HideTutorial()
-	self.Tutorial:Hide();
+	HelpTip:Hide(self, TUTORIAL_VOICE);
 end
 
 function ChannelFrameMixin:ShouldShowTutorial()

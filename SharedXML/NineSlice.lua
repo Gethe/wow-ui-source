@@ -293,14 +293,14 @@ local layouts =
 	WoodenNeutralFrameTemplate = 
 	{
 		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "UI-Frame-neutral-Corner", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "UI-Frame-neutral-Corner", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "UI-Frame-neutral-Corner", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "UI-Frame-neutral-Corner", x = 6, y = -6, },
-		TopEdge = { atlas = "_UI-Frame-neutral-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-neutral-EdgeBottom", mirrorLayout = false, },
-		LeftEdge = { atlas = "!UI-Frame-neutral-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-neutral-EdgeRight", mirrorLayout = false, },
+		TopLeftCorner =	{ atlas = "Neutral-NineSlice-Corner", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "Neutral-NineSlice-Corner", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "Neutral-NineSlice-Corner", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "Neutral-NineSlice-Corner", x = 6, y = -6, },
+		TopEdge = { atlas = "_Neutral-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_Neutral-NineSlice-EdgeBottom", mirrorLayout = false, },
+		LeftEdge = { atlas = "!Neutral-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!Neutral-NineSlice-EdgeRight", mirrorLayout = false, },
 	},
 
 

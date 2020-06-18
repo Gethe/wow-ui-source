@@ -51,19 +51,30 @@ function SoulbindSelectGroupMixin:Init(covenantData, initialSelectSoulbindID)
 	local isInitializing = true;
 	self.buttonGroup:SelectAtIndex(tIndexOf(soulbindIDs, initialSelectSoulbindID) or 1, isInitializing);
 
-	self:UpdateActiveMarker();
+	self:UpdateActiveMarkers();
 end
 
 function SoulbindSelectGroupMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex)
 	self:TriggerEvent(SoulbindSelectGroupMixin.Event.OnSoulbindSelected, soulbindIDs, button, buttonIndex);
 end
 
-function SoulbindSelectGroupMixin:UpdateActiveMarker()
-	self:SetActiveMarker(C_Soulbinds.GetActiveSoulbindID());
+function SoulbindSelectGroupMixin:OnSoulbindActivated(soulbindID)
+	local button = self.buttonGroup:FindButtonByPredicate(
+		function(button)
+			return soulbindID == button:GetSoulbindID();
+		end
+	);
+	button:PlayActiveMarkerFx();
+
+	self:UpdateActiveMarkers();
 end
 
-function SoulbindSelectGroupMixin:SetActiveMarker(soulbindID)
+function SoulbindSelectGroupMixin:UpdateActiveMarkers()
+	self:SetActiveMarkers(C_Soulbinds.GetActiveSoulbindID());
+end
+
+function SoulbindSelectGroupMixin:SetActiveMarkers(soulbindID)
 	for buttonIndex, button in ipairs(self.buttonGroup:GetButtons()) do
-		button:SetActiveMarker(soulbindID == button:GetSoulbindID());
+		button:SetActiveMarkerShown(soulbindID == button:GetSoulbindID());
 	end
 end

@@ -130,25 +130,9 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
-      <CheckButton name="$parentDisableAOELooting" inherits="InterfaceOptionsCheckButtonTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAutoClearAFK" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-8"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_CHECKBOX;
-            self.cvar = "disableAELooting";
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-          </OnLoad>
-        </Scripts>
-      </CheckButton>
       <CheckButton name="$parentAutoLootCorpse" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentDisableAOELooting" relativePoint="BOTTOMLEFT">
+          <Anchor point="TOPLEFT" relativeTo="$parentAutoClearAFK" relativePoint="BOTTOMLEFT">
             <Offset>
               <AbsDimension x="0" y="-8"/>
             </Offset>
@@ -202,11 +186,7 @@
       </Frame>
       <CheckButton name="$parentInteractOnLeftClick" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-70"/>
-            </Offset>
-          </Anchor>
+          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootKeyDropDown" relativePoint="BOTTOMLEFT" x="16" y="-8"/>
         </Anchors>
         <Scripts>
           <OnLoad>
@@ -2203,14 +2183,14 @@
 
         <FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
           <Anchors>
-            <Anchor point="TOPLEFT" x="18" y="-174" />
+            <Anchor point="TOPLEFT" x="18" y="-224" />
           </Anchors>
         </FontString>
 
         <Texture parentKey="ColorblindFiltersSeparator">
           <Size x="600" y="1"/>
           <Anchors>
-            <Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-190"/>
+            <Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-220"/>
           </Anchors>
           <Color r="0.25" g="0.25" b="0.25"/>
         </Texture>
@@ -2261,11 +2241,23 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
-      <CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="-2" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "overrideScreenFlash"
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT">
+          <Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="0" y="-8"/>
+              <AbsDimension x="0" y="-58"/>
             </Offset>
           </Anchor>
         </Anchors>
@@ -2283,7 +2275,7 @@
       <Frame parentKey="ColorblindFilterExamples">
         <Size x="580" y="280" />
         <Anchors>
-          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-16" />
+          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-40" />
         </Anchors>
         <Layers>
           <Layer level="ARTWORK">

@@ -1142,61 +1142,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame name="GarrisonMissionFrameHelpBox" parentKey="GlowBox" inherits="GlowBoxTemplate">
-				<Size x="190" y="200"/>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="BigText" inherits="GameFontHighlight">
-							<Size x="176" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-12"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="SmallText" inherits="GameFontHighlightSmall">
-							<Size x="176" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.BigText" relativePoint="BOTTOM" x="0" y="-12"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="ArrowDown" inherits="HelpPlateArrowDOWN">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlowDown" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="Button" name="$parentButton" inherits="UIPanelButtonTemplate" text="NEXT">
-						<Size x="110" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="12"/>
-						</Anchors>
-					</Button>
-				</Frames>
-			</Frame>
-		</Frames>
 	</Frame>
 
 	<Frame name="GarrisonMissionPageBaseTemplate" virtual="true">

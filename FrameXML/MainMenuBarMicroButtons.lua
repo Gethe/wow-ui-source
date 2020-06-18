@@ -51,16 +51,14 @@ function LFDMicroButton_OnLoad(self)
 	self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 
 	self.disabledTooltip =	function()
-		local canUse, failureReason = C_LFGInfo.CanPlayerUseLFD();
-		if canUse then
-			canUse, failureReason = C_LFGInfo.CanPlayerUsePVP();
-		end
+		local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
 		return canUse and FEATURE_UNAVAILBLE_PLAYER_IS_NEUTRAL or failureReason;
 	end
 
 	self.IsActive =	function()
 		local factionGroup = UnitFactionGroup("player");
-		return not Kiosk.IsEnabled() and (C_LFGInfo.CanPlayerUseLFD() or C_LFGInfo.CanPlayerUsePVP()) and factionGroup ~= "Neutral";
+		local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+		return canUse and factionGroup ~= "Neutral" and not Kiosk.IsEnabled();
 	end
 end
 

@@ -48,6 +48,12 @@
 					</Layer>
 				</Layers>
 			</ModelScene>
+			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate">
+				<Size x="150" y="150"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>
+				</Anchors>
+			</ModelScene>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

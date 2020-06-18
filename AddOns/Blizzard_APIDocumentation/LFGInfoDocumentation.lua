@@ -7,6 +7,16 @@ local LFGInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerUseGroupFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerUseLFD",
 			Type = "Function",
 
@@ -28,6 +38,16 @@ local LFGInfo =
 		},
 		{
 			Name = "CanPlayerUsePVP",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePremadeGroup",
 			Type = "Function",
 
 			Returns =

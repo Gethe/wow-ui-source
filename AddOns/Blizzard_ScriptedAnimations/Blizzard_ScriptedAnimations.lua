@@ -4,6 +4,11 @@ local ScriptedAnimationModelSceneID = 343;
 -- Experimentally determined.
 local SceneUnitDivisor = 612.5;
 
+-- These are (somewhat) arbitrary values. With these, many standard effects with look correct with a scale of 1.0.
+-- To change these, we'd have to update all existing effects that play in scenes with useViewInsetNormalization.
+local TargetViewWidth = 600;
+local TargetViewHeight = 680;
+
 
 local EffectControllerMixin = {};
 
@@ -256,6 +261,13 @@ function ScriptAnimatedModelSceneMixin:RefreshModelScene()
 		self.modelSceneSet = true;
 	end
 
+	if self.useViewInsetNormalization then
+		local currentWidth, currentHeight = self:GetSize();
+		local adjustmentX = (currentWidth - TargetViewWidth) / 2;
+		local adjustmentY = (currentHeight - TargetViewHeight) / 2;
+		self:SetViewInsets(adjustmentX, adjustmentX, adjustmentY, adjustmentY);
+	end
+
 	self:CalculatePixelsPerSceneUnit();
 end
 
@@ -290,8 +302,14 @@ function ScriptAnimatedModelSceneMixin:SetActiveCamera(...)
 	self:CalculatePixelsPerSceneUnit();
 end
 
-function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
+function ScriptAnimatedModelSceneMixin:GetSceneSize()
+	local left, right, top, bottom = self:GetViewInsets();
 	local width, height = self:GetSize();
+	return (width - left) - right, (height - bottom) - top;
+end
+
+function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
+	local width, height = self:GetSceneSize();
 	local sceneSize = Vector2D_GetLength(width, height);
 	local activeCamera = self:GetActiveCamera();
 	if not activeCamera then

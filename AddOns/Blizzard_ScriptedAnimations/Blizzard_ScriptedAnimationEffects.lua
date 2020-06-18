@@ -1,4 +1,9 @@
 
+local UIParentShake = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
+local UIParentShakeDuration = 0.20;
+local UIParentShakeFrequency = 0.001;
+
+
 local function GetDirectionVector(source, target)
 	local sourceX, sourceY = source:GetCenter();
 	local targetX, targetY = target:GetCenter();
@@ -67,6 +72,12 @@ end
 local function ShakeTargetLight(effectDescription, source, target, speed)
 	local duration = effectDescription.duration / speed;
 	local cancelFunction = ScriptAnimationUtil.ShakeFrameRandom(target, 2, duration, .05);
+	return cancelFunction, duration;
+end
+
+local function ShakeUIParent(effectDescription, source, target, speed)
+	local duration = effectDescription.duration / speed;
+	local cancelFunction = ScriptAnimationUtil.ShakeFrame(UIParent, UIParentShake, UIParentShakeDuration, UIParentShakeFrequency);
 	return cancelFunction, duration;
 end
 
@@ -178,6 +189,7 @@ local BehaviorToCallback = {
 	[Enum.ScriptedAnimationBehavior.SourceCollideWithTarget] = StandardAttackCollision,
 	[Enum.ScriptedAnimationBehavior.TargetShake] = ShakeTargetLight,
 	[Enum.ScriptedAnimationBehavior.TargetKnockBack] = StandardKnockback,
+	[Enum.ScriptedAnimationBehavior.UIParentShake] = ShakeUIParent,
 };
 
 local TrajectoryToCallback = {

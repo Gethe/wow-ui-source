@@ -129,7 +129,7 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
-	self.SelectGroup:UpdateActiveMarker();
+	self.SelectGroup:OnSoulbindActivated(soulbindID);
 	self.Tree:Init(C_Soulbinds.GetSoulbindData(soulbindID));
 	self:UpdateResetButton();
 end

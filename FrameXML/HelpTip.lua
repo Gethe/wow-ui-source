@@ -53,6 +53,7 @@ HelpTip.ButtonStyle = {
 	Close = 2,
 	Okay = 3,
 	GotIt = 4,
+	Next = 5,
 };
 
 -- internal use enums
@@ -110,6 +111,7 @@ HelpTip.Buttons = {
 	[HelpTip.ButtonStyle.Close]	= { textWidthAdj = -6,	heightAdj = 0,	parentKey = "CloseButton" },
 	[HelpTip.ButtonStyle.Okay]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = OKAY },
 	[HelpTip.ButtonStyle.GotIt]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_BUTTON_GOT_IT },
+	[HelpTip.ButtonStyle.Next]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = NEXT },
 };
 
 HelpTip.verticalPadding	 = 31;
@@ -458,7 +460,14 @@ function HelpTipTemplateMixin:ApplyText()
 	local color = info.textColor or HIGHLIGHT_FONT_COLOR;
 	self.Text:SetTextColor(color:GetRGB());
 
-	local justifyH = info.textJustifyH or "LEFT";
+	local justifyH = info.textJustifyH;
+	if not justifyH then
+		if self.Text:GetNumLines() == 1 then
+			justifyH = "CENTER";
+		else
+			justifyH = "LEFT";
+		end
+	end
 	self.Text:SetJustifyH(justifyH);
 end
 

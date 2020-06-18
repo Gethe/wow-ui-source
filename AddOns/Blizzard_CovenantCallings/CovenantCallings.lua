@@ -155,7 +155,7 @@ CovenantCallingsMixin = {};
 
 function CovenantCallingsMixin:OnLoad()
 	self.pool = CreateFramePool("Frame", self, "CovenantCallingQuestTemplate");
-	self.layout = AnchorUtil.CreateGridLayout(nil, Constants.Callings.MaxCallings, 35, 0);
+	self.layout = AnchorUtil.CreateGridLayout(nil, Constants.Callings.MaxCallings, 44, 0);
 end
 
 local CovenantCallingsEvents = {
@@ -181,9 +181,8 @@ function CovenantCallingsMixin:OnEvent(event, ...)
 end
 
 function CovenantCallingsMixin:Update()
-	C_CovenantCallings.RequestCallings();
-
 	self.covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+	C_CovenantCallings.RequestCallings();
 	self:UpdateBackground();
 end
 
@@ -204,7 +203,7 @@ function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
 		table.insert(frames, callingFrame);
 	end
 
-	AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -30, 0), self.layout);
+	AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -42, 0), self.layout);
 	self:Layout();
 end
 

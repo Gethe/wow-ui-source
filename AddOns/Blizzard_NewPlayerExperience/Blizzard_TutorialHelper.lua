@@ -243,10 +243,10 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetGossipBindIndex()
-	local gossipOptions = { GetGossipOptions() };
-	for i = 1, #gossipOptions, 1 do
-		if gossipOptions[i] == "binder" then
-			return i / 2;
+	local gossipOptions = C_GossipInfo.GetOptions();
+	for i, optionInfo in ipairs(gossipOptions) do
+		if optionInfo.type == "binder" then
+			return i;
 		end
 	end
 end

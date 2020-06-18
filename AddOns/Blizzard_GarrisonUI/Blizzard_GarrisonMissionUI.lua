@@ -106,7 +106,7 @@ function GarrisonFollowerMission:OnEventMainFrame(event, ...)
 	elseif (event == "GARRISON_MISSION_STARTED") then
 		local followerTypeID = ...;
 		if (followerTypeID == self.followerTypeID) then
-			if (self.MissionTab.MissionList) then
+			if (self.MissionTab.MissionList and self.MissionTab.MissionList.Tab2) then
 				local anim = self.MissionTab.MissionList.Tab2.MissionStartAnim;
 				if (anim:IsPlaying()) then
 					anim:Stop();
@@ -460,7 +460,7 @@ function GarrisonFollowerMission:CheckCompleteMissions(onShow)
 		self:SelectTab(1);
 	end
 
-	if (self.MissionTab.MissionList) then
+	if (self.MissionTab.MissionList and self.MissionTab.MissionList.Tab1) then
 		GarrisonMissionListTab_SetTab(self.MissionTab.MissionList.Tab1);
 	end
 end
@@ -561,21 +561,22 @@ StaticPopupDialogs["ACTIVATE_FOLLOWER"] = {
 };
 
 local tutorials = {
-	[1] = { text1 = GARRISON_MISSION_TUTORIAL1, xOffset = 240, yOffset = -150, parent = "MissionList" },
-	[2] = { text1 = GARRISON_MISSION_TUTORIAL2, xOffset = 752, yOffset = -150, parent = "MissionList" },
-	[3] = { text1 = GARRISON_MISSION_TUTORIAL3, specialAnchor = "threat", xOffset = 0, yOffset = -16, parent = "MissionPage" },
-	[4] = { text1 = GARRISON_MISSION_TUTORIAL4, xOffset = 194, yOffset = -104, parent = "MissionPage" },
-	[5] = { text1 = GARRISON_MISSION_TUTORIAL5, specialAnchor = "follower", xOffset = 0, yOffset = -20, parent = "MissionPage" },
-	[6] = { text1 = GARRISON_MISSION_TUTORIAL6, specialAnchor = "threat", xOffset = 0, yOffset = -16, parent = "MissionPage" },
-	[7] = { text1 = GARRISON_MISSION_TUTORIAL7, xOffset = 368, yOffset = -304, downArrow = true, parent = "MissionPage" },
-	[8] = { text1 = GARRISON_MISSION_TUTORIAL9, xOffset = 536, yOffset = -474, downArrow = true, parent = "MissionPage" },
+	[1] = { text = GARRISON_MISSION_TUTORIAL1, anchor = "mission", offsetX = -135, offsetY = 13, parent = "MissionList", targetPoint = HelpTip.Point.BottomEdgeCenter },
+	[2] = { text = GARRISON_MISSION_TUTORIAL2, anchor = "mission", offsetX = -37, offsetY = 13, parent = "MissionList", targetPoint = HelpTip.Point.BottomEdgeRight },
+	[3] = { text = GARRISON_MISSION_TUTORIAL3, anchor = "threat", offsetX = 0, offsetY = 8, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeCenter },
+	[4] = { text = GARRISON_MISSION_TUTORIAL4, anchor = "follower", offsetX = -16, offsetY = 33, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeRight },
+	[5] = { text = GARRISON_MISSION_TUTORIAL5, anchor = "slot", offsetX = 26, offsetY = 3, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeLeft },	
+	[6] = { text = GARRISON_MISSION_TUTORIAL6, anchor = "threat", offsetX = 0, offsetY = 8, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeCenter },
+	[7] = { text = GARRISON_MISSION_TUTORIAL7, anchor = "rewards",  offsetX = 32, offsetY = -23, parent = "MissionPage", targetPoint = HelpTip.Point.TopEdgeLeft },	
+	[8] = { text = GARRISON_MISSION_TUTORIAL9, anchor = "button", offsetX = 0, offsetY = -17, parent = "MissionPage", targetPoint = HelpTip.Point.TopEdgeCenter },
 }
 
-
 -- TODO: Move these GarrisonMissionFrame_ functions to the GarrisonFollowerMission mixin
-function GarrisonFollowerMission:OnClickMissionTutorialButton()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	self:CheckTutorials(true);
+function GarrisonFollowerMission:OnCloseMissionTutorial(userAction)
+	if userAction then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		self:CheckTutorials(true);
+	end
 end
 
 function GarrisonFollowerMission:CheckTutorials(advance)
@@ -586,10 +587,9 @@ function GarrisonFollowerMission:CheckTutorials(advance)
 			SetCVar("lastGarrisonMissionTutorial", lastTutorial);
 		end
 		local tutorialFrame = GarrisonMissionTutorialFrame;
-		tutorialFrame.GlowBox.Button:SetScript("OnClick", function() self:OnClickMissionTutorialButton() end);
 		if ( lastTutorial >= #tutorials ) then
 			tutorialFrame:Hide();
-		else
+		elseif ( GarrisonMissionFrame:IsShown() ) then
 			local tutorial = tutorials[lastTutorial + 1];
 			-- parent frame
 			tutorialFrame:SetParent(GarrisonMissionFrame.MissionTab[tutorial.parent]);
@@ -597,39 +597,39 @@ function GarrisonFollowerMission:CheckTutorials(advance)
 			tutorialFrame:SetPoint("TOPLEFT", GarrisonMissionFrame, 0, -21);
 			tutorialFrame:SetPoint("BOTTOMRIGHT", GarrisonMissionFrame);
 
-			local height = 58;	-- button height + top and bottom padding + spacing between text and button
-			local glowBox = tutorialFrame.GlowBox;
-			glowBox.BigText:SetText(tutorial.text1);
-			height = height + glowBox.BigText:GetHeight();
-			if ( tutorial.text2 ) then
-				glowBox.SmallText:SetText(tutorial.text2);
-				height = height + 12 + glowBox.SmallText:GetHeight();
-				glowBox.SmallText:Show();
-			else
-				glowBox.SmallText:Hide();
+			local relativeFrame;
+			local anchor = tutorial.anchor;
+			if anchor == "mission" then
+				relativeFrame = self.MissionTab.MissionList.listScroll.buttons[1];
+			elseif anchor == "threat" then
+				local enemy = self:GetMissionPage().Enemy1;
+				if enemy then
+					relativeFrame = enemy.Mechanics[1];
+				end
+			elseif anchor == "follower" then
+				local buttons = self.FollowerList.listScroll.buttons;
+				if buttons then
+					relativeFrame = buttons[1];
+				end
+			elseif anchor == "slot" then
+				relativeFrame = self:GetMissionPage().Follower1;
+			elseif anchor == "rewards" then
+				relativeFrame = self:GetMissionPage().RewardsFrame;
+			elseif anchor == "button" then
+				relativeFrame = self:GetMissionPage().ButtonFrame;
 			end
-			glowBox:SetHeight(height);
-			glowBox:ClearAllPoints();
-			if ( tutorial.specialAnchor == "threat" ) then
-				glowBox:SetPoint("TOP", self:GetMissionPage().Enemy1.Mechanics[1], "BOTTOM", tutorial.xOffset, tutorial.yOffset);
-			elseif ( tutorial.specialAnchor == "follower" ) then
-				local followerFrame = self:GetMissionPage().Follower1;
-				glowBox:SetPoint("TOP", followerFrame.PortraitFrame, "BOTTOM", tutorial.xOffset, tutorial.yOffset);
-			else
-				glowBox:SetPoint("TOPLEFT", tutorial.xOffset, tutorial.yOffset);
+			if relativeFrame then
+				local helpTipInfo = {
+					text = tutorial.text,
+					buttonStyle = HelpTip.ButtonStyle.Next,
+					targetPoint = tutorial.targetPoint,
+					onHideCallback = GenerateClosure(self.OnCloseMissionTutorial, self),
+					offsetX = tutorial.offsetX,
+					offsetY = tutorial.offsetY,
+				};
+				tutorialFrame:Show();
+				HelpTip:Show(tutorialFrame, helpTipInfo, relativeFrame);
 			end
-			if ( tutorial.downArrow ) then
-				glowBox.ArrowUp:Hide();
-				glowBox.ArrowGlowUp:Hide();
-				glowBox.ArrowDown:Show();
-				glowBox.ArrowGlowDown:Show();
-			else
-				glowBox.ArrowUp:Show();
-				glowBox.ArrowGlowUp:Show();
-				glowBox.ArrowDown:Hide();
-				glowBox.ArrowGlowDown:Hide();
-			end
-			tutorialFrame:Show();
 		end
 	end
 end

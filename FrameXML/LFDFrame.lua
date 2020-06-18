@@ -313,6 +313,12 @@ function LFDQueueFrameSpecificList_Update()
 				table.insert(dungeonList, dungeonID);
 			end
 		end
+		if #dungeonList == 0 then
+			-- no eligible dungeons
+			EventRegistry:TriggerEvent("LFDQueueFrameSpecificList_Update.EmptyDungeonList");
+		else
+			EventRegistry:TriggerEvent("LFDQueueFrameSpecificList_Update.DungeonListReady");
+		end
 	else
 		dungeonList = LFDDungeonList;
 	end
@@ -591,6 +597,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		if not LFDQueueCheckRoleSelectionValid(LFGRole_GetChecked(LFDQueueFrameRoleButtonTank), LFGRole_GetChecked(LFDQueueFrameRoleButtonHealer), LFGRole_GetChecked(LFDQueueFrameRoleButtonDPS)) then
 			-- the NPE restricted player needs to at least be a DPS role if nothing is selected
 			LFDQueueFrameRoleButtonDPS.checkButton:SetChecked(true);
+			LFDFrameRoleCheckButton_OnClick(LFDQueueFrameRoleButtonDPS.checkButton);
 		end
 	end
 

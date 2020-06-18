@@ -464,10 +464,6 @@ function TradeSkillUIMixin:GetOptionalReagentBonusText(itemID, slot)
 	return self.DetailsFrame:GetOptionalReagentBonusText(itemID, slot);
 end
 
-function TradeSkillUIMixin:GetOptionalReagentTooltipText(itemID, slot)
-	return self.DetailsFrame:GetOptionalReagentTooltipText(itemID, slot);
-end
-
 function TradeSkillUIMixin:HasOptionalReagent(itemID)
 	return self.DetailsFrame:HasOptionalReagent(itemID);
 end

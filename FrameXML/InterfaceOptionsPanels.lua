@@ -133,6 +133,7 @@ ControlsPanelOptions = {
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
 	interactOnLeftClick = { text = "INTERACT_ON_LEFT_CLICK_TEXT" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
+	disableAELooting = { text = "Auto Loot Nearby Enemies"},
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
@@ -1954,6 +1955,7 @@ AccessibilityPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
 	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+	overrideScreenFlash = { text = "OVERRIDE_SCREEN_FLASH" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)

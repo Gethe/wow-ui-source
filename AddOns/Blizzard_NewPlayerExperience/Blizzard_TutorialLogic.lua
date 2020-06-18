@@ -89,7 +89,7 @@ function Tutorials:Begin()
 	-- LFG Quest
 	if (C_QuestLog.GetLogIndexForQuestID(tutorialData.LookingForGroupQuest)) then
 		-- Looking For Group Quest is Active
-		self.LookingForGroup:Begin();
+		self.LFGStatusWatcher:ForceBegin();
 	end
 
 	-- Use Quest Item Quest
@@ -107,7 +107,9 @@ function Tutorials:Begin()
 	-- Use Map Quest
 	questID = tutorialData.UseMapQuest;
 	if C_QuestLog.GetLogIndexForQuestID(questID) ~= nil then -- Use Map Quest is still active
-		self.Intro_OpenMap:Begin();
+		if not C_QuestLog.IsQuestFlaggedCompleted(questID) then
+			self.Intro_OpenMap:Begin();
+		end
 	end
 
 	-- if we are past a certain point, turn on of all the UI
@@ -191,7 +193,7 @@ function Tutorials:Quest_Accepted(questData)
 		self.UseQuestItemTutorial:Begin(tutorialData.RemindUseQuestItemData);
 	elseif (questID == tutorialData.LookingForGroupQuest) then
 		-- Looking For Group Quest
-		self.LookingForGroup:Begin();
+		self.LFGStatusWatcher:ForceBegin();
 	elseif (questID == specQuestID) then
 		-- Spec Choice Quest
 		self.SpecTutorial:Begin();
@@ -382,6 +384,7 @@ Tutorials.Vendor_Watcher				= Class_Vendor_Watcher:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Looking For Group
+Tutorials.LFGStatusWatcher				= Class_LFGStatusWatcher:new();
 Tutorials.LookingForGroup				= Class_LookingForGroup:new()
 
 -- ------------------------------------------------------------------------------------------------------------

@@ -3,6 +3,9 @@
 	<Script file="Blizzard_ScriptedAnimations.lua"/>
 
 	<ModelScene name="ScriptAnimatedModelSceneTemplate" mixin="ScriptAnimatedModelSceneMixin" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="useViewInsetNormalization" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnSizeChanged method="OnSizeChanged"/>

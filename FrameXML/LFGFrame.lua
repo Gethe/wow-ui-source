@@ -1898,6 +1898,15 @@ function LFGDungeonList_DisableEntries()
 end
 
 function LFGDungeonList_SetDungeonEnabled(dungeonID, isEnabled)
+
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		if isEnabled then
+			EventRegistry:TriggerEvent("LFGDungeonList.DungeonEnabled", dungeonID);
+		else
+			EventRegistry:TriggerEvent("LFGDungeonList.DungeonDisabled", dungeonID);
+		end
+	end
+
 	SetLFGDungeonEnabled(dungeonID, isEnabled);
 	LFGEnabledList[dungeonID] = isEnabled;
 end
@@ -2122,11 +2131,6 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 	local parent = button:GetParent();
 	local dungeonID = parent.id;
 	local isChecked = button:GetChecked();
-
-	if C_PlayerInfo.IsPlayerNPERestricted() and isChecked then
-		-- in theory, an NPE Restriced Player can ONLY click on an NPE Restricted dungeon
-		EventRegistry:TriggerEvent("LFGDungeonListCheckButton_OnClick.DungeonChecked");
-	end
 
 	PlaySound(isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	if ( LFGIsIDHeader(dungeonID) ) then
