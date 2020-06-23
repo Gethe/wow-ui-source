@@ -10,6 +10,8 @@ WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 	[LE_QUEST_TAG_TYPE_RAID] = true,
 }
 
+local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
+
 WorldQuestsSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
 WorldQuestsSecondsFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.None, false);
 
@@ -261,7 +263,7 @@ local function ShouldShowWarModeBonus(questID, currencyID, firstInstance)
 		return false;
 	end
 
-	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestHasWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
+	return QuestUtils_IsQuestWorldQuest(questID) and C_QuestLog.QuestCanHaveWarModeBonus(questID) and not C_CurrencyInfo.GetFactionGrantedByCurrency(currencyID);
 end
 
 function QuestUtils_GetQuestDecorationLink(linkType, questID, icon, width, height)
@@ -301,7 +303,7 @@ end
 function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	local hasAnySingleLineRewards = false;
 	local isWarModeDesired = C_PvP.IsWarModeDesired();
-	local questHasWarModeBonus = C_QuestLog.QuestHasWarModeBonus(questID);
+	local questHasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
 
 	-- xp
 	local totalXp, baseXp = GetQuestLogRewardXP(questID);
@@ -416,7 +418,9 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			uniqueCurrencyIDs[currencyID] = true;
 		end
 		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity, firstInstance = firstInstance };
-		tinsert(currencies, currencyInfo);
+		if(currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or numQuestCurrencies == 1) then
+			tinsert(currencies, currencyInfo);
+		end
 	end
 
 	table.sort(currencies,

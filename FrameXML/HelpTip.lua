@@ -267,7 +267,7 @@ end
 function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
 	self:SetParent(parent);
 	if info.useParentStrata then
-		self:SetFrameLevel(10000);
+		self:SetFrameLevel(9000);
 	else
 		self:SetFrameStrata("DIALOG");
 	end

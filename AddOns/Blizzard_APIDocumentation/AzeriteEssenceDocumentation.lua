@@ -161,6 +161,15 @@ local AzeriteEssence =
 			},
 		},
 		{
+			Name = "GetNumUsableEssences",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numUsableEssences", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPendingActivationEssence",
 			Type = "Function",
 

@@ -4,6 +4,7 @@ ItemButtonUtil = {};
 ItemButtonUtil.ItemContextEnum = {
 	Scrapping = 1,
 	CleanseCorruption = 2, 
+	ApplyCorruption = 3,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -38,6 +39,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.Scrapping;
 	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetFrameType() == Enum.ItemInteractionFrameType.CleanseCorruption then
 		return ItemButtonUtil.ItemContextEnum.CleanseCorruption;
+	elseif TargetSpellHasApplyCorruption() then
+		return ItemButtonUtil.ItemContextEnum.ApplyCorruption;
 	end
 	
 	return nil;
@@ -59,6 +62,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return C_Item.CanScrapItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.CleanseCorruption then 
 			return C_Item.IsItemCorrupted(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.ApplyCorruption then 
+			return C_Item.IsItemCorruptable(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end

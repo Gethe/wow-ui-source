@@ -137,7 +137,12 @@ function AuctionHouseItemDisplayMixin:OnClick(button)
 				if itemKeyInfo and itemKeyInfo.battlePetLink then
 					DressUpBattlePetLink(itemKeyInfo.battlePetLink);
 				else
-					DressUpLink(self:GetItemLink());
+					if itemKeyInfo.appearanceLink then
+						local _, _, hyperlinkString = ExtractHyperlinkString(itemKeyInfo.appearanceLink);
+						DressUpTransmogLink(hyperlinkString);
+					else
+						DressUpLink(self:GetItemLink());
+					end
 				end
 			elseif IsModifiedClick("CHATLINK") then
 				local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);

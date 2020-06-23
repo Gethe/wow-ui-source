@@ -3,7 +3,7 @@
 	<Script file="CommunitiesSettings.lua"/>
 	
 	<Frame name="CommunitiesSettingsDialog" frameStrata="HIGH" parent="UIParent" enableMouse="true" mixin="CommunitiesSettingsDialogMixin" topLevel="true" clampedToScreen="true" hidden="true">
-		<Size x="432" y="680"/>
+		<Size x="432" y="740"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 		</Anchors>
@@ -272,11 +272,27 @@
 			<Frame parentKey="LookingForDropdown" name="ClubFinderLookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
 				<Size x="0" y="20"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ClubFocusDropdown" relativePoint="RIGHT" x="190" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ClubFocusDropdown" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" text="CLUB_FINDER_LOOKING_FOR" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="LanguageDropdown" name="ClubFinderLanguageDropdown" inherits="UIDropDownMenuTemplate" mixin="ClubFinderLanguageDropdownMixin">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="LANGUAGE" justifyH="LEFT" inherits="GameFontNormal">
 							<Size x="280" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="20" y="15"/>

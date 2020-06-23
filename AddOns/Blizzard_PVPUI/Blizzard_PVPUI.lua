@@ -12,6 +12,7 @@ local SEASON_STATE_ACTIVE = 3;
 local SEASON_STATE_DISABLED = 4;
 
 local CONQUEST_CURRENCY_ID = 1602;
+local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
 
 local BFA_START_SEASON = 26;
 
@@ -229,14 +230,16 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 	-- artifact-level currency trumps item
 	if currencyRewards then
 		for i, reward in ipairs(currencyRewards) do
-			local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(reward.id);
-			if quality == LE_ITEM_QUALITY_ARTIFACT then
-				name, texture, _, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
-				currencyID = reward.id;
-				rewardTexture = texture;
-				rewardQuantity = reward.quantity;
-			elseif reward.id == CONQUEST_CURRENCY_ID then
-				rewardFrame.conquestAmount = reward.quantity;
+			if(reward.id ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
+				local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(reward.id);
+				if quality == LE_ITEM_QUALITY_ARTIFACT then
+					name, texture, _, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
+					currencyID = reward.id;
+					rewardTexture = texture;
+					rewardQuantity = reward.quantity;
+				elseif reward.id == CONQUEST_CURRENCY_ID then
+					rewardFrame.conquestAmount = reward.quantity;
+				end
 			end
 		end
 	end

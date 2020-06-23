@@ -290,10 +290,26 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="LookingForDropDownLabel" text="CLUB_FINDER_LOOKING_FOR" justifyH="LEFT" inherits="GameFontHighlight">
+						<FontString parentKey="Label" text="CLUB_FINDER_LOOKING_FOR" justifyH="LEFT" inherits="GameFontHighlight">
 							<Size x="280" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="20" y="11"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="LanguageDropdown" name="ClubFinderLanguageDropdown" inherits="UIDropDownMenuTemplate" mixin="ClubFinderLanguageDropdownMixin">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="-25" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="LANGUAGE" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="15"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -457,7 +473,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="ACCEPT">
 				<Size x="120" y="25"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-80" y="15"/>
@@ -467,6 +483,12 @@
 						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():PostClub();
 					</OnClick>
+					<OnEnter>
+						self:GetParent():AcceptButtonOnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -881,6 +903,20 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="ClubFinderFilterDropdownTemplate" inherits="UIDropDownMenuTemplate" mixin="ClubFinderFilterDropdownMixin" virtual="true">
+		<Size x="100" y="15"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" text="FILTER" justifyH="LEFT" inherits="GameFontHighlight">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<CheckButton name="ClubFinderCheckboxTemplate" mixin="ClubFinderCheckboxMixin" virtual="true">
 		<Scripts>
 			<OnClick method="OnClick"/>
@@ -1129,7 +1165,7 @@
 				</Layer>
 			</Layers>
 		</Frame>
-		<Frame parentKey="ClubFocusDropdown" hidden="true" name="ClubFinderFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
+		<Frame parentKey="ClubFilterDropdown" hidden="true" name="ClubFinderFilterDropdown" inherits="ClubFinderFilterDropdownTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-1" y="18"/>
 			</Anchors>

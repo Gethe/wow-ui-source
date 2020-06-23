@@ -243,6 +243,7 @@ info.minWidth = [nil, NUMBER] -- Minimum width for this line
 info.customFrame = frame -- Allows this button to be a completely custom frame, should inherit from UIDropDownCustomMenuEntryTemplate and override appropriate methods.
 info.icon = [TEXTURE] -- An icon for the button.
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
+info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 ]]
 
 function UIDropDownMenu_CreateInfo()
@@ -461,6 +462,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.padding = info.padding;
 	button.icon = info.icon;
 	button.mouseOverIcon = info.mouseOverIcon;
+	button.ignoreAsMenuSelection = info.ignoreAsMenuSelection;
 
 	if ( info.value ) then
 		button.value = info.value;
@@ -728,16 +730,18 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			local checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
 			local uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
 			if ( checked ) then
-				somethingChecked = true;
-				local icon = GetChild(frame, frame:GetName(), "Icon");
-				if (button.iconOnly and icon and button.icon) then
-					UIDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
-				elseif ( useValue ) then
-					UIDropDownMenu_SetText(frame, button.value);
-					icon:Hide();
-				else
-					UIDropDownMenu_SetText(frame, button:GetText());
-					icon:Hide();
+				if not button.ignoreAsMenuSelection then
+					somethingChecked = true;
+					local icon = GetChild(frame, frame:GetName(), "Icon");
+					if (button.iconOnly and icon and button.icon) then
+						UIDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
+					elseif ( useValue ) then
+						UIDropDownMenu_SetText(frame, button.value);
+						icon:Hide();
+					else
+						UIDropDownMenu_SetText(frame, button:GetText());
+						icon:Hide();
+					end
 				end
 				button:LockHighlight();
 				checkImage:Show();
@@ -758,6 +762,8 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	end
 	if(somethingChecked == nil) then
 		UIDropDownMenu_SetText(frame, VIDEO_QUALITY_LABEL6);
+		local icon = GetChild(frame, frame:GetName(), "Icon");
+		icon:Hide();
 	end
 	if (not frame.noResize) then
 		for i=1, UIDROPDOWNMENU_MAXBUTTONS do
@@ -1325,10 +1331,11 @@ end
 function UIDropDownMenu_DisableDropDown(dropDown)
 	local dropDownName = dropDown:GetName();
 	local label = GetChild(dropDown, dropDownName, "Label");
-	if ( label ) then
-		label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	if label then
+		label:SetVertexColor(GRAY_FONT_COLOR:GetRGB());
 	end
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	GetChild(dropDown, dropDownName, "Icon"):SetVertexColor(GRAY_FONT_COLOR:GetRGB());
+	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(GRAY_FONT_COLOR:GetRGB());
 	GetChild(dropDown, dropDownName, "Button"):Disable();
 	dropDown.isDisabled = 1;
 end
@@ -1336,10 +1343,11 @@ end
 function UIDropDownMenu_EnableDropDown(dropDown)
 	local dropDownName = dropDown:GetName();
 	local label = GetChild(dropDown, dropDownName, "Label");
-	if ( label ) then
-		label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	if label then
+		label:SetVertexColor(NORMAL_FONT_COLOR:GetRGB());
 	end
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GetChild(dropDown, dropDownName, "Icon"):SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	GetChild(dropDown, dropDownName, "Button"):Enable();
 	dropDown.isDisabled = nil;
 end

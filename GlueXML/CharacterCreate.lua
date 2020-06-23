@@ -2454,7 +2454,7 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 
 	local isNeutralRace = C_CharacterCreation.IsNeutralRace(CharacterCreate.selectedRace);
 	local showEarlyFaction = classInfo.earlyFactionChoice;
-	local usingCharacterTemplate = C_CharacterCreation.IsUsingCharacterTemplate();
+	local usingCharacterTemplate = C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate();
 	local showFactions = isNeutralRace and (showTrialFrames or showEarlyFaction or usingCharacterTemplate);
 
 	if showSpecializations then

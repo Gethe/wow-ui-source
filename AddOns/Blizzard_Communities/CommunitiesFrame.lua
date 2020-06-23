@@ -988,6 +988,7 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
+	local clubId = self:GetSelectedClubId();
 	local displayMode = self:GetDisplayMode();
 	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO then
 		if self:SelectedClubHasApplicants() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_APPLICANTS_GUILD_LEADER) then
@@ -1002,18 +1003,21 @@ function CommunitiesFrameMixin:CheckForTutorials()
 	end
 
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
-		local isGuildSelected = self:IsGuildSelected();
-		local flag = isGuildSelected and LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_GUILD_LEADER or LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_COMMUNITY_LEADER;
-		if not GetCVarBitfield("closedInfoFrames", flag) then
-			self:ShowClubFinderRecruitmentTutorialForLeader();
-			return;
+		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
+		if clubPostingInfo then
+			if not clubPostingInfo.localeSet and self:TryShowClubFinderLanguageFilterTutorialForLeader(isGuild) then
+				return;
+			end
+		else
+			if self:TryShowClubFinderRecruitmentTutorialForLeader(isGuild) then
+				return;
+			end
 		end
 	end
 
-	local clubId = self:GetSelectedClubId();
+
 	if self.InviteButton:IsShown() and isGuild and clubId and C_ClubFinder.RequestPostingInformationFromClubId(clubId)then
-		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLUB_FINDER_LINKING) then
-			self:ShowClubFinderLinkTutorialForLeader();
+		if self:TryShowClubFinderLinkTutorialForLeader() then
 			return;
 		end
 	end
@@ -1065,9 +1069,13 @@ function CommunitiesFrameMixin:ShowClubFinderApplicantListTutorialForLeader()
 	end
 end
 
-function CommunitiesFrameMixin:ShowClubFinderRecruitmentTutorialForLeader()
-	local isGuildSelected = self:IsGuildSelected();
+function CommunitiesFrameMixin:TryShowClubFinderRecruitmentTutorialForLeader(isGuildSelected)
+	if not isGuildSelected and not self:IsCharacterCommunitySelected() then
+		return false;
+	end
+
 	local flag = isGuildSelected and LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_GUILD_LEADER or LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_COMMUNITY_LEADER;
+	local button = isGuildSelected and self.CommunitiesControlFrame.GuildRecruitmentButton or self.CommunitiesControlFrame.CommunitiesSettingsButton;
 	local helpTipInfo = {
 		text = CLUB_FINDER_TUTORIAL_POSTING,
 		buttonStyle = HelpTip.ButtonStyle.Close,
@@ -1076,16 +1084,33 @@ function CommunitiesFrameMixin:ShowClubFinderRecruitmentTutorialForLeader()
 		targetPoint = HelpTip.Point.BottomEdgeCenter,
 		offsetX = -4,
 		useParentStrata = true,
+		checkCVars = true,
 	};
 
-	if isGuildSelected then
-		HelpTip:Show(self, helpTipInfo, self.CommunitiesControlFrame.GuildRecruitmentButton);
-	elseif self:IsCharacterCommunitySelected() then
-		HelpTip:Show(self, helpTipInfo, self.CommunitiesControlFrame.CommunitiesSettingsButton);
-	end
+	return HelpTip:Show(self, helpTipInfo, button);
 end
 
-function CommunitiesFrameMixin:ShowClubFinderLinkTutorialForLeader()
+function CommunitiesFrameMixin:TryShowClubFinderLanguageFilterTutorialForLeader(isGuildSelected)
+	if not isGuildSelected and not self:IsCharacterCommunitySelected() then
+		return false;
+	end
+
+	local button = isGuildSelected and self.CommunitiesControlFrame.GuildRecruitmentButton or self.CommunitiesControlFrame.CommunitiesSettingsButton;
+	local helpTipInfo = {
+		text = CLUB_FINDER_TUTORIAL_LANGUAGE_FILTER,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_CLUB_FINDER_NEW_LANGUAGE_FILTER,
+		targetPoint = HelpTip.Point.BottomEdgeCenter,
+		offsetX = -4,
+		useParentStrata = true,
+		checkCVars = true,
+	};
+
+	return HelpTip:Show(self, helpTipInfo, button);
+end
+
+function CommunitiesFrameMixin:TryShowClubFinderLinkTutorialForLeader()
 	local helpTipInfo = {
 		text = CLUB_FINDER_TUTORIAL_GUILD_LINK,
 		buttonStyle = HelpTip.ButtonStyle.Close,
@@ -1094,9 +1119,10 @@ function CommunitiesFrameMixin:ShowClubFinderLinkTutorialForLeader()
 		targetPoint = HelpTip.Point.BottomEdgeCenter,
 		offsetX = -4,
 		useParentStrata = true,
+		checkCVars = true,
 	};
 
-	HelpTip:Show(self, helpTipInfo, self.InviteButton);
+	return HelpTip:Show(self, helpTipInfo, self.InviteButton);
 end
 
 function CommunitiesFrameMixin:IsClubTypeSelected(clubType)
@@ -1392,6 +1418,7 @@ end
 function CommunitiesFrameMixin:UpdateStreamDropDown()
 	local clubId = self:GetSelectedClubId();
 	local selectedStream = self:GetSelectedStreamForClub(clubId);
+	UIDropDownMenu_Initialize(self.StreamDropDownMenu, CommunitiesStreamDropDownMenu_Initialize);
 	UIDropDownMenu_SetSelectedValue(self.StreamDropDownMenu, selectedStream and selectedStream.streamId or nil, true);
 	local streamName = selectedStream and CommunitiesStreamDropDownMenu_GetStreamName(clubId, selectedStream) or "";
 	UIDropDownMenu_SetText(self.StreamDropDownMenu, streamName);
