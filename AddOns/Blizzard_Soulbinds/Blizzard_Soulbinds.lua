@@ -30,8 +30,4 @@ do
 		allowOtherPanels = 1,
 	};
 	RegisterUIPanel(SoulbindViewer, attributes);
-
-	TRADESKILL_LOG_FIRSTPERSON = "+ %s : %s (Craft)";
-	TRADESKILL_LOG_THIRDPERSON = "+ %s : %s (Craft)"
-
 end

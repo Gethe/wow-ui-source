@@ -36,24 +36,18 @@
 	</Frame>
 
 	<Button name="RuneforgeModifierFrameTemplate" mixin="RuneforgeModifierFrameMixin" virtual="true">
-		<Size x="47" y="89"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.7"/>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Size x="37" y="350"/>
 		<Frames>
 			<ItemButton parentKey="FirstSlot" inherits="RuneforgeModifierSlotTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-5"/>
+					<Anchor point="TOPLEFT" x="0" y="-5"/>
 				</Anchors>
 			</ItemButton>
 
 			<ItemButton parentKey="SecondSlot" inherits="RuneforgeModifierSlotTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.FirstSlot" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					<Anchor point="LEFT" relativeKey="$parent.FirstSlot" relativePoint="LEFT"/>
+					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
 			</ItemButton>
 

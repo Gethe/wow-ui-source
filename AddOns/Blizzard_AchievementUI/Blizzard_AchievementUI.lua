@@ -2539,11 +2539,12 @@ function AchievementFrameSummaryCategory_OnHide (self)
 end
 
 function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
-	if ( not AchievementFrame:IsShown() and not forceSelect ) then
+	if ( (not AchievementFrame:IsShown() and not forceSelect) or (not C_AchievementInfo.IsValidAchievement(id)) ) then
 		return;
 	end
 
 	local _, _, _, achCompleted, _, _, _, _, flags = GetAchievementInfo(id);
+
 	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then

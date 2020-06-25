@@ -342,6 +342,10 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 
+	if EncounterJournal.instanceSelect:IsShown() then
+		EJ_ContentTab_Select(self.selectedTab);
+	end
+
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
 end
@@ -2464,6 +2468,7 @@ function EJ_ContentTab_Select(id)
 		end
 	end
 
+	EncounterJournal.selectedTab = id;
 
 	-- Setup background
 	local tierData;

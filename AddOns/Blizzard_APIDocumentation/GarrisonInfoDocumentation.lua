@@ -167,6 +167,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetMissionEncounterIconInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "missionEncounterIconInfo", Type = "MissionEncounterIconInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentInfo",
 			Type = "Function",
 
@@ -996,6 +1010,16 @@ local GarrisonInfo =
 				{ Name = "locTextureKit", Type = "string", Nilable = false },
 				{ Name = "isExhausting", Type = "bool", Nilable = false },
 				{ Name = "enemies", Type = "table", InnerType = "GarrisonEnemyEncounterInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "MissionEncounterIconInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
+				{ Name = "isElite", Type = "bool", Nilable = false },
+				{ Name = "isRare", Type = "bool", Nilable = false },
 			},
 		},
 	},

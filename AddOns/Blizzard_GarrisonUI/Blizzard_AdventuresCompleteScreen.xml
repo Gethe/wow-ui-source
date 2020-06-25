@@ -55,18 +55,13 @@
 							</Anchors>
 							<Color r="0.84" g="0.72" b="0.57"/>
 						</FontString>
-						<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="48" y="-4"/>
-							</Anchors>
-						</Texture>
 						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
 							<Size x="430" y="0"/>
 							<Shadow>
 								<Offset x="1" y="-1"/>
 							</Shadow>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="10"/>
+								<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="-5"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
@@ -81,6 +76,13 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="EncounterIcon" inherits="SmallCovenantMissionEncounterIconTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="48" y="-16"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</Frame>
 
 			<Frame parentKey="Board" inherits="AdventuresBoardCombatTemplate" frameLevel="1000">

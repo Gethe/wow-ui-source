@@ -101,6 +101,7 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
 
    	self:ResetMissionDisplay();
 	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo);
+	self.MissionInfo.EncounterIcon:SetEncounterInfo(mission.encounterIconInfo);
 
 	if not mission.completed then
    		C_Garrison.MarkMissionComplete(self.currentMission.missionID);
@@ -124,8 +125,6 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
    	local r, g, b = color:GetRGB();
    	local a = 0.4;
    	missionInfo.IconBG:SetVertexColor(r, g, b, a);
-
-   	missionInfo.MissionType:SetAtlas(mission.typeAtlas, true);
    
    	for i, encounter in ipairs(self.missionEncounters) do
    		local encounterFrame = self:GetFrameFromBoardIndex(encounter.boardIndex);

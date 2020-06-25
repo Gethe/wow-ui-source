@@ -219,10 +219,10 @@
 					<OnClick>
 						if ( self:GetChecked() ) then
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							SetCurrencyUnused(TokenFrame.selectedID, 1);
+							C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, 1);
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							SetCurrencyUnused(TokenFrame.selectedID, 0);
+							C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, 0);
 						end
 						TokenFrame_Update();
 						TokenFramePopup_CloseIfHidden();

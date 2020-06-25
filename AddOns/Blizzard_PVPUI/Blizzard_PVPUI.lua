@@ -209,17 +209,8 @@ function PVPUIFrame_SetRoles(frame)
 end
 
 function PVPUIFrame_UpdateRolesChangeable()
-	if ( PVPHelper_CanChangeRoles() ) then
-		PVPUIFrame_UpdateAvailableRoles(HonorFrame.TankIcon, HonorFrame.HealerIcon, HonorFrame.DPSIcon);
-		PVPUIFrame_UpdateAvailableRoles(ConquestFrame.TankIcon, ConquestFrame.HealerIcon, ConquestFrame.DPSIcon);
-	else
-		LFG_DisableRoleButton(HonorFrame.TankIcon);
-		LFG_DisableRoleButton(HonorFrame.HealerIcon);
-		LFG_DisableRoleButton(HonorFrame.DPSIcon);
-		LFG_DisableRoleButton(ConquestFrame.TankIcon);
-		LFG_DisableRoleButton(ConquestFrame.HealerIcon);
-		LFG_DisableRoleButton(ConquestFrame.DPSIcon);
-	end
+	PVPUIFrame_UpdateAvailableRoles(HonorFrame.TankIcon, HonorFrame.HealerIcon, HonorFrame.DPSIcon);
+	PVPUIFrame_UpdateAvailableRoles(ConquestFrame.TankIcon, ConquestFrame.HealerIcon, ConquestFrame.DPSIcon);
 end
 
 function PVPUIFrame_UpdateAvailableRoles(tankButton, healButton, dpsButton)
@@ -958,7 +949,18 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 			button:Disable();
 		end
-		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, (IsPlayerAtEffectiveMaxLevel())));
+		HelpTip:Hide(button, BRAWL_TUTORIAL);
+		if ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, (IsPlayerAtEffectiveMaxLevel())) then
+			local helpTipInfo = {
+				text = BRAWL_TUTORIAL,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_BRAWL,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -10,
+			};
+			HelpTip:Show(button, helpTipInfo);
+		end
 	end
 
 	do

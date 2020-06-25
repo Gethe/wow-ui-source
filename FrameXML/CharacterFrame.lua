@@ -98,6 +98,21 @@ function CharacterFrame_OnEvent (self, event, ...)
 	end
 end
 
+local function ShouldShowExaltedPlusHelpTip()
+	if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS)) then
+		return false;
+	end
+
+	local numFactions = GetNumFactions();
+	for i=1, numFactions do
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain = GetFactionInfo(i);
+		if (factionID and C_Reputation.IsFactionParagon(factionID) ) then
+			return true;
+		end
+	end
+	return false;
+end
+
 function CharacterFrame_OnShow (self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CharacterFrame_UpdatePortrait();
@@ -115,6 +130,18 @@ function CharacterFrame_OnShow (self)
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
 	StatusTrackingBarManager:SetTextLocked(true);
+
+	if ShouldShowExaltedPlusHelpTip() then
+		local helpTipInfo = {
+			text = REPUTATION_EXALTED_PLUS_HELP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			offsetY = 8,
+		};
+		HelpTip:Show(self, helpTipInfo, CharacterFrameTab2);
+	end
 
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 end

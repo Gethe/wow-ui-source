@@ -958,12 +958,17 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit);
 		end
 
-		local warfrontHelpBox = BlocksFrame.WarfrontHelpBox;
 		if inWarfront and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_RESOURCES) then
-			warfrontHelpBox:SetHeight(25 + warfrontHelpBox.BigText:GetHeight());
-			warfrontHelpBox:Show();
-		else
-			warfrontHelpBox:Hide();
+			local helpTipInfo = {
+				text = WARFRONT_TUTORIAL_RESOURCES,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_WARFRONT_RESOURCES,
+				targetPoint = HelpTip.Point.LeftEdgeCenter,
+				offsetX = -4,
+				offsetY = 4,
+			};
+			HelpTip:Show(BlocksFrame, helpTipInfo, stageBlock);
 		end
 	end
 	BlocksFrame.scenarioName = scenarioName;

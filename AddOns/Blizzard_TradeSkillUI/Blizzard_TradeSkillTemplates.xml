@@ -3,6 +3,20 @@
 	<Script file="Blizzard_TradeSkillTemplates.lua"/>
 
 	<Button name="OptionalReagentButtonTemplate" inherits="LargeItemButtonTemplate" mixin="OptionalReagentButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SocketGlow" atlas="tradeskills-icon-add" alphaMode="ADD" useAtlasSize="true" scale="1.06" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SocketGlowPulseAnim" looping="BOUNCE">
+				<Alpha childKey="SocketGlow" duration="0.8" fromAlpha="0" toAlpha="0.6"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

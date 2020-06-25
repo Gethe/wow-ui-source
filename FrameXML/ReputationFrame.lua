@@ -21,8 +21,9 @@ function ReputationFrame_OnShow(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UPDATE_FACTION");
 
-	if (self:GetParent().ReputationTabHelpBox:IsShown()) then
-		self:GetParent().ReputationTabHelpBox:Hide();
+	local parent = self:GetParent();
+	if HelpTip:IsShowing(parent, REPUTATION_EXALTED_PLUS_HELP) then
+		HelpTip:Hide(parent, REPUTATION_EXALTED_PLUS_HELP);
 		SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS, true);
 	end
 end

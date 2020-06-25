@@ -86,7 +86,7 @@ function CovenantFollowerTabMixin:OnLoad()
 end
 
 function CovenantFollowerTabMixin:OnUpdate()
-	local SECONDS_BETWEEN_UPDATE = 5;
+	local SECONDS_BETWEEN_UPDATE = 1;
 	local currentTime = GetTime();
 	if (self.lastUpdate and (currentTime - self.lastUpdate) > SECONDS_BETWEEN_UPDATE) then 
 		self.followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(self.followerID);
@@ -304,14 +304,26 @@ function CovenantMissionListMixin:UpdateMissions()
 	completedMissions = C_Garrison.GetCompleteMissions(self:GetMissionFrame().followerTypeID);
 
 	C_Garrison.GetAvailableMissions(self.combinedMissions, self:GetMissionFrame().followerTypeID);
-	for i = 1, #inProgressMissions do
-		for j = 1, #completedMissions  do
-			if completedMissions[j].missionID == inProgressMissions[i].missionID then
-				inProgressMissions[i].canBeCompleted = true;
+
+	--Missions that are partially completed (initiated complete but didn't finish) are not marked InProgress, so this loop makes sure to add the unique complete missions while marking the inProgress Missions that are also complete. 
+	for _, completedMission in ipairs(completedMissions) do
+		local foundInProgress = false;
+		for _, inProgressMission in ipairs(inProgressMissions) do 
+			if completedMission.missionID == inProgressMission.missionID then
+				inProgressMission.canBeCompleted = true;
+				foundInProgress = true;
+				break
 			end
 		end
-		
-		table.insert(self.combinedMissions, inProgressMissions[i]);
+
+		if not foundInProgress then 
+			completedMission.canBeCompleted = true;
+			table.insert(self.combinedMissions, completedMission);
+		end
+	end
+
+	for _, inProgressMission in ipairs(inProgressMissions) do 
+		table.insert(self.combinedMissions, inProgressMission);
 	end
 
 	CovenantMissionList_Sort(self.combinedMissions);
@@ -344,6 +356,9 @@ function CovenantMissionListMixin:Update()
 			button.Title:SetWidth(0);
 			button.Title:SetText(mission.name);
 			button.Level:SetText(mission.level);
+			button.Summary:Show();
+			button.info.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
+
 			if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
 				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
 				button.Summary:SetFormattedText(PARENS_TEMPLATE, duration);
@@ -356,34 +371,18 @@ function CovenantMissionListMixin:Update()
 			else
 				button.LocBG:Hide();
 			end
-			if (mission.isRare) then
-				button.RareOverlay:Show();
-				button.RareText:Show();
-				button.IconBG:SetVertexColor(0, 0.012, 0.291, 0.4)
-			else
-				button.RareOverlay:Hide();
-				button.RareText:Hide();
-				button.IconBG:SetVertexColor(0, 0, 0, 0.4)
-			end
-			local showingItemLevel = false;
-			if ( GarrisonFollowerOptions[followerTypeID].showILevelOnMission and mission.isMaxLevel and mission.iLevel > 0 ) then
-				button.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
-				button.ItemLevel:Show();
-				showingItemLevel = true;
-			else
-				button.ItemLevel:Hide();
-			end
-			if ( showingItemLevel and mission.isRare ) then
-				button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -22);
-			else
-				button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -36);
-			end
 
+			if ( button.EncounterIcon ) then
+				button.EncounterIcon:SetEncounterInfo(button.info.encounterIconInfo);
+			end
+			
 			button:Enable();
 			button.Overlay:Hide();
+			button.CompleteCheck:SetShown(mission.canBeCompleted);
+			button.CompleteHighlight:SetShown(mission.canBeCompleted);
 
 			if (mission.canBeCompleted) then
-				button.Summary:SetText(YELLOW_FONT_COLOR_CODE..COMPLETE..FONT_COLOR_CODE_CLOSE);
+				button.Summary:SetShown(false);
 			elseif (mission.inProgress) then
 				button.Overlay:Show();
 				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR_CODE..GARRISON_MISSION_IN_PROGRESS..FONT_COLOR_CODE_CLOSE);
@@ -399,10 +398,6 @@ function CovenantMissionListMixin:Update()
 				button.Summary:ClearAllPoints();
 				button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);
 			end
-
-			button.MissionType:SetAtlas(mission.typeAtlas);
-			button.MissionType:SetSize(75, 75);
-			button.MissionType:SetPoint("TOPLEFT", 68, -2);
 
 			GarrisonMissionButton_SetRewards(button, mission.rewards, #mission.rewards);
 			button:Show();
@@ -431,6 +426,66 @@ function CovenantMissionButton_OnClick(self)
 end
 
 function CovenantMissionButton_OnEnter(self)
+	local missionInfo = self.info;
 
+	if (missionInfo == nil) then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+
+	GameTooltip_SetTitle(GameTooltip, missionInfo.name);
+	if(missionInfo.canBeCompleted) then
+		GameTooltip_AddColoredLine(GameTooltip, COMPLETE, WHITE_FONT_COLOR);
+	elseif missionInfo.inProgress then
+		GameTooltip_AddColoredLine(GameTooltip, IN_PROGRESS, WHITE_FONT_COLOR);
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, REWARDS);
+	for id, reward in pairs(missionInfo.rewards) do
+		if (reward.quality) then
+			GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
+		elseif (reward.itemID) then
+			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+			if itemName then
+				GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
+			end
+        elseif (reward.currencyID and C_CurrencyInfo.IsCurrencyContainer(reward.currencyID, reward.quantity)) then
+            local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity);
+            if name then
+				GameTooltip:AddLine(ITEM_QUALITY_COLORS[quality].hex..name..FONT_COLOR_CODE_CLOSE);
+			end
+		else
+			GameTooltip_AddColoredLine(GameTooltip, reward.title, WHITE_FONT_COLOR);
+		end
+	end
+
+	if missionInfo.inProgress then
+		if (self.info.followers ~= nil) then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, GARRISON_FOLLOWERS);
+			for i=1, #(missionInfo.followers) do
+				GameTooltip_AddColoredLine(GameTooltip, C_Garrison.GetFollowerName(missionInfo.followers[i]), WHITE_FONT_COLOR);
+			end
+		end
+	elseif (missionInfo.isRare) then
+		GameTooltip_AddNormalLine(GameTooltip, GARRISON_MISSION_AVAILABILITY);
+		GameTooltip_AddColoredLine(GameTooltip, missionInfo.offerTimeRemaining, WHITE_FONT_COLOR);
+	end
+
+	GameTooltip:Show();
+end
+
+---------------------------------------------------------------------------------
+--- Covenant Mission List Button Handlers									  ---
+---------------------------------------------------------------------------------
+
+CovenantMissionEncounterIconMixin = {}
+
+function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
+	self.RareOverlay:SetShown(encounterIconInfo.isRare);
+	self.EliteOverlay:SetShown(encounterIconInfo.isElite);
+	GarrisonEnemyPortait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
 end
 

@@ -30,28 +30,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame name="ActionStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="ActionStatusText" inherits="GameFontNormalLarge">
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="ActionStatus_OnLoad"/>
-					<OnEvent function="ActionStatus_OnEvent"/>
-					<OnUpdate function="ActionStatus_OnUpdate"/>
-				</Scripts>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad function="WorldFrame_OnLoad"/>
 			<OnUpdate function="WorldFrame_OnUpdate"/>

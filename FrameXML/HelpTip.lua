@@ -12,11 +12,13 @@
 		cvar, cvarValue,						-- cvar to set when closed by user or from HelpTip:Acknowledge()
 		cvarBitfield, bitfieldFlag,				-- cvarbitfield to set when closed by user or from HelpTip:Acknowledge()
 		onHideCallback, callbackArg,			-- callback whenever the helptip is closed:  onHideCallback(acknowledged, callbackArg)
+		onAcknowledgeCallback					-- callback whenever the helptip is closed by the user clicking its button: onAcknowledgeCallback(callbackArg)
 		checkCVars = false,						-- on: helptip will only be shown if the cvar or cvarBitfield is not set
 		autoEdgeFlipping = false,				-- on: will flip helptip to opposite edge based on relative region's center vs helptip's center during OnUpdate
 		autoHorizontalSlide = false,			-- on: will change the alignment to fit helptip on screen during OnUpdate
 		useParentStrata	= false,				-- whether to use parent framestrata
 		system = ""								-- reference string
+		systemPriority = 0,						-- if a system and a priority is specified, higher priority helptips will close another helptip in that system
 	}
 ]]--
 
@@ -185,11 +187,30 @@ function HelpTip:CanShow(info)
 			end
 		end
 	end
+
+	-- priority
+	if info.system and info.systemPriority then
+		for frame in self.framePool:EnumerateActive() do
+			if frame.info.system == info.system and frame.info.systemPriority then
+				if info.systemPriority > frame.info.systemPriority then
+					frame:Close();
+					-- by design there can only be one such frame, no need to keep going
+					break;
+				else
+					-- higher or equal priority is already shown
+					return false;
+				end
+			end
+		end
+	end
+
 	return true;
 end
 
 function HelpTip:ForceHideAll()
+	self:SetHelpTipsEnabled("ForceHideAll", false);
 	self.framePool:ReleaseAll();
+	self:SetHelpTipsEnabled("ForceHideAll", true);
 end
 
 function HelpTip:HideAllSystem(system)
@@ -247,6 +268,15 @@ function HelpTip:IsShowingAny(parent)
 	return false;
 end
 
+function HelpTip:IsShowingAnyInSystem(system)
+	for frame in self.framePool:EnumerateActive() do
+		if frame.info.system == system then
+			return true;
+		end
+	end
+	return false;
+end
+
 function HelpTip:Acknowledge(parent, text)
 	for frame in self.framePool:EnumerateActive() do
 		if frame:Matches(parent, text) then
@@ -288,6 +318,9 @@ function HelpTipTemplateMixin:OnHide()
 	local info = self.info;
 	if info.onHideCallback then
 		info.onHideCallback(self.acknowledged, info.callbackArg);
+	end
+	if self.acknowledged and info.onAcknowledgeCallback then
+		info.onAcknowledgeCallback(info.callbackArg);
 	end
 	HelpTip:Release(self);
 end

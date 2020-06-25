@@ -21,9 +21,6 @@ local listTextureKitRegions = {
 local featureBorderTextureKitRegions = {
 	["Border"] = "CovenantSanctum-Icon-Border-%s",
 }
-local uniqueFeatureBorderTextureKitRegions = {
-	["Border"] = "CovenantSanctum-BigIcon-Border-%s",
-}
 local reservoirTextureKitRegions = {
 	["RankBorder"] = "CovenantSanctum-Resevoir-RankBorder-%s",
 	["Background"] = "CovenantSanctum-Resevoir-Empty-%s",
@@ -209,6 +206,15 @@ function CovenantSanctumUpgradeTalentListMixin:Upgrade()
 	end
 end
 
+function CovenantSanctumUpgradeTalentListMixin:FindTalentButton(talentID)
+	for talentFrame in self.talentPool:EnumerateActive() do
+		if talentFrame.info.id == talentID then
+			return talentFrame;
+		end
+	end
+	return nil;
+end
+
 --=============================================================================================
 CovenantSanctumUpgradeTalentMixin = { };
 
@@ -245,7 +251,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, g_sanctumTextureKit);
 		self.Border:SetAtlas(atlas);
 	else
-		self.Border:SetAtlas("CovenantSanctum_Upgrade_Border_Available");
+		self.Border:SetAtlas("CovenantSanctum-Upgrade-Border-Available");
 	end
 	self.Icon:SetDesaturated(disabled);
 
@@ -357,11 +363,7 @@ function CovenantSanctumUpgradeBaseMixin:IsSelected()
 end
 
 function CovenantSanctumUpgradeBaseMixin:SetUpTextureKit()
-	if self.uniqueUpgrade then
-		SetupTextureKit(self, uniqueFeatureBorderTextureKitRegions);
-	else
-		SetupTextureKit(self, featureBorderTextureKitRegions);
-	end
+	SetupTextureKit(self, featureBorderTextureKitRegions);
 end
 
 --=============================================================================================

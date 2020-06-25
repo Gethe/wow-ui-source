@@ -1,4 +1,12 @@
 
+local OptionalReagentTutorialStage = {
+	Slot = 1,
+	List = 2,
+	Icon = 3,
+	Create = 4,
+};
+
+
 TradeSkillDetailsMixin = {};
 
 function TradeSkillDetailsMixin:OnLoad()
@@ -15,8 +23,14 @@ function TradeSkillDetailsMixin:OnLoad()
 	self.GlowClipFrame.ModifiedCraftingGlowSpinAnim:Play();
 end
 
+function TradeSkillDetailsMixin:OnShow()
+	self:GetParent():RegisterCallback(TradeSkillUIMixin.Event.OptionalReagentListClosed, self.OnOptionalReagentListClosed, self);
+end
+
 function TradeSkillDetailsMixin:OnHide()
+	self:GetParent():UnregisterCallback(TradeSkillUIMixin.Event.OptionalReagentListClosed, self);
 	self:CancelSpellLoadCallback();
+	self:ClearOptionalReagents();
 end
 
 function TradeSkillDetailsMixin:OnUpdate()
@@ -38,6 +52,10 @@ function TradeSkillDetailsMixin:OnEvent(event, ...)
 		self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 		self:Refresh();
 	end
+end
+
+function TradeSkillDetailsMixin:OnOptionalReagentListClosed()
+	self:Refresh();
 end
 
 function TradeSkillDetailsMixin:OnDataSourceChanged()
@@ -124,6 +142,115 @@ local function SetUpReagentButton(reagentButton, reagentName, reagentTexture, re
 	end
 
 	return craftable;
+end
+
+function TradeSkillDetailsMixin:ValidateTutorialStage(stageComplete)
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_OPTIONAL_REAGENT_CRAFTING) or #self.optionalReagentSlots == 0 then
+		self.tutorialStage = nil;
+		return;
+	end
+
+	if not self.tutorialStage then
+		if self.Contents.OptionalReagent1:IsShown() then
+			self.tutorialStage = OptionalReagentTutorialStage.Slot;
+		end
+	elseif self.tutorialStage == stageComplete then
+		self.tutorialStage = self.tutorialStage + 1;
+		if self.tutorialStage > OptionalReagentTutorialStage.Create then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_OPTIONAL_REAGENT_CRAFTING, true);
+			self.tutorialStage = nil;
+		end
+	end
+
+	if self.tutorialStage and (self.tutorialStage > OptionalReagentTutorialStage.List) and (#self:GetOptionalReagentsArray() == 0) then
+		self.tutorialStage = self:GetParent():IsOptionalReagentListShown() and OptionalReagentTutorialStage.List or OptionalReagentTutorialStage.Slot;
+	end
+
+	if self.tutorialStage == OptionalReagentTutorialStage.List and not self:GetParent():IsOptionalReagentListShown() then
+		self.tutorialStage = OptionalReagentTutorialStage.Slot;
+	end
+end
+
+function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
+	HelpTip:HideAll(self);
+
+	self:ValidateTutorialStage(stageComplete);
+
+	-- Show/hide a synchronized glowing animations.
+	local progress = nil;
+	for i, reagentButton in ipairs(self.Contents.OptionalReagents) do
+		local hasReagent = self:GetOptionalReagent(reagentButton.optionalReagentIndex) ~= nil;
+		if not hasReagent and (self.tutorialStage == OptionalReagentTutorialStage.Slot) then
+			if not progress then
+				progress = reagentButton:GetGlowingProgress();
+			end
+
+			reagentButton:SetGlowing(true, progress);
+		else
+			reagentButton:SetGlowing(false);
+		end
+	end
+
+	if self.tutorialStage == OptionalReagentTutorialStage.Slot then
+		local helpTipInfo = {
+			text = OPTIONAL_REAGENT_TUTORIAL_SLOT,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			alignment = HelpTip.Alignment.CENTER,
+			offsetX = -6,
+			offsetY = 2,
+		};
+
+		HelpTip:Show(self, helpTipInfo, self.Contents.OptionalReagent1);
+	elseif self.tutorialStage == OptionalReagentTutorialStage.List then
+		local helpTipInfo = {
+			text = OPTIONAL_REAGENT_TUTORIAL_LIST,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			alignment = HelpTip.Alignment.CENTER,
+			offsetX = 0,
+			offsetY = 0,
+		};
+
+		local firstLine = self:GetParent():GetOptionalReagentListTutorialLine();
+		HelpTip:Show(self, helpTipInfo, firstLine);
+	elseif self.tutorialStage == OptionalReagentTutorialStage.Icon then
+		local function HelpTipHiddenCallback(acknowledged)
+			if acknowledged then
+				self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Icon);
+			end
+		end
+
+		local helpTipInfo = {
+			text = OPTIONAL_REAGENT_TUTORIAL_ITEM,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			alignment = HelpTip.Alignment.CENTER,
+			offsetX = -6,
+			offsetY = 2,
+			onHideCallback = HelpTipHiddenCallback,
+		};
+
+		HelpTip:Show(self, helpTipInfo, self.Contents.ResultIcon);
+	elseif self.tutorialStage == OptionalReagentTutorialStage.Create then
+		local function HelpTipHiddenCallback(acknowledged)
+			if acknowledged then
+				self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Create);
+			end
+		end
+
+		local helpTipInfo = {
+			text = OPTIONAL_REAGENT_TUTORIAL_COUNT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			alignment = HelpTip.Alignment.TOP,
+			offsetX = 0,
+			offsetY = 0,
+			onHideCallback = HelpTipHiddenCallback,
+		};
+
+		HelpTip:Show(self, helpTipInfo, self.CreateMultipleInputBox);
+	end
 end
 
 local SPACING_BETWEEN_LINES = 11;
@@ -285,8 +412,8 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			reagentButton:Hide();
 		end
 
-
 		local optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID);
+		self.optionalReagentSlots = optionalReagentSlots;
 		local numOptionalReagentSlots = #optionalReagentSlots;
 		local hasOptionalReagentSlots = numOptionalReagentSlots > 0;
 		
@@ -302,6 +429,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			self:AddContentWidget(self.Contents.OptionalReagentLabel);
 		end
 
+		local selectedOptionalReagentIndex = self:GetParent():GetSelectedOptionalReagentIndex();
 		for optionalReagentIndex = 1, numOptionalReagentSlots do
 			local reagentName, bonusText, reagentQuality, reagentTexture, reagentCount, playerReagentCount = self:GetOptionalReagent(optionalReagentIndex);
 			local reagentButton = self.Contents.OptionalReagents[optionalReagentIndex];
@@ -327,6 +455,8 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 				reagentButton:SetReagentText(optionalReagentSlots[optionalReagentIndex].slotText or OPTIONAL_REAGENT_POSTFIX);
 				reagentButton.Count:SetText("");
 			end
+
+			reagentButton.SelectedTexture:SetShown(optionalReagentIndex == selectedOptionalReagentIndex);
 		end
 
 		for optionalReagentIndex = numOptionalReagentSlots + 1, #self.Contents.OptionalReagents do
@@ -342,6 +472,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			self.Contents.ResultIcon.ResultBorder:SetAlpha(1);
 		end
 
+		self:CheckOptionalReagentTutorial();
 
 		self.Contents.NextRankText:Hide();
 		local sourceText, sourceTextIsForNextRank;
@@ -462,11 +593,13 @@ function TradeSkillDetailsMixin:CreateAll()
 	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.selectedRecipeID);
 	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, recipeInfo.numAvailable, self:GetOptionalReagentsArray());
 	self.CreateMultipleInputBox:ClearFocus();
+	self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Create);
 end
 
 function TradeSkillDetailsMixin:Create()
 	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, self.CreateMultipleInputBox:GetValue(), self:GetOptionalReagentsArray());
 	self.CreateMultipleInputBox:ClearFocus();
+	self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Create);
 end
 
 
@@ -481,6 +614,7 @@ function TradeSkillDetailsMixin:OnResultMouseEnter(resultButton)
 		GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
 		GameTooltip:SetRecipeResultItem(self.selectedRecipeID, self:GetOptionalReagentsArray());
 		CursorUpdate(resultButton);
+		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Icon)
 	end
 	
 	resultButton.UpdateTooltip = resultButton.UpdateTooltip or function(owner) self:OnResultMouseEnter(owner); end;
@@ -528,6 +662,8 @@ end
 function TradeSkillDetailsMixin:OnOptionalReagentClicked(reagentButton, button)
 	if button == "LeftButton" then
 		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, reagentButton.optionalReagentIndex);
+		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Slot);
+		self:Refresh();
 	elseif button == "RightButton" then
 		self:SetOptionalReagent(reagentButton.optionalReagentIndex, nil);
 		self:OnOptionalReagentMouseEnter(reagentButton);
@@ -576,6 +712,12 @@ function TradeSkillDetailsMixin:SetOptionalReagent(optionalReagentIndex, option)
 	end
 	
 	self:GetParent():TriggerEvent(TradeSkillUIMixin.Event.OptionalReagentUpdated, optionalReagentIndex);
+	self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.List);
+	self:Refresh();
+end
+
+function TradeSkillDetailsMixin:ClearOptionalReagents()
+	self.optionalReagents = {};
 	self:Refresh();
 end
 

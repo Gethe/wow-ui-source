@@ -5,6 +5,7 @@
 Blizzard_SoulbindsTemplates.xml
 Blizzard_SoulbindsSelectButton.xml
 Blizzard_SoulbindsSelectGroup.xml
+Blizzard_SoulbindsConduit.lua
 Blizzard_SoulbindsNode.xml
 Blizzard_SoulbindsNodeLink.xml
 Blizzard_SoulbindsTree.xml

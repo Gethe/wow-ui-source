@@ -183,6 +183,10 @@ local GossipInfo =
 			Name = "GossipShow",
 			Type = "Event",
 			LiteralName = "GOSSIP_SHOW",
+			Payload =
+			{
+				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+			},
 		},
 	},
 

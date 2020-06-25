@@ -61,36 +61,38 @@ function GossipTitleButtonMixin:Resize()
 end
 
 function GossipFrame_OnLoad(self)
-	self:RegisterEvent("GOSSIP_SHOW");
-	self:RegisterEvent("GOSSIP_CLOSED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 
 	self.titleButtonPool = CreateFramePool("Button", self, "GossipTitleButtonTemplate");
 end
 
-function GossipFrame_OnEvent(self, event, ...)
-	if ( event == "GOSSIP_SHOW" ) then
-		-- if there is only a non-gossip option, then go to it directly
-		if ( (C_GossipInfo.GetNumAvailableQuests() == 0) and (C_GossipInfo.GetNumActiveQuests()  == 0) and (C_GossipInfo.GetNumOptions() == 1) and not C_GossipInfo.ForceGossip() ) then
-			local gossipInfoTable = C_GossipInfo.GetOptions();
-			if ( gossipInfoTable[1].type ~= "gossip" ) then
-				C_GossipInfo.SelectOption(1);
-				return;
-			end
+function GossipFrame_HandleShow(self)
+-- if there is only a non-gossip option, then go to it directly
+	if ( (C_GossipInfo.GetNumAvailableQuests() == 0) and (C_GossipInfo.GetNumActiveQuests()  == 0) and (C_GossipInfo.GetNumOptions() == 1) and not C_GossipInfo.ForceGossip() ) then
+		local gossipInfoTable = C_GossipInfo.GetOptions();
+		if ( gossipInfoTable[1].type ~= "gossip" ) then
+			C_GossipInfo.SelectOption(1);
+			return;
 		end
+	end
 
-		if ( not GossipFrame:IsShown() ) then
-			ShowUIPanel(self);
-			if ( not self:IsShown() ) then
-				C_GossipInfo.CloseGossip();
-				return;
-			end
+	if ( not GossipFrame:IsShown() ) then
+		ShowUIPanel(self);
+		if ( not self:IsShown() ) then
+			C_GossipInfo.CloseGossip();
+			return;
 		end
-		NPCFriendshipStatusBar_Update(self);
-		GossipFrameUpdate();
-	elseif ( event == "GOSSIP_CLOSED" ) then
-		HideUIPanel(self);
-	elseif ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
+	end
+	NPCFriendshipStatusBar_Update(self);
+	GossipFrameUpdate();
+end 
+
+function GossipFrame_HandleHide(self)
+	HideUIPanel(self);
+end 
+
+function GossipFrame_OnEvent(self, event, ...)
+	if ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
 		GossipFrameUpdate();
 	end
 end

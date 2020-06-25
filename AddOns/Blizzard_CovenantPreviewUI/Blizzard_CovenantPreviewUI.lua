@@ -30,11 +30,6 @@ local abilityTypeText = {
 	[Enum.CovenantAbilityType.Racial] = COVENANT_PREVIEW_RACIAL_ABILITY, 
 }
 
---Aubrie TODO fix this up when the artwork for the frames are in.
-local covenantNineSlice = {
-	["Kyrian"] = "Oribos",
-}
-
 CovenantPreviewFrameMixin = { }; 
 function CovenantPreviewFrameMixin:OnLoad() 
 	self.AbilityButtonsPool = CreateFramePool("BUTTON", self.InfoPanel, "CovenantAbilityButtonTemplate");
@@ -77,22 +72,17 @@ end
 
 function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 
-	if (not self.showingFromPlayerChoice) then 
-		local nineSliceLayout = covenantNineSlice[self.uiTextureKit];
-
-		if(self.uiTextureKit and nineSliceLayout) then 
-			NineSliceUtil.ApplyLayoutByName(self.BorderFrame, nineSliceLayout);
-		end
+	if (not self.showingFromPlayerChoice and self.uiTextureKit) then 
+		NineSliceUtil.ApplyUniqueCornersLayout(self.BorderFrame, self.uiTextureKit);
 	end
 	if(self.showingFromPlayerChoice) then 
 		PlayerChoiceFrame.BlackBackground:Show(); 
 	end 
-	self.NineSlice:SetShown(not self.showingFromPlayerChoice);
 	self.BorderFrame:SetShown(not self.showingFromPlayerChoice);
 	self.CloseButton:SetShown(not self.showingFromPlayerChoice);
 	self.SelectButton:SetShown(self.showingFromPlayerChoice);
-	self:SetupTextureKits(self.Title, titleTextureKitRegions, nineSliceLayout);
-	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, nineSliceLayout);
+	self:SetupTextureKits(self.Title, titleTextureKitRegions, self.uiTextureKit);
+	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, self.uiTextureKit);
 	self:SetupTextureKits(self.InfoPanel, infoPanelTextureKitRegions);
 end
 

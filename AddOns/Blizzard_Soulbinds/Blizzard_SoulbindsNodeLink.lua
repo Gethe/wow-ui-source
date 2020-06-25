@@ -53,7 +53,7 @@ function SoulbindTreeNodeLinkMixin:SetState(state)
 		self:DesaturateHierarchy(0);
 		for _, foreground in ipairs(self.foregrounds) do
 			foreground:SetShown(true);
-			foreground:SetVertexColor(.2, .4, 1);
+			foreground:SetVertexColor(.192, .686, .941);
 		end
 		self.FlowAnim1:Play();
 		self.FlowAnim2:Play();

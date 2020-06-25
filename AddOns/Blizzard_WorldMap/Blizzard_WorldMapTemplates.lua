@@ -499,6 +499,8 @@ function WorldMapThreatEyeMixin:OnShow()
 			bitfieldFlag = LE_FRAME_TUTORIAL_WORLD_MAP_THREAT_ICON,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			alignment = HelpTip.Alignment.Left,
+			system = "WorldMap",
+			systemPriority = 10,
 		};
 		HelpTip:Show(self, helpTipInfo);
 	end

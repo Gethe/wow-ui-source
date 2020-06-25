@@ -572,11 +572,9 @@ local tutorials = {
 }
 
 -- TODO: Move these GarrisonMissionFrame_ functions to the GarrisonFollowerMission mixin
-function GarrisonFollowerMission:OnCloseMissionTutorial(userAction)
-	if userAction then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		self:CheckTutorials(true);
-	end
+function GarrisonFollowerMission:OnCloseMissionTutorial()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:CheckTutorials(true);
 end
 
 function GarrisonFollowerMission:CheckTutorials(advance)
@@ -623,7 +621,7 @@ function GarrisonFollowerMission:CheckTutorials(advance)
 					text = tutorial.text,
 					buttonStyle = HelpTip.ButtonStyle.Next,
 					targetPoint = tutorial.targetPoint,
-					onHideCallback = GenerateClosure(self.OnCloseMissionTutorial, self),
+					onAcknowledgeCallback = GenerateClosure(self.OnCloseMissionTutorial, self),
 					offsetX = tutorial.offsetX,
 					offsetY = tutorial.offsetY,
 				};

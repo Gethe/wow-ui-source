@@ -30,21 +30,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum_Icon_Select" useAtlasSize="true">
+				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum-Icon-Select" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum_Icon_Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Icon-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="RankBorder" atlas="CovenantSanctum_Icon_RankBorder" useAtlasSize="true">
+				<Texture parentKey="RankBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" y="-11"/>
 					</Anchors>
@@ -83,14 +83,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum_Reservoir_Select" useAtlasSize="true">
+				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum-Reservoir-Select" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum_Reservoir_Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Reservoir-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -122,7 +122,7 @@
 		<Size x="251" y="52"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="CovenantSanctum_Upgrade_Background">
+				<Texture parentKey="Background" atlas="CovenantSanctum-Upgrade-Background">
 					<Size x="249" y="50"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-1"/>
@@ -154,14 +154,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="UpgradeArrow" atlas="CovenantSanctum_Upgrade_Icon_Available" useAtlasSize="true">
+				<Texture parentKey="UpgradeArrow" atlas="CovenantSanctum-Upgrade-Icon-Available" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="3" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" setAllPoints="true" atlas="CovenantSanctum_Upgrade_Hover" alphaMode="ADD"/>
+				<Texture parentKey="Highlight" setAllPoints="true" atlas="CovenantSanctum-Upgrade-Hover" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
 		<Frames>

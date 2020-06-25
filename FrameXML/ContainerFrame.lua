@@ -33,6 +33,7 @@ local CONTAINER_BOTTOM_TEXTURE_DEFAULT_END = 179;
 local CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT = CONTAINER_BOTTOM_TEXTURE_DEFAULT_END - CONTAINER_BOTTOM_TEXTURE_DEFAULT_START;
 local CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_END = 172;
 local CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_HEIGHT = CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_END - CONTAINER_BOTTOM_TEXTURE_DEFAULT_START;
+local CONTAINER_HELPTIP_SYSTEM = "ContainerFrame";
 
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
@@ -208,17 +209,10 @@ function ContainerFrame_OnHide(self)
 		UpdateMicroButtons();
 		PlaySound(SOUNDKIT.KEY_RING_CLOSE);
 	else
-		if ( self:GetID() == 0 and BagHelpBox.wasShown ) then
-			BagHelpBox.wasShown = nil;
-		end
-		if ( BagHelpBox:IsShown() and BagHelpBox.owner == self ) then
-			BagHelpBox.owner = nil;
-			BagHelpBox:Hide();
-		end
 		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE);
 	end
 
-	ContainerFrame_CloseSpecializedTutorialForItem(self);
+	ContainerFrame_CloseTutorial(self);
 end
 
 function ContainerFrame_OnShow(self)
@@ -238,28 +232,7 @@ function ContainerFrame_OnShow(self)
 	end
 	
 	self.FilterIcon:Hide();
-	if ( self:GetID() == 0 ) then
-		local shouldShow = true;
-		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
-			shouldShow = false;
-		else
-			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-				if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
-					shouldShow = false;
-					break;
-				end
-			end
-		end
-		if ( shouldShow and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) ) then
-			BagHelpBox:ClearAllPoints();
-			BagHelpBox:SetPoint("RIGHT", BagItemAutoSortButton, "LEFT", -24, 0);
-			BagHelpBox.Text:SetText(CLEAN_UP_BAGS_TUTORIAL);
-			BagHelpBox.owner = self;
-			BagHelpBox.wasShown = true;
-			BagHelpBox.bitField = LE_FRAME_TUTORIAL_CLEAN_UP_BAGS;
-			BagHelpBox:Show();
-		end
-	elseif ( self:GetID() > 0) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
+	if ( self:GetID() > 0) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 				local active = false;
@@ -274,9 +247,6 @@ function ContainerFrame_OnShow(self)
 					break;
 				end
 			end
-		end
-		if ( not ContainerFrame1.allBags ) then
-			CheckBagSettingsTutorial();
 		end
 	end
 	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = self:GetName();
@@ -322,9 +292,6 @@ function OpenBag(id, force)
 		elseif (containerShowing and force) then
 			ContainerFrame_GenerateFrame(containerFrame, size, id);
 			ContainerFrame_Update(containerFrame);
-		end
-		if (not ContainerFrame1.allBags) then
-			CheckBagSettingsTutorial();
 		end
 	end
 end
@@ -395,41 +362,6 @@ function UpdateNewItemList(containerFrame)
 	end
 end
 
-function CheckBagSettingsTutorial()
-	local shouldShow = true;
-	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
-		shouldShow = false;
-	else
-		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
-				shouldShow = false;
-				break;
-			end
-		end
-	end
-	if (shouldShow and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS)) then
-		local frame;
-		if (ContainerFrame4:IsShown() and ContainerFrame4:GetID() ~= 0) then
-			frame = ContainerFrame4;
-		else
-			for i=NUM_CONTAINER_FRAMES, 1, -1 do
-				if ( _G["ContainerFrame"..i]:IsShown() and _G["ContainerFrame"..i]:GetID() ~= 0 ) then
-					frame = _G["ContainerFrame"..i];
-					break;
-				end
-			end
-		end
-		if (frame) then
-			BagHelpBox:ClearAllPoints();
-			BagHelpBox:SetPoint("RIGHT", frame.Portrait, "LEFT", -8, 0);
-			BagHelpBox.Text:SetText(BAG_SETTINGS_TUTORIAL);
-			BagHelpBox:Show();
-			BagHelpBox.owner = frame;
-			BagHelpBox.bitField = LE_FRAME_TUTORIAL_BAG_SETTINGS;
-		end
-	end
-end
-
 function SearchBagsForItem(itemID)
 	for i = 0, NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
@@ -475,50 +407,40 @@ function ContainerFrame_AnchorTutorialToItemButton(tutorialFrame, itemButton)
 	tutorialFrame:Show();
 end
 
-function ContainerFrame_IsSpecializedTutorialShown()
-	return ArtifactRelicHelpBox:IsShown() or AzeriteItemInBagHelpBox:IsShown();
+function ContainerFrame_IsTutorialShown()
+	return HelpTip:IsShowingAnyInSystem(CONTAINER_HELPTIP_SYSTEM);
 end
 
-function ContainerFrame_CloseSpecializedTutorialForItem(ownerFrame)
-	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == ownerFrame then
-		ArtifactRelicHelpBox:Hide();
-	end
-
-	if AzeriteItemInBagHelpBox:IsShown() and AzeriteItemInBagHelpBox.owner == ownerFrame then
-		AzeriteItemInBagHelpBox:Hide();
+function ContainerFrame_CloseTutorial(ownerFrame)
+	if ownerFrame.helpTipSystem then
+		HelpTip:HideAllSystem(ownerFrame.helpTipSystem);
+		ownerFrame.helpTipSystem = nil;
 	end
 end
 
+-- Returns whether further buttons should be considered
 function ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID)
-	if ContainerFrame_IsSpecializedTutorialShown() then
-		return;
-	end
-
 	if itemID and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemID) then
 		if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, true);
-			return;
+			return false;
 		end
 
-		ContainerFrame_AnchorTutorialToItemButton(AzeriteItemInBagHelpBox, itemButton);
+		local helpTipInfo = {
+			text = AZERITE_TUTORIAL_ITEM_IN_SLOT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = -3,
+			system = CONTAINER_HELPTIP_SYSTEM,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, itemButton);
+		local containerFrame = itemButton:GetParent();
+		containerFrame.helpTipSystem = CONTAINER_HELPTIP_SYSTEM;
+		return false;
 	end
-end
-
-function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
-	if ContainerFrame_IsSpecializedTutorialShown() then
-		return;
-	end
-
-	if itemID and IsArtifactRelicItem(itemID) then
-		if C_ArtifactUI.DoesEquippedArtifactHaveAnyRelicsSlotted() and false then
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
-			return;
-		end
-
-		if C_ArtifactUI.CanApplyArtifactRelic(itemID, true) then
-			ContainerFrame_AnchorTutorialToItemButton(ArtifactRelicHelpBox, itemButton);
-		end
-	end
+	return true;
 end
 
 function ContainerFrame_UpdateItemUpgradeIcons(frame)
@@ -574,11 +496,9 @@ function ContainerFrame_Update(self)
 		BagItemAutoSortButton:Hide();
 	end
 
-	ContainerFrame_CloseSpecializedTutorialForItem(self);
+	ContainerFrame_CloseTutorial(self);
 
-	local shouldDoSpecializedTutorialChecks = not BagHelpBox:IsShown() and not Kiosk.IsEnabled();
-	local shouldDoRelicChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
-	local shouldDoAzeriteChecks = shouldDoSpecializedTutorialChecks and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT);
+	local shouldDoAzeriteChecks = not Kiosk.IsEnabled() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT) and not ContainerFrame_IsTutorialShown();
 
 	for i=1, self.size, 1 do
 		itemButton = _G[name.."Item"..i];
@@ -670,12 +590,25 @@ function ContainerFrame_Update(self)
 		itemButton:SetMatchesSearch(not isFiltered);
 		if ( not isFiltered ) then
 			if shouldDoAzeriteChecks then
-				ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID);
-			end
-			if shouldDoRelicChecks then
-				ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID);
+				shouldDoAzeriteChecks = ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID);
 			end
 		end
+	end
+
+	-- authenticator slots helpTip
+	if id == 0 and IsAccountSecured() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR) and not ContainerFrame_IsTutorialShown() then
+		itemButton = _G[name.."Item"..4];
+		local helpTipInfo = {
+			text = BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 1,
+			system = CONTAINER_HELPTIP_SYSTEM,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, itemButton);
+		self.helpTipSystem = CONTAINER_HELPTIP_SYSTEM;
 	end
 
 	local bagButton = ContainerFrame_GetBagButton(self);
@@ -1005,18 +938,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			end
 			
 			itemButton:Show();
-		end
-		if (id == 0 and secured and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR)) then
-			itemButton = _G[name.."Item"..4];
-			local helpTipInfo = {
-				text = BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED,
-				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR,
-				targetPoint = HelpTip.Point.LeftEdgeCenter,
-				offsetX = 1,
-			};
-			HelpTip:Show(frame, helpTipInfo, itemButton);
 		end
 	end
 	for i=size + 1, MAX_CONTAINER_ITEMS, 1 do
@@ -1566,7 +1487,6 @@ function ToggleAllBags()
 			OpenBag(i);
 		end
 		ContainerFrame1.allBags = false;
-		CheckBagSettingsTutorial();
 
 		EventRegistry:TriggerEvent("ContainerFrame.AllBagsOpened");
 	elseif( BankFrame:IsShown() ) then
@@ -1588,7 +1508,6 @@ function ToggleAllBags()
 				OpenBag(i);
 			end
 			ContainerFrame1.allBags = false;
-			CheckBagSettingsTutorial();
 		end
 	end
 end
@@ -1623,7 +1542,6 @@ function OpenAllBags(frame, forceUpdate)
 		OpenBag(i);
 	end
 	ContainerFrame1.allBags = false;
-	CheckBagSettingsTutorial();
 end
 
 function CloseAllBags(frame, forceUpdate)

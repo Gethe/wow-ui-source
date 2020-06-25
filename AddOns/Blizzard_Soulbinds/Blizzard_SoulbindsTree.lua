@@ -84,13 +84,25 @@ function SoulbindTreeMixin:OnNodeChanged(nodeID)
 	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
 end
 
+function SoulbindTreeMixin:LearnNodeByButton(button)
+	if button:IsSelectable() then
+		C_Soulbinds.LearnNode(button:GetID());
+	end
+end
+
 function SoulbindTreeMixin:OnNodeClicked(button, buttonID)
 	if not self:IsEditable() then
 		return;
 	end
 
-	if button:IsSelectable() then
-		C_Soulbinds.LearnNode(button:GetID());
+	local linked = false;
+	if IsModifiedClick("CHATLINK") then
+		local link = GetSpellLink(button:GetSpellID());
+		linked = HandleModifiedItemClick(link);
+	end
+
+	if not linked then
+		self:LearnNodeByButton(button);
 	end
 end
 
@@ -100,11 +112,21 @@ function SoulbindTreeMixin:OnConduitClicked(button, buttonID)
 	end
 
 	if Soulbinds.HasConduitAtCursor() then
-		if button:IsOwned() then
+		if not button:IsUnavailable() then
 			self:TryInstallConduitAtCursor(button);
 		end
 	else
-		self:OnNodeClicked(button, buttonID);
+		local linked = false;
+		if button:IsInstalled() and IsModifiedClick("CHATLINK") then
+			local conduitID = button:GetConduitID();
+			local conduitRank = button:GetRank();
+			local link = C_Soulbinds.GetConduitHyperlink(conduitID, conduitRank);
+			linked = HandleModifiedItemClick(link);
+		end
+
+		if not linked then
+			self:LearnNodeByButton(button);
+		end
 	end
 end
 
@@ -113,7 +135,7 @@ function SoulbindTreeMixin:OnConduitReceiveDrag(button)
 		return;
 	end
 
-	if button:IsOwned() then
+	if not button:IsUnavailable() then
 		self:TryInstallConduitAtCursor(button);
 	end
 end
@@ -144,7 +166,7 @@ function SoulbindTreeMixin:StopThenApplyTargetedConduitAnimation(conduitType)
 	end
 
 	for _, nodeFrame in pairs(self.nodeFrames) do
-		if nodeFrame:IsOwned() and nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) then
+		if nodeFrame:IsSelected() and nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) then
 			nodeFrame:SetInstallOverlayPlaying(true);
 		end
 	end
@@ -183,13 +205,13 @@ function SoulbindTreeMixin:OnCursorStateChanged()
 		self.handleCursor = true;
 
 		if self:IsEditable() then
-		self:StopNodeAnimations();
+			self:StopNodeAnimations();
 
-		for _, nodeFrame in pairs(self.nodeFrames) do
-			if nodeFrame:IsOwned() and nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) then
-				nodeFrame:SetInstallOverlayShown(true);
+			for _, nodeFrame in pairs(self.nodeFrames) do
+				if nodeFrame:IsSelected() and nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) then
+					nodeFrame:SetInstallOverlayShown(true);
+				end
 			end
-		end
 		end
 
 	elseif self.handleCursor then
@@ -251,24 +273,25 @@ function SoulbindTreeMixin:StopThenApplyNodeAnimations()
 		for _, nodeFrame in pairs(self.nodeFrames) do
 			nodeFrame:SetActivationOverlayShown(false);
 			
-			if nodeFrame:IsOwned() and nodeFrame:IsConduit() and not nodeFrame:IsInstalled() then
+			if nodeFrame:IsSelected() and nodeFrame:IsConduit() and not nodeFrame:IsInstalled() then
 				nodeFrame:SetInstallOverlayPlaying(true);
 			end
 		end	
 	end
 end
 
-function SoulbindTreeMixin:OnConduitInstalled(nodeID, conduitID)
+function SoulbindTreeMixin:OnConduitInstalled(nodeID, conduitData)
 	local conduitFrame = self.nodeFrames[nodeID];
 	if conduitFrame then
-		conduitFrame:SetConduitID(conduitID);
+		local conduit = SoulbindConduitMixin_Create(conduitData.conduitID, conduitData.conduitRank);
+		conduitFrame:SetConduit(conduit);
 	end
 end
 
 function SoulbindTreeMixin:OnConduitUninstalled(nodeID)
 	local conduitFrame = self.nodeFrames[nodeID];
 	if conduitFrame then
-		conduitFrame:SetConduitID(0);
+		conduitFrame:SetConduit(nil);
 	end
 end
 
@@ -296,16 +319,6 @@ function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, itemLocation)
 	end;
 
 	item:ContinueOnItemLoad(itemCallback);
-end
-
-function SoulbindTreeMixin:UninstallConduits()
-	C_Soulbinds.UninstallConduits();
-	
-	for _, nodeFrame in pairs(self.nodeFrames) do
-		if nodeFrame:IsConduit() then
-			nodeFrame:SetConduitID(0);
-		end
-	end
 end
 
 function SoulbindTreeMixin:Init(soulbindData)

@@ -63,15 +63,6 @@ function PaladinPowerBar:ToggleHolyRune(self, visible)
 	end
 end
 
-function PaladinPowerBar_OnUpdate(self, elapsed)
-	self.delayedUpdate = self.delayedUpdate - elapsed;
-	if ( self.delayedUpdate <= 0 ) then
-		self.delayedUpdate = nil;
-		self:SetScript("OnUpdate", nil);
-		self:UpdatePower();
-	end
-end
-
 function PaladinPowerBar:UpdatePower()
 	if ( self.delayedUpdate ) then
 		return;
@@ -79,17 +70,6 @@ function PaladinPowerBar:UpdatePower()
 
 	local numHolyPower = UnitPower( self:GetParent().unit, Enum.PowerType.HolyPower );
 	local maxHolyPower = UnitPowerMax( self:GetParent().unit, Enum.PowerType.HolyPower );
-
-	-- a little hacky but we want to signify that the bank is being used to replenish holy power
-	if ( self.lastPower and self.lastPower > HOLY_POWER_FULL and numHolyPower == self.lastPower - HOLY_POWER_FULL ) then
-		for i = 1, HOLY_POWER_FULL do
-			self:ToggleHolyRune(self["rune"..i], true);
-		end
-		self.lastPower = nil;
-		self.delayedUpdate = 0.5;
-		self:SetScript("OnUpdate", PaladinPowerBar_OnUpdate);
-		return;
-	end
 
 	for i=1,maxHolyPower do
 		local holyRune = self["rune"..i];

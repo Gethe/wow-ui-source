@@ -2067,6 +2067,9 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		ChatEdit_FocusActiveWindow();
 		self.editBox:SetText("");
 		MerchantFrame_ResetRefundItem();
+		if GameTooltip:GetOwner() == self then
+			GameTooltip:Hide();
+		end
 	end,
 	OnHyperlinkEnter = function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
 		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");

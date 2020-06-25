@@ -1106,18 +1106,24 @@ function FriendsFrame_CheckQuickJoinHelpTip()
 	local hasEnoughGroups = #C_SocialQueue.GetAllGroups(false) > 1;
 	local hasClosedTutorial = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN);
 	if ( not hasClosedTutorial and hasEnoughGroups ) then
-		FriendsFrame.FriendsFrameQuickJoinHelpTip:Show();
-	else
-		FriendsFrame.FriendsFrameQuickJoinHelpTip:Hide();
+		local helpTipInfo = {
+			text = SOCIAL_QUICK_JOIN_TAB_HELP_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -13,
+		};
+		HelpTip:Show(FriendsFrame, helpTipInfo, FriendsFrameTab4);
 	end
 end
 
 function FriendsFrame_CloseQuickJoinHelpTip()
 	-- Don't mark it as closed until you've actually seen it.
-	if ( FriendsFrame.FriendsFrameQuickJoinHelpTip:IsShown() or #C_SocialQueue.GetAllGroups(false) > 1 ) then
+	if ( HelpTip:IsShowing(FriendsFrame, SOCIAL_QUICK_JOIN_TAB_HELP_TIP) or #C_SocialQueue.GetAllGroups(false) > 1 ) then
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN, true);
 	end
-	FriendsFrame.FriendsFrameQuickJoinHelpTip:Hide();
+	HelpTip:Hide(FriendsFrame, SOCIAL_QUICK_JOIN_TAB_HELP_TIP);
 end
 
 function OpenFriendsFrame(tab)

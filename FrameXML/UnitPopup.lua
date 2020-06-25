@@ -351,6 +351,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	dropdownMenu.name = name;
 	dropdownMenu.userData = userData;
 	dropdownMenu.server = server;
+	dropdownMenu.accountInfo = nil;
 	dropdownMenu.accountInfo = UnitPopup_GetBNetAccountInfo(dropdownMenu);
 	dropdownMenu.isMobile = UnitPopup_GetIsMobile(dropdownMenu);
 

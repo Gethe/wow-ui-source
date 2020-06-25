@@ -185,14 +185,11 @@ function CovenantMission:ShowMission(missionInfo)
 	missionPage.missionInfo = missionInfo;
 
 	self:SetTitle(missionInfo.name);
-
-	self:SetMissionIcon(missionInfo.typeAtlas, missionInfo.isRare);
 	
 	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
 	missionPage.environment = missionDeploymentInfo.environment;
-
 	self:SetEnvironmentTexture(missionDeploymentInfo.environmentTexture);
-
+	missionPage.EncounterIcon:SetEncounterInfo(missionInfo.encounterIconInfo);
 	local enemies = missionDeploymentInfo.enemies;
 	self:SetEnemies(missionPage, enemies);
 
@@ -442,6 +439,10 @@ function CovenantMission:GetNumMissionFollowers()
 	end
 
 	return numFollowers;
+end
+
+function CovenantMission:GetStartMissionButtonFrame(missionPage)
+	return missionPage.StartMissionFrame.ButtonFrame;
 end
 
 ---------------------------------------------------------------------------------

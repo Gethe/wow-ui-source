@@ -191,29 +191,6 @@ function SpellBookFrame_OnShow(self)
 
 	SpellBookFrame_PlayOpenSound();
 	MicroButtonPulseStop(SpellbookMicroButton);
-
-	-- if boosted, find the first locked spell and display a tip next to it
-	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
-		local spellSlot;
-		for i = 1, SPELLS_PER_PAGE do
-			local spellBtn = _G["SpellButton" .. i];
-			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
-			if (slotType == "FUTURESPELL") then
-				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
-					spellSlot = spellBtn;
-				end
-			end
-		end
-
-		if ( spellSlot ) then
-			SpellLockedTooltip:Show();
-			SpellLockedTooltip:SetPoint("LEFT", spellSlot, "RIGHT", 16, 0);
-		else
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true);
-		end
-	else
-		SpellLockedTooltip:Hide();
-	end
 end
 
 function SpellBookFrame_Update()
@@ -295,6 +272,33 @@ function SpellBookFrame_Update()
 	local tabUpdate = SpellBookInfo[SpellBookFrame.bookType].updateFunc;
 	if(tabUpdate) then
 		tabUpdate()
+	end
+
+	-- if boosted, find the first locked spell and display a tip next to it
+	HelpTip:Hide(SpellBookFrame, BOOSTED_CHAR_LOCKED_SPELL_TIP);
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
+		local spellSlot;
+		for i = 1, SPELLS_PER_PAGE do
+			local spellBtn = _G["SpellButton" .. i];
+			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
+			if (slotType == "FUTURESPELL") then
+				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
+					spellSlot = spellBtn;
+				end
+			end
+		end
+
+		if ( spellSlot ) then
+			local helpTipInfo = {
+				text = BOOSTED_CHAR_LOCKED_SPELL_TIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -6,
+			};
+			HelpTip:Show(SpellBookFrame, helpTipInfo, spellSlot);
+		end
 	end
 end
 
@@ -447,8 +451,6 @@ function SpellBookFrame_OnHide(self)
 
 	-- Hide multibar slots
 	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
-
-	SpellLockedTooltip:Hide();
 
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();

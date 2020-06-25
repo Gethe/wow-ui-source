@@ -140,6 +140,10 @@ function ScrollListMixin:GetSelectedListIndex()
 	return self.selectedListIndex;
 end
 
+function ScrollListMixin:GetLine(index)
+	return self.ScrollFrame.buttons[index];
+end
+
 function ScrollListMixin:Reset()
 	if self.isInitialized then
 		self.ScrollFrame.scrollBar:SetValue(0);

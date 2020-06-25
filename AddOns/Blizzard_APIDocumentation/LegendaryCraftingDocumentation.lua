@@ -35,7 +35,7 @@ local LegendaryCrafting =
 			},
 		},
 		{
-			Name = "GetItemLevelTiers",
+			Name = "GetRuneforgeLegendaryCost",
 			Type = "Function",
 
 			Arguments =
@@ -45,7 +45,7 @@ local LegendaryCrafting =
 
 			Returns =
 			{
-				{ Name = "tiers", Type = "table", InnerType = "ItemLevelTier", Nilable = false },
+				{ Name = "cost", Type = "table", InnerType = "CurrencyCost", Nilable = false },
 			},
 		},
 		{
@@ -65,7 +65,6 @@ local LegendaryCrafting =
 			{
 				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = true },
-				{ Name = "itemLevelTierIndex", Type = "number", Nilable = true },
 				{ Name = "addedModifierIndex", Type = "number", Nilable = false },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
 			},
@@ -140,7 +139,6 @@ local LegendaryCrafting =
 			{
 				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "runeforgePowerID", Type = "number", Nilable = false },
-				{ Name = "itemLevelTierIndex", Type = "number", Nilable = false },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
 			},
 

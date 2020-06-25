@@ -176,6 +176,7 @@ function OptionalReagentListMixin:OnHide()
 
 	local tradeSkillUI = self:GetTradeSkillUI();
 	tradeSkillUI:UnregisterCallback(TradeSkillUIMixin.Event.OptionalReagentUpdated, self);
+	tradeSkillUI:TriggerEvent(TradeSkillUIMixin.Event.OptionalReagentListClosed);
 	SetUIPanelAttribute(tradeSkillUI, "width", tradeSkillUI:GetWidth());
 	UpdateUIPanelPositions(tradeSkillUI);
 
@@ -249,6 +250,10 @@ function OptionalReagentListMixin:OpenSelection(selectedRecipeID, optionalReagen
 	self.selectedCallback = selectedCallback;
 
 	self:RefreshListedItems();
+end
+
+function OptionalReagentListMixin:GetOptionalReagentIndex()
+	return self.optionalReagentIndex;
 end
 
 function OptionalReagentListMixin:ClearSelection()
@@ -333,6 +338,17 @@ end
 
 function OptionalReagentListMixin:IsHidingUnowned()
 	return self.HideUnownedButton:GetChecked();
+end
+
+function OptionalReagentListMixin:GetTutorialLine()
+	for i = 1, #self.options do
+		local option = self.options[i];
+		if ItemUtil.GetOptionalReagentCount(option) > 0 then
+			return self.ScrollList:GetLine(i);
+		end
+	end
+
+	return self.ScrollList:GetLine(1);
 end
 
 

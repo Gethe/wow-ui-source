@@ -61,7 +61,6 @@
 			<Anchor point="CENTER" x="-10" y="0"/>
 		</Anchors>
 		<Frames>
-			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
 			<Frame parentKey="BorderFrame" frameLevel="510">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-6" y="6"/>

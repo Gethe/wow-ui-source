@@ -700,6 +700,24 @@ function WardrobeTransmogButton_SetStatusBorder(self, status)
 	end
 end
 
+ClearAllPendingButtonMixin = {};
+
+function ClearAllPendingButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
+	for index, button in ipairs(WardrobeTransmogFrame.ModelScene.SlotButtons) do
+		C_Transmog.ClearPending(button.transmogLocation);
+	end
+end
+
+function ClearAllPendingButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(TRANSMOGRIFY_CLEAR_ALL_PENDING);
+end
+
+function ClearAllPendingButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
 -- ************************************************************************************************************************************************************
 -- **** COLLECTION ********************************************************************************************************************************************
 -- ************************************************************************************************************************************************************

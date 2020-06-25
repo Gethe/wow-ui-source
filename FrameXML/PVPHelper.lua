@@ -186,13 +186,7 @@ function PVPRoleCheckPopup_UpdateAvailableRoles(tankButton, healButton, dpsButto
 end
 
 function PVPRoleCheckPopup_UpdateRolesChangeable(self)
-	if ( PVPHelper_CanChangeRoles() ) then
-		PVPRoleCheckPopup_UpdateAvailableRoles(self.TankIcon, self.HealerIcon, self.DPSIcon);
-	else
-		LFG_DisableRoleButton(self.TankIcon);
-		LFG_DisableRoleButton(self.HealerIcon);
-		LFG_DisableRoleButton(self.DPSIcon);
-	end
+	PVPRoleCheckPopup_UpdateAvailableRoles(self.TankIcon, self.HealerIcon, self.DPSIcon);
 end
 
 function PVPRoleCheckPopup_UpdateSelectedRoles(self)
@@ -354,15 +348,6 @@ end
 -------------------------------------------------------------------------
 ---- PVP Helper Functions
 ---------------------------------------------------------------------------
-function PVPHelper_CanChangeRoles()
-	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
-		if ( status ~= "none" and status ~= "active" and PVPHelper_QueueNeedsRoles(queueType, registeredMatch) ) then
-			return false;
-		end
-	end
-	return true;
-end
 
 function PVPHelper_QueueNeedsRoles(queueType, isRated)
 	return queueType == "BATTLEGROUND" and not isRated;

@@ -1058,7 +1058,7 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 			if ( classification == "elite" or classification == "worldboss" ) then
 				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
 				frame.classificationIndicator:Show();
-			elseif ( classification == "rareelite" ) then
+			elseif ( classification == "rareelite" or classification == "rare" ) then
 				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
 				frame.classificationIndicator:Show();
 			else

@@ -105,6 +105,7 @@ UIParent.xml
 PartyUtil.lua
 QuestUtils.lua
 AchievementUtil.lua
+AchievementDisplayFrame.xml
 MapUtil.lua
 AzeriteUtil.lua
 AzeriteEssenceUtil.lua
@@ -255,6 +256,7 @@ PetitionFrame.xml
 HelpFrame.xml
 ColorPickerFrame.xml
 GossipFrame.xml
+CustomGossipFrameBase.xml
 MailFrame.xml
 PetStable.xml
 VehicleSeatIndicator.xml
@@ -318,6 +320,7 @@ SplashFrame.xml
 AzeriteEmpoweredItemDataSource.lua
 GuildUtil.lua
 QuestSession.xml
+ActionStatus.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

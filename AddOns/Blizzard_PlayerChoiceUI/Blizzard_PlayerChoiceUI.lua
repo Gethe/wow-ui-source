@@ -706,7 +706,7 @@ function PlayerChoiceFrameMixin:Update()
 			local optionInfo = self.optionData[i];
 
 			option.rarity = optionInfo.rarity;
-			if(option.rarity) then 
+			if(option.rarity and self.uiTextureKit and self.uiTextureKit == "jailerstower") then 
 				optionInfo.description = option:SetupRarityDescription(optionInfo.description); 
 			end 
 			option.hasDesaturatedArt = optionInfo.desaturatedArt;

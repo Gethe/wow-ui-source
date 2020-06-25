@@ -346,6 +346,9 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.hideHealthbar = showOnlyNames;
 	DefaultCompactNamePlateFrameSetUpOptions.hideCastbar = showOnlyNames;
 
+	local personalNamePlateClickThrough = GetCVarBool("NameplatePersonalClickThrough");
+	C_NamePlate.SetNamePlateSelfClickThrough(personalNamePlateClickThrough);
+
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
 	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));

@@ -864,6 +864,20 @@ function Class_QueueSystem:QueueSpellTutorial(spellID, warningString, spellMicro
 	self:CheckQueue();
 end
 
+function Class_QueueSystem:QueueMountTutorial()
+	local value = {};
+	value.type = "MOUNT_TUTORIAL";
+	self.tutorialQueue:Push(value);
+	self:CheckQueue();
+end
+
+function Class_QueueSystem:QueueSpecTutorial()
+	local value = {};
+	value.type = "SPEC_TUTORIAL";
+	self.tutorialQueue:Push(value);
+	self:CheckQueue();
+end
+
 function Class_QueueSystem:TutorialFinished()
 	self.inProgress = false;
 	self:CheckQueue();
@@ -898,6 +912,12 @@ function Class_QueueSystem:CheckQueue()
 			end
 		elseif value.type == "UNIT_INVENTORY_CHANGED" then
 			self.inProgress = Tutorials.EquipFirstItemWatcher:CheckForUpgrades();
+		elseif value.type == "MOUNT_TUTORIAL" then
+			self.inProgress = true;
+			Tutorials.MountAddedWatcher:StartTutorial();
+		elseif value.type == "SPEC_TUTORIAL" then
+			self.inProgress = true;
+			Tutorials.SpecTutorial:StartTutorial();
 		end
 	end
 end
@@ -3135,6 +3155,10 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_MountAddedWatcher = class("MountAddedWatcher", Class_TutorialBase);
 function Class_MountAddedWatcher:OnBegin()
+	Tutorials.QueueSystem:QueueMountTutorial();
+end
+
+function Class_MountAddedWatcher:StartTutorial()
 	local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
 	self.mountID = mountData.mountID;
 	local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(self.mountID);
@@ -3205,7 +3229,10 @@ end
 
 
 Class_MountTutorial = class("MountTutorial", Class_TutorialBase);
-function Class_MountTutorial:OnBegin(mountID)
+function Class_MountTutorial:OnBegin(mountID)	
+	--EventRegistry:RegisterCallback("MountJournal.OnShow", self.MountJournalShow, self);
+	EventRegistry:RegisterCallback("MountJournal.OnHide", self.MountJournalHide, self);
+
 	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	self.mountID = mountID;
 
@@ -3214,19 +3241,22 @@ function Class_MountTutorial:OnBegin(mountID)
 		return;
 	end
 
+	C_Timer.After(0.1, function()
+		self:MountJournalShow();
+	end);
+end
+
+function Class_MountTutorial:MountJournalShow()
 	self.originButton = MountJournal_GetMountButtonByMountID(self.mountID);
 	self.destButton = TutorialHelper:FindEmptyButton();
 	if(self.originButton and self.destButton) then
 		NPE_TutorialDragButton:Show(self.originButton, self.destButton);
 	end
-
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", button or MountJournal, 0, 10, nil, "LEFT");
+end
 
-	C_Timer.After(1, function()
-		Dispatcher:RegisterFunction("ToggleCollectionsJournal", function()
-			self:Complete()
-		end, true);
-	end);
+function Class_MountTutorial:MountJournalHide()
+	self:Complete();
 end
 
 function Class_MountTutorial:ACTIONBAR_SLOT_CHANGED(slot)
@@ -3251,6 +3281,7 @@ function Class_MountTutorial:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	NPE_TutorialDragButton:Hide();
 	self:HidePointerTutorials();
+	Tutorials.QueueSystem:TutorialFinished();
 end
 
 
@@ -3259,6 +3290,18 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_SpecTutorial = class("SpecTutorial", Class_TutorialBase);
 function Class_SpecTutorial:OnBegin()
+	Tutorials.QueueSystem:QueueSpecTutorial();
+end
+
+function Class_SpecTutorial:StartTutorial()
+	local tutorialData = TutorialHelper:GetFactionData();
+	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+	if C_QuestLog.IsQuestFlaggedCompleted(specQuestID) then 
+		self:Complete();
+		return;
+	end
+
+	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
 	Dispatcher:RegisterEvent("GOSSIP_SHOW", self);
 	ActionButton_ShowOverlayGlow(TalentMicroButton);
 	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
@@ -3266,6 +3309,15 @@ function Class_SpecTutorial:OnBegin()
 	self.functionID = Dispatcher:RegisterFunction("ToggleTalentFrame", function()
 		self:TutorialToggleTalentFrame();
 		end, false);
+end
+
+function Class_SpecTutorial:QUEST_REMOVED(questIDRemoved)
+	local tutorialData = TutorialHelper:GetFactionData();
+	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+
+	if specQuestID == questIDRemoved then
+		self:Complete();
+	end
 end
 
 function Class_SpecTutorial:GOSSIP_SHOW()
@@ -3308,5 +3360,7 @@ function Class_SpecTutorial:PLAYER_SPECIALIZATION_CHANGED()
 end
 
 function Class_SpecTutorial:OnComplete()
+	ActionButton_HideOverlayGlow(TalentMicroButton);
 	self:HidePointerTutorials();
+	Tutorials.QueueSystem:TutorialFinished();
 end

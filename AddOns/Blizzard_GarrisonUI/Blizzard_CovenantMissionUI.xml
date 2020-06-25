@@ -206,14 +206,6 @@
 					<Color r="0" g="0" b="0" a="0.55"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat">
-					<Size x="50" y="50"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-10"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true" tile="true">
 					<Anchors>
@@ -246,6 +238,11 @@
 					<Anchor point="TOPRIGHT" x="4" y="6"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="EncounterIcon" inherits="SmallCovenantMissionEncounterIconTemplate" frameLevel="900">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="48" y="-16"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Stage" inherits="CovenantMissionPageStageTemplate"/>
 			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
 				<Anchors>
@@ -299,7 +296,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CovenantMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, CovenantMission" frameLevel="1">
+	<Frame name="CovenantMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, CovenantMission" frameLevel="1" parent="UIParent" topLevel="true">
 		<Size x="962" y="662"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

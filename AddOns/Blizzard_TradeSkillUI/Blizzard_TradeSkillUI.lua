@@ -15,6 +15,7 @@ TradeSkillUIMixin = CreateFromMixins(CallbackRegistryMixin);
 TradeSkillUIMixin:GenerateCallbackEvents(
 {
 	"OptionalReagentUpdated",
+	"OptionalReagentListClosed",
 });
 
 function TradeSkillUIMixin:OnLoad()
@@ -470,12 +471,24 @@ end
 
 function TradeSkillUIMixin:OpenOptionalReagentSelection(selectedRecipeID, optionalReagentIndex)
 	local function ReagentSelectedCallback(option)
-		self:CloseOptionalReagentSelection();
 		self.DetailsFrame:SetOptionalReagent(optionalReagentIndex, option);
+		self:CloseOptionalReagentSelection();
 	end
 
 	self.OptionalReagentList:OpenSelection(selectedRecipeID, optionalReagentIndex, ReagentSelectedCallback);
 	self.OptionalReagentList:Show();
+end
+
+function TradeSkillUIMixin:IsOptionalReagentListShown()
+	return self.OptionalReagentList:IsShown();
+end
+
+function TradeSkillUIMixin:GetOptionalReagentListTutorialLine()
+	return self.OptionalReagentList:GetTutorialLine();
+end
+
+function TradeSkillUIMixin:GetSelectedOptionalReagentIndex()
+	return self:IsOptionalReagentListShown() and self.OptionalReagentList:GetOptionalReagentIndex() or nil;
 end
 
 function TradeSkillUIMixin:CloseOptionalReagentSelection(selectedRecipeID, optionalReagentIndex)

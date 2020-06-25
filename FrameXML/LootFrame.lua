@@ -827,7 +827,15 @@ end
 function EncounterJournalLinkButton_OnShow(self)
 	local tutorialClosed = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK);
 	if not tutorialClosed and EncounterJournalLinkButton_IsLinkDataAvailable() then
-		self:GetParent().EncounterJournalLinkButtonHelp:Show();
+		local helpTipInfo = {
+			text = ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			offsetY = -14,
+		};
+		HelpTip:Show(self:GetParent(), helpTipInfo);
 	end
 end
 
@@ -850,7 +858,7 @@ function OpenBonusRollEncounterJournalLink()
 	end
 
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true);
-	BonusRollFrame.PromptFrame.EncounterJournalLinkButtonHelp:Hide();
+	HelpTip:HideAll(BonusRollFrame.PromptFrame);
 
 	EncounterJournal_LoadUI();
 

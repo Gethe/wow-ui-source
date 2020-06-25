@@ -375,10 +375,12 @@ function MountJournal_OnShow(self)
 	local hasPendingItem = MountJournal_HasPendingMountEquipment(self);
 	self.SlotButton:SetPendingApply(hasPendingItem);
 	self.SlotButton.NewAlert:ValidateIsShown();
+	EventRegistry:TriggerEvent("MountJournal.OnShow");
 end
 
 function MountJournal_OnHide(self)
 	C_MountJournal.ClearRecentFanfares();
+	EventRegistry:TriggerEvent("MountJournal.OnHide");
 end
 
 function MountJournal_UpdateMountList()

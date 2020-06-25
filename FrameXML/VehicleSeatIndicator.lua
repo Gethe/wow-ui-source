@@ -47,7 +47,7 @@ function VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID)
 	end
 	
 	VehicleSeatIndicator:Show();
-	DurabilityFrame_SetAlerts();
+	DurabilityFrame:SetAlerts();
 	VehicleSeatIndicator_Update();
 	
 	UIParent_ManageFramePositions();
@@ -57,7 +57,7 @@ function VehicleSeatIndicator_UnloadTextures()
 	VehicleSeatIndicatorBackgroundTexture:SetTexture(nil);
 	VehicleSeatIndicator:Hide()
 	VehicleSeatIndicator.currSkin = nil;
-	DurabilityFrame_SetAlerts();
+	DurabilityFrame:SetAlerts();
 	
 	UIParent_ManageFramePositions();
 end

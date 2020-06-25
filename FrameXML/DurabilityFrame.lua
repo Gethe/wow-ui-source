@@ -15,10 +15,44 @@ INVENTORY_ALERT_COLORS = {};
 INVENTORY_ALERT_COLORS[1] = {r = 1, g = 0.82, b = 0.18};
 INVENTORY_ALERT_COLORS[2] = {r = 0.93, g = 0.07, b = 0.07};
 
-function DurabilityFrame_SetAlerts()
+DurabilityFrameMixin = {};
+
+function DurabilityFrameMixin:OnLoad()
+	self:SetFrameLevel(self:GetFrameLevel() - 1);
+	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function DurabilityFrameMixin:OnEvent()
+	self:SetAlerts();
+	UIParent_ManageFramePositions();
+end
+
+function DurabilityFrameMixin:OnEnter()
+	if ( self.anyItemBroken or self.anyItemBreaking ) then
+		local wrap = true;
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip_SetTitle(GameTooltip, REPAIR_ARMOR_TOOLTIP_TITLE, WHITE_FONT_COLOR, wrap);
+		if ( self.anyItemBroken ) then
+			GameTooltip_AddNormalLine(GameTooltip, REPAIR_ARMOR_TOOLTIP_BROKEN, wrap);
+		else
+			GameTooltip_AddNormalLine(GameTooltip, REPAIR_ARMOR_TOOLTIP_BREAKING, wrap);
+		end
+		GameTooltip:Show();
+	end
+end
+
+function DurabilityFrameMixin:OnLeave()
+	if ( GameTooltip:GetOwner() == self ) then
+		GameTooltip_Hide();
+	end
+end
+
+function DurabilityFrameMixin:SetAlerts()
 	local numAlerts = 0;
 	local texture, color, showDurability;
 	local hasLeft, hasRight;
+	self.anyItemBroken = false;
 	for index, value in pairs(INVENTORY_ALERT_STATUS_SLOTS) do
 		texture = _G["Durability"..value.slot];
 		if ( value.slot == "Shield" ) then
@@ -45,6 +79,9 @@ function DurabilityFrame_SetAlerts()
 				showDurability = 1;
 			end
 			numAlerts = numAlerts + 1;
+			if ( GetInventoryAlertStatus(index) == 2 ) then
+				self.anyItemBroken = true;
+			end
 		else
 			texture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 			if ( value.showSeparate ) then
@@ -52,6 +89,7 @@ function DurabilityFrame_SetAlerts()
 			end
 		end
 	end
+	self.anyItemBreaking = numAlerts > 0;
 	for index, value in pairs(INVENTORY_ALERT_STATUS_SLOTS) do
 		if ( not value.showSeparate ) then
 			if ( showDurability ) then

@@ -63,6 +63,20 @@ local Item =
 			},
 		},
 		{
+			Name = "DoesItemMatchBonusTreeReplacement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesBonusTree", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentItemLevel",
 			Type = "Function",
 
@@ -256,20 +270,6 @@ local Item =
 			Returns =
 			{
 				{ Name = "isBound", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsItemCorruptable",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isCorruptable", Type = "bool", Nilable = false },
 			},
 		},
 		{

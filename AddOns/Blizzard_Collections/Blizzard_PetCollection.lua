@@ -856,7 +856,7 @@ function PetJournal_UpdatePetList()
 				else
 					-- Only display the unusable texture if you'll never be able to summon this pet.
 					local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
-					local neverUsable = error == Enum.PetJournalError.InvalidFaction;
+					local neverUsable = error == Enum.PetJournalError.InvalidFaction or error == Enum.PetJournalError.InvalidCovenant;
 					pet.iconBorder:SetShown(not neverUsable);
 					CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
 				end

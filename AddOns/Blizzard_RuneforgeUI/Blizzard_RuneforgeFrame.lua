@@ -7,7 +7,6 @@ RuneforgeFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 RuneforgeFrameMixin:GenerateCallbackEvents(
 {
 	"BaseItemChanged",
-	"ItemLevelTierChanged",
 	"PowerSelected",
 	"ModifiersChanged",
 });
@@ -82,18 +81,17 @@ function RuneforgeFrameMixin:GetLegendaryCraftInfo()
 	if itemLocation then
 		local powerID = self.PowerSlot:GetPowerID();
 		local modifiers = self.ModifierFrame:GetModifiers();
-		local itemLevelTierIndex = self.ItemLevelSelector:GetItemLevelTierIndex();
-		return itemLocation, powerID, modifiers, itemLevelTierIndex;
+		return itemLocation, powerID, modifiers;
 	end
 
 	return nil;
 end
 
 function RuneforgeFrameMixin:SetItemTooltip(tooltip)
-	local baseItem, powerID, modifiers, itemLevelTierIndex = self:GetLegendaryCraftInfo();
+	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
 	if baseItem then
 		local itemID = C_Item.GetItemID(baseItem);
-		tooltip:SetRuneforgeResultItem(itemID, powerID, modifiers, itemLevelTierIndex);
+		tooltip:SetRuneforgeResultItem(itemID, powerID, modifiers);
 	end
 end
 
@@ -122,15 +120,6 @@ function RuneforgeFrameMixin:TogglePowerList()
 	end
 end
 
-function RuneforgeFrameMixin:GetItemLevelTiers()
-	local item = self.BaseItemSlot:GetItem();
-	if not item then
-		return nil;
-	end
-
-	return C_LegendaryCrafting.GetItemLevelTiers(item);
-end
-
 function RuneforgeFrameMixin:GetModifierSelections()
 	local item = self.BaseItemSlot:GetItem();
 	if not item then
@@ -145,19 +134,15 @@ function RuneforgeFrameMixin:GetPowers()
 	return C_LegendaryCrafting.GetRuneforgePowers(item);
 end
 
-function RuneforgeFrameMixin:GetItemLevelTier()
-	return self.ItemLevelSelector:GetItemLevelTier();
-end
-
 function RuneforgeFrameMixin:GetCraftDescription()
 	local craftDescription = {};
 
-	local baseItem, powerID, modifiers, itemLevelTierIndex = self:GetLegendaryCraftInfo();
-	if not baseItem or not powerID or #modifiers ~= 2 or not itemLevelTierIndex then
+	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
+	if not baseItem or not powerID or #modifiers ~= 2 then
 		return nil;
 	end
 
-	return C_LegendaryCrafting.MakeRuneforgeCraftDescription(baseItem, powerID, itemLevelTierIndex, modifiers);
+	return C_LegendaryCrafting.MakeRuneforgeCraftDescription(baseItem, powerID, modifiers);
 end
 
 function RuneforgeFrameMixin:Close()

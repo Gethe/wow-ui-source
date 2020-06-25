@@ -69,12 +69,20 @@ WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE = 1;
 WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST = 2;
 WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES = 3;
 
+function WorldMapBountyBoardMixin:HideHelpTips()
+	HelpTip:Hide(self, BOUNTY_TUTORIAL_INTRO);
+	if self.firstCompletedTab then
+		HelpTip:Hide(self.firstCompletedTab, BOUNTY_TUTORIAL_BOUNTY_FINISHED);
+	end
+end
+
 function WorldMapBountyBoardMixin:Refresh()
 	assert(not self.isRefreshing);
 	self.isRefreshing = true;
 
+	self:HideHelpTips();
+
 	self.firstCompletedTab = nil;
-	self.TutorialBox:Hide();
 
 	self.bountyTabPool:ReleaseAll();
 	self.bountyObjectivePool:ReleaseAll();
@@ -486,63 +494,45 @@ end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()
 	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
-		if not self.TutorialBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_INTRO) then
-			self.TutorialBox.activeTutorial = LE_FRAME_TUTORIAL_BOUNTY_INTRO;
-
-			self.TutorialBox.Text:SetText(BOUNTY_TUTORIAL_INTRO);
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_INTRO) then
+			local helpTipInfo = {
+				text = BOUNTY_TUTORIAL_INTRO,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_BOUNTY_INTRO,
+				offsetY = -14,
+				system = "WorldMap",
+				systemPriority = 30,
+			};
 
 			local displayLocation = self:GetDisplayLocation();
 			if displayLocation == Enum.MapOverlayDisplayLocation.TopRight or displayLocation == Enum.MapOverlayDisplayLocation.BottomRight then
-				SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 270);
-				SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 270);
-
-				self.TutorialBox.Arrow:ClearAllPoints();
-				self.TutorialBox.Arrow:SetPoint("TOPLEFT", self.TutorialBox, "TOPRIGHT", -4, -15);
-
-				self.TutorialBox.Arrow.Glow:ClearAllPoints();
-				self.TutorialBox.Arrow.Glow:SetPoint("CENTER", self.TutorialBox.Arrow.Arrow, "CENTER", 2, 0);
-
-				self.TutorialBox:ClearAllPoints();
-				self.TutorialBox:SetPoint("RIGHT", self, "LEFT", 10, -15);
+				helpTipInfo.targetPoint = HelpTip.Point.LeftEdgeCenter;
+				helpTipInfo.offsetX = 31;
 			else
-				SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 90);
-				SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 90);
-
-				self.TutorialBox.Arrow:ClearAllPoints();
-				self.TutorialBox.Arrow:SetPoint("TOPLEFT", self.TutorialBox, "TOPLEFT", -17, -15);
-
-				self.TutorialBox.Arrow.Glow:ClearAllPoints();
-				self.TutorialBox.Arrow.Glow:SetPoint("CENTER", self.TutorialBox.Arrow.Arrow, "CENTER", -3, 0);
-
-				self.TutorialBox:ClearAllPoints();
-				self.TutorialBox:SetPoint("LEFT", self, "RIGHT", -10, -15);
+				helpTipInfo.targetPoint = HelpTip.Point.RightEdgeCenter;
+				helpTipInfo.offsetX = -31;
 			end
 
-			self.TutorialBox:Show();
+			HelpTip:Show(self, helpTipInfo);
 		end
 	end
 end
 
 function WorldMapBountyBoardMixin:TryShowingCompletionTutorial()
 	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE and self.firstCompletedTab then
-		if not self.TutorialBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_FINISHED) then
-			self.TutorialBox.activeTutorial = LE_FRAME_TUTORIAL_BOUNTY_FINISHED;
-
-			self.TutorialBox.Text:SetText(BOUNTY_TUTORIAL_BOUNTY_FINISHED);
-
-			SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 0);
-			SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 0);
-
-			self.TutorialBox.Arrow:ClearAllPoints();
-			self.TutorialBox.Arrow:SetPoint("TOP", self.TutorialBox, "BOTTOM", 0, 4);
-
-			self.TutorialBox.Arrow.Glow:ClearAllPoints();
-			self.TutorialBox.Arrow.Glow:SetPoint("TOP", self.TutorialBox.Arrow, "TOP", 0, 0);
-
-			self.TutorialBox:ClearAllPoints();
-			self.TutorialBox:SetPoint("BOTTOM", self.firstCompletedTab, "TOP", 0, 14);
-
-			self.TutorialBox:Show();
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_FINISHED) then
+			local helpTipInfo = {
+				text = BOUNTY_TUTORIAL_BOUNTY_FINISHED,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_BOUNTY_FINISHED,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				offsetY = -7,
+				system = "WorldMap",
+				systemPriority = 20,
+			};
+			HelpTip:Show(self.firstCompletedTab, helpTipInfo);
 		end
 	end
 end

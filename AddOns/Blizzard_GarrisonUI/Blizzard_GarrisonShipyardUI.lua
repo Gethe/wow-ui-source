@@ -1240,12 +1240,10 @@ function GarrisonShipyardMap_UpdateMissions()
 	end
 end
 
-function GarrisonMissionFrame_OnCloseShipyardTutorial(userAction)
-	if userAction then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		GarrisonMissionTutorialFrame:Hide();
-		GarrisonShipyardMap_CheckTutorials();
-	end
+function GarrisonMissionFrame_OnCloseShipyardTutorial()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	GarrisonMissionTutorialFrame:Hide();
+	GarrisonShipyardMap_CheckTutorials();
 end
 
 function GarrisonShipyardMap_ShowTutorial(missionFrame, text)
@@ -1261,7 +1259,7 @@ function GarrisonShipyardMap_ShowTutorial(missionFrame, text)
 		buttonStyle = HelpTip.ButtonStyle.Next,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		offsetY = -8,
-		onHideCallback = GarrisonMissionFrame_OnCloseShipyardTutorial,
+		onAcknowledgeCallback = GarrisonMissionFrame_OnCloseShipyardTutorial,
 	};
 	HelpTip:Show(tutorialFrame, helpTipInfo, missionFrame);
 end

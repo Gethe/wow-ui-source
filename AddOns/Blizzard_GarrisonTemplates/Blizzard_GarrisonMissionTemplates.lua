@@ -484,6 +484,10 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	missionPage.lastUpdate = GetTime();
 end
 
+function GarrisonMission:GetStartMissionButtonFrame(missionPage)
+	return missionPage.ButtonFrame;
+end
+
 function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned)
 	if ( owned < cost ) then
 		missionPage.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
@@ -493,17 +497,19 @@ function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned)
 		missionPage.CostFrame.Cost:SetText(BreakUpLargeNumbers(cost));
 	end
 
-	missionPage.CostFrame:SetPoint("LEFT", missionPage.ButtonFrame, "LEFT", 50, 0);
-	missionPage.CostFrame:SetPoint("RIGHT", missionPage.ButtonFrame, "CENTER");
+	local buttonFrame = self:GetStartMissionButtonFrame(missionPage);
+
+	missionPage.CostFrame:SetPoint("LEFT", buttonFrame, "LEFT", 50, 0);
+	missionPage.CostFrame:SetPoint("RIGHT", buttonFrame, "CENTER");
 
 	if (baseCost > 0) then
 		missionPage.CostFrame:Show();
 		missionPage.StartMissionButton:ClearAllPoints();
-		missionPage.StartMissionButton:SetPoint("RIGHT", missionPage.ButtonFrame, "RIGHT", -50, 1);
+		missionPage.StartMissionButton:SetPoint("RIGHT", buttonFrame, "RIGHT", -50, 1);
 	else
 		missionPage.CostFrame:Hide();
 		missionPage.StartMissionButton:ClearAllPoints();
-		missionPage.StartMissionButton:SetPoint("CENTER", missionPage.ButtonFrame, "CENTER", 0, 1);
+		missionPage.StartMissionButton:SetPoint("CENTER", buttonFrame, "CENTER", 0, 1);
 	end
 end
 

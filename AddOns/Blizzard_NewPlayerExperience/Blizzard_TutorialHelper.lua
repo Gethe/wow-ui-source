@@ -91,6 +91,9 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetItemContainerFrame(container, slot)
 	local frameIndex = (GetContainerNumSlots(container) + 1) - slot;
+	if (container == 0 and not IsAccountSecured()) then
+		frameIndex = frameIndex + 4;
+	end
 	return _G["ContainerFrame" .. (container + 1) .. "Item" .. frameIndex];
 end
 

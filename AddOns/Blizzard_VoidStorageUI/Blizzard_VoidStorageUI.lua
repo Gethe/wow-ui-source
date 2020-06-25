@@ -9,9 +9,9 @@ local VOID_STORAGE_MAX = 80;
 local VOID_STORAGE_PAGES = 2;
 
 local voidStorageTutorials = {
-	[1] = { text1 = VOID_STORAGE_TUTORIAL1, text2 = VOID_STORAGE_TUTORIAL2, yOffset = 340 },
-	[2] = { text1 = VOID_STORAGE_TUTORIAL3, yOffset = 180 },
-	[3] = { text1 = VOID_STORAGE_TUTORIAL4, text2 = VOID_STORAGE_TUTORIAL5, yOffset = 86 },
+	[1] = { text1 = VOID_STORAGE_TUTORIAL1, text2 = VOID_STORAGE_TUTORIAL2, region = "VoidStorageDepositButton5", offsetY = -22 },
+	[2] = { text1 = VOID_STORAGE_TUTORIAL3, region = "VoidStorageWithdrawButton5", offsetY = -22 },
+	[3] = { text1 = VOID_STORAGE_TUTORIAL4, text2 = VOID_STORAGE_TUTORIAL5, region = "VoidStorageTransferButton", offsetY = 0 },
 }
 
 function VoidStorageFrame_Show()
@@ -161,6 +161,7 @@ function VoidStorageFrame_UpdateTabs()
 end
 
 function VoidStorageFrame_Update()
+	HelpTip:HideAll(VoidStorageFrame);
 	if ( CanUseVoidStorage() ) then
 		local lastTutorial = tonumber(GetCVar("lastVoidStorageTutorial"));
 		if ( lastTutorial ) then
@@ -170,26 +171,27 @@ function VoidStorageFrame_Update()
 					VoidStorageBorderFrameMouseBlockFrame:Hide();
 					VoidStoragePurchaseFrame:Hide();
 					VoidStorageBorderFrame.Bg:Hide();
-					VoidStorageHelpBox:Hide();
 				end
 			else
 				local tutorial = voidStorageTutorials[lastTutorial + 1];
-				local height = 58;	-- button height + top and bottom padding + spacing between text and button
-				VoidStorageHelpBoxBigText:SetText(tutorial.text1);
-				height = height + VoidStorageHelpBoxBigText:GetHeight();
-				if ( tutorial.text2 ) then
-					VoidStorageHelpBoxSmallText:SetText(tutorial.text2);
-					height = height + 12 + VoidStorageHelpBoxSmallText:GetHeight();
-					VoidStorageHelpBoxSmallText:Show();
-				else
-					VoidStorageHelpBoxSmallText:Hide();
+				local text = tutorial.text1;
+				if tutorial.text2 then
+					text = text.."|n|n"..tutorial.text2;
 				end
-				VoidStorageHelpBox:SetHeight(height);
-				VoidStorageHelpBox:SetPoint("BOTTOMLEFT", 12, tutorial.yOffset);
-				VoidStorageHelpBoxButton.currentTutorial = lastTutorial + 1;
+
+				local helpTipInfo = {
+					text = text,
+					buttonStyle = HelpTip.ButtonStyle.Okay,
+					cvar = "lastVoidStorageTutorial",
+					cvarValue = lastTutorial + 1,
+					targetPoint = HelpTip.Point.TopEdgeCenter,
+					onAcknowledgeCallback = VoidStorageFrame_Update,
+					offsetY = tutorial.offsetY,
+				};
+				HelpTip:Show(VoidStorageFrame, helpTipInfo, _G[tutorial.region]);
+
 				VoidStorageFrame_SetUpBlockingFrame();
 				VoidStoragePurchaseFrame:Hide();
-				VoidStorageHelpBox:Show();
 			end
 		end
 		IsVoidStorageReady();

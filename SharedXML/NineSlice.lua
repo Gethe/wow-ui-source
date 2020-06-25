@@ -316,18 +316,6 @@ local layouts =
 		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 	},
 
-	Oribos =
-	{
-		TopLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerTopLeft", },
-		TopRightCorner =	{ atlas = "UI-Frame-Oribos-CornerTopRight", },
-		BottomLeftCorner =	{ atlas = "UI-Frame-Oribos-CornerBottomLeft", },
-		BottomRightCorner =	{ atlas = "UI-Frame-Oribos-CornerBottomRight", },
-		TopEdge = { atlas = "_UI-Frame-Oribos-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-Oribos-EdgeBottom", },
-		LeftEdge = { atlas = "!UI-Frame-Oribos-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-Oribos-EdgeRight", },
-	},
-
 	AdventuresMissionComplete =
 	{
 		TopLeftCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },

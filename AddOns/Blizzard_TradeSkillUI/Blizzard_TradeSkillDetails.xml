@@ -25,6 +25,16 @@
 	</Button>
 
 	<Button name="TradeSkillOptionalReagentTemplate" parentArray="OptionalReagents" inherits="OptionalReagentButtonTemplate" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnEnter>
 				self:GetParent():GetParent():OnOptionalReagentMouseEnter(self);
@@ -594,6 +604,7 @@
 			<OnLoad method="OnLoad" />
 			<OnUpdate method="OnUpdate" />
 			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 		</Scripts>
 	</ScrollFrame>

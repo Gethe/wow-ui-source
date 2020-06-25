@@ -269,6 +269,8 @@ AuctionHouseSellFrameMixin = CreateFromMixins(AuctionHouseSortOrderSystemMixin);
 
 local AUCTION_HOUSE_SELL_FRAME_EVENTS = {
 	"CURSOR_UPDATE",
+	"AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
+	"AUCTION_HOUSE_THROTTLED_MESSAGE_SENT",
 }
 
 function AuctionHouseSellFrameMixin:OnLoad()
@@ -327,6 +329,8 @@ function AuctionHouseSellFrameMixin:OnEvent(event, ...)
 		if self.Overlay:IsMouseOver() then
 			self:OnOverlayEnter();
 		end
+	elseif event == "AUCTION_HOUSE_THROTTLED_SYSTEM_READY" or event == "AUCTION_HOUSE_THROTTLED_MESSAGE_SENT" then
+		self:UpdatePostButtonState();
 	end
 end
 
@@ -485,6 +489,10 @@ function AuctionHouseSellFrameMixin:CanPostItem()
 	local quantity = self:GetQuantity();
 	if quantity < 1 then
 		return false, AUCTION_HOUSE_SELL_FRAME_ERROR_QUANTITY;
+	end
+
+	if not C_AuctionHouse.IsThrottledMessageSystemReady() then
+		return false, ERR_GENERIC_THROTTLE;
 	end
 
 	return true, nil;

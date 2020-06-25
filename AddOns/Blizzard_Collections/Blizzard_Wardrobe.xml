@@ -1755,7 +1755,7 @@
 									<Anchor point="TOP" x="0" y="-10"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true">
+							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true" mixin="ClearAllPendingButtonMixin">
 								<Size x="26" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-5" y="-10"/>
@@ -1771,15 +1771,9 @@
 								</Layers>
 								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
-										C_Transmog.ClearPending();
-									</OnClick>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(TRANSMOGRIFY_CLEAR_ALL_PENDING);
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
+									<OnClick method="OnClick" />
+									<OnEnter method="OnEnter" />
+									<OnLeave method="OnLeave"/>
 								</Scripts>
 							</Button>
 							<Button parentKey="HeadButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">

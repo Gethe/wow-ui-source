@@ -158,7 +158,7 @@ end
 
 function RuneforgeModifierSelectorFrameMixin:Open(button)
 	self:ClearAllPoints();
-	self:SetPoint("RIGHT", button, "LEFT");
+	self:SetPoint("LEFT", button, "RIGHT");
 	self.selectedButton = button;
 	self:GenerateSelections();
 end
@@ -258,9 +258,9 @@ function RuneforgeModifierFrameMixin:SetModifierTooltip(tooltip, slot, itemID)
 		table.insert(modifiers, otherItemID);
 	end
 
-	local baseItem, powerID, _, itemLevelTierIndex = self:GetRuneforgeFrame():GetLegendaryCraftInfo();
+	local baseItem, powerID = self:GetRuneforgeFrame():GetLegendaryCraftInfo();
 	local addedModifierIndex = 1;
-	local name, description = C_LegendaryCrafting.GetRuneforgeModifierInfo(baseItem, powerID, itemLevelTierIndex, addedModifierIndex, modifiers);
+	local name, description = C_LegendaryCrafting.GetRuneforgeModifierInfo(baseItem, powerID, addedModifierIndex, modifiers);
 
 	local wrap = true;
 	GameTooltip_SetTitle(tooltip, name, HIGHLIGHT_FONT_COLOR, wrap);

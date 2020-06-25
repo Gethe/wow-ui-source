@@ -35,21 +35,15 @@
 				</Anchors>
 			</Button>
 
-			<Button parentKey="ItemLevelSelector" inherits="RuneforgeItemLevelSelectorTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.BaseItemSlot" relativePoint="TOP" x="0" y="10"/>
-				</Anchors>
-			</Button>
-
 			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="70" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-120" y="0"/>
 				</Anchors>
 			</Frame>
 
 			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-70" y="-120"/>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="70" y="0"/>
 				</Anchors>
 			</Button>
 
@@ -67,7 +61,7 @@
 
 			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-20" y="-20"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-20"/>
 				</Anchors>
 			</Frame>
 		</Frames>

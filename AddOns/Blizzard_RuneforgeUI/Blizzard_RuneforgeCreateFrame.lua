@@ -3,12 +3,12 @@ RuneforgeCreateFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
 local RefreshEventNames = {
 	"BaseItemChanged",
-	"ItemLevelTierChanged",
 	"PowerSelected",
 	"ModifiersChanged",
 };
 
 function RuneforgeCreateFrameMixin:OnLoad()
+	self.Cost:SetTextAnchorPoint("CENTER");
 	self:UpdateCost();
 end
 
@@ -44,24 +44,14 @@ function RuneforgeCreateFrameMixin:Refresh()
 end
 
 function RuneforgeCreateFrameMixin:UpdateCost()
-	local currencies = {};
-	local currenciesSet = {};
+	local baseItem = self:GetRuneforgeFrame():GetItem();
+	local currenciesCost = baseItem and C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem) or nil;
+	local showCost = (currenciesCost ~= nil) and (#currenciesCost > 0);
+	self.Cost:SetShown(showCost);
 
-	local itemLevelTier = self:GetRuneforgeFrame():GetItemLevelTier();
-	if itemLevelTier then
-		for i, cost in ipairs(itemLevelTier.costs) do
-			table.insert(currencies, { cost.currencyID, cost.amount });
-			currenciesSet[cost.currencyID] = true;
-		end
+	if showCost then
+		self.Cost:SetCurrencies(currenciesCost, RUNEFORGE_LEGENDARY_COST_FORMAT);
 	end
-
-	for i, currencyID in ipairs(RuneforgeUtil.GetRuneforgeCurrencies()) do
-		if not currenciesSet[currencyID] then
-			table.insert(currencies, { currencyID, 0 });
-		end
-	end
-
-	self.Cost:SetCurrencies(currencies, RUNEFORGE_LEGENDARY_COST_FORMAT);
 end
 
 

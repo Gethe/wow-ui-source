@@ -26,15 +26,6 @@ local LegendaryCraftingTypes =
 				{ Name = "Invalid", Type = "RuneforgePowerState", EnumValue = 2 },
 			},
 		},
-		{
-			Name = "CurrencyCost",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "currencyID", Type = "number", Nilable = false },
-				{ Name = "amount", Type = "number", Nilable = false },
-			},
-		},
 	},
 };
 

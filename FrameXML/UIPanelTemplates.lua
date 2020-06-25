@@ -478,7 +478,11 @@ function CurrencyDisplayMixin:SetCurrencies(currencies, formatString)
 		end
 
 		if type(currency) == "table" then
-			text = text..GetCurrencyString(unpack(currency));
+			if currency.currencyID and currency.amount then
+				text = text..GetCurrencyString(currency.currencyID, currency.amount);
+			else
+				text = text..GetCurrencyString(unpack(currency));
+			end
 		else
 			text = text..GetCurrencyString(currency);
 		end
@@ -493,6 +497,11 @@ end
 
 function CurrencyDisplayMixin:SetText(text)
 	self.Text:SetText(text);
+end
+
+function CurrencyDisplayMixin:SetTextAnchorPoint(anchorPoint)
+	self.Text:ClearAllPoints();
+	self.Text:SetPoint(anchorPoint);
 end
 
 CurrencyDisplayGroupMixin = {};
