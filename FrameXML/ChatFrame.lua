@@ -2224,6 +2224,11 @@ if IsGMClient() then
 	end
 end
 
+SLASH_PERFREPORT1 = "/perfreport";
+SlashCmdList["PERFREPORT"] = function(msg) 
+	C_ChatInfo.ReportServerLag();
+end
+
 SlashCmdList["TABLEINSPECT"] = function(msg)
 	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
 		return;

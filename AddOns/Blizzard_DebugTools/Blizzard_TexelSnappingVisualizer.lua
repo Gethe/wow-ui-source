@@ -9,6 +9,8 @@ end
 TexelSnappingVisualizerMixin = {};
 
 function TexelSnappingVisualizerMixin:OnCreated()
+	self:Hide();
+
 	self:SetScript("OnShow", self.OnShow);
 	self:SetScript("OnMouseDown", self.StartMoving);
 	self:SetScript("OnMouseUp", self.StopMovingOrSizing);
