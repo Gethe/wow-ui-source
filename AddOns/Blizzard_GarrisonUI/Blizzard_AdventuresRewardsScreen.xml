@@ -105,25 +105,6 @@
 				</Layers>
 			</Frame>
 	
-			<Frame parentKey="TreasureChestFrame" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="5">
-						<Texture parentKey="TreasureChestBurst" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
-							<Size x="80" y="80"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="60"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="TreasureChestTexture" atlas="Adventures-Chest" useAtlasSize="true">
-							<Size x="240" y="240"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-	
 			<Frame parentKey="FinalRewardsPanel" setAllPoints= "true" hidden="true">
 				<Layers>
 					<Layer level="BORDER">

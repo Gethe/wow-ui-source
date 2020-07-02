@@ -89,7 +89,13 @@ function WeeklyRewardsMixin:GetActivityFrame(activityType, index)
 end
 
 function WeeklyRewardsMixin:Refresh()
-	self.SelectRewardButton:SetShown(C_WeeklyRewards.CanClaimRewards());
+	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
+	if canClaimRewards then
+		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_CHOOSE_REWARD);
+	else
+		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_ADD_ITEMS);
+	end
+	self.SelectRewardButton:SetShown(canClaimRewards);
 
 	local activities = C_WeeklyRewards.GetActivities();
 	for i, activityInfo in ipairs(activities) do
@@ -152,7 +158,9 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	end
 	self.Threshold:SetFormattedText(thresholdString, activityInfo.threshold);
 
-	self.unlocked = activityInfo.progress == activityInfo.threshold;
+	self.unlocked = activityInfo.progress >= activityInfo.threshold;
+
+	self:SetProgressText(activityInfo);
 
 	local useAtlasSize = true;
 	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
@@ -162,7 +170,6 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		self.Border:SetAtlas("weeklyrewards-frame-reward-unlocked", useAtlasSize);
 		self.Threshold:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(GREEN_FONT_COLOR:GetRGB());
-		self.Progress:SetFormattedText(GENERIC_FRACTION_STRING, activityInfo.progress, activityInfo.threshold);
 		self.LockIcon:Show();
 		self.LockIcon:SetAtlas("weeklyrewards-icon-unlocked", useAtlasSize);
 		if canClaimRewards then
@@ -180,7 +187,6 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		self.Border:SetAtlas("weeklyrewards-frame-reward-locked", useAtlasSize);
 		self.Threshold:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		self.Progress:SetFormattedText(GENERIC_FRACTION_STRING, activityInfo.progress, activityInfo.threshold);
 		if canClaimRewards then
 			self.LockIcon:Show();
 			self.LockIcon:SetAtlas("weeklyrewards-icon-incomplete", useAtlasSize);
@@ -189,6 +195,21 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		end
 		self.ItemFrame:Hide();
 		self.ItemGlow:Hide();
+	end
+end
+
+function WeeklyRewardsActivityMixin:SetProgressText(activityInfo)
+	if self.unlocked then
+		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
+			local name = GetDifficultyInfo(activityInfo.level);
+			self.Progress:SetText(name);
+		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+			self.Progress:SetFormattedText(WEEKLY_REWARDS_MYTHIC, activityInfo.level);
+		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
+			self.Progress:SetText(PVPUtil.GetTierName(activityInfo.level));
+		end
+	else
+		self.Progress:SetFormattedText(GENERIC_FRACTION_STRING, activityInfo.progress, activityInfo.threshold);
 	end
 end
 

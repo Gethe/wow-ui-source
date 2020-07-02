@@ -39,7 +39,7 @@ end
 function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
 	if oldState == Enum.SoulbindNodeState.Selectable and newState == Enum.SoulbindNodeState.Selected then
 		local NODE_SELECTION_FX_1 = 42;
-		local NODE_SELECTION_FX_2 = 43;
+		local NODE_SELECTION_FX_2 = 48;
 		local modelScene = self:GetFxModelScene();
 		modelScene:AddEffect(NODE_SELECTION_FX_1, self);
 		modelScene:AddEffect(NODE_SELECTION_FX_2, self);
@@ -298,8 +298,10 @@ function SoulbindConduitNodeMixin:SetConduit(conduit)
 		self:PlayInstallAnim();
 		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_INSTALLED);
 
-		local CONDUIT_INSTALL_FX = 45;
-		self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX, self);
+		local CONDUIT_INSTALL_FX_1 = 48;
+		local CONDUIT_INSTALL_FX_2 = 44;
+		self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX_1, self);
+		self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX_2, self);
 	end
 
 	if GameTooltip:IsShown() then

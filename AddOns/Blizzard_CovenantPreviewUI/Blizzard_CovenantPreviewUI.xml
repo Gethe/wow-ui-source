@@ -35,10 +35,10 @@
 				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" JustifyV="BOTTOM">
-					<Size x="147" y="25"/>
+				<FontString parentKey="Name" inherits="GameFontNormalMed3" justifyH="LEFT" JustifyV="BOTTOM">
+					<Size x="147" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Type" inherits="GameFontHighlight" justifyH="LEFT" JustifyV="BOTTOM">
@@ -69,8 +69,8 @@
 				</Frame>
 			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-2"/>
+					<Anchor point="TOPLEFT" x="5" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -101,8 +101,8 @@
 						<Texture parentKey="Middle" atlas="_UI-Frame-Neutral-TitleMiddle" horizTile="true">
 							<Size x="0" y="85"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -119,7 +119,7 @@
 			<Frame parentKey="ModelSceneContainer">
 				<Size x="414" y="432"/>
 				<Anchors>
-					<Anchor point="LEFT" x="85" y="-40"/>
+					<Anchor point="LEFT" x="65" y="-40"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
@@ -156,7 +156,7 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="Crest">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="10" y="-10"/>
+								<Anchor point="TOPLEFT" x="25" y="-25"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -164,33 +164,28 @@
 						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Shadow_Enormous">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="28"/>
+								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="15" y="5"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Large">
+						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Shadow_Large">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-15"/>
+								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="GameFontNormal">
-							<Size x="300" y="0"/>
+						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med1">
+							<Size x="500" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="0" y="-40"/>
+								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="40" y="-30"/>
 							</Anchors>
-						</FontString>
-						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="GameFontBlack">
-							<Size x="450" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="20" y="-40"/>
-							</Anchors>
+							<Color r="0.2824" g="0.0157" b="0.0157"/>
 						</FontString>
 						<FontString parentKey="AbilitiesLabel" JustifyH="LEFT" JustifyV="TOP" inherits="QuestFont_Super_Huge" text="COVENANT_PREVIEW_ABILITIE_LABEL">
 							<Size x="450" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="LEFT" x="30" y="-20"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="30" y="-30"/>
 							</Anchors>
-							<Color r="0" g="0" b="0"/>
+							<Color r="0.2824" g="0.0157" b="0.0157"/>
 						</FontString>
 					</Layer>
 				</Layers>

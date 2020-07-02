@@ -79,7 +79,7 @@ function CampaignOverviewMixin:SetupEntryHeader(index, entry, line)
 end
 
 function CampaignOverviewMixin:SetupEntryStandard(index, entry, line)
-	line:SetFontObject(SystemFont_Shadow_Small2);
+	line:SetFontObject(SystemFont_Shadow_Med1);
 	line:SetTextColor(LORE_TEXT_BODY_COLOR:GetRGBA());
 	line:SetJustifyH("LEFT");
 	line:SetJustifyV("TOP");

@@ -895,13 +895,6 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
-	self:DestroyTargetDummies();
-end
-
-function CharacterCreateRaceAndClassMixin:SetupTargetDummies()
-end
-
-function CharacterCreateRaceAndClassMixin:DestroyTargetDummies()
 end
 
 function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
@@ -919,6 +912,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending)
 	self:StopClassAnimations();
+	CharacterCreateFrame:ResetCharacterRotation(nil, true);
 	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(not useBlending);
 end
 
@@ -1385,7 +1379,7 @@ function CharacterCreateZoneChoiceMixin:OnHide()
 end
 
 function CharacterCreateZoneChoiceMixin:Setup()
-	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices(RaceAndClassFrame.selectedFaction);
+	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices();
 
 	if not secondZoneChoiceInfo or CharacterCreateFrame.paidServiceType then
 		self:SetUseNPE(firstZoneChoiceInfo.isNPE);

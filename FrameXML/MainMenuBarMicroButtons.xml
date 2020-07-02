@@ -237,7 +237,7 @@
 				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
 					<Size x="28" y="58"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER" x="0" y="11"/>
 					</Anchors>
 				</Texture>
 				<Texture name="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">

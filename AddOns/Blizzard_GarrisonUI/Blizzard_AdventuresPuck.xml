@@ -128,6 +128,12 @@
 				</Anchors>
 			</Frame>
 
+			<Frame parentKey="EnemyTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
+				<KeyValues>
+					<KeyValue key="targetingTextureAtlas" type="string" value="Adventures-Target-Indicator"/>
+				</KeyValues>
+			</Frame>
+			
 			<!-- Draw over the other subframes -->
 			<Frame parentKey="DeathAnimationFrame" frameLevel="1500" enableMouse="false" setAllPoints="true">
 				<Layers>

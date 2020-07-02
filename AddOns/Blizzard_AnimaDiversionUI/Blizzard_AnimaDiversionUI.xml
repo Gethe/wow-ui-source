@@ -136,8 +136,6 @@
       </Frame>
 			<Frame parentKey="SelectPinInfoFrame" inherits="ResizeLayoutFrame" mixin="AnimaDiversionSelectionInfoMixin" frameLevel="515">
 				<KeyValues>
-					<KeyValue key="layoutType" value="IdenticalCornersLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="AnimaChannel" type="string"/>
 					<KeyValue key="spacing" value="5" type="number"/>
           <KeyValue key="fixedWidth" value="250" type="number"/>
 				</KeyValues>
@@ -172,6 +170,8 @@
 				<Frames>
           <Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="550">
             <KeyValues>
+							<KeyValue key="layoutType" value="IdenticalCornersLayout" type="string"/>
+							<KeyValue key="layoutTextureKit" value="AnimaChannel" type="string"/>
               <KeyValue key="ignoreInLayout" value="true" type="boolean"/>
             </KeyValues>
             <Anchors>

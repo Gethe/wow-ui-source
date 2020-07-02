@@ -2,12 +2,12 @@ local splashFrameTextureRegions = {
 	["LeftTexture"] = "splash-%s-topleft",
 	["RightTexture"] = "splash-%s-right",
 	["BottomTexture"] = "splash-%s-botleft",
-}; 
+};
 
-SplashFrameMixin = { }; 
+SplashFrameMixin = { };
 
 function SplashFrameMixin:OnLoad()
-	self.screenInfo = nil; 
+	self.screenInfo = nil;
 	self:RegisterEvent("OPEN_SPLASH_SCREEN");
 	AlertFrame:SetAlertsEnabled(false, "splashFrame");
 end
@@ -15,22 +15,23 @@ end
 function SplashFrameMixin:OnShow()
 	C_TalkingHead.SetConversationsDeferred(true);
 	AlertFrame:SetAlertsEnabled(false, "splashFrame");
-end 
+	C_SplashScreen.AcknowledgeSplash();
+end
 
 function SplashFrameMixin:OnHide()
 	self.screenInfo = nil;
 	C_TalkingHead.SetConversationsDeferred(false);
 	AlertFrame:SetAlertsEnabled(true, "splashFrame");
 	ObjectiveTracker_Update();
-end 
+end
 
 function SplashFrameMixin:OnEvent(event, ...)
 	if ( Kiosk.IsEnabled() ) then
 		return;
 	end
-	if(event == "OPEN_SPLASH_SCREEN") then 
-		self:SetupFrame(...); 
-	elseif( event == "QUEST_LOG_UPDATE" ) then
+	if event == "OPEN_SPLASH_SCREEN" then
+		self:SetupFrame(...);
+	elseif event == "QUEST_LOG_UPDATE" then
 		if( self:IsShown() and self.screenInfo)then
 			self.RightFeature:SetStartQuestButtonDisplay(self.screenInfo);
 		end
@@ -38,23 +39,24 @@ function SplashFrameMixin:OnEvent(event, ...)
 end
 
 function SplashFrameMixin:SetupFrame(screenInfo)
-	if(not screenInfo) then 
-		return; 
-	end 
+	if(not screenInfo) then
+		AlertFrame:SetAlertsEnabled(true, "splashFrame");
+		return;
+	end
 
 	SetupTextureKitOnRegions(screenInfo.textureKit, self, splashFrameTextureRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	self.BottomTexture:SetSize(371, 137);
 
-	if (screenInfo.screenType == Enum.SplashScreenType.WhatsNew) then 
+	if (screenInfo.screenType == Enum.SplashScreenType.WhatsNew) then
 		self.Header:SetText(SPLASH_BASE_HEADER);
 	elseif(screenInfo.screenType == Enum.SplashScreenType.SeasonRollOver) then
 		self.Header:SetText(SPLASH_NEW_HEADER_SEASON);
-	end 
+	end
 
 	self.Label:SetText(screenInfo.header);
 	self.TopLeftFeature:Setup(screenInfo.topLeftFeatureTitle, screenInfo.topLeftFeatureDesc);
 	self.BottomLeftFeature:Setup(screenInfo.bottomLeftFeatureTitle, screenInfo.bottomLeftFeatureDesc);
-	self.RightFeature:Setup(screenInfo); 
+	self.RightFeature:Setup(screenInfo);
 	self:Show();
 
 	ObjectiveTracker_Update();
@@ -62,7 +64,7 @@ function SplashFrameMixin:SetupFrame(screenInfo)
 		HideUIPanel(QuestFrame);
 	end
 
-	self.screenInfo = screenInfo; 
+	self.screenInfo = screenInfo;
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 end
 
@@ -76,22 +78,20 @@ function SplashFrameMixin:OpenQuestDialog()
 end
 
 function SplashFrameMixin:Close()
-	local questID = self.RightFeature.questID; 
+	local questID = self.RightFeature.questID;
 	local showQuestDialog = questID and (self.RightFeature.StartQuestButton:IsShown() and self.RightFeature.StartQuestButton:IsEnabled());
 	HideUIPanel(self);
 
 	if (showQuestDialog) then
 		self:OpenQuestDialog();
 	end
-
-	C_SplashScreen.AcknowledgeSplash(); 
 	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
 StartQuestButtonMixin = { };
 
-function StartQuestButtonMixin:SetButtonState(enabled) 
-	if (enabled) then 
+function StartQuestButtonMixin:SetButtonState(enabled)
+	if (enabled) then
 		self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		self:SetScript("OnUpdate", nil);
 	else
@@ -100,7 +100,7 @@ function StartQuestButtonMixin:SetButtonState(enabled)
 
 	self.Texture:SetDesaturated(not enabled);
 	self:SetEnabled(enabled);
-end 
+end
 
 function StartQuestButtonMixin:OnMouseUp()
 	self.Text:SetPoint("CENTER", 20, 0);
@@ -110,15 +110,15 @@ function StartQuestButtonMixin:OnMouseDown()
 	if( self:IsEnabled() ) then
 		self.Text:SetPoint("CENTER", 22, -2);
 	end
-end 
+end
 
 function StartQuestButtonMixin:OnEnter()
 	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-end 
+end
 
 function StartQuestButtonMixin:OnLeave()
 	self.Text:SetTextColor(DARKYELLOW_FONT_COLOR:GetRGB());
-end 
+end
 
 function StartQuestButtonMixin:OnClick()
 	self:GetParent():GetParent():Close();
@@ -131,17 +131,17 @@ SplashFeatureFrameMixin = { };
 function SplashFeatureFrameMixin:Setup(title, description)
 	self.Title:SetText(title);
 	self.Description:SetText(description);
-end 
+end
 
-SplashRightFeatureFrameMixin = { }; 
+SplashRightFeatureFrameMixin = { };
 
 function SplashRightFeatureFrameMixin:GetQuestID(screenInfo)
-	if (UnitFactionGroup("player") == "Horde") then 
-		return screenInfo.hordeQuestID; 
+	if (UnitFactionGroup("player") == "Horde") then
+		return screenInfo.hordeQuestID;
 	else
-		return screenInfo.allianceQuestID; 
-	end 
-end 
+		return screenInfo.allianceQuestID;
+	end
+end
 
 function SplashRightFeatureFrameMixin:ShouldEnableStartQuestButton()
 	if( self.questID ) then
@@ -160,14 +160,14 @@ function SplashRightFeatureFrameMixin:ShouldEnableStartQuestButton()
 end
 
 function SplashRightFeatureFrameMixin:Setup(screenInfo)
-	self.questID = self:GetQuestID(screenInfo); 
+	self.questID = self:GetQuestID(screenInfo);
 	self.Title:SetSize(310, 0);
 	self.Title:SetMaxLines(1);
 	self.Title:SetFontObjectsToTry("Game72Font", "Game60Font", "Game48Font", "Game46Font", "Game36Font", "Game32Font", "Game27Font", "Game24Font", "Game18Font");
 	self.Title:SetText(screenInfo.rightFeatureTitle);
 	self.Description:SetText(screenInfo.rightFeatureDesc);
 	self:SetStartQuestButtonDisplay(screenInfo);
-end 
+end
 
 function SplashRightFeatureFrameMixin:SetStartQuestButtonDisplay(screenInfo)
 	self.Title:ClearAllPoints();
@@ -188,9 +188,9 @@ function SplashRightFeatureFrameMixin:SetStartQuestButtonDisplay(screenInfo)
 			self.Description:ClearAllPoints();
 			self.Description:SetPoint("TOP", self.Title, "BOTTOM", 0, -10);
 			self.Description:SetWidth(234);
-		end 
+		end
 	end
 
-	self.StartQuestButton:SetShown(showStartButton); 
+	self.StartQuestButton:SetShown(showStartButton);
 	self:GetParent().BottomCloseButton:SetShown(not showStartButton);
 end

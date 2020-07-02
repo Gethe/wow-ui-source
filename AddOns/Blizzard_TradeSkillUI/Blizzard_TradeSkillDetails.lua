@@ -633,6 +633,7 @@ end
 function TradeSkillDetailsMixin:OnReagentClicked(reagentButton)
 	local clickHandled = HandleModifiedItemClick(C_TradeSkillUI.GetRecipeReagentItemLink(self.selectedRecipeID, reagentButton.reagentIndex));
 	if not clickHandled then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		TradeSkillFrame.SearchBox:SetText(reagentButton.Name:GetText());
 	end
 end
@@ -660,11 +661,21 @@ function TradeSkillDetailsMixin:OnOptionalReagentMouseEnter(reagentButton)
 end
 
 function TradeSkillDetailsMixin:OnOptionalReagentClicked(reagentButton, button)
+	local itemID = select(7, self:GetOptionalReagent(reagentButton.optionalReagentIndex));
+	if itemID then
+		local itemName, itemLink = GetItemInfo(itemID);
+		if HandleModifiedItemClick(itemLink) then
+			return;
+		end
+	end
+
 	if button == "LeftButton" then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, reagentButton.optionalReagentIndex);
 		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Slot);
 		self:Refresh();
 	elseif button == "RightButton" then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		self:SetOptionalReagent(reagentButton.optionalReagentIndex, nil);
 		self:OnOptionalReagentMouseEnter(reagentButton);
 	end

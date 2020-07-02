@@ -1,6 +1,22 @@
 
 RuneforgeModifierSlotMixin = {};
 
+function RuneforgeModifierSlotMixin:OnLoad()
+	local normalTexture = self:GetNormalTexture();
+	normalTexture:ClearAllPoints();
+	normalTexture:SetPoint("CENTER"); -- Remove the standard -1 offset.
+	normalTexture:SetAtlas("runecarving-icon-reagent-empty", true);
+	normalTexture:SetAlpha(0);
+
+	local pushedTexture = self:GetPushedTexture();
+	pushedTexture:ClearAllPoints();
+	pushedTexture:SetPoint("CENTER");
+	pushedTexture:SetAtlas("runecarving-icon-reagent-pressed", true);
+	pushedTexture:SetAlpha(0);
+
+	self.IconBorder:SetAlpha(0);
+end
+
 function RuneforgeModifierSlotMixin:OnEnter()
 	local itemID = self:GetItemID();
 	if itemID then
@@ -15,11 +31,40 @@ function RuneforgeModifierSlotMixin:OnLeave()
 end
 
 function RuneforgeModifierSlotMixin:OnClick(buttonName)
+	local modifierFrame = self:GetModifierFrame();
 	if buttonName == "RightButton" then
-		self:GetParent():SetModifierSlot(self:GetID(), nil);
+		modifierFrame:SetModifierSlot(self:GetID(), nil);
+		modifierFrame:CloseSelector();
+		GameTooltip:Hide();
 	else
-		self:GetParent():OnSlotSelected(self);
+		modifierFrame:OnSlotSelected(self);
 	end
+end
+
+function RuneforgeModifierSlotMixin:OnEnable()
+	local alpha = (self:GetItem() == nil) and 1 or 0;
+	self:GetNormalTexture():SetAlpha(alpha);
+	self:GetPushedTexture():SetAlpha(alpha);
+end
+
+function RuneforgeModifierSlotMixin:OnDisable()
+	self:GetNormalTexture():SetAlpha(0);
+	self:GetPushedTexture():SetAlpha(0);
+end
+
+function RuneforgeModifierSlotMixin:SetItem(item)
+	local hasItem = item ~= nil;
+	self.SelectedTexture:SetShown(hasItem);
+
+	local alpha = (self:IsEnabled() and not hasItem) and 1 or 0;
+	self:GetNormalTexture():SetAlpha(alpha);
+	self:GetPushedTexture():SetAlpha(alpha);
+
+	ItemButtonMixin.SetItem(self, item);
+end
+
+function RuneforgeModifierSlotMixin:SetArrowShown(shown)
+	self.Arrow:SetShown(shown);
 end
 
 function RuneforgeModifierSlotMixin:GetModifierFrame()
@@ -32,25 +77,41 @@ RuneforgeModifierSelectionMixin = {};
 local RuneforgeModifierSelectionState = {
 	Available = 1,
 	Unavailable = 2,
-	Selected = 3,
+	SelectedInOtherSlot = 3,
+	SelectedInThisSlot = 4,
 };
 
 function RuneforgeModifierSelectionMixin:SetState(state)
 	if state == RuneforgeModifierSelectionState.Available then
+		self.StateTexture:SetAtlas("runecarving-icon-reagent-border", true);
 		self:SetAlpha(1.0);
+		self.icon:SetDesaturation(false);
 		self:SetEnabled(true);
-	elseif state == RuneforgeModifierSelectionState.Selected then
-		self:SetAlpha(0.5);
+	elseif state == RuneforgeModifierSelectionState.SelectedInThisSlot then
+		self.StateTexture:SetAtlas("runecarving-menu-reagent-selected", true);
+		self:SetAlpha(1.0);
+		self.icon:SetDesaturated(false);
+		self:SetEnabled(true);
+	elseif state == RuneforgeModifierSelectionState.SelectedInOtherSlot then
+		self.StateTexture:SetAtlas("runecarving-icon-reagent-selectedother", true);
+		self:SetAlpha(0.3);
+		self.icon:SetDesaturation(0.5);
 		self:SetEnabled(false);
 	elseif state == RuneforgeModifierSelectionState.Unavailable then
-		self:SetAlpha(0.2);
+		self.StateTexture:SetAtlas("runecarving-icon-reagent-border", true);
+		self:SetAlpha(0.5);
+		self.icon:SetDesaturation(1.0);
 		self:SetEnabled(false);
 	end
 end
 
 function RuneforgeModifierSelectionMixin:GetState(count)
-	if self.selected then
-		return RuneforgeModifierSelectionState.Selected;
+	if self.selectedInThisSlot then
+		return RuneforgeModifierSelectionState.SelectedInThisSlot;
+	end
+
+	if self.selectedInOtherSlot then
+		return RuneforgeModifierSelectionState.SelectedInOtherSlot;
 	end
 
 	count = count or ItemUtil.GetOptionalReagentCount(self:GetItemID());
@@ -65,12 +126,18 @@ function RuneforgeModifierSelectionMixin:RefreshState(count)
 	self:SetState(self:GetState(count));
 end
 
-function RuneforgeModifierSelectionMixin:SetModifierItem(itemID, count, selected)
+function RuneforgeModifierSelectionMixin:SetModifierItem(itemID, count, selectedInThisSlot, selectedInOtherSlot)
 	count = count or ItemUtil.GetOptionalReagentCount(itemID);
 
-	self.selected = selected;
+	self.selectedInThisSlot = selectedInThisSlot;
+	self.selectedInOtherSlot = selectedInOtherSlot;
 	self:SetItem(itemID);
 	self:RefreshState(count);
+end
+
+function RuneforgeModifierSelectionMixin:OnLoad()
+	self:GetNormalTexture():SetAlpha(0);
+	self.IconBorder:SetAlpha(0);
 end
 
 function RuneforgeModifierSelectionMixin:OnEnter()
@@ -110,7 +177,7 @@ function RuneforgeModifierSelectorFrameMixin:OnLoad()
 	self.selectionPool = CreateFramePool("ItemButton", self, "RuneforgeModifierSelectionTemplate");
 end
 
-function RuneforgeModifierSelectorFrameMixin:GenerateSelections()
+function RuneforgeModifierSelectorFrameMixin:GenerateSelections(slotID)
 	self.selectionPool:ReleaseAll();
 
 	local modifierItemIDs = self:GetParent():GetRuneforgeFrame():GetModifierSelections();
@@ -118,53 +185,44 @@ function RuneforgeModifierSelectorFrameMixin:GenerateSelections()
 	local reagentCounts = {};
 	local selectedMap = tInvert(self:GetParent():GetModifiers());
 
-	local function ModifierSortFunction(lhsItemID, rhsItemID)
-		reagentCounts[lhsItemID] = reagentCounts[lhsItemID] or ItemUtil.GetOptionalReagentCount(lhsItemID);
-		reagentCounts[rhsItemID] = reagentCounts[rhsItemID] or ItemUtil.GetOptionalReagentCount(rhsItemID);
-		local lhsAvailable = reagentCounts[lhsItemID] > 0;
-		local rhsAvailable = reagentCounts[rhsItemID] > 0;
-		if lhsAvailable ~= rhsAvailable then
-			return lhsAvailable;
-		end
-
-		local lhsSelected = selectedMap[lhsItemID] ~= nil;
-		local rhsSelected = selectedMap[rhsItemID] ~= nil;
-		if lhsSelected ~= rhsSelected then
-			return not lhsSelected;
-		end
-
-		return lhsItemID < rhsItemID;
-	end
-
-	table.sort(modifierItemIDs, ModifierSortFunction);
-
 	local previousSelection = nil;
 	for i, itemID in ipairs(modifierItemIDs) do
 		local selection = self.selectionPool:Acquire();
 		if not previousSelection then
-			selection:SetPoint("TOPLEFT", 5, -5);
+			selection:SetPoint("TOPLEFT", 20, -30);
 		else
-			selection:SetPoint("TOPLEFT", previousSelection, "BOTTOMLEFT", 0, -5);
+			selection:SetPoint("TOPLEFT", previousSelection, "BOTTOMLEFT", 0, -11);
 		end
 
-		selection:SetModifierItem(itemID, reagentCounts[itemID], selectedMap[itemID] ~= nil);
+		local selectedSlot = selectedMap[itemID];
+		local selectedInThisSlot = slotID == selectedSlot;
+		local selectedInOtherSlot = not selectedInThisSlot and (selectedSlot ~= nil);
+		selection:SetModifierItem(itemID, reagentCounts[itemID], selectedInThisSlot, selectedInOtherSlot);
 		selection:Show();
 
 		previousSelection = selection;
 	end
-
-	self:MarkDirty();
 end
 
 function RuneforgeModifierSelectorFrameMixin:Open(button)
+	if self.selectedButton then
+		self.selectedButton:SetArrowShown(false);
+	end
+
+	button:SetArrowShown(true);
+
 	self:ClearAllPoints();
-	self:SetPoint("LEFT", button, "RIGHT");
+	self:SetPoint("LEFT", button, "RIGHT", 10, 0);
 	self.selectedButton = button;
-	self:GenerateSelections();
+	self:GenerateSelections(button:GetID());
 end
 
 function RuneforgeModifierSelectorFrameMixin:Close()
-	self.selectedButton = nil;
+	if self.selectedButton then
+		self.selectedButton:SetArrowShown(false);
+		self.selectedButton = nil;
+	end
+	
 	self.selectionPool:ReleaseAll();
 	self:Hide();
 end
@@ -190,16 +248,20 @@ end
 RuneforgeModifierFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
 function RuneforgeModifierFrameMixin:OnShow()
-	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.OnBaseItemChanged, self);
+	self:RegisterRefreshMethod(self.Refresh);
 	self:UpdateEnabledState();
 end
 
 function RuneforgeModifierFrameMixin:OnHide()
-	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self);
+	self:UnregisterRefreshMethod(self.Refresh);
 end
 
-function RuneforgeModifierFrameMixin:OnBaseItemChanged()
-	self:Reset();
+function RuneforgeModifierFrameMixin:Refresh(eventName)
+	if eventName == "BaseItemChanged" then
+		self:Reset();
+	else
+		self:UpdateEnabledState();
+	end
 end
 
 function RuneforgeModifierFrameMixin:Reset()
@@ -215,8 +277,8 @@ end
 
 function RuneforgeModifierFrameMixin:GetModifiers()
 	local modifiers = {};
-	table.insert(modifiers, self.FirstSlot:GetItemID());
-	table.insert(modifiers, self.SecondSlot:GetItemID());
+	modifiers[self.FirstSlot:GetID()] = self.FirstSlot:GetItemID();
+	modifiers[self.SecondSlot:GetID()] = self.SecondSlot:GetItemID();
 	return modifiers;
 end
 
@@ -230,9 +292,11 @@ function RuneforgeModifierFrameMixin:OnSlotSelected(slot)
 end
 
 function RuneforgeModifierFrameMixin:UpdateEnabledState()
-	local enabled = self:GetRuneforgeFrame():GetItem() ~= nil;
+	local enabled = self:GetRuneforgeFrame():GetPowerID() ~= nil;
 	self.FirstSlot:SetEnabled(enabled);
-	self.SecondSlot:SetEnabled(enabled);
+
+	local secondSlotEnabled = (self.SecondSlot:GetItem() ~= nil) or (self.FirstSlot:GetItem() ~= nil);
+	self.SecondSlot:SetEnabled(enabled and secondSlotEnabled);
 end
 
 function RuneforgeModifierFrameMixin:SetModifierSlot(slot, itemID)

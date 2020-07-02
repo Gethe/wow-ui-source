@@ -45,7 +45,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
+	<Frame name="ObjectiveTrackerHeaderTemplate" mixin="ObjectiveTrackerHeaderMixin" virtual="true" hidden="true">
 		<Size x="235" y="25"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -124,10 +124,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-        		self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
-        		self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
-      		</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

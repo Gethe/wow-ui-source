@@ -338,7 +338,7 @@ function AdventuresMissionPageFollowerPuckMixin:SetEmpty()
 	self.followerGUID = nil;
 	self.Portrait:Hide();
 	self.PuckBorder:Hide();
-	self.EmptyPortrait:Show();
+	self.EmptyPortrait:Hide();
 	self.HealthBar:Hide();
 	self.AbilityOne:Hide();
 	self.AbilityTwo:Hide();

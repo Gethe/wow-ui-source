@@ -3,6 +3,21 @@ local GarrisonConstants =
 	Tables =
 	{
 		{
+			Name = "CovenantType",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "CovenantType", EnumValue = 0 },
+				{ Name = "Kyrian", Type = "CovenantType", EnumValue = 1 },
+				{ Name = "Venthyr", Type = "CovenantType", EnumValue = 2 },
+				{ Name = "NightFae", Type = "CovenantType", EnumValue = 3 },
+				{ Name = "Necrolord", Type = "CovenantType", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "FollowerAbilityCastResult",
 			Type = "Enumeration",
 			NumValues = 15,
@@ -134,14 +149,15 @@ local GarrisonConstants =
 		{
 			Name = "GarrTalentCostType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Initial", Type = "GarrTalentCostType", EnumValue = 0 },
 				{ Name = "Respec", Type = "GarrTalentCostType", EnumValue = 1 },
 				{ Name = "MakePermanent", Type = "GarrTalentCostType", EnumValue = 2 },
+				{ Name = "TreeReset", Type = "GarrTalentCostType", EnumValue = 3 },
 			},
 		},
 		{

@@ -359,7 +359,6 @@
 							<Frame parentKey="StoryHeader" hidden="true">
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="QUEST_LOG_STORY_LAYOUT_INDEX" type="global"/>
-									<KeyValue key="topPadding" value="-18" type="number"/>
 									<KeyValue key="bottomPadding" value="7" type="number"/>
 								</KeyValues>
 								<Size x="260" y="62"/>

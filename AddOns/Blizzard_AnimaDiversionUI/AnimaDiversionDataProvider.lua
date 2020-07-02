@@ -85,6 +85,9 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self.lineThickness = Lerp(1, 2, Saturate(1 - self:GetMap():GetCanvasZoomPercent())) * 85;
 	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes(); 
+	if (not animaNodes) then 
+		return;
+	end 
 	for _, nodeData in ipairs(animaNodes) do
 		nodeData.textureKit = self.textureKit; 
 		self:AddNode(nodeData);
@@ -192,7 +195,9 @@ function AnimaDiversionPinMixin:Setup()
 	self.IconReinforce:SetShown(self.ReinforceState or self.forceReinforceState);
 	self.IconSelect:SetShown(self.SelectState and not self.forceReinforceState);
 	self.Icon:SetShown(self.UnavailableState and not self.forceReinforceState);
-	self.lineContainer:SetShown(self.ReinforceState or self.SelectState);
+	if (self.lineContainer) then 
+		self.lineContainer:SetShown(self.ReinforceState or self.SelectState);
+	end
 end 
 
 function AnimaDiversionPinMixin:SetReinforceState(reinforce) 

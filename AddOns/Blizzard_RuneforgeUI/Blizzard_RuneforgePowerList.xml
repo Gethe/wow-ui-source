@@ -3,6 +3,31 @@
 	<Script file="Blizzard_RuneforgePowerList.lua"/>
 
 	<Button name="RuneforgePowerButtonTemplate" mixin="RuneforgePowerButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipOffsetX" value="-15" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="-15" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<MaskTexture parentKey="CircleMask" file="Interface/CharacterFrame/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-4" y="4"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
@@ -12,15 +37,32 @@
 	</Button>
 
 	<Button name="RuneforgePowerSlotTemplate" mixin="RuneforgePowerSlotMixin" inherits="RuneforgePowerButtonTemplate" virtual="true">
-		<Size x="80" y="80"/>
+		<Size x="72" y="120"/>
+		<KeyValues>
+			<KeyValue key="tooltipOffsetX" value="-22" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="-22" type="number"/>
+		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.7"/>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-power-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<NormalTexture atlas="runecarving-icon-power-empty" useAtlasSize="true" alpha="0">
+			<Anchors>
+				<Anchor point="CENTER" x="-5" y="2"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="runecarving-icon-power-pressed" useAtlasSize="true" alpha="0">
+			<Anchors>
+				<Anchor point="CENTER" x="-5" y="2"/>
+			</Anchors>
+		</PushedTexture>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnClick method="OnClick"/>
@@ -28,15 +70,25 @@
 	</Button>
 
 	<Button name="RuneforgePowerTemplate" mixin="RuneforgePowerMixin" inherits="RuneforgePowerButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="64" y="64"/>
+		<Size x="72" y="72"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0" g="0" b="1" a="0.7"/>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Border" atlas="runecarving-menu-power-border" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="runecarving-menu-power-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnShow method="OnShow"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -59,29 +111,19 @@
 	</ScrollFrame>
 
 	<Frame name="RuneforgePowerFrameTemplate" mixin="RuneforgePowerFrameMixin" virtual="true">
-		<Size x="400" y="300"/>
+		<Size x="300" y="368"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.7"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Line">
-					<Size x="2" y="0"/>
+				<Texture parentKey="Background" atlas="runecarving-menu-power-background" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" x="30" y="0"/>
-						<Anchor point="TOP"/>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color r="0" g="1" b="0" a="0.7"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="RUNEFORGE_LEGENDARY_POWER_LIST_LABEL">
+				<FontString parentKey="Label" inherits="GameFontNormalLarge" text="RUNEFORGE_LEGENDARY_POWER_LIST_LABEL">
 					<Anchors>
-						<Anchor point="TOP"/>
-						<Anchor point="LEFT" relativeKey="$parent.Line" relativePoint="RIGHT" x="12" y="0"/>
+						<Anchor point="TOP" x="0" y="-30"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -89,7 +131,8 @@
 		<Frames>
 			<ScrollFrame parentKey="PowerList" inherits="RuneforgePowerListTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+					<Anchor point="LEFT" x="13" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-18"/>
 				</Anchors>
 			</ScrollFrame>
 		</Frames>

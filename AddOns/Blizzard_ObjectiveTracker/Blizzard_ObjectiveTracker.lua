@@ -134,9 +134,14 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:BeginLayout(isStaticReanchor)
 	self.oldContentsHeight = self.contentsHeight;
 	self.contentsHeight = 0;
 	self.contentsAnimHeight = 0;
+	self.potentialBlocksAddedThisLayout = 0; -- this isn't a ref count, this is the total number of blocks that the module tried to add.
 	-- if it's not a static reanchor, reset whether we've skipped blocks
 	if ( not isStaticReanchor ) then
 		self.hasSkippedBlocks = false;
+
+		if not self:UsesSharedHeader() and self.Header then
+			self.Header:Hide();
+		end
 	end
 	self:MarkBlocksUnused();
 end
@@ -229,6 +234,16 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeUnusedBlocks()
 			self:FreeBlock(block);
 		end
 	end
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlockCount()
+	local count = 0;
+	local modules = self:GetRelatedModules();
+	for index, module in ipairs(modules) do
+		count = count + (module.potentialBlocksAddedThisLayout or 0);
+	end
+
+	return count;
 end
 
 -- ***** LINES
@@ -535,9 +550,8 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
 	end
 end
 
-local function ObjectiveTracker_SetModulesCollapsed(collapsed, ...)
-	for i = 1, select("#", ...) do
-		local module = select(i, ...);
+local function ObjectiveTracker_SetModulesCollapsed(collapsed, modules)
+	for index, module in ipairs(modules) do
 		module.collapsed = collapsed;
 	end
 end
@@ -553,7 +567,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetRelatedModules()
 		end
 	end
 
-	return unpack(modules);
+	return modules;
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetCollapsed(collapsed)
@@ -561,7 +575,12 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetCollapsed(collapsed)
 
 	if self.Header and self.Header.MinimizeButton then
 		self.Header.MinimizeButton:SetCollapsed(collapsed);
+		self.Header.recentlyChangedCollapse = true;
 	end
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:IsCollapsed()
+	return self.collapsed;
 end
 
 -- *****************************************************************************************************
@@ -839,7 +858,18 @@ end
 
 function ObjectiveTrackerHeader_OnAnimFinished(self)
 	local header = self:GetParent();
-	header.animating = false;
+	header.animating = nil;
+end
+
+ObjectiveTrackerHeaderMixin = {};
+
+function ObjectiveTrackerHeaderMixin:OnLoad()
+	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
+	self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
+end
+
+function ObjectiveTrackerHeaderMixin:OnHide()
+	self.recentlyChangedCollapse = nil;
 end
 
 -- *****************************************************************************************************
@@ -893,8 +923,8 @@ end
 function ObjectiveTracker_MinimizeModuleButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local module = self:GetParent().module;
-	module:SetCollapsed(not module.collapsed);
-	ObjectiveTracker_Update();
+	module:SetCollapsed(not module:IsCollapsed());
+	ObjectiveTracker_Update(0, nil, module);
 end
 
 function ObjectiveTracker_Collapse()
@@ -967,8 +997,15 @@ local function InternalAddBlock(block)
 	local blocksFrame = module.BlocksFrame;
 	block.nextBlock = nil;
 
+	-- This doesn't take fit into account, it just assumes that there's content to be added, so the potential count
+	-- should increase (this is related to showing the collapse buttons on the headers, see Reorder)
+	-- NOTE: Never count headers as added blocks
+	if not block.isHeader then
+		module.potentialBlocksAddedThisLayout = (module.potentialBlocksAddedThisLayout or 0) + 1;
+	end
+
 	-- Only allow headers to be added if the module is collapsed.
-	if not block.isHeader and module.collapsed then
+	if not block.isHeader and module:IsCollapsed() then
 		return false;
 	end
 
@@ -993,16 +1030,20 @@ local function InternalAddBlock(block)
 	return true;
 end
 
-function ObjectiveTracker_AddHeader(header)
+function ObjectiveTracker_AddHeader(header, isStaticReanchor)
 	if InternalAddBlock(header) then
 		header.added = true;
 		if not header:IsShown() then
 			header:Show();
-			if header.animateReason and band(OBJECTIVE_TRACKER_UPDATE_REASON, header.animateReason ) > 0 and not header.animating then
-				-- animate header
-				header.animating = true;
-				header.HeaderOpenAnim:Stop();
-				header.HeaderOpenAnim:Play();
+			if not isStaticReanchor and band(OBJECTIVE_TRACKER_UPDATE_REASON, (header.animateReason or 0)) > 0 and not header.animating then
+				-- animate header, if this wasn't related to expand/collapse
+				if not header.recentlyChangedCollapse then
+					header.animating = true;
+					header.HeaderOpenAnim:Stop();
+					header.HeaderOpenAnim:Play();
+				end
+
+				header.recentlyChangedCollapse = nil;
 			end
 		end
 
@@ -1125,11 +1166,19 @@ end
 
 -- ***** UPDATE
 
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchorCheckAddHeaderOnly()
+	if self:IsCollapsed() and not self.Header.added and self:GetBlockCount() > 0 then
+		ObjectiveTracker_AddHeader(self.Header, true); -- the header was marked as not being added, make sure to add it again...
+		return true;
+	end
+
+	return false;
+end
+
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	-- If this module is collapsed, don't process anything, it will result in the entire module being hidden, since just the header
 	-- is showing, there's nothing to update.
-	if self.collapsed and not self.Header.added then
-		ObjectiveTracker_AddHeader(self.Header); -- the header was marked as not being added, make sure to add it again...
+	if self:StaticReanchorCheckAddHeaderOnly() then
 		return;
 	end
 
@@ -1155,13 +1204,29 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	self:EndLayout(true);
 end
 
+local function GetRelatedModulesForUpdate(module)
+	if module then
+		return tInvert(module:GetRelatedModules())
+	end
+
+	return nil;
+end
+
+local function IsRelatedModuleForUpdate(module, moduleLookup)
+	if moduleLookup then
+		return moduleLookup[module] ~= nil;
+	end
+
+	return false;
+end
+
 function ObjectiveTracker_UpdateSuperTrackedQuest(self)
 	local questID = C_SuperTrack.GetSuperTrackedQuestID();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
 	QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
 end
 
-function ObjectiveTracker_Update(reason, id)
+function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 	local tracker = ObjectiveTrackerFrame;
 	if tracker.isUpdating then
 		-- Trying to update while we're already updating, try again next frame
@@ -1196,11 +1261,14 @@ function ObjectiveTracker_Update(reason, id)
 		end
 	end
 
+	-- These can be nil, it's fine, trust the API.
+	local relatedModules = GetRelatedModulesForUpdate(moduleWhoseCollapseChanged);
+
 	-- run module updates
 	local gotMoreRoomThisPass = false;
 	for i = 1, #tracker.MODULES do
 		local module = tracker.MODULES[i];
-		if ( band(OBJECTIVE_TRACKER_UPDATE_REASON, module.updateReasonModule + module.updateReasonEvents ) > 0 ) then
+		if IsRelatedModuleForUpdate(moduleWhoseCollapseChanged, relatedModules) or (band(OBJECTIVE_TRACKER_UPDATE_REASON, module.updateReasonModule + module.updateReasonEvents) > 0) then
 			-- run a full update on this module
 			module:Update();
 			-- check if it's now taking up less space, using subtraction because of floats
@@ -1268,7 +1336,7 @@ local function ObjectiveTracker_CountVisibleModules()
 		if header and not seen[header] then
 			seen[header] = true;
 
-			if header:IsVisible() then
+			if header:IsVisible() and module:GetBlockCount() > 0 then -- testing out the whole active block count concept....
 				count = count + 1;
 			end
 		end
@@ -1279,7 +1347,7 @@ end
 
 function ObjectiveTracker_ReorderModules()
 	local visibleCount = ObjectiveTracker_CountVisibleModules();
-	local showModuleMinimizeButton = visibleCount > 1;
+	local showAllModuleMinimizeButtons = visibleCount > 1;
 	local detachIndex = nil;
 	local anchorBlock = nil;
 
@@ -1307,8 +1375,12 @@ function ObjectiveTracker_ReorderModules()
 				header = nil;
 			end
 
-			module.Header.MinimizeButton:SetShown(showModuleMinimizeButton);
-			if showModuleMinimizeButton then
+			-- Side-step annoying "uncollapse" issue by allowing a collapsed module to continue showing its minimize button even if
+			-- it's the only remaining visible module
+			local shouldShowThisModuleMinimizeButton = showAllModuleMinimizeButtons or module:IsCollapsed();
+
+			module.Header.MinimizeButton:SetShown(shouldShowThisModuleMinimizeButton);
+			if shouldShowThisModuleMinimizeButton then
 				module.Header.MinimizeButton:SetPoint("RIGHT", module.Header, "RIGHT", -21, 0);
 			end
 		end
@@ -1349,6 +1421,7 @@ function QuestHeaderMixin:OnShow()
 end
 
 function QuestHeaderMixin:OnHide()
+	ObjectiveTrackerHeaderMixin.OnHide(self);
 	self:UnregisterEvent("QUEST_SESSION_JOINED");
 	self:UnregisterEvent("QUEST_SESSION_LEFT");
 end

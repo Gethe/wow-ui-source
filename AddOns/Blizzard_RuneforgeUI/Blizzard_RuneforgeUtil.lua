@@ -2,7 +2,27 @@
 RuneforgeSystemMixin = {};
 
 function RuneforgeSystemMixin:GetRuneforgeFrame()
-	return self:GetParent();
+	return self:GetParent():GetParent();
+end
+
+local RefreshEventNames = {
+	"BaseItemChanged",
+	"PowerSelected",
+	"ModifiersChanged",
+};
+
+function RuneforgeSystemMixin:RegisterRefreshMethod(refreshMethod)
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	for i, eventName in ipairs(RefreshEventNames) do
+		runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event[eventName], GenerateClosure(refreshMethod, self, eventName), self);
+	end
+end
+
+function RuneforgeSystemMixin:UnregisterRefreshMethod()
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	for i, eventName in ipairs(RefreshEventNames) do
+		runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event[eventName], self);
+	end
 end
 
 

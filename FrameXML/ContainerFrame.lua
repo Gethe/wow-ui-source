@@ -1182,6 +1182,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 		else
 			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 			local itemIsValidAuctionItem = (itemLocation:IsValid() and C_AuctionHouse.IsSellItemValid(itemLocation, --[[ displayError = ]] false));
+			local itemIsValidItem = itemLocation:IsValid() and C_Item.DoesItemExist(itemLocation);
 
 			-- Don't send invalid items to auction house unless it's on the listing page (it will show an error for this case).
 			local shouldAuctionReceiveEvent = AuctionHouseFrame and AuctionHouseFrame:IsShown() and (AuctionHouseFrame:IsListingAuctions() or itemIsValidAuctionItem);
@@ -1192,7 +1193,11 @@ function ContainerFrameItemButton_OnClick(self, button)
 				AzeriteRespecFrame:SetRespecItem(itemLocation);
 				return;
 			elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
-				RuneforgeFrame:SetItem(itemLocation);
+				if itemIsValidItem then
+					RuneforgeFrame:SetItem(itemLocation);
+				end
+
+				-- No error for bad items or empty slots.
 				return;
 			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
 						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
@@ -1512,19 +1517,38 @@ function ToggleAllBags()
 	end
 end
 
+function IsAnyBagOpen()
+	for i = 0, NUM_BAG_FRAMES do
+		if IsBagOpen(i) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function OpenAllBagsMatchingContext(frame)
+	if IsAnyBagOpen() then
+		return;
+	end
+
+	for i = 0, NUM_BAG_FRAMES do
+		if ItemButtonUtil.GetItemContextMatchResultForContainer(i) == ItemButtonUtil.ItemContextMatchResult.Match then
+			OpenBag(i);
+		end
+	end
+
+	if frame and not FRAME_THAT_OPENED_BAGS then
+		FRAME_THAT_OPENED_BAGS = frame:GetName();
+	end
+end
+
 function OpenAllBags(frame, forceUpdate)
 	if ( not UIParent:IsShown() ) then
 		return;
 	end
-	
-	local anyBagIsOpen = false;
-	for i=0, NUM_BAG_FRAMES, 1 do
-		if (IsBagOpen(i)) then
-			anyBagIsOpen = true;
-		end
-	end
 
-	if ( anyBagIsOpen ) then
+	if ( IsAnyBagOpen() ) then
 		if ( forceUpdate ) then
 			ContainerFrame_UpdateAll();
 		end

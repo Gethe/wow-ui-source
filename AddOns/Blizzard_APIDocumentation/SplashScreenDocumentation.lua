@@ -33,7 +33,7 @@ local SplashScreen =
 			LiteralName = "OPEN_SPLASH_SCREEN",
 			Payload =
 			{
-				{ Name = "info", Type = "SplashScreenInfo", Nilable = false },
+				{ Name = "info", Type = "SplashScreenInfo", Nilable = true },
 			},
 		},
 	},

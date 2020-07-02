@@ -24,6 +24,18 @@ function OptionalReagentListLineMixin:OnEvent(event, ...)
 	end
 end
 
+function OptionalReagentListLineMixin:OnClick()
+	if IsModifiedClick() then
+		local itemName, itemLink = GetItemInfo(self:GetItemID());
+		if HandleModifiedItemClick(itemLink) then
+			return;
+		end
+	end
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	ScrollListLineMixin.OnClick(self);
+end
+
 function OptionalReagentListLineMixin:OnEnter()
 	GameTooltip:SetOwner(self, "RIGHT");
 
@@ -369,4 +381,5 @@ OptionalReagentListCloseButtonMixin = {};
 function OptionalReagentListCloseButtonMixin:OnClick()
 	self:GetParent():ClearSelection();
 	self:GetParent():Hide();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 end

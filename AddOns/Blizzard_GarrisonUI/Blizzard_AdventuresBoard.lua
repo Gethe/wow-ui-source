@@ -23,6 +23,20 @@ local BackFollowerPositions = {
 	Enum.GarrAutoBoardIndex.AllyRightBack,
 };
 
+local EnemySocketAtlasNames = {
+	"Adventures-Mission-Enemy-Socket-01",
+	"Adventures-Mission-Enemy-Socket-02",
+	"Adventures-Mission-Enemy-Socket-03",
+	"Adventures-Mission-Enemy-Socket-04",
+};
+
+local FollowerSocketAtlasNames = {
+	"Adventures-Mission-Follower-Socket-01",
+	"Adventures-Mission-Follower-Socket-02",
+	"Adventures-Mission-Follower-Socket-03",
+	"Adventures-Mission-Follower-Socket-04",
+}
+
 
 AdventuresBoardMixin = {};
 
@@ -31,6 +45,9 @@ function AdventuresBoardMixin:OnLoad()
 	self.socketsByBoardIndex = {};
 	self.enemyFramePool = CreateFramePool("FRAME", self.EnemyContainer, self.enemyTemplate);
 	self.followerFramePool = CreateFramePool("FRAME", self.FollowerContainer, self.followerTemplate);
+	self.enemySocketFramePool = CreateFramePool("FRAME", self, self.enemySocketTemplate);
+	self.followerSocketFramePool = CreateFramePool("FRAME", self, self.followerSocketTemplate);
+	
 	self.socketTexturePool = CreateTexturePool(self, "BACKGROUND");
 
 	self:CreateEnemyFrames();
@@ -82,15 +99,15 @@ function AdventuresBoardMixin:RegisterFrame(boardIndex, socket, frame)
 	self.socketsByBoardIndex[boardIndex] = socket;
 end
 
-function AdventuresBoardMixin:GenerateFactoryFunction(framePool, boardIndices, socketContainer, socketAtlas)
+function AdventuresBoardMixin:GenerateFactoryFunction(puckFramePool, socketFramePool, boardIndices, socketContainer, socketAtlasCollection)
 	local function CreateNewFrame(index)
-		local newSocket = self.socketTexturePool:Acquire();
+		local newSocket = socketFramePool:Acquire();
 		local useAtlasSize = true;
-		newSocket:SetAtlas(socketAtlas, useAtlasSize);
+		newSocket.SocketTexture:SetAtlas(socketAtlasCollection[mod(index, #socketAtlasCollection) + 1], useAtlasSize);
 		newSocket:SetParent(socketContainer);
 		newSocket:Show();
 
-		local newFrame = framePool:Acquire();
+		local newFrame = puckFramePool:Acquire();
 		newFrame.boardIndex = boardIndices[index];
 		self:RegisterFrame(newFrame.boardIndex, newSocket, newFrame);
 		newFrame:SetPoint("CENTER", newSocket, "CENTER");
@@ -110,7 +127,7 @@ function AdventuresBoardMixin:CreateEnemyFrames()
 	self.enemyFramesCreated = true;
 
 	local boardIndices = EnemyOrder;
-	local createNewEnemy = self:GenerateFactoryFunction(self.enemyFramePool, boardIndices, self.EnemyContainer, self.enemySocketAtlas);
+	local createNewEnemy = self:GenerateFactoryFunction(self.enemyFramePool, self.enemySocketFramePool, boardIndices, self.EnemyContainer, EnemySocketAtlasNames);
 
 	local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.EnemyContainer, "TOPLEFT", 0, 0);
 
@@ -131,7 +148,7 @@ function AdventuresBoardMixin:CreateFollowerFrames()
 	self.followerFramesCreated = true;
 
 	local boardIndices = FollowerOrder;
-	local createNewFollower = self:GenerateFactoryFunction(self.followerFramePool, boardIndices, self.FollowerContainer, self.followerSocketAtlas);
+	local createNewFollower = self:GenerateFactoryFunction(self.followerFramePool, self.followerSocketFramePool, boardIndices, self.FollowerContainer, FollowerSocketAtlasNames);
 
 	local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.FollowerContainer, "TOPLEFT", 0, 0);
 
@@ -168,6 +185,41 @@ function AdventuresBoardMixin:RaiseFrameByBoardIndex(boardIndex)
 
 	local frame = self:GetFrameByBoardIndex(boardIndex);
 	frame:SetFrameLevel(frame:GetFrameLevel() + 50);
+end
+
+
+function AdventuresBoardMixin:TriggerEnemyTargetingReticles(targetingIndices, useLoop)
+	for _, targetingIndex in ipairs(targetingIndices) do
+		if  targetingIndex >= Enum.GarrAutoBoardIndex.EnemyLeftFront and targetingIndex <= Enum.GarrAutoBoardIndex.EnemyRightBack then
+			local frameToPlayAnimation = self:GetFrameByBoardIndex(targetingIndex);
+
+			if frameToPlayAnimation:IsShown() then
+				if not useLoop then 
+					frameToPlayAnimation.EnemyTargetingIndicatorFrame:Play();
+				else
+					frameToPlayAnimation.EnemyTargetingIndicatorFrame:Loop();
+				end
+			else
+				local socketToPlayEmptyAnimation = self:GetSocketByBoardIndex(targetingIndex);
+				if not useLoop then
+					socketToPlayEmptyAnimation.DesaturatedTargetingIndicatorFrame:Play();
+				else
+					socketToPlayEmptyAnimation.DesaturatedTargetingIndicatorFrame:Loop();
+				end
+			end
+			
+		end
+	end
+end
+
+function AdventuresBoardMixin:GetHoverTargetingBoardIndex(placerFrame)
+	for followerFrame in self:EnumerateFollowers() do
+		if followerFrame:IsMouseOver() then
+			return followerFrame.boardIndex;
+		end
+	end
+
+	return nil;
 end
 
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);

@@ -294,7 +294,7 @@ TutorialData.ClassData = {
 		warningSpenderString = NPEV2_ENHANCED_COMBAT_TACTICS_WARNING;
 
 		builderString = NPEV2_DRUID_BUILDER,
-		spenderStringD = NPEV2_DRUID_SPENDER,
+		spenderString = NPEV2_DRUID_SPENDER,
 		classQuestSpellID = 783,			-- Travel Form
 	},
 };

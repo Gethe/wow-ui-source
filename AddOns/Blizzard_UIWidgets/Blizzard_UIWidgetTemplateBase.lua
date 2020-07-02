@@ -280,18 +280,21 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Text:SetWidth(textWidth);
 	self.Text:SetHeight(0);
 
-	if spellInfo.text ~= "" then
-		self.Text:SetText(spellInfo.text);
-	else
-		self.Text:SetText(name);
-	end
+	local textShown = spellInfo.textShownState == Enum.SpellDisplayTextShownStateType.Shown;
+	self.Text:SetShown(textShown);
 
-	if textWidth == 0 then
-		textWidth = self.Text:GetWidth();
-	end
-
-	if self.Text:GetHeight() < self.Icon:GetHeight() then
-		self.Text:SetHeight(self.Icon:GetHeight());
+	if textShown then
+		if spellInfo.text ~= "" then
+			self.Text:SetText(spellInfo.text);
+		else
+			self.Text:SetText(name);
+		end
+		if textWidth == 0 then
+			textWidth = self.Text:GetWidth();
+		end
+		if self.Text:GetHeight() < self.Icon:GetHeight() then
+			self.Text:SetHeight(self.Icon:GetHeight());
+		end
 	end
 
 	if spellInfo.stackDisplay > 0 then

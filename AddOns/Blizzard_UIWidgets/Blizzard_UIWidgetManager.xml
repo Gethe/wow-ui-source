@@ -12,7 +12,7 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="ResizeLayoutFrame" mixin="UIWidgetContainerMixin">
+	<Frame name="UIWidgetContainerNoResizeTemplate" virtual="true" mixin="UIWidgetContainerMixin">
 		<Size x="1" y="1"/>
 		<KeyValues>
 			<!--Set this to false if you don't want visibility managed by the WidgetContainerMixin-->
@@ -24,6 +24,9 @@
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
+
+
+	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="UIWidgetContainerNoResizeTemplate, ResizeLayoutFrame" mixin="UIWidgetContainerMixin"/>
 
 	<Frame name="WidgetOffsetContainerTemplate" virtual="true">
 		<Frames>

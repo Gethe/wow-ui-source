@@ -55,7 +55,7 @@ local CovenantPreview =
 			Fields =
 			{
 				{ Name = "Class", Type = "CovenantAbilityType", EnumValue = 0 },
-				{ Name = "Racial", Type = "CovenantAbilityType", EnumValue = 1 },
+				{ Name = "Signature", Type = "CovenantAbilityType", EnumValue = 1 },
 			},
 		},
 		{

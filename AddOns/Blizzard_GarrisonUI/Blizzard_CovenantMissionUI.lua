@@ -100,7 +100,16 @@ local COVENANT_MISSION_EVENTS = {
 	"GARRISON_RANDOM_MISSION_ADDED",
 	"CURRENT_SPELL_CAST_CHANGED",
 	"GARRISON_FOLLOWER_XP_CHANGED",
+	"GARRISON_AUTO_MISSION_TARGETING_RESPONSE"
 };
+
+function CovenantMission:OnEventMainFrame(event, ...)
+	if event == "GARRISON_AUTO_MISSION_TARGETING_RESPONSE" then
+		self:UpdateSpellTargeting(...);
+	else
+		GarrisonFollowerMission:OnEventMainFrame(event, ...);
+	end
+end
 
 function CovenantMission:OnShowMainFrame()
 	GarrisonMission.OnShowMainFrame(self);
@@ -118,6 +127,8 @@ function CovenantMission:OnShowMainFrame()
 	self:SetupTabs();
 
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
+
+	self.MissionTargetInfo = {};
 end
 
 function CovenantMission:OnHideMainFrame()
@@ -129,6 +140,7 @@ function CovenantMission:OnHideMainFrame()
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameDragStop, self);
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameReceiveDrag, self);
 
+	self.MissionTargetInfo = {};
 	C_AdventureMap.Close(); --Opening the table implicitly opens an Adventure Map, this clears the npc on it.
 end
 
@@ -274,7 +286,6 @@ function CovenantMission:OnFollowerFrameDragStart(followerFrame)
 	end
 	
 	CovenantPlacer:SetScript("OnHide", CovenantPlacerFrame_OnHide);
-
 	self:RemoveFollowerFromMission(followerFrame);
 end
 
@@ -285,6 +296,35 @@ end
 function CovenantMission:OnFollowerFrameReceiveDrag(followerFrame)
 	self:AssignFollowerToMission(followerFrame, CovenantPlacer.info);
 	self:ClearMouse();
+end
+
+function CovenantMission:GetPlacerUpdate()
+	local function PlacerFrameUpdate(placerFrame)
+		GarrisonFollowerPlacer_OnUpdate(placerFrame);
+
+		local missionPage = self:GetMissionPage();
+		local hoverBoardIndex = missionPage.Board:GetHoverTargetingBoardIndex(placerFrame);
+		if hoverBoardIndex ~= self.casterBoardIndex then
+			if hoverBoardIndex == nil then
+				self.casterBoardIndex = hoverBoardIndex;
+				EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
+				return;
+			end
+
+			local missionID = missionPage.missionInfo.missionID;
+			local spellID = CovenantPlacer.info.autoCombatSpells[1].autoCombatSpellID;
+			local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, spellID, hoverBoardIndex);
+			if targetingIndices then
+				self.casterBoardIndex = hoverBoardIndex;
+				local useLoop = true;
+				missionPage.Board:TriggerEnemyTargetingReticles(targetingIndices, useLoop);
+			else
+				C_Garrison.RequestAutoMissionTargetingInfo(missionID, spellID);
+			end
+		end
+	end
+
+	return PlacerFrameUpdate;
 end
 
 local AutoAssignmentFollowerOrder = {
@@ -390,15 +430,28 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 
 	local previousFollowerID = frame:GetFollowerGUID();
 	local previousFollowerInfo = frame:GetInfo();
+	local missionID = missionPage.missionInfo.missionID;
+
 	if previousFollowerID then
-		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, previousFollowerID);
+		C_Garrison.RemoveFollowerFromMission(missionID, previousFollowerID);
 		frame:SetEmpty();
 	end
 	
 	if C_Garrison.GetFollowerStatus(info.followerID) ~= GARRISON_FOLLOWER_IN_PARTY then
-		if not C_Garrison.AddFollowerToMission(missionPage.missionInfo.missionID, info.followerID, frame.boardIndex) then
+		if not C_Garrison.AddFollowerToMission(missionID, info.followerID, frame.boardIndex) then
 			return false;
 		end
+	end
+
+	EventRegistry:TriggerEvent("CovenantMission.CancelTargeting");
+
+	self.casterSpellIndex = frame.boardIndex;
+	self.lastAssignedSpell = info.autoCombatSpells[1].autoCombatSpellID;
+	local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, self.lastAssignedSpell, self.casterSpellIndex);
+	if targetingIndices then
+		missionPage.Board:TriggerEnemyTargetingReticles(targetingIndices);
+	else
+		C_Garrison.RequestAutoMissionTargetingInfo(missionID, self.lastAssignedSpell);
 	end
 
 	frame:SetFollowerGUID(info.followerID, info);
@@ -425,6 +478,10 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerID);
 	end
 
+	if frame.autoCombatSpells and frame.autoCombatSpells[1].autoCombatSpellID == self.lastAssignedSpell then
+		EventRegistry:TriggerEvent("CovenantMission.CancelTargetingAnimation");
+	end
+
 	frame:SetEmpty();
 
 	self:UpdateMissionData(missionPage);
@@ -445,6 +502,33 @@ function CovenantMission:GetStartMissionButtonFrame(missionPage)
 	return missionPage.StartMissionFrame.ButtonFrame;
 end
 
+function CovenantMission:UpdateSpellTargeting(missionID, autoSpellID, targetingIndices)
+	EventRegistry:TriggerEvent("CovenantMission.CancelTargetingAnimation");
+
+	if not self.MissionTargetInfo[missionID] then
+		self.MissionTargetInfo[missionID] = {};
+	end
+
+	self.MissionTargetInfo[missionID][autoSpellID] = targetingIndices;
+	local currentTargetIndices = self:GetTargetIndicesForCasterIndex(missionID, autoSpellID, self.casterSpellIndex);
+
+	if self.lastAssignedSpell == autoSpellID then
+		self:GetMissionPage().Board:TriggerEnemyTargetingReticles(currentTargetIndices);
+	end
+end
+
+function CovenantMission:GetTargetIndicesForCasterIndex(missionID, autoSpellID, boardIndex)
+	if self.MissionTargetInfo[missionID] and self.MissionTargetInfo[missionID][autoSpellID] then
+		for _, targetInfo in ipairs(self.MissionTargetInfo[missionID][autoSpellID]) do
+			if targetInfo.casterBoardIndex == boardIndex then
+				return targetInfo.targetIndices;
+			end
+		end
+	end
+
+	return nil;
+end
+
 ---------------------------------------------------------------------------------
 --- Mission Page Follower Mixin                                               ---
 ---------------------------------------------------------------------------------
@@ -455,7 +539,8 @@ function CovenantFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	
+	followerInfo.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerID);
+
 	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
 		local puck = self.Board:GetFrameByBoardIndex(boardIndex);
 		if not puck:GetFollowerGUID() then
@@ -474,7 +559,7 @@ function CovenantFollowerMissionPageMixin:UpdatePortraitPulse()
 			puck:SetHighlight(false);
 		else
 			highlightFound = true;
-			puck:SetHighlight(true);
+			puck:SetHighlight(false);
 		end
 	end
 end

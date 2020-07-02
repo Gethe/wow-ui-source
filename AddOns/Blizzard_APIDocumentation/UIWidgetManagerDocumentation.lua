@@ -449,6 +449,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "SpellDisplayTextShownStateType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Shown", Type = "SpellDisplayTextShownStateType", EnumValue = 0 },
+				{ Name = "Hidden", Type = "SpellDisplayTextShownStateType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "StatusBarColorTintValue",
 			Type = "Enumeration",
 			NumValues = 9,
@@ -1063,6 +1075,7 @@ local UIWidgetManager =
 				{ Name = "stackDisplay", Type = "number", Nilable = false },
 				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
 				{ Name = "iconDisplayType", Type = "SpellDisplayIconDisplayType", Nilable = false },
+				{ Name = "textShownState", Type = "SpellDisplayTextShownStateType", Nilable = false },
 			},
 		},
 		{

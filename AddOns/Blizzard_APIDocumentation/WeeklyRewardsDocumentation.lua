@@ -84,6 +84,7 @@ local WeeklyRewards =
 				{ Name = "threshold", Type = "number", Nilable = false },
 				{ Name = "progress", Type = "number", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 	},

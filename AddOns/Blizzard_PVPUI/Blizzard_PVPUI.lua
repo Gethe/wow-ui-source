@@ -1119,16 +1119,6 @@ function ConquestFrame_OnShow(self)
 	end
 end
 
-local tierEnumToName =
-{
-	[0] = PVP_RANK_0_NAME,
-	[1] = PVP_RANK_1_NAME,
-	[2] = PVP_RANK_2_NAME,
-	[3] = PVP_RANK_3_NAME,
-	[4] = PVP_RANK_4_NAME,
-	[5] = PVP_RANK_5_NAME,
-};
-
 local nextTierEnumToDescription =
 {
 	[0] = nil,
@@ -1140,18 +1130,20 @@ local nextTierEnumToDescription =
 };
 
 function PVPRatedTier_OnEnter(self)
-	if self.tierInfo and self.tierInfo.pvpTierEnum and tierEnumToName[self.tierInfo.pvpTierEnum] then
+	local tierName = self.tierInfo and self.tierInfo.pvpTierEnum and PVPUtil.GetTierName(self.tierInfo.pvpTierEnum);
+	if tierName then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, tierEnumToName[self.tierInfo.pvpTierEnum]);
+		GameTooltip_SetTitle(GameTooltip, tierName);
 		GameTooltip:Show();
 	end
 end
 
 function NextTier_OnEnter(self)
-	if self.tierInfo and self.tierInfo.pvpTierEnum and tierEnumToName[self.tierInfo.pvpTierEnum] then
+	local tierName = self.tierInfo and self.tierInfo.pvpTierEnum and PVPUtil.GetTierName(self.tierInfo.pvpTierEnum);
+	if tierName then
 		local WORD_WRAP = true;
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, TOOLTIP_PVP_NEXT_RANK:format(tierEnumToName[self.tierInfo.pvpTierEnum]));
+		GameTooltip_SetTitle(GameTooltip, TOOLTIP_PVP_NEXT_RANK:format(tierName));
 		if nextTierEnumToDescription[self.tierInfo.pvpTierEnum] then
 			GameTooltip:SetMinimumWidth(260);
 			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum], WORD_WRAP);
@@ -1385,11 +1377,12 @@ function ConquestFrameButton_OnEnter(self)
 	tooltip.Title:SetText(self.toolTipTitle);
 
 	local tierInfo = C_PvP.GetPvpTierInfo(pvpTier);
-	if tierInfo and tierInfo.pvpTierEnum and tierEnumToName[tierInfo.pvpTierEnum] then
+	local tierName = tierInfo and tierInfo.pvpTierEnum and PVPUtil.GetTierName(tierInfo.pvpTierEnum);
+	if tierName then
 		if ranking then
-			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RANK_AND_RATING, tierEnumToName[tierInfo.pvpTierEnum], ranking, rating);
+			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RANK_AND_RATING, tierName, ranking, rating);
 		else
-			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RATING, tierEnumToName[tierInfo.pvpTierEnum], rating);
+			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RATING, tierName, rating);
 		end
 	else
 		tooltip.Tier:SetText("");

@@ -238,6 +238,21 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetTalentTreeResetInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "goldCost", Type = "number", Nilable = false },
+				{ Name = "currencyCosts", Type = "table", InnerType = "GarrisonTalentCurrencyCostInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentTreeTalentPointResearchInfo",
 			Type = "Function",
 
@@ -303,6 +318,16 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "RequestAutoMissionTargetingInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "garrAutoSpellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RushHealFollower",
 			Type = "Function",
 
@@ -327,6 +352,17 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonAutoMissionTargetingResponse",
+			Type = "Event",
+			LiteralName = "GARRISON_AUTO_MISSION_TARGETING_RESPONSE",
+			Payload =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "garrAutoSpellID", Type = "number", Nilable = false },
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
 			},
 		},
 		{
@@ -861,6 +897,15 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "events", Type = "table", InnerType = "AutoMissionEvent", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoMissionTargetingInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+				{ Name = "targetIndices", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

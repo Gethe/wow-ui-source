@@ -113,6 +113,7 @@ AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
 ItemUtil.lua
+PVPUtil.lua
 TransmogUtil.lua
 ItemDisplay.xml
 HelpTip.xml

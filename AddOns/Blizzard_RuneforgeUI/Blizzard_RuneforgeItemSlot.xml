@@ -3,19 +3,22 @@
 	<Script file="Blizzard_RuneforgeItemSlot.lua"/>
 
 	<Button name="RuneforgeItemSlotTemplate" mixin="RuneforgeItemSlotMixin" registerForClicks="LeftButtonDown, RightButtonDown" virtual="true">
-		<Size x="100" y="100"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.7"/>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Size x="60" y="60"/>
 		<Frames>
-			<ItemButton parentKey="ItemButton" inherits="GiantItemButtonTemplate" mixin="RuneforgeItemSlotButtonMixin">
+			<ItemButton parentKey="ItemButton" mixin="RuneforgeItemSlotButtonMixin">
+				<Size x="60" y="60"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SelectedTexture" atlas="runecarving-icon-center-selected" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnEnter method="OnEnter"/>

@@ -12,7 +12,6 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 });
 
 local RuneforgeFrameEvents = {
-	"GLOBAL_MOUSE_DOWN",
 	"CURRENCY_DISPLAY_UPDATE",
 	"RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
 };
@@ -44,16 +43,7 @@ function RuneforgeFrameMixin:OnHide()
 end
 
 function RuneforgeFrameMixin:OnEvent(event, ...)
-	if event == "GLOBAL_MOUSE_DOWN" then
-		local mouseFocus = GetMouseFocus();
-		if not DoesAncestryInclude(self.PowerFrame, mouseFocus) and mouseFocus ~= self.PowerSlot then
-			self.PowerFrame:Hide();
-		end
-
-		if not DoesAncestryInclude(self.ModifierFrame, mouseFocus) then
-			self.ModifierFrame:CloseSelector();
-		end
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+	if event == "CURRENCY_DISPLAY_UPDATE" then
 		-- If this is a Runeforge currency, update.
 		local updatedCurrencyID = ...;
 		for i, currencyID in ipairs(RuneforgeUtil.GetRuneforgeCurrencies()) do
@@ -79,8 +69,8 @@ end
 function RuneforgeFrameMixin:GetLegendaryCraftInfo()
 	local itemLocation = self:GetItem();
 	if itemLocation then
-		local powerID = self.PowerSlot:GetPowerID();
-		local modifiers = self.ModifierFrame:GetModifiers();
+		local powerID = self.CraftingFrame:GetPowerID();
+		local modifiers = self.CraftingFrame:GetModifiers();
 		return itemLocation, powerID, modifiers;
 	end
 
@@ -97,31 +87,34 @@ end
 
 function RuneforgeFrameMixin:SetItem(itemLocation)
 	if not itemLocation or C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) then
-		return self.BaseItemSlot:SetItem(itemLocation);
+		return self.CraftingFrame:SetItem(itemLocation);
 	end
 
 	return false;
 end
 
 function RuneforgeFrameMixin:GetItem()
-	return self.BaseItemSlot:GetItem();
+	return self.CraftingFrame:GetItem();
 end
 
 function RuneforgeFrameMixin:HasItem()
 	return self:GetItem() ~= nil;
 end
 
+function RuneforgeFrameMixin:SetPowerID(powerID)
+	return self.CraftingFrame:SetPowerID(powerID);
+end
+
+function RuneforgeFrameMixin:GetPowerID()
+	return self.CraftingFrame:GetPowerID();
+end
+
 function RuneforgeFrameMixin:TogglePowerList()
-	if self.PowerFrame:IsShown() then
-		self.PowerFrame:Hide();
-	else
-		self.PowerFrame:OpenPowerList(self:GetPowers());
-		self.PowerFrame:Show();
-	end
+	self.CraftingFrame:TogglePowerList();
 end
 
 function RuneforgeFrameMixin:GetModifierSelections()
-	local item = self.BaseItemSlot:GetItem();
+	local item = self.CraftingFrame:GetItem();
 	if not item then
 		return {};
 	end
@@ -130,7 +123,7 @@ function RuneforgeFrameMixin:GetModifierSelections()
 end
 
 function RuneforgeFrameMixin:GetPowers()
-	local item = self.BaseItemSlot:GetItem();
+	local item = self.CraftingFrame:GetItem();
 	return C_LegendaryCrafting.GetRuneforgePowers(item);
 end
 

@@ -152,6 +152,43 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="HeaderFrame">
+				<Size x="1056" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" y="-42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Left" atlas="UI-Frame-Oribos-TitleLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="UI-Frame-Oribos-TitleRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Middle" atlas="_UI-Frame-Oribos-TitleMiddle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER" spacing="2">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="RaidFrame" inherits="WeeklyRewardActivityTypeTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="56" y="-152"/>

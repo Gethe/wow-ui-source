@@ -6,5 +6,5 @@ Blizzard_RuneforgePowerList.xml
 Blizzard_RuneforgeModifierSlot.xml
 Blizzard_RuneforgeItemSlot.xml
 Blizzard_RuneforgeCreateFrame.xml
-Blizzard_RuneforgeDropDown.xml
+Blizzard_RuneforgeCraftingFrame.xml
 Blizzard_RuneforgeFrame.xml

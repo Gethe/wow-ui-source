@@ -1212,6 +1212,12 @@ function QuestLogQuests_Update(poiTable)
 	end
 
 	if storyAchievementID then
+		if displayState.campaignShown then
+			QuestScrollFrame.Contents.StoryHeader.topPadding = -18;
+		else
+			QuestScrollFrame.Contents.StoryHeader.topPadding = 0;
+		end
+
 		QuestScrollFrame.Contents.StoryHeader:Show();
 		local mapInfo = C_Map.GetMapInfo(storyMapID);
 		QuestScrollFrame.Contents.StoryHeader.Text:SetText(mapInfo and mapInfo.name or nil);

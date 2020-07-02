@@ -424,7 +424,7 @@
 					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
+			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerNoResizeTemplate" hidden="true">
 				<Size x="210" y="1" />
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>

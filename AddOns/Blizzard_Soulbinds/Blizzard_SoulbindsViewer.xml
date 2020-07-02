@@ -59,7 +59,7 @@
 				<FontString parentKey="Name" inherits="GameFontNormalWTF2" justifyH="LEFT" wordwrap="true">
 					<Size x="295"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-335" y="200"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-335" y="230"/>
 					</Anchors>
 					<Color color="WHITE_FONT_COLOR"/>
 					<Shadow x="1" y="-1">
@@ -69,7 +69,7 @@
 				<FontString parentKey="Description" inherits="SystemFont_Shadow_Med1" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-10"/>
-						<Anchor point="BOTTOMRIGHT" x="-50" y="-30"/>
+						<Anchor point="BOTTOMRIGHT" x="-60" y="30"/>
 					</Anchors>
 					<Color r=".51" g=".48" b=".43" a="1.0"/>
 				</FontString>

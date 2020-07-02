@@ -790,7 +790,7 @@ function GarrisonMission:OnDragStartFollowerButton(placer, frame, yOffset)
 	placer.yOffset = yOffset;
 	placer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + placer.yOffset);
 	placer:Show();
-	placer:SetScript("OnUpdate", GarrisonFollowerPlacer_OnUpdate);
+	placer:SetScript("OnUpdate", self:GetPlacerUpdate());
 end
 
 function GarrisonMission:OnDragStopFollowerButton(placer)
@@ -807,7 +807,11 @@ function GarrisonMission:SetPlacerFrame(placer, info, yOffset)
 	placer.yOffset = yOffset or 25;
 	placer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + placer.yOffset);
 	placer:Show();
-	placer:SetScript("OnUpdate", GarrisonFollowerPlacer_OnUpdate);
+	placer:SetScript("OnUpdate", self:GetPlacerUpdate());
+end
+
+function GarrisonMission:GetPlacerUpdate()
+	return GarrisonFollowerPlacer_OnUpdate;
 end
 
 function GarrisonMission:OnDragStartMissionFollower(placer, frame, yOffset)

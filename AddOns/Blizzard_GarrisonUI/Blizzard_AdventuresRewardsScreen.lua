@@ -36,25 +36,16 @@ end
 
 function AdventuresRewardsScreenMixin:HideAllPanels()
 	self.CombatCompleteSuccessFrame:Hide();
-	self.TreasureChestFrame:Hide();
 	self.FinalRewardsPanel:Hide();
 end
 
 function AdventuresRewardsScreenMixin:ShowCombatCompleteSuccessPanel()
 	self.CombatCompleteSuccessFrame:Show();
-	self.TreasureChestFrame:Hide();
-	self.FinalRewardsPanel:Hide();
-end
-
-function AdventuresRewardsScreenMixin:ShowTreasureChestPanel()
-	self.CombatCompleteSuccessFrame:Hide();
-	self.TreasureChestFrame:Show();
 	self.FinalRewardsPanel:Hide();
 end
 
 function AdventuresRewardsScreenMixin:ShowFinalRewardsPanel() 
 	self.CombatCompleteSuccessFrame:Hide();
-	self.TreasureChestFrame:Hide();
 	self.FinalRewardsPanel:Show();
 end
 

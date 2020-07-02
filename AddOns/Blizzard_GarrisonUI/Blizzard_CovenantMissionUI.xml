@@ -213,13 +213,13 @@
 						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" tile="true">
+				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" vertTile="true" horizTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Median" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" tile="true">
+				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" vertTile="true" horizTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Median" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
@@ -308,7 +308,7 @@
 			<OnLoad method="OnLoadMainFrame"/>
 			<OnShow method="OnShowMainFrame"/>
 			<OnHide method="OnHideMainFrame"/>
-			<OnEvent method="OnEventMainFrame"/>`
+			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
 		<Frames>
 			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">

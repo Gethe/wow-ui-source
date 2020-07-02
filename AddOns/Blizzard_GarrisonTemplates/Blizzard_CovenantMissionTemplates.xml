@@ -544,6 +544,10 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="BorderFrame" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteDialogTemplate, GarrisonMissionTopBorderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
 					</Frame>
 				</Frames>
 			</Frame>
@@ -862,4 +866,45 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="AdventuresTargetingIndicatorTemplate" frameLevel="500" setAllPoints="true" mixin="AdventuresTargetingIndicatorMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" sublayer="1">
+				<Texture parentKey="TargetMarker" hidden="false" alpha="0" atlas="Adventures-Target-Indicator" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="30"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="TargetingAnimation" setToFinalAlpha="true">
+				<Alpha childKey="TargetMarker" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TargetMarker" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="TargetMarker" duration=".6" order="1" smoothing="IN_OUT" offsetY="10"/>
+				<Translation childKey="TargetMarker" startDelay=".6" duration="1" order="1" smoothing="IN_OUT" offsetY="-10" />
+				<Translation childKey="TargetMarker" startDelay="1.2" duration=".8" order="1" smoothing="IN_OUT" offsetY="10" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Alpha childKey="TargetMarker" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
+				<Alpha childKey="TargetMarker" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup ParentKey="BobLoop" looping="REPEAT">
+				<Translation childKey="TargetMarker" duration=".8" order="1" smoothing="IN_OUT" offsetY="10"/>
+				<Translation childKey="TargetMarker" duration=".9" order="2" smoothing="IN_OUT" offsetY="-10" />
+			</AnimationGroup>
+			<Scripts>
+				<OnPlay>
+						local indicatorFrame = self:GetParent();
+						indicatorFrame:ResetPositions()
+				</OnPlay>
+			</Scripts>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
 </Ui>

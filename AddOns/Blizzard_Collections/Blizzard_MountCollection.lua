@@ -639,19 +639,26 @@ function MountJournal_GetMountButtonByMountID(mountID)
 	end
 end
 
+local function GetMountDisplayIndexByMountID(mountID)
+	for i = 1, C_MountJournal.GetNumDisplayedMounts() do
+		local creatureName, spellID, icon, active, _, _, _, _, _, _, _, currentMountID = C_MountJournal.GetDisplayedMountInfo(i);
+		if currentMountID == mountID then
+			return i;
+		end
+	end
+	return nil;
+end
 
-function MountJournal_SetSelected(mountID, spellID)
-	MountJournal.selectedSpellID = spellID;
-	MountJournal.selectedMountID = mountID;
+function MountJournal_SetSelected(selectedMountID, selectedSpellID)
+	MountJournal.selectedSpellID = selectedSpellID;
+	MountJournal.selectedMountID = selectedMountID;
 	MountJournal_HideMountDropdown();
 	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
 	
-	local mountButton = MountJournal_GetMountButtonByMountID(mountID);
-	if(mountButton) then
-		local buttonIndex = HybridScrollFrame_GetButtonIndex(MountJournal.ListScrollFrame, mountButton);
-		HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, buttonIndex, MountJournal_GetMountButtonHeight);
-	end
+	local numDisplayedMounts = C_MountJournal.GetNumDisplayedMounts();
+	local mountIndex = GetMountDisplayIndexByMountID(selectedMountID);
+	HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
 end
 
 function MountJournalMountButton_UseMount(mountID)

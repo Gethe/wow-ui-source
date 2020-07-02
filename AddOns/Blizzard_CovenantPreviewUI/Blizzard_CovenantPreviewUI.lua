@@ -27,7 +27,7 @@ local modelSceneContainerTextureKitRegions = {
 
 local abilityTypeText = {
 	[Enum.CovenantAbilityType.Class] = COVENANT_PREVIEW_CLASS_ABILITY, 
-	[Enum.CovenantAbilityType.Racial] = COVENANT_PREVIEW_RACIAL_ABILITY, 
+	[Enum.CovenantAbilityType.Signature] = COVENANT_PREVIEW_RACIAL_ABILITY, 
 }
 
 CovenantPreviewFrameMixin = { }; 

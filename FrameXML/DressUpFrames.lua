@@ -325,14 +325,6 @@ end
 
 function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID,  width, height, point, relativePoint, offsetX, offsetY)
 	local self = TransmogAndMountDressupFrame;
-	if ( self.parentFrame ) then
-		if ( self.parentFrame == parentFrame ) then
-			return;
-		end
-		if ( self:IsShown() ) then
-			HideUIPanel(self);
-		end
-	end	
 	self.parentFrame = parentFrame;
 	TransmogAndMountDressupFrame.transmogSetID = transmogSetID;
 	TransmogAndMountDressupFrame.mountID = mountID; 

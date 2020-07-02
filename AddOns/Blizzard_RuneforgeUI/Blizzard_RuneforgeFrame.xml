@@ -3,65 +3,41 @@
 	<Script file="Blizzard_RuneforgeFrame.lua"/>
 
 	<Frame name="RuneforgeFrame" toplevel="true" parent="UIParent" enableMouse="true" mixin="RuneforgeFrameMixin" hidden="true">
-		<Size x="600" y="600"/>
+		<Size x="588" y="676"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture>
+				<Texture parentKey="Background" atlas="runecarving-background-smoke" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<FontString parentKey="Title">
+				<FontString parentKey="Title" font="QuestFont_Super_Huge" text="RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE">
+					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-30"/>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-48"/>
 					</Anchors>
+					<Color color="WHITE_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-				<KeyValues>
-					<KeyValue key="layoutType" value="Runeforge" type="string"/>
-				</KeyValues>
-			</Frame>
-
-			<Button parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate">
+			<Frame parentKey="CraftingFrame" inherits="RuneforgeCraftingFrameTemplate">
 				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Button>
-
-			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-120" y="0"/>
-				</Anchors>
-			</Frame>
-
-			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="70" y="0"/>
-				</Anchors>
-			</Button>
-
-			<Frame parentKey="PowerFrame" inherits="RuneforgePowerFrameTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PowerSlot" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
+					<Anchor point="CENTER" x="0" y="40"/>
 				</Anchors>
 			</Frame>
 
 			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="20"/>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="90"/>
 				</Anchors>
 			</Frame>
 
 			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-20"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-90"/>
 				</Anchors>
 			</Frame>
 		</Frames>

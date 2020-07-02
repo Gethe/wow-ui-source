@@ -94,7 +94,7 @@ function TokenFrame_Update()
 			name = currencyInfo.name;
 			isHeader = currencyInfo.isHeader;
 			isExpanded = currencyInfo.isHeaderExpanded;
-			isUnused = currencyInfo.isUnused;
+			isUnused = currencyInfo.isTypeUnused;
 			isWatched = currencyInfo.isShowInBackpack;
 			count = currencyInfo.quantity;
 			icon = currencyInfo.iconFileID;
@@ -295,4 +295,69 @@ end
 function TokenFrame_UpdatePopup(button)
 	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
 	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
+end
+
+InactiveCurrencyCheckBoxMixin = {};
+
+function InactiveCurrencyCheckBoxMixin:OnLoad()
+	self.Text:SetText(UNUSED);
+	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+function InactiveCurrencyCheckBoxMixin:OnClick()
+	if ( self:GetChecked() ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, true);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, false);
+	end
+	local numTokens = C_CurrencyInfo.GetCurrencyListSize();
+	for i=1, numTokens do
+		if (  C_CurrencyInfo.GetCurrencyListInfo(i).name == TokenFrame.selectedToken ) then
+			TokenFrame.selectedID = i;
+			break;
+		end
+	end
+	TokenFrame_Update();
+	TokenFramePopup_CloseIfHidden();
+	BackpackTokenFrame_Update();
+	ManageBackpackTokenFrame();
+end
+
+function InactiveCurrencyCheckBoxMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, TOKEN_MOVE_TO_UNUSED);
+	GameTooltip:Show();
+end
+
+BackpackCurrencyCheckBoxMixin = {};
+
+function BackpackCurrencyCheckBoxMixin:OnLoad()
+	self.Text:SetText(SHOW_ON_BACKPACK);
+	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+function BackpackCurrencyCheckBoxMixin:OnClick()
+	if ( self:GetChecked() ) then
+		if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
+			UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
+			self:SetChecked(false);
+			return;
+		end
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, true);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, false);
+	end
+	TokenFrame_Update();
+	BackpackTokenFrame_Update();
+	ManageBackpackTokenFrame();
+end
+
+function BackpackCurrencyCheckBoxMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, TOKEN_SHOW_ON_BACKPACK);
+	GameTooltip:Show();
 end

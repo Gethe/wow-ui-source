@@ -2,7 +2,16 @@
 RuneforgeItemSlotButtonMixin = {};
 
 function RuneforgeItemSlotButtonMixin:OnLoad()
-	self:SetNormalTexture(nil);
+	local normalTexture = self:GetNormalTexture();
+	normalTexture:SetAtlas("runecarving-icon-center-empty", true);
+	normalTexture:SetPoint("CENTER"); -- Remove the standard -1 offset.
+
+	local pushedTexture = self:GetPushedTexture();
+	pushedTexture:ClearAllPoints();
+	pushedTexture:SetPoint("CENTER");
+	pushedTexture:SetAtlas("runecarving-icon-center-pressed", true);
+
+	self.IconBorder:SetAlpha(0);
 end
 
 function RuneforgeItemSlotButtonMixin:OnEnter()
@@ -24,6 +33,17 @@ end
 
 function RuneforgeItemSlotButtonMixin:OnReceiveDrag(...)
 	self:GetParent():OnReceiveDrag(...);
+end
+
+function RuneforgeItemSlotButtonMixin:SetItemLocation(itemLocation)
+	local hasItem = itemLocation ~= nil;
+	self.SelectedTexture:SetShown(hasItem);
+
+	local alpha = hasItem and 0 or 1;
+	self:GetNormalTexture():SetAlpha(alpha);
+	self:GetPushedTexture():SetAlpha(alpha);
+
+	ItemButtonMixin.SetItemLocation(self, itemLocation);
 end
 
 
@@ -76,13 +96,13 @@ end
 
 function RuneforgeItemSlotMixin:SetItem(itemLocation)
 	local currentItemLocation = self.ItemButton:GetItemLocation();
-	if currentItemLocation then
+	if currentItemLocation and C_Item.DoesItemExist(currentItemLocation) then
 		C_Item.UnlockItem(currentItemLocation);
 	end
 
 	self.ItemButton:SetItemLocation(itemLocation);
 
-	if itemLocation then
+	if itemLocation ~= nil then
 		C_Item.LockItem(itemLocation);
 	end
 
@@ -96,9 +116,14 @@ end
 
 function RuneforgeItemSlotMixin:SetSelectingItem(isSelectingItem)
 	if isSelectingItem then
-		OpenAllBags(self:GetRuneforgeFrame());
+		OpenAllBagsMatchingContext(self:GetRuneforgeFrame());
+
+		local isLocked = true;
+		self.ItemButton:SetButtonState("PUSHED", isLocked);
 	else
 		local forceUpdate = true;
 		CloseAllBags(self:GetRuneforgeFrame(), forceUpdate);
-	end
+
+		self.ItemButton:SetButtonState("NORMAL");
+	end	
 end

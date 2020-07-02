@@ -2,12 +2,36 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventuresBoard.lua"/>
 
+
+	<Frame name="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SocketTexture" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DesaturatedTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
+				<KeyValues>
+					<KeyValue key="targetingTextureAtlas" type="string" value="Adventures-Target-Indicator-desat"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="EnemyEmptySocketTemplate" inherits="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Size x="76" y="76"/>
+	</Frame>
+
+	<Frame name="FollowerEmptySocketTemplate" inherits="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Size x="108" y="108"/>
+	</Frame>
+	
 	<Frame name="AdventuresBoardTemplate" mixin="AdventuresBoardMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="enemyTemplate" type="string" value="AdventuresEnemyPuckTemplate"/>
 			<KeyValue key="followerTemplate" type="string" value="AdventuresFollowerPuckTemplate"/>
-			<KeyValue key="enemySocketAtlas" type="string" value="Adventures-Mission-Enemy-Socket-01"/>
-			<KeyValue key="followerSocketAtlas" type="string" value="Adventures-Mission-Follower-Socket-01"/>
+			<KeyValue key="enemySocketTemplate" type="string" value="EnemyEmptySocketTemplate"/>
+			<KeyValue key="followerSocketTemplate" type="string" value="FollowerEmptySocketTemplate"/>
 		</KeyValues>
 		<Size x="556" y="455"/>
 		<Frames>

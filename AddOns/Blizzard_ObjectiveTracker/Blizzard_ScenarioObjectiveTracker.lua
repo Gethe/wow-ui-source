@@ -49,7 +49,7 @@ end
 
 -- Provide a custom way to relate these two modules for collapse purposes, since SCENARIO_TRACKER_MODULE isn't in the MODULES table at all.
 function SCENARIO_CONTENT_TRACKER_MODULE:GetRelatedModules()
-	return self, SCENARIO_TRACKER_MODULE;
+	return { self, SCENARIO_TRACKER_MODULE };
 end
 
 -- *****************************************************************************************************
@@ -153,7 +153,7 @@ local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
 	local blockHeight = widgetContainerFrame:GetHeight() + 15;
 	ScenarioWidgetContainerBlock.height = blockHeight;
 	ScenarioWidgetContainerBlock:SetHeight(blockHeight);
-	ScenarioWidgetContainerBlock:Show(); 
+	ScenarioWidgetContainerBlock:Show();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
 end
 
@@ -817,6 +817,10 @@ end
 -- *****************************************************************************************************
 
 function SCENARIO_CONTENT_TRACKER_MODULE:StaticReanchor()
+	if self:StaticReanchorCheckAddHeaderOnly() then
+		return;
+	end
+
 	local scenarioName, currentStage, numStages, flags, _, _, completed, xp, money = C_Scenario.GetInfo();
 	local rewardsFrame = ObjectiveTrackerScenarioRewardsFrame;
 	if ( numStages == 0 ) then

@@ -4,20 +4,11 @@ RuneforgePowerButtonMixin = {};
 function RuneforgePowerButtonMixin:SetPowerID(powerID)
 	self.powerID = powerID;
 
-	-- TODO:: Change visuals
-	if not powerID then
-		self.Background:SetColorTexture(0, 0, 0, 0.4);
-	elseif powerID % 3 == 0 then
-		self.Background:SetColorTexture(1, 0, 0, 0.4);
-	elseif powerID % 3 == 1 then
-		self.Background:SetColorTexture(0, 1, 0, 0.4);
-	elseif powerID % 3 == 2 then
-		self.Background:SetColorTexture(0, 0, 1, 0.4);
-	end
-
-	self.powerInfo = powerID and C_LegendaryCrafting.GetRuneforgePowerInfo(powerID) or nil;
-
-	if powerID then
+	local hasPowerID = powerID ~= nil;
+	self.powerInfo = hasPowerID and C_LegendaryCrafting.GetRuneforgePowerInfo(powerID) or nil;
+	self.Icon:SetShown(hasPowerID);
+	if hasPowerID then
+		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
 		self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
 	else
 		self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
@@ -47,7 +38,7 @@ end
 
 function RuneforgePowerButtonMixin:OnEnter()
 	if self.powerInfo then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", self.tooltipOffsetX or 0, self.tooltipOffsetY or 0);
 
 		local wrap = true;
 		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR, wrap);
@@ -67,33 +58,56 @@ end
 
 RuneforgePowerSlotMixin = CreateFromMixins(RuneforgeSystemMixin);
 
+function RuneforgePowerSlotMixin:OnLoad()
+	self.Icon:SetPoint("CENTER", -5, 2);
+	self.Icon:SetSize(64, 64);
+end
+
 function RuneforgePowerSlotMixin:OnShow()
-	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.PowerSelected, self.OnPowerSelected, self);
 	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.OnBaseItemChanged, self);
 end
 
 function RuneforgePowerSlotMixin:OnHide()
 	RuneforgePowerButtonMixin.OnHide(self);
 
-	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.PowerSelected, self);
 	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self);
 end
 
-function RuneforgePowerSlotMixin:OnClick()
+function RuneforgePowerSlotMixin:OnClick(buttonName)
 	self:GetRuneforgeFrame():TogglePowerList();
 end
 
 function RuneforgePowerSlotMixin:Reset()
 	self:SetPowerID(nil);
+	self.SelectedTexture:Hide();
 end
 
-function RuneforgePowerSlotMixin:OnPowerSelected(powerID)
-	self:SetPowerID(powerID);
+function RuneforgePowerSlotMixin:UpdateState()
+	local powerSelected = self:GetPowerID() ~= nil;
+	self.SelectedTexture:SetShown(powerSelected);
+
+	local hasItem = self:GetRuneforgeFrame():GetItem() ~= nil;
+	local alpha = (not powerSelected and hasItem) and 1 or 0;
+	self:GetNormalTexture():SetAlpha(alpha);
+	self:GetPushedTexture():SetAlpha(alpha);
+end
+
+function RuneforgePowerSlotMixin:SetPowerID(powerID)
+	if self:GetPowerID() == powerID then
+		return;
+	end
+
+	RuneforgePowerButtonMixin.SetPowerID(self, powerID);
+
+	self:GetRuneforgeFrame():TriggerEvent(RuneforgeFrameMixin.Event.PowerSelected, powerID);
+	self:UpdateState();
 end
 
 function RuneforgePowerSlotMixin:OnBaseItemChanged()
 	self:Reset();
+	self:UpdateState();
 end
+
 
 RuneforgePowerMixin = {};
 
@@ -104,8 +118,13 @@ end
 function RuneforgePowerMixin:SetPowerIndex(powerIndex)
 	self.powerIndex = powerIndex;
 
-	local powerID = self:GetPowerList():GetPower(powerIndex);
+	local powerID, isSelected = self:GetPowerList():GetPower(powerIndex);
 	self:SetPowerID(powerID);
+	self.SelectedTexture:SetShown(isSelected);
+end
+
+function RuneforgePowerMixin:OnShow()
+	self:SetAlpha(self:IsEnabled() and 1.0 or 0.5);
 end
 
 function RuneforgePowerMixin:OnClick()
@@ -148,7 +167,7 @@ function RuneforgePowerListMixin:GeneratePowerFrames()
 	local totalWidth = self:GetWidth();
 	local totalHeight = nil;
 	local overrideDirection = nil;
-	local overridePadding = 10;
+	local overridePadding = -4;
 	AnchorUtil.GridLayoutFactory(FactoryFunction, anchor, totalWidth, totalHeight, overrideDirection, overridePadding, overridePadding);
 end
 
@@ -157,7 +176,8 @@ function RuneforgePowerListMixin:GetNumPowers()
 end
 
 function RuneforgePowerListMixin:GetPower(index)
-	return self.powers[index];
+	local powerID = self.powers[index];
+	return powerID, self:GetParent():GetPowerID() == powerID;
 end
 
 function RuneforgePowerListMixin:OnPowerSelected(index)
@@ -172,7 +192,7 @@ function RuneforgePowerFrameMixin:OpenPowerList(powers)
 end
 
 function RuneforgePowerFrameMixin:SelectPowerID(powerID)
-	self:GetRuneforgeFrame():TriggerEvent(RuneforgeFrameMixin.Event.PowerSelected, powerID);
+	self:GetRuneforgeFrame():SetPowerID(powerID);
 	self:Hide();
 end
 

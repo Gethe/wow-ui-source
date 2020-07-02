@@ -489,3 +489,65 @@ function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
 	GarrisonEnemyPortait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
 end
 
+---------------------------------------------------------------------------------
+--- Covenant Mission List Button Handlers									  ---
+---------------------------------------------------------------------------------
+
+AdventuresTargetingIndicatorMixin = {};
+
+function AdventuresTargetingIndicatorMixin:OnShow()
+	if self.targetingTextureAtlas then
+		local useAtlasSize= true;
+		self.TargetMarker:SetAtlas(self.targetingTextureAtlas, useAtlasSize);
+	end
+
+	EventRegistry:RegisterCallback("CovenantMission.CancelTargetingAnimation", self.OnCancelTargeting, self);
+	EventRegistry:RegisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self.StopLooping, self);
+end
+
+function AdventuresTargetingIndicatorMixin:OnHide()
+	self:Stop();
+	EventRegistry:UnregisterCallback("CovenantMission.CancelTargetingAnimation", self);
+	EventRegistry:UnregisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self);
+end
+
+function AdventuresTargetingIndicatorMixin:OnCancelTargeting()
+	self:Stop();
+	self:ResetPositions();
+end
+
+function AdventuresTargetingIndicatorMixin:StopLooping()
+	if self.BobLoop:IsPlaying() then
+		self.FadeIn:Stop();
+		self.BobLoop:Stop();
+		self.FadeOut:Play();
+	end
+end
+
+function AdventuresTargetingIndicatorMixin:ResetPositions()
+	self.TargetMarker:SetPoint("CENTER", self, "TOP", 0, 30);
+end
+
+function AdventuresTargetingIndicatorMixin:Play()
+	if self.TargetingAnimation:IsPlaying() then
+		self:Stop();
+	end
+
+	self.TargetingAnimation:Play();
+end
+
+function AdventuresTargetingIndicatorMixin:Stop()
+	self.TargetingAnimation:Stop();
+end
+
+function AdventuresTargetingIndicatorMixin:Loop()
+	if self.TargetingAnimation:IsPlaying() then 
+		self.TargetingAnimation:Stop();
+	end
+
+	if not self.BobLoop:IsPlaying() then
+		self:ResetPositions();
+		self.FadeIn:Play();
+		self.BobLoop:Play();
+	end
+end

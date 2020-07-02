@@ -62,7 +62,7 @@
 	<CheckButton name="OptionsSmallCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>

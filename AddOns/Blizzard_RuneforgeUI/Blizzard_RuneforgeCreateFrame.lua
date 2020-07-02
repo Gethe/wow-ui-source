@@ -1,31 +1,18 @@
 
 RuneforgeCreateFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
-local RefreshEventNames = {
-	"BaseItemChanged",
-	"PowerSelected",
-	"ModifiersChanged",
-};
-
 function RuneforgeCreateFrameMixin:OnLoad()
 	self.Cost:SetTextAnchorPoint("CENTER");
 	self:UpdateCost();
 end
 
 function RuneforgeCreateFrameMixin:OnShow()
-	local runeforgeFrame = self:GetRuneforgeFrame();
-	for i, eventName in ipairs(RefreshEventNames) do
-		runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event[eventName], self.Refresh, self);
-	end
-
+	self:RegisterRefreshMethod(self.Refresh);
 	self:Refresh();
 end
 
 function RuneforgeCreateFrameMixin:OnHide()
-	local runeforgeFrame = self:GetRuneforgeFrame();
-	for i, eventName in ipairs(RefreshEventNames) do
-		runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event[eventName], self);
-	end
+	self:UnregisterRefreshMethod(self.Refresh);
 end
 
 function RuneforgeCreateFrameMixin:CraftItem()
@@ -52,6 +39,10 @@ function RuneforgeCreateFrameMixin:UpdateCost()
 	if showCost then
 		self.Cost:SetCurrencies(currenciesCost, RUNEFORGE_LEGENDARY_COST_FORMAT);
 	end
+end
+
+function RuneforgeCreateFrameMixin:GetRuneforgeFrame()
+	return self:GetParent();
 end
 
 

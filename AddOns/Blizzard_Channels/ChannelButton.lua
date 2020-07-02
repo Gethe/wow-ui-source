@@ -68,6 +68,19 @@ function ChannelButtonBaseMixin:GetCategory()
 	return self.category;
 end
 
+function ChannelButtonBaseMixin:SetChannelRuleset(ruleset)
+	self.ruleset = ruleset;
+	self.activePlayerRole = nil;
+
+	if ruleset == Enum.ChatChannelRuleset.Mentor then
+		self.activePlayerRole = C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player"));
+	end
+end
+
+function ChannelButtonBaseMixin:GetChannelRuleset()
+	return self.ruleset, self.activePlayerRole;
+end
+
 function ChannelButtonBaseMixin:SetVoiceChannel(voiceChannel)
 	self.linkedVoiceChannel = voiceChannel;
 
@@ -201,6 +214,10 @@ function ChannelButtonBaseMixin:Setup(channelID, name, header, channelNumber, co
 	self:SetChannelName(name);
 	self:SetMemberCount(count);
 	self:SetCategory(category);
+
+	if channelNumber then
+		self:SetChannelRuleset(C_ChatInfo.GetChannelRuleset(channelNumber));
+	end
 
 	self:Update();
 end
