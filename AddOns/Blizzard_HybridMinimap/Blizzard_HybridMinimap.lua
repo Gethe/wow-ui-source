@@ -47,6 +47,9 @@ end
 
 function HybridMinimapMixin:CheckMap()
 	local mapID = MapUtil.GetDisplayableMapForPlayer();
+	if (mapID == 1705) then
+		mapID = 1706;
+	end
 	if mapID ~= self.mapID then
 		self:SetMapID(mapID);
 	end

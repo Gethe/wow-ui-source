@@ -148,11 +148,14 @@ local textureFontProperties = {
 		description = NORMAL_FONT_COLOR,
 		titleFont = QuestFont_Huge;
 	},
-
 	["Oribos"] = {
 		title = HIGHLIGHT_FONT_COLOR,
 		description = HIGHLIGHT_FONT_COLOR,
 		descriptionFont = QuestFont_Super_Huge;
+	},
+	["Kyrian"] = {
+		title = CreateColor(0.008, 0.051, 0.192),
+		description = CreateColor(0.082, 0.165, 0.373),
 	},
 };
 
@@ -225,6 +228,24 @@ local borderLayout = {
 		showTitle = true,
 		setAtlasVisibility = true,
 		frameOffsetY = 0,
+		useFourCornersBorderNineSlice = true,
+	},
+	["Venthyr"] = {
+		closeButtonX = 2,
+		closeBorderX = -2,
+		closeButtonY = 2,
+		closeBorderY = 2,
+		showTitle = true,
+		setAtlasVisibility = true,
+		useFourCornersBorderNineSlice = true,
+	},
+	["Kyrian"] = {
+		closeButtonX = 1,
+		closeBorderX = 0,
+		closeButtonY = -2,
+		closeBorderY = 1,
+		showTitle = true,
+		setAtlasVisibility = true,
 		useFourCornersBorderNineSlice = true,
 	},
 }
@@ -804,7 +825,7 @@ end
 
 function PlayerChoiceFrameMixin:SetupRewards()
 	for i=1, self.numActiveOptions do
-		local optionFrameRewards = self["Option"..i].Rewards;
+		local optionFrameRewards = self["Option"..i].RewardsFrame.Rewards;
 		local rewardInfo = C_PlayerChoice.GetPlayerChoiceRewardInfo(i);
 
 		if rewardInfo then
@@ -1131,7 +1152,7 @@ end
 
 function PlayerChoiceOptionFrameMixin:GetPaddingFrame()
 	if (self.hasRewards) then
-		return self.Rewards;
+		return self.RewardsFrame;
 	else
 		return self.WidgetContainer;
 	end

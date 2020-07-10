@@ -64,8 +64,16 @@ end
 
 function RuneforgeCraftingFrameMixin:Refresh()
 	local hasItem = self:GetItem() ~= nil;
-	self.Runes:SetShown(hasItem);
+	if self.RunesGlow:IsShown() == hasItem then
+		return;
+	end
+
+	self:GetRuneforgeFrame():SetRunesShown(hasItem);
 	self.RunesGlow:SetShown(hasItem);
+
+	if hasItem then
+		self.RunesGlow.FadeIn:Play();
+	end
 end
 
 function RuneforgeCraftingFrameMixin:GetRuneforgeFrame()

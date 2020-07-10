@@ -153,6 +153,7 @@ local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
 	local blockHeight = widgetContainerFrame:GetHeight() + 15;
 	ScenarioWidgetContainerBlock.height = blockHeight;
 	ScenarioWidgetContainerBlock:SetHeight(blockHeight);
+	ScenarioWidgetContainerBlock:SetWidth(widgetContainerFrame:GetWidth());
 	ScenarioWidgetContainerBlock:Show();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
 end
@@ -170,7 +171,7 @@ function ScenarioBlocksFrame_OnLoad(self)
 	self.MawBuffsBlock.module = SCENARIO_TRACKER_MODULE;
 	self.MawBuffsBlock.height = self.MawBuffsBlock:GetHeight();
 	ScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
-	ScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
+	ScenarioWidgetContainerBlock.height = 0;
 
 	SCENARIO_TRACKER_MODULE.BlocksFrame = self;
 
@@ -189,6 +190,7 @@ end
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
+		ScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
 	elseif ( event == "WORLD_STATE_TIMER_START") then
 		local timerID = ...;
 		ScenarioTimer_CheckTimers(timerID);

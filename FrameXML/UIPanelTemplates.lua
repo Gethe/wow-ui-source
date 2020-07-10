@@ -319,17 +319,11 @@ function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatStrin
 	else
 		self:SetText(currencyString);
 	end
-
-	-- without an override amount this currency is eligible for a refresh
-	if not amount then
-		self.currencyID = currencyID;
-		self.formatString = formatString;
-		self.colorCode = colorCode;
-	else
-		self.currencyID = nil;
-		self.formatString = nil;
-		self.colorCode = nil;
-	end
+	
+	self.currencyID = currencyID;
+	self.amount = amount;
+	self.formatString = formatString;
+	self.colorCode = colorCode;
 end
 
 function CurrencyTemplateMixin:SetTooltipAnchor(tooltipAnchor)
@@ -337,7 +331,8 @@ function CurrencyTemplateMixin:SetTooltipAnchor(tooltipAnchor)
 end
 
 function CurrencyTemplateMixin:Refresh()
-	if self.currencyID then
+	-- without an override amount this currency is eligible for a refresh
+	if not self.amount then
 		local overrideAmount = nil;
 		self:SetCurrencyFromID(self.currencyID, overrideAmount, self.formatString, self.colorCode);
 	end
@@ -467,8 +462,24 @@ end
 CurrencyDisplayMixin = CreateFromMixins(CurrencyTemplateMixin);
 
 -- currencies: An array of currencyInfo
--- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }
+-- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }, or a table with { currencyID = 123, amount = 45 }
 function CurrencyDisplayMixin:SetCurrencies(currencies, formatString)
+	if #currencies == 1 then
+		local currency = currencies[1];
+		if type(currency) == "table" then
+			if currency.currencyID and currency.amount then
+				self:SetCurrencyFromID(currency.currencyID, currency.amount, formatString);
+			else
+				local currencyID, overrideAmount, colorCode = unpack(currency);
+				self:SetCurrencyFromID(currencyID, overrideAmount, formatString, colorCode);
+			end
+		else
+			self:SetCurrencyFromID(currency);
+		end
+
+		return;
+	end
+
 	local text = nil;
 	for i, currency in ipairs(currencies) do
 		if text then

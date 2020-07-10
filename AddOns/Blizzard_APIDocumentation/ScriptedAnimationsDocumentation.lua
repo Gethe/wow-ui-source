@@ -42,9 +42,9 @@ local ScriptedAnimations =
 		{
 			Name = "ScriptedAnimationTrajectory",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "AtSource", Type = "ScriptedAnimationTrajectory", EnumValue = 0 },
@@ -53,6 +53,7 @@ local ScriptedAnimations =
 				{ Name = "CurveLeft", Type = "ScriptedAnimationTrajectory", EnumValue = 3 },
 				{ Name = "CurveRight", Type = "ScriptedAnimationTrajectory", EnumValue = 4 },
 				{ Name = "CurveRandom", Type = "ScriptedAnimationTrajectory", EnumValue = 5 },
+				{ Name = "HalfwayBetween", Type = "ScriptedAnimationTrajectory", EnumValue = 6 },
 			},
 		},
 		{

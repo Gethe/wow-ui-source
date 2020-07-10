@@ -3,17 +3,6 @@ local LegendaryCraftingTypes =
 	Tables =
 	{
 		{
-			Name = "RuneforgeLegendaryError",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
-			Fields =
-			{
-				{ Name = "MissingReagents", Type = "RuneforgeLegendaryError", EnumValue = 0 },
-			},
-		},
-		{
 			Name = "RuneforgePowerState",
 			Type = "Enumeration",
 			NumValues = 3,

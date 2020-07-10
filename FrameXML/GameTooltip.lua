@@ -368,6 +368,25 @@ GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
 
+GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY = {
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Maw",
+	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Maw",
+	tile = true,
+	tileEdge = false,
+	tileSize = 16,
+	edgeSize = 19,
+	insets = { left = 4, right = 4, top = 4, bottom = 4 },
+
+	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
+	backdropColor = WHITE_FONT_COLOR,
+
+	overlayAtlasTop = "Maw-tooltip-topper";
+	overlayAtlasTopScale = .75,
+	overlayAtlasTopYOffset = -2;
+
+	padding = { left = 3, right = 3, top = 3, bottom = 3 },
+};
+
 function GameTooltip_OnHide(self)
 	self.needsReset = true;
 	SharedTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or TOOLTIP_BACKDROP_STYLE_DEFAULT);

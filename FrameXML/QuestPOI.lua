@@ -204,7 +204,7 @@ end
 
 function QuestPOI_UpdateNormalStyleTexture(poiButton)
 	-- This may be overridden later
-	poiButton.Display:SetOffset(-1, 0);
+	poiButton.Display:SetOffset(0, 0);
 
 	local questPOIType = QuestPOI_GetQuestType(poiButton);
 

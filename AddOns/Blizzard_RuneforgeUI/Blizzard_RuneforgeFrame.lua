@@ -1,6 +1,17 @@
 
 UIPanelWindows["RuneforgeFrame"] = { area = "left", pushable = 3, showFailedFunc = C_LegendaryCrafting.CloseRuneforgeInteraction, };
 
+local CircleRuneEffects = {
+	{ effectID = 60, offsetX = 104, offsetY = 308 },
+	{ effectID = 62, offsetX = 312, offsetY = 75 },
+	{ effectID = 63, offsetX = 314, offsetY = -72 },
+	{ effectID = 64, offsetX = 50, offsetY = -322 },
+	{ effectID = 65, offsetX = -106, offsetY = -299 },
+	{ effectID = 66, offsetX = -278, offsetY = -150 },
+	{ effectID = 67, offsetX = -254, offsetY = 196 },
+	{ effectID = 68, offsetX = -125, offsetY = 294 },
+};
+
 
 RuneforgeFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
@@ -9,6 +20,8 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 	"BaseItemChanged",
 	"PowerSelected",
 	"ModifiersChanged",
+	"ItemSlotOnEnter",
+	"ItemSlotOnLeave",
 });
 
 local RuneforgeFrameEvents = {
@@ -22,6 +35,7 @@ local RuneforgeFrameUnitEvents = {
 
 function RuneforgeFrameMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
+	self.ResultTooltip:Init();
 end
 
 function RuneforgeFrameMixin:OnShow()
@@ -29,6 +43,7 @@ function RuneforgeFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, RuneforgeFrameUnitEvents, "player");
 
 	self:RefreshCurrencyDisplay();
+	self:InitializeEffects();
 
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
@@ -46,7 +61,7 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 	if event == "CURRENCY_DISPLAY_UPDATE" then
 		-- If this is a Runeforge currency, update.
 		local updatedCurrencyID = ...;
-		for i, currencyID in ipairs(RuneforgeUtil.GetRuneforgeCurrencies()) do
+		for i, currencyID in ipairs(C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies()) do
 			if currencyID == updatedCurrencyID then
 				self:RefreshCurrencyDisplay();
 				break;
@@ -62,8 +77,43 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function RuneforgeFrameMixin:InitializeEffects()
+	if self.effectsInitialized then
+		return;
+	end
+
+	self:AddEffect(RuneforgeUtil.Level.Background, RuneforgeUtil.Effect.CenterPassive, self.CraftingFrame.BaseItemSlot);
+
+	local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -138, };
+	self.BottomModelScene:SetAlpha(0.65);
+	self.BottomModelScene:AddDynamicEffect(bottomEffectDynamicDescription, self);
+
+	self.effectsInitialized = true;
+end
+
+function RuneforgeFrameMixin:SetRunesShown(shown)
+	if self.runeEffects and not shown then
+		for i, effectController in ipairs(self.runeEffects) do
+			effectController:CancelEffect();
+		end
+
+		self.runeEffects = nil;
+	elseif not self.runeEffects and shown then
+		self.runeEffects = {};
+
+		for i, effect in ipairs(CircleRuneEffects) do
+			local effectController = self.OverlayModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
+			table.insert(self.runeEffects, effectController);
+		end
+	end
+end
+
 function RuneforgeFrameMixin:RefreshCurrencyDisplay()
-	return self.CurrencyDisplay:SetCurrencies(RuneforgeUtil.GetRuneforgeCurrencies());
+	local initFunction = nil;
+	local initialAnchor = nil;
+	local gridLayout = nil;
+	local tooltipAnchor = "ANCHOR_RIGHT";
+	return self.CurrencyDisplay:SetCurrencies(C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies(), initFunction, initialAnchor, gridLayout, tooltipAnchor);
 end
 
 function RuneforgeFrameMixin:GetLegendaryCraftInfo()
@@ -77,11 +127,24 @@ function RuneforgeFrameMixin:GetLegendaryCraftInfo()
 	return nil;
 end
 
-function RuneforgeFrameMixin:SetItemTooltip(tooltip)
+function RuneforgeFrameMixin:RefreshResultTooltip()
+	local resultTooltip = self.ResultTooltip;
+	local tooltipWasShown = resultTooltip:IsShown();
 	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
-	if baseItem then
+	local hasItem = baseItem ~= nil;
+	if hasItem then
+		resultTooltip:SetOwner(self, "ANCHOR_NONE");
+		resultTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -160);
 		local itemID = C_Item.GetItemID(baseItem);
-		tooltip:SetRuneforgeResultItem(itemID, powerID, modifiers);
+		resultTooltip:SetRuneforgeResultItem(itemID, powerID, modifiers);
+	end
+	
+	resultTooltip:SetShown(hasItem);
+
+	if tooltipWasShown ~= hasItem then
+		local panelWidth = hasItem and (self:GetWidth() + resultTooltip:GetWidth()) or self:GetWidth();
+		SetUIPanelAttribute(self, "width", panelWidth);
+		UpdateUIPanelPositions(self);
 	end
 end
 
@@ -113,15 +176,6 @@ function RuneforgeFrameMixin:TogglePowerList()
 	self.CraftingFrame:TogglePowerList();
 end
 
-function RuneforgeFrameMixin:GetModifierSelections()
-	local item = self.CraftingFrame:GetItem();
-	if not item then
-		return {};
-	end
-
-	return C_LegendaryCrafting.GetRuneforgeModifiers(item);
-end
-
 function RuneforgeFrameMixin:GetPowers()
 	local item = self.CraftingFrame:GetItem();
 	return C_LegendaryCrafting.GetRuneforgePowers(item);
@@ -136,6 +190,43 @@ function RuneforgeFrameMixin:GetCraftDescription()
 	end
 
 	return C_LegendaryCrafting.MakeRuneforgeCraftDescription(baseItem, powerID, modifiers);
+end
+
+function RuneforgeFrameMixin:CanCraftRuneforgeLegendary()
+	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
+
+	if not baseItem then
+		return false, nil;
+	end
+
+	for i, cost in ipairs(C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem)) do
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(cost.currencyID);
+		if cost.amount > currencyInfo.quantity then
+			return false, RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_CURRENCY_FORMAT:format(currencyInfo.name);
+		end
+	end
+
+	-- We need exactly 2 modifiers, one for each secondary stat.
+	if not powerID or #modifiers ~= 2 then
+		return false, nil;
+	end
+
+	return true, nil;
+end
+
+function RuneforgeFrameMixin:GetModelSceneFromLevel(level)
+	if level == RuneforgeUtil.Level.Background then
+		return self.BackgroundModelScene;
+	elseif level == RuneforgeUtil.Level.Overlay then
+		return self.OverlayModelScene;
+	else -- RuneforgeUtil.Level.Frame is omitted as that is the default level.
+		return self.CraftingFrame.ModelScene;
+	end
+end
+
+function RuneforgeFrameMixin:AddEffect(level, ...)
+	local modelScene = self:GetModelSceneFromLevel(level);
+	return modelScene:AddEffect(...);
 end
 
 function RuneforgeFrameMixin:Close()

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Frame name="UIWidgetTemplateCaptureBar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateCaptureBarMixin">
-		<Size x="173" y="26"/>
+		<Size x="196" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="LeftBar">
@@ -10,7 +10,19 @@
 						<Anchor point="LEFT" x="26" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="LeftBarShadow">
+					<Size x="60" y="9"/>
+					<Anchors>
+						<Anchor point="LEFT" x="26" y="0"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="RightBar">
+					<Size x="60" y="9"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-26" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBarShadow">
 					<Size x="60" y="9"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-26" y="0"/>
@@ -44,6 +56,11 @@
 				<Texture parentKey="LeftLine" atlas="worldstate-capturebar-frame-separater" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.NeutralBar" relativePoint="LEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.NeutralBar" />
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Spark">

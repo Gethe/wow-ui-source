@@ -489,9 +489,6 @@ end
 function CharacterCreateMixin:RotateCharacterToTarget(targetRotation, duration)
 	if not self.mouseRotating then
 		local currentRotation = C_CharacterCreation.GetCharacterCreateFacing();
-		if targetRotation == currentRotation then
-			return;
-		end
 
 		if duration == 0 then
 			C_CharacterCreation.SetCharacterCreateFacing(targetRotation);
@@ -897,17 +894,195 @@ end
 function CharacterCreateRaceAndClassMixin:OnHide()
 end
 
+function CharacterCreateRaceAndClassMixin:ClearTimer()
+	if self.Timer then
+		self.Timer:Cancel();
+	end
+end
+
 function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
+	self:ClearTimer();
+
+	local function playAnims()
+		self:StopClassAnimations();
+
+		local spellVisualKitID = self.selectedClassData.spellVisualKitID;
+		if spellVisualKitID then
+			self:GetParent():RotateCharacterToTarget(0, 0);
+
+			self.currentSpellVisualKitID = spellVisualKitID;
+			
+			local startTargetingSequence = true;
+			local noBlending = (self.allowClassAnimationsAfterSeconds == 0);
+			C_CharacterCreation.PlaySpellVisualKitOnCharacter(spellVisualKitID, startTargetingSequence, noBlending);
+
+			if self.selectedClassData.groundSpellVisualKitID then
+				self.currentGroundSpellVisualKitID = self.selectedClassData.groundSpellVisualKitID;
+				C_CharacterCreation.PlaySpellVisualKitOnGround(self.selectedClassData.groundSpellVisualKitID);
+			end
+		end
+	end
+
+	if not self.allowClassAnimationsAfterSeconds then
+		return;
+	else
+		if self.allowClassAnimationsAfterSeconds > 0 then
+			self.Timer = C_Timer.NewTimer(self.allowClassAnimationsAfterSeconds, playAnims);
+		else
+			playAnims();
+		end
+	end
 end
 
 function CharacterCreateRaceAndClassMixin:StopClassAnimations()
+	self:ClearTimer();
+	self.currentSpellVisualKitID = nil;
 	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
+	C_CharacterCreation.SetModelsHiddenState(false);
 end
 
 function CharacterCreateRaceAndClassMixin:StopActiveGroundEffect()
+	if self.currentGroundSpellVisualKitID then
+		C_CharacterCreation.StopSpellVisualKit(self.currentGroundSpellVisualKitID);
+		self.currentGroundSpellVisualKitID = nil;
+	end
 end
 
+local function GetDHMetaModelInfo(race, sex)
+	local metaFormScale = 0.7;
+
+	if race == "NightElf" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 63247, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	elseif race == "BloodElf" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	end
+end
+
+local function GetDHNormalModelInfo()
+	return { showPlayerModel = true, playerModelSpellVisualKitID = 131914 , destroyModelFunc = GetDHMetaModelInfo };
+end
+
+local function GetDruidCatModelInfo(race, sex)
+	if race == "NightElf" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 29405, spellVisualKitID = 131927 };
+		else
+			return { displayID = 892, spellVisualKitID = 131927 };
+		end
+	elseif race == "Tauren" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 29410, spellVisualKitID = 134580 };
+		else
+			return { displayID = 29412, spellVisualKitID = 134580 };
+		end
+	elseif race == "Worgen" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 33664, spellVisualKitID = 134578 };
+		else
+			return { displayID = 33661, spellVisualKitID = 134578 };
+		end
+	elseif race == "Troll" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 33665, spellVisualKitID = 134582 };
+		else
+			return { displayID = 33666, spellVisualKitID = 134582 };
+		end
+	elseif race == "HighmountainTauren" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 80597, spellVisualKitID = 134581 };
+		else
+			return { displayID = 80598, spellVisualKitID = 134581 };
+		end
+	elseif race == "ZandalariTroll" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 85195, spellVisualKitID = 134583 };
+		else
+			return { displayID = 85194, spellVisualKitID = 134583 };
+		end
+	elseif race == "KulTiran" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 86100, spellVisualKitID = 134579 };
+		else
+			return { displayID = 86524, spellVisualKitID = 134579 };
+		end
+	end
+end
+
+local function GetDruidNormalModelInfo()
+	return { showPlayerModel = true, playerModelSpellVisualKitID = 131928, destroyModelFunc = GetDruidCatModelInfo };
+end
+
+local spellVisualKitCompletionAction = 
+{
+	-- Druid
+	[129374] = { hidePlayerModel = true, createModelFunc = GetDruidCatModelInfo, onCompletionFunc = GetDruidNormalModelInfo },
+
+	-- Demon Hunter
+	[129051] = { hidePlayerModel = true, createModelFunc = GetDHMetaModelInfo, onCompletionFunc = GetDHNormalModelInfo },
+}
+
+local createdModelIndices = {};
+
 function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisualKitID)
+	if self.currentSpellVisualKitID == spellVisualKitID then
+		local nextAction = spellVisualKitCompletionAction[spellVisualKitID];
+		if nextAction then
+			self.currentSpellVisualKitID = nil;
+
+			if nextAction.hidePlayerModel then
+				C_CharacterCreation.SetModelsHiddenState(true);
+			elseif nextAction.showPlayerModel then
+				C_CharacterCreation.SetModelsHiddenState(false);
+			end
+
+			local modelSvkID;
+			if nextAction.createModelFunc then
+				local createModelInfo = nextAction.createModelFunc(self.selectedRaceData.fileName, self.selectedSexID);
+				if createModelInfo then
+					local needsAnim = (createModelInfo.spellVisualKitID ~= nil);
+					local useCharFacing = true;
+					createdModelIndices[createModelInfo.displayID] = C_CharacterCreation.CreateAuxModel(createModelInfo.displayID, needsAnim, useCharFacing, createModelInfo.position, createModelInfo.scale);
+					if createModelInfo.equipWeapons then
+						C_CharacterCreation.EquipWeaponsOnAuxModel(createdModelIndices[createModelInfo.displayID], createModelInfo.weaponScale);
+					end
+					if createModelInfo.spellVisualKitID then
+						C_CharacterCreation.PlaySpellVisualKitOnAuxModel(createdModelIndices[createModelInfo.displayID], createModelInfo.spellVisualKitID);
+						self.currentSpellVisualKitID = createModelInfo.spellVisualKitID;
+						modelSvkID = createModelInfo.spellVisualKitID;
+					end
+				end
+			end
+
+			if modelSvkID and nextAction.onCompletionFunc then
+				spellVisualKitCompletionAction[modelSvkID] = nextAction.onCompletionFunc();
+			end
+
+			if nextAction.destroyModelFunc then
+				local destroyModelInfo = nextAction.destroyModelFunc(self.selectedRaceData.fileName, self.selectedSexID);
+				if destroyModelInfo and createdModelIndices[destroyModelInfo.displayID] then
+					C_CharacterCreation.DestroyAuxModel(createdModelIndices[destroyModelInfo.displayID]);
+					createdModelIndices[destroyModelInfo.displayID] = nil;
+				end
+			end
+
+			if nextAction.playerModelSpellVisualKitID then
+				local doNotStartTargetingSequence = false;
+				C_CharacterCreation.PlaySpellVisualKitOnCharacter(nextAction.playerModelSpellVisualKitID, doNotStartTargetingSequence);
+				self.currentSpellVisualKitID = nextAction.playerModelSpellVisualKitID;
+			end
+		else
+			local useBlending = true;
+			self:PlayClassIdleAnimation(useBlending);
+		end
+	end
 end
 
 function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending)
@@ -916,19 +1091,33 @@ function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending)
 	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(not useBlending);
 end
 
+function CharacterCreateRaceAndClassMixin:DestroyCreatedModels()
+	for _, modelIndex in pairs(createdModelIndices) do
+		C_CharacterCreation.DestroyAuxModel(modelIndex);
+	end
+
+	createdModelIndices = {};
+end
+
 function CharacterCreateRaceAndClassMixin:PlayCustomizationAnimation()
 	self:StopClassAnimations();
+	self:DestroyCreatedModels();
 	C_CharacterCreation.PlayCustomizationIdleAnimationOnCharacter();
 end
 
 function CharacterCreateRaceAndClassMixin:IsPlayingClassAnimtion()
-	return false;
+	return (self.currentSpellVisualKitID ~= nil);
 end
 
 function CharacterCreateRaceAndClassMixin:ClearCurrentSpellVisualKit()
+	self:ClearTimer();
+	self.currentSpellVisualKitID = nil;
+	self.currentGroundSpellVisualKitID = nil;
 end
 
 function CharacterCreateRaceAndClassMixin:ClearClassAnimationCountdown()
+	self.allowClassAnimationsAfterSeconds = nil;
+	self:ClearTimer();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
@@ -961,7 +1150,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterRace(raceID, faction)
 	if self.selectedRaceID ~= raceID then
-		CharacterCreateFrame:ResetCharacterRotation();
+		CharacterCreateFrame:ResetCharacterRotation(nil, true);
 		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
 		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedRace(raceID);
@@ -986,7 +1175,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterSex(sexID)
 	if self.selectedSexID ~= sexID  then
-		CharacterCreateFrame:ResetCharacterRotation();
+		CharacterCreateFrame:ResetCharacterRotation(nil, true);
 		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
 		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedSex(sexID);

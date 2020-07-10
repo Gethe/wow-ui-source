@@ -203,14 +203,7 @@ local DISPLAY_DATA = {
 		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
-	
-	[53] = { --TUTORIAL_MOUNT
-		tileHeight = 13, 
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-	
+
 	[58] = { --TUTORIAL_BAG_FULL
 		tileHeight = 22, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},

@@ -93,6 +93,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="EncounterIcon" inherits="CovenantLandingPageEncounterIconTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-8"/>
+				</Anchors>
+			</Frame>
 			<Frame parentArray="Rewards" parentKey="Reward1" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" x="-6" y="-2"/>
@@ -608,7 +613,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BORDER">
-						<FontString inherits="QuestFont_Enormous" text="GARRISON_FOLLOWERS">
+						<FontString parentKey="LandingPageHeader" inherits="QuestFont_Enormous" text="GARRISON_FOLLOWERS">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
@@ -619,6 +624,7 @@
 					<Anchor point="TOPLEFT" x="45" y="-120"/>
 				</Anchors>
 			</Frame>
+
 			<Frame parentKey="FollowerTab" mixin="GarrisonFollowerTabMixin">
 				<Size x="470" y="565"/>
 				<Anchors>
@@ -627,6 +633,7 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isLandingPage" value="true" type="boolean"/>
+					<KeyValue key="autoCombatStatsTemplate" value="CovenantStatLineLandingPageTemplate" type="string"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -743,6 +750,13 @@
 						</KeyValues>
 						<Layers>
 							<Layer level="ARTWORK">
+								<FontString parentKey="StatsLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COVENANT_MISSIONS_STATS">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="51" type="number"/>
+										<KeyValue key="topPadding" value="10" type="number"/>
+										<KeyValue key="bottomPadding" value="5" type="number"/>
+									</KeyValues>
+								</FontString>
 								<FontString parentKey="SpecializationLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="SPECIALIZATION">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="100" type="number"/>

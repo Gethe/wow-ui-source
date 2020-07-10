@@ -7,6 +7,10 @@ local CovenantSanctum =
 	Functions =
 	{
 		{
+			Name = "DepositAnima",
+			Type = "Function",
+		},
+		{
 			Name = "EndInteraction",
 			Type = "Function",
 		},

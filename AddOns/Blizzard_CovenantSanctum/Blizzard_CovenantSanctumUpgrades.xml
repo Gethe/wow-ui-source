@@ -111,11 +111,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 	
 	<Frame name="CovenantSanctumUpgradeTalentTemplate" mixin="CovenantSanctumUpgradeTalentMixin" virtual="true">
@@ -207,9 +202,10 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="QuestFont_Super_Huge">
+						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" wordwrap="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="19" y="-35"/>
+								<Anchor point="TOPRIGHT" x="-20" y="-70"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Tier" inherits="SystemFont_Shadow_Large">

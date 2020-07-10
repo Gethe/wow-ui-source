@@ -148,6 +148,16 @@
 	</Frame>
 
 	<Frame name="CovenantMissionAutoSpellAbilityTemplate" inherits="GarrisonAbilityLargeCounterTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontHighlightMed2" justifyH="LEFT" maxLines="1">
+					<Size x="150" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.IconButton" relativePoint="RIGHT" x="8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnEnter function="CovenantMissionAutoSpellAbilityTemplate_OnEnter"/>
 			<OnLeave function="CovenantMissionAutoSpellAbilityTemplate_OnLeave"/>
@@ -375,6 +385,27 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name ="CovenantStatLineLandingPageTemplate" parentArray="Abilities" virtual="true">
+		<Size x="175" y="22"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="RightString" inherits="GameFontHighlightMed2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LeftString" inherits="GameFontHighlightMed2" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 	
 	<Frame name="CovenantFollowerTabTemplate" inherits="CovenantMissionBaseFrameTemplate" mixin="GarrisonFollowerTabMixin,CovenantFollowerTabMixin" hidden="true" virtual="true">
 		<Size x="574" y="538"/>
@@ -417,11 +448,6 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x ="26" y="-8"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AbilitiesLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.StatsFrame" relativePoint="BOTTOMLEFT" x ="26" y="-8"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -460,12 +486,19 @@
 								<KeyValue key="bottomPadding" value="5" type="number"/>
 							</KeyValues>
 						</FontString>
+						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
+							<Anchors>
+								<KeyValue key="layoutIndex" value="200" type="number"/>
+								<KeyValue key="topPadding" value="10" type="number"/>
+								<KeyValue key="bottomPadding" value="5" type="number"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
 			<Frame parentKey="AbilitiesFrame" inherits="HorizontalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesLabel" relativePoint="BOTTOMLEFT" y="-14"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-14"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="expand" value="true" type="boolean"/>
@@ -642,6 +675,47 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="CovenantLandingPageEncounterIconTemplate" mixin="CovenantMissionEncounterIconMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="PortraitBorder" atlas="Adventurers-Followers-Frame"/>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+						<MaskedTexture childKey="PortraitBorder"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RareOverlay" atlas="Adventure-Mission-Silver-Dragon">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="14" y="-14"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EliteOverlay" atlas="Adventure-Mission-Gold-Dragon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="14" y="-14"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<Button name="CovenantMissionListButtonTemplate" virtual="true">
 		<Size x="832" y="80"/>
 		<Layers>

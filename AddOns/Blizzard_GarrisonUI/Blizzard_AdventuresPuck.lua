@@ -90,9 +90,9 @@ end
 
 function AventuresPuckHealthBarMixin:SetRole(role)
 	local useAtlasSize = true;
-	if role == Enum.AutoCombatantRole.Healer then
+	if role == Enum.GarrAutoCombatantRole.HealSupport then
 		self.RoleIcon:SetAtlas("Adventures-Healer", useAtlasSize);
-	elseif role == Enum.AutoCombatantRole.Tank then
+	elseif role == Enum.GarrAutoCombatantRole.Tank then
 		self.RoleIcon:SetAtlas("Adventures-Tank", useAtlasSize);
 	else
 		self.RoleIcon:SetAtlas("Adventures-DPS", useAtlasSize);

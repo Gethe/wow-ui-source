@@ -25,8 +25,11 @@ function RuneforgeCreateFrameMixin:Close()
 end
 
 function RuneforgeCreateFrameMixin:Refresh()
-	local craftDescription = self:GetRuneforgeFrame():GetCraftDescription();
-	self.CraftItemButton:SetEnabled(craftDescription and C_LegendaryCrafting.CanCraftRuneforgeLegendary(craftDescription));
+	local canCraft, errorString = self:GetRuneforgeFrame():CanCraftRuneforgeLegendary(baseItem);
+	self.CraftItemButton:SetCraftState(canCraft, errorString);
+	self.CraftError:SetShown(errorString ~= nil);
+	self.CraftError:SetText(errorString);
+
 	self:UpdateCost();
 end
 
@@ -50,6 +53,23 @@ RuneforgeCraftItemButtonMixin = {};
 
 function RuneforgeCraftItemButtonMixin:OnClick()
 	self:GetParent():CraftItem();
+end
+
+function RuneforgeCraftItemButtonMixin:OnEnter()
+	if self.errorString then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, self.errorString);
+		GameTooltip:Show();
+	end
+end
+
+function RuneforgeCraftItemButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function RuneforgeCraftItemButtonMixin:SetCraftState(canCraft, errorString)
+	self:SetEnabled(canCraft);
+	self.errorString = errorString;
 end
 
 

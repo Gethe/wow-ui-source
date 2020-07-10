@@ -202,6 +202,7 @@
 		<Scripts>
 			<OnEnter method="OnEnter"/> <!-- OnLeave logic handled by run-time OnUpdate handler -->
 			<OnMouseUp method="OnMouseUp"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

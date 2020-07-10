@@ -2586,7 +2586,7 @@ function EncounterJournal_RefreshSlotFilterText(self)
 	local text = ALL_INVENTORY_SLOTS;
 	local slotFilter = C_EncounterJournal.GetSlotFilter();
 	if slotFilter ~= Enum.ItemSlotFilterType.NoFilter then
-		for filer, _ in pairs(Enum.ItemSlotFilterType) do
+		for _, filter in pairs(Enum.ItemSlotFilterType) do
 			if ( filter == slotFilter ) then
 				text = SlotFilterToSlotName[filter];
 				break;
@@ -2726,8 +2726,8 @@ function EncounterJournal_InitLootSlotFilter(self, level)
 	end
 	C_EncounterJournal.SetSlotFilter(slotFilter);
 
-	for filer, _ in pairs(Enum.ItemSlotFilterType) do
-		if ( isLootSlotPresent[filter] or filter == slotFilter ) then
+	for _, filter in pairs(Enum.ItemSlotFilterType) do
+		if ( (isLootSlotPresent[filter] or filter == slotFilter) and filter ~= Enum.ItemSlotFilterType.NoFilter ) then
 			info.text = SlotFilterToSlotName[filter];
 			info.checked = slotFilter == filter;
 			info.arg1 = filter;

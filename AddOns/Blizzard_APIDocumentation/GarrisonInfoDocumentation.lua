@@ -23,7 +23,16 @@ local GarrisonInfo =
 			},
 		},
 		{
-			Name = "GetAutoCombatSpellName",
+			Name = "GetAutoCombatDamageClassValues",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "damageClassStrings", Type = "table", InnerType = "AutoCombatDamageClassString", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCombatLogSpellInfo",
 			Type = "Function",
 
 			Arguments =
@@ -33,7 +42,7 @@ local GarrisonInfo =
 
 			Returns =
 			{
-				{ Name = "spellName", Type = "string", Nilable = true },
+				{ Name = "spellInfo", Type = "AutoCombatSpellInfo", Nilable = true },
 			},
 		},
 		{
@@ -832,16 +841,12 @@ local GarrisonInfo =
 	Tables =
 	{
 		{
-			Name = "AutoCombatantRole",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
+			Name = "AutoCombatDamageClassString",
+			Type = "Structure",
 			Fields =
 			{
-				{ Name = "Damager", Type = "AutoCombatantRole", EnumValue = 0 },
-				{ Name = "Healer", Type = "AutoCombatantRole", EnumValue = 1 },
-				{ Name = "Tank", Type = "AutoCombatantRole", EnumValue = 2 },
+				{ Name = "damageClassValue", Type = "number", Nilable = false },
+				{ Name = "locString", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -958,7 +963,7 @@ local GarrisonInfo =
 				{ Name = "boardIndex", Type = "number", Nilable = false },
 				{ Name = "health", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
-				{ Name = "role", Type = "AutoCombatantRole", Nilable = false },
+				{ Name = "role", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1003,7 +1008,7 @@ local GarrisonInfo =
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "mechanics", Type = "table", InnerType = "GarrisonMechanicInfo", Nilable = false },
 				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
-				{ Name = "role", Type = "AutoCombatantRole", Nilable = false },
+				{ Name = "role", Type = "number", Nilable = false },
 				{ Name = "health", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },

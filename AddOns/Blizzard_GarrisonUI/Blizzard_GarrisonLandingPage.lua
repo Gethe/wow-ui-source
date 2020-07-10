@@ -4,7 +4,7 @@ GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY = {
 	[Enum.GarrisonFollowerType.FollowerType_6_2] = Enum.GarrFollowerQuality.Epic,
 	[Enum.GarrisonFollowerType.FollowerType_7_0] = Enum.GarrFollowerQuality.Title,
 	[Enum.GarrisonFollowerType.FollowerType_8_0] = Enum.GarrFollowerQuality.Legendary,
-	[Enum.GarrisonFollowerType.FollowerType_9_0] = Enum.GarrFollowerQuality.Title,
+	[Enum.GarrisonFollowerType.FollowerType_9_0] = Enum.GarrFollowerQuality.Common,
 }
 
 GARRISON_MISSION_NAME_FONT_COLOR	=	{r=0.78, g=0.75, b=0.73};
@@ -89,6 +89,9 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
 		self:SetupCovenantCallings();
 		self:SetupSoulbind();
+		self.FollowerTabButton:SetText(COVENANT_MISSIONS_FOLLOWERS);
+		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSIONS_FOLLOWERS);
+		self.FollowerTab.FollowerText:Hide();
 	end
 
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
@@ -506,12 +509,12 @@ end
 
 function GarrisonLandingPageReportList_UpdateItems()
 	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems(GarrisonLandingPage.garrTypeID);
-
+	local availableString = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0 and COVENANT_MISSIONS_AVAILABLE or GARRISON_LANDING_AVAILABLE;
 	local items = C_Garrison.GetAvailableMissions(GetPrimaryGarrisonFollowerType(GarrisonLandingPage.garrTypeID));
 	GarrisonLandingPageReport.List.AvailableItems = GarrisonLandingPageReportMission_FilterOutCombatAllyMissions(items);
 	Garrison_SortMissions(GarrisonLandingPageReport.List.AvailableItems);
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);
-	GarrisonLandingPageReport.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPageReport.List.AvailableItems);
+	GarrisonLandingPageReport.Available.Text:SetFormattedText(availableString, #GarrisonLandingPageReport.List.AvailableItems);
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
 		GarrisonLandingPageReportList_Update();
 		GarrisonLandingPageReport:SetScript("OnUpdate", GarrisonLandingPageReport_OnUpdate);
@@ -530,7 +533,8 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 	local numButtons = #buttons;
 
 	if (numItems == 0) then
-		GarrisonLandingPageReport.List.EmptyMissionText:SetText(GARRISON_EMPTY_MISSION_LIST);
+		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0 and COVENANT_MISSIONS_EMPTY_LIST or GARRISON_EMPTY_MISSION_LIST;
+		GarrisonLandingPageReport.List.EmptyMissionText:SetText(emptyMissionText);
 	else
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
 	end
@@ -555,11 +559,15 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			else
 				button.MissionType:SetText(item.duration);
 			end
-			button.MissionTypeIcon:Show();
+			button.MissionTypeIcon:SetShown(item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0);
+			button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0);
+
 			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
 			if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
 				button.MissionTypeIcon:SetSize(40, 40);
 				button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
+			elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+				button.EncounterIcon:SetEncounterInfo(C_Garrison.GetMissionEncounterIconInfo(item.missionID));
 			else
 				button.MissionTypeIcon:SetSize(50, 50);
 				button.MissionTypeIcon:SetPoint("TOPLEFT", 0, 2);
@@ -692,7 +700,8 @@ function GarrisonLandingPageReportList_Update()
 	local stopUpdate = true;
 
 	if (numItems == 0) then
-		GarrisonLandingPageReport.List.EmptyMissionText:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST);
+		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0 and COVENANT_MISSIONS_EMPTY_IN_PROGRESS or GARRISON_EMPTY_IN_PROGRESS_LIST;
+		GarrisonLandingPageReport.List.EmptyMissionText:SetText(emptyMissionText);
 	else
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
 	end
@@ -737,14 +746,18 @@ function GarrisonLandingPageReportList_Update()
 				button.Title:SetWidth(322 - button.TimeLeft:GetWidth());
 			end
 			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
+			button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0);
+
 			if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
 				button.MissionTypeIcon:SetSize(40, 40);
 				button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
+			elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+				button.EncounterIcon:SetEncounterInfo(C_Garrison.GetMissionEncounterIconInfo(item.missionID));
 			else
 				button.MissionTypeIcon:SetSize(50, 50);
 				button.MissionTypeIcon:SetPoint("TOPLEFT", 0, 2);
 			end
-			button.MissionTypeIcon:SetShown(not item.isBuilding);
+			button.MissionTypeIcon:SetShown(not item.isBuilding and item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0);
 			button.Status:SetShown(not item.isComplete);
 			button.TimeLeft:SetShown(not item.isComplete);
 
@@ -848,12 +861,12 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 		GameTooltip:SetText(item.name);
 		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
 			GameTooltip:AddLine(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
-		else
+		elseif (item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0) then
 			GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
 		end
 		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, item.followerTypeID, false, GarrisonLandingPage.abilityCountersForMechanicTypes);
 		if (item.isRare) then
-			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
+			GameTooltip:AddLine(GarrisonFollowerOptions[item.followerTypeID].strings.AVAILABILITY);
 			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
 		end
 		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then

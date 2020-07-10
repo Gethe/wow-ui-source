@@ -712,7 +712,22 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Name:SetText(missionInfo.name);
 	frame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
-	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0) then
+		frame.MissionType:SetShown(false);
+		frame.EncounterIcon:SetShown(true);
+
+		local encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(missionInfo.missionID);
+		frame.EncounterIcon.RareOverlay:SetShown(encounterIconInfo.isRare);
+		frame.EncounterIcon.EliteOverlay:SetShown(encounterIconInfo.isElite);
+
+		if encounterIconInfo.portraitFileDataID == nil or encounterIconInfo.portraitFileDataID == 0 then
+			frame.EncounterIcon.Portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");
+		else
+			frame.EncounterIcon.Portrait:SetTexture(encounterIconInfo.portraitFileDataID);
+		end
+
+		frame.EncounterIcon:SetPoint("TOPLEFT", frame, "TOPLEFT", 24, -19);
+	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
 		frame.MissionType:SetSize(50, 50);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 21, -14);
 	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0) then

@@ -30,7 +30,7 @@
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="23" y="5" />
 				</Anchors>
 			</Button>
-			<Button parentKey="FoundationsTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="Foundations">
+			<Button parentKey="FoundationsTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="Foundations" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
 				</Anchors>

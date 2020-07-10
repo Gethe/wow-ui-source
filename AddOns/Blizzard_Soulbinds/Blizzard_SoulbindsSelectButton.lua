@@ -18,11 +18,20 @@ function SoulbindsSelectButtonMixin:OnEvent(event, ...)
 	end
 end
 
+function SoulbindsSelectButtonMixin:OnUpdate(elapsed)
+	if self.deferredFx then
+		self.deferredFx();
+		self.deferredFx = nil;
+	end
+end
+
 function SoulbindsSelectButtonMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SoulbindsSelectButtonEvents);
 end
 
 function SoulbindsSelectButtonMixin:OnHide()
+	self:Reset();
+
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindsSelectButtonEvents);
 end
 
@@ -40,6 +49,9 @@ function SoulbindsSelectButtonMixin:Reset()
 	self.ModelScene.Active:Hide();
 	self.ModelScene.Selected:Hide();
 	self:SetHighlightUnselected();
+	self:GetFxModelScene():ClearEffects();
+	self.deferredFx = nil;
+	self.activatedFxController = nil;
 end
 
 function SoulbindsSelectButtonMixin:GetFxModelScene()
@@ -107,11 +119,40 @@ function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
 	end
 end
 
-function SoulbindsSelectButtonMixin:SetActiveMarkerShown(enabled)
-	self.ModelScene.Active:SetShown(enabled);
+function SoulbindsSelectButtonMixin:SetActivated(activated)
+	self.ModelScene.Active:SetShown(activated);
+	if activated then
+		self.ModelScene.Dark:SetAlpha(0);
+		self.ModelScene:SetDesaturation(0);
+
+		if not self.activatedFxController then
+			self.deferredFx = GenerateClosure(self.PlayActivatedFx, self);
+		end
+	else
+		if self.activatedFxController then
+			self.activatedFxController:CancelEffect();
+			self.activatedFxController = nil;
+		end
+
+		self.ModelScene.Dark:SetAlpha(.3);
+		self.ModelScene:SetDesaturation(.5);
+	end
 end
 
-function SoulbindsSelectButtonMixin:PlayActiveMarkerFx()
-	local ACTIVATED_FX = 46;
-	self:GetFxModelScene():AddEffect(ACTIVATED_FX, self.ModelScene.Active);
+function SoulbindsSelectButtonMixin:OnActivated()
+	self:PlayActivatedFx();
+end
+
+function SoulbindsSelectButtonMixin:AddActiveEffect(effect)
+	return self:GetFxModelScene():AddEffect(effect, self.ModelScene.Active);
+end
+
+function SoulbindsSelectButtonMixin:PlayActivatedFx()
+	local ACTIVATED_FX = 41;
+	self.activatedFxController = self:AddActiveEffect(ACTIVATED_FX);
+end
+
+function SoulbindsSelectButtonMixin:PlayActivationChangedFx()
+	local ACTIVATE_CHANGED_FX = 46;
+	self:AddActiveEffect(ACTIVATE_CHANGED_FX);
 end

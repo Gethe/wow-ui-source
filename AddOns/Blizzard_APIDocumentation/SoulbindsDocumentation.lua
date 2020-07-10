@@ -296,6 +296,7 @@ local Soulbinds =
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "tree", Type = "SoulbindTree", Nilable = false },
 				{ Name = "modelSceneData", Type = "SoulbindModelSceneData", Nilable = false },
+				{ Name = "resetData", Type = "SoulbindResetData", Nilable = false },
 			},
 		},
 		{
@@ -322,6 +323,24 @@ local Soulbinds =
 				{ Name = "state", Type = "SoulbindNodeState", Nilable = false },
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SoulbindResetCurrencyData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SoulbindResetData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "goldCost", Type = "number", Nilable = false },
+				{ Name = "currencyCosts", Type = "table", InnerType = "SoulbindResetCurrencyData", Nilable = false },
 			},
 		},
 		{

@@ -1051,6 +1051,9 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	local playerTalentSpec = GetSpecialization(nil, self.isPet, specs[selectedSpec].talentGroup);
 	local shownSpec = spec or playerTalentSpec or 1;
 	local numSpecs = GetNumSpecializations(nil, self.isPet);
+	if ( shownSpec > numSpecs ) then 
+		shownSpec = 1;
+	end
 	local petNotActive = self.isPet and not IsPetActive();
 	local sex = self.isPet and UnitSex("pet") or UnitSex("player");
 	-- do spec buttons

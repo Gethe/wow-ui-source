@@ -195,6 +195,7 @@ ItemSharedDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
+PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
 QuestConstantsDocumentation.lua

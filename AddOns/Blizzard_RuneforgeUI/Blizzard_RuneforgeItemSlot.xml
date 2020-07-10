@@ -2,39 +2,30 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RuneforgeItemSlot.lua"/>
 
-	<Button name="RuneforgeItemSlotTemplate" mixin="RuneforgeItemSlotMixin" registerForClicks="LeftButtonDown, RightButtonDown" virtual="true">
+	<ItemButton name="RuneforgeItemSlotTemplate" mixin="RuneforgeItemSlotMixin" registerForClicks="LeftButtonDown, RightButtonDown" virtual="true">
 		<Size x="60" y="60"/>
-		<Frames>
-			<ItemButton parentKey="ItemButton" mixin="RuneforgeItemSlotButtonMixin">
-				<Size x="60" y="60"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="SelectedTexture" atlas="runecarving-icon-center-selected" useAtlasSize="true" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-					<OnClick method="OnClick"/>
-					<OnReceiveDrag method="OnReceiveDrag"/>
-				</Scripts>
-			</ItemButton>
-		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectingTexture" atlas="runecarving-icon-center-pressed" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-center-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 			<OnReceiveDrag method="OnReceiveDrag"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
-	</Button>
+	</ItemButton>
 </Ui>

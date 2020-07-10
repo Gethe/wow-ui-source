@@ -43,6 +43,18 @@ function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
 		local modelScene = self:GetFxModelScene();
 		modelScene:AddEffect(NODE_SELECTION_FX_1, self);
 		modelScene:AddEffect(NODE_SELECTION_FX_2, self);
+
+		--local LEARN_SHAKE_DELAY = 0;
+		--C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
+	end
+end
+
+function SoulbindTreeNodeMixin:Shake()
+	if self:IsShown() then
+		local SHAKE = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
+		local SHAKE_DURATION = 0.20;
+		local SHAKE_FREQUENCY = 0.001;
+		ScriptAnimationUtil.ShakeFrame(UIParent, SHAKE, SHAKE_DURATION, SHAKE_FREQUENCY)
 	end
 end
 

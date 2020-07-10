@@ -179,6 +179,10 @@ function CampaignHeaderMixin:SetCampaign(campaignID)
 	CampaignHeaderDisplayMixin.SetCampaign(self, campaignID);
 	self.LoreButton:SetMode("overview");
 	self:UpdateCollapsedState();
+
+	self:RegisterEvent("LORE_TEXT_UPDATED_CAMPAIGN");
+	self.hasLoreEntries = false;
+	C_LoreText.RequestLoreTextForCampaignID(campaignID);
 end
 
 function CampaignHeaderMixin:UpdateCollapsedState()
@@ -207,6 +211,11 @@ end
 function CampaignHeaderMixin:OnEnter()
 	self:ShowTooltip();
 
+	-- Keep requesting lore for every mouse enter, the alternative is to make the dangerous assumption that lore would only update on quest complete
+	if not self:HasLoreEntries() then
+		C_LoreText.RequestLoreTextForCampaignID(self:GetCampaign():GetID());
+	end
+
 	-- NOTE: The OnUpdate handles the logic for OnLeave because of how many elements need to remain visible/highlighted.
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
@@ -215,6 +224,22 @@ function CampaignHeaderMixin:OnMouseUp(button, upInside)
 	if upInside and button == "LeftButton" then
 		self.CollapseButton:OnClick(button);
 	end
+end
+
+function CampaignHeaderMixin:OnEvent(event, ...)
+	if event == "LORE_TEXT_UPDATED_CAMPAIGN" then
+		local id, entries = ...;
+		if id == self:GetCampaign():GetID() then
+			self.hasLoreEntries = #entries > 0;
+			if self.hasLoreEntries then
+				self:UnregisterEvent("LORE_TEXT_UPDATED_CAMPAIGN");
+			end
+		end
+	end
+end
+
+function CampaignHeaderMixin:HasLoreEntries()
+	return self.hasLoreEntries;
 end
 
 function CampaignHeaderMixin:ShowTooltip()
@@ -232,7 +257,8 @@ end
 
 function CampaignHeaderMixin:UpdateLoreButtonVisibility()
 	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
-	self.LoreButton:SetShown(mouseOver);
+	local showLore = mouseOver and self:HasLoreEntries();
+	self.LoreButton:SetShown(showLore);
 	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
 
 	-- OnLeave logic

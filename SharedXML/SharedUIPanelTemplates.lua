@@ -1664,7 +1664,16 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.SelectionNumber:SetTextColor(fontColor:GetRGB());
 		self.SelectionName:SetTextColor(fontColor:GetRGB());
 	end
-	self.SelectionNumber:SetText(index);
+
+	local hideNumber = ((isSelected == nil) and (selectionData.name ~= ""));
+	if hideNumber then
+		self.SelectionNumber:Hide();
+		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "LEFT", 0, 0);
+	else
+		self.SelectionNumber:Show();
+		self.SelectionNumber:SetText(index);
+		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
+	end
 end
 
 SelectionPopoutMixin = {};

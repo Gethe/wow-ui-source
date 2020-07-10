@@ -107,7 +107,7 @@ function CovenantMission:OnEventMainFrame(event, ...)
 	if event == "GARRISON_AUTO_MISSION_TARGETING_RESPONSE" then
 		self:UpdateSpellTargeting(...);
 	else
-		GarrisonFollowerMission:OnEventMainFrame(event, ...);
+		GarrisonFollowerMission.OnEventMainFrame(self, event, ...);
 	end
 end
 
@@ -290,11 +290,18 @@ function CovenantMission:OnFollowerFrameDragStart(followerFrame)
 end
 
 function CovenantMission:OnFollowerFrameDragStop(followerFrame)
-	GarrisonShowFollowerPlacerFrame(self, CovenantPlacer.info);
+	if CovenantPlacer.info then
+		GarrisonShowFollowerPlacerFrame(self, CovenantPlacer.info);
+	else	
+		self:ClearMouse();
+	end
+	
 end
 
 function CovenantMission:OnFollowerFrameReceiveDrag(followerFrame)
-	self:AssignFollowerToMission(followerFrame, CovenantPlacer.info);
+	if CovenantPlacer.info then
+		self:AssignFollowerToMission(followerFrame, CovenantPlacer.info);
+	end
 	self:ClearMouse();
 end
 

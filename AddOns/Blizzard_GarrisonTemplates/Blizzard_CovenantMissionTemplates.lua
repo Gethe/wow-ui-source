@@ -80,17 +80,13 @@ end
 
 CovenantFollowerTabMixin = {};
 
-function CovenantFollowerTabMixin:OnLoad()
-	self.abilitiesPool = CreateFramePool("FRAME", self.AbilitiesFrame, "CovenantMissionAutoSpellAbilityTemplate");
-	self.statsPool = CreateFramePool("FRAME", self.StatsFrame, "CovenantStatLineTemplate");
-end
-
 function CovenantFollowerTabMixin:OnUpdate()
 	local SECONDS_BETWEEN_UPDATE = 1;
 	local currentTime = GetTime();
 	if (self.lastUpdate and (currentTime - self.lastUpdate) > SECONDS_BETWEEN_UPDATE) then 
 		self.followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(self.followerID);
 		self:UpdateCombatantStats(self.followerInfo);
+		self.StatsFrame:Layout();
 		self:UpdateHealCost();
 
 		self.lastUpdate = GetTime();
@@ -127,74 +123,12 @@ function CovenantFollowerTabMixin:UpdateHealCost()
 	end
 end
 
-function CovenantFollowerTabMixin:SetupNewStatText(anchorFrame, leftText, rightText, additionalOffset)
-	additionalOffset = additionalOffset or 0;
-
-	local newFrame = self.statsPool:Acquire();
-	newFrame.LeftString:SetText(leftText);
-	newFrame.RightString:SetText(rightText);
-	newFrame.layoutIndex = anchorFrame.layoutIndex + 1;
-	newFrame:SetPoint("TOPLEFT", anchorFrame, "BOTTOMLEFT", 0, -4 + additionalOffset);
-	newFrame:Show();
-	return newFrame;
+function CovenantFollowerTabMixin:GetStatsAnchorFrame()
+	return self.StatsFrame;
 end
 
-function CovenantFollowerTabMixin:UpdateCombatantStats(followerInfo)
-	self.statsPool:ReleaseAll();
-
-	local anchorFrame = self.StatsFrame.StatsLabel;
-	local autoCombatantStats = followerInfo.autoCombatantStats;
-	
-	if autoCombatantStats then
-		--Level
-		local newAnchorFrame = self:SetupNewStatText(anchorFrame, COVENANT_MISSIONS_LEVEL, followerInfo.level);
-		
-		--Health
-		local healthColor = (autoCombatantStats.currentHealth == autoCombatantStats.maxHealth) and WHITE_FONT_COLOR or RED_FONT_COLOR;
-		newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_HEALTH, healthColor:WrapTextInColorCode(autoCombatantStats.currentHealth) .. "/" .. autoCombatantStats.maxHealth, -4);
-		
-		--Attack
-		newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_ATTACK, autoCombatantStats.attack);
-
-		--Experience, hide if max level.
-		if followerInfo.levelXP ~= 0 then
-			newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_XP_TO_LEVEL, followerInfo.levelXP);
-		end
-
-		self.StatsFrame.StatsLabel:Show();
-		self.StatsFrame:Layout();
-	else
-		self.StatsFrame.StatsLabel:Hide();
-	end
-end
-
-function CovenantFollowerTabMixin:UpdateAbilities(autoSpellInfo)
-	local ABILITY_ICON_SIZE = 60; --The base frame we're reusing here as a pool is too small.
-	local anchorFrame;
-
-	self.AbilitiesLabel:Hide();
-	self.abilitiesPool:ReleaseAll();
-
-	for i, autoSpell in ipairs(autoSpellInfo) do
-		local abilityFrame = self.abilitiesPool:Acquire();
-		abilityFrame:SetSize(ABILITY_ICON_SIZE, ABILITY_ICON_SIZE); 
-		abilityFrame.Icon:SetSize(ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
-		abilityFrame.info = autoSpell;
-		abilityFrame.info.showCounters = false;
-		abilityFrame.Icon:SetTexture(autoSpell.icon);
-		abilityFrame.layoutIndex = i;
-		abilityFrame.Border:Hide();
-		abilityFrame:Show();
-
-		anchorFrame = abilityFrame;
-	end
-
-	if anchorFrame then
-		self.AbilitiesLabel:Show();
-		self.AbilitiesLabel:SetPoint("TOPLEFT", self.StatsFrame, "BOTTOMLEFT", 0, -18);
-	end
-		
-	self.AbilitiesFrame:Layout();
+function CovenantFollowerTabMixin:GetAbilitiesText()
+	return self.StatsFrame.AbilitiesText;
 end
 
 function CovenantFollowerTabMixin:ShowFollower(followerID, followerList)
@@ -232,9 +166,13 @@ function CovenantFollowerTabMixin:ShowFollower(followerID, followerList)
 
 	--Add in stats: hp, power, level, experience.
 	self:UpdateCombatantStats(followerInfo);
-
+	
 	--Add in ability icons
-	self:UpdateAbilities(autoSpellAbilities);
+	self:UpdateAutoSpellAbilities(followerInfo);
+
+	self.StatsFrame:Layout();
+	self.StatsFrame.AbilitiesText:SetPoint("TOPLEFT", self.StatsFrame, "BOTTOMLEFT", 0, -18)
+	self.AbilitiesFrame:SetPoint("TOPLEFT", self.StatsFrame.AbilitiesText, "BOTTOMLEFT", 0, -18);
 
 	--Set cost of the heal, enable/disable the button accordingly. 
 	self:UpdateHealCost();
@@ -255,7 +193,7 @@ function CovenantMissionList_Sort(missionsList)
 		end
 
 		if mission1.inProgress ~= mission2.inProgress then
-			return not mission1.inProgress;
+			return mission1.inProgress;
 		end
 
 		if ( mission1.level ~= mission2.level ) then
@@ -357,7 +295,11 @@ function CovenantMissionListMixin:Update()
 			button.Title:SetText(mission.name);
 			button.Level:SetText(mission.level);
 			button.Summary:Show();
-			button.info.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
+			if not mission.encounterIconInfo then
+				mission.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
+			end
+
+			button.info.encounterIconInfo = mission.encounterIconInfo;
 
 			if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
 				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
@@ -464,13 +406,13 @@ function CovenantMissionButton_OnEnter(self)
 	if missionInfo.inProgress then
 		if (self.info.followers ~= nil) then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddNormalLine(GameTooltip, GARRISON_FOLLOWERS);
+			GameTooltip_AddNormalLine(GameTooltip, COVENANT_MISSIONS_FOLLOWERS);
 			for i=1, #(missionInfo.followers) do
 				GameTooltip_AddColoredLine(GameTooltip, C_Garrison.GetFollowerName(missionInfo.followers[i]), WHITE_FONT_COLOR);
 			end
 		end
 	elseif (missionInfo.isRare) then
-		GameTooltip_AddNormalLine(GameTooltip, GARRISON_MISSION_AVAILABILITY);
+		GameTooltip_AddNormalLine(GameTooltip, COVENANT_MISSIONS_AVAILABILITY);
 		GameTooltip_AddColoredLine(GameTooltip, missionInfo.offerTimeRemaining, WHITE_FONT_COLOR);
 	end
 
@@ -490,7 +432,7 @@ function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
 end
 
 ---------------------------------------------------------------------------------
---- Covenant Mission List Button Handlers									  ---
+--- Adventures Targeting Indicator											  ---
 ---------------------------------------------------------------------------------
 
 AdventuresTargetingIndicatorMixin = {};

@@ -65,6 +65,17 @@ end
 function SoulbindViewerMixin:SetupResetButtonTooltip()
 	GameTooltip:SetOwner(self.ResetButton, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, SOULBIND_RESET_BUTTON);
+
+	for _, currencyCostData in ipairs(self.soulbindData.resetData.currencyCosts) do
+			
+		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(currencyCostData.currencyID, currencyCostData.quantity);
+		if currencyInfo then
+			local text = SOULBIND_RESET_CURRENCY_FORMAT:format(currencyInfo.displayAmount, currencyInfo.icon, currencyInfo.name);
+			local currencyColor = GetColorForCurrencyReward(currencyCostData.currencyID, currencyCostData.quantity);
+			GameTooltip_AddColoredLine(GameTooltip, text, currencyColor);
+		end
+	end
+
 	GameTooltip:Show();
 end
 
@@ -103,6 +114,10 @@ end
 function SoulbindViewerMixin:InitCovenant(covenantData, soulbindData)
 	self.soulbindData = soulbindData;
 	self.covenantData = covenantData;
+
+	if (covenantData.ID == 0) then
+		error("You are not in a required covenant.");
+	end
 
 	self.SelectGroup:Init(covenantData, soulbindData.ID);
 	self.Background:SetAtlas(string.format("Soulbinds_Background_%s", covenantData.textureKit), true);

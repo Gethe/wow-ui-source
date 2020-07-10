@@ -57,7 +57,7 @@ function CovenantSanctumUpgradesTabMixin:OnShow()
 	if self:GetSelectedTree() then
 		self:Refresh();
 	else
-		self:SetSelectedTree(self.ReservoirUpgrade.treeID);
+		self:SetSelectedTree(self.TravelUpgrade.treeID);
 	end
 end
 
@@ -94,7 +94,7 @@ function CovenantSanctumUpgradesTabMixin:GetSelectedTree()
 end
 
 function CovenantSanctumUpgradesTabMixin:DepositAnima()
-	-- TODO
+	C_CovenantSanctumUI.DepositAnima(); -- TO DO: hook this to a player condition to see if the person even can deposit. 
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
@@ -397,7 +397,7 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 	else
 		self.FillBackground:Show();
 		local totalHeight = self.Background:GetHeight();
-		if value == maxDisplayableValue then
+		if value >= maxDisplayableValue then
 			self.FillBackground:SetHeight(totalHeight);
 			self.FillBackground:SetTexCoord(0, 1, 0, 1);
 		else

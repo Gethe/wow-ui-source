@@ -418,11 +418,14 @@
 				</Anchors>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
-			<Frame parentKey="Rewards" inherits="PlayerChoiceRewardsTemplate">
+			<Frame parentKey="RewardsFrame">
 				<Size x="210" y="1" />
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="Rewards" inherits="PlayerChoiceRewardsTemplate"/>
+				</Frames>
 			</Frame>
 			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerNoResizeTemplate" hidden="true">
 				<Size x="210" y="1" />

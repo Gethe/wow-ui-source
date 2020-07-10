@@ -119,7 +119,19 @@ function EffectControllerMixin:RunEffectFinish()
 	end
 end
 
-function EffectControllerMixin:CancelEffect(skipRemovingController)
+function EffectControllerMixin:SetDynamicOffsets(pixelX, pixelY, pixelZ)
+	local pixelsPerSceneUnit = self.modelScene:GetPixelsPerSceneUnit();
+	local sceneX = pixelX and (pixelX / pixelsPerSceneUnit) or 0;
+	local sceneY = pixelY and (pixelY / pixelsPerSceneUnit) or 0;
+	local sceneZ = pixelZ and (pixelZ / pixelsPerSceneUnit) or 0;
+	self.actor:SetDynamicOffsets(sceneX, sceneY, sceneZ);
+end
+
+function EffectControllerMixin:CancelEffect()
+	self:InternalCancelEffect();
+end
+
+function EffectControllerMixin:InternalCancelEffect(skipRemovingController)
 	if not skipRemovingController then
 		self.modelScene:RemoveEffectController(self);
 	end
@@ -198,6 +210,7 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self.baseOffsetX = effectDescription.offsetX;
 	self.baseOffsetY = effectDescription.offsetY;
 	self.baseOffsetZ = effectDescription.offsetZ;
+	self:SetDynamicOffsets(0, 0, 0);
 
 	local animationSpeed = effectDescription.animationSpeed;
 	if animationSpeed == 0 then
@@ -227,8 +240,21 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self:DeltaUpdate(0);
 end
 
+function ScriptAnimatedModelSceneActorMixin:UpdateCombinedOffsets()
+	self.combinedOffsetX = (self.dynamicOffsetX or 0) + self.baseOffsetX;
+	self.combinedOffsetY = (self.dynamicOffsetY or 0) + self.baseOffsetY;
+	self.combinedOffsetZ = (self.dynamicOffsetZ or 0) + self.baseOffsetZ;
+end
+
+function ScriptAnimatedModelSceneActorMixin:SetDynamicOffsets(sceneX, sceneY, sceneZ)
+	self.dynamicOffsetX = sceneX;
+	self.dynamicOffsetY = sceneY;
+	self.dynamicOffsetZ = sceneZ;
+	self:UpdateCombinedOffsets();
+end
+
 function ScriptAnimatedModelSceneActorMixin:SetEffectActorOffset(x, y, z)
-	self:SetPosition(self.baseOffsetX + x, self.baseOffsetY + y, self.baseOffsetZ + z);
+	self:SetPosition(self.combinedOffsetX + x, self.combinedOffsetY + y, self.combinedOffsetZ + z);
 end
 
 
@@ -241,6 +267,7 @@ function ScriptAnimatedModelSceneMixin:OnLoad()
 	self.centerY = 0;
 	self.effectControllers = {};
 	self.pixelsPerSceneUnit = math.huge;
+	self.delayedActions = {};
 
 	self:RefreshModelScene();
 end
@@ -256,7 +283,8 @@ function ScriptAnimatedModelSceneMixin:RefreshModelScene()
 
 	self.centerX, self.centerY = self:GetCenter();
 
-	if not self.modelSceneSet then
+	local sceneShouldBeSet = not self:IsModelSceneSet();
+	if sceneShouldBeSet then
 		self:SetFromModelSceneID(ScriptedAnimationModelSceneID);
 		self.modelSceneSet = true;
 	end
@@ -269,6 +297,31 @@ function ScriptAnimatedModelSceneMixin:RefreshModelScene()
 	end
 
 	self:CalculatePixelsPerSceneUnit();
+
+	-- Now that the scene is set, and we've calculated pixels per scene unit, we can execute the
+	-- actions that were delayed until we had a proper scene set up.
+	if sceneShouldBeSet then
+		for i, action in ipairs(self.delayedActions) do
+			action();
+		end
+
+		self.delayedActions = nil;
+	end
+end
+
+function ScriptAnimatedModelSceneMixin:IsModelSceneSet()
+	return self.modelSceneSet;
+end
+
+function ScriptAnimatedModelSceneMixin:ExecuteOrDelayUntilSceneSet(action)
+	-- If we're still resolving sizing and anchoring and we don't have a proper model scene set up,
+	-- we need to delay adding effects as they won't be initialized properly.
+	if self:IsModelSceneSet() then
+		action();
+		return;
+	end
+
+	table.insert(self.delayedActions, action);
 end
 
 function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
@@ -320,9 +373,32 @@ function ScriptAnimatedModelSceneMixin:CalculatePixelsPerSceneUnit()
 	self.pixelsPerSceneUnit = (sceneSize * zoomDistance) / SceneUnitDivisor;
 end
 
+function ScriptAnimatedModelSceneMixin:GetPixelsPerSceneUnit()
+	return self.pixelsPerSceneUnit;
+end
+
 function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEffectFinish, onEffectResolution)
 	local effectController = CreateAndInitFromMixin(EffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution);
-	effectController:StartEffect();
+
+	local function StartEffectController()
+		effectController:StartEffect();
+	end
+
+	self:ExecuteOrDelayUntilSceneSet(StartEffectController);
+	
+	return effectController; 
+end
+
+function ScriptAnimatedModelSceneMixin:AddDynamicEffect(dynamicEffectDescription, source, target, onEffectFinish, onEffectResolution)
+	local effectController = CreateAndInitFromMixin(EffectControllerMixin, self, dynamicEffectDescription.effectID, source, target, onEffectFinish, onEffectResolution);
+
+	local function StartEffectController()
+		effectController:StartEffect();
+		effectController:SetDynamicOffsets(dynamicEffectDescription.offsetX, dynamicEffectDescription.offsetY, dynamicEffectDescription.offsetZ);
+	end
+
+	self:ExecuteOrDelayUntilSceneSet(StartEffectController);
+	
 	return effectController; 
 end
 
@@ -356,7 +432,7 @@ end
 function ScriptAnimatedModelSceneMixin:ClearEffects()
 	local skipRemovingController = true;
 	for i, effectController in ipairs(self.effectControllers) do
-		effectController:CancelEffect(skipRemovingController);
+		effectController:InternalCancelEffect(skipRemovingController);
 	end
 
 	self.effectControllers = {};

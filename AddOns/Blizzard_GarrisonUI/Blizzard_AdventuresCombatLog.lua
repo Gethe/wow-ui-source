@@ -29,35 +29,30 @@ local function EventHasPoints(eventType)
 			eventType == Enum.GarrAutoMissionEventType.PeriodicHeal;
 end
 
-local function EventIsFollowedBySpell(eventType) 
-	return	eventType == Enum.GarrAutoMissionEventType.PeriodicDamage or
-			eventType == Enum.GarrAutoMissionEventType.PeriodicHeal;
-end
-
-local function GetActionForEvent(spellName, eventType) 
+local function GetCombatLogEntryForEventType(spellName, eventType, caster, target, amount, element) 
 --TODO: Finalize design of combat log to stop using nonlocalized string
 	if eventType == Enum.GarrAutoMissionEventType.MeleeDamage then
-		return "meleed ";
+		return COVENANT_MISSIONS_COMBAT_LOG_MELEE_DAMAGE:format(caster, target, amount);
 	elseif  eventType == Enum.GarrAutoMissionEventType.RangeDamage then
-		return "shot ";
+		return COVENANT_MISSIONS_COMBAT_LOG_RANGE_DAMAGE:format(caster, target, amount);
 	elseif  eventType == Enum.GarrAutoMissionEventType.SpellMeleeDamage then
-		return "cast " .. spellName .. " at ";
+		return COVENANT_MISSIONS_COMBAT_LOG_SPELL_MELEE_DAMAGE:format(caster, spellName, target, amount, element);
 	elseif  eventType == Enum.GarrAutoMissionEventType.SpellRangeDamage then
-		return "cast " .. spellName .. " at ";
+		return COVENANT_MISSIONS_COMBAT_LOG_SPELL_RANGE_DAMAGE:format(caster, spellName, target, amount, element);
 	elseif  eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
-		return spellName .. " damage ticked "
+		return COVENANT_MISSIONS_COMBAT_LOG_PERIODIC_DAMAGE:format(caster, spellName, amount, element, target);
 	elseif  eventType == Enum.GarrAutoMissionEventType.ApplyAura then
-		return "applied " .. spellName .. " to ";
+		return COVENANT_MISSIONS_COMBAT_LOG_APPLY_AURA:format(caster, spellName, target);
 	elseif  eventType == Enum.GarrAutoMissionEventType.Heal then
-		return "cast " .. spellName .. " on ";
+		return COVENANT_MISSIONS_COMBAT_LOG_HEAL:format(caster, spellName, target, amount);
 	elseif  eventType == Enum.GarrAutoMissionEventType.PeriodicHeal then
-		return spellName .. " heal ticked ";
+		return COVENANT_MISSIONS_COMBAT_LOG_PERIODIC_HEAL:format(caster, spellName, target, amount);
 	elseif  eventType == Enum.GarrAutoMissionEventType.Died then
-		return "killed ";
+		return COVENANT_MISSIONS_COMBAT_LOG_DIED:format(caster, target);
 	elseif  eventType == Enum.GarrAutoMissionEventType.RemoveAura then
-		return "removed the " .. spellName .. " aura ";
+		return COVENANT_MISSIONS_COMBAT_LOG_REMOVE_AURA:format(caster, spellName, target);
 	else
-		return "defaulted ";
+		return COVENANT_MISSIONS_COMBAT_LOG_SPELL_RANGE_DAMAGE:format(caster, spellName, target, amount, element);
 	end
 end
 
@@ -88,6 +83,13 @@ function AdventuresCombatLogMixin:OnLoad()
 	self.CombatLogMessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
 		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
 	end);
+
+	self.damageTypeKeys = {};
+	local damageClassStrings = C_Garrison.GetAutoCombatDamageClassValues();
+
+	for _, damageClassString in ipairs(damageClassStrings) do
+		self.damageTypeKeys[damageClassString.damageClassValue] = damageClassString.locString;
+	end
 end
 
 function AdventuresCombatLogMixin:Clear()
@@ -102,36 +104,31 @@ function AdventuresCombatLogMixin:AddCombatRound(roundIndex, currentRound, total
 end
 
 function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex, totalRounds) 
---TODO: Finalize design of combat log to stop using nonlocalized string
 	self.CombatLogMessageFrame:AddMessage(" ");
-	self.CombatLogMessageFrame:AddMessage("Round " .. roundIndex .. "/" .. totalRounds .. ":", YELLOW_FONT_COLOR:GetRGB());
+	self.CombatLogMessageFrame:AddMessage(COVENANT_MISSIONS_COMBAT_LOG_ROUND:format(roundIndex, totalRounds), YELLOW_FONT_COLOR:GetRGB());
 	self.CombatLogMessageFrame:AddMessage(" ");
 end
 
 function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
---TODO: Finalize design of combat log to stop using nonlocalized string
-	local spellName = C_Garrison.GetAutoCombatSpellName(combatLogEvent.spellID) or "<Failed to find Rec>";
-
+	local spellInfo = C_Garrison.GetCombatLogSpellInfo(combatLogEvent.spellID);
+	local spellName = spellInfo.name;
+	local damageType = self.damageTypeKeys[spellInfo.schoolMask];
 	local caster = self:GetNameAtBoardIndex(combatLogEvent.casterBoardIndex);
-	local possessive = EventIsFollowedBySpell(combatLogEvent.type) and "'s " or " ";
-	local action = GetActionForEvent(spellName, combatLogEvent.type);
-	local target = self:GetTargetName(combatLogEvent.targetInfo);
 	local eventHasPoints = EventHasPoints(combatLogEvent.type);
-	local preposition =  eventHasPoints and " for " or "";
-	local amount = eventHasPoints and #combatLogEvent.targetInfo > 0 and combatLogEvent.targetInfo[1].points or "";
 	local textColor = GetCombatLogTextColor(combatLogEvent);
 
-	if target == "" then
-		self.CombatLogMessageFrame:AddMessage(caster .. possessive .. action .. "no target", textColor:GetRGB());
-	else
-		self.CombatLogMessageFrame:AddMessage(caster .. possessive .. action .. target .. preposition .. amount, textColor:GetRGB());
+	for _, targetInfoEntry in ipairs(combatLogEvent.targetInfo) do
+		local target = self:GetNameAtBoardIndex(targetInfoEntry.boardIndex);
+		local amount = eventHasPoints and targetInfoEntry.points or "";
+		local logEntry = GetCombatLogEntryForEventType(spellName, combatLogEvent.type, caster, target, amount, damageType);
+
+		self.CombatLogMessageFrame:AddMessage(logEntry, textColor:GetRGB());
 	end
 end
 
 function AdventuresCombatLogMixin:AddVictoryState(winState)
---TODO: Finalize design of combat log to stop using nonlocalized string
-	local winStateText = winState and "won!" or "lost.";
-	self.CombatLogMessageFrame:AddMessage("You " .. winStateText, YELLOW_FONT_COLOR:GetRGB());
+	local winStateText = winState and COVENANT_MISSIONS_COMBAT_LOG_VICTORY or COVENANT_MISSIONS_COMBAT_LOG_LOSS;
+	self.CombatLogMessageFrame:AddMessage(winStateText, YELLOW_FONT_COLOR:GetRGB());
 end
 
 function AdventuresCombatLogMixin:GetCompleteScreen()
@@ -141,15 +138,4 @@ end
 function AdventuresCombatLogMixin:GetNameAtBoardIndex(boardIndex)
 	local frame = self:GetCompleteScreen():GetFrameFromBoardIndex(boardIndex);
 	return frame:GetName() or "";
-end
-
-function AdventuresCombatLogMixin:GetTargetName(targetInfo)
---TODO: Finalize design of combat log to stop using nonlocalized string
-	if #targetInfo == 1 then 
-		return self:GetNameAtBoardIndex(targetInfo[1].boardIndex);
-	elseif #targetInfo > 1 then
-		return "multiple targets";
-	else 
-		return "";
-	end
 end

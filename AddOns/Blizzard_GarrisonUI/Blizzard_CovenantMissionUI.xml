@@ -264,7 +264,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="StartMissionButton" inherits="StartMissionButtonTemplate" frameLevel="1600">
+			<Button parentKey="StartMissionButton" inherits="StartMissionButtonTemplate" text="COVENANT_MISSIONS_START_ADVENTURE" frameLevel="1600">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.StartMissionFrame" x="-50" y="1"/>
 				</Anchors>
@@ -322,8 +322,8 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS"/>
-			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS"/>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="COVENANT_MISSIONS_TITLE"/>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="COVENANT_MISSIONS_FOLLOWERS"/>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplate" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
 				<Size x="305" y="505"/>
 				<KeyValues>

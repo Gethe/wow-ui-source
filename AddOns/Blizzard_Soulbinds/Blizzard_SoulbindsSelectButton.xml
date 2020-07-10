@@ -18,6 +18,11 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Dark">
+							<Color color="BLACK_FONT_COLOR"/>
+						</Texture>
+					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="2">
 						<Texture atlas="Soulbinds_Portrait_Border" useAtlasSize="true">
 							<Anchors>
@@ -58,6 +63,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEnter method="OnEnter"/>

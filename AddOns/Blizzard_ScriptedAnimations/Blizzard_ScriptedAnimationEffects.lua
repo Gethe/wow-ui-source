@@ -69,6 +69,12 @@ local function TargetStaticTrajectory(source, target, elapsed, duration)
 	return target:GetCenter();
 end
 
+local function HalfwayStaticTrajectory(source, target, elapsed, duration)
+	local sourceCenterX, sourceCenterY = source:GetCenter();
+	local targetCenterX, targetCenterY = target:GetCenter();
+	return sourceCenterX + ((targetCenterX - sourceCenterX) / 2.0), sourceCenterY + ((targetCenterY - sourceCenterY) / 2.0);
+end
+
 local function ShakeTargetLight(effectDescription, source, target, speed)
 	local duration = effectDescription.duration / speed;
 	local cancelFunction = ScriptAnimationUtil.ShakeFrameRandom(target, 2, duration, .05);
@@ -199,6 +205,7 @@ local TrajectoryToCallback = {
 	[Enum.ScriptedAnimationTrajectory.CurveRight] = ReverseCurveTrajectory,
 	[Enum.ScriptedAnimationTrajectory.CurveRandom] = RandomCurveTrajectory,
 	[Enum.ScriptedAnimationTrajectory.AtTarget] = TargetStaticTrajectory,
+	[Enum.ScriptedAnimationTrajectory.HalfwayBetween] = HalfwayStaticTrajectory,
 };
 
 local function LoadScriptedAnimationEffects()

@@ -1227,7 +1227,7 @@ function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 
 	if (missionInfo.followers ~= nil) then
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(GARRISON_FOLLOWERS);
+		GameTooltip:AddLine(GarrisonFollowerOptions[missionInfo.followerTypeID].strings.FOLLOWER_NAME);
 		for i=1, #(missionInfo.followers) do
 			GameTooltip:AddLine(C_Garrison.GetFollowerName(missionInfo.followers[i]), 1, 1, 1);
 		end

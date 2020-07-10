@@ -1,5 +1,5 @@
 
-RuneforgeModifierSlotMixin = {};
+RuneforgeModifierSlotMixin = CreateFromMixins(RuneforgeEffectOwnerMixin);
 
 function RuneforgeModifierSlotMixin:OnLoad()
 	local normalTexture = self:GetNormalTexture();
@@ -15,6 +15,11 @@ function RuneforgeModifierSlotMixin:OnLoad()
 	pushedTexture:SetAlpha(0);
 
 	self.IconBorder:SetAlpha(0);
+
+	self:AddEffectData("primary", RuneforgeUtil.Effect.ModifierSlotted, RuneforgeUtil.EffectTarget.None);
+
+	local effectID = (self:GetID() == 1) and RuneforgeUtil.Effect.FirstModifierChainsEffect or RuneforgeUtil.Effect.SecondModifierChainsEffect;
+	self:AddEffectData("chains", effectID, RuneforgeUtil.EffectTarget.ItemSlot);
 end
 
 function RuneforgeModifierSlotMixin:OnEnter()
@@ -60,6 +65,9 @@ function RuneforgeModifierSlotMixin:SetItem(item)
 	self:GetNormalTexture():SetAlpha(alpha);
 	self:GetPushedTexture():SetAlpha(alpha);
 
+	self:SetEffectShown("primary", hasItem);
+	self:SetEffectShown("chains", hasItem);
+
 	ItemButtonMixin.SetItem(self, item);
 end
 
@@ -69,6 +77,10 @@ end
 
 function RuneforgeModifierSlotMixin:GetModifierFrame()
 	return self:GetParent();
+end
+
+function RuneforgeModifierSlotMixin:GetRuneforgeFrame()
+	return self:GetParent():GetRuneforgeFrame();
 end
 
 
@@ -180,7 +192,7 @@ end
 function RuneforgeModifierSelectorFrameMixin:GenerateSelections(slotID)
 	self.selectionPool:ReleaseAll();
 
-	local modifierItemIDs = self:GetParent():GetRuneforgeFrame():GetModifierSelections();
+	local modifierItemIDs = C_LegendaryCrafting.GetRuneforgeModifiers();
 
 	local reagentCounts = {};
 	local selectedMap = tInvert(self:GetParent():GetModifiers());

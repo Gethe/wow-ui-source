@@ -7,21 +7,6 @@ local LegendaryCrafting =
 	Functions =
 	{
 		{
-			Name = "CanCraftRuneforgeLegendary",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "description", Type = "RuneforgeLegendaryCraftDescription", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canCraft", Type = "bool", Nilable = false },
-				{ Name = "error", Type = "RuneforgeLegendaryError", Nilable = true },
-			},
-		},
-		{
 			Name = "CloseRuneforgeInteraction",
 			Type = "Function",
 		},
@@ -58,6 +43,15 @@ local LegendaryCrafting =
 			},
 		},
 		{
+			Name = "GetRuneforgeLegendaryCurrencies",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencies", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRuneforgeModifierInfo",
 			Type = "Function",
 
@@ -78,11 +72,6 @@ local LegendaryCrafting =
 		{
 			Name = "GetRuneforgeModifiers",
 			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-			},
 
 			Returns =
 			{

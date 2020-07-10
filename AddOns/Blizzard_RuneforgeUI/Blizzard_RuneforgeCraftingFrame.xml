@@ -10,6 +10,11 @@
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+							<Alpha childKey="SelectedTexture" duration="0.2" fromAlpha="0.25" toAlpha="1" order="1"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 
@@ -20,29 +25,21 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-
-			<Layer level="ARTWORK">
-				<Texture parentKey="Runes" atlas="runecarving-frame-runes" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate">
+			<ItemButton parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="CENTER" x="7" y="-6"/>
 				</Anchors>
-			</Button>
+			</ItemButton>
 
-			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate">
+			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-82" y="-10"/>
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate">
+			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="45" y="-9"/>
 				</Anchors>
@@ -53,6 +50,13 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PowerSlot" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
 				</Anchors>
 			</Frame>
+
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="20" y="-20"/>
+				</Anchors>
+			</ModelScene>
 		</Frames>
 		<Scripts>
 			<OnShow method="OnShow"/>

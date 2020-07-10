@@ -9,6 +9,11 @@ function RuneforgePowerButtonMixin:SetPowerID(powerID)
 	self.Icon:SetShown(hasPowerID);
 	if hasPowerID then
 		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
+
+		local isAvailable = self.powerInfo.state == Enum.RuneforgePowerState.Available;
+		self.Icon:SetDesaturated(not isAvailable);
+		self.Icon:SetAlpha((isAvailable and self:IsEnabled()) and 1.0 or 0.5);
+
 		self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
 	else
 		self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
@@ -41,7 +46,15 @@ function RuneforgePowerButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", self.tooltipOffsetX or 0, self.tooltipOffsetY or 0);
 
 		local wrap = true;
+		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name, nil, wrap);
+	
+		local wrap = true;
 		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR, wrap);
+	
+		if self.powerInfo.source then
+			local wrap = true;
+			GameTooltip_AddErrorLine(GameTooltip, self.powerInfo.source, wrap);
+		end
 
 		GameTooltip:Show();
 	end
@@ -61,6 +74,10 @@ RuneforgePowerSlotMixin = CreateFromMixins(RuneforgeSystemMixin);
 function RuneforgePowerSlotMixin:OnLoad()
 	self.Icon:SetPoint("CENTER", -5, 2);
 	self.Icon:SetSize(64, 64);
+
+	self:AddEffectData("primary", RuneforgeUtil.Effect.PowerSlotted, RuneforgeUtil.EffectTarget.None);
+	self:AddEffectData("chains", RuneforgeUtil.Effect.PowerInChainsEffect, RuneforgeUtil.EffectTarget.ItemSlot);
+	self:AddEffectData("chains2", RuneforgeUtil.Effect.PowerOutChainsEffect, RuneforgeUtil.EffectTarget.ReverseItemSlot);
 end
 
 function RuneforgePowerSlotMixin:OnShow()
@@ -90,6 +107,10 @@ function RuneforgePowerSlotMixin:UpdateState()
 	local alpha = (not powerSelected and hasItem) and 1 or 0;
 	self:GetNormalTexture():SetAlpha(alpha);
 	self:GetPushedTexture():SetAlpha(alpha);
+
+	self:SetEffectShown("primary", powerSelected);
+	self:SetEffectShown("chains", powerSelected);
+	self:SetEffectShown("chains2", powerSelected);
 end
 
 function RuneforgePowerSlotMixin:SetPowerID(powerID)
@@ -157,8 +178,8 @@ function RuneforgePowerListMixin:GeneratePowerFrames()
 		end
 
 		local frame = self.powerPool:Acquire();
-		frame:SetPowerIndex(index);
 		frame:SetEnabled(buttonsEnabled);
+		frame:SetPowerIndex(index);
 		frame:Show();
 		return frame;
 	end

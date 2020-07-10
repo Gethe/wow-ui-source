@@ -94,7 +94,11 @@ function GarrisonFollowerList:Setup(mainFrame, followerType, followerTemplate, i
 	self.listScroll.dynamic = function(offset) return GarrisonFollowerList_GetTopButton(self, offset); end;
 
 	if (not followerTemplate) then
-		followerTemplate = "GarrisonMissionFollowerOrCategoryListButtonTemplate";
+		if followerType == Enum.GarrisonFollowerType.FollowerType_9_0 then
+			followerTemplate = "CovenantMissionFollowerOrCategoryListButtonTemplate";
+		else 
+			followerTemplate = "GarrisonMissionFollowerOrCategoryListButtonTemplate";
+		end
 	end
 	if (not initialOffsetX) then
 		initialOffsetX = 7;
@@ -550,7 +554,7 @@ function GarrisonFollowerList:UpdateData()
 						if (follower.isMaxLevel) then
 							button.Follower.Status:SetText(C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
 						else
-							button.Follower.Status:SetFormattedText(GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION, C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
+							button.Follower.Status:SetFormattedText(GarrisonFollowerOptions[follower.followerTypeID].strings.OUT_WITH_DURATION, C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
 						end
 					end
 				else
@@ -1013,7 +1017,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 			elseif ( status == GARRISON_FOLLOWER_IN_PARTY ) then
 				UIErrorsFrame:AddMessage(GARRISON_FOLLOWER_IN_PARTY_ADD_ERR, RED_FONT_COLOR:GetRGBA());
 			end
-		else
+		elseif followerList.OptionDropDown then
 			if ( self.isCollected ) then
 				if ( followerList.OptionDropDown.followerID ~= self.id ) then
 					CloseDropDownMenus();
@@ -1600,7 +1604,9 @@ function GarrisonFollowerTabMixin:UpdateValidSpellHighlightOnAbilityFrame(abilit
 			abilityFrame.IconButton.OldIcon:SetAlpha(0);
 		end
 	else
-		abilityFrame.IconButton.ValidSpellHighlight:Hide();
+		if abilityFrame.IconButton then
+			abilityFrame.IconButton.ValidSpellHighlight:Hide();
+		end
 	end
 end
 
@@ -1677,6 +1683,11 @@ function GarrisonFollowerTabMixin:SetupXPBar(followerInfo)
 			self.XPBar:SetValue(followerInfo.xp);
 			local xpLeft = followerInfo.levelXP - followerInfo.xp;
 			self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
+			if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+				self.XPText:SetPoint("TOPRIGHT", self.Class, "TOPRIGHT", -2, -8);
+			else 
+				self.XPText:SetPoint("TOPRIGHT", self.Class, "TOPLEFT", -2, -8);
+			end
 			self.XPText:Show();
 		end
 	else
@@ -1782,11 +1793,16 @@ local function EquipmentFrame_OnReleased(pool, equipmentFrame)
 	equipmentFrame.failureReason = nil;
 end
 
+function GarrisonFollowerTabMixin:GetAutoCombatStatsTemplate()
+	return self.autoCombatStatsTemplate or "CovenantStatLineTemplate";
+end
 
 function GarrisonFollowerTabMixin:OnLoad()
 	self.abilitiesPool = CreateFramePool("FRAME", self.AbilitiesFrame, "GarrisonFollowerPageAbilityTemplate", AbilityFrame_OnReleased);
 	self.equipmentPool = CreateFramePool("BUTTON", self.AbilitiesFrame, "GarrisonFollowerEquipmentTemplate", EquipmentFrame_OnReleased);
 	self.countersPool = CreateFramePool("FRAME", self.AbilitiesFrame, "GarrisonMissionMechanicTemplate");
+	self.autoSpellPool = CreateFramePool("FRAME", self.AbilitiesFrame, "CovenantMissionAutoSpellAbilityTemplate");
+	self.autoCombatStatsPool = CreateFramePool("FRAME", self:GetStatsAnchorFrame(), self:GetAutoCombatStatsTemplate());
 end
 
 function GarrisonFollowerTabMixin:OnHide()
@@ -2098,6 +2114,91 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 	end
 end
 
+function GarrisonFollowerTabMixin:SetupNewStatText(anchorFrame, leftText, rightText, additionalOffset)
+	additionalOffset = additionalOffset or 0;
+
+	local newFrame = self.autoCombatStatsPool:Acquire();
+	newFrame.LeftString:SetText(leftText);
+	newFrame.RightString:SetText(rightText);
+	newFrame.layoutIndex = anchorFrame.layoutIndex + 1;
+	newFrame:SetPoint("TOPLEFT", anchorFrame, "BOTTOMLEFT", 0, -4 + additionalOffset);
+	newFrame:Show();
+	return newFrame;
+end
+
+function GarrisonFollowerTabMixin:GetStatsAnchorFrame()
+	return self.AbilitiesFrame;
+end
+
+function GarrisonFollowerTabMixin:UpdateCombatantStats(followerInfo)
+	self.autoCombatStatsPool:ReleaseAll();
+
+	local anchorFrame = self:GetStatsAnchorFrame().StatsLabel; 
+	local autoCombatantStats = followerInfo.autoCombatantStats;
+	
+	if autoCombatantStats then
+		local newAnchorFrame = nil;
+		--Level
+		if not self.isLandingPage then 
+			newAnchorFrame = self:SetupNewStatText(anchorFrame, COVENANT_MISSIONS_LEVEL, followerInfo.level);
+		else 
+			newAnchorFrame = anchorFrame;
+		end
+		
+		--Health
+		local healthColor = (autoCombatantStats.currentHealth == autoCombatantStats.maxHealth) and WHITE_FONT_COLOR or RED_FONT_COLOR;
+		newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_HEALTH, healthColor:WrapTextInColorCode(autoCombatantStats.currentHealth) .. "/" .. autoCombatantStats.maxHealth, -4);
+		
+		--Attack
+		newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_ATTACK, autoCombatantStats.attack);
+
+		--Experience, hide if max level.
+		if followerInfo.levelXP ~= 0 and not self.isLandingPage then
+			newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_XP_TO_LEVEL, followerInfo.levelXP - followerInfo.xp);
+		end
+
+		anchorFrame:Show();	
+	else
+		anchorFrame:Hide();
+	end
+end
+
+function GarrisonFollowerTabMixin:GetAbilitiesText()
+	return self.AbilitiesFrame.AbilitiesText;
+end
+
+function GarrisonFollowerTabMixin:UpdateAutoSpellAbilities(followerInfo)
+	local abilityIconSize = self.isLandingPage and 35 or 60;
+	local anchorFrame;
+
+	local abilitiesText = self:GetAbilitiesText();
+	abilitiesText:Hide();
+	self.autoSpellPool:ReleaseAll();
+
+	local autoSpellInfo = followerInfo.autoSpellAbilities;
+	
+	for i, autoSpell in ipairs(autoSpellInfo) do
+		local abilityFrame = self.autoSpellPool:Acquire();
+		abilityFrame:SetSize(abilityIconSize, abilityIconSize); 
+		abilityFrame.Icon:SetSize(abilityIconSize, abilityIconSize);
+		abilityFrame.info = autoSpell;
+		abilityFrame.info.showCounters = false;
+		abilityFrame.Icon:SetTexture(autoSpell.icon);
+		abilityFrame.layoutIndex = BASE_ABILITY_LAYOUT_INDEX + i;
+		abilityFrame.Border:Hide();
+		abilityFrame:Show();
+		if self.isLandingPage then
+			abilityFrame.Name:SetText(autoSpell.name);
+		end
+		anchorFrame = abilityFrame;
+	end
+	
+	if anchorFrame then
+		abilitiesText:Show();
+	end
+		
+	self.AbilitiesFrame:Layout();
+end
 
 function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 
@@ -2149,6 +2250,20 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	self:SetupAbilities(followerInfo);
 	self:ShowAbilities(followerInfo);
 	self:ShowEquipment(followerInfo);
+
+	--Auto Combat Stats and Abilities
+	local isAutoCombatant = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+	if self.AbilitiesFrame.StatsLabel then 
+		self.AbilitiesFrame.StatsLabel:SetShown(isAutoCombatant);
+	end
+	if isAutoCombatant then 
+		followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID);
+		followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
+		self.Class:Hide();
+		self.AbilitiesFrame.SpecializationLabel:SetShown(false);
+		self:UpdateCombatantStats(followerInfo);
+		self:UpdateAutoSpellAbilities(followerInfo)
+	end
 
 	-- gear	/ source
 	local showGearOption = GarrisonFollowerOptions[followerInfo.followerTypeID].followerPageShowGear;

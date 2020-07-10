@@ -46,9 +46,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 18,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 17,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -69,6 +69,8 @@ local UIWidgetManagerShared =
 				{ Name = "TextureAndTextRow", Type = "UIWidgetVisualizationType", EnumValue = 15 },
 				{ Name = "ZoneControl", Type = "UIWidgetVisualizationType", EnumValue = 16 },
 				{ Name = "CaptureZone", Type = "UIWidgetVisualizationType", EnumValue = 17 },
+				{ Name = "TextureWithAnimation", Type = "UIWidgetVisualizationType", EnumValue = 18 },
+				{ Name = "DiscreteProgressSteps", Type = "UIWidgetVisualizationType", EnumValue = 19 },
 			},
 		},
 	},
