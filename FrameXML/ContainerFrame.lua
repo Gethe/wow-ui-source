@@ -1356,7 +1356,7 @@ function ContainerFrameItemButton_OnUpdate(self)
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 		if itemLocation and itemLocation:IsValid() then
-			if C_MountJournal.IsMountEquipmentUnlocked() and (not CollectionsJournal or not CollectionsJournal:IsShown()) then
+			if C_PlayerInfo.CanPlayerUseMountEquipment() and (not CollectionsJournal or not CollectionsJournal:IsShown()) then
 				local tabIndex = 1;
 				CollectionsMicroButton_SetAlertShown(tabIndex);
 			end

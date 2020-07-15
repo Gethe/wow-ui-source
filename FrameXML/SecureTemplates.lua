@@ -329,7 +329,7 @@ SECURE_ACTIONS.actionbar =
 
 SECURE_ACTIONS.action =
     function (self, unit, button)
-        local action = ActionButton_CalculateAction(self, button);
+        local action = self:CalculateAction(button);
         if ( action ) then
             -- Save macros in case the one for this action is being edited
             securecall("MacroFrame_SaveMacro");
@@ -365,7 +365,7 @@ SECURE_ACTIONS.flyout =
 
 SECURE_ACTIONS.multispell =
     function (self, unit, button)
-        local action = ActionButton_CalculateAction(self, button);
+        local action = self:CalculateAction(button);
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
         if ( action and spell ) then
             SetMultiCastSpell(action, tonumber(spell) or spell);

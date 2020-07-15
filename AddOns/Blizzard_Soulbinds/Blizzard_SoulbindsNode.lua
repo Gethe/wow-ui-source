@@ -44,15 +44,15 @@ function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
 		modelScene:AddEffect(NODE_SELECTION_FX_1, self);
 		modelScene:AddEffect(NODE_SELECTION_FX_2, self);
 
-		--local LEARN_SHAKE_DELAY = 0;
-		--C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
+		local LEARN_SHAKE_DELAY = 0;
+		C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
 	end
 end
 
 function SoulbindTreeNodeMixin:Shake()
 	if self:IsShown() then
-		local SHAKE = { { x = 0, y = -20}, { x = 0, y = 20}, { x = 0, y = -20}, { x = 0, y = 20}, { x = -9, y = -8}, { x = 8, y = 8}, { x = -3, y = -8}, { x = 9, y = 8}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
-		local SHAKE_DURATION = 0.20;
+		local SHAKE = { { x = 0, y = -5}, { x = 0, y = 5}, { x = 0, y = -5}, { x = 0, y = 5}, { x = -3, y = -2}, { x = 2, y = 2}, { x = -1, y = -2}, { x = 3, y = 2}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, };
+		local SHAKE_DURATION = 0.1;
 		local SHAKE_FREQUENCY = 0.001;
 		ScriptAnimationUtil.ShakeFrame(UIParent, SHAKE, SHAKE_DURATION, SHAKE_FREQUENCY)
 	end
@@ -65,6 +65,7 @@ end
 function SoulbindTreeNodeMixin:Reset()
 	self.node = nil;
 	self.linkFrames = {};
+	self.RingOverlay:Hide();
 	self.RingOverlay.Pulse:Stop();
 	self:GetFxModelScene():ClearEffects();
 	self:UnregisterEvents();
@@ -163,13 +164,21 @@ function SoulbindTreeNodeMixin:IsConduit()
 	return self.node.conduitType ~= nil;
 end
 
-function SoulbindTreeNodeMixin:SetActivationOverlayShown(shown, displayArrow)
-	self.RingOverlay.Pulse:SetPlaying(shown);
-	self.Arrow:SetShown(displayArrow or false);
-	self.Arrow2:SetShown(displayArrow or false);
+function SoulbindTreeNodeMixin:SetActivationOverlayShown(shown, editable, multipleSelectable)
+	self.RingOverlay:SetShown(shown);
+	
+	local animated = shown and editable;
+	if animated then
+		self.RingOverlay.Pulse:SetPlaying(shown);
+	end
+
+	local showArrow = animated and multipleSelectable;
+	self.Arrow:SetShown(showArrow);
+	self.Arrow2:SetShown(showArrow);
 end
 
 function SoulbindTreeNodeMixin:StopAnimations()
+	self.RingOverlay:Hide();
 	self.RingOverlay.Pulse:Stop();
 	self.Arrow:Hide();
 	self.Arrow2:Hide();
@@ -195,6 +204,7 @@ function SoulbindTraitNodeMixin:LoadTooltip()
 	local onSpellLoad = function()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetSpellByID(self.spell:GetSpellID());
+		self:AddTooltipContents();
 		GameTooltip:Show();
 	end;
 	self.spell:ContinueOnSpellLoad(onSpellLoad);
@@ -232,14 +242,6 @@ end
 
 function SoulbindConduitNodeMixin:OnLoad()
 	SoulbindTreeNodeMixin.OnLoad(self);
-
-	local onFinished = function()
-		for _, ringFrame in ipairs(self.installAnimTextures) do
-			ringFrame:Hide();
-		end
-	end;
-
-	self.InstallAnim:SetScript("OnFinished", onFinished);
 end
 
 function SoulbindConduitNodeMixin:Init(node)
@@ -284,7 +286,9 @@ function SoulbindConduitNodeMixin:Reset()
 	self.conduit = nil;
 
 	self.Icon:Hide();
-	self.InstallAnim:Stop();
+	for _, ringFrame in ipairs(self.installAnimTextures) do
+		ringFrame.InstallAnim:Stop();
+	end
 end
 
 function SoulbindConduitNodeMixin:OnClick(...)
@@ -307,13 +311,7 @@ function SoulbindConduitNodeMixin:SetConduit(conduit)
 	self:SetConduitID_Internal(conduit);
 
 	if conduit then
-		self:PlayInstallAnim();
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_INSTALLED);
-
-		local CONDUIT_INSTALL_FX_1 = 48;
-		local CONDUIT_INSTALL_FX_2 = 44;
-		self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX_1, self);
-		self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX_2, self);
+		self:PlayConduitInstall();
 	end
 
 	if GameTooltip:IsShown() then
@@ -322,36 +320,72 @@ function SoulbindConduitNodeMixin:SetConduit(conduit)
 	end
 end
 
-function SoulbindConduitNodeMixin:SetInstallOverlayShown(shown)
+function SoulbindConduitNodeMixin:PlayConduitInstall()
+	self:PlayInstallAnim();
+	
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_INSTALLED);
+
+	local CONDUIT_INSTALL_FX_1 = 48;
+	local CONDUIT_INSTALL_FX_2 = 44;
+	self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX_1, self);
+	self:GetFxModelScene():AddEffect(CONDUIT_INSTALL_FX_2, self);
+end
+
+function SoulbindConduitNodeMixin:SetConduitPickupAnimShown(shown)
 	if shown then
 		self.RingOverlay2:Show();
-		self.RingOverlay2:SetAlpha(1.0);
+		self.RingOverlay3:Show();
+		self.RingOverlay6:Show();
+		self.RingOverlay2.Pulse:Play();
+		self.RingOverlay3.Pulse:Play();
+		self.RingOverlay6.Pulse:Play();
 	else
 		self.RingOverlay2:Hide();
+		self.RingOverlay3:Hide();
+		self.RingOverlay6:Hide();
 	end
 end
 
-function SoulbindConduitNodeMixin:SetInstallOverlayPlaying(playing)
-	if playing then
+function SoulbindConduitNodeMixin:SetConduitMouseoverAnimShown(shown)
+	if shown then
 		self.RingOverlay2:Show();
+		self.RingOverlay3:Show();
+		self.RingOverlay6:Show();
 		self.RingOverlay2.Pulse:Play();
+		self.RingOverlay3.Pulse:Play();
+		self.RingOverlay6.Pulse:Play();
 	else
 		self.RingOverlay2:Hide();
+		self.RingOverlay3:Hide();
+		self.RingOverlay6:Hide();
+	end
+end
+
+function SoulbindConduitNodeMixin:SetAvailableConduitsAnimShown(shown)
+	if shown then
+		self.RingOverlay4:Show();
+		self.RingOverlay5:Show();
+		self.RingOverlay4.Pulse:Play();
+		self.RingOverlay5.Pulse:Play();
+	else
+		self.RingOverlay4:Hide();
+		self.RingOverlay5:Hide();
 	end
 end
 
 function SoulbindConduitNodeMixin:PlayInstallAnim()
 	for _, ringFrame in ipairs(self.installAnimTextures) do
-		ringFrame:Show();
+		ringFrame.InstallAnim:Play();
 	end
-	self.InstallAnim:Play();
 end
 
 function SoulbindConduitNodeMixin:StopAnimations()
 	SoulbindTreeNodeMixin.StopAnimations(self);
 
-	self.RingOverlay2.Pulse:Stop();
-	self.RingOverlay2:Hide();
+	for _, overlay in ipairs(self.RingOverlays) do
+		overlay.Pulse:Stop();
+		overlay:Hide();
+	end
 end
 
 function SoulbindConduitNodeMixin:IsInstalled()
@@ -384,13 +418,52 @@ function SoulbindConduitNodeMixin:OnConduitSpellLoad()
 	self.Icon:Show();
 end
 
+function SoulbindTreeNodeMixin:AddUnavailableLine()
+	if self:IsConduit() then
+		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_CONDUIT_ACTIVATE_UNAVAIL, true);
+	else
+		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_ACTIVATE_UNAVAIL, true);
+	end
+end
+
+function SoulbindTreeNodeMixin:AddTooltipContents()
+	if not self:IsSelected() and not self:IsUnselectable() then
+		local stamina = 0;
+		local staminaText = SOULBIND_STAMINA_BONUS:format(stamina);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddInstructionLine(GameTooltip, staminaText, true);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	end
+
+	if self:IsSelectable() then
+		if C_Soulbinds.IsAtSoulbindForge() then
+			GameTooltip_AddInstructionLine(GameTooltip, SOULBIND_NODE_ACTIVATE, true);
+		else
+			self:AddUnavailableLine();
+		end
+	elseif self:IsUnselectable() then
+		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED, true);
+	elseif self:IsUnavailable() then
+		if C_Soulbinds.GetFoundationIndex() < self:GetRow() then
+			local unavailableText = SOULBIND_NODE_PREREQ:format(self:GetRow() + 1);
+			GameTooltip_AddDisabledLine(GameTooltip, unavailableText, true);
+		else
+			if C_Soulbinds.IsAtSoulbindForge() then
+				GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_DISCONNECTED, true);
+			else
+				self:AddUnavailableLine();
+			end
+		end
+	end
+end
+
 local function GetUninstalledConduitStrings(conduitType)
 	if conduitType == Enum.SoulbindConduitType.Potency then
-		return CONDUIT_TYPE_POTENCY, CONDUIT_TYPE_DESC_POTENCY;
+		return CONDUIT_SLOT_POTENCY, CONDUIT_TYPE_DESC_POTENCY;
 	elseif conduitType == Enum.SoulbindConduitType.Endurance then
-		return CONDUIT_TYPE_ENDURANCE, CONDUIT_TYPE_DESC_ENDURANCE;
+		return CONDUIT_SLOT_ENDURANCE, CONDUIT_TYPE_DESC_ENDURANCE;
 	elseif conduitType == Enum.SoulbindConduitType.Finesse then
-		return CONDUIT_TYPE_FINESSE, CONDUIT_TYPE_DESC_FINESSE;
+		return CONDUIT_SLOT_FINESSE, CONDUIT_TYPE_DESC_FINESSE;
 	end
 end
 
@@ -399,14 +472,20 @@ function SoulbindConduitNodeMixin:LoadTooltip()
 		local onConduitLoad = function()
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetConduit(self.conduit:GetConduitID(), self.conduit:GetRank()); 
+			self:AddTooltipContents();
 			GameTooltip:Show();
 		end;
 		self.conduit:ContinueOnSpellLoad(onConduitLoad);
 	else
-		local title, description = GetUninstalledConduitStrings(self:GetConduitType());
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, title);
-		GameTooltip_AddNormalLine(GameTooltip, description, true);
+		if Soulbinds.HasConduitAtCursor() and not C_Soulbinds.IsAtSoulbindForge() then
+			GameTooltip_AddErrorLine(GameTooltip, SOULBIND_CONDUIT_INSTALL_UNAVAIL, true);
+		else
+			local title, description = GetUninstalledConduitStrings(self:GetConduitType());
+			GameTooltip_SetTitle(GameTooltip, title);
+			GameTooltip_AddNormalLine(GameTooltip, description, true);
+			self:AddTooltipContents();
+		end
 		GameTooltip:Show();
 	end
 end

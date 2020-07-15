@@ -42,36 +42,46 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
 
 	for index, widgetFrame in ipairs(sortedWidgets) do	
-		local useVerticalLayout = (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical) or (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default and widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Vertical);
+		local useVerticalLayout = (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical) or
+		                           ((widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default or widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap) and widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Vertical);
+		local useOverlapLayout = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap;
 
 		if (useVerticalLayout) then 
 			if ( index == 1 ) then
-				widgetFrame:SetPoint("TOP", widgetContainerFrame);
+				widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame);
 			else
 				local relative = horizontalRowContainer or sortedWidgets[index - 1];
-				widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+				if ( useOverlapLayout ) then
+					widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalAnchorPoint, 0, 0);
+				else
+					widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+				end
 				if(horizontalRowContainer) then 
 					horizontalRowContainer:Layout(); 
 					horizontalRowContainer = nil;
 				end
 			end
 		else
-			if(not horizontalRowContainer) then 
+			if ( not useOverlapLayout and not horizontalRowContainer ) then 
 				horizontalRowContainer = widgetContainerFrame.horizontalRowContainerPool:Acquire();
 				horizontalRowContainer:Show(); 
 
 				if ( index == 1 ) then
-					horizontalRowContainer:SetPoint("TOP", widgetContainerFrame, "TOP");
+					horizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame, widgetContainerFrame.verticalAnchorPoint);
 				else 
 					local relative = sortedWidgets[index - 1];
-					horizontalRowContainer:SetPoint("TOP", relative, "BOTTOM", 0, 0);
+					horizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
 				widgetFrame:SetPoint("TOPLEFT", horizontalRowContainer);
 				widgetFrame:SetParent(horizontalRowContainer); 
 			else
 				local relative = sortedWidgets[index - 1];
-				widgetFrame:SetParent(horizontalRowContainer); 
-				widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
+				if ( useOverlapLayout ) then
+					widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalAnchorPoint, 0, 0);
+				else
+					widgetFrame:SetParent(horizontalRowContainer);
+					widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
+				end
 			end
 		end
 	end

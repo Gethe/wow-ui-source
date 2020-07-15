@@ -136,6 +136,7 @@
 	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="disableMouse" value="true" type="boolean"/>
+			<KeyValue key="ignoreCUFNameRequirement" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER" />

@@ -7,6 +7,26 @@ local PlayerInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerUseAreaLoot",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseAreaLoot", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseMountEquipment",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseMountEquipment", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetContentDifficultyCreatureForPlayer",
 			Type = "Function",
 

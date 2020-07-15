@@ -271,7 +271,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.Border:SetAtlas("UI-Frame-IconBorder", false); 
 	end 
 
-	local iconWidth = self.Icon:GetWidth() + 5;
+	local iconWidth = self.Icon:GetWidth();
 	local textWidth = 0;
 	if width > iconWidth then
 		textWidth = width - iconWidth;
@@ -295,6 +295,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		if self.Text:GetHeight() < self.Icon:GetHeight() then
 			self.Text:SetHeight(self.Icon:GetHeight());
 		end
+		iconWidth = iconWidth + 5;
 	end
 
 	if spellInfo.stackDisplay > 0 then

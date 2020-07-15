@@ -645,6 +645,7 @@ function GarrisonMissionFrame_ClearMouse()
 		GarrisonFollowerPlacer:Hide();
 		GarrisonFollowerPlacerFrame:Hide();
 		GarrisonFollowerPlacer.info = nil;
+		EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 		return true;
 	end
 	return false;

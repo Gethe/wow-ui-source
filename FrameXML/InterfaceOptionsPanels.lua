@@ -1336,6 +1336,14 @@ function InterfaceOptionsLargerNamePlate_OnLoad(self)
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 end
 
+function InterfaceOptionsLargerNamePlate_OnShow(self)
+	if C_Commentator.IsSpectating() then
+		BlizzardOptionsPanel_CheckButton_Disable(self);
+	else
+		BlizzardOptionsPanel_CheckButton_Enable(self);
+	end
+end
+
 function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local value = "2";

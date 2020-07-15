@@ -3,13 +3,16 @@
 	<Script file="ItemButtonTemplate.lua"/>
 
  	<Button name="ItemButton" registerForClicks="LeftButtonUp, RightButtonUp" mixin="ItemButtonMixin" intrinsic="true">
-		<!--
-		<KeyValues>	
+		<KeyValues>
+			<!-- Show system-specific highlight when this item button matches the current context. -->
+			<KeyValue key="showMatchHighlight" value="true" type="boolean"/>
+
+			<!--
 			Set a function to use to get item context match results. This will automatically enable item context highlighting.
 			Should take self as the only parameter and return an ItemButtonUtil.ItemContextMatchResult.
 			<KeyValue key="GetItemContextMatchResult" value="BagButton_GetItemContextMatchResult" type="global"/>
+			-->
 		</KeyValues>
-		-->
 		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -41,9 +44,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true">
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
+				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="LevelLinkLockTexture"/>

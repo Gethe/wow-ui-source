@@ -543,6 +543,8 @@ function CharacterCreateMixin:NavForward()
 end
 
 function CharacterCreateMixin:UpdateForwardButton()
+	self.ForwardButton:SetEnabled(self:CanNavForward());
+
 	if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
 		self.ForwardButton:UpdateText(CUSTOMIZE, FORWARD_ARROW);
 	elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
@@ -554,8 +556,6 @@ function CharacterCreateMixin:UpdateForwardButton()
 	else
 		self.ForwardButton:UpdateText(FINISH);
 	end
-
-	self.ForwardButton:SetEnabled(self:CanNavForward());
 end
 
 CharacterCreateNavButtonMixin = {};
@@ -564,11 +564,22 @@ function CharacterCreateNavButtonMixin:GetAppropriateTooltip()
 	return CharCustomizeNoHeaderTooltip;
 end
 
+function CharacterCreateNavButtonMixin:OnEnter()
+	local tooltipText = GetValueOrCallFunction(self, "tooltip");
+	if tooltipText then
+		local tooltip = self:GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_LEFT");
+		tooltip:SetText(tooltipText);
+	end
+end
+
 function CharacterCreateNavButtonMixin:UpdateText(text, arrow)
+	local appendArrowName = self:IsEnabled() and "" or "-disable";
+
 	if arrow == FORWARD_ARROW then
-		self:SetFormattedText("%s  %s", text, CreateAtlasMarkup("common-icon-forwardarrow", 8, 13, 0, 0));
+		self:SetFormattedText("%s  %s", text, CreateAtlasMarkup("common-icon-forwardarrow"..appendArrowName, 8, 13, 0, 0));
 	elseif arrow == BACKWARD_ARROW then
-		self:SetFormattedText("%s  %s", CreateAtlasMarkup("common-icon-backarrow", 8, 13, 0, 0), text);
+		self:SetFormattedText("%s  %s", CreateAtlasMarkup("common-icon-backarrow"..appendArrowName, 8, 13, 0, 0), text);
 	else
 		self:SetText(text);
 	end
@@ -647,9 +658,9 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	self.ClassName:SetText(classData.name);
 
 	self:ClearTooltipLines();
-	self:AddTooltipLine(_G["CLASS_"..classData.fileName.."_2"]);
+	self:AddTooltipLine(classData.description);
 	self:AddBlankTooltipLine();
-	self:AddTooltipLine(_G["CLASS_INFO_"..classData.fileName.."_ROLE_TT"]);
+	self:AddTooltipLine(classData.roleInfo);
 
 	local tooltipDisabledReason;
 	if not classData.enabled then
@@ -668,11 +679,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 			local validRaceConcat = table.concat(validRaceNames, ", ");
 			tooltipDisabledReason = CLASS_DISABLED.."|n|n"..validRaceConcat;
 		else
-			if classData.fileName and _G[classData.fileName.."_DISABLED"] then
-				tooltipDisabledReason = _G[classData.fileName.."_DISABLED"];
-			else
-				tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_GENERIC;
-			end
+			tooltipDisabledReason = classData.disabledString;
 		end
 	end
 
@@ -888,7 +895,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType);
+	self.ClassTrialCheckButton:SetShown(not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
@@ -1570,7 +1577,7 @@ end
 function CharacterCreateZoneChoiceMixin:Setup()
 	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices();
 
-	if not secondZoneChoiceInfo or CharacterCreateFrame.paidServiceType then
+	if not secondZoneChoiceInfo or CharacterCreateFrame.paidServiceType or (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Normal) then
 		self:SetUseNPE(firstZoneChoiceInfo.isNPE);
 		self.shouldShow = false;
 		return;

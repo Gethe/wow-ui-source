@@ -44,6 +44,36 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "AssignPlayerToTeam",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AssignPlayersToTeam",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerName", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AssignPlayersToTeamInCurrentInstance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "CanUseCommentatorCheats",
 			Type = "Function",
 
@@ -75,6 +105,54 @@ local CommentatorFrame =
 		},
 		{
 			Name = "ExitInstance",
+			Type = "Function",
+		},
+		{
+			Name = "FindSpectatedUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "isPet", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "FindTeamNameInCurrentInstance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "teamName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "FindTeamNameInDirectory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerNames", Type = "table", InnerType = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "teamName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "FlushCommentatorHistory",
 			Type = "Function",
 		},
 		{
@@ -117,7 +195,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "string", Nilable = false },
 			},
 
 			Returns =
@@ -167,6 +245,15 @@ local CommentatorFrame =
 				{ Name = "xPos", Type = "number", Nilable = false },
 				{ Name = "yPos", Type = "number", Nilable = false },
 				{ Name = "zPos", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCommentatorHistory",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "history", Type = "CommentatorHistory", Nilable = false },
 			},
 		},
 		{
@@ -387,6 +474,21 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "GetOrCreateSeries",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamName1", Type = "string", Nilable = false },
+				{ Name = "teamName2", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "CommentatorSeries", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerAuraInfo",
 			Type = "Function",
 
@@ -405,6 +507,23 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "GetPlayerAuraInfoByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerCooldownInfo",
 			Type = "Function",
 
@@ -412,6 +531,23 @@ local CommentatorFrame =
 			{
 				{ Name = "teamIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerCooldownInfoByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -456,6 +592,21 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "GetPlayerData",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CommentatorPlayerData", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPlayerFlagInfo",
 			Type = "Function",
 
@@ -471,27 +622,17 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "GetPlayerInfo",
+			Name = "GetPlayerFlagInfoByUnit",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "unitToken", Type = "string", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = false },
-				{ Name = "specialization", Type = "number", Nilable = false },
-				{ Name = "damageDone", Type = "number", Nilable = false },
-				{ Name = "damageTaken", Type = "number", Nilable = false },
-				{ Name = "healingDone", Type = "number", Nilable = false },
-				{ Name = "healingTaken", Type = "number", Nilable = false },
-				{ Name = "kills", Type = "number", Nilable = false },
-				{ Name = "deaths", Type = "number", Nilable = false },
+				{ Name = "hasFlag", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -516,6 +657,24 @@ local CommentatorFrame =
 			{
 				{ Name = "teamIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "charges", Type = "number", Nilable = false },
+				{ Name = "maxCharges", Type = "number", Nilable = false },
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerSpellChargesByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -578,7 +737,7 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "GetTeamHighlightColor",
+			Name = "GetTeamColor",
 			Type = "Function",
 
 			Arguments =
@@ -588,10 +747,21 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "highlightColorR", Type = "number", Nilable = false },
-				{ Name = "highlightColorG", Type = "number", Nilable = false },
-				{ Name = "highlightColorB", Type = "number", Nilable = false },
-				{ Name = "highlightColorA", Type = "number", Nilable = false },
+				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTeamColorByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -631,6 +801,35 @@ local CommentatorFrame =
 			Returns =
 			{
 				{ Name = "spells", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTrackedSpellsByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spells", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitData",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "CommentatorUnitData", Nilable = false },
 			},
 		},
 		{
@@ -729,6 +928,22 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "IsTrackedSpellByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTracked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUsingSmartCamera",
 			Type = "Function",
 
@@ -776,6 +991,20 @@ local CommentatorFrame =
 			Type = "Function",
 		},
 		{
+			Name = "ResetSeriesScores",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamName1", Type = "string", Nilable = false },
+				{ Name = "teamName2", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ResetSettings",
+			Type = "Function",
+		},
+		{
 			Name = "ResetTrackedAuras",
 			Type = "Function",
 		},
@@ -796,7 +1025,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "string", Nilable = false },
 				{ Name = "weight", Type = "number", Nilable = false },
 			},
 		},
@@ -862,6 +1091,15 @@ local CommentatorFrame =
 			Arguments =
 			{
 				{ Name = "enableCheats", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCommentatorHistory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "history", Type = "CommentatorHistory", Nilable = false },
 			},
 		},
 		{
@@ -1032,6 +1270,30 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "SetSeriesScore",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamName1", Type = "string", Nilable = false },
+				{ Name = "teamName2", Type = "string", Nilable = false },
+				{ Name = "scoringTeamName", Type = "string", Nilable = false },
+				{ Name = "score", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSeriesScores",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamName1", Type = "string", Nilable = false },
+				{ Name = "teamName2", Type = "string", Nilable = false },
+				{ Name = "score1", Type = "number", Nilable = false },
+				{ Name = "score2", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetSmartCameraLocked",
 			Type = "Function",
 
@@ -1141,6 +1403,11 @@ local CommentatorFrame =
 			LiteralName = "COMMENTATOR_ENTER_WORLD",
 		},
 		{
+			Name = "CommentatorHistoryFlushed",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_HISTORY_FLUSHED",
+		},
+		{
 			Name = "CommentatorImmediateFovUpdate",
 			Type = "Event",
 			LiteralName = "COMMENTATOR_IMMEDIATE_FOV_UPDATE",
@@ -1169,6 +1436,29 @@ local CommentatorFrame =
 			Type = "Event",
 			LiteralName = "COMMENTATOR_PLAYER_UPDATE",
 		},
+		{
+			Name = "CommentatorResetSettings",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_RESET_SETTINGS",
+		},
+		{
+			Name = "CommentatorTeamNameUpdate",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_TEAM_NAME_UPDATE",
+			Payload =
+			{
+				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorTeamsSwapped",
+			Type = "Event",
+			LiteralName = "COMMENTATOR_TEAMS_SWAPPED",
+			Payload =
+			{
+				{ Name = "swapped", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -1185,6 +1475,83 @@ local CommentatorFrame =
 				{ Name = "Defensive", Type = "TrackedSpellCategory", EnumValue = 1 },
 				{ Name = "Debuff", Type = "TrackedSpellCategory", EnumValue = 2 },
 				{ Name = "Count", Type = "TrackedSpellCategory", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "CommentatorHistory",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "series", Type = "table", InnerType = "CommentatorSeries", Nilable = false },
+				{ Name = "teamDirectory", Type = "table", InnerType = "CommentatorTeamDirectoryEntry", Nilable = false },
+				{ Name = "overrideNameDirectory", Type = "table", InnerType = "CommentatorOverrideNameEntry", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorOverrideNameEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "originalName", Type = "string", Nilable = false },
+				{ Name = "newName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorPlayerData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = false },
+				{ Name = "specialization", Type = "number", Nilable = false },
+				{ Name = "damageDone", Type = "number", Nilable = false },
+				{ Name = "damageTaken", Type = "number", Nilable = false },
+				{ Name = "healingDone", Type = "number", Nilable = false },
+				{ Name = "healingTaken", Type = "number", Nilable = false },
+				{ Name = "kills", Type = "number", Nilable = false },
+				{ Name = "deaths", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorSeries",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "teams", Type = "table", InnerType = "CommentatorSeriesTeam", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorSeriesTeam",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "score", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorTeamDirectoryEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorUnitData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "healthMax", Type = "number", Nilable = false },
+				{ Name = "health", Type = "number", Nilable = false },
+				{ Name = "absorbTotal", Type = "number", Nilable = false },
+				{ Name = "isDeadOrGhost", Type = "bool", Nilable = false },
+				{ Name = "isFeignDeath", Type = "bool", Nilable = false },
+				{ Name = "powerTypeToken", Type = "string", Nilable = false },
+				{ Name = "power", Type = "number", Nilable = false },
+				{ Name = "powerMax", Type = "number", Nilable = false },
 			},
 		},
 		{

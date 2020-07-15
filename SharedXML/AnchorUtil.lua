@@ -177,3 +177,99 @@ function AnchorUtil.GridLayoutFactory(factoryFunction, initialAnchor, totalWidth
 
 	AnchorUtil.GridLayout(frames, initialAnchor, AnchorUtil.CreateGridLayout(direction, rowSize, spacingX, spacingY));
 end
+
+-- Mirrors an array of regions along the specified axis. For example, if horizontal, a region
+-- anchored LEFT TOPLEFT 20 20 will become anchored RIGHT TOPRIGHT -20 20.
+-- Mirror description format: {region = region, mirrorUV = [true, false]}
+local function MirrorRegionsAlongAxis(mirrorDescriptions, exchangeables, setPointWrapper, setTexCoordsWrapper)
+	for _, description in ipairs(mirrorDescriptions) do
+		local exchanged = {};
+
+		local region = description.region;
+		local mirrorUV = description.mirrorUV;
+		for p in pairs(exchangeables) do
+			if not exchanged[p] then
+				local point1, relative1, relativePoint1, x1, y1 = region:GetPointByName(p);
+				if point1 then
+					-- Retrieve point information for what we're replacing, if any.
+					local mirrorPoint1 = exchangeables[point1];
+					local point2, relative2, relativePoint2, x2, y2 = region:GetPointByName(mirrorPoint1);
+					setPointWrapper(region, point1, relative1, relativePoint1, x1, y1);
+
+					-- If we replaced a point, mirror the information to the original point.
+					if point2 then
+						setPointWrapper(region, point2, relative2, relativePoint2, x2, y2);
+					else
+						-- Otherwise, clear the original point.
+						region:ClearPointByName(point1);
+					end
+					
+					exchanged[point1] = true;
+					exchanged[mirrorPoint1] = true;
+				end
+			end
+		end
+		
+		if mirrorUV then
+			setTexCoordsWrapper(region);
+		end
+	end
+end
+
+local SetPointAlongAxis = function(points, region, point, relative, relativePoint, x, y)
+	local mirrorPoint = points[point];
+	local mirrorRelativePoint = points[relativePoint] or relativePoint;
+	region:SetPoint(mirrorPoint, relative, mirrorRelativePoint, x, y);
+end
+
+local VERTICAL_MIRROR_POINTS =
+{
+	["TOPLEFT"] = "BOTTOMLEFT",
+	["TOP"] = "BOTTOM",
+	["TOPRIGHT"] = "BOTTOMRIGHT",
+	["BOTTOMLEFT"] = "TOPLEFT",
+	["BOTTOM"] = "TOP",
+	["BOTTOMRIGHT"] = "TOPRIGHT",
+	["CENTER"] = "CENTER", -- Mirrored only along x and y offsets.
+	["LEFT"] = "LEFT", -- Mirrored only  along x and y offsets.
+	["RIGHT"] = "RIGHT", -- Mirrored only along x and y offsets.
+};
+
+local SetPointVertical = function(region, point, relative, relativePoint, x, y)
+	SetPointAlongAxis(VERTICAL_MIRROR_POINTS, region, point, relative, relativePoint, x, -y);
+end;
+
+local SetTexCoordVertical = function(region)
+	local x1, y1, x2, y2, x3, y3, x4, y4 = region:GetTexCoord();
+	region:SetTexCoord(x2, y2, x1, y1, x4, y4, x3, y3);
+end
+
+function AnchorUtil.MirrorRegionsAlongVerticalAxis(mirrorDescriptions)
+	MirrorRegionsAlongAxis(mirrorDescriptions, VERTICAL_MIRROR_POINTS, SetPointVertical, SetTexCoordVertical);
+end
+
+local HORIZONTAL_MIRROR_POINTS =
+{
+	["TOPLEFT"] = "TOPRIGHT",
+	["LEFT"] = "RIGHT",
+	["BOTTOMLEFT"] = "BOTTOMRIGHT",
+	["TOPRIGHT"] = "TOPLEFT",
+	["RIGHT"] = "LEFT",
+	["BOTTOMRIGHT"] = "BOTTOMLEFT",
+	["CENTER"] = "CENTER", -- Mirrored only along x and y offsets.
+	["TOP"] = "TOP", -- Mirrored only along x and y offsets.
+	["BOTTOM"] = "BOTTOM", -- Mirrored only along x and y offsets.
+};
+
+local SetPointHorizontal = function(region, point, relative, relativePoint, x, y)
+	SetPointAlongAxis(HORIZONTAL_MIRROR_POINTS, region, point, relative, relativePoint, -x, y);
+end
+
+local SetTexCoordHorizontal = function(region)
+	local x1, y1, x2, y2, x3, y3, x4, y4 = region:GetTexCoord();
+	region:SetTexCoord(x3, y3, x4, y4, x1, y1, x2, y2);
+end
+
+function AnchorUtil.MirrorRegionsAlongHorizontalAxis(mirrorDescriptions)
+	MirrorRegionsAlongAxis(mirrorDescriptions, HORIZONTAL_MIRROR_POINTS, SetPointHorizontal, SetTexCoordHorizontal);
+end

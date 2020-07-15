@@ -247,6 +247,7 @@ local borderLayout = {
 		showTitle = true,
 		setAtlasVisibility = true,
 		useFourCornersBorderNineSlice = true,
+		noTitleOffset = true, 
 	},
 }
 
@@ -440,6 +441,8 @@ function PlayerChoiceFrameMixin:TryShow()
 
 	self.optionDescriptionColor = WARBOARD_OPTION_TEXT_COLOR;
 	self.optionHeaderTitleColor = BLACK_FONT_COLOR;
+	self.optionTitleFont = SystemFont_Large;
+	self.optionDescriptionFont = GameFontBlack;
 
 	local textureKitFontProperties = textureFontProperties[self.uiTextureKit];
 	if textureKitFontProperties then
@@ -447,13 +450,9 @@ function PlayerChoiceFrameMixin:TryShow()
 		self.optionHeaderTitleColor = textureKitFontProperties.title;
 		if(textureKitFontProperties.titleFont) then
 			self.optionTitleFont = textureKitFontProperties.titleFont;
-		else
-			self.optionTitleFont = SystemFont_Large;
 		end
 		if(textureKitFontProperties.descriptionFont) then
 			self.optionDescriptionFont = textureKitFontProperties.descriptionFont;
-		else
-			self.optionDescriptionFont = GameFontBlack;
 		end
 	end
 
@@ -717,6 +716,7 @@ function PlayerChoiceFrameMixin:Update()
 
 	local layout = borderLayout[self.uiTextureKit] or borderLayout[DEFAULT_TEXTURE_KIT];
 	local shouldShowTitle = layout.showTitle;
+	local noTitleOffset = layout.noTitleOffset;
 	for i, option in ipairs(self.Options) do
 		if i > self.numActiveOptions then
 			self:UpdateOptionWidgetRegistration(option, nil);
@@ -798,6 +798,16 @@ function PlayerChoiceFrameMixin:Update()
 		self.Title:SetPoint("RIGHT", lastActiveOption, "RIGHT", 15, -50);
 	end
 
+	self.Title.Middle:ClearAllPoints();
+
+	if(noTitleOffset) then 
+		self.Title.Middle:SetPoint("LEFT", self.Title.Left, "RIGHT");
+		self.Title.Middle:SetPoint("RIGHT", self.Title.Right, "LEFT");
+	else 
+		self.Title.Middle:SetPoint("LEFT", self.Title.Left, "RIGHT", -60);
+		self.Title.Middle:SetPoint("RIGHT", self.Title.Right, "LEFT", 60);
+	end 
+
 	self.Title:SetShown(shouldShowTitle);
 	if self.optionLayout.combineHeaderWithOption and shouldShowTitle then
 		self.topPadding = HEADERS_COMBINED_WITH_OPTION_TOP_PADDING;
@@ -828,11 +838,12 @@ function PlayerChoiceFrameMixin:SetupRewards()
 		local optionFrameRewards = self["Option"..i].RewardsFrame.Rewards;
 		local rewardInfo = C_PlayerChoice.GetPlayerChoiceRewardInfo(i);
 
+		optionFrameRewards.ItemRewardsPool:ReleaseAll();
+		optionFrameRewards.CurrencyRewardsPool:ReleaseAll();
+		optionFrameRewards.ReputationRewardsPool:ReleaseAll();
+		optionFrameRewards.lastReward = nil;
+
 		if rewardInfo then
-			optionFrameRewards.ItemRewardsPool:ReleaseAll();
-			optionFrameRewards.CurrencyRewardsPool:ReleaseAll();
-			optionFrameRewards.ReputationRewardsPool:ReleaseAll();
-			optionFrameRewards.lastReward = nil;
 			for _, itemReward in ipairs(rewardInfo.itemRewards) do
 				optionFrameRewards.lastReward = optionFrameRewards:GetItemRewardsFrame(itemReward);
 			end
@@ -890,6 +901,7 @@ PlayerChoiceOptionFrameMixin = {};
 function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.Background:SetScale(1);
 	self.Background:SetAlpha(1);
+	self.Background:Show();
 
 	self.ArtworkBorder:SetRotation(0);
 	self.ArtworkBorder:SetAlpha(1);
@@ -900,6 +912,7 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.ArtworkBorderAdditionalGlow:SetRotation(0);
 	self.ArtworkBorderAdditionalGlow:SetAlpha(1);
 
+	self.BlackBackground:Hide();
 	self.BackgroundGlow:Hide();
 	self.ArtworkBorder2:Hide();
 	self.BackgroundShadowSmall:Hide();
@@ -979,21 +992,26 @@ function PlayerChoiceOptionFrameMixin:OnLeaveOverride()
 	local textureKit = self:GetParent().uiTextureKit;
 	local optionButtonLayout = choiceButtonLayout[textureKit] or choiceButtonLayout["default"]
 
+	local needsLayout = false;
 	if(optionButtonLayout.hideOptionButtonsUntilMouseOver) then
+		self.OptionButtonsContainer:Hide();
+		needsLayout = true;
+	end
+
+	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then
+		self.Background:SetScale(1);
 		self.Background:Show();
 		self.BlackBackground:Hide();
 		self.ScrollingBG:SetAlpha(0);
 		self.ScrollingBackgroundScroll:Stop();
-		self.OptionButtonsContainer:Hide();
 		self.BackgroundShadowSmall:Show();
 		self.BackgroundShadowLarge:Hide();
 		self:SetFrameLevel(200);
-		self:Layout();
+		needsLayout = true;
 	end
 
-
-	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then
-		self.Background:SetScale(1);
+	if(needsLayout) then
+		self:Layout();
 	end
 
 	self.BackgroundGlowAnimationOut:Play();
@@ -1119,6 +1137,8 @@ function PlayerChoiceOptionFrameMixin:SetToStandardSize()
 
 	self:SetupTextureKits(self, standardSizeTextureKitRegions);
 	self:SetupTextureKits(self, optionBackgroundTextureKitRegions, self.uiTextureKit);
+
+	self.BackgroundShadowLarge:Hide();
 
 	local textureKit = self.uiTextureKit or self:GetParent().uiTextureKit;
 	local backgroundInfo = C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit(optionBackgroundTextureKitRegions.Background, textureKit));

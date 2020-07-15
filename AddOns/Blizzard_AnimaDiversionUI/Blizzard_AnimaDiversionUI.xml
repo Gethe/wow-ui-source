@@ -40,6 +40,10 @@
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="Oribos" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-6" y="6"/>
 					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
@@ -56,6 +60,12 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-5" y="-5" />
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						C_AnimaDiversion.CloseUI();
+						HideUIPanel(AnimaDiversionFrame);
+					</OnClick>
+				</Scripts>
 			</Button>
       <Button parentKey="AnimaDiversionCurrencyFrame" mixin="AnimaDiversionCurrencyFrameMixin" enableMouse="true" frameLevel="512">
         <Size x="189" y="37"/>
@@ -94,11 +104,7 @@
           <OnLeave method="OnLeave"/>
         </Scripts>
 				<Frames>
-					<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false">
-						<KeyValues>
-							<KeyValue key="useViewInsetNormalization" value="false" type="boolean"/>
-						</KeyValues>
-					</ModelScene>
+					<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false"/>
 				</Frames>
       </Button>
       <Frame parentKey="ReinforceInfoFrame" mixin="ReinforceInfoFrameMixin" frameLevel="512">
@@ -123,13 +129,15 @@
           </Layer>
         </Layers>
         <Frames>
-          <Button parentKey="AnimaNodeReinforceButton" inherits="UIPanelButtonTemplate" mixin="AnimaNodeReinforceButtonMixin" text="ANIMA_DIVERSION_REINFORCE">
+          <Button parentKey="AnimaNodeReinforceButton" inherits="UIPanelButtonTemplate" mixin="AnimaNodeReinforceButtonMixin" motionScriptsWhileDisabled="true" text="ANIMA_DIVERSION_REINFORCE">
             <Size x="100" y="25"/>
             <Anchors>
               <Anchor point="TOP" relativeKey="$parent.TitleShadow" relativePoint="BOTTOM" x="0" y="5"/>
             </Anchors>
             <Scripts>
               <OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
             </Scripts>
           </Button>
         </Frames>
@@ -191,6 +199,9 @@
           </Anchors>
         </Button>
 				</Frames>
+				<Scripts>
+					<OnHide method="OnHide"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

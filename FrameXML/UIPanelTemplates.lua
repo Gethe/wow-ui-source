@@ -298,14 +298,19 @@ end
 
 CurrencyTemplateMixin = {};
 
-function GetCurrencyString(currencyID, overrideAmount, colorCode)
+function GetCurrencyString(currencyID, overrideAmount, colorCode, abbreviate)
 	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 	if currencyInfo then
 		local currencyTexture = currencyInfo.iconFileID;
 		local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
-		local amountString = BreakUpLargeNumbers(overrideAmount or currencyInfo.quantity);
+		local amountString;
+		if abbreviate then
+			amountString = AbbreviateNumbers(overrideAmount or currencyInfo.quantity);
+		else
+			amountString = BreakUpLargeNumbers(overrideAmount or currencyInfo.quantity);
+		end
 		return ("%s%s %s|r"):format(colorCode, amountString, markup);
 	end
 
@@ -313,7 +318,7 @@ function GetCurrencyString(currencyID, overrideAmount, colorCode)
 end
 
 function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString, colorCode)
-	local currencyString = GetCurrencyString(currencyID, amount, colorCode);
+	local currencyString = GetCurrencyString(currencyID, amount, colorCode, self.abbreviate);
 	if formatString then
 		self:SetText(formatString:format(currencyString));
 	else
@@ -328,6 +333,10 @@ end
 
 function CurrencyTemplateMixin:SetTooltipAnchor(tooltipAnchor)
 	self.tooltipAnchor = tooltipAnchor;
+end
+
+function CurrencyTemplateMixin:SetAbbreviate(abbreviate)
+	self.abbreviate = abbreviate;
 end
 
 function CurrencyTemplateMixin:Refresh()
@@ -522,7 +531,7 @@ function CurrencyDisplayGroupMixin:OnLoad()
 end
 
 -- Defaults to a TOPRIGHT configuration.
-function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, gridLayout, tooltipAnchor)
+function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, gridLayout, tooltipAnchor, abbreviate)
 	self.currencyFramePool:ReleaseAll();
 
 	local function FactoryFunction(index)
@@ -530,6 +539,7 @@ function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initi
 		local currencyInfo = currencies[index];
 
 		currencyFrame:SetTooltipAnchor(tooltipAnchor);
+		currencyFrame:SetAbbreviate(abbreviate);
 
 		if type(currency) == "table" then
 			currencyFrame:SetCurrencyFromID(unpack(currencyInfo));
@@ -556,5 +566,83 @@ end
 function CurrencyDisplayGroupMixin:Refresh()
 	for currencyFrame in self.currencyFramePool:EnumerateActive() do
 		currencyFrame:Refresh();
+	end
+end
+
+CurrencyHorizontalLayoutFrameMixin = { };
+
+function CurrencyHorizontalLayoutFrameMixin:Clear()
+	if self.quantityPool then
+		self.quantityPool:ReleaseAll();
+	end
+	if self.iconPool then
+		self.iconPool:ReleaseAll();
+	end
+	self.nextLayoutIndex = nil;
+end
+
+function CurrencyHorizontalLayoutFrameMixin:AddToLayout(region)
+	if not self.nextLayoutIndex then
+		self.nextLayoutIndex = 1;
+	end
+	region.layoutIndex = self.nextLayoutIndex;
+	self.nextLayoutIndex = self.nextLayoutIndex + 1;
+	region:Show();
+end
+
+function CurrencyHorizontalLayoutFrameMixin:GetQuantityFontString()
+	if not self.quantityPool then
+		self.quantityPool = CreateFontStringPool(self, "ARTWORK", 0, (self.quantityFontObject or "GameFontHighlight"));
+	end
+	local fontString = self.quantityPool:Acquire();
+	self:AddToLayout(fontString);
+	return fontString;
+end
+
+function CurrencyHorizontalLayoutFrameMixin:GetIconFrame()
+	if not self.iconPool then
+		self.iconPool = CreateFramePool("FRAME", self, "CurrencyLayoutFrameIconTemplate");
+	end
+	local frame = self.iconPool:Acquire();
+	self:AddToLayout(frame);
+	return frame;
+end
+
+function CurrencyHorizontalLayoutFrameMixin:CreateLabel(text, color, fontObject, spacing)
+	if self.Label then
+		return;
+	end
+
+	local label = self:CreateFontString(nil, "ARTWORK", fontObject or "GameFontHighlight");
+	self.Label = label;
+	label.layoutIndex = 0;
+	label.rightPadding = spacing;
+	label:SetHeight(self.fixedHeight);
+	label:SetText(text);
+	color = color or HIGHLIGHT_FONT_COLOR;
+	label:SetTextColor(color:GetRGB());
+end
+
+function CurrencyHorizontalLayoutFrameMixin:AddCurrency(currencyID, overrideAmount, color)
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	if currencyInfo then
+		local height = self.fixedHeight;
+		-- quantity
+		local fontString = self:GetQuantityFontString();
+		fontString:SetHeight(height);
+		local amountString = BreakUpLargeNumbers(overrideAmount or currencyInfo.quantity);
+		fontString:SetText(amountString);
+		color = color or HIGHLIGHT_FONT_COLOR;
+		fontString:SetTextColor(color:GetRGB());
+		-- icon
+		local frame = self:GetIconFrame();
+		frame:SetSize(height, height);
+		frame.Icon:SetTexture(currencyInfo.iconFileID);
+		frame.id = currencyID;
+		-- spacing
+		fontString.rightPadding = self.quantitySpacing;
+		if fontString.layoutIndex > 1  then
+			fontString.leftPadding = self.currencySpacing;
+		end
 	end
 end

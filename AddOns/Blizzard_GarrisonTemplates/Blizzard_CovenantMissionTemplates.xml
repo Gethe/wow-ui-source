@@ -312,27 +312,28 @@
 			<Layer level="BORDER" textureSubLevel="4">
 				<Texture parentKey="BaseFrameTopEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="TOPLEFT" y="3"/>
+						<Anchor point="TOPRIGHT" y="3"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BaseFrameBottomEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" y="-3"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
 				<Texture parentKey="BaseFrameLeftEdge" atlas="!AdventuresFrame-Left" vertTile="true" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="TOPLEFT" x="-3"/>
+						<Anchor point="BOTTOMLEFT" x="-3"/>
 					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture parentKey="BaseFrameRightEdge" atlas="!AdventuresFrame-Left" vertTile="true" useAtlasSize="true">
+				<Texture parentKey="BaseFrameRightEdge" atlas="!AdventuresFrame-Right" vertTile="true" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPRIGHT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" x="3"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
@@ -428,7 +429,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+				<Texture parentKey="ButtonFrame" atlas="Adventures_MissionCostStartButtonBg" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="-22"/>
 					</Anchors>

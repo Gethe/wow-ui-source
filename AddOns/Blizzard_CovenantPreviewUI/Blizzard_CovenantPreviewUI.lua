@@ -1,4 +1,5 @@
 local MAX_ABILITIES_IN_ROW = 2; 
+local PLAYER_CHOICE_TEXTURE_KIT = "Oribos";
 
 local backgroundTextureKitRegions = {
 	["BackgroundTile"] = "UI-Frame-%s-BackgroundTile",
@@ -75,15 +76,23 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 	if (not self.showingFromPlayerChoice and self.uiTextureKit) then 
 		NineSliceUtil.ApplyUniqueCornersLayout(self.BorderFrame, self.uiTextureKit);
 	end
-	if(self.showingFromPlayerChoice) then 
-		PlayerChoiceFrame.BlackBackground:Show(); 
-	end 
 	self.BorderFrame:SetShown(not self.showingFromPlayerChoice);
 	self.CloseButton:SetShown(not self.showingFromPlayerChoice);
 	self.SelectButton:SetShown(self.showingFromPlayerChoice);
-	self:SetupTextureKits(self.Title, titleTextureKitRegions, self.uiTextureKit);
-	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, self.uiTextureKit);
 	self:SetupTextureKits(self.InfoPanel, infoPanelTextureKitRegions);
+	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, self.uiTextureKit);
+
+	if(self.showingFromPlayerChoice) then 
+		self:SetupTextureKits(self.Title, titleTextureKitRegions, PLAYER_CHOICE_TEXTURE_KIT);
+	else 
+		self:SetupTextureKits(self.Title, titleTextureKitRegions, self.uiTextureKit);
+	end 
+
+	if(PlayerChoiceFrame) then 
+		PlayerChoiceFrame.BlackBackground:SetShown(self.showingFromPlayerChoice);
+	end 
+
+	self.Background:SetShown(not self.showingFromPlayerChoice);
 end
 
 function CovenantPreviewFrameMixin:TryShow(covenantInfo)

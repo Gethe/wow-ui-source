@@ -439,11 +439,11 @@ function MultiCastActionButton_OnLoad(self)
 	-- setup action button stuff
 	self.buttonType = "MULTICASTACTIONBUTTON";
 	self.buttonIndex = self:GetID();
-	ActionButton_OnLoad(self);
+	ActionBarActionButtonMixin.OnLoad(self);
 end
 
 function MultiCastActionButton_OnEvent(self, event, ...)
-	ActionButton_OnEvent(self, event, ...);
+	ActionBarActionButtonMixin.OnEvent(self, event, ...);
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
 		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
 			MultiCastActionButton_OnEnter(self);
@@ -459,7 +459,7 @@ end
 
 function MultiCastActionButton_OnEnter(self)
 	MultiCastSlotButton_OnEnter(self.slotButton);
-	ActionButton_SetTooltip(self);
+	self:SetTooltip();
 end
 
 function MultiCastActionButton_OnLeave(self)
@@ -468,7 +468,7 @@ function MultiCastActionButton_OnLeave(self)
 end
 
 function MultiCastActionButton_OnPostClick(self, button, down)
-	ActionButton_UpdateState(self, button, down);
+	self:UpdateState();
 	MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 end
 
@@ -478,9 +478,9 @@ function MultiCastActionButton_Update(self, id, index, slot)
 	if ( slot == 0 ) then
 		self:Hide();
 	else
-		ActionButton_UpdateAction(self);
-		ActionButton_Update(self);
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateAction();
+		ActionBarActionButtonMixin.Update(self);
+		self:UpdateHotkeys(self.buttonType);
 
 		-- fixup textures
 		local tcoords;
@@ -497,7 +497,7 @@ function MultiCastActionButtonDown(id)
 	end
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
+		button:UpdateState();
 	end
 end
 
@@ -507,7 +507,7 @@ function MultiCastActionButtonUp(id)
 		button:SetButtonState("NORMAL");
 		if (not GetCVarBool("ActionButtonUseKeyDown")) then
 			SecureActionButton_OnClick(button, "LeftButton");
-			ActionButton_UpdateState(button);
+			button:UpdateState();
 		end
 	end
 	MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
@@ -533,7 +533,7 @@ function MultiCastFlyoutButton_OnClick(self)
 		if ( type == "page" ) then
 			ChangeMultiCastActionPage(self.page);
 		elseif ( type == "slot" ) then
-			SetMultiCastSpell(ActionButton_CalculateAction(parent.parent.actionButton), self.spellId);
+			SetMultiCastSpell(parent.parent.actionButton:CalculateAction(), self.spellId);
 		end
 	end
 
@@ -861,7 +861,7 @@ end
 
 function MultiCastSpellButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
 		MultiCastSpellButton_UpdateCooldown(self);
 	elseif ( event == "ACTIONBAR_UPDATE_STATE" ) then
@@ -968,7 +968,7 @@ function MultiCastSummonSpellButton_Update(self)
 			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 			self.eventsRegistered = true;
 		end
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 		MultiCastSpellButton_UpdateCooldown(self);
 
 		if ( GameTooltip:GetOwner() == self ) then
@@ -1045,7 +1045,7 @@ function MultiCastRecallSpellButton_Update(self)
 			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 			self.eventsRegistered = true;
 		end
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 		MultiCastSpellButton_UpdateCooldown(self);
 
 		if ( GameTooltip:GetOwner() == self ) then

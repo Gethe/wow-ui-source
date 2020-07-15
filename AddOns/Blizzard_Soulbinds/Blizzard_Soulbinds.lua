@@ -25,7 +25,8 @@ end
 do
 	local attributes = 
 	{ 
-		area = "center",
+		area = "doublewide",
+		xoffset = 35,
 		pushable = 0,
 		allowOtherPanels = 1,
 	};

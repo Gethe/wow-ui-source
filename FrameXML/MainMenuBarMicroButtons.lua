@@ -776,9 +776,10 @@ local TALENT_FRAME_PRIORITIES =
 {
 	TALENT_MICRO_BUTTON_SPEC_TUTORIAL = 1,
 	TALENT_MICRO_BUTTON_TALENT_TUTORIAL = 2,
-	TALENT_MICRO_BUTTON_UNSPENT_TALENTS = 3,
-	TALENT_MICRO_BUTTON_UNSPENT_PVP_TALENT_SLOT = 4,
-	TALENT_MICRO_BUTTON_NEW_PVP_TALENT = 5,
+	TALENT_MICRO_BUTTON_NO_SPEC = 3,
+	TALENT_MICRO_BUTTON_UNSPENT_TALENTS = 4,
+	TALENT_MICRO_BUTTON_UNSPENT_PVP_TALENT_SLOT = 5,
+	TALENT_MICRO_BUTTON_NEW_PVP_TALENT = 6,
 }
 
 local LOWEST_TALENT_FRAME_PRIORITY = 1000;
@@ -804,6 +805,8 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 		alert = "TALENT_MICRO_BUTTON_SPEC_TUTORIAL";
 	elseif not self.canUseTalentUI and canUseTalentUI then
 		alert = "TALENT_MICRO_BUTTON_TALENT_TUTORIAL";
+	elseif canUseTalentSpecUI and GetSpecialization() > GetNumSpecializations() then
+		alert = "TALENT_MICRO_BUTTON_NO_SPEC";
 	elseif canUseTalentUI and not AreTalentsLocked() and GetNumUnspentTalents() > 0 then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	end
@@ -848,7 +851,11 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 	if not PlayerTalentFrame or not PlayerTalentFrame:IsShown() then
 		if MainMenuMicroButton_ShowAlert(self, alertText) then
 			MicroButtonPulse(self);
-			TalentMicroButton.suggestedTab = 2;
+			if GetSpecialization() > GetNumSpecializations() then
+				TalentMicroButton.suggestedTab = 1;
+			else
+				TalentMicroButton.suggestedTab = 2;
+			end
 			return true;
 		end
 	end
@@ -1046,7 +1053,9 @@ function EJMicroButton_OnEvent(self, event, ...)
 		local unitToken = ...;
 		if unitToken == "player" and (not self.lastEvaluatedLevel or UnitLevel(unitToken) > self.lastEvaluatedLevel) then
 			self.lastEvaluatedLevel = UnitLevel(unitToken);
-			EJMicroButton_UpdateNewAdventureNotice(true);
+			if ( EJMicroButton:IsEnabled() ) then
+				C_AdventureJournal.UpdateSuggestions(true);
+			end
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
@@ -1055,7 +1064,9 @@ function EJMicroButton_OnEvent(self, event, ...)
 		if ( playerLevel == GetMaxLevelForPlayerExpansion() and ((not self.lastEvaluatedSpec or self.lastEvaluatedSpec ~= spec) or (not self.lastEvaluatedIlvl or self.lastEvaluatedIlvl < ilvl))) then
 			self.lastEvaluatedSpec = spec;
 			self.lastEvaluatedIlvl = ilvl;
-			EJMicroButton_UpdateNewAdventureNotice(false);
+			if ( EJMicroButton:IsEnabled() ) then
+				C_AdventureJournal.UpdateSuggestions(false);
+			end
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
@@ -1073,8 +1084,8 @@ function EJMicroButton_OnEvent(self, event, ...)
 	end
 end
 
-function EJMicroButton_UpdateNewAdventureNotice(levelUp)
-	if ( EJMicroButton:IsEnabled() and C_AdventureJournal.UpdateSuggestions(levelUp) ) then
+function EJMicroButton_UpdateNewAdventureNotice()
+	if ( EJMicroButton:IsEnabled()) then
 		if( not EncounterJournal or not EncounterJournal:IsShown() ) then
 			EJMicroButton.Flash:Show();
 			EJMicroButton.NewAdventureNotice:Show();
@@ -1109,7 +1120,9 @@ function EJMicroButton_UpdateAlerts( flag )
 	if ( flag ) then
 		EJMicroButton:RegisterEvent("UNIT_LEVEL");
 		EJMicroButton:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
-		EJMicroButton_UpdateNewAdventureNotice(false)
+		if (EJMicroButton:IsEnabled()) then
+			C_AdventureJournal.UpdateSuggestions(false);
+		end
 	else
 		EJMicroButton:UnregisterEvent("UNIT_LEVEL");
 		EJMicroButton:UnregisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");

@@ -435,7 +435,7 @@ function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
 		button:Init(useAlternateColor);
 	end
 
-	local r, g, b = PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor):GetRGB();
+	local r, g, b = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor):GetRGB();
 	for k, frame in pairs(self.tintFrames) do
 		frame:SetVertexColor(r, g, b);
 	end

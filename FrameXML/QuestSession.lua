@@ -978,10 +978,7 @@ function QuestSessionManagerMixin:ShouldSessionManagementUIBeVisible()
 end
 
 function QuestSessionManagerMixin:GetProposedPlayerLevel()
-	local minLevel = PartyUtil.GetMinLevel();
-	local expansionForLevel = GetExpansionForLevel(minLevel) or LE_EXPANSION_LEVEL_CURRENT;
-
-	local proposedSessionLevel = GetMaxLevelForExpansionLevel(expansionForLevel);
+	local proposedSessionLevel = C_QuestSession.GetProposedMaxLevelForSession();
 	return math.min(UnitLevel("player"), proposedSessionLevel);
 end
 

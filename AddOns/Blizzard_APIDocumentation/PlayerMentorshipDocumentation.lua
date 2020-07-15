@@ -7,10 +7,6 @@ local PlayerMentorship =
 	Functions =
 	{
 		{
-			Name = "ApplyForMentorshipStatus",
-			Type = "Function",
-		},
-		{
 			Name = "GetMentorshipStatus",
 			Type = "Function",
 
@@ -24,23 +20,10 @@ local PlayerMentorship =
 				{ Name = "status", Type = "PlayerMentorshipStatus", Nilable = false },
 			},
 		},
-		{
-			Name = "RelinquishMentorshipStatus",
-			Type = "Function",
-		},
 	},
 
 	Events =
 	{
-		{
-			Name = "MentorshipApplicationResult",
-			Type = "Event",
-			LiteralName = "MENTORSHIP_APPLICATION_RESULT",
-			Payload =
-			{
-				{ Name = "result", Type = "PlayerMentorshipApplicationResult", Nilable = false },
-			},
-		},
 	},
 
 	Tables =

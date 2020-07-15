@@ -1,15 +1,16 @@
 
 UIPanelWindows["RuneforgeFrame"] = { area = "left", pushable = 3, showFailedFunc = C_LegendaryCrafting.CloseRuneforgeInteraction, };
 
+-- Determined by hand using positioning macros.
 local CircleRuneEffects = {
-	{ effectID = 60, offsetX = 104, offsetY = 308 },
-	{ effectID = 62, offsetX = 312, offsetY = 75 },
-	{ effectID = 63, offsetX = 314, offsetY = -72 },
-	{ effectID = 64, offsetX = 50, offsetY = -322 },
-	{ effectID = 65, offsetX = -106, offsetY = -299 },
-	{ effectID = 66, offsetX = -278, offsetY = -150 },
-	{ effectID = 67, offsetX = -254, offsetY = 196 },
-	{ effectID = 68, offsetX = -125, offsetY = 294 },
+	{ effectID = 60, offsetX = 51, offsetY = 149 },
+	{ effectID = 62, offsetX = 155, offsetY = 33 },
+	{ effectID = 63, offsetX = 156, offsetY = -39 },
+	{ effectID = 64, offsetX = 23, offsetY = -165 },
+	{ effectID = 65, offsetX = -54, offsetY = -153 },
+	{ effectID = 66, offsetX = -141, offsetY = -80 },
+	{ effectID = 67, offsetX = -129, offsetY = 94 },
+	{ effectID = 68, offsetX = -64, offsetY = 143 },
 };
 
 
@@ -43,7 +44,7 @@ function RuneforgeFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, RuneforgeFrameUnitEvents, "player");
 
 	self:RefreshCurrencyDisplay();
-	self:InitializeEffects();
+	self:SetStaticEffectsShown(true);
 
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
@@ -53,6 +54,8 @@ function RuneforgeFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFrameUnitEvents);
 
 	C_LegendaryCrafting.CloseRuneforgeInteraction();
+
+	self:SetStaticEffectsShown(false);
 
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
@@ -77,18 +80,20 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function RuneforgeFrameMixin:InitializeEffects()
-	if self.effectsInitialized then
-		return;
+function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
+	if not self.centerPassiveEffect and shown then
+		self.centerPassiveEffect = self:AddEffect(RuneforgeUtil.Level.Background, RuneforgeUtil.Effect.CenterPassive, self.CraftingFrame.BaseItemSlot);
+
+		local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -204, };
+		self.bottomEffect = self.BottomModelScene:AddDynamicEffect(bottomEffectDynamicDescription, self);
+
+	elseif self.centerPassiveEffect and not shown then
+		self.centerPassiveEffect:CancelEffect();
+		self.centerPassiveEffect = nil;
+
+		self.bottomEffect:CancelEffect();
+		self.bottomEffect = nil;
 	end
-
-	self:AddEffect(RuneforgeUtil.Level.Background, RuneforgeUtil.Effect.CenterPassive, self.CraftingFrame.BaseItemSlot);
-
-	local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -138, };
-	self.BottomModelScene:SetAlpha(0.65);
-	self.BottomModelScene:AddDynamicEffect(bottomEffectDynamicDescription, self);
-
-	self.effectsInitialized = true;
 end
 
 function RuneforgeFrameMixin:SetRunesShown(shown)

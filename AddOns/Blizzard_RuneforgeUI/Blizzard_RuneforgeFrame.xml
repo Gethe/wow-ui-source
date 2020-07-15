@@ -23,25 +23,25 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="CraftingFrame" inherits="RuneforgeCraftingFrameTemplate">
+			<Frame parentKey="CraftingFrame" inherits="RuneforgeCraftingFrameTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="40"/>
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate">
+			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="90"/>
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate">
+			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-90"/>
 				</Anchors>
 			</Frame>
 
-			<ModelScene parentKey="BackgroundModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW">
+			<ModelScene parentKey="BackgroundModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="500">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-20" y="20"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="20" y="-20"/>
@@ -57,7 +57,7 @@
 
 			<ModelScene parentKey="BottomModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent" relativePoint="CENTER" x="-40" y="-210"/>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="CENTER" x="-40" y="-150"/>
 					<Anchor point="LEFT" x="-40" y="0"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="40" y="-200"/>
 				</Anchors>

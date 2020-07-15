@@ -97,7 +97,14 @@ function RuneforgeItemSlotMixin:GetItem()
 end
 
 function RuneforgeItemSlotMixin:SetSelectingItem(isSelectingItem)
-	self.SelectingTexture:SetShown(isSelectingItem);
+	local hasItem = self:GetItemLocation() ~= nil;
+	self.SelectingTexture:SetShown(isSelectingItem and not hasItem);
+
+	if isSelectingItem and hasItem then
+		self:LockHighlight();
+	else
+		self:UnlockHighlight();
+	end
 
 	if isSelectingItem then
 		OpenAllBagsMatchingContext(self:GetRuneforgeFrame());

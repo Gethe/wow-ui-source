@@ -534,7 +534,7 @@ function GarrisonMission:UpdateStartButton(missionPage)
 	if ( currencyInfo ~= nil) then 
 		local amountOwned = currencyInfo.quantity;
 		if ( not disableError and amountOwned < missionInfo.cost ) then
-			disableError = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP;
+			disableError = GarrisonFollowerOptions[self.followerTypeID].strings.NOT_ENOUGH_MATERIALS;
 		end
 		
 		self:UpdateCostFrame(missionPage, baseCost, cost, amountOwned);

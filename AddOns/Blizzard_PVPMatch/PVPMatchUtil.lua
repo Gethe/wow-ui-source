@@ -115,7 +115,7 @@ function PVPMatchUtil.UpdateTable(tableBuilder, scrollFrame)
 	HybridScrollFrame_Update(scrollFrame, visibleElementHeight, regionHeight);
 end
 
-function PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor)
+function PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor)
 	local index = PVPMatchUtil.GetColorIndex(factionIndex, useAlternateColor);
 	return PVPMatchStyle.PanelColors[index];
 end

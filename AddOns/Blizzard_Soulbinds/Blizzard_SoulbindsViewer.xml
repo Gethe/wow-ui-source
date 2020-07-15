@@ -4,9 +4,9 @@
 
 	<Button name="SoulbindsUndoButtonTemplate" virtual="true">
 		<Size x="18" y="17"/>
-		<NormalTexture atlas="common-icon-undo"/>
-		<HighlightTexture atlas="common-icon-undo" alphaMode="ADD" alpha=".2"/>
-		<DisabledTexture atlas="common-icon-undo" desaturated="true"/>
+		<NormalTexture atlas="Soulbinds_Tree_Undo"/>
+		<HighlightTexture atlas="Soulbinds_Tree_Undo" alphaMode="ADD" alpha=".2"/>
+		<DisabledTexture atlas="Soulbinds_Tree_Undo" desaturated="true"/>
 	</Button>
 	
 	<Frame name="SoulbindViewer" mixin="SoulbindViewerMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
@@ -21,12 +21,32 @@
 						<Anchor point="TOPLEFT" x="26" y="-25"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Background2" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-25"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="Portrait" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-25" y="-25"/>
 					</Anchors>
+				</Texture>
+				<Texture parentKey="Portrait2" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-25" y="-25"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="3">
@@ -91,13 +111,13 @@
 					<Anchor point="CENTER" x="-56" y="-16"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="ActivateButton" inherits="UIPanelButtonTemplate" text="SOULBIND_ACTIVATE_BUTTON">
+			<Button parentKey="ActivateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">
 				<Size x="150" y="30"/>
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM" x="-96" y="75"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="ResetButton" inherits="SoulbindsUndoButtonTemplate">
+			<Button parentKey="ResetButton" inherits="SoulbindsUndoButtonTemplate" motionScriptsWhileDisabled="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ActivateButton" relativePoint="RIGHT" x="7"/>
 				</Anchors>

@@ -128,7 +128,7 @@ ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
 	"TIME_PLAYED_MSG",
-	"PLAYER_LEVEL_UP",
+	"PLAYER_LEVEL_CHANGED",
 	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
@@ -2552,7 +2552,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
 
-	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
+	C_Commentator.AssignPlayersToTeamInCurrentInstance(teamIndex, teamName);
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
@@ -2568,7 +2568,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 	end
 
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
+	C_Commentator.AssignPlayerToTeam(playerName, teamName);
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
@@ -2576,7 +2576,7 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 		return;
 	end
 
-	PvPCommentator:SetDefaultCommentatorSettings();
+	C_Commentator.ResetSettings();
 end
 
 SlashCmdList["VOICECHAT"] = function(msg)
@@ -3066,9 +3066,12 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		self.defaultLanguage = GetDefaultLanguage();
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 
-		local isInitialLogin = select(1, ...);
-		self.needsMentorChatExplanation = isInitialLogin;
+		self.needsMentorChatExplanation = true;
 		ChatFrame_CheckShowNewcomerHelpBanner(self);
+
+		self.chatLevelUP = {};
+		LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3154,9 +3157,13 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local arg1, arg2 = ...;
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
-	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
-		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
+	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
+		local oldLevel, newLevel = ...;
+		if newLevel > oldLevel then
+			LevelUpDisplay_ChatPrint(self, newLevel, LEVEL_UP_TYPE_CHARACTER)
+		elseif newLevel < oldLevel then
+			LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+		end
 		return true;
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID, xp, money = ...;
@@ -3164,11 +3171,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 			LevelUpDisplay_ChatPrint(self, nil, TOAST_WORLD_QUESTS_UNLOCKED)
 		end
 		return true;
-	elseif (event == "UNIT_LEVEL" ) then
-		local unit = ...;
-		if LevelUpDisplay_ShouldDisplayPetLevelUpdate(LevelUpDisplay, unit) then
-			LevelUpDisplay_ChatPrint(self, UnitLevel(unit), LEVEL_UP_TYPE_PET);
-		end
 	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
 		local tierIndex = ...;
 		if (tierIndex > 0) then
@@ -3571,10 +3573,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 					local channelSlashCommand = GetSlashCommandForChannelOpenChat(arg8);
 					local noticeInfo = ChatTypeInfo["SYSTEM"];
-					if IsActivePlayerMentor() then
-						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
-					elseif IsActivePlayerNewcomer() then
+					if IsActivePlayerNewcomer() then
 						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
+					else
+						-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
+						-- then if you're not a newcomer, you must be a guide.
+						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
 					end
 				end
 			elseif arg1 == "YOU_LEFT" then

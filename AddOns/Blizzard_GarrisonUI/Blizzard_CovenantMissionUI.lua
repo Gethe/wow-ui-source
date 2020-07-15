@@ -126,6 +126,8 @@ function CovenantMission:OnShowMainFrame()
 
 	self:SetupTabs();
 
+	self:UpdateCurrency();
+
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
 
 	self.MissionTargetInfo = {};
@@ -319,6 +321,10 @@ function CovenantMission:GetPlacerUpdate()
 			end
 
 			local missionID = missionPage.missionInfo.missionID;
+			if CovenantPlacer.info.autoCombatSpells[1] == nil then
+				return;
+			end
+
 			local spellID = CovenantPlacer.info.autoCombatSpells[1].autoCombatSpellID;
 			local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, spellID, hoverBoardIndex);
 			if targetingIndices then
@@ -452,13 +458,15 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 
 	EventRegistry:TriggerEvent("CovenantMission.CancelTargeting");
 
-	self.casterSpellIndex = frame.boardIndex;
-	self.lastAssignedSpell = info.autoCombatSpells[1].autoCombatSpellID;
-	local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, self.lastAssignedSpell, self.casterSpellIndex);
-	if targetingIndices then
-		missionPage.Board:TriggerEnemyTargetingReticles(targetingIndices);
-	else
-		C_Garrison.RequestAutoMissionTargetingInfo(missionID, self.lastAssignedSpell);
+	if info.autoCombatSpells[1] ~= nil then
+		self.casterSpellIndex = frame.boardIndex;
+		self.lastAssignedSpell = info.autoCombatSpells[1].autoCombatSpellID;
+		local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, self.lastAssignedSpell, self.casterSpellIndex);
+		if targetingIndices then
+			missionPage.Board:TriggerEnemyTargetingReticles(targetingIndices);
+		else
+			C_Garrison.RequestAutoMissionTargetingInfo(missionID, self.lastAssignedSpell);
+		end
 	end
 
 	frame:SetFollowerGUID(info.followerID, info);

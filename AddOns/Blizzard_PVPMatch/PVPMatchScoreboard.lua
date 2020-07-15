@@ -98,7 +98,7 @@ function PVPMatchScoreboardMixin:SetupArtwork(factionIndex, isFactionalMatch)
 		button:Init(useAlternateColor);
 	end
 
-	local r, g, b = PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor):GetRGB();
+	local r, g, b = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor):GetRGB();
 	self.ScrollFrame.Background:SetVertexColor(r, g, b);
 
 	local theme;

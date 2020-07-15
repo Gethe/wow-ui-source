@@ -4,6 +4,7 @@ TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableAnotherIsRes
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughGold] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableTierUnavailable] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent] = ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT;
 
 function OrderHallTalentFrame_ToggleFrame()
 	if (not OrderHallTalentFrame:IsShown()) then
@@ -718,7 +719,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 				if (preReqTalent) then
 					GameTooltip:AddLine(TOOLTIP_TALENT_PREREQ:format(preReqTalent.talentMaxRank, preReqTalent.name), 1, 0, 0);
 				else
-					GameTooltip:AddLine(Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent, 1, 0, 0);
+					GameTooltip:AddLine(TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent], 1, 0, 0);
 				end
 			elseif (TalentUnavailableReasons[talent.talentAvailability]) then
 				GameTooltip:AddLine(TalentUnavailableReasons[talent.talentAvailability], 1, 0, 0);

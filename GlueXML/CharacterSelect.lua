@@ -133,6 +133,7 @@ function CharacterSelect_OnLoad(self)
 	self.selectLast = false;
 	self.backFromCharCreate = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
+	self.waitingforCharacterList = true;
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
     self:RegisterEvent("FORCE_RENAME_CHARACTER");
@@ -348,6 +349,11 @@ function CharacterSelect_SetAutoSwitchRealm(isAuto)
     REALM_CHANGE_IS_AUTO = isAuto;
 end
 
+function CharacterSelect_GetCharacterListUpdate()
+	CharacterSelect.waitingforCharacterList = true;
+	GetCharacterListUpdate();
+end
+
 function CharacterSelect_UpdateState(fromLoginState)
     local serverName, isPVP, isRP = GetServerName();
     local connected = IsConnectedToServer();
@@ -381,7 +387,7 @@ function CharacterSelect_UpdateState(fromLoginState)
                     CharacterSelectUI:Show();
                 end
             end
-            GetCharacterListUpdate();
+			CharacterSelect_GetCharacterListUpdate();
         else
             UpdateCharacterList();
         end
@@ -525,6 +531,7 @@ function CharacterSelect_OnEvent(self, event, ...)
             self.undeleteNoCharacters = false;
         end
 
+		self.waitingforCharacterList = false;
         UpdateCharacterList();
         UpdateAddonButton(true);
         CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
@@ -752,6 +759,18 @@ function UpdateCharacterSelection(self)
 end
 
 function UpdateCharacterList(skipSelect)
+	if CharacterSelect.waitingforCharacterList then
+		for _, button in pairs(CharacterSelectCharacterFrame.CharacterButtons) do
+			button:Hide();
+		end
+		CharSelectCreateCharacterButton:Hide();
+		CharSelectUndeleteCharacterButton:Hide();
+		CharacterTemplatesFrame.CreateTemplateButton:Hide();
+		CharacterSelect.selectedIndex = 0;
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, 1);
+		return;
+	end
+
     local numChars = GetNumCharacters();
     local coords;
 
@@ -1076,6 +1095,7 @@ function UpdateCharacterList(skipSelect)
 
     CharSelectCreateCharacterButton:Hide();
     CharSelectUndeleteCharacterButton:Hide();
+	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
     local connected = IsConnectedToServer();
     if (CanCreateCharacter() and not CharacterSelect.undeleting) then
@@ -1085,6 +1105,7 @@ function UpdateCharacterList(skipSelect)
             CharSelectCreateCharacterButton:SetID(CharacterSelect.createIndex);
             CharSelectCreateCharacterButton:Show();
             CharSelectUndeleteCharacterButton:Show();
+			CharacterTemplatesFrame.CreateTemplateButton:Show();
         end
     end
 
@@ -1247,7 +1268,7 @@ function CharacterSelect_SelectCharacterByGUID(guid)
             CharacterSelectButton_OnClick(button);
             button.selection:Show();
             UpdateCharacterSelection(CharacterSelect);
-            GetCharacterListUpdate();
+			CharacterSelect_GetCharacterListUpdate();
             return true;
         end
     end
@@ -1386,7 +1407,7 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
         PAID_SERVICE_CHARACTER_ID = nil;
         PAID_SERVICE_TYPE = nil;
 
-        GetCharacterListUpdate();
+		CharacterSelect_GetCharacterListUpdate();
         return;
     end
 
@@ -1840,7 +1861,7 @@ end
 function CharacterSelect_ActivateFactionChange()
     if IsConnectedToServer() then
         EnableChangeFaction();
-        GetCharacterListUpdate();
+		CharacterSelect_GetCharacterListUpdate();
     end
 end
 
@@ -2636,6 +2657,7 @@ function CharacterSelect_StartCharacterUndelete()
     CharSelectBackToActiveButton:Show();
     CharSelectChangeRealmButton:Hide();
     CharSelectUndeleteLabel:Show();
+	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
     AccountReactivate_CloseDialogs();
 
@@ -2652,6 +2674,7 @@ function CharacterSelect_EndCharacterUndelete()
     CharSelectUndeleteCharacterButton:Show();
     CharSelectChangeRealmButton:Show();
     CharSelectUndeleteLabel:Hide();
+	CharacterTemplatesFrame.CreateTemplateButton:Show();
 
     CharacterServicesMaster_UpdateServiceButton();
     EndCharacterUndelete();

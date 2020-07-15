@@ -44,16 +44,30 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="5">
-						<Texture parentKey="Active" atlas="Soulbinds_Portrait_Active" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="BOTTOM" y="11"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="Active" mixin="SoulbindsActiveMarkerMixin" frameLevel="100">
+						<Size x="40" y="40"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" y="11"/>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<Texture parentKey="Diamond" atlas="Soulbinds_Portrait_Active" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 			</ModelScene>
-			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate">
+			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="101">
 				<Size x="150" y="150"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>

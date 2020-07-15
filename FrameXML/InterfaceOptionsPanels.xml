@@ -1667,6 +1667,7 @@
             </Anchors>
             <Scripts>
               <OnLoad function="InterfaceOptionsLargerNamePlate_OnLoad" />
+							<OnShow function="InterfaceOptionsLargerNamePlate_OnShow" />
             </Scripts>
           </CheckButton>
           <CheckButton name="$parentAggroFlash" inherits="InterfaceOptionsCheckButtonTemplate">

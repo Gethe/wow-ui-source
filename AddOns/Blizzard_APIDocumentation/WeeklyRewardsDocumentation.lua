@@ -38,12 +38,12 @@ local WeeklyRewards =
 			},
 		},
 		{
-			Name = "GetActivityRewardHyperlink",
+			Name = "GetItemHyperlink",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "itemDBID", Type = "string", Nilable = false },
 			},
 
 			Returns =
@@ -85,6 +85,18 @@ local WeeklyRewards =
 				{ Name = "progress", Type = "number", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "WeeklyRewardActivityRewardInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "WeeklyRewardActivityRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "CachedRewardType", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "itemDBID", Type = "string", Nilable = true },
 			},
 		},
 	},

@@ -129,7 +129,7 @@ function ActionBarController_UpdateAll(force)
 		end
 		
 		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
-			ActionButton_UpdateAction(frame, force);
+			frame:UpdateAction(force);
 		end
 	else
 		-- Otherwise, display the normal action bar
@@ -144,7 +144,7 @@ end
 function ActionBarController_ResetToDefault(force)
 	MainMenuBarArtFrame:SetAttribute("actionpage", GetActionBarPage());
 	for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
-		ActionButton_UpdateAction(frame, force);
+		frame:UpdateAction(force);
 	end
 end
 

@@ -19,13 +19,14 @@ local newGemTextureKitAnimationEffectId = {
 }; 
 
 local ANIMA_DIVERSION_FRAME_EVENTS = {
-	"ANIMA_DIVERSION_TALENT_UPDATED",
+	"ANIMA_DIVERSION_CLOSE",
 	"CURRENCY_DISPLAY_UPDATE",
 };
 
 function AnimaDiversionFrameMixin:OnLoad() 
 	MapCanvasMixin.OnLoad(self);	
 	self:SetShouldZoomInOnClick(false);
+	self:SetMouseWheelZoomMode(MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_NONE);
 	self:SetShouldPanOnClick(false);
 	self:AddStandardDataProviders();
 	self.bolsterProgressGemPool = CreateFramePool("FRAME", self.ReinforceProgressFrame, "AnimaDiversionBolsterProgressGemTemplate");
@@ -50,7 +51,11 @@ function AnimaDiversionFrameMixin:OnEvent(event, ...)
 	if (event == "ANIMA_DIVERSION_CLOSE") then
 		HideUIPanel(self);
 	elseif (event == "CURRENCY_DISPLAY_UPDATE") then 
-		self:SetupBolsterProgressBar(); 
+		self:SetupBolsterProgressBar();
+		self:SetupCurrencyFrame(); 
+		self.SelectPinInfoFrame:CurrencyUpdate();
+	elseif(event == "ANIMA_DIVERSION_TALENT_UPDATED") then 
+		self:SetupBolsterProgressBar();
 	end 
 	MapCanvasMixin.OnEvent(self, event, ...);
 end 
@@ -64,12 +69,12 @@ function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 	self.bolsterProgress = C_AnimaDiversion.GetReinforceProgress(); 
 	local effectID = nil; 
 	local isReinforceReady = self:CanReinforceNode(); 
+
+	self.ReinforceProgressFrame.ModelScene:ClearEffects();
+
 	if(isReinforceReady) then 
-		self.ReinforceProgressFrame.ModelScene:SetFromModelSceneID(343);
 		self.ReinforceProgressFrame.ModelScene:SetFrameLevel(OVERRIDE_MODEL_SCENE_FRAME_LEVEL);
 		effectID = bolsterGemTextureKitAnimationEffectId[self.uiTextureKit]; 
-	else 
-		self.ReinforceProgressFrame.ModelScene:ClearEffects();
 	end 
 	self.ReinforceProgressFrame.ModelScene:SetShown(isReinforceReady);
 	for i=1, math.min(MAX_ANIMA_GEM_COUNT, self.bolsterProgress) do 
@@ -109,10 +114,6 @@ function AnimaDiversionFrameMixin:SetupTextureKits(frame, regions)
 	SetupTextureKitOnRegions(self.uiTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end 
 
-function AnimaDiversionFrameMixin:SetupFramesWithTextureKit()
-	NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, self.uiTextureKit); 
-end
-
 function AnimaDiversionFrameMixin:TryShow(frameInfo)
 	if(not frameInfo) then
 		return; 
@@ -120,7 +121,6 @@ function AnimaDiversionFrameMixin:TryShow(frameInfo)
 
 	self.uiTextureKit = frameInfo.textureKit; 
 	self.mapID = frameInfo.mapID; 
-	self:SetupFramesWithTextureKit(); 
 	self:SetupBolsterProgressBar();
 	self:SetupCurrencyFrame(); 
 	self:Show(); 
@@ -138,11 +138,32 @@ end
 
 AnimaDiversionSelectionInfoMixin = { }; 
 
-function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
-	if(self.currentlySelectedNode and self.currentlySelectedNode ~= node) then 
-		self.currentlySelectedNode:SetSelected(); 
+function AnimaDiversionSelectionInfoMixin:IsSelectionInfoShowingForNode(node)
+	if (not self:IsShown() or not self.currentlySelectedNode) then 
+		return false;
 	end 
 
+	if(self.currentlySelectedNode == node) then 
+		return true; 
+	end 
+	return false; 
+end
+
+function AnimaDiversionSelectionInfoMixin:CurrencyUpdate()
+	if( not self:IsShown()) then 
+		return;
+	end 
+
+	if(self.currentlySelectedNode) then 
+		self:SetupAndShow(self.currentlySelectedNode);
+	end		
+end 
+
+function AnimaDiversionSelectionInfoMixin:OnHide()
+	self.currentlySelectedNode = nil;
+end 
+
+function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
 	self.currentlySelectedNode = node; 
 	self:ClearAllPoints(); 
 	self:SetPoint("LEFT", node, "RIGHT", 20, 0);
@@ -150,42 +171,49 @@ function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
 	local nodeInfo = node.nodeData; 
 	self.Title:SetText(nodeInfo.name);
 	self.Description:SetText(nodeInfo.description);
-	self.showingNode = node;
 
-	local nodeNotAvailableForSelection = nodeInfo.state ~= Enum.AnimaDiversionNodeState.Available;
-	self.SelectButton:SetShown(nodeInfo.state == Enum.AnimaDiversionNodeState.Available);
-	self.AlreadySelected:SetShown(nodeNotAvailableForSelection);
+	local canAffordAnimaSelection = self:SetupCosts(nodeInfo.costs);
 
-	if	(nodeNotAvailableForSelection) then 
+	local nodeAvailableForSelection = nodeInfo.state == Enum.AnimaDiversionNodeState.Available and canAffordAnimaSelection;
+	self.SelectButton:SetShown(nodeAvailableForSelection);
+	self.AlreadySelected:SetShown(not nodeAvailableForSelection);
+
+	if	(not nodeAvailableForSelection) then 
 		if (nodeInfo.state == Enum.AnimaDiversionNodeState.SelectedTemporary or nodeInfo.state == Enum.AnimaDiversionNodeState.SelectedPermanent) then 
 			self.AlreadySelected:SetText(ANIMA_DIVERSION_NODE_SELECTED);
+		elseif(not canAffordAnimaSelection) then 
+			self.AlreadySelected:SetText(ANIMA_DIVERSION_NOT_ENOUGH_CURRENCY);
 		else 
 			self.AlreadySelected:SetText(ANIMA_DIVERSION_NODE_UNAVAILABLE);
 		end 
 	end 
 
-	self:SetupCosts(nodeInfo.costs);
 	self:Layout(); 
 	self:Show();
 end 
 
 function AnimaDiversionSelectionInfoMixin:GetNodeData()
-	if(not self.showingNode) then
+	if(not self.currentlySelectedNode) then
 		return nil;
 	else 
-		return self.showingNode.nodeData; 
+		return self.currentlySelectedNode.nodeData; 
 	end 
 end 
 
 function AnimaDiversionSelectionInfoMixin:SetupCosts(CurrencyCosts)
+	local playerCanAfford = true; 
 	self.currencyPool:ReleaseAll(); 
 	for i, costInfo in ipairs(CurrencyCosts) do 
 		self.lastCurrency = self:SetupSingleCurrency(i, costInfo); 
+		if(not self.lastCurrency.canAfford) then 
+			playerCanAfford = false; 
+		end 
 	end
 	self.SelectButton:ClearAllPoints(); 
 	self.SelectButton:SetPoint("TOP", self.lastCurrency, "BOTTOM", 10, -20);
 	self.AlreadySelected:ClearAllPoints(); 
 	self.AlreadySelected:SetPoint("CENTER", self.SelectButton); 
+	return playerCanAfford; 
 end 
 
 function AnimaDiversionSelectionInfoMixin:SetupSingleCurrency(index, costInfo)
@@ -203,6 +231,7 @@ function AnimaDiversionSelectionInfoMixin:SetupSingleCurrency(index, costInfo)
 	end 
 
 	currency.currencyInfo = currencyInfo; 
+	currency.canAfford = currencyInfo.quantity >= costInfo.quantity;
 	currency:Show(); 
 	return currency;
 end 
@@ -213,6 +242,7 @@ function AnimaDiversionSelectButtonMixin:OnClick()
 	local selectedNodeData = self:GetParent():GetNodeData();
 	if (selectedNodeData) then 
 		C_AnimaDiversion.SelectAnimaNode(selectedNodeData.talentID, true);
+		self:GetParent():Hide(); 
 	end		
 end
 
@@ -243,7 +273,24 @@ function ReinforceProgressFrameMixin:OnLeave()
 end 
 
 ReinforceInfoFrameMixin = { };
+
+function ReinforceInfoFrameMixin:CanReinforceAnything()
+	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes(); 
+	if (not animaNodes) then 
+		return false;
+	end 
+
+	for _, nodeData in ipairs(animaNodes) do
+		if (nodeData.state == Enum.AnimaDiversionNodeState.Available or nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary) then 
+			return true; 
+		end
+	end  
+	return false; 
+end 
+
 function ReinforceInfoFrameMixin:Init()
+	self.canReinforce = self:CanReinforceAnything();
+
 	self.Title:SetText(ANIMA_DIVERSION_REINFORCE_READY);
 	self.AnimaNodeReinforceButton:Disable(); 
 end 
@@ -257,7 +304,10 @@ function ReinforceInfoFrameMixin:GetNodeData()
 end 
 
 function ReinforceInfoFrameMixin:SelectNodeToReinforce(node) 
-	
+	if( not self.canReinforce) then 
+		return; 
+	end 
+
 	if(self.selectedNode) then 
 		self.selectedNode:SetReinforceState(false); 
 		if(node == self.selectedNode) then 
@@ -265,6 +315,10 @@ function ReinforceInfoFrameMixin:SelectNodeToReinforce(node)
 			self.selectedNode = nil; 
 			return; 
 		end 
+	end
+
+	if(node.UnavailableState) then 
+		return;
 	end
 
 	self.selectedNode = node; 
@@ -279,5 +333,17 @@ function AnimaNodeReinforceButtonMixin:OnClick()
 	local selectedNodeData = self:GetParent():GetNodeData();
 	if (selectedNodeData) then 
 		C_AnimaDiversion.SelectAnimaNode(selectedNodeData.talentID, false);
-	end 
+	end
 end
+
+function AnimaNodeReinforceButtonMixin:OnEnter()
+	if (not self:GetParent().canReinforce) then 
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 20, 0);
+		GameTooltip_AddErrorLine(GameTooltip, ANIMA_DIVERSION_CANT_REINFORCE);
+		GameTooltip:Show(); 
+	end 
+end 
+
+function AnimaNodeReinforceButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 

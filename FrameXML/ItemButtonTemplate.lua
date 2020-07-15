@@ -144,6 +144,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 		return;
 	end
 
+	button.IconOverlay:Hide();
 	if itemIDOrLink then
 		if IsArtifactRelicItem(itemIDOrLink) then
 			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
@@ -151,19 +152,11 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		end
 		
-		button.IconOverlay:Hide();
 		if not suppressOverlays then
-			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
-				button.IconOverlay:SetAtlas("AzeriteIconFrame");
-				button.IconOverlay:Show();
-			elseif IsCorruptedItem(itemIDOrLink) then
-				button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
-				button.IconOverlay:Show();
-			end
+			SetItemButtonOverlay(button, itemIDOrLink);
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
-		button.IconOverlay:Hide();
 	end
 
 	if quality then
@@ -175,6 +168,18 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 		end
 	else
 		button.IconBorder:Hide();
+	end
+end
+
+function SetItemButtonOverlay(button, itemIDOrLink)
+	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+		button.IconOverlay:SetAtlas("AzeriteIconFrame");
+		button.IconOverlay:Show();
+	elseif IsCorruptedItem(itemIDOrLink) then
+		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
+		button.IconOverlay:Show();
+	else
+		button.IconOverlay:Hide();
 	end
 end
 
@@ -275,8 +280,24 @@ end
 
 function ItemButtonMixin:UpdateItemContextOverlay()
 	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
-	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.DoesNotApply or self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
-	self.ItemContextOverlay:SetShown(not matchesSearch or not matchesContext);
+	local contextApplies = self.itemContextMatchResult ~= ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
+	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
+
+	self.ItemContextOverlay:Hide();
+
+	if not matchesSearch or (contextApplies and not matchesContext) then
+		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
+		self.ItemContextOverlay:SetAllPoints(true);
+		self.ItemContextOverlay:Show();
+	elseif matchesContext and self.showMatchHighlight then
+		if ItemButtonUtil.GetItemContext() == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem then
+			local useAtlasSize = true;
+			self.ItemContextOverlay:SetAtlas("runecarving-icon-bag-item-glow", useAtlasSize);
+			self.ItemContextOverlay:ClearAllPoints();
+			self.ItemContextOverlay:SetPoint("CENTER");
+			self.ItemContextOverlay:Show();
+		end
+	end
 end
 
 function ItemButtonMixin:Reset()

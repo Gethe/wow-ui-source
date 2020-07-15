@@ -1,6 +1,9 @@
 AdventuresRewardsScreenMixin = {};
 
+local followerXPTable = {};
+
 function AdventuresRewardsScreenMixin:OnLoad() 
+	followerXPTable = C_Garrison.GetFollowerXPTable(Enum.GarrisonFollowerType.FollowerType_9_0);
 	self.rewardsPool = CreateFramePool("FRAME", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "GarrisonMissionListButtonRewardTemplate");
 	self.followerPool = CreateFramePool("FRAME", self.FinalRewardsPanel.SpoilsFrame.FollowerExperienceEarnedFrame, "AdventuresRewardsPaddedFollower");
 end
@@ -64,17 +67,17 @@ function AdventuresRewardsScreenMixin:SetRewards(rewards)
 	self.FinalRewardsPanel.RewardsEarnedLabel:SetPoint("BOTTOM", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "TOP", 0, 0);
 end
 
-function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo)
+function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, missionInfo)
 	self.followerPool:ReleaseAll();
 	self.FinalRewardsPanel.FollowerProgressLabel:Hide();
-
+	
 	local layoutIndex = 1;
 	for guid, info in pairs(followerInfo) do 
 		--Don't show followers that don't have experience to gain
-		if followerInfo.maxXP and followerInfo.maxXP ~= 0 then
+		if info.maxXP and info.maxXP ~= 0 then
 			local followerFrame = self.followerPool:Acquire();
 			followerFrame.layoutIndex = layoutIndex;
-			followerFrame.RewardsFollower:SetFollowerInfo(info);
+			followerFrame.RewardsFollower:SetFollowerInfo(info, missionInfo.xp);
 			followerFrame:Show();
 
 			layoutIndex = layoutIndex + 1;
@@ -108,36 +111,57 @@ end
 
 AdventuresRewardsFollowerMixin = {}
 
-local ExpGainAnimDuration = 1.3;
+local ExpGainAnimDuration = 1.7;
 
-function AdventuresRewardsFollowerMixin:SetFollowerInfo(info)
+function AdventuresRewardsFollowerMixin:SetFollowerInfo(info, xp)
 	self.info = info;
+	self.xp = xp;
 	self.PuckBorder:SetAtlas("Adventurers-Followers-Frame");
 	self.Portrait:SetTexture(info.portraitIconID);
-	CooldownFrame_SetDisplayAsPercentage(self.FollowerExperienceDisplay,  self.info.currentExperience / self.info.maxExperience);
+	self.LevelUpAnimFrame:Hide();
+	self.LevelDisplayFrame.LevelText:SetText(info.level);
+	if self.info.maxXP ~= 0 then 
+		CooldownFrame_SetDisplayAsPercentage(self.FollowerExperienceDisplay,  self.info.currentXP / self.info.maxXP);
+	end
 end
 
 function AdventuresRewardsFollowerMixin:UpdateExperience()
-	--TODO: Task WOW9-30940 to finish the animations here with proper exp values
-
-	local currentExperience = self.info.currentExperience;
-	local maxExperience = self.info.maxExperience;
-	local missionExperience = 500; --self.awardedExperience, tbd
-	local dinged = false;
+	local currentExperience = self.info.currentXP;
+	local maxExperience = self.info.maxXP;
+	local missionExperience = self.xp;
+	local storedExperience = 0;
+	local totalLevelUps = 0;
+	self.XPFloatingText.Text:SetFormattedText(XP_GAIN, missionExperience);
 
 	local function ExperienceGainEasingUpdate(elapsedTime, duration)
-		local progress = math.min(currentExperience + EasingUtil.InOutQuartic(elapsedTime / duration) * missionExperience, maxExperience);
-	
-		if progress == maxExperience and not dinged then
+		local progress = math.min(currentExperience - storedExperience + EasingUtil.InOutQuartic(elapsedTime / duration) * missionExperience, maxExperience);
+		
+		if progress == maxExperience and maxExperience ~= 0 then
 			--play level up animation, increment level
-			dinged = true;
+			self.LevelUpAnimFrame.Anim:Stop(); --in case there's one playing already
+			self.LevelUpAnimFrame:Show();
+			self.LevelUpAnimFrame.Anim:Play();
+			
+			storedExperience = storedExperience + progress;
+			totalLevelUps = totalLevelUps + 1;
+			
+			maxExperience = followerXPTable[self.info.level + totalLevelUps];
+			self.LevelDisplayFrame.LevelText:SetText(self.info.level + totalLevelUps);
+			progress = 0;
 		end
 
 		CooldownFrame_SetDisplayAsPercentage(self.FollowerExperienceDisplay,  progress / maxExperience);
 	end
 
-	local function ExperienceGainOnFinish()
+	local function StartExperienceAnimation()
+		if not self:IsVisible() then
+			return;
+		end
+		
+		self.XPFloatingText.FadeIn:Play();
+		local onFinish = nil;
+		ScriptAnimationUtil.StartScriptAnimation(self.FollowerExperienceDisplay, ExperienceGainEasingUpdate, ExpGainAnimDuration, onFinish);
 	end
 
-	ScriptAnimationUtil.StartScriptAnimation(self.FollowerExperienceDisplay, ExperienceGainEasingUpdate, ExpGainAnimDuration, ExperienceGainOnFinish);
+	C_Timer.After(self:GetParent().layoutIndex / 2, StartExperienceAnimation);
 end

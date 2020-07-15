@@ -30,7 +30,6 @@ local function EventHasPoints(eventType)
 end
 
 local function GetCombatLogEntryForEventType(spellName, eventType, caster, target, amount, element) 
---TODO: Finalize design of combat log to stop using nonlocalized string
 	if eventType == Enum.GarrAutoMissionEventType.MeleeDamage then
 		return COVENANT_MISSIONS_COMBAT_LOG_MELEE_DAMAGE:format(caster, target, amount);
 	elseif  eventType == Enum.GarrAutoMissionEventType.RangeDamage then

@@ -322,10 +322,10 @@ local layouts =
 		TopRightCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
 		BottomLeftCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
 		BottomRightCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
-		TopEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = 0, x1 = 10, y1 = 0, },
-		BottomEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = 0, x1 = 10, y1 = 0, mirrorLayout = true, },
-		LeftEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Left", x = 0, y = 10, x1 = 0, y1 = -10, },
-		RightEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Right", x = 0, y = 10, x1 = 0, y1 = -10, },
+		TopEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = 3, x1 = 10, y1 = 3, },
+		BottomEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = -3, x1 = 10, y1 = -3, mirrorLayout = true, },
+		LeftEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Right", x = -3, y = 10, x1 = -3, y1 = -10,},
+		RightEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Left", x = 3, y = 10, x1 = 3, y1 = -10,},
 	},
 
 	CharacterCreateDropdown =

@@ -25,6 +25,10 @@ end
 function SoulbindTreeNodeLinkMixin:OnHide()
 	self.FlowAnim1:Stop();
 	self.FlowAnim2:Stop();
+	self.FlowAnim3:Stop();
+	self.FlowAnim4:Stop();
+	self.FlowAnim5:Stop();
+	self.FlowAnim6:Stop();
 end
 
 function SoulbindTreeNodeLinkMixin:Reset()
@@ -41,6 +45,10 @@ function SoulbindTreeNodeLinkMixin:SetState(state)
 		end
 		self.FlowAnim1:Stop();
 		self.FlowAnim2:Stop();
+		self.FlowAnim3:Stop();
+		self.FlowAnim4:Stop();
+		self.FlowAnim5:Stop();
+		self.FlowAnim6:Stop();
 	elseif state == Enum.SoulbindNodeState.Selectable then
 		self:DesaturateHierarchy(0);
 		for _, foreground in ipairs(self.foregrounds) do
@@ -49,6 +57,10 @@ function SoulbindTreeNodeLinkMixin:SetState(state)
 		end
 		self.FlowAnim1:Play();
 		self.FlowAnim2:Play();
+		self.FlowAnim3:Play();
+		self.FlowAnim4:Play();
+		self.FlowAnim5:Play();
+		self.FlowAnim6:Play();
 	elseif state == Enum.SoulbindNodeState.Selected then
 		self:DesaturateHierarchy(0);
 		for _, foreground in ipairs(self.foregrounds) do
@@ -57,6 +69,10 @@ function SoulbindTreeNodeLinkMixin:SetState(state)
 		end
 		self.FlowAnim1:Play();
 		self.FlowAnim2:Play();
+		self.FlowAnim3:Play();
+		self.FlowAnim4:Play();
+		self.FlowAnim5:Play();
+		self.FlowAnim6:Play();
 	end
 end
 

@@ -7,12 +7,25 @@ local AnimaDiversionUI =
 	Functions =
 	{
 		{
+			Name = "CloseUI",
+			Type = "Function",
+		},
+		{
 			Name = "GetAnimaDiversionNodes",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "animaNodes", Type = "table", InnerType = "AnimaDiversionNodeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOriginPosition",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "normalizedPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{

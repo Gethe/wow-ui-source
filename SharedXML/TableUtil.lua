@@ -118,6 +118,16 @@ function CopyTable(settings)
 	return copy;
 end
 
+function AccumulateIf(tbl, pred)
+	local count = 0;
+	for k, v in pairs(tbl) do
+		if pred(v) then
+			count = count + 1;
+		end
+	end
+	return count;
+end
+
 function FindInTableIf(tbl, pred)
 	for k, v in pairs(tbl) do
 		if (pred(v)) then

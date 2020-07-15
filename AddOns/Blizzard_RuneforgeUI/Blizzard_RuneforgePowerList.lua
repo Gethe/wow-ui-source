@@ -11,8 +11,10 @@ function RuneforgePowerButtonMixin:SetPowerID(powerID)
 		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
 
 		local isAvailable = self.powerInfo.state == Enum.RuneforgePowerState.Available;
+		local isActive = isAvailable and self:IsEnabled();
 		self.Icon:SetDesaturated(not isAvailable);
-		self.Icon:SetAlpha((isAvailable and self:IsEnabled()) and 1.0 or 0.5);
+		self.Icon:SetAlpha(isActive and 1.0 or 0.5);
+		self:SetEnabled(isActive);
 
 		self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
 	else

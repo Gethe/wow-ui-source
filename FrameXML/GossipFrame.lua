@@ -85,11 +85,11 @@ function GossipFrame_HandleShow(self)
 	end
 	NPCFriendshipStatusBar_Update(self);
 	GossipFrameUpdate();
-end 
+end
 
 function GossipFrame_HandleHide(self)
 	HideUIPanel(self);
-end 
+end
 
 function GossipFrame_OnEvent(self, event, ...)
 	if ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
@@ -166,7 +166,7 @@ function GossipTitleButton_OnClick(self, button)
 end
 
 function GossipFrameAvailableQuestsUpdate()
-	local GossipQuests = C_GossipInfo.GetAvailableQuests(); 
+	local GossipQuests = C_GossipInfo.GetAvailableQuests();
 	for titleIndex, questInfo in ipairs(GossipQuests) do
 		local button = GossipFrame_AcquireTitleButton();
 		button:SetQuest(questInfo.title, questInfo.questLevel, questInfo.isTrivial, questInfo.frequency, questInfo.repeatable, questInfo.isLegendary, questInfo.isIgnored, questInfo.questID);
@@ -176,7 +176,7 @@ function GossipFrameAvailableQuestsUpdate()
 end
 
 function GossipFrameActiveQuestsUpdate()
-	local gossipQuests = C_GossipInfo.GetActiveQuests(); 
+	local gossipQuests = C_GossipInfo.GetActiveQuests();
 	GossipFrame_InsertTitleSeparator();
 
 	GossipFrame.hasActiveQuests = (#gossipQuests > 0);

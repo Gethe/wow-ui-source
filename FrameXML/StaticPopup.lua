@@ -2904,62 +2904,7 @@ StaticPopupDialogs["XP_LOSS"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["XP_LOSS_NO_DURABILITY"] = {
-	text = CONFIRM_XP_LOSS_NO_DURABILITY,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, data)
-		if ( data ) then
-			self.text:SetFormattedText(CONFIRM_XP_LOSS_AGAIN_NO_DURABILITY, data);
-			self.data = nil;
-			return 1;
-		else
-			AcceptXPLoss();
-		end
-	end,
-	OnUpdate = function(self, elapsed)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			C_GossipInfo.CloseGossip();
-		end
-	end,
-	OnCancel = function(self)
-		C_GossipInfo.CloseGossip();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	showAlert = 1,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
-	text = CONFIRM_XP_LOSS_NO_SICKNESS,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, data)
-		if ( data ) then
-			self.text:SetText(CONFIRM_XP_LOSS_AGAIN_NO_SICKNESS);
-			self.data = nil;
-			return 1;
-		else
-			AcceptXPLoss();
-		end
-	end,
-	OnUpdate = function(self, dialog)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			C_GossipInfo.CloseGossip();
-		end
-	end,
-	OnCancel = function(self)
-		C_GossipInfo.CloseGossip();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	showAlert = 1,
-	hideOnEscape = 1
-};
+
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 	text = CONFIRM_XP_LOSS_NO_SICKNESS_NO_DURABILITY,
 	button1 = ACCEPT,

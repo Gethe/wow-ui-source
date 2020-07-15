@@ -16,16 +16,31 @@ function SoulbindViewerMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 
-	local activateSoulbind = function()
+	self.ActivateButton:SetScript("OnClick", function()
 		self:OnActivateSoulbindClicked();
-	end;
-	self.ActivateButton:SetScript("OnClick", activateSoulbind);
+	end);
 
-	local resetOpenSoulbind = function()
-		self:ResetOpenSoulbind();
+	local function SetActivationTooltip(text)
+		GameTooltip:SetOwner(self.ActivateButton, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, text);
+		GameTooltip:Show();
 	end;
-	self.ResetButton:SetScript("OnClick", resetOpenSoulbind);
+
+	self.ActivateButton:SetScript("OnEnter", function()
+		if UnitAffectingCombat("player") then
+			SetActivationTooltip(ERR_NOT_IN_COMBAT);
+		elseif not IsResting() then
+			SetActivationTooltip(SOULBIND_ACTIVATION_REQUIREMENT);
+		end
+	end);
+	self.ActivateButton:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.ResetButton:SetScript("OnClick", function()
+		local dialogCallback = GenerateClosure(self.ResetOpenSoulbind, self);
+		StaticPopup_Show("SOULBIND_RESET_TREE", nil, nil, dialogCallback);
+	end);
 
 	self.Tree:RegisterCallback(SoulbindTreeMixin.Event.OnNodeChanged, self.OnNodeChanged, self);
 	self.SelectGroup:RegisterCallback(SoulbindSelectGroupMixin.Event.OnSoulbindSelected, self.OnSoulbindSelected, self);
@@ -44,16 +59,17 @@ function SoulbindViewerMixin:OnEvent(event, ...)
 		HideUIPanel(self);
 	elseif event == "SOULBIND_ACTIVATED" then
 		self:OnSoulbindActivated(...);
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+		self:UpdateResetButton();
 	end
 end
 
 function SoulbindViewerMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SoulbindViewerEvents);
 
-	local atForge = C_Soulbinds.IsAtSoulbindForge();
 	self.ResetButton:SetScript("OnEnter", GenerateClosure(self.SetupResetButtonTooltip, self));
 	self.ResetButton:SetScript("OnLeave", GenerateClosure(self.HideResetButtonTooltip, self));
-	self.ResetButton:SetShown(atForge);
+	self.ResetButton:SetShown(C_Soulbinds.IsAtSoulbindForge());
 
 	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
 end
@@ -67,12 +83,22 @@ function SoulbindViewerMixin:SetupResetButtonTooltip()
 	GameTooltip_SetTitle(GameTooltip, SOULBIND_RESET_BUTTON);
 
 	for _, currencyCostData in ipairs(self.soulbindData.resetData.currencyCosts) do
-			
 		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(currencyCostData.currencyID, currencyCostData.quantity);
 		if currencyInfo then
-			local text = SOULBIND_RESET_CURRENCY_FORMAT:format(currencyInfo.displayAmount, currencyInfo.icon, currencyInfo.name);
-			local currencyColor = GetColorForCurrencyReward(currencyCostData.currencyID, currencyCostData.quantity);
-			GameTooltip_AddColoredLine(GameTooltip, text, currencyColor);
+			local markup = CreateTextureMarkup(currencyInfo.icon, 14, 14, 14, 14, 0, 1, 0, 1, 0, -1);
+			local currentCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyCostData.currencyID);
+			local text = SOULBIND_RESET_CURRENCY_FORMAT:format(currencyInfo.displayAmount, markup, currencyInfo.name);
+			local cannotAfford = currentCurrencyInfo.quantity < currencyInfo.displayAmount;
+			if cannotAfford then
+				GameTooltip_AddErrorLine(GameTooltip, text);
+			else
+				GameTooltip_AddHighlightLine(GameTooltip, text);
+			end
+
+			local canReset = self.Tree:HasSelectedNodes();
+			if not canReset then
+				GameTooltip_AddErrorLine(GameTooltip, SOULBIND_RESET_INELIGIBLE);
+			end
 		end
 	end
 
@@ -90,16 +116,35 @@ function SoulbindViewerMixin:OnNodeChanged()
 	self:UpdateResetButton();
 end
 
+function SoulbindViewerMixin:CanAffordReset()
+	for _, currencyCostData in ipairs(self.soulbindData.resetData.currencyCosts) do
+		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(currencyCostData.currencyID, currencyCostData.quantity);
+		if currencyInfo then
+			local currentCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyCostData.currencyID);
+			local cannotAfford = currentCurrencyInfo.quantity < currencyInfo.displayAmount;
+			if cannotAfford then
+				return false;
+			end
+		end
+	end
+	return true;
+end
+
 function SoulbindViewerMixin:UpdateResetButton()
-	local canReset = self.Tree:HasSelectedNodes();
-	self.ResetButton:SetEnabled(canReset);
+	self.ResetButton:SetShown(C_Soulbinds.IsAtSoulbindForge());
+	local enabled = self.Tree:HasSelectedNodes() and self:CanAffordReset();
+	self.ResetButton:SetEnabled(enabled);
+	self.ResetButton:SetAlpha(enabled and 1 or .6);
+end
+
+function SoulbindViewerMixin:InitCurrentData()
+	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
+	self:Init(covenantData, soulbindData);
 end
 
 function SoulbindViewerMixin:Open()
-	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
-	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
-
-	self:InitCovenant(covenantData, soulbindData);
+	self:InitCurrentData();
 	ShowUIPanel(self);
 end
 
@@ -107,11 +152,11 @@ function SoulbindViewerMixin:OpenSoulbind(soulbindID)
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
 	local covenantData = C_Covenants.GetCovenantData(soulbindData.covenantID);
 	
-	self:InitCovenant(covenantData, soulbindData);
+	self:Init(covenantData, soulbindData);
 	ShowUIPanel(SoulbindViewer);
 end
 
-function SoulbindViewerMixin:InitCovenant(covenantData, soulbindData)
+function SoulbindViewerMixin:Init(covenantData, soulbindData)
 	self.soulbindData = soulbindData;
 	self.covenantData = covenantData;
 
@@ -120,7 +165,9 @@ function SoulbindViewerMixin:InitCovenant(covenantData, soulbindData)
 	end
 
 	self.SelectGroup:Init(covenantData, soulbindData.ID);
-	self.Background:SetAtlas(string.format("Soulbinds_Background_%s", covenantData.textureKit), true);
+	local bgAtlas = string.format("Soulbinds_Background_%s", covenantData.textureKit);
+	self.Background:SetAtlas(bgAtlas, true);
+	self.Background2:SetAtlas(bgAtlas, true);
 end
 
 function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex)
@@ -132,7 +179,9 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	self.soulbindData = soulbindData;
 
 	self.Name:SetText(soulbindData.name);
-	self.Portrait:SetAtlas(string.format("Soulbind_Portrait_%s", soulbindData.textureKit), true);
+	local portraitAtlas = string.format("Soulbind_Portrait_%s", soulbindData.textureKit);
+	self.Portrait:SetAtlas(portraitAtlas, true);
+	self.Portrait2:SetAtlas(portraitAtlas, true);
 	self.Description:SetText(soulbindData.description)
 
 	self.Tree:Init(soulbindData);
@@ -144,6 +193,8 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
+	self.Portrait2.ActivateAnim:Play();
+	self.Background2.ActivateAnim:Play();
 	self.SelectGroup:OnSoulbindActivated(soulbindID);
 	self.Tree:Init(C_Soulbinds.GetSoulbindData(soulbindID));
 	self:UpdateResetButton();
@@ -158,7 +209,8 @@ function SoulbindViewerMixin:GetSoulbindData()
 end
 
 function SoulbindViewerMixin:UpdateActivateButton()
-	local canEnable = not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
+	local canEnable = not UnitAffectingCombat("player") and IsResting() and 
+		not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
 	self.ActivateButton:SetEnabled(canEnable);
 end
 
@@ -188,3 +240,17 @@ end
 function SoulbindViewerMixin:OnInventoryItemLeave(bag, slot)
 	self.Tree:OnInventoryItemLeave(bag, slot);
 end
+
+StaticPopupDialogs["SOULBIND_RESET_TREE"] = {
+	text = SOULBIND_RESET_TREE,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	enterClicksFirstButton = true,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+
+	OnButton1 = function(self, callback)
+		callback();
+	end,
+};

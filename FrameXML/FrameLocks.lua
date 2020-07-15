@@ -162,6 +162,10 @@ function RemoveFrameLock(lock)
 	setFrameLock(lock, false);
 end
 
+function SetFrameLock(lock, enabled)
+	setFrameLock(lock, enabled);
+end
+
 function UpdateFrameLock(frame)
 	updateFrameByState(frame);
 end

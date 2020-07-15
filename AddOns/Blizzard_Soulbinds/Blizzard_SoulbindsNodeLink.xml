@@ -34,6 +34,16 @@
 						<Anchor point="CENTER" relativeKey="$parent.Background" />
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Foreground5" parentArray="foregrounds" atlas="Soulbinds_Link_Spirits" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground6" parentArray="foregrounds" atlas="Soulbinds_Link_Spirits" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
 				<MaskTexture parentKey="FillMask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -43,6 +53,8 @@
 						<MaskedTexture childKey="Foreground2" />
 						<MaskedTexture childKey="Foreground3" />
 						<MaskedTexture childKey="Foreground4" />
+						<MaskedTexture childKey="Foreground5" />
+						<MaskedTexture childKey="Foreground6" />
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -53,10 +65,12 @@
 				<Alpha childKey="Foreground1" duration="1.0" order="2" smoothing="in_out" fromAlpha="1" toAlpha=".7" />
 				<Alpha childkey="Foreground2" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
 				<Alpha childKey="Foreground2" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
-				<Alpha childkey="Foreground3" duration="1.2" order="1" smoothing="in_out" fromalpha=".8" toalpha="1" />
-				<Alpha childKey="Foreground3" duration="1.0" order="2" smoothing="in_out" fromAlpha="1" toAlpha=".8" />
+				<Alpha childkey="Foreground3" duration="1.2" order="1" smoothing="in_out" fromalpha=".6" toalpha=".8" />
+				<Alpha childKey="Foreground3" duration="1.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha=".6" />
 				<Alpha childkey="Foreground4" duration="3.2" order="1" smoothing="in_out" fromalpha=".3" toalpha=".7" />
 				<Alpha childKey="Foreground4" duration="3.0" order="2" smoothing="in_out" fromAlpha=".7" toAlpha=".3" />
+				<Alpha childkey="Foreground5" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="Foreground5" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
 			</AnimationGroup>
 			<AnimationGroup parentKey="FlowAnim2" looping="REPEAT">
 				<TextureCoordTranslation childKey="Foreground1" duration="16" order="1" offsetU="0" offsetV="1" />
@@ -64,6 +78,20 @@
 				<TextureCoordTranslation childKey="Foreground3" duration="16" order="1" offsetU="0" offsetV="-1" />
 				<Rotation childKey="Foreground4" duration="16" order="1" degrees="360" />
 			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim3" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground5" duration="4" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim4" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground6" duration="2" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim5" looping="REPEAT">
+				<Rotation childKey="Foreground6" duration="16" order="1" degrees="-45" />
+				<Rotation childKey="Foreground6" duration="16" order="2" degrees="45" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim6" looping="REPEAT">
+				<Rotation childKey="Foreground5" duration="32" order="1" degrees="45" />
+				<Rotation childKey="Foreground5" duration="32" order="2" degrees="-45" />
+			</AnimationGroup>	
 		</Animations>
 		<Scripts>
 			<OnHide method="OnHide"/>

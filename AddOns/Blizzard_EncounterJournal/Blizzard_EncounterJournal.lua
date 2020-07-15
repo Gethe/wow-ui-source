@@ -2796,6 +2796,10 @@ end
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
 		EJSuggestFrame_RefreshDisplay();
+		local newAdventureNotice = ...;
+		if ( newAdventureNotice ) then
+			EJMicroButton_UpdateNewAdventureNotice();
+		end
 	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()
 	end

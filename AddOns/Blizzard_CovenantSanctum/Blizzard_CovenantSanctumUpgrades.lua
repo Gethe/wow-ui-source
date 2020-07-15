@@ -59,6 +59,9 @@ function CovenantSanctumUpgradesTabMixin:OnShow()
 	else
 		self:SetSelectedTree(self.TravelUpgrade.treeID);
 	end
+
+	self.ReservoirUpgrade:UpdateAnima();
+	self:UpdateCurrencies();
 end
 
 function CovenantSanctumUpgradesTabMixin:OnHide()
@@ -104,6 +107,7 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 	animaFrame:SetTooltipAnchor(tooltipAnchor);
 	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo()
 	animaFrame:SetCurrencyFromID(animaCurrencyID);
+	animaFrame:SetAbbreviate(true);
 	animaFrame:Show();
 
 	local initFunction = function(currencyFrame)
@@ -114,7 +118,8 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 	local paddingX = 10;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
 	local initAnchor = nil;
-	self.CurrencyDisplayGroup:SetCurrencies(currencies, initFunction, initAnchor, layout, tooltipAnchor);
+	local abbreviateCost = true;
+	self.CurrencyDisplayGroup:SetCurrencies(currencies, initFunction, initAnchor, layout, tooltipAnchor, abbreviateCost);
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpUpgrades()
@@ -224,6 +229,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 
 	self.info = talentInfo;
 	local disabled = false;
+	local abbreviateCost = true;
 
 	if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave then
 		self.UpgradeArrow:Hide();
@@ -233,14 +239,14 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 		self.InfoText:SetText(RED_FONT_COLOR_CODE.."Researching".."|r");
 	elseif talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.Available then
 		self.UpgradeArrow:Show();
-		local costString = GetGarrisonTalentCostString(talentInfo);
+		local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
 		self.InfoText:SetText(costString or "");
 	else
 		disabled = true;
 		self.UpgradeArrow:Hide();
 		local isMet, failureString = C_Garrison.IsTalentConditionMet(talentInfo.id);
 		if isMet then
-			local costString = GetGarrisonTalentCostString(talentInfo);
+			local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
 			self.InfoText:SetText(costString);
 		else
 			self.InfoText:SetText(failureString or "");
@@ -267,9 +273,10 @@ end
 
 local TalentUnavailableReasons = {};
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching] = ORDER_HALL_TALENT_UNAVAILABLE_ANOTHER_IS_RESEARCHING;
-TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = COVENANT_SANCTUM_NOT_ENOUGH_RESOURCES;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughGold] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableTierUnavailable] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent] = ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT;
 
 function CovenantSanctumUpgradeTalentMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -323,7 +330,7 @@ function CovenantSanctumUpgradeTalentMixin:OnEnter()
 				if (preReqTalent) then
 					GameTooltip:AddLine(TOOLTIP_TALENT_PREREQ:format(preReqTalent.talentMaxRank, preReqTalent.name), 1, 0, 0);
 				else
-					GameTooltip:AddLine(Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent, 1, 0, 0);
+					GameTooltip:AddLine(TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent], 1, 0, 0);
 				end
 			elseif (TalentUnavailableReasons[talent.talentAvailability]) then
 				GameTooltip:AddLine(TalentUnavailableReasons[talent.talentAvailability], 1, 0, 0);

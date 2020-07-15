@@ -218,7 +218,7 @@ end
 
 function MountJournal_UpdateEquipmentPalette(self)
 	local effectsSuppressed = C_MountJournal.AreMountEquipmentEffectsSuppressed();
-	local locked = not C_MountJournal.IsMountEquipmentUnlocked();
+	local locked = not C_PlayerInfo.CanPlayerUseMountEquipment();
 	if locked or effectsSuppressed then
 		local desaturation = 1.0;
 		self.BottomLeftInset:DesaturateHierarchy(desaturation);
@@ -330,7 +330,7 @@ function MountJournal_InitializeEquipmentSlot(self, item)
 end
 
 function MountJournal_UpdateEquipment(self)
-	local isUnlocked = C_MountJournal.IsMountEquipmentUnlocked();
+	local isUnlocked = C_PlayerInfo.CanPlayerUseMountEquipment();
 	self.SlotButton:SetShown(isUnlocked);
 	self.SlotLabel:SetShown(isUnlocked);
 	self.SlotRequirementLabel:SetShown(not isUnlocked);

@@ -134,13 +134,13 @@ function SoulbindsSelectButtonMixin:SetActivated(activated)
 			self.activatedFxController = nil;
 		end
 
-		self.ModelScene.Dark:SetAlpha(.3);
-		self.ModelScene:SetDesaturation(.5);
+		self.ModelScene.Dark:SetAlpha(.5);
+		self.ModelScene:SetDesaturation(.8);
 	end
 end
 
 function SoulbindsSelectButtonMixin:OnActivated()
-	self:PlayActivatedFx();
+	self:PlayActivationChangedFx();
 end
 
 function SoulbindsSelectButtonMixin:AddActiveEffect(effect)
@@ -155,4 +155,17 @@ end
 function SoulbindsSelectButtonMixin:PlayActivationChangedFx()
 	local ACTIVATE_CHANGED_FX = 46;
 	self:AddActiveEffect(ACTIVATE_CHANGED_FX);
+end
+
+SoulbindsActiveMarkerMixin = {}
+
+function SoulbindsActiveMarkerMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local bonusSpellID = 337601;
+	GameTooltip:SetSpellByID(bonusSpellID);
+	GameTooltip:Show();
+end
+
+function SoulbindsActiveMarkerMixin:OnLeave()
+	GameTooltip:Hide();
 end

@@ -4,8 +4,7 @@
 	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
 		<Size x="52" y="52"/>
 		<Scripts>
-			<OnLoad>
-				ActionButton_OnLoad(self);
+			<OnLoad inherit="append">
 				self:SetFrameLevel(self:GetFrameLevel() + 2);
 				local cooldown = _G[self:GetName().."Cooldown"];
 				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);

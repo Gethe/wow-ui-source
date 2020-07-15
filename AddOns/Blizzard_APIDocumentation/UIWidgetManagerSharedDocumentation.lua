@@ -5,14 +5,15 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetLayoutDirection",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Default", Type = "UIWidgetLayoutDirection", EnumValue = 0 },
 				{ Name = "Vertical", Type = "UIWidgetLayoutDirection", EnumValue = 1 },
 				{ Name = "Horizontal", Type = "UIWidgetLayoutDirection", EnumValue = 2 },
+				{ Name = "Overlap", Type = "UIWidgetLayoutDirection", EnumValue = 3 },
 			},
 		},
 		{

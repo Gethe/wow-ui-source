@@ -63,6 +63,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0] = {
 		FOLLOWER_NAME = GARRISON_FOLLOWERS,
 		OUT_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION,
 		AVAILABILITY = GARRISON_MISSION_AVAILABILITY,
+		NOT_ENOUGH_MATERIALS = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP,
 	},
 	traitAbilitiesAreEquipment = false,
 	useAbilityTooltipStyleWithoutCounters = false,
@@ -120,6 +121,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
 		FOLLOWER_NAME = GARRISON_FOLLOWERS,
 		OUT_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION,
 		AVAILABILITY = GARRISON_MISSION_AVAILABILITY,
+		NOT_ENOUGH_MATERIALS = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = false,
@@ -179,6 +181,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
 		FOLLOWER_NAME = GARRISON_FOLLOWERS,
 		OUT_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION,
 		AVAILABILITY = GARRISON_MISSION_AVAILABILITY,
+		NOT_ENOUGH_MATERIALS = COVENANT_MISSIONS_NOT_ENOUGH_MATERIALS,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
@@ -238,6 +241,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
 		FOLLOWER_NAME = GARRISON_FOLLOWERS,
 		OUT_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION,
 		AVAILABILITY = GARRISON_MISSION_AVAILABILITY,
+		NOT_ENOUGH_MATERIALS = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
@@ -297,6 +301,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0] = {
 		FOLLOWER_NAME = COVENANT_MISSIONS_FOLLOWERS,
 		OUT_WITH_DURATION = COVENANT_MISSIONS_ON_ADVENTURE_DURATION,
 		AVAILABILITY = COVENANT_MISSIONS_AVAILABILITY,
+		NOT_ENOUGH_MATERIALS = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
@@ -469,7 +474,7 @@ end
 --- Talent Tree                                                               ---
 ---------------------------------------------------------------------------------
 
-function GetGarrisonTalentCostString(talentInfo)
+function GetGarrisonTalentCostString(talentInfo, abbreviate)
 	local costString;
 
 	local function AddCost(cost)
@@ -480,8 +485,9 @@ function GetGarrisonTalentCostString(talentInfo)
 		end
 	end
 
+	local colorCode = nil;
 	for i, researchCostInfo in ipairs(talentInfo.researchCurrencyCosts) do
-		AddCost(GetCurrencyString(researchCostInfo.currencyType, researchCostInfo.currencyQuantity));
+		AddCost(GetCurrencyString(researchCostInfo.currencyType, researchCostInfo.currencyQuantity, colorCode, abbreviate));
 	end
 	if talentInfo.researchGoldCost > 0 then
 		AddCost(talentInfo.researchGoldCost.."|TINTERFACE\\MONEYFRAME\\UI-MoneyIcons.blp:16:16:2:0:64:16:0:16:0:16|t");

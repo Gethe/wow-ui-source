@@ -26,14 +26,6 @@ function AdventuresCompleteScreenSpeedButtonMixin:SetSpeedUpShown(shown)
 	self.SpeedUp:SetShown(shown);
 end
 
-AdventuresCompleteScreenReplayButtonMixin = {};
-
-function AdventuresCompleteScreenReplayButtonMixin:OnClick()
-	local completeScreen = self:GetParent():GetParent();
-	completeScreen:ResetReplay();
-end
-
-
 AdventuresCompleteScreenMixin = {};
 
 local AdventuresCompleteScreenEvents = {
@@ -100,7 +92,7 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
    	end
 
    	self:ResetMissionDisplay();
-	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo);
+	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, mission);
 	self.MissionInfo.EncounterIcon:SetEncounterInfo(mission.encounterIconInfo);
 
 	if not mission.completed then
@@ -156,14 +148,7 @@ function AdventuresCompleteScreenMixin:OnMissionCompleteResponse(missionID, canC
 	end
 end
 
-function AdventuresCompleteScreenMixin:ResetReplay()
-	self.ModelScene:ClearEffects();
-	self:ResetMissionDisplay();
-	self:StartMissionReplay();
-end
-
 function AdventuresCompleteScreenMixin:StartMissionReplay()
-	self.CompleteFrame.ReplayButton:SetEnabled(false);
 	self:SetReplaySpeed(SlowSpeed);
 
 	self.AdventuresCombatLog:Clear();
@@ -396,7 +381,6 @@ end
 
 function AdventuresCompleteScreenMixin:FinishReplay()
 	self:SetScript("OnUpdate", nil);
-	self.CompleteFrame.ReplayButton:SetEnabled(true);
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
 	self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
 	self.replayFinished = true;
@@ -431,7 +415,6 @@ function AdventuresCompleteScreenMixin:DisableCompleteFrameButtons()
 
 	completeFrame.ContinueButton:Disable();
 	completeFrame.SpeedButton:Disable();
-	completeFrame.ReplayButton:Disable();
 end
 
 
@@ -440,5 +423,4 @@ function AdventuresCompleteScreenMixin:EnableCompleteFrameButtons()
 
 	completeFrame.ContinueButton:Enable();
 	completeFrame.SpeedButton:Enable();
-	completeFrame.ReplayButton:Enable();
 end

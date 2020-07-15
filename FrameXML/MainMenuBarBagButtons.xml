@@ -35,6 +35,9 @@
 		</Scripts>
 	</Frame>
 	<ItemButton name="BagSlotButtonTemplate" mixin="BagSlotMixin" inherits="ItemAnimTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="showMatchHighlight" value="false" type="boolean"/>
+		</KeyValues>
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -75,6 +78,9 @@
 		</Scripts>
 	</ItemButton>
 	<ItemButton name="MainMenuBarBackpackButton" mixin="BagSlotMixin" inherits="ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
+		<KeyValues>
+			<KeyValue key="showMatchHighlight" value="false" type="boolean"/>
+		</KeyValues>
 		<Size x="40" y="40"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-4" y="-4"/>

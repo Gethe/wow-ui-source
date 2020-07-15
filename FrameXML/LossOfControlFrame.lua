@@ -25,7 +25,7 @@ local DISPLAY_TYPE_FULL = 2;
 local DISPLAY_TYPE_ALERT = 1;
 local DISPLAY_TYPE_NONE = 0;
 
-local ACTIVE_INDEX = 1;
+LOSS_OF_CONTROL_ACTIVE_INDEX = 1;
 
 function LossOfControlFrame_OnLoad(self)
 	self:RegisterEvent("CVAR_UPDATE");
@@ -40,11 +40,13 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 		LossOfControlFrame_UpdateDisplay(self, false);
 	elseif ( event == "LOSS_OF_CONTROL_ADDED" ) then
 		local eventIndex = ...;
-		local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(eventIndex);
-		if ( displayType == DISPLAY_TYPE_ALERT ) then
+		local data = C_LossOfControl.GetActiveLossOfControlData(eventIndex);
+		local timeRemaining = data.timeRemaining;
+		local priority = data.priority;
+		if ( data.displayType == DISPLAY_TYPE_ALERT ) then
 			-- only display an alert type if there's nothing up or it has higher priority. If same priority, it needs to have longer time remaining
 			if ( not self:IsShown() or priority > self.priority or ( priority == self.priority and timeRemaining and ( not self.TimeLeft.timeRemaining or timeRemaining > self.TimeLeft.timeRemaining ) ) ) then
-				LossOfControlFrame_SetUpDisplay(self, true, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
+				LossOfControlFrame_SetUpDisplay(self, true, data);
 			end
 			return;
 		end
@@ -98,10 +100,22 @@ function LossOfControlFrame_OnHide(self)
 	self.priority = nil;
 end
 
-function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType)
-	if ( not locType ) then
-		locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(ACTIVE_INDEX);
+function LossOfControlFrame_SetUpDisplay(self, animate, data)
+	if ( not data ) then
+		data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
 	end
+	
+	local locType = data.locType;
+	local spellID = data.spellID;
+	local text = data.displayText;
+	local iconTexture = data.iconTexture;
+	local startTime = data.startTime;
+	local timeRemaining = data.timeRemaining;
+	local duration = data.duration;
+	local lockoutSchool = data.lockoutSchool;
+	local priority = data.priority;
+	local displayType = data.displayType;
+
 	if ( text and displayType ~= DISPLAY_TYPE_NONE ) then
 		-- ability name
 		text = TEXT_OVERRIDE[spellID] or text;
@@ -160,15 +174,15 @@ function LossOfControlFrame_UpdateDisplay(self)
 		return;
 	end
 
-	local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(ACTIVE_INDEX);
-	if ( text and displayType == DISPLAY_TYPE_FULL ) then
-		if ( spellID ~= self.spellID or startTime ~= self.startTime ) then
-			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
+	local data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
+	if ( data and data.displayText and data.displayType == DISPLAY_TYPE_FULL ) then
+		if ( data.spellID ~= self.spellID or data.startTime ~= self.startTime ) then
+			LossOfControlFrame_SetUpDisplay(self, false, data);
 		end
-		if ( not self.Anim:IsPlaying() and startTime ) then
-			CooldownFrame_Set(self.Cooldown, startTime, duration, true, true);
+		if ( not self.Anim:IsPlaying() and data.startTime ) then
+			CooldownFrame_Set(self.Cooldown, data.startTime, data.duration, true, true);
 		end
-		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, timeRemaining);
+		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, data.timeRemaining);
 	else
 		self:Hide();
 	end

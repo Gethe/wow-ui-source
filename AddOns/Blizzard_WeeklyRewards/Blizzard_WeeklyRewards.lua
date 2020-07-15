@@ -1,22 +1,18 @@
-local MYTHIC_DUNGEONS = "Mythic Dungeons"
-local WEEKLY_REWARDS_THRESHOLD_RAID = "Defeat %d Raid |4Boss:Bosses";
-local WEEKLY_REWARDS_THRESHOLD_MYTHIC = "Complete %d Mythic |4Dungeon:Dungeons";
-local WEEKLY_REWARDS_THRESHOLD_PVP = "Earn %d Conquest Points";
-local CONFIRM_SELECT_WEEKLY_REWARD = "You will be unable to change this reward once it is selected.|n|nAre you sure you wish to select this item?"
-WEEKLY_REWARDS_SELECT_REWARD = "Select Reward"
-
 local NUM_COLUMNS = 3;
+local SELECTION_STATE_HIDDEN = 1;
+local SELECTION_STATE_UNSELECTED = 2;
+local SELECTION_STATE_SELECTED = 3;
 
 StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
-	text = CONFIRM_SELECT_WEEKLY_REWARD,
+	text = WEEKLY_REWARDS_CONFIRM_SELECT,
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		C_WeeklyRewards.ClaimReward(self.data.id);
+		C_WeeklyRewards.ClaimReward(self.data);
+		HideUIPanel(WeeklyRewardsFrame);
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
-	hasItemFrame = 1,
 	showAlert = 1,
 }
 
@@ -97,17 +93,30 @@ function WeeklyRewardsMixin:Refresh()
 	end
 	self.SelectRewardButton:SetShown(canClaimRewards);
 
+	-- always hide concession, if there are rewards the refresh will show it
+	self.ConcessionFrame:Hide();
+
 	local activities = C_WeeklyRewards.GetActivities();
 	for i, activityInfo in ipairs(activities) do
 		local frame = self:GetActivityFrame(activityInfo.type, activityInfo.index);
+		-- hide current progress for current week if rewards are present
+		if canClaimRewards and #activityInfo.rewards == 0 then
+			activityInfo.progress = 0;
+		end
 		frame:Refresh(activityInfo);
 	end
 	
+	if self.ConcessionFrame:IsShown() then
+		self:SetHeight(737);
+	else
+		self:SetHeight(657);
+	end
+
 	self:UpdateSelection();
 end
 
 function WeeklyRewardsMixin:SelectActivity(activityFrame)
-	if activityFrame.unlocked and C_WeeklyRewards.CanClaimRewards() then
+	if activityFrame.hasRewards then
 		if self.selectedActivity == activityFrame then
 			self.selectedActivity = nil;
 		else
@@ -119,33 +128,106 @@ function WeeklyRewardsMixin:SelectActivity(activityFrame)
 end
 
 function WeeklyRewardsMixin:UpdateSelection()
-	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
 	local selectedActivity = self.selectedActivity;
 	local useAtlasSize = true;
 	self.SelectRewardButton:SetEnabled(selectedActivity ~= nil);
 
 	for i, frame in ipairs(self.Activities) do
-		local atlas = nil;
-		if canClaimRewards and selectedActivity and frame.unlocked then
+		local selectionState = SELECTION_STATE_HIDDEN;
+		if selectedActivity and frame.hasRewards then
 			if frame == selectedActivity then
-				atlas = "weeklyrewards-frame-reward-selected";
+				selectionState = SELECTION_STATE_SELECTED;
 			else
-				atlas = "weeklyrewards-shadow-reward-unselected";
+				selectionState = SELECTION_STATE_UNSELECTED;
 			end
 		end
-		frame.SelectionTexture:SetAtlas(atlas, useAtlasSize);
+		frame:SetSelectionState(selectionState);
 	end
 end
 
+function WeeklyRewardsMixin:GetSelectedActivityInfo()
+	return self.selectedActivity and self.selectedActivity.info;
+end
+
 function WeeklyRewardsMixin:SelectReward()
-	local id = self.selectedActivity.ItemFrame.id;
-	local itemHyperlink = C_WeeklyRewards.GetActivityRewardHyperlink(id);
-	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
-	local r, g, b = GetItemQualityColor(itemQuality);
-	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, { id = id, texture = itemIcon, name = itemName, color = {r, g, b, 1}, link = itemHyperlink });
+	local selectionFrame = WeeklyRewardConfirmSelectionFrame;
+	local itemFrame = selectionFrame.ItemFrame;
+	local currencyFrame = selectionFrame.CurrencyFrame;
+	local activityInfo = self:GetSelectedActivityInfo();
+	local heightUsed = 19;
+
+	local itemDBID = self.selectedActivity:GetDisplayedItemDBID();
+	if itemDBID then
+		local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(itemDBID);
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
+		local r, g, b = GetItemQualityColor(itemQuality);
+		itemFrame.Icon:SetTexture(itemIcon);
+		itemFrame.Name:SetText(itemName);
+		itemFrame.Name:SetTextColor(r, g, b);
+		itemFrame.itemHyperlink = itemHyperlink;
+		SetItemButtonQuality(itemFrame, itemQuality, itemHyperlink);
+		itemFrame:Show();
+		currencyFrame:Hide();
+		heightUsed = heightUsed + itemFrame:GetHeight();
+	else
+		currencyFrame:Clear();
+		for i, rewardInfo in ipairs(activityInfo.rewards) do
+			if rewardInfo.type == Enum.CachedRewardType.Currency then
+				currencyFrame:AddCurrency(rewardInfo.id, rewardInfo.quantity);
+			end
+		end
+		currencyFrame:Layout();
+		currencyFrame:Show();
+		itemFrame:Hide();
+		heightUsed = heightUsed + currencyFrame:GetHeight();
+	end
+
+	-- display items that are not the primary reward
+	local alsoItemsFrame = selectionFrame.AlsoItemsFrame;
+	if #activityInfo.rewards > 1 then
+		if alsoItemsFrame.pool then
+			alsoItemsFrame.pool:ReleaseAll();
+		else
+			alsoItemsFrame.pool = CreateFramePool("FRAME", alsoItemsFrame, "WeeklyRewardAlsoItemTemplate");
+		end
+		for i, rewardInfo in ipairs(activityInfo.rewards) do
+			if rewardInfo.itemDBID and rewardInfo.itemDBID ~= itemDBID then
+				local frame = alsoItemsFrame.pool:Acquire();
+				local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID);
+				local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
+				local r, g, b = GetItemQualityColor(itemQuality);
+				frame.Icon:SetTexture(itemIcon);
+				frame.IconBorder:SetVertexColor(r, g, b);
+				frame.layoutIndex = i;
+				frame.itemHyperlink = itemHyperlink;
+				frame:Show();
+			end
+		end
+		alsoItemsFrame:Layout();
+		alsoItemsFrame:Show();
+		heightUsed = heightUsed + 38;
+	else
+		alsoItemsFrame:Hide();
+	end
+
+	selectionFrame:SetHeight(heightUsed);
+	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.id, selectionFrame);
 end
 
 WeeklyRewardsActivityMixin = { };
+
+function WeeklyRewardsActivityMixin:SetSelectionState(state)
+	if state == SELECTION_STATE_SELECTED then
+		self.SelectedTexture:Show();
+		self.UnselectedFrame:Hide();
+	elseif state == SELECTION_STATE_UNSELECTED then
+		self.SelectedTexture:Hide();
+		self.UnselectedFrame:Show();
+	else
+		self.SelectedTexture:Hide();
+		self.UnselectedFrame:Hide();
+	end
+end
 
 function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	local thresholdString;
@@ -159,22 +241,23 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	self.Threshold:SetFormattedText(thresholdString, activityInfo.threshold);
 
 	self.unlocked = activityInfo.progress >= activityInfo.threshold;
+	self.hasRewards = #activityInfo.rewards > 0;
+	self.info = activityInfo;
 
 	self:SetProgressText(activityInfo);
 
 	local useAtlasSize = true;
-	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
 
-	if self.unlocked then
+	if self.unlocked or self.hasRewards then
 		self.Background:SetAtlas("weeklyrewards-background-reward-unlocked", useAtlasSize);
 		self.Border:SetAtlas("weeklyrewards-frame-reward-unlocked", useAtlasSize);
 		self.Threshold:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 		self.LockIcon:Show();
 		self.LockIcon:SetAtlas("weeklyrewards-icon-unlocked", useAtlasSize);
-		if canClaimRewards then
+		if self.hasRewards then
 			self.Orb:SetTexture(nil);
-			self.ItemFrame:SetItem(activityInfo.id);
+			self.ItemFrame:SetRewards(activityInfo.rewards);
 			self.ItemGlow:Show();
 		else
 			self.Orb:SetAtlas("weeklyrewards-orb-unlocked", useAtlasSize);
@@ -187,19 +270,17 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		self.Border:SetAtlas("weeklyrewards-frame-reward-locked", useAtlasSize);
 		self.Threshold:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		if canClaimRewards then
-			self.LockIcon:Show();
-			self.LockIcon:SetAtlas("weeklyrewards-icon-incomplete", useAtlasSize);
-		else
-			self.LockIcon:Hide();
-		end
+		self.LockIcon:Hide();
 		self.ItemFrame:Hide();
 		self.ItemGlow:Hide();
 	end
 end
 
-function WeeklyRewardsActivityMixin:SetProgressText(activityInfo)
-	if self.unlocked then
+function WeeklyRewardsActivityMixin:SetProgressText()
+	local activityInfo = self.info;
+	if self.hasRewards then
+		self.Progress:SetText(nil);	
+	elseif self.unlocked then
 		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			local name = GetDifficultyInfo(activityInfo.level);
 			self.Progress:SetText(name);
@@ -224,11 +305,15 @@ function WeeklyRewardsActivityMixin:OnEnter()
 	end
 end
 
+function WeeklyRewardsActivityMixin:GetDisplayedItemDBID()
+	return self.ItemFrame.displayedItemDBID;
+end
+
 WeeklyRewardActivityItemMixin = { };
 
 function WeeklyRewardActivityItemMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -6);
-	GameTooltip:SetWeeklyReward(self.id);
+	GameTooltip:SetWeeklyReward(self.displayedItemDBID);
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
@@ -248,26 +333,92 @@ end
 function WeeklyRewardActivityItemMixin:OnClick()
 	local activityFrame = self:GetParent();
 	if IsModifiedClick() then
-		local hyperlink = C_WeeklyRewards.GetActivityRewardHyperlink(self.id);
+		local hyperlink = C_WeeklyRewards.GetItemHyperlink(self.displayedItemDBID);
 		HandleModifiedItemClick(hyperlink);
 	else
 		activityFrame:GetParent():SelectActivity(activityFrame);
 	end
 end
 
-function WeeklyRewardActivityItemMixin:SetItem(id)
-	local hyperlink = C_WeeklyRewards.GetActivityRewardHyperlink(id);
-	if not hyperlink then
-		return;
+function WeeklyRewardActivityItemMixin:SetDisplayedItem()
+	self.displayedItemDBID = nil;
+	local bestItemQuality = 0;
+	local bestItemLevel = 0;
+	for i, rewardInfo in ipairs(self:GetParent().info.rewards) do
+		if rewardInfo.type == Enum.CachedRewardType.Item then
+			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(rewardInfo.id);
+			if itemEquipLoc ~= "" then
+				-- want highest item level of highest quality
+				-- this comparison is not really needed now since the rewards are 1 equippable and 1 non-equippable item
+				if itemQuality > bestItemQuality or (itemQuality == bestItemQuality and itemLevel > bestItemLevel) then
+					self.displayedItemDBID = rewardInfo.itemDBID;
+					self.Name:SetText(itemName);
+					self.Icon:SetTexture(itemIcon);
+					SetItemButtonOverlay(self, C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID));
+				end
+			end
+		end
 	end
 
-	self.id = id;
-	local item = Item:CreateFromItemLink(hyperlink);
-	if not item:IsItemEmpty() then
-		item:ContinueOnItemLoad(function()
-			self.Name:SetText(item:GetItemName());
-			self.Icon:SetTexture(item:GetItemIcon());
-			self:Show();
-		end);
+	self:SetShown(self.displayedItemDBID ~= nil);
+end
+
+function WeeklyRewardActivityItemMixin:SetRewards(rewards)
+	local continuableContainer = ContinuableContainer:Create();
+	for i, rewardInfo in ipairs(rewards) do
+		if rewardInfo.type == Enum.CachedRewardType.Item then
+			local item = Item:CreateFromItemID(rewardInfo.id);
+			continuableContainer:AddContinuable(item);
+		end
 	end
+
+	continuableContainer:ContinueOnLoad(function()
+		self:SetDisplayedItem();
+	end);
+end
+
+WeeklyRewardsConcessionMixin = { };
+
+function WeeklyRewardsConcessionMixin:OnLoad()
+	self.RewardsFrame:CreateLabel(WEEKLY_REWARDS_GET_CONCESSION, NORMAL_FONT_COLOR, "GameFontHighlight", 2);
+end
+
+function WeeklyRewardsConcessionMixin:SetSelectionState(state)
+	if state == SELECTION_STATE_SELECTED then
+		self.SelectedTexture:Show();
+		self.UnselectedFrame:Hide();
+	elseif state == SELECTION_STATE_UNSELECTED then
+		self.SelectedTexture:Hide();
+		self.UnselectedFrame:Show();
+	else
+		self.SelectedTexture:Hide();
+		self.UnselectedFrame:Hide();
+	end
+end
+
+function WeeklyRewardsConcessionMixin:Refresh(activityInfo)
+	-- only supports currencies
+	self.RewardsFrame:Clear();
+	local currencyAdded = false;
+	for i, rewardInfo in ipairs(activityInfo.rewards) do
+		if rewardInfo.type == Enum.CachedRewardType.Currency then
+			self.RewardsFrame:AddCurrency(rewardInfo.id, rewardInfo.quantity);
+			currencyAdded = true;
+		end
+	end
+
+	if currencyAdded then
+		self.RewardsFrame:Layout();
+		self.info = activityInfo;
+		self:Show();
+	end
+end
+
+function WeeklyRewardsConcessionMixin:OnMouseDown()
+	self:GetParent():SelectActivity(self);
+end
+
+function WeeklyRewardsConcessionMixin:GetDisplayedItemDBID()
+	-- this only displays currencies
+	return nil;
 end

@@ -174,7 +174,7 @@
 	<Frame name="PlayerChoiceRewardsTemplate" inherits="ResizeLayoutFrame" mixin="PlayerChoiceRewardsMixin" virtual="true">
 		<Size x="210" y="10" />
 		<Anchors>
-			<Anchor point="CENTER" />
+			<Anchor point="TOPLEFT" />
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -620,10 +620,6 @@
 					<Layer level="BACKGROUND" textureSubLevel="-1">
 						<Texture parentKey="Middle" atlas="_UI-Frame-Horde-TitleMiddle" horizTile="true">
 							<Size x="0" y="85"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
-							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">

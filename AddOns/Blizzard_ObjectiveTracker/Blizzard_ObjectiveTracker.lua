@@ -575,7 +575,6 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetCollapsed(collapsed)
 
 	if self.Header and self.Header.MinimizeButton then
 		self.Header.MinimizeButton:SetCollapsed(collapsed);
-		self.Header.recentlyChangedCollapse = true;
 	end
 end
 
@@ -868,8 +867,9 @@ function ObjectiveTrackerHeaderMixin:OnLoad()
 	self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
 end
 
-function ObjectiveTrackerHeaderMixin:OnHide()
-	self.recentlyChangedCollapse = nil;
+function ObjectiveTrackerHeaderMixin:PlayAddAnimation()
+	self.animating = true;
+	self.HeaderOpenAnim:Restart();
 end
 
 -- *****************************************************************************************************
@@ -1033,20 +1033,7 @@ end
 function ObjectiveTracker_AddHeader(header, isStaticReanchor)
 	if InternalAddBlock(header) then
 		header.added = true;
-		if not header:IsShown() then
-			header:Show();
-			if not isStaticReanchor and band(OBJECTIVE_TRACKER_UPDATE_REASON, (header.animateReason or 0)) > 0 and not header.animating then
-				-- animate header, if this wasn't related to expand/collapse
-				if not header.recentlyChangedCollapse then
-					header.animating = true;
-					header.HeaderOpenAnim:Stop();
-					header.HeaderOpenAnim:Play();
-				end
-
-				header.recentlyChangedCollapse = nil;
-			end
-		end
-
+		header:Show();
 		return true;
 	end
 
@@ -1220,6 +1207,27 @@ local function IsRelatedModuleForUpdate(module, moduleLookup)
 	return false;
 end
 
+local function ObjectiveTracker_GetVisibleHeaders()
+	local headers = {};
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		local header = module.Header;
+		if header.added and header:IsVisible() then
+			headers[header] = true;
+		end
+	end
+
+	return headers;
+end
+
+local function ObjectiveTracker_AnimateHeaders(previouslyVisibleHeaders)
+	local currentHeaders = ObjectiveTracker_GetVisibleHeaders();
+	for header, isVisible in pairs(currentHeaders) do
+		if isVisible and not previouslyVisibleHeaders[header] then
+			header:PlayAddAnimation();
+		end
+	end
+end
+
 function ObjectiveTracker_UpdateSuperTrackedQuest(self)
 	local questID = C_SuperTrack.GetSuperTrackedQuestID();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
@@ -1254,10 +1262,13 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 	tracker.BlocksFrame.currentBlock = nil;
 	tracker.BlocksFrame.contentsHeight = 0;
 
+	-- Gather existing headers, only newly added ones will animate
+	local currentHeaders = ObjectiveTracker_GetVisibleHeaders();
+
 	-- mark headers unused
-	for i = 1, #tracker.MODULES do
-		if ( tracker.MODULES[i].Header ) then
-			tracker.MODULES[i].Header.added = nil;
+	for index, module in ipairs(tracker.MODULES) do
+		if module.Header then
+			module.Header.added = nil;
 		end
 	end
 
@@ -1287,9 +1298,10 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 			end
 		end
 	end
-	ObjectiveTracker_ReorderModules();
 
+	ObjectiveTracker_ReorderModules();
 	ObjectiveTracker_UpdatePOIs();
+	ObjectiveTracker_AnimateHeaders(currentHeaders);
 
 	-- hide unused headers
 	for i = 1, #tracker.MODULES do
@@ -1421,7 +1433,6 @@ function QuestHeaderMixin:OnShow()
 end
 
 function QuestHeaderMixin:OnHide()
-	ObjectiveTrackerHeaderMixin.OnHide(self);
 	self:UnregisterEvent("QUEST_SESSION_JOINED");
 	self:UnregisterEvent("QUEST_SESSION_LEFT");
 end

@@ -2446,4 +2446,32 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="CurrencyLayoutFrameIconTemplate" useParentLevel="true" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetCurrencyByID(self.id);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CurrencyHorizontalLayoutFrameTemplate" mixin="CurrencyHorizontalLayoutFrameMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="currencySpacing" value="8" type="number"/>	<!-- spacing between currencies -->
+			<KeyValue key="quantitySpacing" value="2" type="number"/>	<!-- spacing between the text and icon of a currency -->
+			<!-- layout template keys -->
+			<KeyValue key="fixedHeight" value="16" type="number"/>
+			<KeyValue key="spacing" value="0" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="100" y="16"/>
+	</Frame>
 </Ui>

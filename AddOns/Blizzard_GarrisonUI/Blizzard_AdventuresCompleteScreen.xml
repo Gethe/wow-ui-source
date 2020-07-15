@@ -103,7 +103,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+						<Texture atlas="Adventures_MissionCostStartButtonBg" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -134,15 +134,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnClick method="OnClick"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="ReplayButton" mixin="AdventuresCompleteScreenReplayButtonMixin" inherits="UIPanelButtonTemplate" text="|A:Adventures-Rewatch:0:0:0:0|a">
-						<Size x="22" y="22"/>
-						<Anchors>
-							<Anchor point="RIGHT" x="-48" y="1"/>
-						</Anchors>
 						<Scripts>
 							<OnClick method="OnClick"/>
 						</Scripts>

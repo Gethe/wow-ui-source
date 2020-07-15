@@ -66,6 +66,7 @@ ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
 FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
+GamePadDocumentation.lua
 GarrisonInfoDocumentation.lua
 GlyphInfoDocumentation.lua
 GossipInfoDocumentation.lua
@@ -193,6 +194,7 @@ ItemConstantsDocumentation.lua
 ItemLocationSharedDocumentation.lua
 ItemSharedDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua
+LevelConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
 PetScalingConstantsDocumentation.lua

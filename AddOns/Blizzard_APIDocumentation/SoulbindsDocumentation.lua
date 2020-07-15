@@ -63,6 +63,15 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetFoundationIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemConduitType",
 			Type = "Function",
 
@@ -144,7 +153,7 @@ local Soulbinds =
 
 			Returns =
 			{
-				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "result", Type = "SoulbindConduitInstallResult", Nilable = false },
 			},
 		},
 		{
@@ -186,6 +195,15 @@ local Soulbinds =
 			Arguments =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFoundationIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
 			},
 		},
 		{

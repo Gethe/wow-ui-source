@@ -48,13 +48,10 @@
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-		<Scripts>
-			<OnLoad>
-				self.isExtra = true;
-				self.buttonType = "EXTRAACTIONBUTTON";
-				ActionButton_OnLoad(self);
-			</OnLoad>
-		</Scripts>
+		<KeyValues>
+			<KeyValue key="isExtra" value="true" type="boolean"/>
+			<KeyValue key="buttonType" value="EXTRAACTIONBUTTON" type="string"/>
+		</KeyValues>
 	</CheckButton>
 	
 	

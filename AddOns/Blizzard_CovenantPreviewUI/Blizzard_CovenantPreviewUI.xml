@@ -195,7 +195,7 @@
 					<Anchor point="TOPRIGHT" x="3" y="2" />
 				</Anchors>
 			</Button>
-			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" frameLevel="510" hidden="true" text="CLOSE">
+			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" frameLevel="510" hidden="true" text="BACK">
 				<Size x="150" y="25"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="220" y="70" />

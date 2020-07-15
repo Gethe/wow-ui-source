@@ -14,6 +14,8 @@ end
 function RuneforgeCraftingFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeCraftingFrameEvents);
 
+	self.PowerFrame:Hide();
+	
 	self:UnregisterRefreshMethod(self.Refresh);
 end
 

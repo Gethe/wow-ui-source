@@ -15,8 +15,13 @@
 	<Frame name="UIWidgetContainerNoResizeTemplate" virtual="true" mixin="UIWidgetContainerMixin">
 		<Size x="1" y="1"/>
 		<KeyValues>
-			<!--Set this to false if you don't want visibility managed by the WidgetContainerMixin-->
 			<KeyValue key="showAndHideOnWidgetSetRegistration" value="true" type="boolean"/>
+			<KeyValue key="verticalAnchorPoint" value="TOP" type="string"/>
+			<KeyValue key="verticalRelativePoint" value="BOTTOM" type="string"/>
+			<KeyValue key="verticalAnchorYOffset" value="0" type="number"/>
+			<KeyValue key="horizontalAnchorPoint" value="LEFT" type="string"/>
+			<KeyValue key="horizontalRelativePoint" value="RIGHT" type="string"/>
+			<KeyValue key="horizontalAnchorXOffset" value="2" type="number"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -16,46 +16,37 @@
 	</CheckButton>
 	
 	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
-		<Scripts>
-			<OnLoad>
-				self.buttonType = "MULTIACTIONBAR1BUTTON"
-				ActionButton_OnLoad(self);
-			</OnLoad>
-		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR1BUTTON" type="string"/>
+		</KeyValues>
 	</CheckButton>
 	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
-		<Scripts>
-			<OnLoad>
-				self.buttonType = "MULTIACTIONBAR2BUTTON"
-				ActionButton_OnLoad(self);
-			</OnLoad>
-		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR2BUTTON" type="string"/>
+		</KeyValues>
 	</CheckButton>
 	<CheckButton name="MultiBar2ButtonNoBackgroundTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="noGrid" value="true" type="boolean"/>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR2BUTTON" type="string"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				self.buttonType = "MULTIACTIONBAR2BUTTON"
-				ActionButton_OnLoad(self);
-			</OnLoad>
-		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR3BUTTON" type="string"/>
+		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				self.buttonType = "MULTIACTIONBAR3BUTTON"
-				ActionButton_OnLoad(self);
+			<OnLoad inherit="append">
 				self:SetAttribute("flyoutDirection", "LEFT");
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR4BUTTON" type="string"/>
+		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				self.buttonType = "MULTIACTIONBAR4BUTTON"
-				ActionButton_OnLoad(self);
+			<OnLoad inherit="append">
 				self:SetAttribute("flyoutDirection", "LEFT");
 			</OnLoad>
 		</Scripts>

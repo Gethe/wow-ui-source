@@ -44,7 +44,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="ObjectivesFrame" inherits="AchievementDisplayTemplate">
+							<Frame parentKey="ObjectivesFrame" inherits="CriteriaDisplayTemplate">
 								<KeyValues>
 									<KeyValue key="title" type="global" value="NPEV2_CHAT_GUIDE_FRAME_ELIGIBILITY_LABEL"/>
 								</KeyValues>
@@ -76,6 +76,8 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

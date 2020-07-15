@@ -120,11 +120,7 @@ function EffectControllerMixin:RunEffectFinish()
 end
 
 function EffectControllerMixin:SetDynamicOffsets(pixelX, pixelY, pixelZ)
-	local pixelsPerSceneUnit = self.modelScene:GetPixelsPerSceneUnit();
-	local sceneX = pixelX and (pixelX / pixelsPerSceneUnit) or 0;
-	local sceneY = pixelY and (pixelY / pixelsPerSceneUnit) or 0;
-	local sceneZ = pixelZ and (pixelZ / pixelsPerSceneUnit) or 0;
-	self.actor:SetDynamicOffsets(sceneX, sceneY, sceneZ);
+	self.actor:SetDynamicOffsets(pixelX, pixelY, pixelZ);
 end
 
 function EffectControllerMixin:CancelEffect()
@@ -182,7 +178,7 @@ function ScriptAnimatedModelSceneActorMixin:DeltaUpdate(elapsed)
 		end
 
 		if positionX and positionY then
-			self:GetModelScene():SetActorPositionFromPixels(self, positionX, positionY);
+			self:GetModelScene():SetActorPositionFromPixels(self, positionX + self.dynamicOffsetX, positionY + self.dynamicOffsetY, self.dynamicOffsetZ);
 			self:Show();
 		else
 			self:Hide();
@@ -240,21 +236,14 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self:DeltaUpdate(0);
 end
 
-function ScriptAnimatedModelSceneActorMixin:UpdateCombinedOffsets()
-	self.combinedOffsetX = (self.dynamicOffsetX or 0) + self.baseOffsetX;
-	self.combinedOffsetY = (self.dynamicOffsetY or 0) + self.baseOffsetY;
-	self.combinedOffsetZ = (self.dynamicOffsetZ or 0) + self.baseOffsetZ;
-end
-
-function ScriptAnimatedModelSceneActorMixin:SetDynamicOffsets(sceneX, sceneY, sceneZ)
-	self.dynamicOffsetX = sceneX;
-	self.dynamicOffsetY = sceneY;
-	self.dynamicOffsetZ = sceneZ;
-	self:UpdateCombinedOffsets();
+function ScriptAnimatedModelSceneActorMixin:SetDynamicOffsets(pixelX, pixelY, pixelZ)
+	self.dynamicOffsetX = pixelX or 0;
+	self.dynamicOffsetY = pixelY or 0;
+	self.dynamicOffsetZ = pixelZ or 0;
 end
 
 function ScriptAnimatedModelSceneActorMixin:SetEffectActorOffset(x, y, z)
-	self:SetPosition(self.combinedOffsetX + x, self.combinedOffsetY + y, self.combinedOffsetZ + z);
+	self:SetPosition(self.baseOffsetX + x, self.baseOffsetY + y, self.baseOffsetZ + z);
 end
 
 
