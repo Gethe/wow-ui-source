@@ -114,10 +114,10 @@ function AuctionHouseBuySystemMixin:PlaceBid()
 	end
 
 	local bidAmount = self.BidFrame:GetPrice();
-	if bidAmount < self.minBid then
-		UIErrorsFrame:AddExternalErrorMessage(AUCTION_HOUSE_BID_AMOUNT_IS_TOO_LOW);
-	elseif self:GetBuyoutAmount() ~= 0 and bidAmount >= self:GetBuyoutAmount() then
+	if self:GetBuyoutAmount() ~= 0 and bidAmount >= self:GetBuyoutAmount() then
 		self:BuyoutItem();
+	elseif bidAmount < self.minBid then
+		UIErrorsFrame:AddExternalErrorMessage(AUCTION_HOUSE_BID_AMOUNT_IS_TOO_LOW);
 	else
 		self:GetAuctionHouseFrame():StartItemBid(self.auctionID, bidAmount);
 	end
