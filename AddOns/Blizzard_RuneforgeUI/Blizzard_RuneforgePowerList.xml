@@ -36,7 +36,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="RuneforgePowerSlotTemplate" mixin="RuneforgePowerSlotMixin" inherits="RuneforgePowerButtonTemplate" virtual="true">
+	<Button name="RuneforgePowerSlotTemplate" mixin="RuneforgePowerSlotMixin" inherits="RuneforgePowerButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="72" y="120"/>
 		<KeyValues>
 			<KeyValue key="tooltipOffsetX" value="-22" type="number"/>

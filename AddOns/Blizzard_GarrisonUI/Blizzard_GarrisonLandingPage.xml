@@ -718,6 +718,11 @@
 							<Anchor point="TOPLEFT" x="23" y="-10"/>
 						</Anchors>
 					</Frame>
+					<Frame parentKey="CovenantFollowerPortraitFrame" inherits="CovenantPortraitTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="23" y="-10"/>
+						</Anchors>
+					</Frame>
 					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
 						<Size x="370" y="9"/>
 						<Anchors>

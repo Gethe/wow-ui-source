@@ -436,6 +436,55 @@ local function AddSpellToBucket(spellBuckets, type, rewardSpellIndex)
 	table.insert(spellBuckets[type], rewardSpellIndex);
 end
 
+local function QuestInfo_ShowRewardAsItem(questItem, index)
+	local name, texture, numItems, quality, isUsable, itemID;
+	
+	if ( QuestInfoFrame.questLog ) then
+		name, texture, numItems, quality, isUsable, itemID = GetQuestLogChoiceInfo(index);
+		SetItemButtonQuality(questItem, quality, itemID);
+	else
+		name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, index);
+		SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, index));
+	end
+
+	questItem.objectType = "item";
+	questItem:SetID(index)
+	questItem:Show();
+	-- For the tooltip
+	questItem.Name:SetText(name);
+	SetItemButtonCount(questItem, numItems);
+	SetItemButtonTexture(questItem, texture);
+	if ( isUsable ) then
+		SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+		SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+	else
+		SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
+		SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
+	end
+end
+
+local function QuestInfo_ShowRewardAsCurrency(questItem, index, isChoice)
+	local name, texture, quality, amount, currencyID;
+	if ( QuestInfoFrame.questLog ) then
+		name, texture, amount, currencyID, quality = GetQuestLogRewardCurrencyInfo(index, questItem.questID, isChoice);
+	else
+		name, texture, amount, quality = GetQuestCurrencyInfo(questItem.type, index);
+		currencyID = GetQuestCurrencyID(questItem.type, index);
+	end
+
+	questItem.objectType = "currency";
+	questItem:SetID(index)
+	-- For the tooltip
+	questItem.Name:SetText(name);
+	SetItemButtonCount(questItem, amount, true);
+	local currencyColor = GetColorForCurrencyReward(currencyID, amount);
+	questItem.Count:SetTextColor(currencyColor:GetRGB());
+	SetItemButtonTexture(questItem, texture);
+	SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+	SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+	SetItemButtonQuality(questItem, quality, currencyID);
+end
+
 function QuestInfo_ShowRewards()
 	local numQuestRewards = 0;
 	local numQuestChoices = 0;
@@ -461,7 +510,7 @@ function QuestInfo_ShowRewards()
 		questID = C_QuestLog.GetSelectedQuest();
 		if C_QuestLog.ShouldShowQuestRewards(questID) then
 			numQuestRewards = GetNumQuestLogRewards();
-			numQuestChoices = GetNumQuestLogChoices();
+			numQuestChoices = GetNumQuestLogChoices(questID, true);
 			numQuestCurrencies = GetNumQuestLogRewardCurrencies();
 			money = GetQuestLogRewardMoney();
 			skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
@@ -476,18 +525,20 @@ function QuestInfo_ShowRewards()
 		end
 	else
 		questID = GetQuestID();
-		numQuestRewards = GetNumQuestRewards();
-		numQuestChoices = GetNumQuestChoices();
-		numQuestCurrencies = GetNumRewardCurrencies();
-		money = GetRewardMoney();
-		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
-		xp = GetRewardXP();
-		artifactXP, artifactCategory = GetRewardArtifactXP();
-		honor = GetRewardHonor();
-		playerTitle = GetRewardTitle();
-		numSpellRewards = GetNumRewardSpells();
-		spellGetter = GetRewardSpell;
-		hasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
+		if ( QuestFrameRewardPanel:IsShown() or C_QuestLog.ShouldShowQuestRewards(questID) ) then
+			numQuestRewards = GetNumQuestRewards();
+			numQuestChoices = GetNumQuestChoices();
+			numQuestCurrencies = GetNumRewardCurrencies();
+			money = GetRewardMoney();
+			skillName, skillIcon, skillPoints = GetRewardSkillPoints();
+			xp = GetRewardXP();
+			artifactXP, artifactCategory = GetRewardArtifactXP();
+			honor = GetRewardHonor();
+			playerTitle = GetRewardTitle();
+			numSpellRewards = GetNumRewardSpells();
+			spellGetter = GetRewardSpell;
+			hasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
+		end
 	end
 
 	for rewardSpellIndex = 1, numSpellRewards do
@@ -588,28 +639,21 @@ function QuestInfo_ShowRewards()
 		for i = 1, numQuestChoices do
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
+			questItem.questID = questID;
 			questItem.type = "choice";
-			questItem.objectType = "item";
 			numItems = 1;
+
+			local lootType = 0; -- LOOT_LIST_ITEM
 			if ( QuestInfoFrame.questLog ) then
-				name, texture, numItems, quality, isUsable, itemID = GetQuestLogChoiceInfo(i);
-				SetItemButtonQuality(questItem, quality, itemID);
+				lootType = GetQuestLogChoiceInfoLootType(i);
 			else
-				name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, i);
-				SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, i));
+				lootType = GetQuestItemInfoLootType(questItem.type, i);
 			end
-			questItem:SetID(i)
-			questItem:Show();
-			-- For the tooltip
-			questItem.Name:SetText(name);
-			SetItemButtonCount(questItem, numItems);
-			SetItemButtonTexture(questItem, texture);
-			if ( isUsable ) then
-				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
-				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-			else
-				SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
-				SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
+			
+			if (lootType == 0) then -- LOOT_LIST_ITEM
+				QuestInfo_ShowRewardAsItem(questItem, i);
+			elseif (lootType == 1) then -- LOOT_LIST_CURRENCY
+				QuestInfo_ShowRewardAsCurrency(questItem, i, true);
 			end
 
 			AddRewardElement(questItem);
@@ -776,27 +820,11 @@ function QuestInfo_ShowRewards()
 			buttonIndex = buttonIndex + 1;
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
+			questItem.questID = questID;
 			questItem.type = "reward";
 			questItem.objectType = "item";
-			if ( QuestInfoFrame.questLog ) then
-				name, texture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(i);
-				SetItemButtonQuality(questItem, quality, itemID);
-			else
-				name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, i);
-				SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, i));
-			end
-			questItem:SetID(i)
-			-- For the tooltip
-			questItem.Name:SetText(name);
-			SetItemButtonCount(questItem, numItems);
-			SetItemButtonTexture(questItem, texture);
-			if ( isUsable ) then
-				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
-				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-			else
-				SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
-				SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
-			end
+
+			QuestInfo_ShowRewardAsItem(questItem, i);
 
 			AddRewardElement(questItem);
 			rewardsCount = rewardsCount + 1;
@@ -805,38 +833,21 @@ function QuestInfo_ShowRewards()
 		-- currency
 		baseIndex = rewardsCount;
 		local foundCurrencies = 0;
-		for i = 1, GetMaxRewardCurrencies(), 1 do
+		for i = 1, numQuestCurrencies, 1 do
 			buttonIndex = buttonIndex + 1;
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
+			questItem.questID = questID;
 			questItem.type = "reward";
 			questItem.objectType = "currency";
-			local currencyID;
-			if ( QuestInfoFrame.questLog ) then
-				name, texture, numItems, currencyID, quality = GetQuestLogRewardCurrencyInfo(i);
-			else
-				name, texture, numItems, quality = GetQuestCurrencyInfo(questItem.type, i);
-				currencyID = GetQuestCurrencyID(questItem.type, i);
-			end
-			if (name and texture and numItems) then
-				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality);
-				questItem:SetID(i)
-				-- For the tooltip
-				questItem.Name:SetText(name);
-				SetItemButtonCount(questItem, numItems, true);
-				local currencyColor = GetColorForCurrencyReward(currencyID, numItems);
-				questItem.Count:SetTextColor(currencyColor:GetRGB());
-				SetItemButtonTexture(questItem, texture);
-				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
-				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-				SetItemButtonQuality(questItem, quality, currencyID);
 
-				AddRewardElement(questItem);
-				rewardsCount = rewardsCount + 1;
-				foundCurrencies = foundCurrencies + 1;
-				if (foundCurrencies == numQuestCurrencies) then
-					break;
-				end
+			QuestInfo_ShowRewardAsCurrency(questItem, i, false);
+
+			AddRewardElement(questItem);
+			rewardsCount = rewardsCount + 1;
+			foundCurrencies = foundCurrencies + 1;
+			if (foundCurrencies == numQuestCurrencies) then
+				break;
 			end
 		end
 

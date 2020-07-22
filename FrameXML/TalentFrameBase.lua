@@ -194,11 +194,6 @@ local SLOT_NEW_STATE_ACKNOWLEDGED = 3;
 
 function PvpTalentSlotMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
-	if (self.isTrinket) then
-		self.Arrow:SetSize(43, 44);
-		self.Arrow:SetPoint("LEFT", self.Border, "RIGHT", -16, -1);
-		self.Texture:SetSize(41, 41);
-	end
 	self.slotNewState = SLOT_NEW_STATE_OFF;
 end
 

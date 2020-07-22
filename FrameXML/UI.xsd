@@ -806,6 +806,7 @@
 				<xs:attribute name="letters" type="xs:int" default="0"/>
 				<xs:attribute name="blinkSpeed" type="xs:float" default="0.5"/>
 				<xs:attribute name="numeric" type="xs:boolean" default="false"/>
+				<xs:attribute name="alphabeticOnly" type="xs:boolean" default="false"/>
 				<xs:attribute name="password" type="xs:boolean" default="false"/>
 				<xs:attribute name="multiLine" type="xs:boolean" default="false"/>
 				<xs:attribute name="historyLines" type="xs:int" default="0"/>

@@ -1194,7 +1194,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				return;
 			elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 				if itemIsValidItem then
-					RuneforgeFrame:SetItem(itemLocation);
+					RuneforgeFrame:SetItemAutomatic(itemLocation);
 				end
 
 				-- No error for bad items or empty slots.
@@ -1699,4 +1699,17 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		info.checked = GetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP);
 	end
 	UIDropDownMenu_AddButton(info);
+end
+
+function ContainerFrameUtil_IteratePlayerInventory(callback)
+	-- Only includes the backpack and primary 4 bag slots.
+	for bag = 0, NUM_BAG_FRAMES do
+		for slot = 1, MAX_CONTAINER_ITEMS do
+			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
+			if C_Item.DoesItemExist(bagItem) then
+				callback(bagItem);
+			end
+
+		end
+	end
 end

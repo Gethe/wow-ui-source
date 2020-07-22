@@ -46,6 +46,14 @@ function RuneforgeSystemMixin:GetRuneforgeFrame()
 	return self:GetParent():GetParent();
 end
 
+function RuneforgeSystemMixin:IsRuneforgeCrafting()
+	return self:GetRuneforgeFrame():IsRuneforgeCrafting();
+end
+
+function RuneforgeSystemMixin:IsRuneforgeUpgrading()
+	return self:GetRuneforgeFrame():IsRuneforgeUpgrading();
+end
+
 function RuneforgeSystemMixin:RegisterRefreshMethod(refreshMethod)
 	local runeforgeFrame = self:GetRuneforgeFrame();
 	for i, eventName in ipairs(RefreshEventNames) do
@@ -79,12 +87,19 @@ RuneforgeUtil.Effect = {
 	ModifierSlotted = 61,
 	FirstModifierChainsEffect = 54,
 	SecondModifierChainsEffect = 57,
+	UpgradeCenterRune = 69,
+	UpgradeSubRune = 70,
 };
 
 RuneforgeUtil.Level = {
 	Background = 1,
 	Frame = 2,
 	Overlay = 3,
+};
+
+RuneforgeUtil.RuneforgeState = {
+	Craft = 1,
+	Upgrade = 2,
 };
 
 function RuneforgeUtil.GetCostsString(costs)

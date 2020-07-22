@@ -153,7 +153,7 @@ function SoulbindsSelectButtonMixin:PlayActivatedFx()
 end
 
 function SoulbindsSelectButtonMixin:PlayActivationChangedFx()
-	local ACTIVATE_CHANGED_FX = 46;
+	local ACTIVATE_CHANGED_FX = 72;
 	self:AddActiveEffect(ACTIVATE_CHANGED_FX);
 end
 

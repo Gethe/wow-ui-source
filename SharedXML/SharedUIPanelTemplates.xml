@@ -2180,9 +2180,20 @@
 						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="ColorSwatch" atlas="charactercreate-customize-palette" useAtlasSize="true" hidden="true">
+				<Texture parentKey="ColorSwatch1" atlas="charactercreate-customize-palette" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ColorSwatch2" atlas="charactercreate-customize-palette" useAtlasSize="false" hidden="true">
+					<Size x="36" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT" x="18" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ColorSelected" atlas="charactercreate-customize-palette-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ColorSwatch1" relativePoint="LEFT" x="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -2197,9 +2208,6 @@
 		<Frames>
 			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails">
 				<Size x="144" y="20"/>
-				<KeyValues>
-					<KeyValue key="showColors" value="true" type="boolean"/>
-				</KeyValues>
 			</Frame>
 			<Frame parentKey="HighlightBGTex" alpha="0" setAllPoints="true">
 				<KeyValues>
@@ -2269,9 +2277,6 @@
 		<Frames>
 			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true" />
 			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>
 				</Anchors>
@@ -2281,18 +2286,17 @@
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
 			<OnClick method="OnClick"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 
-	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
+	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
+		<Size x="223" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" font="GameFontHighlightMedium">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
 					</Anchors>

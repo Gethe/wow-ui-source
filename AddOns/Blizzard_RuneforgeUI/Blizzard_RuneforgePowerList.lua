@@ -105,14 +105,22 @@ function RuneforgePowerSlotMixin:UpdateState()
 	local powerSelected = self:GetPowerID() ~= nil;
 	self.SelectedTexture:SetShown(powerSelected);
 
+	local isUpgrading = self:IsRuneforgeUpgrading();
 	local hasItem = self:GetRuneforgeFrame():GetItem() ~= nil;
-	local alpha = (not powerSelected and hasItem) and 1 or 0;
+	local alpha = (not powerSelected and hasItem and not isUpgrading) and 1 or 0;
 	self:GetNormalTexture():SetAlpha(alpha);
 	self:GetPushedTexture():SetAlpha(alpha);
 
-	self:SetEffectShown("primary", powerSelected);
-	self:SetEffectShown("chains", powerSelected);
-	self:SetEffectShown("chains2", powerSelected);
+	local slotAlpha = isUpgrading and 0.35 or 1.0;
+	self.SelectedTexture:SetAlpha(slotAlpha);
+	self:SetAlpha(slotAlpha);
+
+	self:SetEnabled(not isUpgrading);
+
+	local showEffects = powerSelected and not isUpgrading;
+	self:SetEffectShown("primary", showEffects);
+	self:SetEffectShown("chains", showEffects);
+	self:SetEffectShown("chains2", showEffects);
 end
 
 function RuneforgePowerSlotMixin:SetPowerID(powerID)
@@ -127,8 +135,20 @@ function RuneforgePowerSlotMixin:SetPowerID(powerID)
 end
 
 function RuneforgePowerSlotMixin:OnBaseItemChanged()
-	self:Reset();
-	self:UpdateState();
+	if self:IsRuneforgeCrafting() then
+		self:Reset();
+		self:UpdateState();
+	elseif self:IsRuneforgeUpgrading() then
+		local runeforgeFrame = self:GetRuneforgeFrame();
+		local item = runeforgeFrame:GetItem();
+		if item == nil then
+			self:Reset();
+			self:UpdateState();
+		else
+			local info = runeforgeFrame:GetRuneforgeComponentInfo();
+			self:SetPowerID(info.powerID);
+		end
+	end
 end
 
 

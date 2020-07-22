@@ -41,52 +41,94 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
 
-	for index, widgetFrame in ipairs(sortedWidgets) do	
-		local useVerticalLayout = (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical) or
-		                           ((widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default or widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap) and widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Vertical);
-		local useOverlapLayout = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap;
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		widgetFrame:ClearAllPoints();
 
-		if (useVerticalLayout) then 
-			if ( index == 1 ) then
-				widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame);
+		local widgetSetUsesVertical = widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Vertical;
+		local widgetUsesVertical = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical;
+
+		local useOverlapLayout = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap;
+		local useVerticalLayout = widgetUsesVertical or (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default and widgetSetUsesVertical);
+
+		if useOverlapLayout then
+			-- This widget uses overlap layout
+
+			if index == 1 then
+				-- But this is the first widget in the set, so just anchor it to the widget container
+				if widgetSetUsesVertical then
+					widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame);
+				else
+					widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, widgetContainerFrame);
+				end
 			else
-				local relative = horizontalRowContainer or sortedWidgets[index - 1];
-				if ( useOverlapLayout ) then
+				-- This is not the first widget in the set, so anchor it so it overlaps the previous widget
+				local relative = sortedWidgets[index - 1];
+				if widgetSetUsesVertical then
+					-- Overlap it vertically
 					widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalAnchorPoint, 0, 0);
 				else
-					widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+					-- Overlap it horizontally
+					widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalAnchorPoint, 0, 0);
 				end
-				if(horizontalRowContainer) then 
+			end
+
+			widgetFrame:SetParent(widgetContainerFrame);
+		elseif useVerticalLayout then 
+			-- This widget uses vertical layout
+
+			if index == 1 then
+				-- This is the first widget in the set, so just anchor it to the widget container
+				widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame);
+			else
+				-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
+				local relative = horizontalRowContainer or sortedWidgets[index - 1];
+				widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+
+				if horizontalRowContainer then
+					-- This widget is vertical, so horizontalRowContainer is done. Call layout on it and clear horizontalRowContainer
 					horizontalRowContainer:Layout(); 
 					horizontalRowContainer = nil;
 				end
 			end
-		else
-			if ( not useOverlapLayout and not horizontalRowContainer ) then 
-				horizontalRowContainer = widgetContainerFrame.horizontalRowContainerPool:Acquire();
-				horizontalRowContainer:Show(); 
 
-				if ( index == 1 ) then
-					horizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame, widgetContainerFrame.verticalAnchorPoint);
+			widgetFrame:SetParent(widgetContainerFrame);
+		else
+			-- This widget uses horizontal layout
+
+			local forceNewRow = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.HorizontalForceNewRow;
+			local needNewRowContainer = not horizontalRowContainer or forceNewRow;
+			if needNewRowContainer then 
+				-- We either don't have a horizontalRowContainer or this widget has requested a new row be started
+				if horizontalRowContainer then 
+					horizontalRowContainer:Layout(); 
+				end
+
+				local newHorizontalRowContainer = widgetContainerFrame.horizontalRowContainerPool:Acquire();
+				newHorizontalRowContainer:Show(); 
+
+				if index == 1 then
+					-- This is the first widget in the set, so just anchor it to the widget container
+					newHorizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, widgetContainerFrame, widgetContainerFrame.verticalAnchorPoint);
 				else 
-					local relative = sortedWidgets[index - 1];
-					horizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+					-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
+					local relative = horizontalRowContainer or sortedWidgets[index - 1];
+					newHorizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
-				widgetFrame:SetPoint("TOPLEFT", horizontalRowContainer);
-				widgetFrame:SetParent(horizontalRowContainer); 
+				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
+				widgetFrame:SetParent(newHorizontalRowContainer);
+
+				-- The old horizontalRowContainer is no longer needed for anchoring, so set it to newHorizontalRowContainer
+				horizontalRowContainer = newHorizontalRowContainer;
 			else
+				-- horizontalRowContainer already existed, so we just keep going in it, anchoring to the previous widget
 				local relative = sortedWidgets[index - 1];
-				if ( useOverlapLayout ) then
-					widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalAnchorPoint, 0, 0);
-				else
-					widgetFrame:SetParent(horizontalRowContainer);
-					widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
-				end
+				widgetFrame:SetParent(horizontalRowContainer);
+				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
 			end
 		end
 	end
 
-	if(horizontalRowContainer) then 
+	if horizontalRowContainer then 
 		horizontalRowContainer:Layout(); 
 	end 
 	widgetContainerFrame:Layout(); 
@@ -326,6 +368,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 	local widgetAlreadyExisted = (widgetFrame ~= nil);
 
 	local oldOrderIndex;
+	local oldLayoutDirection;
 	local isNewWidget = false;
 
 	if widgetAlreadyExisted then
@@ -337,8 +380,9 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 			return;
 		end
 
-		-- Otherwise the widget should still show...save the current orderIndex so we can determine if it changes after Setup is run
+		-- Otherwise the widget should still show...save the current orderIndex and layoutDirection so we can determine if they change after Setup is run
 		oldOrderIndex = widgetFrame.orderIndex;
+		oldLayoutDirection = widgetFrame.layoutDirection;
 
 		-- Remove markedForRemove because it is still showing
 		widgetFrame.markedForRemove = nil;
@@ -356,7 +400,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	-- Ok we are now SURE that this widget should be shown and we have a frame for it
 
-	-- Run the Setup function on the widget (could change the orderIndex)
+	-- Run the Setup function on the widget (could change the orderIndex and/or layoutDirection)
 	widgetFrame:Setup(widgetInfo, self);
 
 	if WIDGET_DEBUG_TEXTURE_SHOW then
@@ -375,9 +419,10 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 		widgetFrame:OnAcquired(widgetInfo)
 	end
 
-	-- Determine if the order index changed
-	if oldOrderIndex ~= widgetFrame.orderIndex then
-		-- Either this is a new widget (oldOrderIndex would be nil) or the orderIndex changed on this widget...the layout is dirty
+	-- Determine if we need to run layout again
+	local needsLayout = (oldOrderIndex ~= widgetFrame.orderIndex) or (oldLayoutDirection ~= widgetFrame.layoutDirection);
+	if needsLayout then
+		-- Either this is a new widget or either orderIndex or layoutDirection changed. In either case layout needs to be run
 		self.dirtyLayout = true;
 	end
 end

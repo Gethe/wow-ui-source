@@ -2,6 +2,100 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CovenantMissionTemplates.lua"/>
 
+	<Frame name="AdventuresPuckHealthBarTemplate" mixin="AventuresPuckHealthBarMixin" virtual="true">
+		<Size x="89" y="36"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="LEFT" x="27" y="0"/>
+						<Anchor point="RIGHT" x="-6" y="0"/>
+						<Anchor point="TOP" x="0" y="-9"/>
+						<Anchor point="BOTTOM" x="0" y="12"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+				<Texture parentKey="RoleIcon">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Health" file="Interface\TargetingFrame\UI-StatusBar">
+					<Size x="30" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Background" relativePoint="LEFT"/>
+					</Anchors>
+					<Color r="0" g="1" b="0" a="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="Adventure-Healthbar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CovenantPortraitTemplate" mixin="CovenantPortraitMixin" virtual="true">
+		<Size x="52" y="60"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="PuckBorder" atlas="Adventurers-Followers-Frame">
+					<Anchors>
+						<Anchor point="TOPLEFT"  y="-2"/>
+						<Anchor point="BOTTOMRIGHT" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PortraitRingQuality"/>
+				<Texture parentKey="PortraitRingCover"/>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+						<MaskedTexture childKey="PuckBorder"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LevelCircle" atlas="Adventure_Ability_Frame_Filled">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="2" y="-4"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="LevelText" inherits="GameNormalNumberFont" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelCircle" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="HealthBar" inherits="AdventuresPuckHealthBarTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" x="-4" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	
 	<Button name="CovenantFollowerButtonTemplate" virtual="true">
 		<Size x="260" y="56"/>
 		<Anchors>
@@ -24,9 +118,9 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="140" y="0"/>
+					<Size x="130" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="60" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
@@ -52,9 +146,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+			<Frame parentKey="PortraitFrame" inherits="CovenantPortraitTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="2"/>
+					<Anchor point="TOPLEFT" x="10" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -258,14 +352,6 @@
 					<Color r="1" g="1" b="1" a=".65"/>
 					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
-				<Texture parentKey="BaseFrameBottom" atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" y="0"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a=".75"/>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
 				<Texture parentKey="BaseFrameLeft" atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="false">
 					<Size x="4"/>
 					<Anchors>
@@ -282,6 +368,12 @@
 					</Anchors>
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 					<Color r="1" g="1" b="1" a=".55"/>
+				</Texture>
+				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">

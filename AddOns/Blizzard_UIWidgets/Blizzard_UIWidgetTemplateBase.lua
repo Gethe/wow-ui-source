@@ -178,6 +178,8 @@ function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
 	self:SetScale(GetWidgetScale(widgetInfo.widgetScale));
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.widgetContainer = widgetContainer;
+	self.orderIndex = widgetInfo.orderIndex;
+	self.layoutDirection = widgetInfo.layoutDirection; 
 	self:AnimIn();
 end
 

@@ -261,7 +261,7 @@ function PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
     if (headerHeight < 20) then
         headerHeight = 20
     end
-    
+
     questionFrame:SetHeight(headerHeight)
     questionFrame.text:SetHeight(headerHeight)
     
@@ -448,7 +448,7 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         titleBox.text:SetPoint("CENTER", titleBox, "CENTER", 0, 0)
         titleBox.SurveyFrame = surveyFrame
         
-        surveyFrame:SetParent(titleBox)        
+        surveyFrame:SetParent(titleBox)
         surveyFrame:SetPoint("TOP", titleBox, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)
         
         function titleBox:SetLabelText(text)
@@ -514,7 +514,15 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         titleBox:Hide()
         PTR_IssueReporter.StandaloneSurvey = titleBox
     end
-    
+    if PTR_IssueReporter.InBarbershop then
+        PTR_IssueReporter.StandaloneSurvey:SetParent(CharCustomizeFrame)
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(CharCustomizeFrame)
+        PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
+	else
+        PTR_IssueReporter.StandaloneSurvey:SetParent(UIParent)
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(UIParent)
+        PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
+	end     
     if (followUpSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
         PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.NextText)
     else
@@ -554,7 +562,6 @@ function PTR_IssueReporter.CreateSurveyFrame()
             end
             
             local surveyString = string.format(self.SurveyString, unpack(userData))
-
             C_UserFeedback.SubmitBug(surveyString, suppressNotification)            
             self:Hide()
             PTR_IssueReporter.CleanReportFrame(self)

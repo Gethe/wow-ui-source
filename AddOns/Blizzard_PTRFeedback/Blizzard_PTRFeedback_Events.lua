@@ -1,5 +1,8 @@
 ----------------------------------------------------------------------------------------------------
 local PTR_Event_Frame = CreateFrame("Frame")
+
+PTR_IssueReporter.InBarbershop = false
+
 PTR_IssueReporter.ReportEventTypes = {
     Tooltip = "Tooltip",
     MapIDEnter = "MapIDEnter",
@@ -21,6 +24,8 @@ PTR_IssueReporter.ReportEventTypes = {
     GameMenuButtonQuit = "GameMenuButtonQuit",
     GameMenuButtonLogout = "GameMenuButtonLogout",
     GameMenuFrameClosed = "GameMenuFrameClosed",
+    BarberShopOpened = "BarberShopOpened",
+    BarberShopClosed = "BarberShopClosed"
 }
 
 local previousQuestProgress = {}
@@ -113,8 +118,6 @@ local function GetCreatureIDFromGuid(guid)
     end
 end
 ----------------------------------------------------------------------------------------------------
-
-
 local function QuestProgressHandler()
     local numberOfEntries = C_QuestLog.GetNumQuestLogEntries()
     local questIDs = {}
@@ -179,7 +182,21 @@ local function QuestProgressHandler()
         lastPlayerPosition = currentPosition
     end
 end
-
+----------------------------------------------------------------------------------------------------
+local function BarberShopOpenedHandler()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.BarberShopOpened)
+    PTR_IssueReporter:SetParent(CharCustomizeFrame)
+    PTR_IssueReporter:SetFrameStrata("DIALOG")
+	PTR_IssueReporter.InBarbershop = true
+end
+----------------------------------------------------------------------------------------------------
+local function BarberShopClosedHandler()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.BarberShopClosed)
+    PTR_IssueReporter:SetParent(GetAppropriateTopLevelParent())
+	PTR_IssueReporter:SetFrameStrata("DIALOG")
+    PTR_IssueReporter.InBarbershop = false
+end
+----------------------------------------------------------------------------------------------------
 C_Timer.NewTicker(1, QuestProgressHandler)
 ----------------------------------------------------------------------------------------------------
 function GetTimeSinceLastQuestProgress()
@@ -199,6 +216,8 @@ PTR_IssueReporter.Data.RegisteredEvents =
     QUEST_FINISHED = QuestFinishedHandler,
     PLAYER_REGEN_ENABLED = PTR_IssueReporter.CheckSurveyQueue,
     PLAYER_DEAD = CombatLogEventHandler,
+    BARBER_SHOP_OPEN = BarberShopOpenedHandler,
+    BARBER_SHOP_CLOSE = BarberShopClosedHandler
 }
 
 for event, func in pairs (PTR_IssueReporter.Data.RegisteredEvents) do

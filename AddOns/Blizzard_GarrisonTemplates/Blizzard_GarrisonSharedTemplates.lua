@@ -311,14 +311,14 @@ end
 function GarrisonFollowerListButton_OnDragStart(self, button)
 	local mainFrame = self:GetFollowerList():GetParent();
 	if (mainFrame.OnDragStartFollowerButton) then
-		mainFrame:OnDragStartFollowerButton(GarrisonFollowerPlacer, self, 24);
+		mainFrame:OnDragStartFollowerButton(mainFrame:GetPlacerFrame(), self, 24);
 	end
 end
 
 function GarrisonFollowerListButton_OnDragStop(self)
 	local mainFrame = self:GetFollowerList():GetParent();
 	if (mainFrame.OnDragStopFollowerButton) then
-		mainFrame:OnDragStopFollowerButton(GarrisonFollowerPlacer);
+		mainFrame:OnDragStopFollowerButton(mainFrame:GetPlacerFrame());
 	end
 end
 
@@ -362,6 +362,7 @@ function GarrisonFollowerList:UpdateFollowers()
 	for i = 1, #self.followers do
 		if (self.followers[i].garrFollowerID) then
 			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].garrFollowerID);
+			self.followers[i].autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(self.followers[i].followerID);
 		end
 	end
 
@@ -2203,6 +2204,8 @@ end
 function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID);
+	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 	local missionFrame = self:GetParent();
 
 	self.followerID = followerID;
@@ -2219,8 +2222,9 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		followerInfo.unlockableEquipment = { };
 		followerInfo.combatAllySpellIDs = { };
 	end
-	if(self.PortraitFrame) then
-		GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);
+	local portraitFrame = self.CovenantFollowerPortraitFrame or self.PortraitFrame;
+	if(portraitFrame) then
+		GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo);
 	end
 	self.Name:SetText(followerInfo.name);
 	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
@@ -2257,8 +2261,10 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.AbilitiesFrame.StatsLabel:SetShown(isAutoCombatant);
 	end
 	if isAutoCombatant then 
-		followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID);
-		followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
+		if self.PortraitFrame and self.CovenantFollowerPortraitFrame then
+			self.PortraitFrame:Hide();
+			self.CovenantFollowerPortraitFrame:Show();
+		end
 		self.Class:Hide();
 		self.AbilitiesFrame.SpecializationLabel:SetShown(false);
 		self:UpdateCombatantStats(followerInfo);

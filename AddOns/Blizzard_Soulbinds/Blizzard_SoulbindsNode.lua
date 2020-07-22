@@ -164,6 +164,10 @@ function SoulbindTreeNodeMixin:IsConduit()
 	return self.node.conduitType ~= nil;
 end
 
+function SoulbindTreeNodeMixin:GetUnavailableReason()
+	return self.node.playerConditionReason;
+end
+
 function SoulbindTreeNodeMixin:SetActivationOverlayShown(shown, editable, multipleSelectable)
 	self.RingOverlay:SetShown(shown);
 	
@@ -418,7 +422,7 @@ function SoulbindConduitNodeMixin:OnConduitSpellLoad()
 	self.Icon:Show();
 end
 
-function SoulbindTreeNodeMixin:AddUnavailableLine()
+function SoulbindTreeNodeMixin:AddNotInProximityLine()
 	if self:IsConduit() then
 		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_CONDUIT_ACTIVATE_UNAVAIL, true);
 	else
@@ -439,19 +443,19 @@ function SoulbindTreeNodeMixin:AddTooltipContents()
 		if C_Soulbinds.IsAtSoulbindForge() then
 			GameTooltip_AddInstructionLine(GameTooltip, SOULBIND_NODE_ACTIVATE, true);
 		else
-			self:AddUnavailableLine();
+			self:AddNotInProximityLine();
 		end
 	elseif self:IsUnselectable() then
 		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED, true);
 	elseif self:IsUnavailable() then
-		if C_Soulbinds.GetFoundationIndex() < self:GetRow() then
-			local unavailableText = SOULBIND_NODE_PREREQ:format(self:GetRow() + 1);
-			GameTooltip_AddDisabledLine(GameTooltip, unavailableText, true);
+		local reason = self:GetUnavailableReason();
+		if reason then
+			GameTooltip_AddDisabledLine(GameTooltip, reason, true);
 		else
 			if C_Soulbinds.IsAtSoulbindForge() then
 				GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_DISCONNECTED, true);
 			else
-				self:AddUnavailableLine();
+				self:AddNotInProximityLine();
 			end
 		end
 	end

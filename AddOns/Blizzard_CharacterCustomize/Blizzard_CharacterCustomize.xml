@@ -49,7 +49,7 @@
 			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
 			<KeyValue key="tooltipXOffset" value="-5" type="number"/>
 			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 		</KeyValues>
 		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
 		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
@@ -138,7 +138,7 @@
 			<KeyValue key="checkedTextureSize" value="118" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="flipTextures" value="true" type="boolean"/>
 		</KeyValues>
 	</CheckButton>
@@ -152,7 +152,7 @@
 			<KeyValue key="checkedTextureSize" value="93" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="flipTextures" value="true" type="boolean"/>
 		</KeyValues>
 	</CheckButton>
@@ -167,7 +167,7 @@
 			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
 			<KeyValue key="tooltipXOffset" value="30" type="number"/>
 			<KeyValue key="tooltipYOffset" value="-16" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 		</KeyValues>
 		<HitRectInsets left="15" right="15" top="15" bottom="15"/>
 	</CheckButton>
@@ -180,19 +180,44 @@
 			<KeyValue key="ringHeight" value="110" type="number"/>
 			<KeyValue key="checkedTextureSize" value="94" type="number"/>
 			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 		</KeyValues>
 	</CheckButton>
 
+	<CheckButton name="CharCustomizeSexButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeSexButtonMixin" virtual="true">
+		<Size x="46" y="46"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
+			<KeyValue key="ringWidth" value="99" type="number"/>
+			<KeyValue key="ringHeight" value="100" type="number"/>
+			<KeyValue key="checkedTextureSize" value="84" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackBG">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
 	<Frame name="CharCustomizeOptionSliderTemplate" inherits="SliderWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSliderMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
 	</Frame>
 	<Frame name="CharCustomizeOptionSelectionPopoutTemplate" inherits="SelectionPopoutWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSelectionPopoutMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
 	</Frame>
@@ -201,7 +226,7 @@
 		<Size x="32" y="38"/>
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
 		<Frames>

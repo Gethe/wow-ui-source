@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="StatsFrame.lua"/>
-	<Frame name="StatsFrame" setAllPoints="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+	<Script file="CustomizationDebugFrame.lua"/>
+	<Frame name="CustomizationDebugFrame" setAllPoints="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="StatsFrameText" inherits="NumberFontNormal" justifyH="RIGHT" justifyV="BOTTOM">
+				<FontString name="CustomizationDebugFrameText" inherits="NumberFontNormal" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
 							<Offset>
@@ -16,8 +16,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="StatsFrame_OnLoad"/>
-			<OnUpdate function="StatsFrame_OnUpdate"/>
+			<OnLoad function="CustomizationDebugFrame_OnLoad"/>
+			<OnUpdate function="CustomizationDebugFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

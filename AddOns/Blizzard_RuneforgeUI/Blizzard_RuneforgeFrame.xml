@@ -13,7 +13,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<FontString parentKey="Title" font="QuestFont_Super_Huge" text="RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE">
+				<FontString parentKey="Title" font="QuestFont_Super_Huge">
 					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-48"/>

@@ -92,6 +92,8 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.FollowerTabButton:SetText(COVENANT_MISSIONS_FOLLOWERS);
 		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSIONS_FOLLOWERS);
 		self.FollowerTab.FollowerText:Hide();
+		self.FollowerTab.PortraitFrame:Hide();
+		self.FollowerTab.CovenantFollowerPortraitFrame:Show();
 	end
 
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));

@@ -65,6 +65,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnShow method="PostOnShow" intrinsicOrder="postcall"/>
@@ -117,6 +125,9 @@
 				<Texture parentKey="IconOverlay" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -173,6 +184,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -286,6 +305,14 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>

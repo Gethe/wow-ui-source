@@ -76,7 +76,7 @@
 						<Offset x="1" y="-1"/>
 					</Shadow>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="-4"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
@@ -222,6 +222,12 @@
 				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" vertTile="true" horizTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Median" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow" alpha=".6">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>

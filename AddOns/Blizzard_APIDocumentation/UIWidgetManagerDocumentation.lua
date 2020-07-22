@@ -1009,6 +1009,7 @@ local UIWidgetManager =
 				{ Name = "overrideBarText", Type = "string", Nilable = false },
 				{ Name = "overrideBarTextShownType", Type = "StatusBarOverrideBarTextShownType", Nilable = false },
 				{ Name = "colorTint", Type = "StatusBarColorTintValue", Nilable = false },
+				{ Name = "partitionValues", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },

@@ -2211,7 +2211,7 @@ function UIParent_OnEvent(self, event, ...)
 		if not CovenantSanctumFrame then
 			CovenantSanctum_LoadUI();
 		end
-		ShowUIPanel(CovenantSanctumFrame);
+		CovenantSanctumFrame:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -2311,7 +2311,11 @@ function UIParent_OnEvent(self, event, ...)
 		AnimaDiversionFrame_LoadUI(); 
 		AnimaDiversionFrame:TryShow(...);
 	elseif (event == "RUNEFORGE_LEGENDARY_CRAFTING_OPENED") then
-		RuneforgeFrame_LoadUI(); 
+		RuneforgeFrame_LoadUI();
+		
+		local isUpgrade = ...;
+		RuneforgeFrame:SetRuneforgeState(isUpgrade and RuneforgeUtil.RuneforgeState.Upgrade or RuneforgeUtil.RuneforgeState.Craft);
+		
 		ShowUIPanel(RuneforgeFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then

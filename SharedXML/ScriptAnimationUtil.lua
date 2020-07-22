@@ -33,7 +33,7 @@ function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequ
 end
 
 function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequency)
-	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
+	if GetCVarBool("disableUIShaking") or not ScriptAnimationUtil.GetScriptAnimationLock(region) then
 		return nop;
 	end
 

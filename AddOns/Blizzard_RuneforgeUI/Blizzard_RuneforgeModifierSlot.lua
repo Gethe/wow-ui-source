@@ -61,12 +61,18 @@ function RuneforgeModifierSlotMixin:SetItem(item)
 	local hasItem = item ~= nil;
 	self.SelectedTexture:SetShown(hasItem);
 
-	local alpha = (self:IsEnabled() and not hasItem) and 1 or 0;
+	local isUpgrading = self:GetModifierFrame():IsRuneforgeUpgrading();
+	local alpha = (self:IsEnabled() and not hasItem and not isUpgrading) and 1 or 0;
 	self:GetNormalTexture():SetAlpha(alpha);
 	self:GetPushedTexture():SetAlpha(alpha);
 
-	self:SetEffectShown("primary", hasItem);
-	self:SetEffectShown("chains", hasItem);
+	local slotAlpha = isUpgrading and 0.35 or 1.0;
+	self.SelectedTexture:SetAlpha(slotAlpha);
+	self:SetAlpha(slotAlpha);
+
+	local showEffects = hasItem and not isUpgrading;
+	self:SetEffectShown("primary", showEffects);
+	self:SetEffectShown("chains", showEffects);
 
 	ItemButtonMixin.SetItem(self, item);
 end
@@ -265,12 +271,24 @@ function RuneforgeModifierFrameMixin:OnShow()
 end
 
 function RuneforgeModifierFrameMixin:OnHide()
-	self:UnregisterRefreshMethod(self.Refresh);
+	self:UnregisterRefreshMethod();
 end
 
 function RuneforgeModifierFrameMixin:Refresh(eventName)
 	if eventName == "BaseItemChanged" then
-		self:Reset();
+		if self:IsRuneforgeCrafting() then
+			self:Reset();
+		elseif self:IsRuneforgeUpgrading() then
+			local runeforgeFrame = self:GetRuneforgeFrame();
+			local item = runeforgeFrame:GetItem();
+			if item == nil then
+				self:Reset();
+			else
+				local info = runeforgeFrame:GetRuneforgeComponentInfo();
+				self.FirstSlot:SetItem(info.modifiers[1]);
+				self.SecondSlot:SetItem(info.modifiers[2]);
+			end
+		end
 	else
 		self:UpdateEnabledState();
 	end
@@ -304,11 +322,12 @@ function RuneforgeModifierFrameMixin:OnSlotSelected(slot)
 end
 
 function RuneforgeModifierFrameMixin:UpdateEnabledState()
+	local isUpgrading = self:IsRuneforgeUpgrading();
 	local enabled = self:GetRuneforgeFrame():GetPowerID() ~= nil;
-	self.FirstSlot:SetEnabled(enabled);
+	self.FirstSlot:SetEnabled(not isUpgrading and enabled);
 
 	local secondSlotEnabled = (self.SecondSlot:GetItem() ~= nil) or (self.FirstSlot:GetItem() ~= nil);
-	self.SecondSlot:SetEnabled(enabled and secondSlotEnabled);
+	self.SecondSlot:SetEnabled(not isUpgrading and enabled and secondSlotEnabled);
 end
 
 function RuneforgeModifierFrameMixin:SetModifierSlot(slot, itemID)

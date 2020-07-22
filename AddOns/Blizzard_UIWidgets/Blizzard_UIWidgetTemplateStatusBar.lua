@@ -19,6 +19,8 @@ local textureKitRegionFormatStrings = {
 	["Spark"] = "%s-Spark",
 }
 
+local partitionTextureKitString = "%s-BorderTick";
+
 local barColorFromTintValue = {
 	[Enum.StatusBarColorTintValue.Black] = BLACK_FONT_COLOR,
 	[Enum.StatusBarColorTintValue.White] = WHITE_FONT_COLOR,
@@ -82,6 +84,25 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Bar:SetPoint("TOP", self, "TOP", 0, -8);
 	end
 
+	self.partitionPool:ReleaseAll();
+
+	local paritionAtlas = partitionTextureKitString:format(frameTextureKit);
+	if C_Texture.GetAtlasInfo(paritionAtlas) then
+		for _, partitionValue in ipairs(widgetInfo.partitionValues) do
+			local partitionTexture = self.partitionPool:Acquire();
+
+			local useAtlasSize = true;
+			partitionTexture:SetAtlas(paritionAtlas, useAtlasSize);
+
+			local partitionPercent = ClampedPercentageBetween(partitionValue, minVal, maxVal);
+			local xOffset = barWidth * partitionPercent;
+
+			partitionTexture:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "LEFT", xOffset, 0)
+
+			partitionTexture:Show();
+		end
+	end
+
 	local totalWidth = math.max(self.Bar:GetWidth() + 16, labelWidth);
 	self:SetWidth(totalWidth);
 
@@ -89,4 +110,14 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	local totalHeight = barHeight + labelHeight;
 	self:SetHeight(totalHeight);
+end
+
+function UIWidgetTemplateStatusBarMixin:OnLoad()
+	UIWidgetBaseTemplateMixin.OnLoad(self);
+	self.partitionPool = CreateTexturePool(self.Bar, "OVERLAY");
+end
+
+function UIWidgetTemplateStatusBarMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
+	self.partitionPool:ReleaseAll();
 end

@@ -635,7 +635,7 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 	local questID = GetQuestID(); -- the last ID that was brought up in a quest frame
 	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID) -- find the index in the quest log
 
-	local numChoices = GetNumQuestLogChoices()
+	local numChoices = GetNumQuestLogChoices(questID)
 	for i = 1, numChoices do
 		local isUsable = select(5, GetQuestLogChoiceInfo(i));
 		if (not isUsable) then
@@ -1100,12 +1100,7 @@ function Class_Intro_OpenMap:OnBegin()
 	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
 
 	local key = TutorialHelper:GetMapBinding();
-	Dispatcher:RegisterScript(WorldMapFrame, "OnShow", function()
-		if self.Timer then
-			self.Timer:Cancel();
-		end
-		self:Complete();
-		end, true);
+	Dispatcher:RegisterScript(WorldMapFrame, "OnShow", self);
 
 	local content = {text = NPEV2_OPENMAP, icon=nil, keyText=key};
 	self:ShowSingleKeyTutorial(content);
@@ -1115,18 +1110,26 @@ function Class_Intro_OpenMap:OnBegin()
 	end);
 end
 
+function Class_Intro_OpenMap:OnShow()
+	self.OpenMap = true;
+	self:Complete();
+end
+
 function Class_Intro_OpenMap:PLAYER_DEAD()
 	self:Complete();
 end
 
 function Class_Intro_OpenMap:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+	self:HideSingleKeyTutorial();
 
 	if self.Timer then
 		self.Timer:Cancel()
 	end
-	self:HideSingleKeyTutorial();
-	Tutorials.Intro_MapHighlights:Begin();
+
+	if self.OpenMap then
+		Tutorials.Intro_MapHighlights:Begin();
+	end
 end
 
 
@@ -1181,13 +1184,6 @@ end
 
 function Class_Intro_MapHighlights:OnComplete()
 end
-
-function Class_Intro_MapHighlights:OnShutdown()
-	if self.Timer then
-		self.Timer:Cancel();
-	end
-end
-
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Repeatable Use Item Tutorial
@@ -1919,8 +1915,8 @@ function Class_EnhancedCombatTactics:OnBegin()
 	self.redirected = false;
 	if playerClass == "WARRIOR" then
 		Tutorials.EnhancedCombatTactics_Warrior:Begin();
-		self:Complete();
 		self.redirected = true;
+		self:Complete();
 	elseif self.playerClass == "MONK" then
 		-- currently there is not monk special MONK training
 	elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
@@ -1928,7 +1924,9 @@ function Class_EnhancedCombatTactics:OnBegin()
 		self.redirected = true;
 		self:Complete();
 	elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
+		self.redirected = true;
 		Tutorials.EnhancedCombatTactics_Ranged:Begin();
+		self:Complete();
 	elseif playerClass == "HUNTER" then
 		self:Complete();-- Hunters do not have an Enhanced Combat Tutorial
 	else
@@ -2551,6 +2549,11 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_LFGStatusWatcher = class("LFGStatusWatcher", Class_TutorialBase);
 function Class_LFGStatusWatcher:OnBegin()
+	local _, instanceType = GetInstanceInfo();
+	if instanceType ~= "none" then
+		return;
+	end
+
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
 	self.onShowID = Dispatcher:RegisterScript(PVEFrame, "OnShow", 
 		function()

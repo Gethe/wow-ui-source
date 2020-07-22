@@ -40,6 +40,9 @@ end
 function CharCustomizeParentFrameBaseMixin:SetCameraDistanceOffset(offset)
 end
 
+function CharCustomizeParentFrameBaseMixin:SetCharacterSex(sexID)
+end
+
 CharCustomizeFrameWithTooltipMixin = {};
 
 function CharCustomizeFrameWithTooltipMixin:OnLoad()
@@ -426,6 +429,38 @@ function CharCustomizeShapeshiftFormButtonMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
+CharCustomizeSexButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+
+function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
+	self.sexID = sexID;
+	self.layoutIndex = layoutIndex;
+
+	self:ClearTooltipLines();
+
+	if sexID == Enum.Unitsex.Male then
+		self:AddTooltipLine(MALE);
+	else
+		self:AddTooltipLine(FEMALE);
+	end
+
+	local atlas = GetGenderAtlas(sexID);
+	self:SetNormalAtlas(atlas);
+	self:SetPushedAtlas(atlas);
+
+	if selectedSexID == sexID then
+		self:SetChecked(true);
+	else
+		self:SetChecked(false);
+	end
+
+	self:UpdateHighlightTexture();
+end
+
+function CharCustomizeSexButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
+	CharCustomizeFrame:SetCharacterSex(self.sexID);
+end
+
 CharCustomizeOptionSliderMixin = CreateFromMixins(SliderWithButtonsAndLabelMixin, CharCustomizeFrameWithTooltipMixin);
 
 function CharCustomizeOptionSliderMixin:OnLoad()
@@ -524,8 +559,8 @@ function CharCustomizeOptionSelectionPopoutMixin:OnPopoutShown()
 	CharCustomizeFrame:HidePopouts(self);
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:OnEntryClick(entry)
-	CharCustomizeFrame:OnOptionPopoutEntryClick(self, entry);
+function CharCustomizeOptionSelectionPopoutMixin:OnEntryClick(entryData)
+	CharCustomizeFrame:OnOptionPopoutEntryClick(self, entryData);
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
@@ -561,6 +596,12 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
 	tooltip:Hide();
 end
 
+local POPOUT_CLEARANCE = 100;
+
+function CharCustomizeOptionSelectionPopoutMixin:GetMaxPopoutHeight()
+	return self:GetBottom() - POPOUT_CLEARANCE;
+end
+
 function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.layoutIndex = optionData.orderIndex;
@@ -588,6 +629,7 @@ CharCustomizeMixin = {};
 function CharCustomizeMixin:OnLoad()
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
+	self:RegisterEvent("CVAR_UPDATE");
 
 	self.pools = CreateFramePoolCollection();
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
@@ -616,6 +658,14 @@ function CharCustomizeMixin:OnEvent(event, ...)
 
 		-- Otherwise hide all popouts
 		self:HidePopouts();
+	elseif event == "CVAR_UPDATE" then
+		local cvarName, cvarValue = ...;
+		if cvarName == "debugTargetInfo" then
+			showDebugTooltipInfo = (cvarValue == "1");
+			if self:IsShown() then
+				self:RefreshCustomizations();
+			end
+		end
 	end
 end
 
@@ -716,8 +766,18 @@ function CharCustomizeMixin:SetViewingShapeshiftForm(formID)
 	end
 end
 
+function CharCustomizeMixin:SetCharacterSex(sexID)
+	self.parentFrame:SetCharacterSex(sexID);
+end
+
 local function SortCategories(a, b)
 	return a.orderIndex < b.orderIndex;
+end
+
+function CharCustomizeMixin:RefreshCustomizations()
+	if self.categories then
+		self:SetCustomizations(self.categories);
+	end
 end
 
 function CharCustomizeMixin:SetCustomizations(categories)
@@ -935,8 +995,8 @@ function CharCustomizeMixin:HidePopouts(exemptPopout)
 	end
 end
 
-function CharCustomizeMixin:OnOptionPopoutEntryClick(option, entry)
-	self:SetCustomizationChoice(option.optionData.id, entry.selectionData.id);
+function CharCustomizeMixin:OnOptionPopoutEntryClick(option, entryData)
+	self:SetCustomizationChoice(option.optionData.id, entryData.id);
 end
 
 function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)

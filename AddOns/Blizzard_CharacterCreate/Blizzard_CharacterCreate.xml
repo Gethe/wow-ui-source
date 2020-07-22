@@ -45,31 +45,6 @@
 		</Layers>
 	</Frame>
 
-	<CheckButton name="CharacterCreateSexButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateSexButtonMixin" virtual="true">
-		<Size x="46" y="46"/>
-		<KeyValues>
-			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
-			<KeyValue key="ringWidth" value="99" type="number"/>
-			<KeyValue key="ringHeight" value="100" type="number"/>
-			<KeyValue key="checkedTextureSize" value="84" type="number"/>
-			<KeyValue key="circleMaskSizeOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
-		</KeyValues>
-
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BlackBG">
-					<Size x="56" y="56"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</CheckButton>
-
 	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateClassButtonMixin" virtual="true">
 		<Size x="67" y="67"/>
 		<KeyValues>
@@ -103,6 +78,15 @@
 			<KeyValue key="checkedTextureSize" value="118" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RaceName" inherits="GameFontNormalMed3Outline" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</CheckButton>
 
 	<CheckButton name="CharacterCreateAllianceButtonTemplate" inherits="CharacterCreateRaceButtonTemplate" virtual="true">
@@ -451,7 +435,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="EditBox" inherits="SharedEditBoxTemplate" mixin="CharacterCreateEditBoxMixin" letters="12">
+					<EditBox parentKey="EditBox" inherits="SharedEditBoxTemplate" mixin="CharacterCreateEditBoxMixin" letters="12" alphabeticOnly="true">
 						<KeyValues>
 							<KeyValue key="justifyH" value="CENTER" type="string"/>
 						</KeyValues>
@@ -465,14 +449,13 @@
 									<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="22"/>
 								</Anchors>
 								<KeyValues>
-									<KeyValue key="tooltipMinWidth" value="nil" type="number"/>
+									<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 									<KeyValue key="tooltipXOffset" value="0" type="number"/>
 									<KeyValue key="tooltipYOffset" value="0" type="number"/>
 								</KeyValues>
 								<NormalTexture atlas="common-icon-redx"/>
 								<HighlightTexture atlas="common-icon-redx" alphaMode="ADD" alpha="0.2"/>
 								<Scripts>
-									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
 								</Scripts>
 							</Button>

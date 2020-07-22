@@ -73,6 +73,7 @@ end
 function TradeSkillDetailsMixin:SetSelectedRecipeID(recipeID)
 	if self.selectedRecipeID ~= recipeID then
 		self:CancelSpellLoadCallback();
+		self:SetSelectedRecipeLevel(nil);
 		self.selectedRecipeID = recipeID;
 		self.craftable = false;
 		self.optionalReagents = {};
@@ -174,6 +175,10 @@ end
 function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
 	HelpTip:HideAll(self);
 
+	if not self.recipeLearned then
+		return;
+	end
+
 	self:ValidateTutorialStage(stageComplete);
 
 	-- Show/hide a synchronized glowing animations.
@@ -253,12 +258,35 @@ function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
 	end
 end
 
+function TradeSkillDetailsMixin:SetSelectedRecipeLevel(recipeLevel, skipRefresh)
+	self.selectedRecipeLevel = recipeLevel;
+
+	if not skipRefresh then
+		self:RefreshDisplay();
+	end
+end
+
+function TradeSkillDetailsMixin:GetSelectedRecipeLevel()
+	return self.selectedRecipeLevel;
+end
+
 local SPACING_BETWEEN_LINES = 11;
 function TradeSkillDetailsMixin:RefreshDisplay()
 	self.activeContentWidgets = {};
 
-	local recipeInfo = self.selectedRecipeID and C_TradeSkillUI.GetRecipeInfo(self.selectedRecipeID);
+	local selectedRecipeLevel = self:GetSelectedRecipeLevel();
+	local recipeInfo = self.selectedRecipeID and C_TradeSkillUI.GetRecipeInfo(self.selectedRecipeID, selectedRecipeLevel);
 	if recipeInfo then
+		local hasRecipeLeveling = recipeInfo.unlockedRecipeLevel;
+		if hasRecipeLeveling and (selectedRecipeLevel == nil) then
+			selectedRecipeLevel = recipeInfo.unlockedRecipeLevel;
+			
+			local skipRefresh = true;
+			self:SetSelectedRecipeLevel(selectedRecipeLevel, skipRefresh);
+		end
+
+		self.recipeLearned = recipeInfo.learned;
+
 		if recipeInfo.learned then
 			self.Background:SetAtlas("tradeskill-background-recipe");
 		else
@@ -301,6 +329,11 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		TradeSkillFrame_GenerateRankLinks(recipeInfo);
 		local totalRanks, currentRank = TradeSkillFrame_CalculateRankInfoFromRankLinks(recipeInfo);
 		self.currentRank = currentRank;
+
+		self.Contents.StarsFrame:Hide();
+		self.Contents.RecipeLevel:Hide();
+		self.Contents.RecipeLevelSelector:Hide();
+
 		if totalRanks > 1 then
 			self.Contents.StarsFrame:Show();
 			for i, starFrame in ipairs(self.Contents.StarsFrame.Stars) do
@@ -322,8 +355,34 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 				end
 			end
 			self:AddContentWidget(self.Contents.StarsFrame);
-		else
-			self.Contents.StarsFrame:Hide();
+			self.Contents.StarsFrame:Show();
+		elseif hasRecipeLeveling then
+			if recipeInfo.currentRecipeExperience ~= nil then
+				local recipeLevelBar = self.Contents.RecipeLevel;
+				recipeLevelBar:SetExperience(recipeInfo.currentRecipeExperience, recipeInfo.nextLevelRecipeExperience);
+				self:AddContentWidget(recipeLevelBar);
+				recipeLevelBar:Show();
+			end
+
+			local function RecipeLevelDropDown_Initialize()
+				for i = 1, recipeInfo.unlockedRecipeLevel do
+					local info = UIDropDownMenu_CreateInfo();
+					info.text = TRADESKILL_RECIPE_LEVEL_DROPDOWN_OPTION_FORMAT:format(i);
+					info.func = function()
+						self:SetSelectedRecipeLevel(i);
+					end
+
+					info.checked = (i == selectedRecipeLevel);
+					UIDropDownMenu_AddButton(info);
+				end
+			end
+
+			UIDropDownMenu_Initialize(self.Contents.RecipeLevelDropDown, RecipeLevelDropDown_Initialize, "MENU");
+
+			self:AddContentWidget(self.Contents.RecipeLevelSelector);
+
+			self.Contents.RecipeLevelSelector:SetText(TRADESKILL_RECIPE_LEVEL_DROPDOWN_BUTTON_FORMAT:format(selectedRecipeLevel));
+			self.Contents.RecipeLevelSelector:Show();
 		end
 
 		self.Contents.Description:SetText("");
@@ -385,7 +444,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			end
 		end
 
-		local numReagents = C_TradeSkillUI.GetRecipeNumReagents(self.selectedRecipeID);
+		local numReagents = C_TradeSkillUI.GetRecipeNumReagents(self.selectedRecipeID, selectedRecipeLevel);
 
 		if numReagents > 0 then
 			self.Contents.ReagentLabel:Show();
@@ -395,7 +454,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		end
 
 		for reagentIndex = 1, numReagents do
-			local reagentName, reagentTexture, reagentCount, playerReagentCount = C_TradeSkillUI.GetRecipeReagentInfo(self.selectedRecipeID, reagentIndex);
+			local reagentName, reagentTexture, reagentCount, playerReagentCount = C_TradeSkillUI.GetRecipeReagentInfo(self.selectedRecipeID, reagentIndex, selectedRecipeLevel);
 			local reagentButton = self.Contents.Reagents[reagentIndex];
 
 			reagentButton:Show();
@@ -591,13 +650,13 @@ end
 
 function TradeSkillDetailsMixin:CreateAll()
 	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.selectedRecipeID);
-	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, recipeInfo.numAvailable, self:GetOptionalReagentsArray());
+	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, recipeInfo.numAvailable, self:GetOptionalReagentsArray(), self:GetSelectedRecipeLevel());
 	self.CreateMultipleInputBox:ClearFocus();
 	self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Create);
 end
 
 function TradeSkillDetailsMixin:Create()
-	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, self.CreateMultipleInputBox:GetValue(), self:GetOptionalReagentsArray());
+	C_TradeSkillUI.CraftRecipe(self.selectedRecipeID, self.CreateMultipleInputBox:GetValue(), self:GetOptionalReagentsArray(), self:GetSelectedRecipeLevel());
 	self.CreateMultipleInputBox:ClearFocus();
 	self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Create);
 end
@@ -826,6 +885,10 @@ function TradeSkillDetailsMixin:GetOptionalReagentBonusText(itemID, slot)
 	return C_TradeSkillUI.GetOptionalReagentBonusText(self.selectedRecipeID, optionalReagentIndex, optionalReagents);
 end
 
+function TradeSkillDetailsMixin:IsRecipeLearned()
+	return self.recipeLearned;
+end
+
 function TradeSkillDetailsMixin:OnStarsMouseEnter(starsFrame)
 	if (self.flashingStar) then
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_RANK_STAR, true);
@@ -917,4 +980,29 @@ function TradeSkillGuildListingMixin:Refresh()
 
 		HybridScrollFrame_Update(self.Container.ScrollFrame, 16 * numMembers, 160);
 	end
+end
+
+
+TradeSkillRecipeLevelBarMixin = {};
+
+function TradeSkillRecipeLevelBarMixin:OnLoad()
+	self.Rank:Hide();
+
+	-- Re-using this constant for consistency.
+	local color = FACTION_BAR_COLORS[5];
+	self:SetStatusBarColor(color.r, color.g, color.b);
+end
+
+function TradeSkillRecipeLevelBarMixin:OnEnter()
+	self.Rank:Show();
+end
+
+function TradeSkillRecipeLevelBarMixin:OnLeave()
+	self.Rank:Hide();
+end
+
+function TradeSkillRecipeLevelBarMixin:SetExperience(currentExperience, maxExperience)
+	self:SetMinMaxValues(0, maxExperience);
+	self:SetValue(currentExperience);
+	self.Rank:SetFormattedText(GENERIC_FRACTION_STRING, currentExperience, maxExperience);
 end

@@ -1161,6 +1161,9 @@
 		LoadAddOn("Blizzard_DebugTools");
 		FrameStackTooltip_ToggleDefaults();
 	</Binding>
+	<Binding name="TOGGLECUSTOMIZATIONDEBUGINFO" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCustomizationDebugInfo();
+	</Binding>
   <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>

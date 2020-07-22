@@ -29,10 +29,9 @@ function SoulbindViewerMixin:OnLoad()
 	end;
 
 	self.ActivateButton:SetScript("OnEnter", function()
-		if UnitAffectingCombat("player") then
-			SetActivationTooltip(ERR_NOT_IN_COMBAT);
-		elseif not IsResting() then
-			SetActivationTooltip(SOULBIND_ACTIVATION_REQUIREMENT);
+		local activateResult, errorDesc = C_Soulbinds.CanActivateSoulbind(self:GetOpenSoulbindID());
+		if not activateResult then
+			SetActivationTooltip(errorDesc);
 		end
 	end);
 	self.ActivateButton:SetScript("OnLeave", GameTooltip_Hide);
@@ -137,14 +136,10 @@ function SoulbindViewerMixin:UpdateResetButton()
 	self.ResetButton:SetAlpha(enabled and 1 or .6);
 end
 
-function SoulbindViewerMixin:InitCurrentData()
+function SoulbindViewerMixin:Open()
 	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
 	self:Init(covenantData, soulbindData);
-end
-
-function SoulbindViewerMixin:Open()
-	self:InitCurrentData();
 	ShowUIPanel(self);
 end
 
@@ -195,6 +190,7 @@ end
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
 	self.Portrait2.ActivateAnim:Play();
 	self.Background2.ActivateAnim:Play();
+	self.BackgroundActivateFX.ActivateAnim:Play();
 	self.SelectGroup:OnSoulbindActivated(soulbindID);
 	self.Tree:Init(C_Soulbinds.GetSoulbindData(soulbindID));
 	self:UpdateResetButton();
@@ -209,9 +205,11 @@ function SoulbindViewerMixin:GetSoulbindData()
 end
 
 function SoulbindViewerMixin:UpdateActivateButton()
-	local canEnable = not UnitAffectingCombat("player") and IsResting() and 
+	local canActivate = C_Soulbinds.CanActivateSoulbind(self:GetOpenSoulbindID());
+	local enabled = canActivate and 
 		not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
-	self.ActivateButton:SetEnabled(canEnable);
+	
+	self.ActivateButton:SetEnabled(enabled);
 end
 
 function SoulbindViewerMixin:IsActiveSoulbindOpen()

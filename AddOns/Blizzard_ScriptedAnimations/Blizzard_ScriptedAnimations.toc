@@ -1,4 +1,6 @@
 ## Title: Blizzard Scripted Animations
 ## LoadOnDemand: 0
 Blizzard_ScriptedAnimationEffects.lua
-Blizzard_ScriptedAnimations.xml
+Blizzard_ScriptAnimatedModelSceneActor.lua
+Blizzard_ScriptAnimatedEffectController.lua
+Blizzard_ScriptAnimatedModelScene.xml

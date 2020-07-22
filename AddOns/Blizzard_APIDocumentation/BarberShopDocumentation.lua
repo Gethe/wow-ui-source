@@ -124,6 +124,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetSelectedSex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sex", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetViewingAlteredForm",
 			Type = "Function",
 

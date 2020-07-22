@@ -16,6 +16,15 @@ local Minimap =
 			},
 		},
 		{
+			Name = "GetUiMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetViewRadius",
 			Type = "Function",
 

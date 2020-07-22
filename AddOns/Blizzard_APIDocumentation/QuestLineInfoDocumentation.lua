@@ -107,6 +107,7 @@ local QuestLineInfo =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
 				{ Name = "isDaily", Type = "bool", Nilable = false },
+				{ Name = "isCampaign", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
 			},
 		},

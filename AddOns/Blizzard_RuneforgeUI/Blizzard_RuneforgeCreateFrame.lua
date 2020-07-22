@@ -8,16 +8,25 @@ end
 
 function RuneforgeCreateFrameMixin:OnShow()
 	self:RegisterRefreshMethod(self.Refresh);
+	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self.Refresh, self);
 	self:Refresh();
 end
 
 function RuneforgeCreateFrameMixin:OnHide()
-	self:UnregisterRefreshMethod(self.Refresh);
+	self:UnregisterRefreshMethod();
+	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self);
 end
 
 function RuneforgeCreateFrameMixin:CraftItem()
-	local craftDescription = self:GetRuneforgeFrame():GetCraftDescription();
-	C_LegendaryCrafting.CraftRuneforgeLegendary(craftDescription);
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	if self:IsRuneforgeUpgrading() then
+		local baseItem = runeforgeFrame:GetItem();
+		local upgradeItem = runeforgeFrame:GetUpgradeItem();
+		C_LegendaryCrafting.UpgradeRuneforgeLegendary(baseItem, upgradeItem);
+	else
+		local craftDescription = runeforgeFrame:GetCraftDescription();
+		C_LegendaryCrafting.CraftRuneforgeLegendary(craftDescription);
+	end
 end
 
 function RuneforgeCreateFrameMixin:Close()
@@ -25,7 +34,7 @@ function RuneforgeCreateFrameMixin:Close()
 end
 
 function RuneforgeCreateFrameMixin:Refresh()
-	local canCraft, errorString = self:GetRuneforgeFrame():CanCraftRuneforgeLegendary(baseItem);
+	local canCraft, errorString = self:GetRuneforgeFrame():CanCraftRuneforgeLegendary();
 	self.CraftItemButton:SetCraftState(canCraft, errorString);
 	self.CraftError:SetShown(errorString ~= nil);
 	self.CraftError:SetText(errorString);
@@ -34,8 +43,7 @@ function RuneforgeCreateFrameMixin:Refresh()
 end
 
 function RuneforgeCreateFrameMixin:UpdateCost()
-	local baseItem = self:GetRuneforgeFrame():GetItem();
-	local currenciesCost = baseItem and C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem) or nil;
+	local currenciesCost = self:GetRuneforgeFrame():GetCost();
 	local showCost = (currenciesCost ~= nil) and (#currenciesCost > 0);
 	self.Cost:SetShown(showCost);
 
@@ -50,6 +58,10 @@ end
 
 
 RuneforgeCraftItemButtonMixin = {};
+
+function RuneforgeCraftItemButtonMixin:OnShow()
+	self:SetText(self:GetParent():IsRuneforgeUpgrading() and LEGENDARY_CRAFTING_UPGRADE_ITEM or LEGENDARY_CRAFTING_CRAFT_ITEM);
+end
 
 function RuneforgeCraftItemButtonMixin:OnClick()
 	self:GetParent():CraftItem();

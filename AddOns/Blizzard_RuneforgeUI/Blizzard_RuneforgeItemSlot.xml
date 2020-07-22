@@ -28,4 +28,17 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</ItemButton>
+
+	<ItemButton name="RuneforgeUpgradeItemSlotTemplate" inherits="RuneforgeItemSlotTemplate" mixin="RuneforgeUpgradeItemSlotMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="runecarving-upgrade-slot-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ItemButton>
 </Ui>

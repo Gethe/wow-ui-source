@@ -51,6 +51,7 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
 	self:RegisterEvent("CHAR_CREATE_BEGIN_ANIMATIONS");
 	self:RegisterEvent("CHAR_CREATE_ANIM_KIT_FINISHED");
+	self:RegisterEvent("CVAR_UPDATE");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -129,6 +130,12 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "CHAR_CREATE_ANIM_KIT_FINISHED" then
 		local animKitID, spellVisualKitID = ...;
 		RaceAndClassFrame:OnAnimKitFinished(animKitID, spellVisualKitID);
+	elseif event == "CVAR_UPDATE" then
+		local cvarName, cvarValue = ...;
+		if cvarName == "debugTargetInfo" then
+			showDebugTooltipInfo = (cvarValue == "1");
+			RaceAndClassFrame:UpdateButtons();
+		end
 	end
 
 	if showError then
@@ -526,6 +533,10 @@ function CharacterCreateMixin:RandomizeAppearance()
 	self:UpdateCharCustomizationFrame();
 end
 
+function CharacterCreateMixin:SetCharacterSex(sexID)
+	RaceAndClassFrame:SetCharacterSex(sexID);
+end
+
 function CharacterCreateMixin:NavForward()
 	if self:CanNavForward() then
 		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
@@ -588,38 +599,6 @@ end
 function CharacterCreateNavButtonMixin:OnClick(button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	CharacterCreateFrame[self.charCreateOnClickMethod](CharacterCreateFrame, button);
-end
-
-CharacterCreateSexButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
-
-function CharacterCreateSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
-	self.sexID = sexID;
-	self.layoutIndex = layoutIndex;
-
-	self:ClearTooltipLines();
-
-	if sexID == Enum.Unitsex.Male then
-		self:AddTooltipLine(MALE);
-	else
-		self:AddTooltipLine(FEMALE);
-	end
-
-	local atlas = GetGenderAtlas(sexID);
-	self:SetNormalAtlas(atlas);
-	self:SetPushedAtlas(atlas);
-
-	if selectedSexID == sexID then
-		self:SetChecked(true);
-	else
-		self:SetChecked(false);
-	end
-
-	self:UpdateHighlightTexture();
-end
-
-function CharacterCreateSexButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-	RaceAndClassFrame:SetCharacterSex(self.sexID);
 end
 
 CharacterCreateClassButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
@@ -745,6 +724,8 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self:SetPushedAtlas(atlas);
 
 	self:SetEnabledState(RaceAndClassFrame:IsRaceValid(raceData, self.faction));
+	self.RaceName:SetText(raceData.name);
+	self.RaceName:SetShown(C_CharacterCreation.IsNewPlayerRestricted());
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(raceData.name, HIGHLIGHT_FONT_COLOR);
@@ -859,7 +840,7 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 	self.ClassTrialCheckButton.Button:SetScript("OnLeave", function() self.ClassTrialCheckButton.OnLeave(self.ClassTrialCheckButton); end);
 
 	self.buttonPool = CreateFramePoolCollection();
-	self.buttonPool:CreatePool("CHECKBUTTON", self.Sexes, "CharacterCreateSexButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceRaces, "CharacterCreateAllianceButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceAlliedRaces, "CharacterCreateAllianceAlliedRaceButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeRaces, "CharacterCreateHordeButtonTemplate");
@@ -1264,7 +1245,7 @@ function CharacterCreateRaceAndClassMixin:UpdateButtons()
 
 	local sexes = {Enum.Unitsex.Male, Enum.Unitsex.Female};
 	for index, sexID in ipairs(sexes) do
-		local button = self.buttonPool:Acquire("CharacterCreateSexButtonTemplate");
+		local button = self.buttonPool:Acquire("CharCustomizeSexButtonTemplate");
 		button:SetSex(sexID, self.selectedSexID, index);
 		button:Show();
 	end
@@ -1368,6 +1349,8 @@ end
 
 function CharacterCreateEditBoxMixin:OnHide()
 	CharacterCreateFrame:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME);
+	self.NameAvailabilityState:UpdateNavBlocker(nil);
+	self.NameAvailabilityState:ClearTimer();
 end
 
 function CharacterCreateEditBoxMixin:OnEscapePressed()
@@ -1411,13 +1394,10 @@ function CharacterCreateNameAvailabilityStateMixin:OnLoad()
 	self:RegisterEvent("CHECK_CHARACTER_NAME_AVAILABILITY_RESULT");
 end
 
-function CharacterCreateNameAvailabilityStateMixin:OnHide()
+function CharacterCreateNameAvailabilityStateMixin:ClearTimer()
 	if self.Timer then
 		self.Timer:Cancel();
-	end
-	
-	if self.navBlocker then
-		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
+		self.Timer = nil;
 	end
 end
 
@@ -1442,10 +1422,7 @@ function CharacterCreateNameAvailabilityStateMixin:CheckName(nameToCheck)
 	self:Hide();
 
 	self:UpdateNavBlocker(nil);
-
-	if self.Timer then
-		self.Timer:Cancel();
-	end
+	self:ClearTimer();
 
 	local function checkName()
 		local valid, reason = C_CharacterCreation.IsCharacterNameValid(nameToCheck);
@@ -1470,7 +1447,7 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateNavBlocker(navBlocker)
 		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
 	end
 
-	if self:IsShown() and navBlocker then
+	if self:GetParent():IsShown() and navBlocker then
 		CharacterCreateFrame:AddNavBlocker(navBlocker);
 		self.navBlocker = navBlocker;
 	else

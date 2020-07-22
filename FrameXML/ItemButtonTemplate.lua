@@ -153,7 +153,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 		end
 		
 		if not suppressOverlays then
-			SetItemButtonOverlay(button, itemIDOrLink);
+			SetItemButtonOverlay(button, itemIDOrLink, quality);
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
@@ -171,13 +171,23 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 	end
 end
 
-function SetItemButtonOverlay(button, itemIDOrLink)
+function SetItemButtonOverlay(button, itemIDOrLink, quality)
+	button.IconOverlay:SetVertexColor(1,1,1);
+	button.IconOverlay2:Hide();
+
 	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("AzeriteIconFrame");
 		button.IconOverlay:Show();
 	elseif IsCorruptedItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
 		button.IconOverlay:Show();
+	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
+		local color = BAG_ITEM_QUALITY_COLORS[quality or Enum.ItemQuality.Common];
+		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		button.IconOverlay:SetAtlas("ConduitIconFrame");
+		button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
+		button.IconOverlay:Show();
+		button.IconOverlay2:Show();
 	else
 		button.IconOverlay:Hide();
 	end
@@ -290,7 +300,8 @@ function ItemButtonMixin:UpdateItemContextOverlay()
 		self.ItemContextOverlay:SetAllPoints(true);
 		self.ItemContextOverlay:Show();
 	elseif matchesContext and self.showMatchHighlight then
-		if ItemButtonUtil.GetItemContext() == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem then
+		local itemContext = ItemButtonUtil.GetItemContext();
+		if itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then
 			local useAtlasSize = true;
 			self.ItemContextOverlay:SetAtlas("runecarving-icon-bag-item-glow", useAtlasSize);
 			self.ItemContextOverlay:ClearAllPoints();

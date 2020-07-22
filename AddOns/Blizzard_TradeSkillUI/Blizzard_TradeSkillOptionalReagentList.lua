@@ -95,11 +95,11 @@ function OptionalReagentListLineMixin:GetState(itemID, itemCount)
 	itemID = itemID or self:GetItemID();
 	itemCount = itemCount or ItemUtil.GetOptionalReagentCount(itemID);
 
-	if itemCount <= 0 then
+	local optionalReagentList = self:GetOptionalReagentList();
+	if itemCount <= 0 or not optionalReagentList:IsRecipeLearned() then
 		return OptionalReagentListLineState.Disabled;
 	end
 
-	local optionalReagentList = self:GetOptionalReagentList();
 	if itemID == optionalReagentList:GetSelectedItemID() then
 		return OptionalReagentListLineState.Current;
 	end
@@ -278,6 +278,10 @@ end
 
 function OptionalReagentListMixin:GetSelectedItemID()
 	return select(6, self:GetTradeSkillUI():GetOptionalReagent(self.optionalReagentIndex));
+end
+
+function OptionalReagentListMixin:IsRecipeLearned()
+	return self:GetTradeSkillUI():IsRecipeLearned();
 end
 
 function OptionalReagentListMixin:HasOptionalReagent(itemID)

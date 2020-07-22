@@ -224,8 +224,11 @@ end
 
 function CovenantMissionListMixin:OnUpdate()
 	local timeNow = GetTime();
-	for i = 1, #self.combinedMissions do
-		if ( not self.combinedMissions[i].inProgress and self.combinedMissions[i].offerEndTime and self.combinedMissions[i].offerEndTime <= timeNow ) then
+	for _, mission in ipairs(self.combinedMissions) do
+	
+		local limitedTimeOfferExpired = not mission.inProgress and mission.offerEndTime and mission.offerEndTime <= timeNow;
+		local activelyInProgress = mission.inProgress and not mission.canBeCompleted;
+		if ( activelyInProgress or limitedTimeOfferExpired) then
 			self:UpdateMissions();
 			break;
 		end
@@ -428,7 +431,7 @@ CovenantMissionEncounterIconMixin = {}
 function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
 	self.RareOverlay:SetShown(encounterIconInfo.isRare);
 	self.EliteOverlay:SetShown(encounterIconInfo.isElite);
-	GarrisonEnemyPortait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
+	GarrisonPortrait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
 end
 
 ---------------------------------------------------------------------------------
@@ -491,5 +494,66 @@ function AdventuresTargetingIndicatorMixin:Loop()
 		self:ResetPositions();
 		self.FadeIn:Play();
 		self.BobLoop:Play();
+	end
+end
+
+
+---------------------------------------------------------------------------------
+--- Covenant Portrait Mixin													  ---
+---------------------------------------------------------------------------------
+
+CovenantPortraitMixin = {};
+
+function CovenantPortraitMixin:SetupPortrait(followerInfo)
+	GarrisonPortrait_Set(self.Portrait, followerInfo.portraitIconID);
+	self.HealthBar:Show();
+	self.HealthBar:SetScale(0.7);
+	self.LevelText:SetText(followerInfo.level);
+	self.HealthBar:SetMaxHealth(followerInfo.autoCombatantStats.maxHealth);
+	self.HealthBar:SetHealth(followerInfo.autoCombatantStats.currentHealth);
+	self.HealthBar:SetRole(followerInfo.role);
+end
+
+function CovenantPortraitMixin:SetQuality(followerInfo)
+
+end
+---------------------------------------------------------------------------------
+--- Health Bar Mixin													  ---
+---------------------------------------------------------------------------------
+
+AventuresPuckHealthBarMixin = {};
+
+local HealthBarBorderSize = 2;
+local TotalHealthBarBorderSize = HealthBarBorderSize * 2;
+function AventuresPuckHealthBarMixin:SetHealth(health)
+	self.health = health;
+
+	local healthPercent = math.min(health / self.maxHealth, 1);
+	local healthBarWidth = self.Background:GetWidth();
+	self.Health:SetPoint("RIGHT", self.Background, "LEFT", healthBarWidth * healthPercent, 0);
+end
+
+function AventuresPuckHealthBarMixin:GetHealth()
+	return self.health;
+end
+
+function AventuresPuckHealthBarMixin:SetMaxHealth(maxHealth)
+	self.maxHealth = maxHealth;
+end
+
+function AventuresPuckHealthBarMixin:SetPuckDesaturation(desaturation)
+	self.Background:SetDesaturation(desaturation);
+	self.Health:SetDesaturation(desaturation);
+	self.RoleIcon:SetDesaturation(desaturation);
+end
+
+function AventuresPuckHealthBarMixin:SetRole(role)
+	local useAtlasSize = true;
+	if role == Enum.GarrAutoCombatantRole.HealSupport then
+		self.RoleIcon:SetAtlas("Adventures-Healer", useAtlasSize);
+	elseif role == Enum.GarrAutoCombatantRole.Tank then
+		self.RoleIcon:SetAtlas("Adventures-Tank", useAtlasSize);
+	else
+		self.RoleIcon:SetAtlas("Adventures-DPS", useAtlasSize);
 	end
 end

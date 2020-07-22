@@ -33,6 +33,12 @@
 				</Anchors>
 			</ItemButton>
 
+			<ItemButton parentKey="UpgradeItemSlot" inherits="RuneforgeUpgradeItemSlotTemplate" frameLevel="900" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BaseItemSlot" relativePoint="BOTTOM" x="0" y="-16"/>
+				</Anchors>
+			</ItemButton>
+
 			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-82" y="-10"/>
@@ -59,6 +65,7 @@
 			</ModelScene>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>

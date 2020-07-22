@@ -3,9 +3,11 @@ ItemButtonUtil = {};
 
 ItemButtonUtil.ItemContextEnum = {
 	Scrapping = 1,
-	CleanseCorruption = 2, 
-	PickRuneforgeBaseItem = 3, 
+	CleanseCorruption = 2,
+	PickRuneforgeBaseItem = 3,
 	ReplaceBonusTree = 4,
+	SelectRuneforgeItem = 5,
+	SelectRuneforgeUpgradeItem = 6,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -41,7 +43,7 @@ function ItemButtonUtil.GetItemContext()
 	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetFrameType() == Enum.ItemInteractionFrameType.CleanseCorruption then
 		return ItemButtonUtil.ItemContextEnum.CleanseCorruption;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
-		return ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem;
+		return RuneforgeFrame:GetItemContext();
 	elseif TargetSpellReplacesBonusTree() then
 		return ItemButtonUtil.ItemContextEnum.ReplaceBonusTree;
 	end
@@ -69,6 +71,10 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ReplaceBonusTree then 
 			return C_Item.DoesItemMatchBonusTreeReplacement(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem then 
+			return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then 
+			return RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end

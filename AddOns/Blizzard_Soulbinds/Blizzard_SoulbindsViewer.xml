@@ -27,12 +27,22 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
-							<Alpha smoothing="IN" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+							<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="BackgroundActivateFX" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="212" y="-45"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
 				<Texture parentKey="Portrait" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-25" y="-25"/>
@@ -44,7 +54,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
-							<Alpha smoothing="IN" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+							<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>

@@ -25,12 +25,12 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
-			<Button parentKey="UpgradesTabButton" name="$parentTab1" inherits="CovenantSanctumFrameTabButtonTemplate" id="1" text="Upgrades">
+			<Button parentKey="UpgradesTabButton" name="$parentTab1" inherits="CovenantSanctumFrameTabButtonTemplate" id="1" text="COVENANT_SANCTUM_TAB_UPGRADES">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="23" y="9" />
 				</Anchors>
 			</Button>
-			<Button parentKey="FoundationsTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="Foundations" hidden="true">
+			<Button parentKey="RenownTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="COVENANT_SANCTUM_TAB_RENOWN" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
 				</Anchors>
@@ -40,6 +40,28 @@
 					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="LevelFrame" frameLevel="510">
+				<Size x="176" y="76"/>
+				<Anchors>
+					<Anchor point="TOP" y="23"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Level" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

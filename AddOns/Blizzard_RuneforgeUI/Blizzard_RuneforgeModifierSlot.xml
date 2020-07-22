@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RuneforgeModifierSlot.lua"/>
 
-	<ItemButton name="RuneforgeModifierSlotTemplate" mixin="RuneforgeModifierSlotMixin" virtual="true">
+	<ItemButton name="RuneforgeModifierSlotTemplate" mixin="RuneforgeModifierSlotMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Arrow" atlas="runecarving-icon-arrow-open" useAtlasSize="true" hidden="true">

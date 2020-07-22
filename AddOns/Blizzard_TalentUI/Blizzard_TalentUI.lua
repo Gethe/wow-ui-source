@@ -1422,17 +1422,7 @@ end
 
 function PvpTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK)) then
-		local helpTipInfo = {
-			text = PVP_TALENT_FIRST_TALENT,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK,
-			targetPoint = HelpTip.Point.RightEdgeCenter,
-			offsetX = -2,
-		};
-		HelpTip:Show(self.TrinketSlot, helpTipInfo);
-	end
+
 	self:Update();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end

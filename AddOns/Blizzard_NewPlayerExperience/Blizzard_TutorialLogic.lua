@@ -154,7 +154,7 @@ function Tutorials:Begin()
 	if C_QuestLog.IsQuestFlaggedCompleted(specQuestID) then 
 		-- spec quest flagged complete
 	elseif C_QuestLog.ReadyForTurnIn(specQuestID) then
-		-- spec quest ready for turn in"
+		-- spec quest ready for turn in
 	elseif C_QuestLog.GetLogIndexForQuestID(specQuestID) ~= nil then
 		self.SpecTutorial:ForceBegin();
 	end

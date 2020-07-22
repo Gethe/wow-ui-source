@@ -16,12 +16,13 @@
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="CraftItemButton" inherits="UIPanelButtonTemplate" mixin="RuneforgeCraftItemButtonMixin" text="LEGENDARY_CRAFTING_CRAFT_ITEM" motionScriptsWhileDisabled="true">
+			<Button parentKey="CraftItemButton" inherits="UIPanelButtonTemplate" mixin="RuneforgeCraftItemButtonMixin" motionScriptsWhileDisabled="true">
 				<Size x="90" y="22"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Cost" relativePoint="BOTTOM" x="-50" y="-8"/>
 				</Anchors>
 				<Scripts>
+					<OnShow method="OnShow"/>
 					<OnClick method="OnClick"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>

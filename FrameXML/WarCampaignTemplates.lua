@@ -257,14 +257,54 @@ end
 
 function CampaignHeaderMixin:UpdateLoreButtonVisibility()
 	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
-	local showLore = mouseOver and self:HasLoreEntries();
+	local showLore = (mouseOver or self:IsLoreButtonLocked()) and self:HasLoreEntries();
 	self.LoreButton:SetShown(showLore);
 	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
+
+	if showLore then
+		self:CheckShowLoreTutorial();
+	end
 
 	-- OnLeave logic
 	if not mouseOver then
 		self:SetScript("OnUpdate", nil);
 		QuestMapLog_GetCampaignTooltip():Hide();
+	end
+end
+
+local function UnlockLoreButtonFromHelpTip(acknowledged, campaignHeader)
+	campaignHeader:SetLoreButtonLocked(false);
+	campaignHeader:UpdateLoreButtonVisibility();
+end
+
+function CampaignHeaderMixin:SetLoreButtonLocked(locked)
+	self.loreButtonLocked = locked;
+end
+
+function CampaignHeaderMixin:IsLoreButtonLocked()
+	return self.loreButtonLocked;
+end
+
+function CampaignHeaderMixin:CheckShowLoreTutorial()
+	if HelpTip:IsShowing(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP) then
+		return;
+	end
+
+	local helpTipInfo =
+	{
+		text = CAMPAIGN_LORE_BUTTON_HELPTIP,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		targetPoint = HelpTip.Point.TopEdgeCenter,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_CAMPAIGN_LORE_TEXT,
+		checkCVars = true,
+		onHideCallback = UnlockLoreButtonFromHelpTip,
+		callbackArg = self,
+		system = "LoreTextButton",
+	};
+
+	if HelpTip:Show(QuestScrollFrame, helpTipInfo, self.LoreButton) then
+		self:SetLoreButtonLocked(true);
 	end
 end
 
@@ -302,6 +342,7 @@ end
 
 function CampaignLoreButtonMixin:OnClick()
 	if self.mode == "overview" then
+		HelpTip:Hide(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
 		EventRegistry:TriggerEvent("QuestLog.ShowCampaignOverview", self:GetParent():GetCampaign():GetID());
 	elseif self.mode == "questlog" then
 		EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");

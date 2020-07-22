@@ -123,10 +123,10 @@ function Minimap_OnEvent(self, event, ...)
 			if not HybridMinimap then
 				UIParentLoadAddOn("Blizzard_HybridMinimap");
 			end
-			HybridMinimap:Show();
+			HybridMinimap:Enable();
 		else
 			if HybridMinimap then
-				HybridMinimap:Hide();
+				HybridMinimap:Disable();
 			end
 		end
 	end

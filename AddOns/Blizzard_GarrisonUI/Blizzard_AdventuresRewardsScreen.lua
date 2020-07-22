@@ -84,10 +84,14 @@ function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, mission
 		end
 	end
 
+	self.FinalRewardsPanel.SpoilsFrame.FollowerExperienceEarnedFrame:SetShown(layoutIndex > 1);
 	if layoutIndex > 1 then 
+		local largePaddingForText = 80;
+		local smallPaddingToFit = 30;
+
 		self.FinalRewardsPanel.SpoilsFrame.FollowerExperienceEarnedFrame:Layout();
-		self.FinalRewardsPanel.SpoilsFrame:Layout();
 		self.FinalRewardsPanel.FollowerProgressLabel:Show();
+		self.FinalRewardsPanel.SpoilsFrame.spacing = layoutIndex > 4 and smallPaddingToFit or largePaddingForText;
 	end
 
 	self.FinalRewardsPanel.SpoilsFrame:Layout();

@@ -16,6 +16,21 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "CanActivateSoulbind",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "errorDescription", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "CloseSoulbindForge",
 			Type = "Function",
 		},
@@ -60,15 +75,6 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetFoundationIndex",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "index", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -180,6 +186,20 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "IsItemConduitByItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LearnNode",
 			Type = "Function",
 
@@ -195,15 +215,6 @@ local Soulbinds =
 			Arguments =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SetFoundationIndex",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "index", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -336,6 +347,7 @@ local Soulbinds =
 				{ Name = "column", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "playerConditionReason", Type = "string", Nilable = true },
 				{ Name = "conduitID", Type = "number", Nilable = false },
 				{ Name = "conduitRank", Type = "number", Nilable = false },
 				{ Name = "state", Type = "SoulbindNodeState", Nilable = false },

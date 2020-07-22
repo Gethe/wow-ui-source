@@ -111,6 +111,7 @@ function AuctionHouseItemSellFrameMixin:OnEvent(event, ...)
 end
 
 function AuctionHouseItemSellFrameMixin:SetMultiSell(inProgress)
+	self.multisellInProgress = inProgress;
 	AuctionHouseMultisellProgressFrame:SetShown(inProgress);
 	self.DisabledOverlay:SetShown(inProgress);
 	if not inProgress then
@@ -324,6 +325,10 @@ function AuctionHouseItemSellFrameMixin:GetPrice()
 end
 
 function AuctionHouseItemSellFrameMixin:CanPostItem()
+	if self.multisellInProgress then
+		return false, nil;
+	end
+	
 	local canPostItem, reasonTooltip = AuctionHouseSellFrameMixin.CanPostItem(self);
 	if not canPostItem then
 		return canPostItem, reasonTooltip;

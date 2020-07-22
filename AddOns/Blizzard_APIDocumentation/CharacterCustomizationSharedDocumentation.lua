@@ -46,7 +46,8 @@ local CharacterCustomizationShared =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "swatchColor", Type = "table", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "swatchColor1", Type = "table", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "swatchColor2", Type = "table", Mixin = "ColorMixin", Nilable = true },
 			},
 		},
 		{

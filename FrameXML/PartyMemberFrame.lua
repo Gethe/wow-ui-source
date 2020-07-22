@@ -380,12 +380,12 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		if ( UnitExists("party"..self:GetID()) ) then
 			PartyMemberFrame_UpdateMember(self);
 			PartyMemberFrame_UpdateOnlineStatus(self);
+			PartyMemberFrame_UpdateAssignedRoles(self);
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
-		return;
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
 	elseif ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then

@@ -764,6 +764,10 @@ function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
 	end
 end
 
+function GarrisonMission:GetPlacerFrame()
+	return GarrisonFollowerPlacer;
+end
+
 function GarrisonMission:OnClickFollowerPlacerFrame(button, info)
 	if ( button == "LeftButton" ) then
 		for i = 1, #self:GetMissionPage().Followers do
@@ -783,14 +787,8 @@ function GarrisonMission:OnDragStartFollowerButton(placer, frame, yOffset)
 	if ( frame.info.status or not frame.info.isCollected ) then
 		return;
 	end
-	self:SetFollowerPortrait(placer, frame.info, false, false);
-	placer.info = frame.info;
-	local cursorX, cursorY = GetCursorPosition();
-	local uiScale = UIParent:GetScale();
-	placer.yOffset = yOffset;
-	placer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + placer.yOffset);
-	placer:Show();
-	placer:SetScript("OnUpdate", self:GetPlacerUpdate());
+
+	self:SetPlacerFrame(placer, frame.info, yOffset);
 end
 
 function GarrisonMission:OnDragStopFollowerButton(placer)
@@ -802,7 +800,11 @@ end
 function GarrisonMission:SetPlacerFrame(placer, info, yOffset)
 	self:SetFollowerPortrait(placer, info, false, false);
 	placer.info = info;
-	local cursorX, cursorY = GetCursorPosition();
+	self:LockPlacerToMouse(placer, yOffset);
+end
+
+function GarrisonMission:LockPlacerToMouse(placer, yOffset)
+ 	local cursorX, cursorY = GetCursorPosition();
 	local uiScale = UIParent:GetScale();
 	placer.yOffset = yOffset or 25;
 	placer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + placer.yOffset);

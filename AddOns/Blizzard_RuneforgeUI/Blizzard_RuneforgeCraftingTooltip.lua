@@ -20,14 +20,20 @@ end
 
 function RunforgeFrameTooltipMixin:OnShow()
 	local runeforgeFrame = self:GetRuneforgeFrame();
-	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.ItemSlotOnEnter, self.StartPulse, self);
-	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.ItemSlotOnLeave, self.StopPulse, self);
+	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.ItemSlotOnEnter, self.OnItemSlotOnEnter, self);
+	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.ItemSlotOnLeave, self.OnItemSlotOnLeave, self);
+	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemSlotOnEnter, self.OnUpgradeItemSlotOnEnter, self);
+	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemSlotOnLeave, self.OnUpgradeItemSlotOnLeave, self);
+	runeforgeFrame:RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self.Refresh, self);
 end
 
 function RunforgeFrameTooltipMixin:OnHide()
 	local runeforgeFrame = self:GetRuneforgeFrame();
 	runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event.ItemSlotOnEnter, self);
 	runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event.ItemSlotOnLeave, self);
+	runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event.UpgradeItemSlotOnEnter, self);
+	runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event.UpgradeItemSlotOnLeave, self);
+	runeforgeFrame:UnregisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self);
 
 	self:StopPulse();
 end
@@ -40,6 +46,31 @@ end
 
 function RunforgeFrameTooltipMixin:Refresh()
 	self:GetRuneforgeFrame():RefreshResultTooltip();
+end
+
+function RunforgeFrameTooltipMixin:OnItemSlotOnEnter()
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	if self:IsRuneforgeUpgrading() and runeforgeFrame:HasUpgradeItem() then
+		runeforgeFrame:ShowComparisonTooltip();
+	else
+		self.PulseOverlay:Show();
+	end
+end
+
+function RunforgeFrameTooltipMixin:OnItemSlotOnLeave()
+	self.PulseOverlay:Hide();
+	GameTooltip_Hide();
+	self:GetRuneforgeFrame():RefreshResultTooltip();
+end
+
+function RunforgeFrameTooltipMixin:OnUpgradeItemSlotOnEnter()
+	if self:GetRuneforgeFrame():HasUpgradeItem() then
+		self.PulseOverlay:Show();
+	end
+end
+
+function RunforgeFrameTooltipMixin:OnUpgradeItemSlotOnLeave()
+	self.PulseOverlay:Hide();
 end
 
 function RunforgeFrameTooltipMixin:StartPulse()

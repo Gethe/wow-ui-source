@@ -19,9 +19,20 @@ function HybridMinimapMixin:OnLoad()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
 end
 
+function HybridMinimapMixin:Enable()
+	self:RegisterEvent("NEW_WMO_CHUNK");
+	self:RegisterEvent("ZONE_CHANGED_INDOORS");
+	self:CheckMap();
+end
+
+function HybridMinimapMixin:Disable()
+	self:UnregisterEvent("NEW_WMO_CHUNK");
+	self:UnregisterEvent("ZONE_CHANGED_INDOORS");
+	self:Hide();
+end
+
 function HybridMinimapMixin:OnShow()
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
-	self:CheckMap();
 	self.MapCanvas:Show();
 	C_Minimap.SetDrawGroundTextures(false);
 	C_Minimap.SetIgnoreRotateMinimap(true);
@@ -29,6 +40,7 @@ end
 
 function HybridMinimapMixin:OnHide()
 	self:UnregisterEvent("MINIMAP_UPDATE_ZOOM");
+	self.mapID = nil;
 	self.MapCanvas:Hide();
 	C_Minimap.SetDrawGroundTextures(true);
 	C_Minimap.SetIgnoreRotateMinimap(false);
@@ -37,21 +49,22 @@ end
 function HybridMinimapMixin:OnEvent(event)
 	if event == "MINIMAP_UPDATE_ZOOM" then
 		self:UpdateZoom();
+	elseif event == "NEW_WMO_CHUNK" or event == "ZONE_CHANGED_INDOORS" then
+		self:CheckMap();
 	end
 end
 
 function HybridMinimapMixin:OnUpdate(elapsed)
-	self:CheckMap();
 	self:UpdatePosition();
 end
 
 function HybridMinimapMixin:CheckMap()
-	local mapID = MapUtil.GetDisplayableMapForPlayer();
-	if (mapID == 1705) then
-		mapID = 1706;
-	end
-	if mapID ~= self.mapID then
+	local mapID = C_Minimap.GetUiMapID();
+	if not mapID then
+		self:Hide();
+	elseif mapID ~= self.mapID then
 		self:SetMapID(mapID);
+		self:Show();
 	end
 end
 

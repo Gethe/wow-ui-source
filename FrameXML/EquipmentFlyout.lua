@@ -131,10 +131,22 @@ local function _createFlyoutBG(buttonAnchor)
 	return texture;
 end
 
+function EquipmentFlyout_GetFrame()
+	return EquipmentFlyoutFrame;
+end
+
+function EquipmentFlyout_Hide()
+	EquipmentFlyoutFrame:Hide();
+end
+
 function EquipmentFlyout_Show(itemButton)
 	local id = itemButton.id or itemButton:GetID();
 
 	local flyout = EquipmentFlyoutFrame;
+	if flyout:IsShown() then
+		flyout:Hide();
+	end
+
 	local buttons = flyout.buttons;
 	
 	if ( flyout.button ~= itemButton ) then
@@ -154,17 +166,36 @@ function EquipmentFlyout_Show(itemButton)
 	wipe(itemTable);
 
 	local flyoutSettings = itemButton:GetParent().flyoutSettings;
+	local useItemLocation = flyoutSettings.useItemLocation;
+
+	flyout:SetScript("OnUpdate", flyoutSettings.customFlyoutOnUpdate or EquipmentFlyout_OnUpdate);
+
+	flyout.Highlight:SetShown(not flyoutSettings.hideFlyoutHighlight);
 
 	flyoutSettings.getItemsFunc(id, itemTable);
 	for location, itemID in next, itemTable do
-		if ( location - id == ITEM_INVENTORY_LOCATION_PLAYER ) then -- Remove the currently equipped item from the list
+		if ( not useItemLocation and ((location - id) == ITEM_INVENTORY_LOCATION_PLAYER) ) then -- Remove the currently equipped item from the list
 			itemTable[location] = nil;
 		else
 			tinsert(itemDisplayTable, location);
 		end
 	end
 
-	table.sort(itemDisplayTable); -- Sort by location. This ends up as: inventory, backpack, bags, bank, and bank bags.
+	if useItemLocation then
+		local locationToItemID = {};
+		local function ItemLocationSort(lhsLocation, rhsLocation)
+			locationToItemID[lhsLocation] = locationToItemID[lhsLocation] or C_Item.GetItemID(lhsLocation);
+			locationToItemID[rhsLocation] = locationToItemID[rhsLocation] or C_Item.GetItemID(rhsLocation);
+			
+			local lhsItemID = locationToItemID[lhsLocation];
+			local rhsItemID = locationToItemID[rhsLocation];
+			return lhsItemID < rhsItemID;
+		end
+
+		table.sort(itemDisplayTable, ItemLocationSort);
+	else
+		table.sort(itemDisplayTable); -- Sort by location. This ends up as: inventory, backpack, bags, bank, and bank bags.
+	end
 	
 	local numTotalItems = #itemDisplayTable;
 
@@ -239,10 +270,36 @@ function EquipmentFlyout_UpdateItems()
 	for i, button in ipairs(buttons) do
 		if ( i <= numPageItems ) then
 			button.id = id;
-			button.location = itemDisplayTable[itemOffset + i];
 			button:Show();
 			
-			EquipmentFlyout_DisplayButton(button, itemButton);
+			local location = itemDisplayTable[itemOffset + i];
+			button.location = location;
+
+			if flyoutSettings.useItemLocation then
+				button:SetItemLocation(location);
+
+				local function SetButtonTooltip()
+					local self = button;
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+					local itemLocation = self:GetItemLocation();
+
+					if itemLocation:IsBagAndSlot() then
+						local bag, slot = itemLocation:GetBagAndSlot();
+						GameTooltip:SetBagItem(bag, slot);
+					elseif itemLocation:IsEquipmentSlot() then
+						local slot = itemLocation:GetEquipmentSlot();
+						GameTooltip:SetInventoryItem("player", slot);
+					end
+
+					GameTooltip:Show(bag, slot);
+				end
+
+				button.setTooltip = SetButtonTooltip;
+				button.UpdateTooltip = SetButtonTooltip;
+			else
+				EquipmentFlyout_DisplayButton(button, itemButton);
+			end
 		else
 			button:Hide();
 		end
@@ -474,7 +531,7 @@ function EquipmentFlyoutButton_OnClick(self)
 	if ( flyoutSettings.onClickFunc ) then
 		flyoutSettings.onClickFunc(self);
 	end
-	if ( EquipmentFlyoutFrame.button.popoutButton and EquipmentFlyoutFrame.button.popoutButton.flyoutLocked and not flyoutSettings.keepShownOnClick ) then
+	if ( (flyoutSettings.alwaysHideOnClick) or (EquipmentFlyoutFrame.button.popoutButton and EquipmentFlyoutFrame.button.popoutButton.flyoutLocked and not flyoutSettings.keepShownOnClick) ) then
 		EquipmentFlyoutFrame:Hide();
 	end
 end

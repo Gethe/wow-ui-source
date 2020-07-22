@@ -216,6 +216,7 @@ PartyFrame.xml
 TargetFrame.xml
 TotemFrame.xml
 PetFrame.xml
+CustomizationDebugFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
 CharacterFrame.xml

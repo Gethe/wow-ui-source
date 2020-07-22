@@ -61,45 +61,6 @@ function AventuresPuckAbilityMixin:SetPuckDesaturation(desaturation)
 	self.Border:SetDesaturation(desaturation);
 end
 
-
-AventuresPuckHealthBarMixin = {};
-
-local HealthBarBorderSize = 2;
-local TotalHealthBarBorderSize = HealthBarBorderSize * 2;
-function AventuresPuckHealthBarMixin:SetHealth(health)
-	self.health = health;
-
-	local healthPercent = math.min(health / self.maxHealth, 1);
-	local healthBarWidth = self.Background:GetWidth();
-	self.Health:SetPoint("RIGHT", self.Background, "LEFT", healthBarWidth * healthPercent, 0);
-end
-
-function AventuresPuckHealthBarMixin:GetHealth()
-	return self.health;
-end
-
-function AventuresPuckHealthBarMixin:SetMaxHealth(maxHealth)
-	self.maxHealth = maxHealth;
-end
-
-function AventuresPuckHealthBarMixin:SetPuckDesaturation(desaturation)
-	self.Background:SetDesaturation(desaturation);
-	self.Health:SetDesaturation(desaturation);
-	self.RoleIcon:SetDesaturation(desaturation);
-end
-
-function AventuresPuckHealthBarMixin:SetRole(role)
-	local useAtlasSize = true;
-	if role == Enum.GarrAutoCombatantRole.HealSupport then
-		self.RoleIcon:SetAtlas("Adventures-Healer", useAtlasSize);
-	elseif role == Enum.GarrAutoCombatantRole.Tank then
-		self.RoleIcon:SetAtlas("Adventures-Tank", useAtlasSize);
-	else
-		self.RoleIcon:SetAtlas("Adventures-DPS", useAtlasSize);
-	end
-end
-
-
 AdventuresPuckMixin = {};
 
 function AdventuresPuckMixin:OnLoad()
@@ -226,7 +187,7 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 	self.info = info;
 	self.name = info.name;
 
-	local autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerGUID);
+	local autoCombatSpells = info.autoCombatSpells or C_Garrison.GetFollowerAutoCombatSpells(followerGUID);
 	self.autoCombatSpells = autoCombatSpells;
 	
 	local abilityOne = autoCombatSpells[1];
@@ -242,11 +203,11 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 		self.AbilityTwo:SetAbilityInfo(abilityTwo);
 	end
 
-	local autoCombatStats = C_Garrison.GetFollowerAutoCombatStats(followerGUID);
+	local autoCombatStats = info.autoCombatantStats and info.autoCombatantStats or C_Garrison.GetFollowerAutoCombatStats(followerGUID);
 	info.autoCombatantStats = autoCombatStats;
 
 	self.Portrait:SetTexture(info.portraitIconID);
-	self.HealthBar:SetMaxHealth(info.maxHealth);
+	self.HealthBar:SetMaxHealth(info.autoCombatantStats.maxHealth);
 	self.HealthBar:SetHealth(info.autoCombatantStats.currentHealth);
 	self.HealthBar:SetRole(info.role);
 end

@@ -295,7 +295,7 @@
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="expand" value="true" type="boolean"/>
-									<KeyValue key="spacing" value="10" type="number"/>
+									<KeyValue key="spacing" value="0" type="number"/>
 									<KeyValue key="layoutIndex" value="1" type="number" />
 								</KeyValues>
 							</Frame>

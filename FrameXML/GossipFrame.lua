@@ -63,7 +63,7 @@ end
 function GossipFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 
-	self.titleButtonPool = CreateFramePool("Button", self, "GossipTitleButtonTemplate");
+	self.titleButtonPool = CreateFramePool("Button", GossipGreetingScrollChildFrame, "GossipTitleButtonTemplate");
 end
 
 function GossipFrame_HandleShow(self)
@@ -145,14 +145,19 @@ local function GossipFrame_InsertTitleSeparator()
 	end
 end
 
+local function GossipFrame_CancelTitleSeparator()
+	GossipFrame.insertSeparator = false;
+end
+
 local function GossipFrame_AnchorTitleButton(button)
 	local buttonCount = GossipFrame_GetTitleButtonCount();
 	if buttonCount > 1 then
 		button:SetPoint("TOPLEFT", GossipFrame_GetTitleButton(buttonCount - 1), "BOTTOMLEFT", 0, (GossipFrame.insertSeparator and -19 or 0) - 3);
-		GossipFrame.insertSeparator = false;
 	else
 		button:SetPoint("TOPLEFT", GossipGreetingText, "BOTTOMLEFT", -10, -20);
 	end
+
+	GossipFrame_CancelTitleSeparator();
 end
 
 function GossipTitleButton_OnClick(self, button)
@@ -173,11 +178,12 @@ function GossipFrameAvailableQuestsUpdate()
 		button:SetID(titleIndex);
 		GossipFrame_AnchorTitleButton(button);
 	end
+
+	GossipFrame_InsertTitleSeparator();
 end
 
 function GossipFrameActiveQuestsUpdate()
 	local gossipQuests = C_GossipInfo.GetActiveQuests();
-	GossipFrame_InsertTitleSeparator();
 
 	GossipFrame.hasActiveQuests = (#gossipQuests > 0);
 	for titleIndex, questInfo in ipairs(gossipQuests) do
@@ -186,11 +192,12 @@ function GossipFrameActiveQuestsUpdate()
 		button:SetID(titleIndex);
 		GossipFrame_AnchorTitleButton(button);
 	end
+
+	GossipFrame_InsertTitleSeparator();
 end
 
 function GossipFrameOptionsUpdate()
 	local gossipOptions = C_GossipInfo.GetOptions();
-	GossipFrame_InsertTitleSeparator();
 
 	local titleIndex = 1;
 	for titleIndex, optionInfo in ipairs(gossipOptions) do

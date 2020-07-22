@@ -140,11 +140,9 @@ function CovenantSanctumUpgradesTabMixin:SetUpUpgrades()
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpTextureKits()
-	local treeID = C_Garrison.GetCurrentGarrTalentTreeID();
-	local treeInfo = C_Garrison.GetTalentTreeInfo(treeID);
-
-	if g_sanctumTextureKit ~= treeInfo.textureKit then
-		g_sanctumTextureKit = treeInfo.textureKit;
+	local textureKit = self:GetParent():GetTextureKit();
+	if g_sanctumTextureKit ~= textureKit then
+		g_sanctumTextureKit = textureKit;
 
 		SetupTextureKit(self, mainTextureKitRegions);
 		SetupTextureKit(self.TalentsList, listTextureKitRegions);

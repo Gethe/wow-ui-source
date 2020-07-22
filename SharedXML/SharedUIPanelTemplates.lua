@@ -1421,7 +1421,7 @@ function SelectionPopoutWithButtonsAndLabelMixin:HidePopout()
 	self.SelectionPopoutButton:HidePopout();
 end
 
-function SelectionPopoutWithButtonsAndLabelMixin:OnEntryClick(entry)
+function SelectionPopoutWithButtonsAndLabelMixin:OnEntryClick(entryData)
 end
 
 function SelectionPopoutWithButtonsAndLabelMixin:GetTooltipText()
@@ -1434,8 +1434,11 @@ end
 function SelectionPopoutWithButtonsAndLabelMixin:OnEntryMouseLeave(entry)
 end
 
+function SelectionPopoutWithButtonsAndLabelMixin:GetMaxPopoutHeight()
+end
+
 function SelectionPopoutWithButtonsAndLabelMixin:UpdateButtons()
-	self.IncrementButton:SetEnabled(self.SelectionPopoutButton.selectedIndex < #self.SelectionPopoutButton.currentButtons);
+	self.IncrementButton:SetEnabled(self.SelectionPopoutButton.selectedIndex < #self.SelectionPopoutButton.selections);
 	self.DecrementButton:SetEnabled(self.SelectionPopoutButton.selectedIndex > 1);
 end
 
@@ -1492,64 +1495,94 @@ function SelectionPopoutButtonMixin:HidePopout()
 end
 
 function SelectionPopoutButtonMixin:ShowPopout()
+	if self.popoutNeedsUpdate then
+		self:UpdatePopout();
+	end
+
 	self.Popout:Show();
 	self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox-open");
 	self.HighlightTexture:SetAlpha(0.2);
+end
+
+function SelectionPopoutButtonMixin:SetupSelections(selections, selectedIndex)
+	self.selections = selections;
+	self.selectedIndex = selectedIndex;
+
+	if self.Popout:IsShown() then
+		self:UpdatePopout();
+	else
+		self.popoutNeedsUpdate = true;
+	end
+
+	self:UpdateButtonDetails();
 end
 
 local MAX_POPOUT_ENTRIES_FOR_1_COLUMN = 10;
 local MAX_POPOUT_ENTRIES_FOR_2_COLUMNS = 24;
 local MAX_POPOUT_ENTRIES_FOR_3_COLUMNS = 36;
 
-function SelectionPopoutButtonMixin:SetupSelections(selections, selectedIndex)
-	self.selections = selections;
-	self.selectedIndex = selectedIndex;
-
-	self.buttonPool:ReleaseAll();
-	self.currentButtons = {};
-
-	local function getNumColumnsAndStride(numSelections)
-		if numSelections > MAX_POPOUT_ENTRIES_FOR_3_COLUMNS then
-			return 4, 12;
-		elseif numSelections > MAX_POPOUT_ENTRIES_FOR_2_COLUMNS then
-			return 3, 12;
-		elseif numSelections > MAX_POPOUT_ENTRIES_FOR_1_COLUMN then
-			if numSelections > 20 then
-				return 2, 12;
-			else
-				return 2, 10;
-			end
-		else
-			return 1, numSelections;
-		end
+local function getNumColumnsAndStride(numSelections, maxStride)
+	local numColumns, stride;
+	if numSelections > MAX_POPOUT_ENTRIES_FOR_3_COLUMNS then
+		numColumns, stride = 4, math.ceil(numSelections / 4);
+	elseif numSelections > MAX_POPOUT_ENTRIES_FOR_2_COLUMNS then
+		numColumns, stride = 3, math.ceil(numSelections / 3);
+	elseif numSelections > MAX_POPOUT_ENTRIES_FOR_1_COLUMN then
+		numColumns, stride =  2, math.ceil(numSelections / 2);
+	else
+		numColumns, stride =  1, numSelections;
 	end
 
-	local numColumns, stride = getNumColumnsAndStride(#selections);
+	if maxStride and stride > maxStride then
+		numColumns = math.ceil(numSelections / maxStride);
+		stride = math.ceil(numSelections / numColumns);
+	end
 
-	for index, selectionData in ipairs(selections) do
+	return numColumns, stride;
+end
+
+function SelectionPopoutButtonMixin:GetMaxPopoutStride()
+	local maxPopoutHeight = self:GetParent():GetMaxPopoutHeight();
+	if maxPopoutHeight then
+		local selectionHeight = 20;
+		return math.floor(maxPopoutHeight / selectionHeight);
+	end
+end
+
+function SelectionPopoutButtonMixin:UpdatePopout()
+	self.buttonPool:ReleaseAll();
+
+	local numColumns, stride = getNumColumnsAndStride(#self.selections, self:GetMaxPopoutStride());
+	local buttons = {};
+
+	for index, selectionData in ipairs(self.selections) do
 		local button = self.buttonPool:Acquire();
-		local selectionInfo = selections[index];
+		local selectionInfo = self.selections[index];
 
-		local isSelected = (index == selectedIndex);
+		local isSelected = (index == self.selectedIndex);
 		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1);
 		button:Show();
 
-		table.insert(self.currentButtons, button);
+		table.insert(buttons, button);
 	end
 
-	self.layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride);
-	AnchorUtil.GridLayout(self.currentButtons, self.initialAnchor, self.layout);
+	if stride ~= self.lastStride then
+		self.layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride);
+		self.lastStride = stride;
+	end
 
-	self:UpdateButtonText();
+	AnchorUtil.GridLayout(buttons, self.initialAnchor, self.layout);
+
+	self.popoutNeedsUpdate = false;
 end
 
-function SelectionPopoutButtonMixin:GetCurrentSelection()
-	return self.currentButtons[self.selectedIndex];
+function SelectionPopoutButtonMixin:GetCurrentSelectedData()
+	return self.selections[self.selectedIndex];
 end
 
-function SelectionPopoutButtonMixin:UpdateButtonText()
-	local currentSelection = self:GetCurrentSelection();
-	self.SelectionDetails:SetupDetails(currentSelection.selectionData, self.selectedIndex);
+function SelectionPopoutButtonMixin:UpdateButtonDetails()
+	local currentSelectedData = self:GetCurrentSelectedData();
+	self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
 	local maxNameWidth = 125 - self.SelectionDetails.SelectionNumber:GetWidth() - 5;
 	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
 		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
@@ -1570,14 +1603,22 @@ function SelectionPopoutButtonMixin:TogglePopout()
 	end
 end
 
+function SelectionPopoutButtonMixin:OnMouseWheel(delta)
+	if delta > 0 then
+		self:Increment();
+	else
+		self:Decrement();
+	end
+end
+
 function SelectionPopoutButtonMixin:OnClick()
 	self:TogglePopout();
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
-function SelectionPopoutButtonMixin:OnEntryClick(entry)
+function SelectionPopoutButtonMixin:OnEntryClick(entryData)
 	if self.parent.OnEntryClick then
-		self.parent:OnEntryClick(entry);
+		self.parent:OnEntryClick(entryData);
 	end
 
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
@@ -1596,10 +1637,10 @@ function SelectionPopoutButtonMixin:OnEntryMouseLeave(entry)
 end
 
 function SelectionPopoutButtonMixin:Increment()
-	local newIndex = math.min(self.selectedIndex + 1, #self.currentButtons);
+	local newIndex = math.min(self.selectedIndex + 1, #self.selections);
 	if newIndex ~= self.selectedIndex then
 		self.selectedIndex = newIndex;
-		self:OnEntryClick(self.currentButtons[newIndex]);
+		self:OnEntryClick(self:GetCurrentSelectedData());
 	end
 end
 
@@ -1607,7 +1648,7 @@ function SelectionPopoutButtonMixin:Decrement()
 	local newIndex = math.max(self.selectedIndex - 1, 1);
 	if newIndex ~= self.selectedIndex then
 		self.selectedIndex = newIndex;
-		self:OnEntryClick(self.currentButtons[newIndex]);
+		self:OnEntryClick(self:GetCurrentSelectedData());
 	end
 end
 
@@ -1615,7 +1656,7 @@ SelectionPopoutDetailsMixin = {};
 
 function SelectionPopoutDetailsMixin:GetTooltipText()
 	if self.SelectionName:IsShown() and self.SelectionName:IsTruncated() then
-		return CHARACTER_CUSTOMIZATION_CHOICE_NAME_AND_ID:format(self.index, self.name);
+		return self.name;
 	end
 
 	return nil;
@@ -1624,9 +1665,9 @@ end
 function SelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
 	local width = defaultWidth;
 
-	if self.ColorSwatch:IsShown() then
+	if self.ColorSwatch1:IsShown() or self.ColorSwatch2:IsShown() then
 		if multipleColumns then
-			width = self.SelectionNumber:GetWidth() + self.ColorSwatch:GetWidth();
+			width = self.SelectionNumber:GetWidth() + self.ColorSwatch2:GetWidth() + 18;
 		end
 	elseif self.SelectionName:IsShown() then
 		if multipleColumns then
@@ -1638,41 +1679,66 @@ function SelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
 		end
 	end
 
-	self:SetWidth(width);
+	self:SetWidth(Round(width));
 end
 
 function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected)
 	self.name = selectionData.name;
 	self.index = index;
 
-	if self.showColors and selectionData.swatchColor then
-		self.ColorSwatch:Show();
+	self.SelectionNumber:ClearAllPoints();
+
+	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
+	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
+	if color1 then
+		self.ColorSwatch1:Show();
+		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
+
+		if color2 then
+			self.ColorSwatch2:Show();
+			self.ColorSwatch2:SetVertexColor(color2:GetRGB());
+		else
+			self.ColorSwatch2:Hide();
+		end
+
 		self.SelectionName:Hide();
-		self.ColorSwatch:SetVertexColor(selectionData.swatchColor:GetRGB());
+		self.SelectionNumber:SetWidth(25);
+		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	elseif selectionData.name ~= "" then
-		self.ColorSwatch:Hide();
+		self.ColorSwatch1:Hide();
+		self.ColorSwatch2:Hide();
 		self.SelectionName:Show();
 		self.SelectionName:SetWidth(0);
 		self.SelectionName:SetText(selectionData.name);
+		self.SelectionNumber:SetWidth(25);
+		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	else
-		self.ColorSwatch:Hide();
+		self.ColorSwatch1:Hide();
+		self.ColorSwatch2:Hide();
 		self.SelectionName:Hide();
+		self.SelectionNumber:SetWidth(0);
+		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	end
 
 	if isSelected ~= nil then
 		local fontColor = isSelected and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 		self.SelectionNumber:SetTextColor(fontColor:GetRGB());
 		self.SelectionName:SetTextColor(fontColor:GetRGB());
+		self.ColorSelected:SetShown(color1 and isSelected);
 	end
 
-	local hideNumber = ((isSelected == nil) and (selectionData.name ~= ""));
+	local hideNumber = ((isSelected == nil) and (color1 or (selectionData.name ~= "")));
 	if hideNumber then
 		self.SelectionNumber:Hide();
 		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "LEFT", 0, 0);
+		self.ColorSwatch1:SetPoint("LEFT", self.SelectionNumber, "LEFT", 0, 0);
+		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "LEFT", 18, -2);
 	else
 		self.SelectionNumber:Show();
 		self.SelectionNumber:SetText(index);
 		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
+		self.ColorSwatch1:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
+		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 18, -2);
 	end
 end
 
@@ -1729,7 +1795,7 @@ function SelectionPopoutEntryMixin:OnLeave()
 end
 
 function SelectionPopoutEntryMixin:OnClick()
-	self.parentButton:OnEntryClick(self);
+	self.parentButton:OnEntryClick(self.selectionData);
 end
 
 DefaultScaleFrameMixin = {};

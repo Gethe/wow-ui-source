@@ -6,9 +6,12 @@ function BarberShopMixin:OnLoad()
 	self:RegisterEvent("BARBER_SHOP_RESULT");
 	self:RegisterEvent("BARBER_SHOP_COST_UPDATE");
 	self:RegisterEvent("BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE");
+	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
 	CharCustomizeFrame.RandomizeAppearanceButton:Hide();
+
+	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
 end
 
 function BarberShopMixin:OnEvent(event, ...)
@@ -24,6 +27,8 @@ function BarberShopMixin:OnEvent(event, ...)
 		self:UpdatePrice();
 	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
 		self:UpdateCharCustomizationFrame();
+	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
+		C_BarberShop.Cancel();
 	end
 end
 
@@ -33,17 +38,32 @@ function BarberShopMixin:OnShow()
 	UIErrorsFrame:SetParent(self);
 	UIErrorsFrame:SetFrameStrata("DIALOG");
 	UIErrorsFrame:ClearAllPoints();
-	UIErrorsFrame:SetPoint("TOP", self.Banner, "BOTTOM", 0, 0);
+	UIErrorsFrame:SetPoint("TOP", self.Sexes, "BOTTOM", 0, 0);
 
-	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
-	if currentCharacterData then
-		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
-	end
+	self:UpdateSex();
 
 	local reset = true;
 	self:UpdateCharCustomizationFrame(reset);
 
 	PlaySound(SOUNDKIT.BARBERSHOP_SIT);
+end
+
+function BarberShopMixin:UpdateSex()
+	self.sexButtonPool:ReleaseAll();
+
+	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
+	if currentCharacterData then
+		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
+
+		local sexes = {Enum.Unitsex.Male, Enum.Unitsex.Female};
+		for index, sexID in ipairs(sexes) do
+			local button = self.sexButtonPool:Acquire();
+			button:SetSex(sexID, currentCharacterData.sex, index);
+			button:Show();
+		end
+	end
+
+	self.Sexes:MarkDirty();
 end
 
 function BarberShopMixin:OnHide()
@@ -56,11 +76,15 @@ end
 function BarberShopMixin:OnKeyDown(key)
 	if key == "ESCAPE" then
 		C_BarberShop.Cancel();
+	elseif key == "PRINTSCREEN" then
+		Screenshot();
 	end
 end
 
 function BarberShopMixin:Reset()
 	C_BarberShop.ResetCustomizationChoices();
+	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
+	self:SetCharacterSex(currentCharacterData.sex)
 	self:UpdateCharCustomizationFrame();
 end
 
@@ -136,6 +160,11 @@ end
 
 function BarberShopMixin:SetCameraDistanceOffset(offset)
 	C_BarberShop.SetCameraDistanceOffset(offset);
+end
+
+function BarberShopMixin:SetCharacterSex(sexID)
+	C_BarberShop.SetSelectedSex(sexID);
+	self:UpdateSex();
 end
 
 BarberShopButtonMixin = {};

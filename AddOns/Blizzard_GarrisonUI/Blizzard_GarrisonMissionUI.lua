@@ -295,7 +295,7 @@ function GarrisonFollowerMission:SetEnemyName(portraitFrame, name)
 end
 
 function GarrisonFollowerMission:SetEnemyPortrait(portraitFrame, enemy, eliteFrame, numMechs)
-	GarrisonEnemyPortait_Set(portraitFrame.Portrait, enemy.portraitFileDataID);
+	GarrisonPortrait_Set(portraitFrame.Portrait, enemy.portraitFileDataID);
 
 	if ( numMechs > 1 ) then
 		eliteFrame:Show();
@@ -641,10 +641,16 @@ function GarrisonMissionFrame_ToggleFrame()
 end
 
 function GarrisonMissionFrame_ClearMouse()
+	GarrisonFollowerPlacerFrame:Hide();
 	if ( GarrisonFollowerPlacer.info ) then
 		GarrisonFollowerPlacer:Hide();
-		GarrisonFollowerPlacerFrame:Hide();
 		GarrisonFollowerPlacer.info = nil;
+		
+		return true;
+	elseif (CovenantFollowerPlacer.info ) then
+		CovenantFollowerPlacer:Hide();
+		CovenantFollowerPlacer.info = nil;
+		
 		EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 		return true;
 	end
@@ -1441,17 +1447,17 @@ end
 ---------------------------------------------------------------------------------
 function GarrisonMissionPageFollowerFrame_OnDragStart(self)
 	local mainFrame = self:GetParent():GetParent():GetParent();
-	mainFrame:OnDragStartMissionFollower(GarrisonFollowerPlacer, self, 24);
+	mainFrame:OnDragStartMissionFollower(mainFrame:GetPlacerFrame(), self, 24);
 end
 
 function GarrisonMissionPageFollowerFrame_OnDragStop(self)
 	local mainFrame = self:GetParent():GetParent():GetParent();
-	mainFrame:OnDragStopMissionFollower(GarrisonFollowerPlacer);
+	mainFrame:OnDragStopMissionFollower(mainFrame:GetPlacerFrame());
 end
 
 function GarrisonMissionPageFollowerFrame_OnReceiveDrag(self)
 	local mainFrame = self:GetParent():GetParent():GetParent();
-	mainFrame:OnReceiveDragMissionFollower(GarrisonFollowerPlacer, self);
+	mainFrame:OnReceiveDragMissionFollower(mainFrame:GetPlacerFrame(), self);
 end
 
 function GarrisonMissionPageFollowerFrame_OnEnter(self)
@@ -1732,10 +1738,10 @@ function GarrisonFollowerMissionComplete:ClearFollowerData()
 end
 
 ---------------------------------------------------------------------------------
---- Enemy Portrait                                                            ---
+--- Global Portrait Setting                                                       ---
 ---------------------------------------------------------------------------------
 
-function GarrisonEnemyPortait_Set(portrait, portraitFileDataID)
+function GarrisonPortrait_Set(portrait, portraitFileDataID)
 	if (portraitFileDataID == nil or portraitFileDataID == 0) then
 		-- unknown icon file ID; use the default silhouette portrait
 		portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");

@@ -23,6 +23,9 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 	"ModifiersChanged",
 	"ItemSlotOnEnter",
 	"ItemSlotOnLeave",
+	"UpgradeItemChanged",
+	"UpgradeItemSlotOnEnter",
+	"UpgradeItemSlotOnLeave",
 });
 
 local RuneforgeFrameEvents = {
@@ -37,6 +40,7 @@ local RuneforgeFrameUnitEvents = {
 function RuneforgeFrameMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	self.ResultTooltip:Init();
+	self.runeforgeState = RuneforgeUtil.RuneforgeState.Craft
 end
 
 function RuneforgeFrameMixin:OnShow()
@@ -46,7 +50,7 @@ function RuneforgeFrameMixin:OnShow()
 	self:RefreshCurrencyDisplay();
 	self:SetStaticEffectsShown(true);
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+	self.Title:SetText(self:IsRuneforgeUpgrading() and RUNEFORGE_LEGENDARY_CRAFTING_FRAME_UPGRADE_TITLE or RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE);
 end
 
 function RuneforgeFrameMixin:OnHide()
@@ -139,9 +143,13 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 	local hasItem = baseItem ~= nil;
 	if hasItem then
 		resultTooltip:SetOwner(self, "ANCHOR_NONE");
-		resultTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -160);
+		resultTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -162);
+
 		local itemID = C_Item.GetItemID(baseItem);
-		resultTooltip:SetRuneforgeResultItem(itemID, powerID, modifiers);
+		local upgradeItem = self:GetUpgradeItem();
+		local hasUpgradeItem = upgradeItem ~= nil;
+		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or C_Item.GetCurrentItemLevel(baseItem);
+		resultTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
 	end
 	
 	resultTooltip:SetShown(hasItem);
@@ -153,12 +161,43 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 	end
 end
 
-function RuneforgeFrameMixin:SetItem(itemLocation)
-	if not itemLocation or C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) then
-		return self.CraftingFrame:SetItem(itemLocation);
+function RuneforgeFrameMixin:ShowComparisonTooltip()
+	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
+	local upgradeItem = self:GetUpgradeItem();
+	if baseItem == nil or upgradeItem == nil then
+		return;
 	end
 
-	return false;
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
+	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, 0);
+
+	local itemID = C_Item.GetItemID(baseItem);
+	local itemLevel = C_Item.GetCurrentItemLevel(baseItem);
+	GameTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
+	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
+	GameTooltip:Show();
+
+	local resultTooltip = self.ResultTooltip;
+	resultTooltip:SetOwner(self, "ANCHOR_NONE");
+	resultTooltip:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 4, 0);
+	local upgradeItemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
+	resultTooltip:SetRuneforgeResultItem(itemID, upgradeItemLevel, powerID, modifiers);
+	resultTooltip:Show();
+
+	SetUIPanelAttribute(self, "width", self:GetWidth());
+	UpdateUIPanelPositions(self);
+end
+
+function RuneforgeFrameMixin:ShowUpgradeTooltip()
+end
+
+function RuneforgeFrameMixin:SetItem(itemLocation, autoSelectSlot)
+	return self.CraftingFrame:SetItem(itemLocation, autoSelectSlot);
+end
+
+function RuneforgeFrameMixin:SetItemAutomatic(itemLocation)
+	local autoSelectSlot = true;
+	return self.CraftingFrame:SetItem(itemLocation, autoSelectSlot);
 end
 
 function RuneforgeFrameMixin:GetItem()
@@ -167,6 +206,14 @@ end
 
 function RuneforgeFrameMixin:HasItem()
 	return self:GetItem() ~= nil;
+end
+
+function RuneforgeFrameMixin:GetUpgradeItem()
+	return self.CraftingFrame:GetUpgradeItem();
+end
+
+function RuneforgeFrameMixin:HasUpgradeItem()
+	return self.CraftingFrame:GetUpgradeItem() ~= nil;
 end
 
 function RuneforgeFrameMixin:SetPowerID(powerID)
@@ -200,14 +247,22 @@ end
 function RuneforgeFrameMixin:CanCraftRuneforgeLegendary()
 	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
 
-	if not baseItem then
+	if baseItem == nil then
 		return false, nil;
 	end
 
-	for i, cost in ipairs(C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem)) do
+	local isUpgrading = self:IsRuneforgeUpgrading();
+	local upgradeItem = self:GetUpgradeItem();
+	if isUpgrading and (upgradeItem == nil) then
+		return false, nil;
+	end
+
+	local costs = isUpgrading and C_LegendaryCrafting.GetRuneforgeLegendaryUpgradeCost(baseItem, upgradeItem) or C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem);
+	for i, cost in ipairs(costs) do
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(cost.currencyID);
 		if cost.amount > currencyInfo.quantity then
-			return false, RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_CURRENCY_FORMAT:format(currencyInfo.name);
+			local formatString = isUpgrading and RUNEFORGE_LEGENDARY_ERROR_UPGRADE_INSUFFICIENT_CURRENCY_FORMAT or RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_CURRENCY_FORMAT;
+			return false, formatString:format(currencyInfo.name);
 		end
 	end
 
@@ -232,6 +287,66 @@ end
 function RuneforgeFrameMixin:AddEffect(level, ...)
 	local modelScene = self:GetModelSceneFromLevel(level);
 	return modelScene:AddEffect(...);
+end
+
+function RuneforgeFrameMixin:SetRuneforgeState(state)
+	self:SetItem(nil);
+	self.runeforgeState = state;
+
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+end
+
+function RuneforgeFrameMixin:GetRuneforgeState()
+	return self.runeforgeState;
+end
+
+function RuneforgeFrameMixin:GetItemContext()
+	local hasItem = self:HasItem();
+	if self:GetRuneforgeState() == RuneforgeUtil.RuneforgeState.Upgrade then
+		return self:HasItem() and ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem or ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem;
+	else
+		return ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem;
+	end
+end
+
+function RuneforgeFrameMixin:GetCost()
+	local baseItem = self:GetItem();
+	if self:IsRuneforgeUpgrading() then
+		local upgradeItem = self:GetUpgradeItem();
+		return (baseItem and upgradeItem) and C_LegendaryCrafting.GetRuneforgeLegendaryUpgradeCost(baseItem, upgradeItem) or nil;
+	else
+		return baseItem and C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem) or nil;
+	end
+end
+
+function RuneforgeFrameMixin:IsUpgradeItemValidForRuneforgeLegendary(itemLocation)
+	local baseItem = self:GetItem();
+	if not baseItem then
+		return false;
+	end
+
+	return C_LegendaryCrafting.IsUpgradeItemValidForRuneforgeLegendary(baseItem, itemLocation);
+end
+
+function RuneforgeFrameMixin:IsRuneforgeCrafting()
+	return self:GetRuneforgeState() == RuneforgeUtil.RuneforgeState.Craft;
+end
+
+function RuneforgeFrameMixin:IsRuneforgeUpgrading()
+	return self:GetRuneforgeState() == RuneforgeUtil.RuneforgeState.Upgrade;
+end
+
+function RuneforgeFrameMixin:GetRuneforgeComponentInfo()
+	if not self:IsRuneforgeUpgrading() then
+		return nil;
+	end
+
+	local baseItem = self:GetItem();
+	if baseItem == nil then
+		return nil;
+	end
+
+	return C_LegendaryCrafting.GetRuneforgeLegendaryComponentInfo(baseItem);
 end
 
 function RuneforgeFrameMixin:Close()

@@ -1979,8 +1979,9 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 	local areAllItemsUsable = true;
 
 	-- Figure out if all the items are usable
-	C_QuestLog.SetSelectedQuest(GetQuestID());
-	for i = 1, GetNumQuestLogChoices() do
+	local questID = GetQuestID();
+	C_QuestLog.SetSelectedQuest(questID);
+	for i = 1, GetNumQuestLogChoices(questID) do
 		local isUsable = select(5, GetQuestLogChoiceInfo(i));
 		if (not isUsable) then
 			areAllItemsUsable = false;

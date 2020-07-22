@@ -310,6 +310,56 @@ function PTR_IssueReporter.CreateReports()
     azeriteEssenceReport:AddDataCollection(collector.FromDataPackage, "ID") 
 
     azeriteEssenceReport:RegisterPopEvent(event.Tooltip, tooltips.azerite)
+    --------------------------------------- Character Customization Bug Reporting ----------------------------------------------
+    local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Bug Report")
+    
+    local GetRaceID = function()
+        return select(3, UnitRace(PTR_IssueReporter.Data.UnitTokens.Player))
+    end
+
+    local GetAllCustomizationSelections = function()        
+        local customizationCategoryData = C_BarberShop.GetAvailableCustomizations()
+        --if the function has changed and doesn't exist then we'll pass through an error index
+        if customizationCategoryData == nil then
+            return "-1"
+        end
+
+        local customizationDataString = ""
+        local count = 0
+
+        for key, category in pairs (customizationCategoryData) do
+            for optionKey, optionValue in pairs(category.options) do
+                if(optionValue.choices[optionValue.currentChoiceIndex].id) then
+                    customizationDataString = customizationDataString .. "," .. optionValue.choices[optionValue.currentChoiceIndex].id
+                    count = count + 1
+                 end
+            end
+        end
+        
+        customizationDataString = count .. customizationDataString
+
+        return customizationDataString
+    end
+
+    local GetClassID = function()
+        return select(3, UnitClass(PTR_IssueReporter.Data.UnitTokens.Player))
+    end
+
+    local GetGender = function()
+        local currentCharacterData = C_BarberShop.GetCurrentCharacterData()
+		return currentCharacterData.sex
+    end
+
+    barberShopReport:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetMessageKey)
+    barberShopReport:AddDataCollection(collector.SurveyID)    
+    barberShopReport:AddDataCollection(collector.RunFunction, GetAllCustomizationSelections)
+    barberShopReport:AddDataCollection(collector.RunFunction, GetClassID)
+    barberShopReport:AddDataCollection(collector.RunFunction, GetGender)
+    barberShopReport:AddDataCollection(collector.RunFunction, GetRaceID)
+    barberShopReport:AddDataCollection(collector.OpenEndedQuestion, "Please describe the issue:")     
+    barberShopReport:RegisterButtonEvent(event.BarberShopOpened)
+    barberShopReport:RegisterButtonEventEnd(event.BarberShopClosed)
+    barberShopReport:RegisterButtonEventEnd(event.MapIDExit)
 end
 --------------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New Player Experience being test in 9.0 Alpha

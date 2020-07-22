@@ -457,6 +457,10 @@ function TradeSkillUIMixin:OnRetrievingFrameUpdate(elapsed)
 	end
 end
 
+function TradeSkillUIMixin:IsRecipeLearned()
+	return self.DetailsFrame:IsRecipeLearned();
+end
+
 function TradeSkillUIMixin:GetOptionalReagent(optionalReagentIndex)
 	return self.DetailsFrame:GetOptionalReagent(optionalReagentIndex);
 end

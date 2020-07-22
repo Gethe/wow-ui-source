@@ -82,7 +82,7 @@ function AdventuresCombatLogMixin:OnLoad()
 	self.CombatLogMessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
 		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
 	end);
-
+	self.CombatLogMessageFrame.ScrollBar.trackBG:Show();
 	self.damageTypeKeys = {};
 	local damageClassStrings = C_Garrison.GetAutoCombatDamageClassValues();
 
@@ -106,6 +106,7 @@ function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex, totalRounds)
 	self.CombatLogMessageFrame:AddMessage(" ");
 	self.CombatLogMessageFrame:AddMessage(COVENANT_MISSIONS_COMBAT_LOG_ROUND:format(roundIndex, totalRounds), YELLOW_FONT_COLOR:GetRGB());
 	self.CombatLogMessageFrame:AddMessage(" ");
+	self:UpdateScrollbar();
 end
 
 function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
@@ -123,11 +124,13 @@ function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
 
 		self.CombatLogMessageFrame:AddMessage(logEntry, textColor:GetRGB());
 	end
+	self:UpdateScrollbar();
 end
 
 function AdventuresCombatLogMixin:AddVictoryState(winState)
 	local winStateText = winState and COVENANT_MISSIONS_COMBAT_LOG_VICTORY or COVENANT_MISSIONS_COMBAT_LOG_LOSS;
 	self.CombatLogMessageFrame:AddMessage(winStateText, YELLOW_FONT_COLOR:GetRGB());
+	self:UpdateScrollbar();
 end
 
 function AdventuresCombatLogMixin:GetCompleteScreen()
@@ -137,4 +140,11 @@ end
 function AdventuresCombatLogMixin:GetNameAtBoardIndex(boardIndex)
 	local frame = self:GetCompleteScreen():GetFrameFromBoardIndex(boardIndex);
 	return frame:GetName() or "";
+end
+
+function AdventuresCombatLogMixin:UpdateScrollbar()
+	local numMessages = self.CombatLogMessageFrame:GetNumMessages();
+	local maxValue = math.max(numMessages, 1);
+	self.CombatLogMessageFrame.ScrollBar:SetMinMaxValues(1, maxValue);
+	self.CombatLogMessageFrame.ScrollBar:SetValue(maxValue - self.CombatLogMessageFrame:GetScrollOffset());
 end

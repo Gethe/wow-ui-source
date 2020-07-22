@@ -20,8 +20,6 @@ local covenantGarrisonStyleData =
 	BackgroundTile = "Adventures-Missions-BG-02",
 };
 
-local CovenantPlacer = GarrisonFollowerPlacer;
-
 local function SetupMissionList(self, styleData)
 	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "CovenantMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
 	self.MissionTab.MissionList:Update();
@@ -220,6 +218,7 @@ function CovenantMission:ClearParty()
 	end
 
 	missionPage.Board:Reset();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 end
 
 -- numFollowers is unused, but kept to maintain the same function signature.
@@ -260,6 +259,9 @@ function CovenantMission:InitiateMissionCompletion(missionInfo)
 	self.MissionCompleteBackground:Show();
 end
 
+function CovenantMission:GetPlacerFrame()
+	return CovenantFollowerPlacer;
+end
 
 function CovenantMission:OnClickFollowerPlacerFrame(button, info)
 	if button == "LeftButton" then
@@ -273,27 +275,34 @@ function CovenantMission:OnClickFollowerPlacerFrame(button, info)
 	self:ClearMouse();
 end
 
+function CovenantMission:SetPlacerFrame(placer, info, yOffset)
+	placer:SetFollowerGUID(info.followerID, info);
+	self:LockPlacerToMouse(placer);
+end
+
 function CovenantMission:OnFollowerFrameDragStart(followerFrame)
 	local info = followerFrame:GetInfo();
 	if not info then
 		return;
 	end
 
-	self:SetPlacerFrame(CovenantPlacer, info);
-	CovenantPlacer.dragStartFrame = followerFrame;
+	local covenantPlacer = self:GetPlacerFrame();
+	self:SetPlacerFrame(covenantPlacer, info);
+	covenantPlacer.dragStartFrame = followerFrame;
 
 	local function CovenantPlacerFrame_OnHide()
-		CovenantPlacer.dragStartFrame = nil;
-		CovenantPlacer:SetScript("OnHide", nil);
+		covenantPlacer.dragStartFrame = nil;
+		covenantPlacer:SetScript("OnHide", nil);
 	end
 	
-	CovenantPlacer:SetScript("OnHide", CovenantPlacerFrame_OnHide);
+	covenantPlacer:SetScript("OnHide", CovenantPlacerFrame_OnHide);
 	self:RemoveFollowerFromMission(followerFrame);
 end
 
 function CovenantMission:OnFollowerFrameDragStop(followerFrame)
-	if CovenantPlacer.info then
-		GarrisonShowFollowerPlacerFrame(self, CovenantPlacer.info);
+	local covenantPlacer = self:GetPlacerFrame();
+	if covenantPlacer.info then
+		GarrisonShowFollowerPlacerFrame(self, covenantPlacer.info);
 	else	
 		self:ClearMouse();
 	end
@@ -301,13 +310,16 @@ function CovenantMission:OnFollowerFrameDragStop(followerFrame)
 end
 
 function CovenantMission:OnFollowerFrameReceiveDrag(followerFrame)
-	if CovenantPlacer.info then
-		self:AssignFollowerToMission(followerFrame, CovenantPlacer.info);
+	local covenantPlacer = self:GetPlacerFrame();
+	if covenantPlacer.info then
+		self:AssignFollowerToMission(followerFrame, covenantPlacer.info);
 	end
 	self:ClearMouse();
 end
 
 function CovenantMission:GetPlacerUpdate()
+	local covenantPlacer = self:GetPlacerFrame();
+
 	local function PlacerFrameUpdate(placerFrame)
 		GarrisonFollowerPlacer_OnUpdate(placerFrame);
 
@@ -321,11 +333,11 @@ function CovenantMission:GetPlacerUpdate()
 			end
 
 			local missionID = missionPage.missionInfo.missionID;
-			if CovenantPlacer.info.autoCombatSpells[1] == nil then
+			if covenantPlacer.info.autoCombatSpells[1] == nil then
 				return;
 			end
 
-			local spellID = CovenantPlacer.info.autoCombatSpells[1].autoCombatSpellID;
+			local spellID = covenantPlacer.info.autoCombatSpells[1].autoCombatSpellID;
 			local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, spellID, hoverBoardIndex);
 			if targetingIndices then
 				self.casterBoardIndex = hoverBoardIndex;
@@ -432,7 +444,6 @@ function CovenantMission:UpdateTextures()
 	self.BackgroundTile:SetAtlas("Adventures-Missions-BG-02");
 
 	local styleData = covenantGarrisonStyleData;
-
 	SetupTabOffset(self);
 	SetupMissionList(self, styleData);
 	SetupBorder(self, styleData);
@@ -456,8 +467,6 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 		end
 	end
 
-	EventRegistry:TriggerEvent("CovenantMission.CancelTargeting");
-
 	if info.autoCombatSpells[1] ~= nil then
 		self.casterSpellIndex = frame.boardIndex;
 		self.lastAssignedSpell = info.autoCombatSpells[1].autoCombatSpellID;
@@ -472,8 +481,9 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	frame:SetFollowerGUID(info.followerID, info);
 
 	-- We're dragging this follower from another slot.
-	if CovenantPlacer.dragStartFrame and previousFollowerInfo then
-		self:AssignFollowerToMission(CovenantPlacer.dragStartFrame, previousFollowerInfo);
+	local covenantPlacer = self:GetPlacerFrame();
+	if covenantPlacer.dragStartFrame and previousFollowerInfo then
+		self:AssignFollowerToMission(covenantPlacer.dragStartFrame, previousFollowerInfo);
 	end
 
 	self:UpdateMissionData(missionPage);

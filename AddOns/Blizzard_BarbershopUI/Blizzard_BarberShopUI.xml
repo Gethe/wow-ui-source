@@ -38,26 +38,13 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Banner">
-				<Size x="381" y="210"/>
+			<Frame parentKey="Sexes" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="22" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" x="2" y="5"/>
+					<Anchor point="TOP" y="-27"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BGTex" setAllPoints="true" file="Interface\Barbershop\UI-Barbershop-Banner">
-							<TexCoords left="0" right="0.744141" top="0" bottom="0.820313"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Caption" inherits="GameFontNormalLarge" text="BARBERSHOP">
-							<Size x="350" y="30"/>
-							<Anchors>
-								<Anchor point="TOP" y="-94"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</Frame>
 			<Button parentKey="CancelButton" inherits="BarberShopButtonTemplate" text="CANCEL">
 				<Anchors>

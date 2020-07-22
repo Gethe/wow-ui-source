@@ -515,6 +515,7 @@ function QuestDetailsFrame_OnHide(self)
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)
+	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	C_QuestLog.SetSelectedQuest(questID);
 	QuestMapFrame.DetailsFrame.questID = questID;
 	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
