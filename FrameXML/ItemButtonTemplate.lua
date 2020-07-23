@@ -145,6 +145,10 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 	end
 
 	button.IconOverlay:Hide();
+	if button.IconOverlay2 then
+		button.IconOverlay2:Hide();
+	end
+
 	if itemIDOrLink then
 		if IsArtifactRelicItem(itemIDOrLink) then
 			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
@@ -173,7 +177,9 @@ end
 
 function SetItemButtonOverlay(button, itemIDOrLink, quality)
 	button.IconOverlay:SetVertexColor(1,1,1);
-	button.IconOverlay2:Hide();
+	if button.IconOverlay2 then
+		button.IconOverlay2:Hide();
+	end
 
 	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("AzeriteIconFrame");
@@ -182,11 +188,14 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality)
 		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
-		local color = BAG_ITEM_QUALITY_COLORS[quality or Enum.ItemQuality.Common];
+		if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
+			quality = Enum.ItemQuality.Common;
+		end
+		local color = BAG_ITEM_QUALITY_COLORS[quality];
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("ConduitIconFrame");
-		button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
 		button.IconOverlay:Show();
+		button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
 		button.IconOverlay2:Show();
 	else
 		button.IconOverlay:Hide();
