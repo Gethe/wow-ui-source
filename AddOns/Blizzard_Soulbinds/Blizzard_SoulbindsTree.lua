@@ -178,16 +178,15 @@ function SoulbindTreeMixin:StopNodeAnimations()
 	end
 end
 
-function SoulbindTreeMixin:StopThenApplyTargetedConduitAnimation(conduitType)
-	self:StopNodeAnimations();
-	
-	if not self:IsEditable() then
+function SoulbindTreeMixin:ApplyTargetedConduitAnimation(conduitType, requireEditable)
+	if requireEditable and not self:IsEditable() then
 		return;
 	end
 
 	for _, nodeFrame in pairs(self.nodeFrames) do
 		if nodeFrame:IsSelected() and nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) then
-			nodeFrame:SetConduitMouseoverAnimShown(true);
+			local withArrows = requireEditable;
+			nodeFrame:SetConduitMouseoverAnimShown(true, withArrows);
 		end
 	end
 end
@@ -205,7 +204,9 @@ function SoulbindTreeMixin:OnInventoryItemEnter(bag, slot)
 			self.handleLeave = true;
 			
 			if not self:IsConduitDragInProgress() then
-				self:StopThenApplyTargetedConduitAnimation(conduitType);
+				self:StopNodeAnimations();
+				local requireEditable = false;
+				self:ApplyTargetedConduitAnimation(conduitType, requireEditable);
 			end
 		end
 	end;
@@ -253,7 +254,9 @@ function SoulbindTreeMixin:EvaluateItemAtCursor()
 			local itemCallback = function()
 				local conduitType = C_Soulbinds.GetItemConduitType(itemLocation);
 				if conduitType then
-					self:StopThenApplyTargetedConduitAnimation(conduitType);
+					self:StopNodeAnimations();
+					local requireEditable = true;
+					self:ApplyTargetedConduitAnimation(conduitType, requireEditable);
 				else
 					self:StopThenApplyNodeAnimations();
 				end

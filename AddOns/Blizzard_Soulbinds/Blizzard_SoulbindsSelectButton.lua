@@ -37,21 +37,32 @@ end
 
 function SoulbindsSelectButtonMixin:OnEnter()
 	self.ModelScene.Highlight:Show();
+
+	if not self.soulbindData.unlocked then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local name = SOULBIND_TUTORIAL_SOULBIND_UNLOCK:format(self.soulbindData.name);
+		GameTooltip_AddNormalLine(GameTooltip, name);
+		GameTooltip:Show();
+	end
 end
 
 function SoulbindsSelectButtonMixin:OnLeave()
 	self.ModelScene.Highlight:Hide();
+	GameTooltip_Hide();
 end
 
 function SoulbindsSelectButtonMixin:Reset()
 	SelectableButtonMixin.Reset(self);
-	self:SetSoulbindID(nil);
+	self:SetSoulbind(nil);
 	self.ModelScene.Active:Hide();
 	self.ModelScene.Selected:Hide();
 	self:SetHighlightUnselected();
 	self:GetFxModelScene():ClearEffects();
 	self.deferredFx = nil;
 	self.activatedFxController = nil;
+	self.ModelScene.Highlight2.Pulse:Stop();
+	self.ModelScene.Highlight3.Pulse:Stop();
+	self.ModelScene.Dark.Pulse:Stop();
 end
 
 function SoulbindsSelectButtonMixin:GetFxModelScene()
@@ -59,15 +70,19 @@ function SoulbindsSelectButtonMixin:GetFxModelScene()
 end
 
 function SoulbindsSelectButtonMixin:GetSoulbindID()
-	return self.soulbindID;
+	return self.soulbindData and self.soulbindData.ID or nil;
 end
 
-function SoulbindsSelectButtonMixin:SetSoulbindID(soulbindID)
-	self.soulbindID = soulbindID;
+function SoulbindsSelectButtonMixin:SetSoulbind(soulbindData)
+	self.soulbindData = soulbindData;
+end
+
+function SoulbindsSelectButtonMixin:ShouldShowTutorial()
+	return Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) and self.soulbindData.unlocked and not GetCVarBitfield("soulbindsViewedTutorial", self.soulbindData.cvarIndex);
 end
 
 function SoulbindsSelectButtonMixin:Init(soulbindData)
-	self:SetSoulbindID(soulbindData.ID);
+	self:SetSoulbind(soulbindData);
 
 	local modelScene = self.ModelScene;
 	modelScene:ClearScene();
@@ -84,6 +99,13 @@ function SoulbindsSelectButtonMixin:Init(soulbindData)
 			actor:SetModelByCreatureDisplayID(modelSceneData.creatureDisplayInfoID, true);
 		end
 	end
+
+	local showTutorial = self:ShouldShowTutorial();
+	self.ModelScene.Highlight2.Pulse:SetPlaying(showTutorial);
+	self.ModelScene.Highlight3.Pulse:SetPlaying(showTutorial);
+	self.ModelScene.NewAlert:SetShown(showTutorial);
+
+	self.ModelScene.Lock:SetShown(not soulbindData.unlocked);
 
 	self.ModelScene:SetPaused(true);
 end
@@ -105,7 +127,13 @@ function SoulbindsSelectButtonMixin:SetHighlightUnselected()
 end
 
 function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
+	self.ModelScene.NewAlert:Hide();
+	self.ModelScene.Highlight2.Pulse:Stop();
+	self.ModelScene.Highlight3.Pulse:Stop();
+	self.ModelScene.Dark.Pulse:Stop();
+
 	if newSelected then
+		SetCVarBitfield("soulbindsViewedTutorial", self.soulbindData.cvarIndex, true);
 		self:SetHighlightSelected();
 	else
 		self:SetHighlightUnselected();
@@ -123,6 +151,7 @@ function SoulbindsSelectButtonMixin:SetActivated(activated)
 	self.ModelScene.Active:SetShown(activated);
 	if activated then
 		self.ModelScene.Dark:SetAlpha(0);
+		self.ModelScene.Dark.Pulse:Stop();
 		self.ModelScene:SetDesaturation(0);
 
 		if not self.activatedFxController then
@@ -134,8 +163,15 @@ function SoulbindsSelectButtonMixin:SetActivated(activated)
 			self.activatedFxController = nil;
 		end
 
-		self.ModelScene.Dark:SetAlpha(.5);
-		self.ModelScene:SetDesaturation(.8);
+		if self:ShouldShowTutorial() then
+			self.ModelScene.Dark:SetAlpha(0);
+			self.ModelScene.Dark.Pulse:Play();
+			self.ModelScene:SetDesaturation(0);
+		else
+			self.ModelScene.Dark:SetAlpha(.5);
+			self.ModelScene.Dark.Pulse:Stop();
+			self.ModelScene:SetDesaturation(.8);
+		end
 	end
 end
 

@@ -1081,20 +1081,19 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 				frame.centerStatusIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED;
 				frame.centerStatusIcon:Show();
 			end
-		elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and (not UnitInPhase(frame.unit) or UnitIsWarModePhased(frame.unit)) ) then
-			frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
-			frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
-			frame.centerStatusIcon.border:Hide();
-			frame.centerStatusIcon.tooltip = PARTY_PHASED_MESSAGE;
-			if ( UnitIsWarModePhased(frame.unit) ) then
-				if C_PvP.IsWarModeDesired() then
-					frame.centerStatusIcon.tooltip = PARTY_PLAYER_WARMODE_DISABLED;
-				else
-					frame.centerStatusIcon.tooltip = PARTY_PLAYER_WARMODE_ENABLED;
+		else
+			if frame.inDistance and frame.optionTable.displayInOtherPhase then
+				local phaseReason = UnitPhaseReason(frame.unit);
+				if phaseReason then
+					frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
+					frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+					frame.centerStatusIcon.border:Hide();
+					frame.centerStatusIcon.tooltip = PartyUtil.GetPhasedReasonString(phaseReason, frame.unit);
+					frame.centerStatusIcon:Show();
+					return;
 				end
 			end
-			frame.centerStatusIcon:Show();
-		else
+
 			frame.centerStatusIcon:Hide();
 		end
 	end

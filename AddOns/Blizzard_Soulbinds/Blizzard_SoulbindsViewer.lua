@@ -113,6 +113,7 @@ end
 
 function SoulbindViewerMixin:OnNodeChanged()
 	self:UpdateResetButton();
+	self:UpdateActivateButton();
 end
 
 function SoulbindViewerMixin:CanAffordReset()
@@ -152,12 +153,12 @@ function SoulbindViewerMixin:OpenSoulbind(soulbindID)
 end
 
 function SoulbindViewerMixin:Init(covenantData, soulbindData)
-	self.soulbindData = soulbindData;
-	self.covenantData = covenantData;
-
 	if (covenantData.ID == 0) then
 		error("You are not in a required covenant.");
 	end
+
+	self.soulbindData = soulbindData;
+	self.covenantData = covenantData;
 
 	self.SelectGroup:Init(covenantData, soulbindData.ID);
 	local bgAtlas = string.format("Soulbinds_Background_%s", covenantData.textureKit);
@@ -179,6 +180,9 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	self.Portrait2:SetAtlas(portraitAtlas, true);
 	self.Description:SetText(soulbindData.description)
 
+	local desaturation = soulbindData.unlocked and 0 or .75;
+	self.Portrait:SetDesaturation(desaturation);
+
 	self.Tree:Init(soulbindData);
 
 	self:UpdateActivateButton();
@@ -188,9 +192,13 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
-	self.Portrait2.ActivateAnim:Play();
+	--self.Portrait2.ActivateAnim:Play();
 	self.Background2.ActivateAnim:Play();
-	self.BackgroundActivateFX.ActivateAnim:Play();
+	self.ActivateFX.ActivateAnim:Play();
+	self.Fx.ActivateFXLensFlare1.ActivateAnim:Play();
+	self.Fx.ActivateFXLensFlare2.ActivateAnim:Play();
+	self.Fx.ActivateFXRunes1.ActivateAnim:Play();
+	self.Fx.ActivateFXRunes2.ActivateAnim:Play();
 	self.SelectGroup:OnSoulbindActivated(soulbindID);
 	self.Tree:Init(C_Soulbinds.GetSoulbindData(soulbindID));
 	self:UpdateResetButton();
@@ -205,11 +213,18 @@ function SoulbindViewerMixin:GetSoulbindData()
 end
 
 function SoulbindViewerMixin:UpdateActivateButton()
-	local canActivate = C_Soulbinds.CanActivateSoulbind(self:GetOpenSoulbindID());
-	local enabled = canActivate and 
-		not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
+	local openSoulbindID = self:GetOpenSoulbindID();
+	local canActivate = C_Soulbinds.CanActivateSoulbind(openSoulbindID);
+	local enabled = canActivate and not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
 	
 	self.ActivateButton:SetEnabled(enabled);
+
+	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
+		local showTutorial = enabled and self.Tree:HasSelectedNodes() and not GetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex);
+		ButtonPulseGlow:SetShown(self.ActivateButton, showTutorial);
+	else
+		ButtonPulseGlow:Hide(self.ActivateButton);
+	end
 end
 
 function SoulbindViewerMixin:IsActiveSoulbindOpen()
@@ -229,6 +244,11 @@ function SoulbindViewerMixin:OnActivateSoulbindClicked()
 	self.ActivateButton:SetEnabled(false);
 	C_Soulbinds.ActivateSoulbind(self:GetOpenSoulbindID());
 	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
+
+	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
+		ButtonPulseGlow:Hide(self.ActivateButton);
+		SetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex, true);
+	end
 end
 
 function SoulbindViewerMixin:OnInventoryItemEnter(bag, slot)

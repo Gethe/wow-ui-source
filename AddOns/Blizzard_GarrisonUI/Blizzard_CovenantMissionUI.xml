@@ -70,13 +70,43 @@
 					</Anchors>
 					<Color r="0.84" g="0.72" b="0.57"/>
 				</FontString>
-				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
-					<Size x="410" y="0"/>
-					<Shadow>
-						<Offset x="1" y="-1"/>
-					</Shadow>
+				<FontString parentKey="Title" inherits="QuestFont_Huge" justifyH="LEFT" maxLines="2">
+					<Size x="220" y="0"/>
+					<Shadow x="1" y="-1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="-4"/>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="105" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="EnemyPowerLabel" inherits="GameFontHighlight" justifyH="LEFT" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin" text="COVENANT_MISSIONS_ENEMY_POWER">
+					<Size x="140" y="0" />
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="4" y="7"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="EnemyPowerValue" inherits="GameFontHighlight" justifyH="RIGHT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+					<Size x="44" y="0"/>
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.EnemyPowerLabel" relativePoint="RIGHT" x="4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="PartyPowerLabel" inherits="GameFontHighlight" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="COVENANT_MISSIONS_PARTY_POWER">
+					<Size x="140" y="0" />
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.EnemyPowerLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="PartyPowerValue" inherits="GameFontHighlight" justifyH="RIGHT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+					<Size x="44" y="0"/>
+					<Shadow x="1" y="-1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.PartyPowerLabel" relativePoint="RIGHT" x="4"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
@@ -199,7 +229,8 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
-				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
+				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG">
+					<Size x="90" y="65"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" y="-1"/>
 					</Anchors>
@@ -246,7 +277,7 @@
 			</Button>
 			<Frame parentKey="EncounterIcon" inherits="SmallCovenantMissionEncounterIconTemplate" frameLevel="900">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="48" y="-16"/>
+					<Anchor point="TOPLEFT" x="28" y="-16"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Stage" inherits="CovenantMissionPageStageTemplate"/>

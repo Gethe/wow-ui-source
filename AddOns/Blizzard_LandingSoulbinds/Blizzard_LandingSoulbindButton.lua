@@ -8,16 +8,38 @@ local LandingSoulbindButtonEvents =
 function LandingPageSoulbindButtonMixin:OnEvent(event, ...)
 	if event == "SOULBIND_ACTIVATED" then
 		local soulbindID = ...;
-		local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
-		self:SetSoulbind(soulbindData);
+		if soulbindID > 0 then
+			local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
+			self:SetSoulbind(soulbindData);
+		end
 	end
 end
 
 function LandingPageSoulbindButtonMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, LandingSoulbindButtonEvents);
 
-	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
-	self:SetSoulbind(soulbindData);
+	local soulbindID = C_Soulbinds.GetActiveSoulbindID();
+	if soulbindID > 0 then
+		self:SetSoulbind(C_Soulbinds.GetSoulbindData(soulbindID));
+
+		if not GetCVarBool("soulbindsLandingPageTutorial") then
+			self:ShowHelpTip();
+		end
+	end
+end
+
+function LandingPageSoulbindButtonMixin:ShowHelpTip()
+	local helpTipInfo = {
+		text = SOULBIND_LANDING_BUTTON_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		targetPoint = HelpTip.Point.BottomEdgeCenter,
+		alignment = HelpTip.Alignment.BOTTOM,
+		offsetY = 5,
+		cvar = "soulbindsLandingPageTutorial",
+		cvarValue = 1,
+	};
+
+	HelpTip:Show(self, helpTipInfo, self);
 end
 
 function LandingPageSoulbindButtonMixin:OnHide()
@@ -42,6 +64,7 @@ end
 
 function LandingPageSoulbindButtonMixin:OnClick()
 	if UIParentLoadAddOn("Blizzard_Soulbinds") then
+		SetCVar("soulbindsLandingPageTutorial", true);
 		SoulbindViewer:Open();
 	end
 end

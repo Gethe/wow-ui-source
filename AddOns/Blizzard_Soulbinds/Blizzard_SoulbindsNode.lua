@@ -339,29 +339,31 @@ function SoulbindConduitNodeMixin:SetConduitPickupAnimShown(shown)
 	if shown then
 		self.RingOverlay2:Show();
 		self.RingOverlay3:Show();
-		self.RingOverlay6:Show();
+		self.RingOverlayArrows:Show();
 		self.RingOverlay2.Pulse:Play();
 		self.RingOverlay3.Pulse:Play();
-		self.RingOverlay6.Pulse:Play();
+		self.RingOverlayArrows.Pulse:Play();
 	else
 		self.RingOverlay2:Hide();
 		self.RingOverlay3:Hide();
-		self.RingOverlay6:Hide();
+		self.RingOverlayArrows:Hide();
 	end
 end
 
-function SoulbindConduitNodeMixin:SetConduitMouseoverAnimShown(shown)
+function SoulbindConduitNodeMixin:SetConduitMouseoverAnimShown(shown, withArrows)
 	if shown then
 		self.RingOverlay2:Show();
 		self.RingOverlay3:Show();
-		self.RingOverlay6:Show();
 		self.RingOverlay2.Pulse:Play();
 		self.RingOverlay3.Pulse:Play();
-		self.RingOverlay6.Pulse:Play();
+		if withArrows then
+			self.RingOverlayArrows:Show();
+			self.RingOverlayArrows.Pulse:Play();
+		end
 	else
 		self.RingOverlay2:Hide();
 		self.RingOverlay3:Hide();
-		self.RingOverlay6:Hide();
+		self.RingOverlayArrows:Hide();
 	end
 end
 

@@ -84,6 +84,11 @@ function CovenantMission:OnLoadMainFrame()
 
 	self:GetMissionPage().Board:Reset();
 
+	self:GetMissionPage().Stage.EnemyPowerLabel:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+	self:GetMissionPage().Stage.EnemyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+	self:GetMissionPage().Stage.PartyPowerLabel:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+	self:GetMissionPage().Stage.PartyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+
 	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
 		followerFrame:SetMainFrame(self);
 	end
@@ -204,8 +209,37 @@ function CovenantMission:ShowMission(missionInfo)
 	missionPage.EncounterIcon:SetEncounterInfo(missionInfo.encounterIconInfo);
 	local enemies = missionDeploymentInfo.enemies;
 	self:SetEnemies(missionPage, enemies);
-
+	self:UpdateEnemyPower(missionPage, enemies);
+	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
+end
+
+function CovenantMission:UpdateEnemyPower(missionPage, enemies)
+	local totalPower = 0;
+	for _, enemy in ipairs(enemies) do
+		totalPower = totalPower + enemy.attack;
+		totalPower = totalPower + enemy.maxHealth;
+	end
+
+	self.enemyPowerLevel = totalPower;
+
+	missionPage.Stage.EnemyPowerValue:SetText(BreakUpLargeNumbers(self.enemyPowerLevel));
+	missionPage.Stage.EnemyPowerValue:Show();
+end
+
+function CovenantMission:UpdateAllyPower(missionPage)
+	local partyPower = 0;
+
+	for followerFrame in missionPage.Board:EnumerateFollowers() do
+		if followerFrame.info then
+			partyPower = partyPower + followerFrame.info.autoCombatantStats.attack;
+			partyPower = partyPower + followerFrame.info.autoCombatantStats.currentHealth;
+		end
+	end
+
+	local textColorCode = partyPower < self.enemyPowerLevel and RED_FONT_COLOR_CODE or YELLOW_FONT_COLOR_CODE;
+	missionPage.Stage.PartyPowerValue:SetText(textColorCode .. BreakUpLargeNumbers(partyPower) .. FONT_COLOR_CODE_CLOSE);
+	missionPage.Stage.PartyPowerValue:Show();
 end
 
 function CovenantMission:ClearParty()
@@ -486,6 +520,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 		self:AssignFollowerToMission(covenantPlacer.dragStartFrame, previousFollowerInfo);
 	end
 
+	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
 
 	return true;
@@ -509,6 +544,7 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 
 	frame:SetEmpty();
 
+	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
 end
 
@@ -564,7 +600,7 @@ function CovenantFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	followerInfo.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerID);
+	followerInfo.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
 
 	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
 		local puck = self.Board:GetFrameByBoardIndex(boardIndex);

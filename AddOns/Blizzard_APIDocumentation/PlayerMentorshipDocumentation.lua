@@ -24,6 +24,11 @@ local PlayerMentorship =
 
 	Events =
 	{
+		{
+			Name = "NewcomerGraduation",
+			Type = "Event",
+			LiteralName = "NEWCOMER_GRADUATION",
+		},
 	},
 
 	Tables =

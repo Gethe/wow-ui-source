@@ -143,7 +143,7 @@ function EquipmentFlyout_Show(itemButton)
 	local id = itemButton.id or itemButton:GetID();
 
 	local flyout = EquipmentFlyoutFrame;
-	if flyout:IsShown() then
+	if flyout:IsShown() and (flyout.button ~= itemButton) then
 		flyout:Hide();
 	end
 

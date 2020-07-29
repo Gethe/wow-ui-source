@@ -139,13 +139,15 @@ function GarrisonLandingPageMixin:SetupCovenantCallings()
 end
 
 function GarrisonLandingPageMixin:SetupSoulbind()
-	if not self.SoulbindPanel then
-		if UIParentLoadAddOn("Blizzard_LandingSoulbinds") then
-			local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
-			if soulbindData.ID > 0 then
-				self.SoulbindPanel = LandingSoulbind.Create(self.Report);
-				self.SoulbindPanel:SetPoint("TOPLEFT", self.Report.Title, "TOPLEFT", -46, -250);
-			end
+	if self.SoulbindPanel then
+		local soulbindID = C_Soulbinds.GetActiveSoulbindID();
+		self.SoulbindPanel:SetShown(soulbindID > 0);
+	else
+		local soulbindID = C_Soulbinds.GetActiveSoulbindID();
+		if soulbindID > 0 and UIParentLoadAddOn("Blizzard_LandingSoulbinds") then
+			local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
+			self.SoulbindPanel = LandingSoulbind.Create(self.Report);
+			self.SoulbindPanel:SetPoint("TOPLEFT", self.Report.Title, "TOPLEFT", -46, -250);
 		end
 	end
 end

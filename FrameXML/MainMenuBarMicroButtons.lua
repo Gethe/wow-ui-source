@@ -805,7 +805,7 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 		alert = "TALENT_MICRO_BUTTON_SPEC_TUTORIAL";
 	elseif not self.canUseTalentUI and canUseTalentUI then
 		alert = "TALENT_MICRO_BUTTON_TALENT_TUTORIAL";
-	elseif canUseTalentSpecUI and GetSpecialization() > GetNumSpecializations() then
+	elseif canUseTalentSpecUI and IsPlayerInitialSpec() then
 		alert = "TALENT_MICRO_BUTTON_NO_SPEC";
 	elseif canUseTalentUI and not AreTalentsLocked() and GetNumUnspentTalents() > 0 then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
@@ -851,7 +851,7 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 	if not PlayerTalentFrame or not PlayerTalentFrame:IsShown() then
 		if MainMenuMicroButton_ShowAlert(self, alertText) then
 			MicroButtonPulse(self);
-			if GetSpecialization() > GetNumSpecializations() then
+			if IsPlayerInitialSpec() then
 				TalentMicroButton.suggestedTab = 1;
 			else
 				TalentMicroButton.suggestedTab = 2;

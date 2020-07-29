@@ -947,8 +947,10 @@ function BonusObjectiveTrackerModuleMixin:Update()
 			-- we just finished the banner for this, clear the data so the block displays
 			BANNER_BONUS_OBJECTIVE_ID = nil;
 		elseif( TopBannerManager_IsIdle() ) then
-			-- if there's no other banner showing we should show the banner
-			TopBannerManager_Show(ObjectiveTrackerBonusBannerFrame, OBJECTIVE_TRACKER_UPDATE_ID);
+			-- if there's no other banner showing we should show the banner, unless it would show for a WQ that shouldn't be in the tracker
+			if not QuestUtils_IsQuestWorldQuest(OBJECTIVE_TRACKER_UPDATE_ID) or GetTaskInfo(OBJECTIVE_TRACKER_UPDATE_ID) ~= nil then
+				TopBannerManager_Show(ObjectiveTrackerBonusBannerFrame, OBJECTIVE_TRACKER_UPDATE_ID);
+			end
 		end
 	end
 

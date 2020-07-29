@@ -677,7 +677,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	talentTabWidthCache[TALENTS_TAB] = 0;
 	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	if ( tab ) then
-		if C_SpecializationInfo.CanPlayerUseTalentUI() then
+		if ( C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec() ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);

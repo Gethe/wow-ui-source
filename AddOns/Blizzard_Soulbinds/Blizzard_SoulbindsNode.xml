@@ -199,7 +199,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="RingOverlay6" parentArray="RingOverlays" atlas="Soulbinds_Tree_Conduit_Arrows" alphaMode="ADD" hidden="true">
+				<Texture parentKey="RingOverlayArrows" parentArray="RingOverlays" atlas="Soulbinds_Tree_Conduit_Arrows" alphaMode="ADD" hidden="true">
 					<Size x="50" y="50"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

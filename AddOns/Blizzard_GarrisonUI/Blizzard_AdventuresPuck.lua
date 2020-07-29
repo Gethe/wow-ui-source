@@ -187,7 +187,7 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 	self.info = info;
 	self.name = info.name;
 
-	local autoCombatSpells = info.autoCombatSpells or C_Garrison.GetFollowerAutoCombatSpells(followerGUID);
+	local autoCombatSpells = info.autoCombatSpells or C_Garrison.GetFollowerAutoCombatSpells(followerGUID, info.level);
 	self.autoCombatSpells = autoCombatSpells;
 	
 	local abilityOne = autoCombatSpells[1];

@@ -113,6 +113,20 @@ local WarCampaign =
 				{ Name = "isCampaignQuest", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "UsesNormalQuestIcons",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "campaignID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "useNormalQuestIcons", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

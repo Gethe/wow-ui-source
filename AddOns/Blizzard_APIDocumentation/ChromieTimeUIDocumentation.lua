@@ -11,6 +11,20 @@ local ChromieTimeUI =
 			Type = "Function",
 		},
 		{
+			Name = "GetChromieTimeExpansionOption",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "expansionRecID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ChromieTimeExpansionInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetChromieTimeExpansionOptions",
 			Type = "Function",
 

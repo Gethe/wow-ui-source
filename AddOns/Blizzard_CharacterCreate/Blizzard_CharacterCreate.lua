@@ -623,8 +623,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	self.layoutIndex = classLayoutIndices[classData.fileName];
 
 	local atlas = GetClassAtlas(strlower(classData.fileName));
-	self:SetNormalAtlas(atlas);
-	self:SetPushedAtlas(atlas);
+	self:SetIconAtlas(atlas);
 
 	local buttonEnabled;
 	if CharacterCreateFrame.paidServiceType then
@@ -651,12 +650,26 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 			tooltipDisabledReason = CHAR_CREATE_NEW_PLAYER;
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace then
 			local validRaces = C_CharacterCreation.GetValidRacesForClass(classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
-			local validRaceNames = {};
-			for i, raceData in ipairs(validRaces) do
-				tinsert(validRaceNames, raceData.name);
+			local validAllianceRaceNames = {};
+			local validHordeRaceNames = {};
+			for _, raceData in ipairs(validRaces) do
+				if raceData.isNeutralRace or (raceData.factionInternalName == "Alliance") then 
+					tinsert(validAllianceRaceNames, raceData.name);
+				end
+
+				if raceData.isNeutralRace or (raceData.factionInternalName == "Horde") then 
+					tinsert(validHordeRaceNames, raceData.name);
+				end
 			end
-			local validRaceConcat = table.concat(validRaceNames, ", ");
-			tooltipDisabledReason = CLASS_DISABLED.."|n|n"..validRaceConcat;
+
+			-- Sort alphabetically
+			table.sort(validAllianceRaceNames);
+			table.sort(validHordeRaceNames);
+
+			local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
+			local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
+
+			tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -691,6 +704,29 @@ function CharacterCreateClassButtonMixin:SetEnabledState(enabled)
 	self.ClassName:SetFontObject(enabled and "GameFontNormalMed3" or "GameFontDisableMed3");
 end
 
+function CharacterCreateClassButtonMixin:IsDisabledByRace()
+	return not self.classData.enabled and (self.classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace);
+end
+
+function CharacterCreateClassButtonMixin:OnEnter()
+	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
+	if self:IsDisabledByRace() then
+		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
+		local validRacesMap = {};
+		for _, raceData in ipairs(validRaces) do
+			validRacesMap[raceData.raceID] = true;
+		end
+		RaceAndClassFrame:SetClassValidRaces(validRacesMap);
+	end
+end
+
+function CharacterCreateClassButtonMixin:OnLeave()
+	CharCustomizeFrameWithTooltipMixin.OnLeave(self);
+	if self:IsDisabledByRace() then
+		RaceAndClassFrame:SetClassValidRaces(nil);
+	end
+end
+
 CharacterCreateRaceButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin, CharCustomizeFrameWithExpandableTooltipMixin);
 
 function CharacterCreateRaceButtonMixin:GetAppropriateTooltip()
@@ -720,10 +756,17 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 
 	local useHiRez = true;
 	local atlas = GetRaceAtlas(strlower(raceData.fileName), sexString, useHiRez);
-	self:SetNormalAtlas(atlas);
-	self:SetPushedAtlas(atlas);
+	self:SetIconAtlas(atlas);
 
-	self:SetEnabledState(RaceAndClassFrame:IsRaceValid(raceData, self.faction));
+	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
+	self:SetEnabledState(isValidRace);
+
+	if isValidRace and RaceAndClassFrame.classValidRaces then
+		self:StartFlash();
+	else
+		self:StopFlash();
+	end
+
 	self.RaceName:SetText(raceData.name);
 	self.RaceName:SetShown(C_CharacterCreation.IsNewPlayerRestricted());
 
@@ -1077,6 +1120,9 @@ function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending)
 	self:StopClassAnimations();
 	CharacterCreateFrame:ResetCharacterRotation(nil, true);
 	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(not useBlending);
+
+	self.allowClassAnimationsAfterSeconds = self.selectedClassData.animLoopWaitTimeSeconds;
+	self:PlayClassAnimations();
 end
 
 function CharacterCreateRaceAndClassMixin:DestroyCreatedModels()
@@ -1200,6 +1246,10 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		return false;
 	end
 
+	if self.classValidRaces and not self.classValidRaces[raceData.raceID] then
+		return false;
+	end
+
 	if CharacterCreateFrame.paidServiceType == PAID_CHARACTER_CUSTOMIZATION then
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
@@ -1239,9 +1289,10 @@ function CharacterCreateRaceAndClassMixin:GetRandomValidRaceData()
 	return validRaces[randomIndex];
 end
 
-function CharacterCreateRaceAndClassMixin:UpdateButtons()
-	self.buttonPool:ReleaseAll();
-	self.frameCount = {};
+function CharacterCreateRaceAndClassMixin:UpdateSexButtons(releaseButtons)
+	if releaseButtons then
+		self.buttonPool:ReleaseAllByTemplate("CharCustomizeSexButtonTemplate");
+	end
 
 	local sexes = {Enum.Unitsex.Male, Enum.Unitsex.Female};
 	for index, sexID in ipairs(sexes) do
@@ -1249,6 +1300,17 @@ function CharacterCreateRaceAndClassMixin:UpdateButtons()
 		button:SetSex(sexID, self.selectedSexID, index);
 		button:Show();
 	end
+end
+
+function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
+	if releaseButtons then
+		self.buttonPool:ReleaseAllByTemplate("CharacterCreateAllianceButtonTemplate");
+		self.buttonPool:ReleaseAllByTemplate("CharacterCreateAllianceAlliedRaceButtonTemplate");
+		self.buttonPool:ReleaseAllByTemplate("CharacterCreateHordeButtonTemplate");
+		self.buttonPool:ReleaseAllByTemplate("CharacterCreateHordeAlliedRaceButtonTemplate");
+	end
+
+	local templateCount = {};
 
 	local races = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AllRaces);
 	for _, raceData in ipairs(races) do
@@ -1259,15 +1321,21 @@ function CharacterCreateRaceAndClassMixin:UpdateButtons()
 				return;
 			end
 
-			if not self.frameCount[buttonTemplate] then
-				self.frameCount[buttonTemplate] = 1;
+			if not templateCount[buttonTemplate] then
+				templateCount[buttonTemplate] = 1;
 			else
-				self.frameCount[buttonTemplate] = self.frameCount[buttonTemplate] + 1;
+				templateCount[buttonTemplate] = templateCount[buttonTemplate] + 1;
 			end
 
-			button:SetRace(raceData, self.selectedSexID, self.selectedRaceID, self.selectedFaction, self.frameCount[buttonTemplate]);
+			button:SetRace(raceData, self.selectedSexID, self.selectedRaceID, self.selectedFaction, templateCount[buttonTemplate]);
 			button:Show();
 		end
+	end
+end
+
+function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
+	if releaseButtons then
+		self.buttonPool:ReleaseAllByTemplate("CharacterCreateClassButtonTemplate");
 	end
 
 	local classes = C_CharacterCreation.GetAvailableClasses();
@@ -1276,7 +1344,23 @@ function CharacterCreateRaceAndClassMixin:UpdateButtons()
 		button:SetClass(classData, self.selectedClassID);
 		button:Show();
 	end
+end
 
+function CharacterCreateRaceAndClassMixin:UpdateButtons()
+	self.buttonPool:ReleaseAll();
+
+	self:UpdateSexButtons();
+	self:UpdateRaceButtons();
+	self:UpdateClassButtons();
+
+	self:LayoutButtons();
+end
+
+function CharacterCreateRaceAndClassMixin:SetClassValidRaces(classValidRaces)
+	self.classValidRaces = classValidRaces;
+
+	local releaseButtons = true;
+	self:UpdateRaceButtons(releaseButtons);
 	self:LayoutButtons();
 end
 

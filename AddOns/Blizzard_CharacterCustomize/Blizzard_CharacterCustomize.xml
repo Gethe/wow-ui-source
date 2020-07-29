@@ -122,6 +122,26 @@
 			</Layer>
 		</Layers>
 		
+		<Frames>
+			<Frame parentKey="Flash" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Portrait" setAllPoints="true" alphaMode="ADD" />
+						<Texture parentKey="Ring" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="BOUNCE">
+						<Alpha fromAlpha="0" toAlpha="1" duration="1" />
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>

@@ -33,7 +33,8 @@ function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequ
 end
 
 function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequency)
-	if GetCVarBool("disableUIShaking") or not ScriptAnimationUtil.GetScriptAnimationLock(region) then
+	local shakeStrength = tonumber(GetCVar("ShakeStrengthUI"));
+	if shakeStrength <= 0 or not ScriptAnimationUtil.GetScriptAnimationLock(region) then
 		return nop;
 	end
 
@@ -49,7 +50,7 @@ function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequenc
 	end
 
 	region.shakeTicker = C_Timer.NewTicker(frequency, function()
-		local xVariation, yVariation = shake[shakeIndex].x, shake[shakeIndex].y;
+		local xVariation, yVariation = shake[shakeIndex].x * shakeStrength, shake[shakeIndex].y * shakeStrength;
 		region:SetPoint(point, relativeRegion, relativePoint, x + xVariation, y + yVariation);
 		shakeIndex = shakeIndex + 1;
 		if shakeIndex > #shake or GetTime() >= endTime then

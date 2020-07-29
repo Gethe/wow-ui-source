@@ -21,7 +21,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Fontstring parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+				<Fontstring parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" maxLines="3">
 					<Size x="92" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" x="51"/>
@@ -136,7 +136,7 @@
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -161,7 +161,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WeeklyRewardConfirmSelectionFrame">
+	<Frame name="WeeklyRewardConfirmSelectionFrame" mixin="WeeklyRewardConfirmSelectionMixin">
 		<Size x="200" y="98"/>
 		<Frames>
 			<Frame parentKey="CurrencyFrame" inherits="CurrencyHorizontalLayoutFrameTemplate">
@@ -211,6 +211,9 @@
 				</Layers>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="WeeklyRewardsFrame" mixin="WeeklyRewardsMixin" parent="UIParent" hidden="true" enableMouse="true">

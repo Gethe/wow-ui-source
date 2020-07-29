@@ -39,6 +39,9 @@ function WeeklyRewardsMixin:OnShow()
 	self:RegisterEvent("WEEKLY_REWARDS_HIDE");
 	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
 	
+	-- for preview item tooltips
+	C_MythicPlus.RequestMapInfo();
+
 	self:Refresh();
 end
 
@@ -150,68 +153,7 @@ function WeeklyRewardsMixin:GetSelectedActivityInfo()
 end
 
 function WeeklyRewardsMixin:SelectReward()
-	local selectionFrame = WeeklyRewardConfirmSelectionFrame;
-	local itemFrame = selectionFrame.ItemFrame;
-	local currencyFrame = selectionFrame.CurrencyFrame;
-	local activityInfo = self:GetSelectedActivityInfo();
-	local heightUsed = 19;
-
-	local itemDBID = self.selectedActivity:GetDisplayedItemDBID();
-	if itemDBID then
-		local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(itemDBID);
-		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
-		local r, g, b = GetItemQualityColor(itemQuality);
-		itemFrame.Icon:SetTexture(itemIcon);
-		itemFrame.Name:SetText(itemName);
-		itemFrame.Name:SetTextColor(r, g, b);
-		itemFrame.itemHyperlink = itemHyperlink;
-		SetItemButtonQuality(itemFrame, itemQuality, itemHyperlink);
-		itemFrame:Show();
-		currencyFrame:Hide();
-		heightUsed = heightUsed + itemFrame:GetHeight();
-	else
-		currencyFrame:Clear();
-		for i, rewardInfo in ipairs(activityInfo.rewards) do
-			if rewardInfo.type == Enum.CachedRewardType.Currency then
-				currencyFrame:AddCurrency(rewardInfo.id, rewardInfo.quantity);
-			end
-		end
-		currencyFrame:Layout();
-		currencyFrame:Show();
-		itemFrame:Hide();
-		heightUsed = heightUsed + currencyFrame:GetHeight();
-	end
-
-	-- display items that are not the primary reward
-	local alsoItemsFrame = selectionFrame.AlsoItemsFrame;
-	if #activityInfo.rewards > 1 then
-		if alsoItemsFrame.pool then
-			alsoItemsFrame.pool:ReleaseAll();
-		else
-			alsoItemsFrame.pool = CreateFramePool("FRAME", alsoItemsFrame, "WeeklyRewardAlsoItemTemplate");
-		end
-		for i, rewardInfo in ipairs(activityInfo.rewards) do
-			if rewardInfo.itemDBID and rewardInfo.itemDBID ~= itemDBID then
-				local frame = alsoItemsFrame.pool:Acquire();
-				local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID);
-				local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
-				local r, g, b = GetItemQualityColor(itemQuality);
-				frame.Icon:SetTexture(itemIcon);
-				frame.IconBorder:SetVertexColor(r, g, b);
-				frame.layoutIndex = i;
-				frame.itemHyperlink = itemHyperlink;
-				frame:Show();
-			end
-		end
-		alsoItemsFrame:Layout();
-		alsoItemsFrame:Show();
-		heightUsed = heightUsed + 38;
-	else
-		alsoItemsFrame:Hide();
-	end
-
-	selectionFrame:SetHeight(heightUsed);
-	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.id, selectionFrame);
+	WeeklyRewardConfirmSelectionFrame:ShowPopup(self.selectedActivity:GetDisplayedItemDBID(), self:GetSelectedActivityInfo());
 end
 
 WeeklyRewardsActivityMixin = { };
@@ -255,13 +197,13 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		self.Progress:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 		self.LockIcon:Show();
 		self.LockIcon:SetAtlas("weeklyrewards-icon-unlocked", useAtlasSize);
+		self.ItemFrame:Hide();
 		if self.hasRewards then
 			self.Orb:SetTexture(nil);
 			self.ItemFrame:SetRewards(activityInfo.rewards);
 			self.ItemGlow:Show();
 		else
 			self.Orb:SetAtlas("weeklyrewards-orb-unlocked", useAtlasSize);
-			self.ItemFrame:Hide();
 			self.ItemGlow:Hide();
 		end
 	else
@@ -299,10 +241,112 @@ function WeeklyRewardsActivityMixin:OnMouseDown()
 end
 
 function WeeklyRewardsActivityMixin:OnEnter()
-	if not C_WeeklyRewards.CanClaimRewards() then
-		-- TODO: Tooltip for item preview
-		--GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -11);
+	if self.unlocked and not C_WeeklyRewards.CanClaimRewards() then
+		self:ShowPreviewItemTooltip();		
 	end
+end
+
+function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -11);
+	GameTooltip_SetTitle(GameTooltip, WEEKLY_REWARDS_CURRENT_REWARD);
+	local itemLink, upgradeItemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(self.info.id);
+	local itemLevel, upgradeItemLevel;
+	if itemLink then
+		itemLevel = GetDetailedItemLevelInfo(itemLink);
+	end
+	if upgradeItemLink then
+		upgradeItemLevel = GetDetailedItemLevelInfo(upgradeItemLink);
+	end
+	if not itemLevel then
+		GameTooltip_AddErrorLine(GameTooltip, RETRIEVING_ITEM_INFO);
+		self.UpdateTooltip = self.ShowPreviewItemTooltip;
+	else
+		self.UpdateTooltip = nil;
+		if self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
+			self:HandlePreviewRaidRewardTooltip(itemLevel, upgradeItemLevel);
+		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+			self:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel);
+		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
+			self:HandlePreviewPvPRewardTooltip(itemLevel, upgradeItemLevel);
+		end
+		if not upgradeItemLevel then
+			GameTooltip_AddColoredLine(GameTooltip, WEEKLY_REWARDS_MAXED_REWARD, GREEN_FONT_COLOR);
+		end
+	end
+	GameTooltip:Show();
+end
+
+function WeeklyRewardsActivityMixin:HandlePreviewRaidRewardTooltip(itemLevel, upgradeItemLevel)
+	local currentDifficultyID = self.info.level;
+	local currentDifficultyName = GetDifficultyInfo(currentDifficultyID);
+	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_RAID, itemLevel, currentDifficultyName));
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	if upgradeItemLevel then
+		local targetIndex;
+		-- looking for the next difficulty after current one
+		for i, difficultyID in ipairs(DIFFICULTY_PRIMARYRAIDS) do
+			if i == targetIndex then
+				local difficultyName = GetDifficultyInfo(difficultyID);
+				GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_RAID, difficultyName));
+				break;
+			elseif currentDifficultyID == difficultyID then
+				targetIndex = i + 1;
+			end
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel)
+	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC, itemLevel, self.info.level));
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	if upgradeItemLevel then
+		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
+		if self.info.threshold == 1 then
+			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT);
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, self.info.level + 1, self.info.threshold));
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
+
+			local runHistory = C_MythicPlus.GetRunHistory();
+			local comparison = function(entry1, entry2)
+				if ( entry1.level == entry2.level ) then
+					return entry1.mapChallengeModeID < entry2.mapChallengeModeID;
+				else
+					return entry1.level > entry2.level;
+				end
+			end
+			table.sort(runHistory, comparison);
+			for i = 1, self.info.threshold do
+				local runInfo = runHistory[i];
+				local name = C_ChallengeMode.GetMapUIInfo(runInfo.mapChallengeModeID);
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_RUN_INFO, runInfo.level, name));
+			end
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:HandlePreviewPvPRewardTooltip(itemLevel, upgradeItemLevel)
+	local tierName = PVPUtil.GetTierName(self.info.level);
+	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_PVP, itemLevel, tierName));
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	if upgradeItemLevel then
+		-- All brackets have the same breakpoints, use the first one
+		local tierID = C_PvP.GetPvpTierID(self.info.level, CONQUEST_BRACKET_INDEXES[1]);
+		local tierInfo = C_PvP.GetPvpTierInfo(tierID);
+		local ascendTierInfo = C_PvP.GetPvpTierInfo(tierInfo.ascendTier);
+		if ascendTierInfo then
+			GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
+			local ascendTierName = PVPUtil.GetTierName(ascendTierInfo.pvpTierEnum);
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_PVP, ascendTierName, tierInfo.ascendRating, ascendTierInfo.ascendRating - 1));
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:OnLeave()
+	self.UpdateTooltip = nil;
+	GameTooltip:Hide();
 end
 
 function WeeklyRewardsActivityMixin:GetDisplayedItemDBID()
@@ -421,4 +465,92 @@ end
 function WeeklyRewardsConcessionMixin:GetDisplayedItemDBID()
 	-- this only displays currencies
 	return nil;
+end
+
+WeeklyRewardConfirmSelectionMixin = { }
+
+function WeeklyRewardConfirmSelectionMixin:OnEvent(event, ...)
+	self:RefreshRewards();
+end
+
+function WeeklyRewardConfirmSelectionMixin:ShowPopup(itemDBID, activityInfo)
+	self.itemDBID = itemDBID;
+	self.activityInfo = activityInfo;
+	self:RefreshRewards();
+	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.id, self);
+end
+
+function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
+	local heightUsed = 19;
+	local itemFrame = self.ItemFrame;
+	local currencyFrame = self.CurrencyFrame;
+	local hasMissingData = false;
+	if self.itemDBID then
+		local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(self.itemDBID);
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
+		itemFrame.Icon:SetTexture(itemIcon or QUESTION_MARK_ICON);
+		local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
+		SetItemButtonQuality(itemFrame, itemQuality, itemHyperlink);
+		if itemName and itemQuality then
+			itemFrame.Name:SetText(itemName);
+			itemFrame.Name:SetTextColor(r, g, b);
+		else
+			itemFrame.Name:SetText(RETRIEVING_ITEM_INFO);
+			itemFrame.Name:SetTextColor(RED_FONT_COLOR:GetRGB());
+			hasMissingData = true;
+		end
+		itemFrame.itemHyperlink = itemHyperlink;
+		itemFrame:Show();
+		currencyFrame:Hide();
+		heightUsed = heightUsed + itemFrame:GetHeight();
+	else
+		currencyFrame:Clear();
+		for i, rewardInfo in ipairs(self.activityInfo.rewards) do
+			if rewardInfo.type == Enum.CachedRewardType.Currency then
+				currencyFrame:AddCurrency(rewardInfo.id, rewardInfo.quantity);
+			end
+		end
+		currencyFrame:Layout();
+		currencyFrame:Show();
+		itemFrame:Hide();
+		heightUsed = heightUsed + currencyFrame:GetHeight();
+	end
+
+	-- display items that are not the primary reward
+	local alsoItemsFrame = self.AlsoItemsFrame;
+	if #self.activityInfo.rewards > 1 then
+		if alsoItemsFrame.pool then
+			alsoItemsFrame.pool:ReleaseAll();
+		else
+			alsoItemsFrame.pool = CreateFramePool("FRAME", alsoItemsFrame, "WeeklyRewardAlsoItemTemplate");
+		end
+		for i, rewardInfo in ipairs(self.activityInfo.rewards) do
+			if rewardInfo.itemDBID and rewardInfo.itemDBID ~= self.itemDBID then
+				local frame = alsoItemsFrame.pool:Acquire();
+				local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID);
+				local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
+				if not itemIcon or not itemQuality then
+					hasMissingData = true;
+				end
+				frame.Icon:SetTexture(itemIcon or QUESTION_MARK_ICON);
+				local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
+				frame.IconBorder:SetVertexColor(r, g, b);
+				frame.layoutIndex = i;
+				frame.itemHyperlink = itemHyperlink;
+				frame:Show();
+			end
+		end
+		alsoItemsFrame:Layout();
+		alsoItemsFrame:Show();
+		heightUsed = heightUsed + 38;
+	else
+		alsoItemsFrame:Hide();
+	end
+
+	if hasMissingData then
+		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	else
+		self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+	end
+	self:SetHeight(heightUsed);
 end

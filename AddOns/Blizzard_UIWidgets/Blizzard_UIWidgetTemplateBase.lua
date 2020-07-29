@@ -673,3 +673,91 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, 
 
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end
+
+UIWidgetBaseScenarioHeaderTemplateMixin = {};
+
+local scenarioHeaderTextureKitRegions = {
+	["Frame"] = "%s-frame",
+}
+
+local scenarioHeaderTextureKitInfo =
+{
+	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR},
+	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, anchorOffsets = {xOffset = 15, yOffset = -8}, headerTextHeight = 20},
+}
+
+local scenarioHeaderDefaultFontObjects = {QuestTitleFont, Fancy16Font, SystemFont_Med1};
+local scenarioHeaderDefaultFontColor = SCENARIO_STAGE_COLOR;
+local scenarioHeaderDefaultAnchorOffsets = {xOffset = 15, yOffset = -8};
+local scenarioHeaderDefaultHeaderTextHeight = 36;
+local scenarioHeaderStageChangeWaitTime = 1.5;
+
+-- This returns true if we are waiting for the stage header to slide out
+function UIWidgetBaseScenarioHeaderTemplateMixin:Setup(widgetInfo, widgetContainer)
+	self:EnableMouse(false);
+
+	if self.WaitTimer then
+		self.latestWidgetInfo = widgetInfo;
+		return true;
+	end
+
+	local _, currentScenarioStage = C_Scenario.GetInfo();
+	if self.lastScenarioStage and self.lastScenarioStage ~= currentScenarioStage then
+		-- This widget was already showing and the scenario stage changed since the last time Setup was called
+		-- If we update everything now we will be showing the next stage's info
+		-- So instead we want to set a timer to give the current stage's header time to slide out
+
+		if self.WaitTimer then
+			self.WaitTimer:Cancel();
+		end
+
+		self.latestWidgetInfo = widgetInfo;
+		self.WaitTimer = C_Timer.NewTimer(scenarioHeaderStageChangeWaitTime, GenerateClosure(self.OnWaitTimerDone, self));
+		return true;
+	end
+
+	self.lastScenarioStage = currentScenarioStage;
+
+	local textureKitInfo = scenarioHeaderTextureKitInfo[widgetInfo.frameTextureKit];
+
+	local fontObjectsToTry = textureKitInfo and textureKitInfo.fontObjects or scenarioHeaderDefaultFontObjects;
+	self.HeaderText:SetFontObjectsToTry(unpack(fontObjectsToTry));
+
+	local fontColor = textureKitInfo and textureKitInfo.fontColor or scenarioHeaderDefaultFontColor;
+	self.HeaderText:SetTextColor(fontColor:GetRGB());
+
+	local headerTextHeight = textureKitInfo and textureKitInfo.headerTextHeight or scenarioHeaderDefaultHeaderTextHeight;
+	self.HeaderText:SetHeight(headerTextHeight);
+
+	self.HeaderText:SetText(widgetInfo.headerText);
+
+	local anchorOffsets = textureKitInfo and textureKitInfo.anchorOffsets or scenarioHeaderDefaultAnchorOffsets;
+	self.HeaderText:SetPoint("TOPLEFT", self, "TOPLEFT", anchorOffsets.xOffset, anchorOffsets.yOffset);
+
+	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, scenarioHeaderTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+
+	self:SetWidth(self.Frame:GetWidth());
+	self:SetHeight(self.Frame:GetHeight());
+end
+
+function UIWidgetBaseScenarioHeaderTemplateMixin:OnWaitTimerDone()
+	self.WaitTimer = nil;
+	
+	local _, currentScenarioStage = C_Scenario.GetInfo();
+	self.lastScenarioStage = currentScenarioStage;
+
+	self:Setup(self.latestWidgetInfo, self.widgetContainer);
+	self.latestWidgetInfo = nil;
+end
+
+function UIWidgetBaseScenarioHeaderTemplateMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
+
+	if self.WaitTimer then
+		self.WaitTimer:Cancel();
+		self.WaitTimer = nil;
+	end
+
+	self.lastScenarioStage = nil;
+	self.latestWidgetInfo = nil;
+end

@@ -285,8 +285,11 @@ function CharCustomizeMaskedButtonMixin:OnLoad()
 	if hasRingSizes then
 		self.Ring:SetAtlas(self.ringAtlas);
 		self.Ring:SetSize(self.ringWidth, self.ringHeight);
+		self.Flash.Ring:SetAtlas(self.ringAtlas);
+		self.Flash.Ring:SetSize(self.ringWidth, self.ringHeight);
 	else
 		self.Ring:SetAtlas(self.ringAtlas, true);
+		self.Flash.Ring:SetAtlas(self.ringAtlas, true);
 	end
 
 	self.NormalTexture:AddMaskTexture(self.CircleMask);
@@ -294,15 +297,33 @@ function CharCustomizeMaskedButtonMixin:OnLoad()
 	self.DisabledOverlay:AddMaskTexture(self.CircleMask);
 	self.DisabledOverlay:SetAlpha(self.disabledOverlayAlpha);
 	self.CheckedTexture:SetSize(self.checkedTextureSize, self.checkedTextureSize);
+	self.Flash.Portrait:AddMaskTexture(self.CircleMask);
 
 	if self.flipTextures then
 		self.NormalTexture:SetTexCoord(1, 0, 0, 1);
 		self.PushedTexture:SetTexCoord(1, 0, 0, 1);
+		self.Flash.Portrait:SetTexCoord(1, 0, 0, 1);
 	end
 
 	if self.BlackBG then
 		self.BlackBG:AddMaskTexture(self.CircleMask);
 	end
+end
+
+function CharCustomizeMaskedButtonMixin:SetIconAtlas(atlas)
+	self:SetNormalAtlas(atlas);
+	self:SetPushedAtlas(atlas);
+	self.Flash.Portrait:SetAtlas(atlas);
+end
+
+function CharCustomizeMaskedButtonMixin:StartFlash()
+	self.Flash:Show();
+	self.Flash.Anim:Play();
+end
+
+function CharCustomizeMaskedButtonMixin:StopFlash()
+	self.Flash.Anim:Stop();
+	self.Flash:Hide();
 end
 
 function CharCustomizeMaskedButtonMixin:SetEnabledState(enabled)
@@ -324,6 +345,7 @@ function CharCustomizeMaskedButtonMixin:OnMouseDown(button)
 		self.CircleMask:SetPoint("TOPLEFT", self.PushedTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
 		self.CircleMask:SetPoint("BOTTOMRIGHT", self.PushedTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
 		self.Ring:SetPoint("CENTER", self, "CENTER", 1, -1);
+		self.Flash:SetPoint("CENTER", self, "CENTER", 1, -1);
 	end
 end
 
@@ -339,6 +361,7 @@ function CharCustomizeMaskedButtonMixin:OnMouseUp(button)
 	self.CircleMask:SetPoint("TOPLEFT", self.NormalTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
 	self.CircleMask:SetPoint("BOTTOMRIGHT", self.NormalTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
 	self.Ring:SetPoint("CENTER");
+	self.Flash:SetPoint("CENTER");
 end
 
 function CharCustomizeMaskedButtonMixin:UpdateHighlightTexture()
@@ -368,8 +391,7 @@ function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, se
 
 	local useHiRez = true;
 	local atlas = GetRaceAtlas(strlower(raceData.fileName), sexString, useHiRez);
-	self:SetNormalAtlas(atlas);
-	self:SetPushedAtlas(atlas);
+	self:SetIconAtlas(atlas);
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(CHARACTER_FORM:format(raceData.name));
@@ -406,12 +428,10 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 
 	if selectedCategoryID == categoryData.id then
 		self:SetChecked(true);
-		self:SetNormalAtlas(categoryData.selectedIcon);
-		self:SetPushedAtlas(categoryData.selectedIcon);
+		self:SetIconAtlas(categoryData.selectedIcon);
 	else
 		self:SetChecked(false);
-		self:SetNormalAtlas(categoryData.icon);
-		self:SetPushedAtlas(categoryData.icon);
+		self:SetIconAtlas(categoryData.icon);
 	end
 
 	self:UpdateHighlightTexture();
@@ -444,8 +464,7 @@ function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
 	end
 
 	local atlas = GetGenderAtlas(sexID);
-	self:SetNormalAtlas(atlas);
-	self:SetPushedAtlas(atlas);
+	self:SetIconAtlas(atlas);
 
 	if selectedSexID == sexID then
 		self:SetChecked(true);

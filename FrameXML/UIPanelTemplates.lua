@@ -531,12 +531,16 @@ function CurrencyDisplayGroupMixin:OnLoad()
 end
 
 -- Defaults to a TOPRIGHT configuration.
-function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, gridLayout, tooltipAnchor, abbreviate)
+function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, gridLayout, tooltipAnchor, abbreviate, reverseOrder)
 	self.currencyFramePool:ReleaseAll();
 
 	local function FactoryFunction(index)
 		local currencyFrame = self.currencyFramePool:Acquire();
-		local currencyInfo = currencies[index];
+		local tIndex = index;
+		if reverseOrder then
+			tIndex = #currencies + 1 - index;
+		end
+		local currencyInfo = currencies[tIndex];
 
 		currencyFrame:SetTooltipAnchor(tooltipAnchor);
 		currencyFrame:SetAbbreviate(abbreviate);

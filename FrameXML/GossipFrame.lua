@@ -20,14 +20,14 @@ end
 function GossipTitleButtonMixin:SetQuest(titleText, level, isTrivial, frequency, isRepeatable, isLegendary, isIgnored, questID)
 	self.type = "Available";
 
-	QuestUtil.ApplyQuestIconOfferToTexture(self.Icon, isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID), C_QuestLog.IsQuestCalling(questID))
+	QuestUtil.ApplyQuestIconOfferToTexture(self.Icon, isLegendary, frequency, isRepeatable, QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID), C_QuestLog.IsQuestCalling(questID))
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
 end
 
 function GossipTitleButtonMixin:SetActiveQuest(titleText, level, isTrivial, isComplete, isLegendary, isIgnored, questID)
 	self.type = "Active";
 
-	QuestUtil.ApplyQuestIconActiveToTexture(self.Icon, isComplete, isLegendary, nil, nil, C_CampaignInfo.IsCampaignQuest(questID), C_QuestLog.IsQuestCalling(questID));
+	QuestUtil.ApplyQuestIconActiveToTexture(self.Icon, isComplete, isLegendary, nil, nil, QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID), C_QuestLog.IsQuestCalling(questID));
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
 end
 

@@ -2771,6 +2771,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
+	self:RegisterEvent("NEWCOMER_GRADUATION");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -3069,6 +3070,11 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		self.needsMentorChatExplanation = true;
 		ChatFrame_CheckShowNewcomerHelpBanner(self);
 
+		local isInitialLogin, isUIReload = ...;
+		if isInitialLogin then
+			ChatFrame_CheckShowNewcomerGraduation();
+		end
+
 		self.chatLevelUP = {};
 		LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
 
@@ -3080,6 +3086,9 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 	elseif ( event == "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED" ) then
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 		return true;
+	elseif ( event == "NEWCOMER_GRADUATION" ) then
+		local isFromEvent = true;
+		ChatFrame_CheckShowNewcomerGraduation(isFromEvent);
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
 		local name, fontSize, r, g, b, a, shown, locked = FCF_GetChatWindowInfo(self:GetID());
 		if ( fontSize > 0 ) then
@@ -3371,6 +3380,22 @@ function ChatFrame_CheckShowNewcomerHelpBanner(self, excludeChannel)
 	end
 end
 
+function ChatFrame_ShowNewcomerGraduation()
+	local slashCmd = GetSlashCommandForChannelOpenChat(1); -- The 1 is a lie, but there's no current way to find the general channel index here...
+	ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_NEWCOMER_GRADUATION:format(slashCmd));
+end
+
+function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
+	local hasShownGraduation = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION);
+	if not hasShownGraduation and isFromGraduationEvent then
+		ChatFrame_ShowNewcomerGraduation();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION, true);
+	elseif hasShownGraduation and not isFromGraduationEvent and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION_REMINDER) then
+		ChatFrame_ShowNewcomerGraduation();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION_REMINDER, true);
+	end
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3572,13 +3597,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					self.needsMentorChatExplanation = nil;
 
 					local channelSlashCommand = GetSlashCommandForChannelOpenChat(arg8);
-					local noticeInfo = ChatTypeInfo["SYSTEM"];
 					if IsActivePlayerNewcomer() then
-						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
+						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
 					else
 						-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
 						-- then if you're not a newcomer, you must be a guide.
-						self:AddMessage(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand), noticeInfo.r, noticeInfo.g, noticeInfo.b, info.id, accessID, typeID);
+						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
 					end
 				end
 			elseif arg1 == "YOU_LEFT" then

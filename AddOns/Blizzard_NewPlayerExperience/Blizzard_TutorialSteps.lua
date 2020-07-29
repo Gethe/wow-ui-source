@@ -224,7 +224,7 @@ end
 
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
 	self:ShowMouseKeyboardTutorial();
-	self.Timer = C_Timer.NewTimer(10, function() NPE_TutorialButtonPulseGlow:Show(KeyboardMouseConfirmButton) end);
+	self.Timer = C_Timer.NewTimer(10, function() ButtonPulseGlow:Show(KeyboardMouseConfirmButton) end);
 end
 
 function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
@@ -604,7 +604,7 @@ function Class_AcceptQuest:OnBegin()
 		self:Complete();
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function() NPE_TutorialButtonPulseGlow:Show(QuestFrameAcceptButton) end);
+	self.Timer = C_Timer.NewTimer(4, function() ButtonPulseGlow:Show(QuestFrameAcceptButton) end);
 end
 
 function Class_AcceptQuest:QUEST_ACCEPTED()
@@ -615,7 +615,7 @@ function Class_AcceptQuest:OnComplete()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	NPE_TutorialButtonPulseGlow:Hide(QuestFrameAcceptButton);
+	ButtonPulseGlow:Hide(QuestFrameAcceptButton);
 end
 
 
@@ -666,14 +666,14 @@ function Class_TurnInQuest:OnBegin()
 		self:Complete()
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function() NPE_TutorialButtonPulseGlow:Show(QuestFrameCompleteQuestButton) end);
+	self.Timer = C_Timer.NewTimer(4, function() ButtonPulseGlow:Show(QuestFrameCompleteQuestButton) end);
 end
 
 function Class_TurnInQuest:OnComplete()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	NPE_TutorialButtonPulseGlow:Hide(QuestFrameCompleteQuestButton);
+	ButtonPulseGlow:Hide(QuestFrameCompleteQuestButton);
 end
 
 
@@ -2639,13 +2639,13 @@ end
 
 function Class_LookingForGroup:DungeonEnabled(dungeonID)
 	if LFDQueueFrameFindGroupButton:IsEnabled() then
-		NPE_TutorialButtonPulseGlow:Show(LFDQueueFrameFindGroupButton);
+		ButtonPulseGlow:Show(LFDQueueFrameFindGroupButton);
 		self:HidePointerTutorials();
 	end
 end
 
 function Class_LookingForGroup:DungeonDisabled(dungeonID)
-	NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
+	ButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
 end
 
 function Class_LookingForGroup:ReadyDungeonList()
@@ -2697,7 +2697,7 @@ end
 
 function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 	--Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
-	NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
+	ButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
 
 	self:HidePointerTutorials();
 
@@ -2729,7 +2729,7 @@ function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
 end
 
 function Class_LookingForGroup:OnComplete()
-	NPE_TutorialButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
+	ButtonPulseGlow:Hide(LFDQueueFrameFindGroupButton);
 
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
@@ -2798,7 +2798,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_ResurrectPrompt = class("Death_ResurrectPrompt", Class_TutorialBase);
 function Class_Death_ResurrectPrompt:OnBegin()
-	self.Timer = C_Timer.NewTimer(2, function() NPE_TutorialButtonPulseGlow:Show(StaticPopup1Button1) end);
+	self.Timer = C_Timer.NewTimer(2, function() ButtonPulseGlow:Show(StaticPopup1Button1) end);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
 

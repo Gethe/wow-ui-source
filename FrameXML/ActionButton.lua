@@ -320,26 +320,6 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
     end
 end
 
-function ActionBarActionButtonMixin:CalculateAction(button)
-	if ( not button ) then
-		button = SecureButton_GetEffectiveButton(self);
-	end
-	if ( self:GetID() > 0 ) then
-		local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
-		if ( not page ) then
-			page = GetActionBarPage();
-			if ( self.isExtra ) then
-				page = GetExtraBarIndex();
-			elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
-				page = GetMultiCastBarIndex();
-			end
-		end
-		return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));
-	else
-		return SecureButton_GetModifiedAttribute(self, "action", button) or 1;
-	end
-end
-
 function ActionBarActionButtonMixin:UpdateAction(force)
 	local action = self:CalculateAction();
 	if ( action ~= self.action or force ) then

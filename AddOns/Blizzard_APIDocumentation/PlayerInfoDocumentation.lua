@@ -7,13 +7,21 @@ local PlayerInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerEnterChromieTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canEnter", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerUseAreaLoot",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "canUseAreaLoot", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -72,6 +80,15 @@ local PlayerInfo =
 			{
 				{ Name = "isEligible", Type = "bool", Nilable = false },
 				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPlayerInChromieTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inChromieTime", Type = "bool", Nilable = false },
 			},
 		},
 		{

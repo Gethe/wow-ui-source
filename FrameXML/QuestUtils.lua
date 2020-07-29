@@ -152,9 +152,18 @@ function QuestUtil.ApplyQuestIconActiveToTexture(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActive(...));
 end
 
+function QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID)
+	local quest = QuestCache:Get(questID);
+	if quest:IsCampaign() then
+		return not CampaignCache:Get(quest:GetCampaignID()):UsesNormalQuestIcons();
+	end
+
+	return false;
+end
+
 function QuestUtil.GetQuestIconOfferForQuestID(questID)
 	local quest = QuestCache:Get(questID);
-	return QuestUtil.GetQuestIconOffer(quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
+	return QuestUtil.GetQuestIconOffer(quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID));
 end
 
 function QuestUtil.ApplyQuestIconOfferToTextureForQuestID(texture, ...)
@@ -163,7 +172,7 @@ end
 
 function QuestUtil.GetQuestIconActiveForQuestID(questID)
 	local quest = QuestCache:Get(questID);
-	return QuestUtil.GetQuestIconActive(quest:IsComplete(), quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), quest:IsCampaign());
+	return QuestUtil.GetQuestIconActive(quest:IsComplete(), quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID));
 end
 
 function QuestUtil.ApplyQuestIconActiveToTextureForQuestID(texture, ...)

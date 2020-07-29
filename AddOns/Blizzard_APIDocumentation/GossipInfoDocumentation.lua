@@ -193,12 +193,50 @@ local GossipInfo =
 	Tables =
 	{
 		{
+			Name = "GossipOptionRewardType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Item", Type = "GossipOptionRewardType", EnumValue = 0 },
+				{ Name = "Currency", Type = "GossipOptionRewardType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "GossipOptionStatus",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Available", Type = "GossipOptionStatus", EnumValue = 0 },
+				{ Name = "Unavailable", Type = "GossipOptionStatus", EnumValue = 1 },
+				{ Name = "Locked", Type = "GossipOptionStatus", EnumValue = 2 },
+				{ Name = "AlreadyComplete", Type = "GossipOptionStatus", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "GossipOptionRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "rewardType", Type = "GossipOptionRewardType", Nilable = false },
+			},
+		},
+		{
 			Name = "GossipOptionUIInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "GossipOptionRewardInfo", Nilable = false },
+				{ Name = "status", Type = "GossipOptionStatus", Nilable = false },
 			},
 		},
 		{

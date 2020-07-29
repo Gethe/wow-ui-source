@@ -272,14 +272,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="AnimaCurrency" inherits="CurrencyDisplayTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="300" y="56"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="CurrencyDisplayGroup" inherits="CurrencyDisplayGroupTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="400" y="56"/>
+					<Anchor point="BOTTOMLEFT" x="412" y="56"/>
 				</Anchors>
 			</Frame>
 		</Frames>

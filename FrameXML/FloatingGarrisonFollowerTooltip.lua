@@ -45,7 +45,7 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait3 = trait3;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait4 = trait4;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroop(garrisonFollowerID);
-		GARRISON_FOLLOWER_FLOATING_TOOLTIP.autoCombatSpells = C_Garrison.GetFollowerAutoSpells(garrisonFollowerID);
+		GARRISON_FOLLOWER_FLOATING_TOOLTIP.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(garrisonFollowerID, level);
 
 		if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
 			GarrisonFollowerTooltipTemplate_SetShipyardFollower(floatingTooltip, GARRISON_FOLLOWER_FLOATING_TOOLTIP);
@@ -62,11 +62,14 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	tooltipFrame.Name:SetText(data.name);
 	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.iLevel);
 	tooltipFrame.PortraitFrame:SetupPortrait(data, false);
+
+	local isAutoCombatant = data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+
 	if ( data.spec ) then
 		local classSpecName = C_Garrison.GetFollowerClassSpecName(data.garrisonFollowerID);
 		tooltipFrame.ClassSpecName:SetText(classSpecName);
 		local classSpecAtlas = C_Garrison.GetFollowerClassSpecAtlas(data.spec);
-		if ( classSpecAtlas ) then
+		if (classSpecAtlas) then
 			tooltipFrame.Class:SetAtlas(classSpecAtlas);
 		else
 			tooltipFrame.Class:SetTexture(nil);
@@ -100,7 +103,30 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		else
 			tooltipFrame.XPBar:Show();
 		end
+
 		tooltipFrame.XPBarBackground:Show();
+	end
+
+	tooltipFrame.PortraitFrame:SetShown(not isAutoCombatant);
+	tooltipFrame.Class:SetShown(not isAutoCombatant);
+	local autoCombatantTooltipBaseHeight = 65;
+	if isAutoCombatant then	
+		tooltipFrame.XPBar:Hide();
+		tooltipFrame.XPBarBackground:Hide();
+
+		tooltipFrame.Name:SetPoint("TOPLEFT", 16, -15);
+		tooltipFrame.ClassSpecName:SetPoint("TOPLEFT", 16, -35);
+		tooltipFrame.XP:SetPoint("TOPLEFT", 16, -48);
+		tooltipFrame.XP:SetJustifyH("LEFT");
+		if	(data.xp == 0) then
+			autoCombatantTooltipBaseHeight = 55;
+			tooltipFrame.XP:Hide();
+		end
+	else
+		tooltipFrame.Name:SetPoint("TOPLEFT", 66, -10);
+		tooltipFrame.ClassSpecName:SetPoint("TOPLEFT", 66, -35);
+		tooltipFrame.XP:SetJustifyH("CENTER");
+		tooltipFrame.XP:SetPoint("TOPLEFT", tooltipFrame.XPBar, "BOTTOMLEFT", 0, -3);
 	end
 
 	local abilities = {data.ability1, data.ability2, data.ability3, data.ability4};
@@ -123,12 +149,12 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	
 	local abilityTemplate = "GarrisonFollowerAbilityTemplate";
 
-	local tooltipFrameHeightBase = 80;					-- this is the tooltip frame height w/ no abilities/traits being displayed
-	local abilityOffset = 10;							-- distance between ability entries
-	local abilityFrameHeightBase = 20;					-- ability frame height w/ no description/details being displayed
-	local spacingBetweenLabelAndFirstAbility = 8;		-- distance between the "Abilities" label and the first ability below it
-	local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
-	local spacingBetweenDescriptionAndDetails = 8;		-- must match the XML ability template setting
+	local tooltipFrameHeightBase = isAutoCombatant and autoCombatantTooltipBaseHeight or 80;	-- this is the tooltip frame height w/ no abilities/traits being displayed
+	local abilityOffset = 10;																	-- distance between ability entries
+	local abilityFrameHeightBase = 20;															-- ability frame height w/ no description/details being displayed
+	local spacingBetweenLabelAndFirstAbility = 8;												-- distance between the "Abilities" label and the first ability below it
+	local spacingBetweenNameAndDescription = 4;													-- must match the XML ability template setting
+	local spacingBetweenDescriptionAndDetails = 8;												-- must match the XML ability template setting
 	local spacingBeforeUnderBiasedString = 10;
 
 	local tooltipFrameHeight = tooltipFrameHeightBase;
@@ -179,7 +205,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		tooltipFrameHeight = tooltipFrameHeight + Ability:GetHeight();
 	end
 
-	local autoSpells = C_Garrison.GetFollowerAutoCombatSpells(data.garrisonFollowerID);
+	local autoSpells = C_Garrison.GetFollowerAutoCombatSpells(data.garrisonFollowerID, data.level);
 	local autoSpellCount = #autoSpells;
 
 	if abilityCount > 0 or autoSpellCount > 0 then 
@@ -488,7 +514,12 @@ function GarrisonFollowerTooltipTemplate_SetAutoSpell(frame, autoSpell)
 	frame.Details:Hide();
 	frame.CounterIcon:Hide();
 	frame.CounterIconBorder:Hide();
-	frame.Description:SetText(autoSpell.description);
+	local fullDescription = "";
+	if autoSpell.cooldown > 0 then
+		fullDescription = COVENANT_MISSIONS_COOLDOWN:format(autoSpell.cooldown) .. "\n";
+	end
+	fullDescription = fullDescription .. autoSpell.description;
+	frame.Description:SetText(fullDescription);
 	frame.Description:Show();
 	frame:SetHeight(frame:GetHeight() + frame.Description:GetHeight() + spacingBetweenNameAndDescription);
 

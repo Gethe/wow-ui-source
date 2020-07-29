@@ -1,5 +1,5 @@
 PVPConquestRewardMixin = { };
-function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
+function PVPConquestRewardMixin:SetupForBfA(questID, seasonState, tooltipAnchor)
 	self.questID = questID;
 	self.seasonState = seasonState;
 	self.tooltipAnchor = tooltipAnchor;
@@ -25,6 +25,31 @@ function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
 	end
 end
 
+function PVPConquestRewardMixin:SetupForShadowlands(seasonState, tooltipAnchor)
+	self.seasonState = seasonState;
+	self.tooltipAnchor = tooltipAnchor;
+
+	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
+	local progress = weeklyProgress.progress;
+	local maxProgress = weeklyProgress.maxProgress;
+	local displayType = weeklyProgress.displayType;
+
+	if progress < maxProgress then
+		if displayType == Enum.ConquestProgressBarDisplayType.Seasonal then
+			self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 1);
+		else
+			self:SetTexture("Interface\\icons\\Inv_trinket_oribos_01_silver", 1);
+		end
+		self.CheckMark:Hide();
+		self.Ring:SetDesaturated(false);
+	else
+		self:SetTexture("Interface\\Icons\\inv_misc_bag_10", 0.2);
+		self.CheckMark:Show();
+		self.CheckMark:SetDesaturated(true);
+		self.Ring:SetDesaturated(true);
+	end
+end
+
 function PVPConquestRewardMixin:Clear()
 	self:SetTexture(nil, 1);
 	self.questID = nil;
@@ -44,7 +69,7 @@ function PVPConquestRewardMixin:SetTooltipAnchor(questTooltipAnchor)
 	self.questTooltipAnchor = questTooltipAnchor;
 end
 
-function PVPConquestRewardMixin:TryShowTooltip()
+function PVPConquestRewardMixin:TryShowTooltipForBfA()
 	local WORD_WRAP = true;
 	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -74,6 +99,48 @@ function PVPConquestRewardMixin:TryShowTooltip()
 			ResetCursor();
 		end
 		EmbeddedItemTooltip:Show();
+	end
+end
+
+function PVPConquestRewardMixin:TryShowTooltipForShadowlands()
+	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
+	local progress = weeklyProgress.progress;
+	local maxProgress = weeklyProgress.maxProgress;
+	local displayType = weeklyProgress.displayType;
+	local itemLink = weeklyProgress.sampleItemHyperlink;
+	local itemLevel = 0;
+	if itemLink then
+		itemLevel = GetDetailedItemLevelInfo(itemLink);
+	end
+	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR);
+	else
+		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
+		local message;
+		if progress < maxProgress then
+			if displayType == Enum.ConquestProgressBarDisplayType.FirstChest then
+				message = CONQUEST_PVP_WEEK_FIRST_CHEST:format(maxProgress, itemLevel);
+			elseif displayType == Enum.ConquestProgressBarDisplayType.AdditionalChest then
+				message = CONQUEST_PVP_WEEK_ADDITIONAL_CHEST:format(maxProgress, itemLevel);
+			else
+				message = CONQUEST_PVP_WEEK_ADDITIONAL_CONQUEST;
+			end
+		else
+			message = CONQUEST_PVP_WEEK_CONQUEST_COMPLETE;
+		end
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, message, NORMAL_FONT_COLOR);
+	end
+	EmbeddedItemTooltip:Show();
+end
+
+function PVPConquestRewardMixin:TryShowTooltip()
+	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
+		self:TryShowTooltipForShadowlands();
+	else
+		self:TryShowTooltipForBfA();
 	end
 end
 

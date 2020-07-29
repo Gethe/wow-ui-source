@@ -118,12 +118,9 @@ AdventuresRewardsFollowerMixin = {}
 local ExpGainAnimDuration = 1.7;
 
 function AdventuresRewardsFollowerMixin:SetFollowerInfo(info, xp)
-	self.info = info;
+	self:SetupPortrait(info);
 	self.xp = xp;
-	self.PuckBorder:SetAtlas("Adventurers-Followers-Frame");
-	self.Portrait:SetTexture(info.portraitIconID);
 	self.LevelUpAnimFrame:Hide();
-	self.LevelDisplayFrame.LevelText:SetText(info.level);
 	if self.info.maxXP ~= 0 then 
 		CooldownFrame_SetDisplayAsPercentage(self.FollowerExperienceDisplay,  self.info.currentXP / self.info.maxXP);
 	end

@@ -10,7 +10,6 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0" g="0" b="0"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -26,25 +25,16 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Layer level="BORDER">
-					<Texture parentKey="Border"/>
-				</Layer>
-				<Frames>
-					<Slider parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-15" y="-15"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="15" y="11"/>
-						</Anchors>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
+	</Frame>
+
+	<Frame name="CustomGossipFrameBaseGridTemplate" inherits="CustomGossipFrameBaseTemplate" mixin="CustomGossipFrameBaseGridMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="GridLayoutContainer"/>
+		</Frames>
 	</Frame>
 	<Frame name="CustomGossipFrameManager" mixin="CustomGossipManagerMixin">
 		<Scripts>

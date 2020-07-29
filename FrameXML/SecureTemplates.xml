@@ -8,7 +8,7 @@
     <Script file="SecureHoverDriver.lua"/>
 
     <!-- A button template for click-cast style action buttons -->
-    <Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+    <Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" mixin="SecureActionButtonMixin" virtual="true">
         <Scripts>
             <OnClick function="SecureActionButton_OnClick"/>
         </Scripts>

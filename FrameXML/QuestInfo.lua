@@ -718,8 +718,15 @@ function QuestInfo_ShowRewards()
 						local followerFrame = rewardsFrame.followerRewardPool:Acquire();
 						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
 						followerFrame.Name:SetText(followerInfo.name);
-						followerFrame.Class:SetAtlas(followerInfo.classAtlas);
-						followerFrame.PortraitFrame:SetupPortrait(followerInfo);
+						
+						if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+							followerFrame.AdventuresFollowerPortraitFrame:SetupPortrait(followerInfo)
+							followerFrame.AdventuresFollowerPortraitFrame:Show()
+							followerFrame.PortraitFrame:Hide();
+						else
+							followerFrame.PortraitFrame:SetupPortrait(followerInfo);
+							followerFrame.Class:SetAtlas(followerInfo.classAtlas);
+						end
 						followerFrame.ID = garrFollowerID;
 						followerFrame:Show();
 

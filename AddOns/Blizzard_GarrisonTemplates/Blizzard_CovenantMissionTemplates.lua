@@ -134,8 +134,6 @@ end
 function CovenantFollowerTabMixin:ShowFollower(followerID, followerList)
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	local autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID);
-	local autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 	local missionFrame = self:GetParent();
 
 	self.followerID = followerID;
@@ -153,11 +151,12 @@ function CovenantFollowerTabMixin:ShowFollower(followerID, followerList)
 		followerInfo.combatAllySpellIDs = { };
 	end
 
+	local autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level or 1);
 	if not autoSpellAbilities then
 		autoSpellAbilities = {};
 	end
 
-	followerInfo.autoCombatantStats = autoCombatantStats;
+	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 	followerInfo.autoSpellAbilities = autoSpellAbilities;
 	self.followerInfo = followerInfo;
 
@@ -296,7 +295,7 @@ function CovenantMissionListMixin:Update()
 			button.info = mission;
 			button.Title:SetWidth(0);
 			button.Title:SetText(mission.name);
-			button.Level:SetText(mission.level);
+			button.Level:SetText(mission.missionScalar);
 			button.Summary:Show();
 			if not mission.encounterIconInfo then
 				mission.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
@@ -429,6 +428,7 @@ end
 CovenantMissionEncounterIconMixin = {}
 
 function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
+	self.PortraitBorder:SetShown( not encounterIconInfo.isRare and not encounterIconInfo.isElite);
 	self.RareOverlay:SetShown(encounterIconInfo.isRare);
 	self.EliteOverlay:SetShown(encounterIconInfo.isElite);
 	GarrisonPortrait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);

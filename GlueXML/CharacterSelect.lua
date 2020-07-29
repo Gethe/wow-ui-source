@@ -44,6 +44,14 @@ local characterCopyRegions = {
 	[5] = CHINA,
 };
 
+local function UpdateMaxCharactersDisplayed()
+	if ( (CanCreateCharacter() or CharacterSelect.undeleting) and GetNumCharacters() >= MAX_CHARACTERS_DISPLAYED_BASE ) then
+		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
+	else
+		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
+	end
+end
+
 function GenerateBuildString(buildNumber)
 	if buildNumber == 0 then
 		return "No Login";
@@ -547,6 +555,7 @@ function CharacterSelect_OnEvent(self, event, ...)
             self.selectedIndex = index;
             CharSelectCharacterName:SetText(GetCharacterInfo(charID));
         end
+		UpdateMaxCharactersDisplayed();
         if ((CHARACTER_LIST_OFFSET == 0) and (self.selectedIndex > MAX_CHARACTERS_DISPLAYED)) then
             CHARACTER_LIST_OFFSET = self.selectedIndex - MAX_CHARACTERS_DISPLAYED;
         end
@@ -779,11 +788,7 @@ function UpdateCharacterList(skipSelect)
         CharacterSelect.undeleteChanged = false;
     end
 
-    if ( (CanCreateCharacter() or CharacterSelect.undeleting) and numChars >= MAX_CHARACTERS_DISPLAYED_BASE ) then
-		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
-    else
-        MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
-    end
+    UpdateMaxCharactersDisplayed();
 
 	if CharacterSelect.selectLast then
         CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);

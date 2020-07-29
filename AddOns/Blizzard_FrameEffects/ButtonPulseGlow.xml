@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="ButtonPulseGlow.lua" />
+
+	<Frame name="ButtonPulseGlowTemplate" virtual="true">
+		<Size x="2" y="2"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" atlas="newplayertutorial-greenglow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="newplayertutorial-greenglow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="newplayertutorial-greenglow-redbutton-middle" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

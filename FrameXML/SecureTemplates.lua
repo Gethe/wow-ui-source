@@ -577,6 +577,28 @@ SECURE_ACTIONS.worldmarker =
 		end
 	end;
 
+ SecureActionButtonMixin = {};
+
+function SecureActionButtonMixin:CalculateAction(button)
+    if ( not button ) then
+        button = SecureButton_GetEffectiveButton(self);
+    end
+    if ( self:GetID() > 0 ) then
+        local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
+        if ( not page ) then
+            page = GetActionBarPage();
+            if ( self.isExtra ) then
+                page = GetExtraBarIndex();
+            elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
+                page = GetMultiCastBarIndex();
+            end
+        end
+        return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));
+    else
+        return SecureButton_GetModifiedAttribute(self, "action", button) or 1;
+    end
+end
+
 function SecureActionButton_OnClick(self, button, down)
     -- TODO check with Tom etc if this is kosher
     if (down) then

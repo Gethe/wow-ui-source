@@ -73,6 +73,18 @@ function ToggleSpellBook(bookType)
 	end
 end
 
+function SpellBookFrame_UpdateHelpPlate()
+	if ( IsPlayerInitialSpec() ) then
+		SpellBookFrame_HelpPlate[2].HighLightBox.height = 100;
+		SpellBookFrame_HelpPlate[3].HighLightBox.height = GetNumSpecializations() * 50;
+		SpellBookFrame_HelpPlate[3].HighLightBox.y = -125;
+	else
+		SpellBookFrame_HelpPlate[2].HighLightBox.height = 150;
+		SpellBookFrame_HelpPlate[3].HighLightBox.height = (GetNumSpecializations() - 1) * 50;
+		SpellBookFrame_HelpPlate[3].HighLightBox.y = -175;
+	end
+end
+
 function SpellBookFrame_GetTutorialEnum()
 	local helpPlate;
 	local tutorial;
@@ -1472,8 +1484,8 @@ SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
 	[1] = { ButtonPos = { x = 250,	y = -50},	HighLightBox = { x = 65, y = -25, width = 460, height = 462 },	ToolTipDir = "DOWN",	ToolTipText = SPELLBOOK_HELP_1 },
-	[2] = { ButtonPos = { x = 520,	y = -30 },	HighLightBox = { x = 540, y = -5, width = 46, height = 100 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
-	[3] = { ButtonPos = { x = 520,	y = -150},	HighLightBox = { x = 540, y = -125, width = 46, height = 200 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
+	[2] = { ButtonPos = { x = 520,	y = -30 },	HighLightBox = { x = 540, y = -5, width = 46, height = 150 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
+	[3] = { ButtonPos = { x = 520,	y = -150},	HighLightBox = { x = 540, y = -175, width = 46, height = 100 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
 }
 
 ProfessionsFrame_HelpPlate = {
@@ -1484,6 +1496,7 @@ ProfessionsFrame_HelpPlate = {
 }
 
 function SpellBook_ToggleTutorial()
+	SpellBookFrame_UpdateHelpPlate();
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
 		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );

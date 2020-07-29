@@ -239,21 +239,6 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 
--- helper function to deal with decoding the resolution string
-function DecodeResolution(valueString)
-	if(valueString == nil) then
-		return 0,0;
-	end
-	local xIndex = strfind(valueString, "x");
-	local width = strsub(valueString, 1, xIndex-1);
-	local height = strsub(valueString, xIndex+1, strlen(valueString));
-	local widthIndex = strfind(height, " ");
-	if (widthIndex ~= nil) then
-		height = strsub(height, 0, widthIndex-1);
-	end
-	return tonumber(width), tonumber(height);
-end
-
 VideoData["Display_ResolutionDropDown"]={
 	name = WINDOW_SIZE;
 	description = OPTION_TOOLTIP_RESOLUTION,
@@ -262,19 +247,9 @@ VideoData["Display_ResolutionDropDown"]={
 		function(self)
 			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
-	getValues =
-		function(self)
-			return DecodeResolution(self.table[self:GetValue()]);
-		end,
-	readfilter =
-		function(self, value)
-			local width, height = DecodeResolution(value);
-			return value;
-		end,
 	SetValue =
 		function (self, value)
-			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height);
+			SetScreenResolution(self.table[value]);
 		end,
 	doGetValue =
 		function(self)

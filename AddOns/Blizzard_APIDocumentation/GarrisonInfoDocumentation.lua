@@ -70,6 +70,7 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "followerLevel", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -343,6 +344,15 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAutoCombatSpellFastForward",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "state", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -1011,6 +1021,7 @@ local GarrisonInfo =
 				{ Name = "role", Type = "number", Nilable = false },
 				{ Name = "health", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "attack", Type = "number", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },
 			},
 		},

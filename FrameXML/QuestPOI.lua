@@ -177,7 +177,7 @@ Enum.QuestPOIQuestTypes = {
 
 local function QuestPOI_GetQuestType(poiButton)
 	local quest = QuestCache:Get(poiButton.questID);
-	if quest:IsCampaign() then
+	if QuestUtil.ShouldQuestIconsUseCampaignAppearance(poiButton.questID) then
 		return Enum.QuestPOIQuestTypes.Campaign;
 	elseif quest:IsCalling() then
 		return Enum.QuestPOIQuestTypes.Calling;

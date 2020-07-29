@@ -9,8 +9,8 @@ function QuestMixin:Init(questID)
 
 		-- Remove all dynamic data that could become stale
 		self.questLogIndex = nil;
-		self.isCollapsed = nil;
 		self.isOnMap = nil;
+		self.isCollapsed = nil;
 		self.hasLocalPOI = nil;
 	end
 
@@ -37,7 +37,11 @@ function QuestMixin:IsDisabledForSession()
 end
 
 function QuestMixin:IsCampaign()
-	return self.campaignID ~= nil;
+	return self:GetCampaignID() ~= 0;
+end
+
+function QuestMixin:GetCampaignID()
+	return self.campaignID or 0;
 end
 
 function QuestMixin:IsCalling()

@@ -9,14 +9,16 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Sce
 
 UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-local frameTextureKitRegions = {
-	["Frame"] = "%s-frame",
-}
-
 local DEFAULT_CURRENCY_FRAME_WIDTH = 95;
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+
+	local waitingForStageUpdate = UIWidgetBaseScenarioHeaderTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+	if waitingForStageUpdate then
+		return;
+	end
+
 	self.currencyPool:ReleaseAll();
 
 	local previousCurrencyFrame;
@@ -50,11 +52,6 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 
 	self.CurrencyContainer:SetWidth(totalCurrencyWidth);
 	self.CurrencyContainer:SetHeight(totalCurrencyHeight);
-
-	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-
-	self:SetWidth(self.Frame:GetWidth());
-	self:SetHeight(self.Frame:GetHeight());
 end
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:CustomDebugSetup(color)

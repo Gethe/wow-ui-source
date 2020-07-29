@@ -30,14 +30,8 @@ function RuneforgeItemSlotMixin:OnClick(buttonName)
 			end
 		end
 	else
-		if self:IsRuneforgeUpgrading() then
-			EquipmentFlyout_Show(self);
-
-			local skipBags = true;
-			self:SetSelectingItem(true, skipBags);
-		else
-			self:SetSelectingItem(true);
-		end
+		EquipmentFlyout_Show(self);
+		self:SetSelectingItem(true);
 	end
 end
 
@@ -88,6 +82,7 @@ end
 function RuneforgeItemSlotMixin:OnHide()
 	self:UpdateEffectVisibility();
 	self:ResetItemSlot();
+	EquipmentFlyout_Hide();
 end
 
 function RuneforgeItemSlotMixin:SetEvents()
@@ -150,7 +145,7 @@ function RuneforgeItemSlotMixin:GetItem()
 	return self:GetItemLocation();
 end
 
-function RuneforgeItemSlotMixin:SetSelectingItem(isSelectingItem, skipBags)
+function RuneforgeItemSlotMixin:SetSelectingItem(isSelectingItem)
 	local hasItem = self:GetItemLocation() ~= nil;
 	self.SelectingTexture:SetShown(isSelectingItem and not hasItem);
 
@@ -158,15 +153,6 @@ function RuneforgeItemSlotMixin:SetSelectingItem(isSelectingItem, skipBags)
 		self:LockHighlight();
 	else
 		self:UnlockHighlight();
-	end
-
-	if not skipBags then
-		if isSelectingItem then
-			OpenAllBagsMatchingContext(self:GetRuneforgeFrame());
-		else
-			local forceUpdate = true;
-			CloseAllBags(self:GetRuneforgeFrame(), forceUpdate);
-		end
 	end
 
 	self:UpdateEffectVisibility();

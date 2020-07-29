@@ -132,6 +132,7 @@ MoneyInputFrame.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
 GarrisonBaseUtils.xml
+AdventuresFollowerTooltip.xml
 FloatingGarrisonFollowerTooltip.xml
 GarrisonFollowerTooltip.xml
 GameTooltip.xml

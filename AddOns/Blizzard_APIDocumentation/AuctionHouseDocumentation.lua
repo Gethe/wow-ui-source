@@ -705,12 +705,6 @@ local AuctionHouse =
 		{
 			Name = "IsThrottledMessageSystemReady",
 			Type = "Function",
-			Documentation = { "This function is not used in the base UI but is included for AddOn ease-of-use." },
-
-			Arguments =
-			{
-				{ Name = "specificSearch", Type = "bool", Nilable = false, Default = false },
-			},
 
 			Returns =
 			{
@@ -1019,37 +1013,26 @@ local AuctionHouse =
 			Name = "AuctionHouseThrottledMessageDropped",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledMessageQueued",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledMessageResponseReceived",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledMessageSent",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_SENT",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
-		},
-		{
-			Name = "AuctionHouseThrottledSpecificSearchReady",
-			Type = "Event",
-			LiteralName = "AUCTION_HOUSE_THROTTLED_SPECIFIC_SEARCH_READY",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledSystemReady",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionMultisellFailure",

@@ -320,6 +320,21 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetPvpTierID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tierEnum", Type = "number", Nilable = false },
+				{ Name = "bracketEnum", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "id", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPvpTierInfo",
 			Type = "Function",
 

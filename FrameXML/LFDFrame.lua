@@ -621,6 +621,9 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
 	else
 		LFDQueueFrameFindGroupButton:Disable();
+		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+			LFDQueueFrameFindGroupButton.tooltip = ERR_NOT_LEADER;
+		end
 	end
 
 	--Disable the button if the person is active in LFGList
@@ -632,8 +635,6 @@ function LFDQueueFrameFindGroupButton_Update()
 	if ( lfgListDisabled ) then
 		LFDQueueFrameFindGroupButton:Disable();
 		LFDQueueFrameFindGroupButton.tooltip = lfgListDisabled;
-	else
-		LFDQueueFrameFindGroupButton.tooltip = nil;
 	end
 
 	--Update the backfill enable state

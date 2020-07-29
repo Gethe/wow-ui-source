@@ -21,6 +21,12 @@
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="Dark">
 							<Color color="BLACK_FONT_COLOR"/>
+							<Animations>
+								<AnimationGroup parentKey="Pulse" looping="REPEAT" setToFinalAlpha="true">
+									<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha=".25" toAlpha="0"/>
+									<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="0" toAlpha=".25"/>
+								</AnimationGroup>
+							</Animations>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="2">
@@ -44,8 +50,43 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture parentKey="Highlight2" atlas="Soulbinds_Portrait_Border" useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Pulse" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+									<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="1" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="Highlight3" atlas="Soulbinds_Portrait_Border"  useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Pulse" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+									<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="1" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="Lock" atlas="Soulbinds_Portrait_Lock" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="NewAlert" inherits="NewFeatureLabelTemplate" frameLevel="100" hidden="true">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="CENTER" x="1" y="-40"/>
+						</Anchors>
+					</Frame>
 					<Frame parentKey="Active" mixin="SoulbindsActiveMarkerMixin" frameLevel="100">
 						<Size x="40" y="40"/>
 						<Anchors>

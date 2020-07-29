@@ -169,6 +169,17 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="AdventuresFollowerPortraitFrame" inherits="AdventuresLevelPortraitTemplate" mixin="AdventuresLevelPortraitMixin" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" x="4" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+						self:SetScale(.8);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Button>
 

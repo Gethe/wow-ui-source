@@ -617,6 +617,21 @@ local function GetMinimapAtlases_GarrisonType8_0(faction)
 	end
 end
 
+local garrisonTypeAnchors = {
+	["default"] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 32, -118),
+	[Enum.GarrisonType.Type_9_0] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 32, -106),
+}
+
+local function GetGarrisonTypeAnchor(garrisonType)
+	return garrisonTypeAnchors[garrisonType or "default"] or garrisonTypeAnchors["default"];
+end
+
+local function ApplyGarrisonTypeAnchor(self, garrisonType)
+	local anchor = GetGarrisonTypeAnchor(garrisonType);
+	local clearAllPoints = true;
+	anchor:SetPoint(self, clearAllPoints);
+end
+
 local garrisonType9_0AtlasFormats = {
 	"shadowlands-landingbutton-%s-up",
 	"shadowlands-landingbutton-%s-down",
@@ -643,6 +658,9 @@ end
 
 function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
+
+	ApplyGarrisonTypeAnchor(self, garrisonType);
+
 	if (garrisonType == Enum.GarrisonType.Type_6_0) then
 		self.faction = UnitFactionGroup("player");
 		if ( self.faction == "Horde" ) then

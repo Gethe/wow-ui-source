@@ -33,7 +33,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="BackgroundActivateFX" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
+				<Texture parentKey="ActivateFX" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="212" y="-45"/>
 					</Anchors>
@@ -106,6 +106,57 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Fx" setAllPoints="true" frameLevel="200">
+				<Layers>
+					<Layer level="DIALOG" textureSubLevel="6">
+						<Texture parentKey="ActivateFXLensFlare1" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_LensFlare" useAtlasSize="false">
+							<Size x="1367" y="387"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-50"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha=".5" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXLensFlare2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_LensFlare" useAtlasSize="false">
+							<Size x="1367" y="387"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ActivateFX" relativePoint="CENTER" x="20"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Rotation smoothing="NONE" duration="0" order="1" degrees="90"/>
+									<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha=".05" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXRunes1" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Runes1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.ActivateFX" relativePoint="LEFT" x="92" y="-18"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha=".2" toAlpha="0"/>
+									<Translation startDelay=".1" offsetX="0" offsetY="-20" duration="1.4" order="1"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="ActivateFXRunes2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_Runes2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ActivateFX" relativePoint="RIGHT" x="-88" y="155"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+									<Alpha smoothing="IN" startDelay=".1" duration="1.4" order="1" fromAlpha=".2" toAlpha="0"/>
+									<Translation startDelay=".1" offsetX="0" offsetY="20" duration="1.4" order="1"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
@@ -122,17 +173,18 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="ActivateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">
-				<Size x="150" y="30"/>
+				<Size x="152" y="22"/>
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" x="-96" y="75"/>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="-93" y="77"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="ResetButton" inherits="SoulbindsUndoButtonTemplate" motionScriptsWhileDisabled="true">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ActivateButton" relativePoint="RIGHT" x="7"/>
+					<Anchor point="LEFT" relativeKey="$parent.ActivateButton" relativePoint="RIGHT" x="8"/>
 				</Anchors>
 			</Button>
 		</Frames>
+		
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

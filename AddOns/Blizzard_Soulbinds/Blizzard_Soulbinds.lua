@@ -22,6 +22,11 @@ function Soulbinds.HasConduitAtCursor()
 	return itemLocation ~= nil and conduitType ~= nil;
 end
 
+function Soulbinds.HasNewSoulbindTutorial(soulbindID)
+	local noTutorialIDs = {1, 4, 7, 8};
+	return not tContains(noTutorialIDs, soulbindID);
+end
+
 do
 	local attributes = 
 	{ 

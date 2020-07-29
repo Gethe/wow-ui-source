@@ -103,23 +103,25 @@ end
 function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 	local tooltipAnchor = "ANCHOR_RIGHT";
 
-	local animaFrame = self.AnimaCurrency;
-	animaFrame:SetTooltipAnchor(tooltipAnchor);
-	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo()
-	animaFrame:SetCurrencyFromID(animaCurrencyID);
-	animaFrame:SetAbbreviate(true);
-	animaFrame:Show();
-
 	local initFunction = function(currencyFrame)
 		currencyFrame:SetWidth(50);
 	end
 	local currencies = C_CovenantSanctumUI.GetSoulCurrencies();
+	-- sort them by ID - just happens to be in the order desired
+	table.sort(currencies);
+	-- add Anima to the front
+	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo()
+	tinsert(currencies, 1, animaCurrencyID);
+
 	local stride = #currencies;
 	local paddingX = 10;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
 	local initAnchor = nil;
 	local abbreviateCost = true;
-	self.CurrencyDisplayGroup:SetCurrencies(currencies, initFunction, initAnchor, layout, tooltipAnchor, abbreviateCost);
+	local reverseOrder = true;
+	self.CurrencyDisplayGroup:SetCurrencies(currencies, initFunction, initAnchor, layout, tooltipAnchor, abbreviateCost, reverseOrder);
+
+	self.currencyOrder = currencies;
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpUpgrades()
@@ -154,8 +156,20 @@ function CovenantSanctumUpgradesTabMixin:SetUpTextureKits()
 end
 
 function CovenantSanctumUpgradesTabMixin:UpdateCurrencies()
-	self.AnimaCurrency:Refresh();
 	self.CurrencyDisplayGroup:Refresh();
+end
+
+function CovenantSanctumUpgradesTabMixin:GetSortedResearchCurrencyCosts(currencyCosts)
+	local outputTable = { };
+	for i, orderValue in ipairs(self.currencyOrder) do
+		for j, cost in ipairs(currencyCosts) do
+			if cost.currencyType == orderValue then
+				tinsert(outputTable, cost)
+				break;
+			end
+		end
+	end
+	return outputTable;
 end
 
 --=============================================================================================
@@ -185,6 +199,7 @@ function CovenantSanctumUpgradeTalentListMixin:Refresh()
 		end
 
 		local talentFrame = self.talentPool:Acquire();
+		talentInfo.researchCurrencyCosts = self:GetParent():GetSortedResearchCurrencyCosts(talentInfo.researchCurrencyCosts);
 		talentFrame:Set(talentInfo);
 
 		if lastTalentFrame then

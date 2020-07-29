@@ -361,7 +361,7 @@ function GarrisonFollowerList:UpdateFollowers()
 	--TODO: Tagify GetFollowers and condense this into it
 	for i = 1, #self.followers do
 		if (self.followers[i].garrFollowerID) then
-			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].garrFollowerID);
+			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].garrFollowerID, self.followers[i].level);
 			self.followers[i].autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(self.followers[i].followerID);
 		end
 	end
@@ -2204,8 +2204,6 @@ end
 function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID);
-	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 	local missionFrame = self:GetParent();
 
 	self.followerID = followerID;
@@ -2222,6 +2220,9 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		followerInfo.unlockableEquipment = { };
 		followerInfo.combatAllySpellIDs = { };
 	end
+	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
+
 	local portraitFrame = self.CovenantFollowerPortraitFrame or self.PortraitFrame;
 	if(portraitFrame) then
 		GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo);
@@ -2268,7 +2269,9 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.Class:Hide();
 		self.AbilitiesFrame.SpecializationLabel:SetShown(false);
 		self:UpdateCombatantStats(followerInfo);
-		self:UpdateAutoSpellAbilities(followerInfo)
+		self:UpdateAutoSpellAbilities(followerInfo);
+		local commonColoring = FOLLOWER_QUALITY_COLORS[Enum.GarrFollowerQuality.Common];
+		self.Name:SetVertexColor(commonColoring.r, commonColoring.g, commonColoring.b);
 	end
 
 	-- gear	/ source

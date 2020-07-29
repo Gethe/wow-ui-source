@@ -479,11 +479,10 @@
 								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="Background">
+						<Texture parentKey="Background" alpha="0.8">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="205" y="40"/>
 							</Anchors>
-							<Color r="1" g="1" b="1" a=".8"/>
 						</Texture>
 					</Layer>
 				</Layers>

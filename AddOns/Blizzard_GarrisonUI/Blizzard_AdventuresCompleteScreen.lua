@@ -178,6 +178,7 @@ function AdventuresCompleteScreenMixin:SetReplaySpeed(replaySpeed)
 	self.ModelScene:SetEffectSpeed(replaySpeed);
 
 	self.CompleteFrame.SpeedButton:SetSpeedUpShown(self:IsReplaySpeedFast());
+	C_Garrison.SetAutoCombatSpellFastForward(self:IsReplaySpeedFast());
 end
 
 function AdventuresCompleteScreenMixin:IsReplaySpeedFast()

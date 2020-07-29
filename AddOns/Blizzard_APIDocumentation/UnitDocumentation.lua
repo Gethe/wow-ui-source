@@ -186,6 +186,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitChromieTimeID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitClass",
 			Type = "Function",
 
@@ -214,6 +228,20 @@ local Unit =
 			{
 				{ Name = "classFilename", Type = "string", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInPartyShard",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inPartyShard", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -246,48 +274,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitIsWarModeActive",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "string", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "warModeActive", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitIsWarModeDesired",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "string", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "warModeDesired", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitIsWarModePhased",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "string", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "warModePhased", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "UnitNameplateShowsWidgetsOnly",
 			Type = "Function",
 
@@ -299,6 +285,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "nameplateShowsWidgetsOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPhaseReason",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reason", Type = "PhaseReason", Nilable = true },
 			},
 		},
 		{
@@ -1416,6 +1416,20 @@ local Unit =
 
 	Tables =
 	{
+		{
+			Name = "PhaseReason",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Phasing", Type = "PhaseReason", EnumValue = 0 },
+				{ Name = "Sharding", Type = "PhaseReason", EnumValue = 1 },
+				{ Name = "WarMode", Type = "PhaseReason", EnumValue = 2 },
+				{ Name = "ChromieTime", Type = "PhaseReason", EnumValue = 3 },
+			},
+		},
 		{
 			Name = "PowerType",
 			Type = "Enumeration",

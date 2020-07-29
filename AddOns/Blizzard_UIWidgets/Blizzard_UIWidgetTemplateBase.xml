@@ -264,4 +264,29 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
+
+	<Frame name="UIWidgetBaseScenarioHeaderTemplate" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetBaseScenarioHeaderTemplateMixin">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" justifyV="MIDDLE" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size x="172" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-8"/>
+					</Anchors>
+					<Color color="SCENARIO_STAGE_COLOR" />
+					<Shadow>
+						<Offset x="1" y="-1"/>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

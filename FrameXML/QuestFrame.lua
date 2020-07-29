@@ -314,7 +314,7 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 
 			local activeQuestID = GetActiveQuestID(i);
-			QuestUtil.ApplyQuestIconActiveToTexture(questTitleButton.Icon, isComplete, IsActiveQuestLegendary(i), nil, nil, C_CampaignInfo.IsCampaignQuest(activeQuestID), C_QuestLog.IsQuestCalling(activeQuestID));
+			QuestUtil.ApplyQuestIconActiveToTexture(questTitleButton.Icon, isComplete, IsActiveQuestLegendary(i), nil, nil, QuestUtil.ShouldQuestIconsUseCampaignAppearance(activeQuestID), C_QuestLog.IsQuestCalling(activeQuestID));
 			questTitleButton:SetHeight(math.max(questTitleButton:GetTextHeight() + 2, questTitleButton.Icon:GetHeight()));
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
@@ -344,7 +344,7 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(i - numActiveQuests);
-			QuestUtil.ApplyQuestIconOfferToTexture(questTitleButton.Icon, isLegendary, frequency, isRepeatable, C_CampaignInfo.IsCampaignQuest(questID), C_QuestLog.IsQuestCalling(questID));
+			QuestUtil.ApplyQuestIconOfferToTexture(questTitleButton.Icon, isLegendary, frequency, isRepeatable, QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID), C_QuestLog.IsQuestCalling(questID));
 
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));

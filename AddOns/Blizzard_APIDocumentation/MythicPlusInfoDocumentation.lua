@@ -82,6 +82,21 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetRunHistory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "includePreviousWeeks", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeIncompleteRuns", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "runs", Type = "table", InnerType = "MythicPlusRunInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
 
@@ -232,6 +247,17 @@ local MythicPlusInfo =
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MythicPlusRunInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "thisWeek", Type = "bool", Nilable = false },
+				{ Name = "completed", Type = "bool", Nilable = false },
 			},
 		},
 	},

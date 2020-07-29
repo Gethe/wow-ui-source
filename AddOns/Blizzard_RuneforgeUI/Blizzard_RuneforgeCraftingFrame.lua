@@ -6,19 +6,12 @@ local RuneforgeCraftingFrameEvents = {
 };
 
 function RuneforgeCraftingFrameMixin:OnLoad()
-	local function RuneforgeSelectUpgradeItemButtonCallback(flyoutButton)
+	local function RuneforgeSelectFlyoutItemButtonCallback(flyoutButton)
 		self:SetItem(flyoutButton:GetItemLocation());
 	end
 
-	-- itemSlot is required by the API, but unused in this context.
-	local function GetRuneforgeLegendariesCallback(itemSlot, resultsTable)
-		self:GetRuneforgeLegendariesCallback(resultsTable);
-	end
-
 	self.flyoutSettings = {
-		onClickFunc = RuneforgeSelectUpgradeItemButtonCallback,
-		getItemsFunc = GetRuneforgeLegendariesCallback,
-		postGetItemsFunc = function (itemButton, itemDisplayTable, numTotalItems) return numTotalItems; end,
+		onClickFunc = RuneforgeSelectFlyoutItemButtonCallback,
 		customFlyoutOnUpdate = nop,
 		hasPopouts = true,
 		parent = self:GetParent(),
@@ -34,6 +27,8 @@ function RuneforgeCraftingFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RuneforgeCraftingFrameEvents);
 
 	self:RegisterRefreshMethod(self.Refresh);
+
+	self:SetDynamicFlyoutSettings();
 end
 
 function RuneforgeCraftingFrameMixin:OnHide()
@@ -58,10 +53,26 @@ function RuneforgeCraftingFrameMixin:OnEvent(event, ...)
 			self.ModifierFrame:CloseSelector();
 		end
 
-		if isRightButton or (not DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus)) then
+		local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+		if not flyoutSelected then
 			EquipmentFlyout_Hide();
 		end
+
+		if not flyoutSelected and (not DoesAncestryInclude(self.BaseItemSlot, mouseFocus)) then
+			self.BaseItemSlot:SetSelectingItem(nil);
+		end
 	end
+end
+
+function RuneforgeCraftingFrameMixin:SetDynamicFlyoutSettings()
+	local filterFunction = self:IsRuneforgeUpgrading() and C_LegendaryCrafting.IsRuneforgeLegendary or C_LegendaryCrafting.IsValidRuneforgeBaseItem;
+
+	-- itemSlot is required by the API, but unused in this context.
+	local function GetRuneforgeLegendariesCallback(itemSlot, resultsTable)
+		self:GetRuneforgeFlyoutItemsCallback(filterFunction, resultsTable);
+	end
+
+	self.flyoutSettings.getItemsFunc = GetRuneforgeLegendariesCallback;
 end
 
 function RuneforgeCraftingFrameMixin:SetItem(item, autoSelectSlot)
@@ -129,9 +140,9 @@ function RuneforgeCraftingFrameMixin:Refresh()
 	self.UpgradeItemSlot:SetShown(hasItem and self:IsRuneforgeUpgrading());
 end
 
-function RuneforgeCraftingFrameMixin:GetRuneforgeLegendariesCallback(resultsTable)
+function RuneforgeCraftingFrameMixin:GetRuneforgeFlyoutItemsCallback(filterFunction, resultsTable)
 	local function ItemLocationCallback(itemLocation)
-		if C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) then
+		if filterFunction(itemLocation) then
 			resultsTable[itemLocation] = C_Item.GetItemID(itemLocation);
 		end
 	end

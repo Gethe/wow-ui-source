@@ -12,11 +12,24 @@ do
 		return GuideFrame;
 	end
 
+	local function HandleTorghastLevelPickerGossipShow(textureKit)
+		LoadAddOn("Blizzard_TorghastLevelPicker");
+		TorghastLevelPickerFrame:TryShow(textureKit)
+		return TorghastLevelPickerFrame;
+	end
+
 	function CustomGossipManagerMixin:OnLoad()
 		FrameUtil.RegisterFrameForEvents(self, CUSTOM_GOSSIP_FRAME_EVENTS);
 
 		-- NOTE: This shim exists because the guide system lives in a demand-loaded addon
 		self:RegisterHandler("npe-guide", HandleNPEGuideGossipShow);
+		self:RegisterHandler("skoldushall", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("mortregar", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("coldheartinterstitia", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("fracturechambers", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("soulforges", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("theupperreaches", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("twistingcorridors", HandleTorghastLevelPickerGossipShow);
 	end
 
 end
@@ -64,8 +77,9 @@ end
 
 CustomGossipFrameBaseMixin = {};
 
+-- To be overriden
 function CustomGossipFrameBaseMixin:OnLoad()
-	self.ScrollFrame.update = function() self:RefreshLayout() end;
+
 end
 
 --To be overriden
@@ -80,10 +94,6 @@ end
 function CustomGossipFrameBaseMixin:RefreshLayout()
 end
 
-function CustomGossipFrameBaseMixin:SetupScrollFrameTextures(scrollFrameTextureKitRegions)
-	SetupTextureKitOnRegions(self.textureKit, self.scrollFrame, scrollFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-end
-
 function CustomGossipFrameBaseMixin:SetupBackgroundFrameTexture(backgroundTextureKitRegions)
 	SetupTextureKitOnRegions(self.textureKit, self, backgroundTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
@@ -92,17 +102,95 @@ function CustomGossipFrameBaseMixin:SetupFrameTextures(textureKitRegions)
 	SetupTextureKitOnRegions(self.textureKit, self, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
+CustomGossipFrameBaseGridMixin = { }; 
+
+function CustomGossipFrameBaseGridMixin:LayoutGridInit(anchor, overridePaddingX, overridePaddingY, overrideDirection)
+	if(not self.gossipOptionsPool) then 
+		return;
+	end 
+
+	self.gossipOptionsPool:ReleaseAll();
+
+	self.totalNumGossipOptions = #self.gossipOptions;
+
+	if(self.totalNumGossipOptions <= 0 ) then 
+		return; 
+	end 
+	self.gossipOptionsByIndex = {};
+
+	local function FactoryFunction(index)
+		if index > self.totalNumGossipOptions then
+			return nil;
+		end
+		local frame = self.gossipOptionsPool:Acquire();
+		self.gossipOptionsByIndex[index] = frame;
+		return frame;
+	end
+
+	local totalWidth = self.GridLayoutContainer:GetWidth();
+	local totalHeight = self.GridLayoutContainer:GetHeight();
+	AnchorUtil.GridLayoutFactory(FactoryFunction, anchor, totalWidth, totalHeight, overrideDirection, overridePaddingX, overridePaddingY);
+
+	self.maxOptionsPerPage = #self.gossipOptionsByIndex;
+	self.numPages = math.ceil(self.totalNumGossipOptions / self.maxOptionsPerPage); 
+	self:SetStartingPage(1); 
+	self:SetupOptionsByStartingIndex(1);
+end
+
+function CustomGossipFrameBaseGridMixin:SetupOptionsByStartingIndex(index)
+	if(not self.gossipOptions) then 
+		return;
+	end 
+
+	if(index > self.totalNumGossipOptions) then 
+		return;
+	end 
+	for i=1, self.maxOptionsPerPage do
+		if (index <= self.totalNumGossipOptions and self.gossipOptions[index]) then	
+			self.gossipOptionsByIndex[i]:Setup(self.textureKit, self.gossipOptions[index], index);
+			self.gossipOptionsByIndex[i]:Show(); 
+		else 
+			self.gossipOptionsByIndex[i]:Hide(); 
+		end 
+		index = index + 1;
+	end
+end 
+
+function CustomGossipFrameBaseGridMixin:NextGridPage()
+	if(not self.gossipOptionsPool) then
+		return; 
+	end 
+
+	self.gossipOptionsPool:ReleaseAll();
+	
+end 
+
 CustomGossipOptionButtonBaseMixin = {};
+
+--Override in custom system.
+function CustomGossipOptionButtonBaseMixin:ShouldOptionBeEnabled(enabled)
+end 
+
+--Override in custom system.
+function CustomGossipOptionButtonBaseMixin:SetState()
+
+end 
+
+--Override in custom system.
+function CustomGossipOptionButtonBaseMixin:Setup()
+
+end 
 
 function CustomGossipOptionButtonBaseMixin:OnClick()
 	C_GossipInfo.SelectOption(self.index);
 end
 
-function CustomGossipOptionButtonBaseMixin:Setup(textureKit, buttonInfo, index, buttonTextureKitRegions)
+function CustomGossipOptionButtonBaseMixin:SetupBase(textureKit, buttonInfo, index, buttonTextureKitRegions)
 	self.Title:SetText(buttonInfo.name);
-	self.index = index;
+	self.Title:Show(); 
+	self.index = index; 
 	if (textureKit and buttonTextureKitRegions) then
-		SetupTextureKitOnRegions(textureKit, scrollFrame, buttonTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnRegions(textureKit, self, buttonTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	end
 	self:Show();
 end

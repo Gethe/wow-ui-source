@@ -709,8 +709,6 @@
 						<MaskedTexture childKey="PortraitBorder"/>
 					</MaskedTextures>
 				</MaskTexture>
-			</Layer>
-			<Layer level="OVERLAY">
 				<Texture parentKey="RareOverlay" atlas="Adventure-Mission-Silver-Dragon">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-14" y="16"/>
@@ -813,7 +811,7 @@
 		<Size x="832" y="80"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="GarrMission_MissionParchment" useAtlasSize="true" vertTile="true" horizTile="true">
+				<Texture atlas="Adventure_MissionParchment" useAtlasSize="true" vertTile="true" horizTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3"/>
 						<Anchor point="BOTTOMRIGHT" x="-3"/>
@@ -1017,7 +1015,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="Overlay" setAllPoints="true" hidden="true">
+			<Frame parentKey="Overlay" setAllPoints="true" hidden="true" framelevel="500">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Overlay" setAllPoints="true">

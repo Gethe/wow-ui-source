@@ -17,7 +17,7 @@
 		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
-			<OnEnter method="UpdateTooltip"/>
+			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
@@ -455,10 +455,10 @@
 				</Scripts>
 			 </Frame>
 		</Frames>
-		<BarTexture atlas="_pvpqueue-conquestbar-fill-yellow"/>
+		<BarTexture parentKey="FillTexture" atlas="_pvpqueue-conquestbar-fill-yellow"/>
 		<BarColor r="1" g="1" b="1"/>
 		<Scripts>
-      <OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
@@ -1436,11 +1436,11 @@
 										</Layers>
 										<Frames>
 											<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-                      <Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
-                        <Anchors>
-                          <Anchor point="BOTTOM" x="0" y="-1"/>
-                        </Anchors>
-                      </Button>
+											<Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
+												<Anchors>
+													<Anchor point="BOTTOM" x="0" y="-1"/>
+												</Anchors>
+											</Button>
 										</Frames>
 										<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
 										<Scripts>
@@ -1455,7 +1455,7 @@
 									</Cooldown>
 								</Frames>
 							</Frame>
-							<Frame parentKey="RatedPanel" setAllPoints="true" hidden="true">
+							<Frame parentKey="RatedPanel" mixin="PVPWeeklyRatedPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Label" inherits="GameFontNormal" text="RATED_PVP_WEEKLY_CHEST">
@@ -1466,7 +1466,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="WeeklyChest" mixin="PVPWeeklyChestMixin">
+									<Frame parentKey="WeeklyChest" useParentLevel="true" mixin="PVPWeeklyChestMixin">
 										<Size x="84" y="70"/>
 										<Anchors>
 											<Anchor point="TOP" y="-48"/>
@@ -1494,7 +1494,7 @@
 													</Anchors>
 												</Texture>
 											</Layer>
-											<Layer level="OVERLAY">
+											<Layer level="ARTWORK">
 												<Texture parentKey="ChestTexture">
 													<Size x="187" y="152"/>
 													<Anchors>
@@ -1593,8 +1593,14 @@
 												</MaskTexture>
 											</Layer>
 										</Layers>
+										<Scripts>
+											<OnMouseDown method="OnMouseDown"/>
+										</Scripts>
 									</Frame>
 								</Frames>
+								<Scripts>
+									<OnShow method="OnShow"/>
+								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>

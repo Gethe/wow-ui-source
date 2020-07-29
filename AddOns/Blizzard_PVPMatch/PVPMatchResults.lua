@@ -339,7 +339,7 @@ function PVPMatchResultsMixin:HaveConquestData()
 end
 function PVPMatchResultsMixin:OnUpdate()
 	if self.UpdateLeaveButton then
-		self:UpdateLeaveButton();		
+		self:UpdateLeaveButton();
 	end
 
 	PVPMatchUtil.UpdateTable(self.tableBuilder, self.scrollFrame);
