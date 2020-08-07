@@ -102,5 +102,6 @@
 		<PushedTexture atlas="jailerstower-animapowerbutton-normalpressed"/>
 		<HighlightTexture atlas="jailerstower-animapowerbutton-highlight" alphaMode="ADD"/>
 		<DisabledTexture atlas="jailerstower-animapowerbutton-normal" desaturated="true"/>
+		<PushedTextOffset x="1.25" y="-1"/>
 	</Button>
 </Ui>

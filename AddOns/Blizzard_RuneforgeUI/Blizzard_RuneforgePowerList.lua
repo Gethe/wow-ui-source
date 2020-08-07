@@ -124,14 +124,25 @@ function RuneforgePowerSlotMixin:UpdateState()
 end
 
 function RuneforgePowerSlotMixin:SetPowerID(powerID)
-	if self:GetPowerID() == powerID then
+	local oldPowerID = self:GetPowerID();
+	if oldPowerID == powerID then
 		return;
 	end
 
 	RuneforgePowerButtonMixin.SetPowerID(self, powerID);
 
-	self:GetRuneforgeFrame():TriggerEvent(RuneforgeFrameMixin.Event.PowerSelected, powerID);
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	runeforgeFrame:TriggerEvent(RuneforgeFrameMixin.Event.PowerSelected, powerID);
+
 	self:UpdateState();
+
+	if oldPowerID == nil then
+		runeforgeFrame:FlashRunes();
+	end
+
+	if not runeforgeFrame:IsRuneforgeUpgrading() then
+		PlaySound(SOUNDKIT.UI_RUNECARVING_SELECT_LEGENDARY_POWER);
+	end
 end
 
 function RuneforgePowerSlotMixin:OnBaseItemChanged()
@@ -154,64 +165,51 @@ end
 
 RuneforgePowerMixin = {};
 
-function RuneforgePowerMixin:GetPowerList()
-	return self:GetParent():GetParent();
+function RuneforgePowerMixin:InitElement(powerList)
+	self.powerList = powerList;
 end
 
-function RuneforgePowerMixin:SetPowerIndex(powerIndex)
-	self.powerIndex = powerIndex;
+function RuneforgePowerMixin:GetPowerList()
+	return self.powerList;
+end
 
-	local powerID, isSelected = self:GetPowerList():GetPower(powerIndex);
+function RuneforgePowerMixin:UpdateDisplay()
+	local powerIndex = self:GetListIndex();
+
+	local powerList = self:GetPowerList();
+	self:SetEnabled(powerList:GetRuneforgeFrame():HasItem());
+
+	local powerID, isSelected = powerList:GetPower(powerIndex);
 	self:SetPowerID(powerID);
 	self.SelectedTexture:SetShown(isSelected);
-end
 
-function RuneforgePowerMixin:OnShow()
 	self:SetAlpha(self:IsEnabled() and 1.0 or 0.5);
-end
-
-function RuneforgePowerMixin:OnClick()
-	self:GetPowerList():OnPowerSelected(self.powerIndex);
 end
 
 
 RuneforgePowerListMixin = {};
 
 function RuneforgePowerListMixin:OnLoad()
-	ScrollFrame_OnLoad(self);
+	PagedListMixin.OnLoad(self);
+	
+	self:SetGetNumResultsFunction(GenerateClosure(self.GetNumPowers, self));
+	self:SetSelectionCallback(GenerateClosure(self.OnPowerSelected, self));
+	self:SetElementTemplate("RuneforgePowerTemplate", self);
 
-	self.powerPool = CreateFramePool("BUTTON", self.ScrollChild, "RuneforgePowerTemplate");
+	local stride = 4;
+	local padding = -4;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, padding, padding);
+	local numDisplayedElements = 12;
+	self:SetLayout(layout, numDisplayedElements);
+end
+
+function RuneforgePowerListMixin:OnHide()
+	self:SetPage(1);
 end
 
 function RuneforgePowerListMixin:OpenPowerList(powers)
 	self.powers = powers;
-	self:GeneratePowerFrames();
-end
-
-function RuneforgePowerListMixin:GeneratePowerFrames()
-	self.powerPool:ReleaseAll();
-
-	local numPowers = self:GetNumPowers();
-	local buttonsEnabled = self:GetParent():GetRuneforgeFrame():HasItem();
-
-	local function FactoryFunction(index)
-		if index > numPowers then
-			return nil;
-		end
-
-		local frame = self.powerPool:Acquire();
-		frame:SetEnabled(buttonsEnabled);
-		frame:SetPowerIndex(index);
-		frame:Show();
-		return frame;
-	end
-
-	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.ScrollChild, "TOPLEFT");
-	local totalWidth = self:GetWidth();
-	local totalHeight = nil;
-	local overrideDirection = nil;
-	local overridePadding = -4;
-	AnchorUtil.GridLayoutFactory(FactoryFunction, anchor, totalWidth, totalHeight, overrideDirection, overridePadding, overridePadding);
+	self:RefreshListDisplay();
 end
 
 function RuneforgePowerListMixin:GetNumPowers()
@@ -227,8 +225,16 @@ function RuneforgePowerListMixin:OnPowerSelected(index)
 	self:GetParent():SelectPowerID(self:GetPower(index));
 end
 
+function RuneforgePowerListMixin:GetRuneforgeFrame()
+	return self:GetParent():GetRuneforgeFrame();
+end
+
 
 RuneforgePowerFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
+
+function RuneforgePowerFrameMixin:OnLoad()
+	self.PageControl:SetPagedList(self.PowerList);
+end
 
 function RuneforgePowerFrameMixin:OpenPowerList(powers)
 	self.PowerList:OpenPowerList(powers);

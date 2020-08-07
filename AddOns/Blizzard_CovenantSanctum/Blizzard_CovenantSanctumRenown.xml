@@ -28,6 +28,55 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	
+	<Frame name="CovenantSanctumRenownRewardTemplate" mixin="CovenantSanctumRenownRewardMixin" virtual="true">
+		<Size x="415" y="136"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Toast">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" x="44"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Name" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="226" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="134" y="-45"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="226" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 
 	<Frame parentKey="RenownTab" mixin="CovenantSanctumRenownTabMixin" parent="CovenantSanctumFrame" hidden="true" setAllPoints="true">
 		<Layers>
@@ -51,67 +100,28 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Anima">
+					<Anchors>
+						<Anchor point="CENTER" y="79"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Header" inherits="QuestFont_Super_Huge" text="COVENANT_SANCTUM_RENOWN_REWARD_TITLE">
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOP" y="-74"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="RewardFrame">
-				<Size x="415" y="136"/>
-				<Anchors>
-					<Anchor point="TOP" y="-171"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Anima">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="Toast">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Header" inherits="QuestFont_Super_Huge" text="COVENANT_SANCTUM_RENOWN_REWARD_TITLE">
-							<Shadow x="1" y="-1">
-								<Color r="0" g="0" b="0"/>
-							</Shadow>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" y="73"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="Description" inherits="GameFontHighlight">
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-6"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="Icon">
-							<Size x="64" y="64"/>
-							<Anchors>
-								<Anchor point="LEFT" x="44"/>
-							</Anchors>
-						</Texture>
-						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-							<Size x="64" y="64"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-							</Anchors>
-							<MaskedTextures>
-								<MaskedTexture childKey="Icon"/>
-							</MaskedTextures>
-						</MaskTexture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame parentKey="MilestonesFrame">
 				<Size x="835" y="85"/>
 				<Anchors>
@@ -154,6 +164,8 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

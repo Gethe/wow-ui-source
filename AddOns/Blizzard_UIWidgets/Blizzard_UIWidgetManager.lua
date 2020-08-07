@@ -40,6 +40,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 	local horizontalRowContainer = nil; 
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
+	local widgetContainerFrameLevel = widgetContainerFrame:GetFrameLevel();
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		widgetFrame:ClearAllPoints();
@@ -73,6 +74,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 			end
 
 			widgetFrame:SetParent(widgetContainerFrame);
+			widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 		elseif useVerticalLayout then 
 			-- This widget uses vertical layout
 
@@ -92,6 +94,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 			end
 
 			widgetFrame:SetParent(widgetContainerFrame);
+			widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 		else
 			-- This widget uses horizontal layout
 
@@ -116,6 +119,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 				end
 				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
 				widgetFrame:SetParent(newHorizontalRowContainer);
+				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 
 				-- The old horizontalRowContainer is no longer needed for anchoring, so set it to newHorizontalRowContainer
 				horizontalRowContainer = newHorizontalRowContainer;
@@ -123,6 +127,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 				-- horizontalRowContainer already existed, so we just keep going in it, anchoring to the previous widget
 				local relative = sortedWidgets[index - 1];
 				widgetFrame:SetParent(horizontalRowContainer);
+				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
 			end
 		end

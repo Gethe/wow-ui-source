@@ -157,7 +157,9 @@ DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml
+..\SharedXML\PagedList.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
 TextStatusBar.lua

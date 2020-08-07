@@ -5,26 +5,26 @@ local TAB_RENOWN = 2;
 
 function CovenantSanctumMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, 2);
-	
-	local attributes = 
-	{ 
+
+	local attributes =
+	{
 		area = "center",
 		pushable = 0,
 		allowOtherPanels = 1,
 	};
-	RegisterUIPanel(CovenantSanctumFrame, attributes);	
+	RegisterUIPanel(CovenantSanctumFrame, attributes);
 end
 
 local CovenantSanctumEvents = {
 	"COVENANT_SANCTUM_INTERACTION_ENDED",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 function CovenantSanctumMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CovenantSanctumEvents);
 
 	self:SetTab(TAB_UPGRADES);
-	-- todo: get actual level
-	self.LevelFrame.Level:SetFormattedText(COVENANT_SANCTUM_LEVEL, 1);
+	self:RefreshLevel();
 end
 
 function CovenantSanctumMixin:OnHide()
@@ -39,7 +39,13 @@ function CovenantSanctumMixin:OnEvent(event, ...)
 		ShowUIPanel(self);
 	elseif event == "COVENANT_SANCTUM_INTERACTION_ENDED" then
 		HideUIPanel(self);
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+		self:RefreshLevel();
 	end
+end
+
+function CovenantSanctumMixin:RefreshLevel()
+	self.LevelFrame.Level:SetFormattedText(COVENANT_SANCTUM_LEVEL, C_CovenantSanctumUI.GetRenownLevel());
 end
 
 function CovenantSanctumMixin:SetTab(tabID)
@@ -56,6 +62,7 @@ function CovenantSanctumMixin:SetCovenantInfo()
 		local treeInfo = C_Garrison.GetTalentTreeInfo(treeID);
 		self.textureKit = treeInfo.textureKit;
 		NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, treeInfo.textureKit);
+		NineSliceUtil.DisableSharpening(self.NineSlice);
 
 		local atlas = "CovenantSanctum-Level-Border-%s";
 		local useAtlasSize = true;

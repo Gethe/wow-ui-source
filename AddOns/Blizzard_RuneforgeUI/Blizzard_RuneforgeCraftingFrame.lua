@@ -6,12 +6,8 @@ local RuneforgeCraftingFrameEvents = {
 };
 
 function RuneforgeCraftingFrameMixin:OnLoad()
-	local function RuneforgeSelectFlyoutItemButtonCallback(flyoutButton)
-		self:SetItem(flyoutButton:GetItemLocation());
-	end
 
 	self.flyoutSettings = {
-		onClickFunc = RuneforgeSelectFlyoutItemButtonCallback,
 		customFlyoutOnUpdate = nop,
 		hasPopouts = true,
 		parent = self:GetParent(),
@@ -21,14 +17,30 @@ function RuneforgeCraftingFrameMixin:OnLoad()
 		hideFlyoutHighlight = true,
 		alwaysHideOnClick = true,
 	};
+
+	local function SelectFlyoutItemButtonCallback(flyoutButton)
+		self:SetItem(flyoutButton:GetItemLocation());
+	end
+
+	local function UpgradeItemValidation(itemLocation)
+		return self:GetRuneforgeFrame():IsUpgradeItemValidForRuneforgeLegendary(itemLocation);
+	end
+
+	local function UpgradeItemSelectFlyoutItemButtonCallback(flyoutButton)
+		self:SetUpgradeItem(flyoutButton:GetItemLocation());
+	end
+
+	self.flyoutTypeToCallbacks = {
+		[RuneforgeUtil.FlyoutType.BaseItem] = { C_LegendaryCrafting.IsValidRuneforgeBaseItem, SelectFlyoutItemButtonCallback },
+		[RuneforgeUtil.FlyoutType.Legendary] = { C_LegendaryCrafting.IsRuneforgeLegendary, SelectFlyoutItemButtonCallback },
+		[RuneforgeUtil.FlyoutType.UpgradeItem] = { UpgradeItemValidation, UpgradeItemSelectFlyoutItemButtonCallback },
+	};
 end
 
 function RuneforgeCraftingFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RuneforgeCraftingFrameEvents);
 
 	self:RegisterRefreshMethod(self.Refresh);
-
-	self:SetDynamicFlyoutSettings();
 end
 
 function RuneforgeCraftingFrameMixin:OnHide()
@@ -64,8 +76,19 @@ function RuneforgeCraftingFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function RuneforgeCraftingFrameMixin:SetDynamicFlyoutSettings()
-	local filterFunction = self:IsRuneforgeUpgrading() and C_LegendaryCrafting.IsRuneforgeLegendary or C_LegendaryCrafting.IsValidRuneforgeBaseItem;
+function RuneforgeCraftingFrameMixin:ShowFlyout(button, flyoutType)
+	if flyoutType == nil then
+		flyoutType = self:IsRuneforgeUpgrading() and RuneforgeUtil.FlyoutType.Legendary or RuneforgeUtil.FlyoutType.BaseItem;
+	end
+
+	self:SetDynamicFlyoutSettings(flyoutType);
+	EquipmentFlyout_Show(button);
+	PlaySound(SOUNDKIT.UI_RUNECARVING_OPEN_SELECTION_SUB_WINDOW);
+end
+
+function RuneforgeCraftingFrameMixin:SetDynamicFlyoutSettings(flyoutType)
+	local callbacks = self.flyoutTypeToCallbacks[flyoutType];
+	local filterFunction = callbacks[1];
 
 	-- itemSlot is required by the API, but unused in this context.
 	local function GetRuneforgeLegendariesCallback(itemSlot, resultsTable)
@@ -73,6 +96,11 @@ function RuneforgeCraftingFrameMixin:SetDynamicFlyoutSettings()
 	end
 
 	self.flyoutSettings.getItemsFunc = GetRuneforgeLegendariesCallback;
+	self.flyoutSettings.onClickFunc = callbacks[2];
+end
+
+function RuneforgeCraftingFrameMixin:SetUpgradeItem(item)
+	self.UpgradeItemSlot:SetItem(item);
 end
 
 function RuneforgeCraftingFrameMixin:SetItem(item, autoSelectSlot)
@@ -81,7 +109,7 @@ function RuneforgeCraftingFrameMixin:SetItem(item, autoSelectSlot)
 	elseif self:IsRuneforgeUpgrading() then
 		if autoSelectSlot and (self:GetItem() ~= nil) then
 			if self:GetRuneforgeFrame():IsUpgradeItemValidForRuneforgeLegendary(item) then
-				self.UpgradeItemSlot:SetItem(item);
+				self:SetUpgradeItem(item);
 			end
 		elseif C_LegendaryCrafting.IsRuneforgeLegendary(item) then
 			self.BaseItemSlot:SetItem(item);
@@ -119,6 +147,7 @@ function RuneforgeCraftingFrameMixin:TogglePowerList()
 	if self.PowerFrame:IsShown() then
 		self.PowerFrame:Hide();
 	else
+		PlaySound(SOUNDKIT.UI_RUNECARVING_OPEN_SELECTION_SUB_WINDOW);
 		self.PowerFrame:OpenPowerList(self:GetRuneforgeFrame():GetPowers());
 		self.PowerFrame:Show();
 	end

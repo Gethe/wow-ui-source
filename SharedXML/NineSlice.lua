@@ -290,7 +290,7 @@ local layouts =
 		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 	},
 
-	WoodenNeutralFrameTemplate = 
+	WoodenNeutralFrameTemplate =
 	{
 		mirrorLayout = true,
 		TopLeftCorner =	{ atlas = "Neutral-NineSlice-Corner", x = -6, y = 6, },
@@ -341,7 +341,7 @@ local layouts =
 		Center = { atlas = "CharacterCreateDropdown-NineSlice-Center", },
 	},
 
-	UniqueCornersLayout = 
+	UniqueCornersLayout =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
 		["TopLeftCorner"] = { atlas = "%s-NineSlice-CornerTopLeft" },
@@ -400,6 +400,14 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 				SetupPieceVisuals(piece, setup, pieceLayout, textureKit);
 			end
 		end
+	end
+end
+
+function NineSliceUtil.DisableSharpening(container)
+	for pieceIndex, setup in ipairs(nineSliceSetup) do
+		local piece = GetNineSlicePiece(container, setup.pieceName);
+		piece:SetTexelSnappingBias(0);
+		piece:SetSnapToPixelGrid(false);
 	end
 end
 

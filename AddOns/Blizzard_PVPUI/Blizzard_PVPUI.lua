@@ -14,7 +14,7 @@ local SEASON_STATE_DISABLED = 4;
 local CONQUEST_CURRENCY_ID = 1602;
 local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
 
-local BFA_START_SEASON = 26;
+local SL_START_SEASON = 30;
 
 ---------------------------------------------------------------
 -- PVP FRAME
@@ -98,7 +98,7 @@ end
 function PVPUIFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 
-	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde) then
 		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-background-casual-horde", true)
 	else
 		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-background-casual-alliance", true)
@@ -362,7 +362,7 @@ function PVPQueueFrame_Update(self, frame)
 end
 
 function PVPQueueFrame_OnShow(self)
-	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde) then
 		PVEFrame:SetPortraitToAsset("Interface\\Icons\\INV_BannerPVP_01");
 	else
 		PVEFrame:SetPortraitToAsset("Interface\\Icons\\INV_BannerPVP_02");
@@ -380,7 +380,7 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
 	end
 end
 
@@ -1110,7 +1110,7 @@ function ConquestFrame_OnShow(self)
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
 	local lastSeasonNumber = tonumber(GetCVar("newPvpSeason"));
-	if lastSeasonNumber < (GetCurrentArenaSeason() - BFA_START_SEASON + 1) then
+	if lastSeasonNumber < (GetCurrentArenaSeason() - SL_START_SEASON + 1) then
 		PVPQueueFrame.NewSeasonPopup:Show();
 	end
 end
@@ -1521,31 +1521,56 @@ function PVPUIHonorInsetMixin:Update()
 	return 0;
 end
 
+function PVPUIHonorInsetMixin:LegacyDisplayCasualPanel()
+	local panel = self.CasualPanel;
+	local lifetimeHonorKills = GetPVPLifetimeStats();
+	
+	panel.HKLabel:SetText(HONORABLE_KILLS);
+	panel.HKLabel:SetPoint("TOP", 0, -184);
+
+	panel.HKValue:SetText(BreakUpLargeNumbers(lifetimeHonorKills));
+	panel.HKValue:Show();
+
+	panel.WeeklyChest:Hide();
+	panel.HonorLevelDisplay:SetPoint("TOP", 0, -25);
+end
+
 function PVPUIHonorInsetMixin:DisplayCasualPanel()
 	local panel = self.CasualPanel;
 	panel:Show();
 	self.RatedPanel:Hide();
 
-	local lifetimeHonorKills = GetPVPLifetimeStats();
-	panel.HKValue:SetText(BreakUpLargeNumbers(lifetimeHonorKills));
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyDisplayCasualPanel();
+		return;
+	end
+
+	panel.HKLabel:SetText(RATED_PVP_WEEKLY_VAULT);
+	panel.HKLabel:SetPoint("TOP", 0, -12);
+	panel.WeeklyChest:Show();
+	panel.HonorLevelDisplay:SetPoint("TOP", panel.WeeklyChest, "BOTTOM", 0, -90);
 end
 
 local SEASON_REWARD_ACHIEVEMENTS = {
-	[BFA_START_SEASON] = {
-		[PLAYER_FACTION_GROUP[0]] = 13136,
-		[PLAYER_FACTION_GROUP[1]] = 13137,
+	[SL_START_SEASON] = {
+		[PLAYER_FACTION_GROUP.Horde] = 14561,
+		[PLAYER_FACTION_GROUP.Alliance] = 14555,
 	},
-	[BFA_START_SEASON + 1] = {
-		[PLAYER_FACTION_GROUP[0]] = 13227,
-		[PLAYER_FACTION_GROUP[1]] = 13228,
+	[SL_START_SEASON + 1] = {
+		[PLAYER_FACTION_GROUP.Horde] = 14563,
+		[PLAYER_FACTION_GROUP.Alliance] = 14557,
 	},
-	[BFA_START_SEASON + 2] = {
-		[PLAYER_FACTION_GROUP[0]] = 13636,
-		[PLAYER_FACTION_GROUP[1]] = 13637,
+	[SL_START_SEASON + 2] = {
+		[PLAYER_FACTION_GROUP.Horde] = 14564,
+		[PLAYER_FACTION_GROUP.Alliance] = 14558,
 	},
-	[BFA_START_SEASON + 3] = {
-		[PLAYER_FACTION_GROUP[0]] = 13944,
-		[PLAYER_FACTION_GROUP[1]] = 13943,
+	[SL_START_SEASON + 3] = {
+		[PLAYER_FACTION_GROUP.Horde] = 14565,
+		[PLAYER_FACTION_GROUP.Alliance] = 14559,
+	},
+	[SL_START_SEASON + 4] = {
+		[PLAYER_FACTION_GROUP.Horde] = 14566,
+		[PLAYER_FACTION_GROUP.Alliance] = 14560,
 	},
 };
 
@@ -1583,7 +1608,7 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 		if seasonID == NO_ARENA_SEASON then
 			seasonID = GetPreviousArenaSeason();
 		end
-		if seasonID and seasonID >= BFA_START_SEASON then
+		if seasonID and seasonID >= SL_START_SEASON then
 			local achievementID = GetPVPSeasonAchievementID(seasonID);
 			if achievementID ~= nil then
 				showSeasonReward = true;
@@ -1626,7 +1651,7 @@ PVPUIHonorLevelDisplayMixin = { };
 
 function PVPUIHonorLevelDisplayMixin:OnLoad()
 	self:Pause();
-	if UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] then
+	if UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde then
 		self.Background:SetAtlas("pvpqueue-sidebar-honorbar-background-horde", false);
 		self.FactionBadge:SetAtlas("pvpqueue-sidebar-honorbar-badge-horde", false);
 	else
@@ -1862,7 +1887,7 @@ function PVPConquestBarMixin:OnLeave()
 	self.Reward:HideTooltip();
 end
 
-function PVPConquestBarMixin:UpdateForBfA()
+function PVPConquestBarMixin:LegacyUpdate()
 	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
 	local currentValue, maxValue, questID = PVPGetConquestLevelInfo();
 	local questDone = questID and questID == 0;
@@ -1882,7 +1907,15 @@ function PVPConquestBarMixin:UpdateForBfA()
 	self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
 end
 
-function PVPConquestBarMixin:UpdateForShadowlands()
+function PVPConquestBarMixin:Update()
+	self.locked = not IsPlayerAtEffectiveMaxLevel();
+	self.Lock:SetShown(self.locked);
+
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyUpdate();
+		return;
+	end
+
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local progress = weeklyProgress.progress;
 	local maxProgress = weeklyProgress.maxProgress;
@@ -1916,17 +1949,6 @@ function PVPConquestBarMixin:UpdateForShadowlands()
 	end
 end
 
-function PVPConquestBarMixin:Update()
-	self.locked = not IsPlayerAtEffectiveMaxLevel();
-	self.Lock:SetShown(self.locked);
-
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:UpdateForShadowlands();
-	else
-		self:UpdateForBfA();
-	end
-end
-
 function PVPConquestBarMixin:SetDisabled(disabled)
 	if self.disabled ~= disabled then
 		self.Border:SetDesaturated(disabled);
@@ -1945,8 +1967,8 @@ NewPvpSeasonMixin = { };
 
 function NewPvpSeasonMixin:OnShow()
 	local currentSeason = GetCurrentArenaSeason();
-	self.SeasonDescription:SetText(BFA_SEASON_NUMBER:format(currentSeason - BFA_START_SEASON + 1));
-	self.SeasonDescription2:SetText(BFA_PVP_SEASON_DESCRIPTION_TWO);
+	self.SeasonDescription:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
+	self.SeasonDescription2:SetText(SL_PVP_SEASON_DESCRIPTION);
 
 	local achievementID = GetPVPSeasonAchievementID(currentSeason);
 	local showSeasonReward = achievementID ~= nil;
@@ -1958,7 +1980,7 @@ end
 
 PVPWeeklyChestMixin = { };
 
-function PVPWeeklyChestMixin:GetStateForBfA()
+function PVPWeeklyChestMixin:LegacyGetState()
 	local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
 	if lastWeekRewardAchieved and not lastWeekRewardClaimed then
 		return "collect";
@@ -1968,7 +1990,7 @@ function PVPWeeklyChestMixin:GetStateForBfA()
 	return "incomplete";
 end
 
-function PVPWeeklyChestMixin:GetStateForShadowlands()
+function PVPWeeklyChestMixin:GetState()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local unlocksCompleted = weeklyProgress.unlocksCompleted;
 
@@ -1981,10 +2003,10 @@ function PVPWeeklyChestMixin:GetStateForShadowlands()
 	return "incomplete";
 end
 
-function PVPWeeklyChestMixin:OnShowForBfA()
-	local state = self:GetStateForBfA();
+function PVPWeeklyChestMixin:LegacyOnShow()
+	local state = self:LegacyGetState();
 	local atlas;
-	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde) then
 		atlas = "pvpqueue-chest-horde-"..state;
 	else
 		atlas = "pvpqueue-chest-alliance-"..state;
@@ -2002,8 +2024,13 @@ function PVPWeeklyChestMixin:OnShowForBfA()
 	end
 end
 
-function PVPWeeklyChestMixin:OnShowForShadowlands()
-	local state = self:GetStateForShadowlands();
+function PVPWeeklyChestMixin:OnShow()
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyOnShow();
+		return;
+	end
+
+	local state = self:GetState();
 	local atlas = "pvpqueue-chest-greatvault-"..state;
 	local useAtlasSize = true;
 	self.ChestTexture:SetAtlas(atlas, useAtlasSize);
@@ -2013,24 +2040,48 @@ function PVPWeeklyChestMixin:OnShowForShadowlands()
 	self.SpinAnim:Stop();
 end
 
-function PVPWeeklyChestMixin:OnShow()
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:OnShowForShadowlands();
-	else
-		self:OnShowForBfA();
-	end
-end
-
 function PVPWeeklyChestMixin:OnEnter()
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:OnEnterForShadowlands();
-	else
-		self:OnEnterForBfA();
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyOnEnter();
+		return;
 	end
+
+	local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
+	local tierInfo = C_PvP.GetPvpTierInfo(tierID);
+	local pvpTier = tierInfo and tierInfo.pvpTierEnum or 0;
+	local tierName = tierInfo and tierInfo.pvpTierEnum and PVPUtil.GetTierName(tierInfo.pvpTierEnum);
+
+	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
+	local itemLink = weeklyProgress.sampleItemHyperlink;
+	local itemLevel = 0;
+	if itemLink then
+		itemLevel = GetDetailedItemLevelInfo(itemLink) or 0;
+	end
+	local unlocksCompleted = weeklyProgress.unlocksCompleted or 0;
+
+	local state = self:GetState();
+	local maxUnlocks = weeklyProgress.maxUnlocks or 3;
+	local description;
+	if unlocksCompleted > 0 then
+		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks, itemLevel, tierName);
+	else
+		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP_NO_REWARDS:format(unlocksCompleted, maxUnlocks);
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, RATED_PVP_WEEKLY_VAULT_TITLE);
+
+	local canClaimRewards = C_WeeklyRewards.CanClaimPVPRewards();
+	if canClaimRewards then
+		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_VAULT_COLLECT_TOOLTIP, GREEN_FONT_COLOR);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	end
+	GameTooltip_AddNormalLine(GameTooltip, description);
+	GameTooltip:Show();
 end
 
-function PVPWeeklyChestMixin:OnEnterForBfA()
-	local state = self:GetStateForBfA();
+function PVPWeeklyChestMixin:LegacyOnEnter()
+	local state = self:LegacyGetState();
 	local title, description, showItemLevel;
 	if state == "incomplete" then
 		title = RATED_PVP_WEEKLY_CHEST;
@@ -2065,54 +2116,21 @@ function PVPWeeklyChestMixin:OnEnterForBfA()
 	GameTooltip:Show();
 end
 
-function PVPWeeklyChestMixin:OnEnterForShadowlands()
-	local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
-	local tierInfo = C_PvP.GetPvpTierInfo(tierID);
-	local tierName = tierInfo and tierInfo.pvpTierEnum and PVPUtil.GetTierName(tierInfo.pvpTierEnum);
-
-	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local itemLink = weeklyProgress.sampleItemHyperlink;
-	local itemLevel = 0;
-	if itemLink then
-		itemLevel = GetDetailedItemLevelInfo(itemLink);
-	end
-	local unlocksCompleted = weeklyProgress.unlocksCompleted;
-
-	local state = self:GetStateForShadowlands();
-	local maxUnlocks = 3;
-	local description = RATED_PVP_WEEKLY_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks, itemLevel, tierName);
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, RATED_PVP_WEEKLY_VAULT_TITLE);
-
-	local canClaimRewards = C_WeeklyRewards.CanClaimPVPRewards();
-	if canClaimRewards then
-		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_VAULT_COLLECT_TOOLTIP, GREEN_FONT_COLOR);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	end
-	GameTooltip_AddColoredLine(GameTooltip, description, NORMAL_FONT_COLOR);
-	GameTooltip:Show();
-end
-
 function PVPNewSeasonPopupOnClick(self)
 	self:GetParent():Hide();
-	SetCVar("newPvpSeason", GetCurrentArenaSeason() - BFA_START_SEASON + 1);
+	SetCVar("newPvpSeason", GetCurrentArenaSeason() - SL_START_SEASON + 1);
 end
 
 PVPWeeklyRatedPanelMixin = { };
 
-function PVPWeeklyRatedPanelMixin:OnShowForBfA()
+function PVPWeeklyRatedPanelMixin:LegacyOnShow()
 	self.Label:SetText(RATED_PVP_WEEKLY_CHEST);
 end
 
-function PVPWeeklyRatedPanelMixin:OnShowForShadowlands()
-	self.Label:SetText(RATED_PVP_WEEKLY_VAULT);
-end
-
 function PVPWeeklyRatedPanelMixin:OnShow()
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:OnShowForShadowlands();
-	else
-		self:OnShowForBfA();
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyOnShow();
+		return;
 	end
+	self.Label:SetText(RATED_PVP_WEEKLY_VAULT);
 end

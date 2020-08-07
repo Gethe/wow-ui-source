@@ -102,6 +102,12 @@ RuneforgeUtil.RuneforgeState = {
 	Upgrade = 2,
 };
 
+RuneforgeUtil.FlyoutType = {
+	BaseItem = 1,
+	Legendary = 2,
+	UpgradeItem = 3,
+};
+
 function RuneforgeUtil.GetCostsString(costs)
 	local resultString = "";
 	for i, cost in ipairs(costs) do

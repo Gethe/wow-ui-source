@@ -1370,10 +1370,6 @@ function ContainerFrameItemButton_OnEnter(self)
 	if ArtifactFrame and self.hasItem then
 		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
 	end
-
-	if SoulbindViewer and self.hasItem then
-		SoulbindViewer:OnInventoryItemEnter(self:GetParent():GetID(), self:GetID());
-	end
 end
 
 function ContainerFrameItemButton_OnLeave(self)
@@ -1382,10 +1378,6 @@ function ContainerFrameItemButton_OnLeave(self)
 
 	if ArtifactFrame then
 		ArtifactFrame:OnInventoryItemMouseLeave(self:GetParent():GetID(), self:GetID());
-	end
-
-	if SoulbindViewer and self.hasItem then
-		SoulbindViewer:OnInventoryItemLeave(self:GetParent():GetID(), self:GetID());
 	end
 end
 

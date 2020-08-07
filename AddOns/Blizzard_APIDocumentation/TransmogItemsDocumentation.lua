@@ -21,6 +21,23 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetIllusionSourceInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "visualID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceIcon",
 			Type = "Function",
 

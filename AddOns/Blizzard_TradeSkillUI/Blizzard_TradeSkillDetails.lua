@@ -73,7 +73,10 @@ end
 function TradeSkillDetailsMixin:SetSelectedRecipeID(recipeID)
 	if self.selectedRecipeID ~= recipeID then
 		self:CancelSpellLoadCallback();
-		self:SetSelectedRecipeLevel(nil);
+
+		local skipRefresh = true;
+		self:SetSelectedRecipeLevel(nil, skipRefresh);
+		
 		self.selectedRecipeID = recipeID;
 		self.craftable = false;
 		self.optionalReagents = {};
@@ -278,6 +281,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 	local recipeInfo = self.selectedRecipeID and C_TradeSkillUI.GetRecipeInfo(self.selectedRecipeID, selectedRecipeLevel);
 	if recipeInfo then
 		local hasRecipeLeveling = recipeInfo.unlockedRecipeLevel;
+		local hasMaxRecipeLevel = hasRecipeLeveling and (recipeInfo.currentRecipeExperience == nil);
 		if hasRecipeLeveling and (selectedRecipeLevel == nil) then
 			selectedRecipeLevel = recipeInfo.unlockedRecipeLevel;
 			
@@ -357,12 +361,10 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			self:AddContentWidget(self.Contents.StarsFrame);
 			self.Contents.StarsFrame:Show();
 		elseif hasRecipeLeveling then
-			if recipeInfo.currentRecipeExperience ~= nil then
-				local recipeLevelBar = self.Contents.RecipeLevel;
-				recipeLevelBar:SetExperience(recipeInfo.currentRecipeExperience, recipeInfo.nextLevelRecipeExperience);
-				self:AddContentWidget(recipeLevelBar);
-				recipeLevelBar:Show();
-			end
+			local recipeLevelBar = self.Contents.RecipeLevel;
+			recipeLevelBar:SetExperience(recipeInfo.currentRecipeExperience, recipeInfo.nextLevelRecipeExperience, recipeInfo.unlockedRecipeLevel);
+			self:AddContentWidget(recipeLevelBar);
+			recipeLevelBar:Show();
 
 			local function RecipeLevelDropDown_Initialize()
 				for i = 1, recipeInfo.unlockedRecipeLevel do
@@ -404,12 +406,32 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		if requiredToolsString then
 			self.Contents.RequirementLabel:Show();
 			self.Contents.RequirementText:SetText(requiredToolsString);
-			self.Contents.RecipeCooldown:SetPoint("TOP", self.Contents.RequirementText, "BOTTOM", 0, -SPACING_BETWEEN_LINES);
+			self.Contents.ExperienceLabel:SetPoint("TOP", self.Contents.RequirementText, "BOTTOM", 0, 0);
 			self:AddContentWidget(self.Contents.RequirementLabel);
 			self:AddContentWidget(self.Contents.RequirementText);
 		else
 			self.Contents.RequirementLabel:Hide();
 			self.Contents.RequirementText:SetText("");
+			self.Contents.ExperienceLabel:SetPoint("TOP", self.Contents.RequirementText, "TOP", 0, 0);
+		end
+
+		local earnedExperience = recipeInfo.earnedExperience;
+		local showEarnedExperience = (earnedExperience ~= nil) and not hasMaxRecipeLevel;
+		if showEarnedExperience then
+			self.Contents.ExperienceLabel:Show();
+			self.Contents.ExperienceText:SetText(earnedExperience);
+			self:AddContentWidget(self.Contents.ExperienceLabel);
+			self:AddContentWidget(self.Contents.ExperienceText);
+		else
+			self.Contents.ExperienceLabel:Hide();
+			self.Contents.ExperienceText:SetText("");
+		end
+
+		if showEarnedExperience then
+			self.Contents.RecipeCooldown:SetPoint("TOP", self.Contents.ExperienceText, "BOTTOM", 0, -SPACING_BETWEEN_LINES);
+		elseif requiredToolsString then
+			self.Contents.RecipeCooldown:SetPoint("TOP", self.Contents.RequirementText, "BOTTOM", 0, -SPACING_BETWEEN_LINES);
+		else
 			self.Contents.RecipeCooldown:SetPoint("TOP", self.Contents.RequirementText, "BOTTOM", 0, 0);
 		end
 
@@ -987,22 +1009,49 @@ TradeSkillRecipeLevelBarMixin = {};
 
 function TradeSkillRecipeLevelBarMixin:OnLoad()
 	self.Rank:Hide();
-
-	-- Re-using this constant for consistency.
-	local color = FACTION_BAR_COLORS[5];
-	self:SetStatusBarColor(color.r, color.g, color.b);
+	self:SetStatusBarColor(TRADESKILL_EXPERIENCE_COLOR:GetRGB());
 end
 
 function TradeSkillRecipeLevelBarMixin:OnEnter()
 	self.Rank:Show();
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	if self:IsMaxLevel() then
+		GameTooltip_SetTitle(GameTooltip, TRADESKILL_RECIPE_LEVEL_TOOLTIP_HIGHEST_RANK, NORMAL_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, TRADESKILL_RECIPE_LEVEL_TOOLTIP_HIGHEST_RANK_EXPLANATION, GREEN_FONT_COLOR);
+	else
+		local experiencePercent = math.floor((self.currentExperience / self.maxExperience) * 100);
+		GameTooltip_SetTitle(GameTooltip, TRADESKILL_RECIPE_LEVEL_TOOLTIP_RANK_FORMAT:format(self.currentLevel), NORMAL_FONT_COLOR);
+		GameTooltip_AddHighlightLine(GameTooltip, TRADESKILL_RECIPE_LEVEL_TOOLTIP_EXPERIENCE_FORMAT:format(self.currentExperience, self.maxExperience, experiencePercent));
+		GameTooltip_AddColoredLine(GameTooltip, TRADESKILL_RECIPE_LEVEL_TOOLTIP_LEVELING_FORMAT:format(self.currentLevel + 1), GREEN_FONT_COLOR);
+	end
+
+	GameTooltip:Show();
 end
 
 function TradeSkillRecipeLevelBarMixin:OnLeave()
 	self.Rank:Hide();
+
+	GameTooltip_Hide();
 end
 
-function TradeSkillRecipeLevelBarMixin:SetExperience(currentExperience, maxExperience)
-	self:SetMinMaxValues(0, maxExperience);
-	self:SetValue(currentExperience);
-	self.Rank:SetFormattedText(GENERIC_FRACTION_STRING, currentExperience, maxExperience);
+function TradeSkillRecipeLevelBarMixin:SetExperience(currentExperience, maxExperience, currentLevel)
+	self.currentExperience = currentExperience;
+	self.maxExperience = maxExperience;
+	self.currentLevel = currentLevel;
+
+	if self:IsMaxLevel() then
+		self:SetMinMaxValues(0, 1);
+		self:SetValue(1);
+		self.Rank:SetText(TRADESKILL_RECIPE_LEVEL_MAXIMUM);
+	else
+		self:SetMinMaxValues(0, maxExperience);
+		self:SetValue(currentExperience);
+		self.Rank:SetFormattedText(GENERIC_FRACTION_STRING, currentExperience, maxExperience);
+	end
+end
+
+function TradeSkillRecipeLevelBarMixin:IsMaxLevel()
+	return self.currentExperience == nil;
 end

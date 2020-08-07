@@ -91,6 +91,7 @@ LFGListInfoDocumentation.lua
 LFGuildInfoDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
+LevelSquishDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LoreTextDocumentation.lua

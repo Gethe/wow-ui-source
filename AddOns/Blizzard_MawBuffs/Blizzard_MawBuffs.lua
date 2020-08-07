@@ -1,21 +1,32 @@
+local MAW_BUFF_MAX_DISPLAY = 44;
+
 MawBuffsContainerMixin = {};
 
 function MawBuffsContainerMixin:OnLoad()
 	self:Update();
 	self:RegisterUnitEvent("UNIT_AURA", "player");
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 end
 
 function MawBuffsContainerMixin:OnEvent(event, ...)
 	local unit = ...;
 	if event == "UNIT_AURA" then
 		self:Update();
+	elseif event == "GLOBAL_MOUSE_DOWN" then
+		if self.List:IsShown() then
+			if (self:IsMouseOver() or self.List:IsMouseOver())  then 
+				return; 
+			end 
+
+			self:UpdateListState(false);
+		end
 	end
 end
 
 function MawBuffsContainerMixin:Update()
 	local mawBuffs = {};
 	local totalCount = 0;
-	for i=1, BUFF_MAX_DISPLAY do
+	for i=1, MAW_BUFF_MAX_DISPLAY do
 		local _, icon, count, _, _, _, _, _, _, spellID = UnitAura("player", i, "MAW");
 		if icon then
 			if count == 0 then
@@ -79,8 +90,8 @@ function MawBuffsListMixin:OnShow()
 	self.button:SetPushedAtlas("jailerstower-animapowerbutton-pressed");
 	self.button:SetHighlightAtlas("jailerstower-animapowerbutton-pressed-highlight");
 	self.button:SetWidth(268);
-	self.button:SetPushedTextOffset(10, -1);
 	self.button:SetButtonState("NORMAL");
+	self.button:SetPushedTextOffset(8.75, -1);
 	self.button:SetButtonState("PUSHED", true);
 end
 
@@ -88,8 +99,8 @@ function MawBuffsListMixin:OnHide()
 	self.button:SetPushedAtlas("jailerstower-animapowerbutton-normalpressed");
 	self.button:SetHighlightAtlas("jailerstower-animapowerbutton-highlight");
 	self.button:SetWidth(253);
-	self.button:SetPushedTextOffset(2, -1);
 	self.button:SetButtonState("NORMAL", false);
+	self.button:SetPushedTextOffset(1.25, -1);
 end
 
 function MawBuffsListMixin:HighlightBuffAndShow(spellID, maxStackCount)

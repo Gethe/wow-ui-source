@@ -198,6 +198,7 @@ local TradeSkillUI =
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
 			},
 		},
 		{

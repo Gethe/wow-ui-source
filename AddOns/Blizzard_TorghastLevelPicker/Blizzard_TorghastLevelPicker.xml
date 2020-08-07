@@ -193,6 +193,12 @@
 					<Anchor point="TOPRIGHT" x="-60" y="-60" />
 				</Anchors>
 			</Button>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW" enableMouse="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-30"/>
+				</Anchors>
+			</ModelScene>
 		</Frames>
 		<Scripts>
 			<OnHide method="OnHide"/>

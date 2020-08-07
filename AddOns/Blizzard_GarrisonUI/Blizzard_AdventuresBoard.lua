@@ -283,6 +283,18 @@ function AdventuresBoardCombatMixin:AddCombatEventText(combatLogEvent)
 			targetFrame:SetHealth(target.newHealth);
 		end
 	end
+
+	--celebration noise on final enemy kill 
+	if combatLogEvent.type == Enum.GarrAutoMissionEventType.Died then
+		for enemyFrame in self.enemyFramePool:EnumerateActive() do
+			local currentHealth = enemyFrame:GetHealth();
+			if currentHealth and currentHealth ~= 0 then
+				return;
+			end
+		end
+
+		PlaySound(SOUNDKIT.UI_ADVENTURES_FINAL_DEATH);
+	end
 end
 
 local FloatingCombatTextAnimationTranslation = 40;

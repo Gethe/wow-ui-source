@@ -277,6 +277,10 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+								<KeyValues>
+									<KeyValue key="verticalAnchorPoint" value="TOPRIGHT" type="string"/>
+									<KeyValue key="verticalRelativePoint" value="TOPRIGHT" type="string"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>

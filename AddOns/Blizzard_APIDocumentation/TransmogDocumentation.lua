@@ -49,6 +49,20 @@ local Transmog =
 			},
 		},
 		{
+			Name = "GetItemIDForSource",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSlotForInventoryType",
 			Type = "Function",
 

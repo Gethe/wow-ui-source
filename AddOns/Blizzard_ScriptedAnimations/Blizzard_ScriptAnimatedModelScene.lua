@@ -130,7 +130,7 @@ function ScriptAnimatedModelSceneMixin:GetPixelsPerSceneUnit()
 end
 
 function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEffectFinish, onEffectResolution)
-	local effectController = CreateAndInitFromMixin(EffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution);
+	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution);
 
 	local function StartEffectController()
 		effectController:StartEffect();
@@ -142,7 +142,7 @@ function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEff
 end
 
 function ScriptAnimatedModelSceneMixin:AddDynamicEffect(dynamicEffectDescription, source, target, onEffectFinish, onEffectResolution)
-	local effectController = CreateAndInitFromMixin(EffectControllerMixin, self, dynamicEffectDescription.effectID, source, target, onEffectFinish, onEffectResolution);
+	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, dynamicEffectDescription.effectID, source, target, onEffectFinish, onEffectResolution);
 
 	local function StartEffectController()
 		effectController:StartEffect();

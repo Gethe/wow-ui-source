@@ -77,7 +77,7 @@ function CovenantMission:OnLoadMainFrame()
 	self:SetupCompleteDialog();
 	self:UpdateCurrencyInfo();
 	self:UpdateTextures();
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, 3);
 	self:SelectTab(self:DefaultTab());
 
 	self.FollowerList:SetSortFuncs(nil);
@@ -116,6 +116,7 @@ end
 
 function CovenantMission:OnShowMainFrame()
 	GarrisonMission.OnShowMainFrame(self);
+	AdventureMapMixin.OnShow(self.MapTab);
 	FrameUtil.RegisterFrameForEvents(self, COVENANT_MISSION_EVENTS); 
 
 	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameMouseUp, self.OnMouseUpMissionFollower, self);
@@ -138,6 +139,7 @@ end
 
 function CovenantMission:OnHideMainFrame()
 	GarrisonFollowerMission.OnHideMainFrame(self);
+	AdventureMapMixin.OnHide(self.MapTab);
 	FrameUtil.UnregisterFrameForEvents(self, COVENANT_MISSION_EVENTS);
 
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameMouseUp, self);
@@ -149,22 +151,44 @@ function CovenantMission:OnHideMainFrame()
 	C_AdventureMap.Close(); --Opening the table implicitly opens an Adventure Map, this clears the npc on it.
 end
 
+function CovenantMission:ShouldShowMissionsAndFollowersTabs()
+	return C_Garrison.IsAtGarrisonMissionNPC();
+end
+
+function CovenantMission:SelectTab(id)
+	GarrisonFollowerMission.SelectTab(self, id);
+	self.BackgroundTile:SetShown(id ~= 3);
+end
+
 function CovenantMission:SetupTabs()
    local tabList = { };
    local validTabs = { };
    local defaultTab;
 
    local lastShowMissionsAndFollowersTabs = self.lastShowMissionsAndFollowersTabs;
+   	if self:ShouldShowMissionsAndFollowersTabs() then
+		table.insert(tabList, 1);
+		table.insert(tabList, 2);
+		validTabs[1] = true;
+		validTabs[2] = true;
+		self.lastShowMissionsAndFollowersTabs = true;
+		defaultTab = 1;
+	else
+		self.lastShowMissionsAndFollowersTabs = false;
+	end
 
-   table.insert(tabList, 1);
-   table.insert(tabList, 2);
-   validTabs[1] = true;
-   validTabs[2] = true;
-   self.lastShowMissionsAndFollowersTabs = true;
-   defaultTab = 1;
+	-- If we have completed all sandbox choice quests, hide the adventure map
+	if ((#tabList == 0) or C_Garrison.ShouldShowMapTab(GarrisonFollowerOptions[self.followerTypeID].garrisonType)) then
+		table.insert(tabList, 3);
+		validTabs[3] = true;
+		if (not defaultTab) then
+			defaultTab = 3;
+		end
+	end
 
    self.Tab1:Hide();
    self.Tab2:Hide();
+   self.Tab3:Hide();
 
    -- don't show any tabs if there's only 1
    if (#tabList > 1) then
@@ -298,20 +322,31 @@ function CovenantMission:GetPlacerFrame()
 end
 
 function CovenantMission:OnClickFollowerPlacerFrame(button, info)
+	local soundKitToPlay = SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED;
 	if button == "LeftButton" then
 		for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
 			if followerFrame:IsShown() and followerFrame:IsMouseOver() then
 				self:AssignFollowerToMission(followerFrame, info);
+				soundKitToPlay = nil;
 			end
 		end
 	end
-
+	
+	if soundKitToPlay then
+		PlaySound(soundKitToPlay);
+	end
 	self:ClearMouse();
 end
 
-function CovenantMission:SetPlacerFrame(placer, info, yOffset)
+function CovenantMission:SetPlacerFrame(placer, info, yOffset, soundKit)
 	placer:SetFollowerGUID(info.followerID, info);
 	self:LockPlacerToMouse(placer);
+
+	if soundKit then
+		PlaySound(soundKit)
+	else
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED);
+	end
 end
 
 function CovenantMission:OnFollowerFrameDragStart(followerFrame)
@@ -321,7 +356,7 @@ function CovenantMission:OnFollowerFrameDragStart(followerFrame)
 	end
 
 	local covenantPlacer = self:GetPlacerFrame();
-	self:SetPlacerFrame(covenantPlacer, info);
+	self:SetPlacerFrame(covenantPlacer, info, yOffset, SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED);
 	covenantPlacer.dragStartFrame = followerFrame;
 
 	local function CovenantPlacerFrame_OnHide()
@@ -523,6 +558,8 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
 
+	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED);
+
 	return true;
 end
 
@@ -546,6 +583,10 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
+
+	if updateValues then
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED);
+	end
 end
 
 function CovenantMission:GetNumMissionFollowers()

@@ -6,10 +6,10 @@ local SoulbindTreeEvents =
 {
 	"SOULBIND_NODE_LEARNED",
 	"SOULBIND_NODE_UNLEARNED",
+	"SOULBIND_PATH_CHANGED",
 	"SOULBIND_CONDUIT_INSTALLED",
 	"SOULBIND_CONDUIT_UNINSTALLED",
 	"CURSOR_UPDATE",
-	"BAG_UPDATE",
 };
 
 SoulbindTreeMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -36,15 +36,18 @@ end
 
 function SoulbindTreeMixin:OnEvent(event, ...)
 	if event == "SOULBIND_NODE_LEARNED" or event == "SOULBIND_NODE_UNLEARNED" then
-		self:OnNodeChanged(...);
+		local nodeID = ...;
+		self:OnNodeChanged(nodeID);
+	elseif event == "SOULBIND_PATH_CHANGED" then
+		self:OnPathChanged();
 	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
-		self:OnConduitInstalled(...);
+		local nodeID, conduitData = ...;
+		self:OnConduitInstalled(nodeID, conduitData);
 	elseif event == "SOULBIND_CONDUIT_UNINSTALLED" then
-		self:OnConduitUninstalled(...);
+		local nodeID = ...;
+		self:OnConduitUninstalled(nodeID);
 	elseif event == "CURSOR_UPDATE" then
 		self:OnCursorStateChanged();
-	elseif event == "BAG_UPDATE" then
-		self:OnBagChanged();
 	end
 end
 
@@ -84,13 +87,24 @@ function SoulbindTreeMixin:OnNodeChanged(nodeID)
 	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
 end
 
-function SoulbindTreeMixin:LearnNodeByButton(button)
-	if button:IsSelectable() then
-		C_Soulbinds.LearnNode(button:GetID());
+function SoulbindTreeMixin:OnPathChanged()
+	-- Temp. Removed once the tree isn't being reset.
+	Soulbinds.SetPathChangePending(true);
+	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
+	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
+	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
+	Soulbinds.SetPathChangePending(false);
+end
+
+function SoulbindTreeMixin:SelectNode(button, buttonName)
+	if buttonName == "LeftButton" then
+		if button:IsUnselected() or button:IsSelectable() then
+			C_Soulbinds.SelectNode(button:GetID());
+		end
 	end
 end
 
-function SoulbindTreeMixin:OnNodeClicked(button, buttonID)
+function SoulbindTreeMixin:OnNodeClicked(button, buttonName)
 	if not self:IsEditable() then
 		return;
 	end
@@ -102,16 +116,16 @@ function SoulbindTreeMixin:OnNodeClicked(button, buttonID)
 	end
 
 	if not linked then
-		self:LearnNodeByButton(button);
+		self:SelectNode(button, buttonName);
 	end
 end
 
-function SoulbindTreeMixin:OnConduitClicked(button, buttonID)
+function SoulbindTreeMixin:OnConduitClicked(button, buttonName)
 	if not self:IsEditable() then
 		return;
 	end
 
-	if buttonID == "RightButton" then
+	if buttonName == "RightButton" then
  		local nodeID = button:GetID();
  		if C_Soulbinds.HasInstalledConduit(nodeID) then
 			local callback = GenerateClosure(C_Soulbinds.UninstallConduitInSlot, nodeID);
@@ -131,7 +145,7 @@ function SoulbindTreeMixin:OnConduitClicked(button, buttonID)
 		end
 
 		if not linked then
-			self:LearnNodeByButton(button);
+			self:SelectNode(button, buttonName);
 		end
 	end
 end
@@ -157,19 +171,15 @@ local function GetConduitMismatchString(conduitType)
 end
 
 function SoulbindTreeMixin:TryInstallConduitAtCursor(button)
-	local itemLocation, conduitType = Soulbinds.GetConduitInfoAtCursor();
-	if itemLocation then
+	local conduitType, conduitID = Soulbinds.GetConduitDataAtCursor();
+	if conduitType then
 		if button:IsConduitType(conduitType) then
 			local nodeID = button:GetID();
-			self:TryInstallConduitInSlot(nodeID, itemLocation);
+			self:TryInstallConduitInSlot(nodeID, conduitID);
 		else
 			UIErrorsFrame:AddMessage(GetConduitMismatchString(button:GetConduitType()), RED_FONT_COLOR:GetRGBA());	
 		end
 	end
-end
-
-function SoulbindTreeMixin:IsConduitDragInProgress()
-	return select(2, Soulbinds.GetConduitInfoAtCursor()) ~= nil;
 end
 
 function SoulbindTreeMixin:StopNodeAnimations()
@@ -191,37 +201,25 @@ function SoulbindTreeMixin:ApplyTargetedConduitAnimation(conduitType, requireEdi
 	end
 end
 
-function SoulbindTreeMixin:OnInventoryItemEnter(bag, slot)
-	local itemLocation = ItemLocation:CreateFromBagAndSlot(bag, slot);
-	if not itemLocation:IsValid() then
-		return;
-	end
+function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
+	self.handleLeave = true;
 
-	local item = Item:CreateFromItemLocation(itemLocation);
-	local itemCallback = function()
-		local conduitType = C_Soulbinds.GetItemConduitType(item:GetItemLocation());
-		if conduitType then
-			self.handleLeave = true;
-			
-			if not self:IsConduitDragInProgress() then
-				self:StopNodeAnimations();
-				local requireEditable = false;
-				self:ApplyTargetedConduitAnimation(conduitType, requireEditable);
-			end
-		end
-	end;
-	item:ContinueOnItemLoad(itemCallback);
+	if not Soulbinds.HasConduitAtCursor() then
+		self:StopNodeAnimations();
+		local requireEditable = false;
+		self:ApplyTargetedConduitAnimation(conduitType, requireEditable);
+	end
 end
 
-function SoulbindTreeMixin:OnInventoryItemLeave(bag, slot)
-	if self.handleLeave and not self:IsConduitDragInProgress() then
+function SoulbindTreeMixin:OnCollectionConduitLeave()
+	if self.handleLeave and not Soulbinds.HasConduitAtCursor() then
 		self:StopThenApplyNodeAnimations();
 	end
 	self.handleLeave = false;
 end
 
 function SoulbindTreeMixin:OnCursorStateChanged()
-	local itemLocation, conduitType = Soulbinds.GetConduitInfoAtCursor();
+	local conduitType = Soulbinds.GetConduitDataAtCursor();
 	if conduitType then
 		self.handleCursor = true;
 
@@ -234,40 +232,9 @@ function SoulbindTreeMixin:OnCursorStateChanged()
 				end
 			end
 		end
-
 	elseif self.handleCursor then
 		self.handleCursor = false;
-
-		self:EvaluateItemAtCursor();
 	end
-end
-
-function SoulbindTreeMixin:OnBagChanged()
-	self:EvaluateItemAtCursor();
-end
-
-function SoulbindTreeMixin:EvaluateItemAtCursor()
-	local itemLocation = ContainerFrame_FindItemLocationUnderCursor();
-	if itemLocation then
-		if itemLocation:IsValid() then
-			local item = Item:CreateFromItemLocation(itemLocation);
-			local itemCallback = function()
-				local conduitType = C_Soulbinds.GetItemConduitType(itemLocation);
-				if conduitType then
-					self:StopNodeAnimations();
-					local requireEditable = true;
-					self:ApplyTargetedConduitAnimation(conduitType, requireEditable);
-				else
-					self:StopThenApplyNodeAnimations();
-				end
-			end;
-			item:ContinueOnItemLoad(itemCallback);
-
-			return;
-		end
-	end
-
-	self:StopThenApplyNodeAnimations();
 end
 
 function SoulbindTreeMixin:StopThenApplyNodeAnimations()
@@ -309,44 +276,39 @@ function SoulbindTreeMixin:OnConduitUninstalled(nodeID)
 	end
 end
 
-function SoulbindTreeMixin:CommitInstallConduit(nodeID, itemLocation)
-	local result = C_Soulbinds.InstallConduitInSlot(nodeID, itemLocation);
+function SoulbindTreeMixin:CommitInstallConduit(nodeID, conduitID)
+	local result = C_Soulbinds.InstallConduitInSlot(nodeID, conduitID);
 	if result == Enum.SoulbindConduitInstallResult.Success then
 		local nodeFrame = self.nodeFrames[nodeID];
 		if nodeFrame then
 			nodeFrame:PlayInstallAnim();
 		end
-
+	
 		ClearCursor();
 	elseif result == Enum.SoulbindConduitInstallResult.DuplicateConduit then
 		UIErrorsFrame:AddMessage(ERR_SOULBIND_DUPLICATE_CONDUIT, RED_FONT_COLOR:GetRGBA());
 	end
-
+	
 	return result;
 end
 
-function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, itemLocation)
-	local item = Item:CreateFromItemLocation(itemLocation);
-	local itemCallback = function()
-		if C_Soulbinds.HasInstalledConduit(nodeID) then
-			local dialogCallback = GenerateClosure(self.CommitInstallConduit, self, nodeID, itemLocation);
-			StaticPopup_Show("SOULBIND_DIALOG_REPLACE_CONDUIT", nil, nil, dialogCallback);
-			
-			PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_START_INSTALL);
+function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, conduitID)
+	if C_Soulbinds.HasInstalledConduit(nodeID) then
+		local dialogCallback = GenerateClosure(self.CommitInstallConduit, self, nodeID, conduitID);
+		StaticPopup_Show("SOULBIND_DIALOG_REPLACE_CONDUIT", nil, nil, dialogCallback);
+		
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_START_INSTALL);
+	else
+		local nodeFrame = self.nodeFrames[nodeID];
+		if nodeFrame:IsUnselected() then
+			local dialogCallback = GenerateClosure(self.CommitInstallConduit, self, nodeID, conduitID);
+			StaticPopup_Show("SOULBIND_DIALOG_INSTALL_CONDUIT_UNUSABLE", nil, nil, dialogCallback);
+		
+			PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_START_INSTALL_UNUSABLE);
 		else
-			local nodeFrame = self.nodeFrames[nodeID];
-			if nodeFrame:IsUnselectable() then
-				local dialogCallback = GenerateClosure(self.CommitInstallConduit, self, nodeID, itemLocation);
-				StaticPopup_Show("SOULBIND_DIALOG_INSTALL_CONDUIT_UNUSABLE", nil, nil, dialogCallback);
-			
-				PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_START_INSTALL_UNUSABLE);
-			else
-				self:CommitInstallConduit(nodeID, itemLocation);
-			end
+			self:CommitInstallConduit(nodeID, conduitID);
 		end
-	end;
-
-	item:ContinueOnItemLoad(itemCallback);
+	end
 end
 
 function SoulbindTreeMixin:Init(soulbindData)
@@ -457,7 +419,7 @@ function SoulbindTreeMixin:Init(soulbindData)
 		for _, linkFrame in ipairs(nodeFrame:GetLinks()) do
 			local linkToFrame = self.linkToFrames[linkFrame];
 			local linkToFrameState = linkToFrame:GetState();
-			linkFrame:SetState(linkToFrame:IsSelected() and state or Enum.SoulbindNodeState.Unselectable);
+			linkFrame:SetState(linkToFrame:IsSelected() and state or Enum.SoulbindNodeState.Unselected);
 		end
 	end
 

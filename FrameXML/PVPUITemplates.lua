@@ -69,7 +69,7 @@ function PVPConquestRewardMixin:SetTooltipAnchor(questTooltipAnchor)
 	self.questTooltipAnchor = questTooltipAnchor;
 end
 
-function PVPConquestRewardMixin:TryShowTooltipForBfA()
+function PVPConquestRewardMixin:LegacyTryShowTooltip()
 	local WORD_WRAP = true;
 	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -102,7 +102,12 @@ function PVPConquestRewardMixin:TryShowTooltipForBfA()
 	end
 end
 
-function PVPConquestRewardMixin:TryShowTooltipForShadowlands()
+function PVPConquestRewardMixin:TryShowTooltip()
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyTryShowTooltip();
+		return;
+	end
+
 	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
@@ -111,10 +116,8 @@ function PVPConquestRewardMixin:TryShowTooltipForShadowlands()
 	local maxProgress = weeklyProgress.maxProgress;
 	local displayType = weeklyProgress.displayType;
 	local itemLink = weeklyProgress.sampleItemHyperlink;
-	local itemLevel = 0;
-	if itemLink then
-		itemLevel = GetDetailedItemLevelInfo(itemLink);
-	end
+	local itemLevel = itemLink and GetDetailedItemLevelInfo(itemLink) or 0;
+
 	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR);
 	else
@@ -134,14 +137,6 @@ function PVPConquestRewardMixin:TryShowTooltipForShadowlands()
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, message, NORMAL_FONT_COLOR);
 	end
 	EmbeddedItemTooltip:Show();
-end
-
-function PVPConquestRewardMixin:TryShowTooltip()
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:TryShowTooltipForShadowlands();
-	else
-		self:TryShowTooltipForBfA();
-	end
 end
 
 function PVPConquestRewardMixin:HideTooltip()

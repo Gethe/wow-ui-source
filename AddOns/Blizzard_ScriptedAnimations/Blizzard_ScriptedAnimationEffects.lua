@@ -20,6 +20,10 @@ local function GetProgress(elapsed, duration)
 	return (duration ~= 0) and (elapsed / duration) or 0;
 end
 
+local function GetTransformationProgress(elapsed, duration)
+	return (elapsed > duration) and 1.0 or (elapsed / duration);
+end
+
 local function LinearTrajectory(source, target, elapsed, duration)
 	local sourceX, sourceY = source:GetCenter();
 	local targetX, targetY = target:GetCenter();
@@ -73,6 +77,21 @@ local function HalfwayStaticTrajectory(source, target, elapsed, duration)
 	local sourceCenterX, sourceCenterY = source:GetCenter();
 	local targetCenterX, targetCenterY = target:GetCenter();
 	return sourceCenterX + ((targetCenterX - sourceCenterX) / 2.0), sourceCenterY + ((targetCenterY - sourceCenterY) / 2.0);
+end
+
+local function GenerateAlphaTransformation(effectActor, elapsed, duration, beginAlpha, targetAlpha)
+	beginAlpha = beginAlpha or effectActor:GetAlpha();
+	targetAlpha = targetAlpha or effectActor:GetAlpha();
+
+	local function AlphaTransformation(effectActor, elapsed, duration)
+		local progress = GetTransformationProgress(elapsed, duration);
+		local alpha = Lerp(beginAlpha, targetAlpha, progress);
+		effectActor:SetAlpha(alpha);
+
+		return progress == 1.0;
+	end
+
+	return AlphaTransformation(effectActor, elapsed, duration), AlphaTransformation;
 end
 
 local function ShakeTargetLight(effectDescription, source, target, speed)
@@ -188,7 +207,7 @@ end
 local StandardAttackCollision = GenerateAttackCollisionFunction(50);
 
 
--- Behavior functions should have the signature: (effectDescription, source, target) -> cancelFunction, behaviorDuration
+-- Behavior functions should have the signature: (effectDescription, source, target, speed) -> cancelFunction, behaviorDuration
 local BehaviorToCallback = {
 	-- [Enum.ScriptedAnimationBehavior.None] = nil,
 	[Enum.ScriptedAnimationBehavior.SourceRecoil] = StandardRecoil,
@@ -208,6 +227,114 @@ local TrajectoryToCallback = {
 	[Enum.ScriptedAnimationTrajectory.HalfwayBetween] = HalfwayStaticTrajectory,
 };
 
+-- Support feature prototypes without extending the databse table. Current Extensions:
+--
+-- (1) The transformation system
+-- Part of the goal of future FX is to allow more control over events in an effect such
+-- as playing sounds or starting a new effect. This prototype is currently built to support
+-- fading in and fading out.
+-- Proposed transformation format:
+-- {
+-- timing: how the behavior starts (at a fixed time, at a fixed percentage, with the beginning,
+-- 			so that the transformation ends with the effect, halfway through the effect, etc )
+-- duration: how long the transformation lasts.
+-- transformationCallback: an enum value corresponding to the function to do the actual transformation.
+-- args: a list of arguments to control the callback.
+-- }
+-- These can be found in HardcodedTransformations below.
+-- 
+-- (2) Animation controls
+-- Additional columns to support controlling animations
+-- animation: an animation to play instead of Stand.
+-- animationStartOffset: an offset (in seconds) to the animation.
+--
+-- (3) Looping sound effects
+-- An additional columns to support controlling animations
+-- loopingSoundKitID: a looping sound effect that plays while the effect is active.
+
+Enum.ScriptedAnimationTransformation = {};
+Enum.ScriptedAnimationTransformation.Alpha = 1;
+
+Enum.ScriptedAnimationTransformationTiming = {};
+Enum.ScriptedAnimationTransformationTiming.BeginWithEffect = 1;
+Enum.ScriptedAnimationTransformationTiming.FinishWithEffect = 2;
+-- Enum.ScriptedAnimationTransformationTiming.Fixed = 3; -- Currently unsupported.
+
+local TransformationToCallback = {
+	[Enum.ScriptedAnimationTransformation.Alpha] = GenerateAlphaTransformation,
+};
+
+local HardcodedTransformations = {
+	FadeIn = {
+		timing = Enum.ScriptedAnimationTransformationTiming.BeginWithEffect,
+		duration = 0.4,
+		transformationCallback = TransformationToCallback[Enum.ScriptedAnimationTransformation.Alpha],
+		args = { 0, 1, n = 2 },
+	},
+
+	FadeOut = {
+		timing = Enum.ScriptedAnimationTransformationTiming.FinishWithEffect,
+		duration = 0.4,
+		transformationCallback = TransformationToCallback[Enum.ScriptedAnimationTransformation.Alpha],
+		args = { nil, 0, n = 2 },
+	},
+};
+
+local RunecarvingRuneFlashExtension = {
+	animation = 127,
+	animationStartOffset = 0.3,
+
+	transformations = {
+		HardcodedTransformations.FadeOut,
+	},
+};
+
+local RunecarvingRuneBirthExtension = {
+	transformations = {
+		HardcodedTransformations.FadeIn,
+	},
+};
+
+local ScriptAnimationTableExtension = {
+	[52] = {
+		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_MAIN_WINDOW_OPEN_LOOP,
+	},
+
+	[55] = {
+		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_POWER_SELECTED_LOOP,
+	},
+
+	[54] = {
+		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_LOWER_RUNE_SELECTED_LOOP,
+	},
+
+	[57] = {
+		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_UPPER_RUNE_SELECTED_LOOP,
+	},
+
+	[73] = Mixin({ loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_ITEM_SELECTED_LOOP, }, RunecarvingRuneBirthExtension),
+	[74] = RunecarvingRuneBirthExtension,
+	[75] = RunecarvingRuneBirthExtension,
+	[76] = RunecarvingRuneBirthExtension,
+	[77] = RunecarvingRuneBirthExtension,
+	[78] = RunecarvingRuneBirthExtension,
+	[79] = RunecarvingRuneBirthExtension,
+	[80] = RunecarvingRuneBirthExtension,
+
+	[81] = RunecarvingRuneFlashExtension,
+	[82] = RunecarvingRuneFlashExtension,
+	[83] = RunecarvingRuneFlashExtension,
+	[84] = RunecarvingRuneFlashExtension,
+	[85] = RunecarvingRuneFlashExtension,
+	[86] = RunecarvingRuneFlashExtension,
+	[87] = RunecarvingRuneFlashExtension,
+	[88] = RunecarvingRuneFlashExtension,
+	[89] = {
+		animation = 215, 
+	},
+};
+
+
 local function LoadScriptedAnimationEffects()
 	local effects = {};
 	local effectDescriptions = C_ScriptedAnimations.GetAllScriptedAnimationEffects();
@@ -217,7 +344,14 @@ local function LoadScriptedAnimationEffects()
 		effectDescription.trajectory = TrajectoryToCallback[effectDescription.trajectory];
 		effectDescription.startBehavior = effectDescription.startBehavior and BehaviorToCallback[effectDescription.startBehavior] or nil;
 		effectDescription.finishBehavior = effectDescription.finishBehavior and BehaviorToCallback[effectDescription.finishBehavior] or nil;
-		effects[effectDescription.id] = effectDescription;
+
+		local effectID = effectDescription.id;
+		local extension = ScriptAnimationTableExtension[effectID];
+		if extension then
+			effectDescription = Mixin(effectDescription, extension);
+		end
+		
+		effects[effectID] = effectDescription;
 	end
 
 	return effects;

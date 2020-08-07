@@ -1,10 +1,16 @@
 UIWidgetTemplateTooltipFrameMixin = {}
 
+function UIWidgetTemplateTooltipFrameMixin:SetMouse(disableMouse)
+	local useMouse = self.tooltip and self.tooltip ~= "" and not disableMouse;
+	self:EnableMouse(useMouse)
+end
+
 function UIWidgetTemplateTooltipFrameMixin:OnLoad()
 end
 
 function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
-	self:EnableMouse(not widgetContainer.disableWidgetTooltips);
+	local disableMouse = widgetContainer.disableWidgetTooltips;
+	self:SetMouse(disableMouse);
 	self:SetMouseClickEnabled(false);
 end
 
@@ -19,6 +25,7 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	if tooltip then
 		self.tooltipContainsHyperLink, self.preString, self.hyperLinkString, self.postString = ExtractHyperlinkString(tooltip);
 	end
+	self:SetMouse();
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
@@ -42,6 +49,8 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 				GameTooltip_AddColoredLine(EmbeddedItemTooltip, self.postString, self.tooltipColor or HIGHLIGHT_FONT_COLOR, true);
 			end
 
+			self.UpdateTooltip = self.OnEnter;
+
 			EmbeddedItemTooltip:Show();
 		else
 			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(self.tooltip);
@@ -51,6 +60,9 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 			if nonHeader then
 				GameTooltip_AddColoredLine(EmbeddedItemTooltip, nonHeader, self.tooltipColor or NORMAL_FONT_COLOR, true);
 			end
+
+			self.UpdateTooltip = nil;
+
 			EmbeddedItemTooltip:SetShown(header ~= nil);
 		end
 	end
@@ -60,6 +72,7 @@ end
 function UIWidgetTemplateTooltipFrameMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
 	self.mouseOver = false;
+	self.UpdateTooltip = nil;
 end
 
 local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor)
@@ -331,6 +344,11 @@ function UIWidgetBaseSpellTemplateMixin:OnEnter()
 	end
 end
 
+function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
+	local useMouse = ((self.tooltip and self.tooltip ~= "") or self.spellID) and not disableMouse;
+	self:EnableMouse(useMouse)
+end
+
 UIWidgetBaseColoredTextMixin = {};
 
 function UIWidgetBaseColoredTextMixin:SetEnabledState(enabledState)
@@ -410,6 +428,11 @@ function UIWidgetBaseStatusBarTemplateMixin:UpdateBarText()
 	else
 		self.Label:SetText(self.barText);
 	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:SetMouse(disableMouse)
+	local useMouse = ((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse;
+	self:EnableMouse(useMouse)
 end
 
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
@@ -682,13 +705,13 @@ local scenarioHeaderTextureKitRegions = {
 
 local scenarioHeaderTextureKitInfo =
 {
-	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR},
-	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, anchorOffsets = {xOffset = 15, yOffset = -8}, headerTextHeight = 20},
+	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
+	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, headerTextHeight = 20},
 }
 
 local scenarioHeaderDefaultFontObjects = {QuestTitleFont, Fancy16Font, SystemFont_Med1};
 local scenarioHeaderDefaultFontColor = SCENARIO_STAGE_COLOR;
-local scenarioHeaderDefaultAnchorOffsets = {xOffset = 15, yOffset = -8};
+local scenarioHeaderDefaultTextAnchorOffsets = {xOffset = 15, yOffset = -8};
 local scenarioHeaderDefaultHeaderTextHeight = 36;
 local scenarioHeaderStageChangeWaitTime = 1.5;
 
@@ -731,8 +754,8 @@ function UIWidgetBaseScenarioHeaderTemplateMixin:Setup(widgetInfo, widgetContain
 
 	self.HeaderText:SetText(widgetInfo.headerText);
 
-	local anchorOffsets = textureKitInfo and textureKitInfo.anchorOffsets or scenarioHeaderDefaultAnchorOffsets;
-	self.HeaderText:SetPoint("TOPLEFT", self, "TOPLEFT", anchorOffsets.xOffset, anchorOffsets.yOffset);
+	local textAnchorOffsets = textureKitInfo and textureKitInfo.textAnchorOffsets or scenarioHeaderDefaultTextAnchorOffsets;
+	self.HeaderText:SetPoint("TOPLEFT", self, "TOPLEFT", textAnchorOffsets.xOffset, textAnchorOffsets.yOffset);
 
 	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, scenarioHeaderTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 

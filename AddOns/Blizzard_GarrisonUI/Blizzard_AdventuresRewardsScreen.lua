@@ -2,6 +2,13 @@ AdventuresRewardsScreenMixin = {};
 
 local followerXPTable = {};
 
+local CovenantVictorySoundKits = {
+	Fae = SOUNDKIT.UI_ADVENTURES_ADVENTURE_SUCCESS_NIGHTFAE,
+	Kyrian = SOUNDKIT.UI_ADVENTURES_ADVENTURE_SUCCESS_KYRIAN,
+	Necrolord = SOUNDKIT.UI_ADVENTURES_ADVENTURE_SUCCESS_NECROLORD,
+	Venthyr = SOUNDKIT.UI_ADVENTURES_ADVENTURE_SUCCESS_VENTHYR,
+};
+
 function AdventuresRewardsScreenMixin:OnLoad() 
 	followerXPTable = C_Garrison.GetFollowerXPTable(Enum.GarrisonFollowerType.FollowerType_9_0);
 	self.rewardsPool = CreateFramePool("FRAME", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "GarrisonMissionListButtonRewardTemplate");
@@ -20,20 +27,28 @@ function AdventuresRewardsScreenMixin:ShowAdventureVictoryStateScreen(combatWon)
 		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		local kit = covenantData and covenantData.textureKit or "Kyrian";
 		self.CombatCompleteSuccessFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format(kit), true);
+		PlaySound(CovenantVictorySoundKits[kit]);
 		self:ShowCombatCompleteSuccessPanel();
 	else
 		self.CombatCompleteSuccessFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format("Fail"), true);
+		PlaySound(self:HasExperienceRewards() and SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_PARTIAL or SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_COMPLETE);
 		self:ShowCombatCompleteSuccessPanel();
 	end
+
+	self.CombatCompleteSuccessFrame.CombatCompleteBurstCW:SetShown(combatWon);
+	self.CombatCompleteSuccessFrame.CombatCompleteBurstCCW:SetShown(combatWon);
 	self:Show();
 end
 
-function AdventuresRewardsScreenMixin:ShowRewardsScreen(missionInfo)
+function AdventuresRewardsScreenMixin:ShowRewardsScreen(missionInfo, victoryState)
 	self.missionInfo = missionInfo;
 	
 	self.FinalRewardsPanel.MissionName:SetText(missionInfo.name);
-	self:SetRewards(missionInfo.rewards);
+	self:SetRewards(missionInfo.rewards, victoryState);
 
+	if victoryState then
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURE_SUCCESS_COMPLETE);
+	end
 	self:ShowFinalRewardsPanel();
 end
 
@@ -52,25 +67,29 @@ function AdventuresRewardsScreenMixin:ShowFinalRewardsPanel()
 	self.FinalRewardsPanel:Show();
 end
 
-function AdventuresRewardsScreenMixin:SetRewards(rewards)
+function AdventuresRewardsScreenMixin:SetRewards(rewards, victoryState)
 	self.rewardsPool:ReleaseAll();
-	for i, reward in ipairs(rewards) do 
-		local rewardFrame = self.rewardsPool:Acquire();
-		rewardFrame.layoutIndex = i;
-		local currencyMultipliers = {}; --Automissions do not have currency multipliers
-		GarrisonMissionButton_SetReward(rewardFrame, reward, currencyMultipliers);
-		rewardFrame:Show();
+	self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame:SetShown(victoryState);
+	self.FinalRewardsPanel.RewardsEarnedLabel:SetShown(VictoryState);
+	if victoryState then 
+		for i, reward in ipairs(rewards) do 
+			local rewardFrame = self.rewardsPool:Acquire();
+			rewardFrame.layoutIndex = i;
+			local currencyMultipliers = {}; --Automissions do not have currency multipliers
+			GarrisonMissionButton_SetReward(rewardFrame, reward, currencyMultipliers);
+			rewardFrame:Show();
+		end
 	end
 
-	self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame:Layout();
-	self.FinalRewardsPanel.SpoilsFrame:Layout();
-	self.FinalRewardsPanel.RewardsEarnedLabel:SetPoint("BOTTOM", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "TOP", 0, 0);
+		self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame:Layout();
+		self.FinalRewardsPanel.SpoilsFrame:Layout();
+		self.FinalRewardsPanel.RewardsEarnedLabel:SetPoint("BOTTOM", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "TOP", 0, 0);
 end
 
 function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, missionInfo)
 	self.followerPool:ReleaseAll();
 	self.FinalRewardsPanel.FollowerProgressLabel:Hide();
-	
+	self.hasExperienceRewards = false;
 	local layoutIndex = 1;
 	for guid, info in pairs(followerInfo) do 
 		--Don't show followers that don't have experience to gain
@@ -86,6 +105,7 @@ function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, mission
 
 	self.FinalRewardsPanel.SpoilsFrame.FollowerExperienceEarnedFrame:SetShown(layoutIndex > 1);
 	if layoutIndex > 1 then 
+		self.hasExperienceRewards = true;
 		local largePaddingForText = 80;
 		local smallPaddingToFit = 30;
 
@@ -96,6 +116,10 @@ function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, mission
 
 	self.FinalRewardsPanel.SpoilsFrame:Layout();
 	self.FinalRewardsPanel.FollowerProgressLabel:SetPoint("BOTTOM", self.FinalRewardsPanel.SpoilsFrame.FollowerExperienceEarnedFrame, "TOP", 0, 0);
+end
+
+function AdventuresRewardsScreenMixin:HasExperienceRewards()
+	return self.hasExperienceRewards;
 end
 
 ---------------------------------------------------
@@ -142,7 +166,8 @@ function AdventuresRewardsFollowerMixin:UpdateExperience()
 			self.LevelUpAnimFrame.Anim:Stop(); --in case there's one playing already
 			self.LevelUpAnimFrame:Show();
 			self.LevelUpAnimFrame.Anim:Play();
-			
+			PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_LEVEL_UP, nil, SOUNDKIT_ALLOW_DUPLICATES);
+
 			storedExperience = storedExperience + progress;
 			totalLevelUps = totalLevelUps + 1;
 			

@@ -470,6 +470,16 @@ local Item =
 			},
 		},
 		{
+			Name = "ItemChanged",
+			Type = "Event",
+			LiteralName = "ITEM_CHANGED",
+			Payload =
+			{
+				{ Name = "previousHyperlink", Type = "string", Nilable = false },
+				{ Name = "newHyperlink", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ItemDataLoadResult",
 			Type = "Event",
 			LiteralName = "ITEM_DATA_LOAD_RESULT",

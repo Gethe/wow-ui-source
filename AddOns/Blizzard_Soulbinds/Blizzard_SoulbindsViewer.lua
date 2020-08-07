@@ -153,17 +153,19 @@ function SoulbindViewerMixin:OpenSoulbind(soulbindID)
 end
 
 function SoulbindViewerMixin:Init(covenantData, soulbindData)
-	if (covenantData.ID == 0) then
+	if not covenantData then
 		error("You are not in a required covenant.");
 	end
 
 	self.soulbindData = soulbindData;
 	self.covenantData = covenantData;
 
+	local background = "Soulbinds_Background";
+	self.Background:SetAtlas(background, true);
+	self.Background2:SetAtlas(background, true);
+
 	self.SelectGroup:Init(covenantData, soulbindData.ID);
-	local bgAtlas = string.format("Soulbinds_Background_%s", covenantData.textureKit);
-	self.Background:SetAtlas(bgAtlas, true);
-	self.Background2:SetAtlas(bgAtlas, true);
+	self.ConduitList:Init();
 end
 
 function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex)
@@ -174,15 +176,6 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
 	self.soulbindData = soulbindData;
 
-	self.Name:SetText(soulbindData.name);
-	local portraitAtlas = string.format("Soulbind_Portrait_%s", soulbindData.textureKit);
-	self.Portrait:SetAtlas(portraitAtlas, true);
-	self.Portrait2:SetAtlas(portraitAtlas, true);
-	self.Description:SetText(soulbindData.description)
-
-	local desaturation = soulbindData.unlocked and 0 or .75;
-	self.Portrait:SetDesaturation(desaturation);
-
 	self.Tree:Init(soulbindData);
 
 	self:UpdateActivateButton();
@@ -192,7 +185,6 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
-	--self.Portrait2.ActivateAnim:Play();
 	self.Background2.ActivateAnim:Play();
 	self.ActivateFX.ActivateAnim:Play();
 	self.Fx.ActivateFXLensFlare1.ActivateAnim:Play();
@@ -251,12 +243,12 @@ function SoulbindViewerMixin:OnActivateSoulbindClicked()
 	end
 end
 
-function SoulbindViewerMixin:OnInventoryItemEnter(bag, slot)
-	self.Tree:OnInventoryItemEnter(bag, slot);
+function SoulbindViewerMixin:OnCollectionConduitEnter(conduitType)
+	self.Tree:OnCollectionConduitEnter(conduitType);
 end
 
-function SoulbindViewerMixin:OnInventoryItemLeave(bag, slot)
-	self.Tree:OnInventoryItemLeave(bag, slot);
+function SoulbindViewerMixin:OnCollectionConduitLeave()
+	self.Tree:OnCollectionConduitLeave();
 end
 
 StaticPopupDialogs["SOULBIND_RESET_TREE"] = {

@@ -34,6 +34,38 @@ local CovenantSanctum =
 			},
 		},
 		{
+			Name = "GetRenownLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRenownMilestones",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "milestones", Type = "table", InnerType = "CovenantSanctumRenownMilestoneInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRenownRewardsForLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rewards", Type = "table", InnerType = "CovenantSanctumRenownRewardInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSanctumType",
 			Type = "Function",
 
@@ -77,6 +109,35 @@ local CovenantSanctum =
 				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
 				{ Name = "featureType", Type = "number", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CovenantSanctumRenownMilestoneInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "locked", Type = "bool", Nilable = false },
+				{ Name = "isCapstone", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CovenantSanctumRenownRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = true },
+				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "mountID", Type = "number", Nilable = true },
+				{ Name = "transmogID", Type = "number", Nilable = true },
+				{ Name = "transmogSetID", Type = "number", Nilable = true },
+				{ Name = "titleID", Type = "number", Nilable = true },
+				{ Name = "garrFollowerID", Type = "number", Nilable = true },
+				{ Name = "transmogIllusionSourceID", Type = "number", Nilable = true },
+				{ Name = "icon", Type = "number", Nilable = true },
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "description", Type = "string", Nilable = true },
 			},
 		},
 	},

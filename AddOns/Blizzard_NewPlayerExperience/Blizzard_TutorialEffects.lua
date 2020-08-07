@@ -44,6 +44,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 NPE_TutorialDragButton = {};
 function NPE_TutorialDragButton:Show(originButton, destButton)
+	self:Hide();
 	Dispatcher:RegisterEvent("OnUpdate", self);
 
 	local texture;

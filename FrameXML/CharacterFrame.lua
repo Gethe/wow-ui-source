@@ -11,6 +11,7 @@ function ToggleCharacter (tab, onlyShow)
 				if ( subFrame:IsShown() ) then
 					if ( not onlyShow ) then
 						HideUIPanel(CharacterFrame);
+						EventRegistry:TriggerEvent("CharacterFrame.Hide");
 					end
 				else
 					PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -19,6 +20,7 @@ function ToggleCharacter (tab, onlyShow)
 			else
 				CharacterFrame_ShowSubFrame(tab);
 				ShowUIPanel(CharacterFrame);
+				EventRegistry:TriggerEvent("CharacterFrame.Show");
 			end
 		end
 	end

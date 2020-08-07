@@ -32,13 +32,13 @@ function SoulbindTreeNodeLinkMixin:OnHide()
 end
 
 function SoulbindTreeNodeLinkMixin:Reset()
-	self:SetState(Enum.SoulbindNodeState.Unselectable);
+	self:SetState(Enum.SoulbindNodeState.Unselected);
 end
 
 function SoulbindTreeNodeLinkMixin:SetState(state)
 	self.state = state;
 
-	if state == Enum.SoulbindNodeState.Unselectable or state == Enum.SoulbindNodeState.Unavailable then
+	if state == Enum.SoulbindNodeState.Unselected or state == Enum.SoulbindNodeState.Unavailable then
 		self:DesaturateHierarchy(1);
 		for _, foreground in ipairs(self.foregrounds) do
 			foreground:SetShown(false);

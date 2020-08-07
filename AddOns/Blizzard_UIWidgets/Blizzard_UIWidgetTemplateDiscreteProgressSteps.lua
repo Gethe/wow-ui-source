@@ -56,7 +56,6 @@ end
 
 function UIWidgetTemplateDiscreteProgressStepsMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
-	self:EnableMouse(widgetInfo.tooltip ~= "");
 
 	local textureKit = widgetInfo.textureKit;
 	local progMin = widgetInfo.progressMin;

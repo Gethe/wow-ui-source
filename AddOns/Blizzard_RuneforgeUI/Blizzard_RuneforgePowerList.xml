@@ -69,7 +69,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="RuneforgePowerTemplate" mixin="RuneforgePowerMixin" inherits="RuneforgePowerButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="RuneforgePowerTemplate" mixin="RuneforgePowerMixin" inherits="TemplatedListElementTemplate, RuneforgePowerButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="72" y="72"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -88,29 +88,19 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnShow method="OnShow"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 
-	<ScrollFrame name="RuneforgePowerListTemplate" mixin="RuneforgePowerListMixin" inherits="MinimalScrollFrameTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="scrollBarHideable" value="true" type="boolean" />
-		</KeyValues>
+	<Frame name="RuneforgePowerListTemplate" mixin="RuneforgePowerListMixin" inherits="PagedListTemplate" virtual="true">
 		<Size x="286" y="222"/>
-		<ScrollChild>
-			<Frame parentKey="ScrollChild" inherits="ResizeLayoutFrame">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-			</Frame>
-		</ScrollChild>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
-	</ScrollFrame>
+	</Frame>
 
-	<Frame name="RuneforgePowerFrameTemplate" mixin="RuneforgePowerFrameMixin" virtual="true">
+	<Frame name="RuneforgePowerFrameTemplate" mixin="RuneforgePowerFrameMixin" enableMouse="true" virtual="true">
 		<Size x="300" y="368"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -129,12 +119,21 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame parentKey="PowerList" inherits="RuneforgePowerListTemplate">
+			<Frame parentKey="PowerList" inherits="RuneforgePowerListTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="13" y="0"/>
 					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-18"/>
 				</Anchors>
-			</ScrollFrame>
+			</Frame>
+
+			<Frame parentKey="PageControl" inherits="PagedListHorizontalControlTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="50"/>
+				</Anchors>
+			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 </Ui>

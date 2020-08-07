@@ -37,15 +37,20 @@ function SoulbindTreeNodeMixin:Init(node)
 end
 
 function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
-	if oldState == Enum.SoulbindNodeState.Selectable and newState == Enum.SoulbindNodeState.Selected then
-		local NODE_SELECTION_FX_1 = 42;
-		local NODE_SELECTION_FX_2 = 48;
-		local modelScene = self:GetFxModelScene();
-		modelScene:AddEffect(NODE_SELECTION_FX_1, self);
-		modelScene:AddEffect(NODE_SELECTION_FX_2, self);
-
-		local LEARN_SHAKE_DELAY = 0;
-		C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
+	if newState == Enum.SoulbindNodeState.Selected then
+		-- IsPathChangePending Temp. Remove once tree is no longer being reset.
+		if oldState == Enum.SoulbindNodeState.Selectable and not Soulbinds.IsPathChangePending() then
+			local NODE_SELECTION_FX_1 = 42;
+			local NODE_SELECTION_FX_2 = 48;
+			local modelScene = self:GetFxModelScene();
+			modelScene:AddEffect(NODE_SELECTION_FX_1, self);
+			modelScene:AddEffect(NODE_SELECTION_FX_2, self);
+			local LEARN_SHAKE_DELAY = 0;
+			C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
+		elseif oldState == Enum.SoulbindNodeState.Unselected then
+			-- Lattice changed from reselection of a branch. Effect pending and
+			-- awaiting tree not being reset.
+		end
 	end
 end
 
@@ -77,7 +82,7 @@ function SoulbindTreeNodeMixin:UpdateVisuals()
 		self.IconOverlay:Show();
 		self.Ring:SetDesaturated(false);
 		self.MouseOverlay:SetDesaturated(false);
-	elseif self:IsUnselectable() then
+	elseif self:IsUnselected() then
 		self.Icon:SetDesaturated(false);
 		self.IconOverlay:Show();
 		self.Ring:SetDesaturated(true);
@@ -103,8 +108,8 @@ function SoulbindTreeNodeMixin:IsSelectable()
 	return self:GetState() == Enum.SoulbindNodeState.Selectable;
 end
 
-function SoulbindTreeNodeMixin:IsUnselectable()
-	return self:GetState() == Enum.SoulbindNodeState.Unselectable;
+function SoulbindTreeNodeMixin:IsUnselected()
+	return self:GetState() == Enum.SoulbindNodeState.Unselected;
 end
 
 function SoulbindTreeNodeMixin:IsUnavailable()
@@ -234,16 +239,6 @@ end
 
 SoulbindConduitNodeMixin = CreateFromMixins(SoulbindTreeNodeMixin);
 
-local function GetConduitEmblemAtlas(conduitType)
-	if conduitType == Enum.SoulbindConduitType.Potency then
-		return "Soulbinds_Tree_Conduit_Icon_Attack";
-	elseif conduitType == Enum.SoulbindConduitType.Endurance then
-		return "Soulbinds_Tree_Conduit_Icon_Protect";
-	elseif conduitType == Enum.SoulbindConduitType.Finesse then
-		return "Soulbinds_Tree_Conduit_Icon_Utility";
-	end
-end
-
 function SoulbindConduitNodeMixin:OnLoad()
 	SoulbindTreeNodeMixin.OnLoad(self);
 end
@@ -258,7 +253,7 @@ function SoulbindConduitNodeMixin:Init(node)
 		self:SetConduitID_Internal(nil);
 	end
 
-	local atlas = GetConduitEmblemAtlas(self:GetConduitType());
+	local atlas = Soulbinds.GetConduitEmblemAtlas(self:GetConduitType());
 	self.Emblem:SetAtlas(atlas);
 	self.EmblemBg:SetAtlas(atlas)
 	self.EmblemBg:SetVertexColor(0, 0, 0);
@@ -272,7 +267,7 @@ function SoulbindConduitNodeMixin:UpdateVisuals()
 		self.MouseOverlay:SetAtlas("Soulbinds_Tree_Conduit_Ring_Disabled", false);
 		self.Emblem:SetDesaturated(true);
 		self.Emblem:SetAlpha(.75);
-	elseif self:IsUnselectable() then
+	elseif self:IsUnselected() then
 		self.Ring:SetAtlas("Soulbinds_Tree_Conduit_Ring", false);
 		self.MouseOverlay:SetAtlas("Soulbinds_Tree_Conduit_Ring", false);
 		self.Emblem:SetDesaturated(true);
@@ -433,7 +428,7 @@ function SoulbindTreeNodeMixin:AddNotInProximityLine()
 end
 
 function SoulbindTreeNodeMixin:AddTooltipContents()
-	if not self:IsSelected() and not self:IsUnselectable() then
+	if not self:IsSelected() and not self:IsUnselected() then
 		local stamina = 0;
 		local staminaText = SOULBIND_STAMINA_BONUS:format(stamina);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
@@ -447,7 +442,7 @@ function SoulbindTreeNodeMixin:AddTooltipContents()
 		else
 			self:AddNotInProximityLine();
 		end
-	elseif self:IsUnselectable() then
+	elseif self:IsUnselected() then
 		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED, true);
 	elseif self:IsUnavailable() then
 		local reason = self:GetUnavailableReason();

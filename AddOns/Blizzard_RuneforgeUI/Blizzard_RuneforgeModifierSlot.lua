@@ -144,12 +144,12 @@ function RuneforgeModifierSelectionMixin:RefreshState(count)
 	self:SetState(self:GetState(count));
 end
 
-function RuneforgeModifierSelectionMixin:SetModifierItem(itemID, count, selectedInThisSlot, selectedInOtherSlot)
-	count = count or ItemUtil.GetOptionalReagentCount(itemID);
-
+function RuneforgeModifierSelectionMixin:SetModifierItem(itemID, selectedInThisSlot, selectedInOtherSlot)
 	self.selectedInThisSlot = selectedInThisSlot;
 	self.selectedInOtherSlot = selectedInOtherSlot;
 	self:SetItem(itemID);
+
+	local count = ItemUtil.GetOptionalReagentCount(itemID);
 	self:RefreshState(count);
 end
 
@@ -200,7 +200,6 @@ function RuneforgeModifierSelectorFrameMixin:GenerateSelections(slotID)
 
 	local modifierItemIDs = C_LegendaryCrafting.GetRuneforgeModifiers();
 
-	local reagentCounts = {};
 	local selectedMap = tInvert(self:GetParent():GetModifiers());
 
 	local previousSelection = nil;
@@ -215,7 +214,7 @@ function RuneforgeModifierSelectorFrameMixin:GenerateSelections(slotID)
 		local selectedSlot = selectedMap[itemID];
 		local selectedInThisSlot = slotID == selectedSlot;
 		local selectedInOtherSlot = not selectedInThisSlot and (selectedSlot ~= nil);
-		selection:SetModifierItem(itemID, reagentCounts[itemID], selectedInThisSlot, selectedInOtherSlot);
+		selection:SetModifierItem(itemID, selectedInThisSlot, selectedInOtherSlot);
 		selection:Show();
 
 		previousSelection = selection;
@@ -318,6 +317,7 @@ function RuneforgeModifierFrameMixin:OnSlotSelected(slot)
 	else
 		self.Selector:Open(slot);
 		self.Selector:Show();
+		PlaySound(SOUNDKIT.UI_RUNECARVING_OPEN_SELECTION_SUB_WINDOW);
 	end
 end
 
@@ -339,9 +339,25 @@ function RuneforgeModifierFrameMixin:SetModifierSlot(slot, itemID)
 		otherButton:SetItem(nil);
 	end
 
+	local oldItemID = selectedButton:GetItemID();
 	selectedButton:SetItem(itemID);
 
-	self:GetRuneforgeFrame():TriggerEvent(RuneforgeFrameMixin.Event.ModifiersChanged);
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	runeforgeFrame:TriggerEvent(RuneforgeFrameMixin.Event.ModifiersChanged);
+
+	if itemID ~= nil then
+		if oldItemID == nil then
+			runeforgeFrame:FlashRunes();
+		end
+
+		if not runeforgeFrame:IsRuneforgeUpgrading() then
+			if isFirstSlot then
+				PlaySound(SOUNDKIT.UI_RUNECARVING_SELECT_UPPER_RUNE);
+			else
+				PlaySound(SOUNDKIT.UI_RUNECARVING_SELECT_LOWER_RUNE);
+			end
+		end
+	end
 end
 
 function RuneforgeModifierFrameMixin:SetModifierTooltip(tooltip, slot, itemID)

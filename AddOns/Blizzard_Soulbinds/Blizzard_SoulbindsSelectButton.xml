@@ -87,7 +87,7 @@
 							<Anchor point="CENTER" x="1" y="-40"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="Active" mixin="SoulbindsActiveMarkerMixin" frameLevel="100">
+					<Frame parentKey="Active" frameLevel="100">
 						<Size x="40" y="40"/>
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOM" y="11"/>
@@ -101,10 +101,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
 					</Frame>
 				</Frames>
 			</ModelScene>

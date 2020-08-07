@@ -7,6 +7,15 @@ local CovenantCallings =
 	Functions =
 	{
 		{
+			Name = "AreCallingsUnlocked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "unlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestCallings",
 			Type = "Function",
 		},

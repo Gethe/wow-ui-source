@@ -1,6 +1,10 @@
 
 RuneforgeItemSlotMixin = CreateFromMixins(RuneforgeSystemMixin);
 
+local RuneforgeItemSlotEvents = {
+	"UNIT_INVENTORY_CHANGED",
+};
+
 function RuneforgeItemSlotMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 
@@ -30,9 +34,12 @@ function RuneforgeItemSlotMixin:OnClick(buttonName)
 			end
 		end
 	else
-		EquipmentFlyout_Show(self);
+		self:GetRuneforgeFrame().CraftingFrame:ShowFlyout(self);
 		self:SetSelectingItem(true);
 	end
+
+	HelpTip:Hide(self, FRAME_TUTORIAL_RUNEFORGE_LEGENDARY_CRAFT_TEXT);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_RUNEFORGE_LEGENDARY_CRAFT, true);
 end
 
 function RuneforgeItemSlotMixin:OnMouseDown()
@@ -66,6 +73,8 @@ function RuneforgeItemSlotMixin:OnLeave()
 end
 
 function RuneforgeItemSlotMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, RuneforgeItemSlotEvents);
+
 	self:UpdateEffectVisibility();
 
 	if self:IsRuneforgeUpgrading() then
@@ -77,12 +86,35 @@ function RuneforgeItemSlotMixin:OnShow()
 		self:SetPushedAtlas("runecarving-icon-center-empty");
 		self.SelectingTexture:SetAtlas("runecarving-icon-center-pressed", true);
 	end
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_RUNEFORGE_LEGENDARY_CRAFT) and self:GetRuneforgeFrame():HasValidItemForRuneforgeState() then
+		local helpTipInfo = {
+			text = FRAME_TUTORIAL_RUNEFORGE_LEGENDARY_CRAFT_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_RUNEFORGE_LEGENDARY_CRAFT,
+			alignment = HelpTip.Alignment.Left,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+		};
+
+		HelpTip:Show(self, helpTipInfo, self);
+	end
+
+	self:Refresh();
 end
 
 function RuneforgeItemSlotMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, RuneforgeItemSlotEvents);
+
 	self:UpdateEffectVisibility();
 	self:ResetItemSlot();
 	EquipmentFlyout_Hide();
+end
+
+function RuneforgeItemSlotMixin:OnEvent(event)
+	if event == "UNIT_INVENTORY_CHANGED" then
+		self:Refresh();
+	end
 end
 
 function RuneforgeItemSlotMixin:SetEvents()
@@ -102,6 +134,10 @@ function RuneforgeItemSlotMixin:SetTextureAndEffects()
 	pushedTexture:SetAtlas("runecarving-upgrade-icon-center-empty", true);
 
 	self:AddEffectData("primary", RuneforgeUtil.Effect.CenterRune, RuneforgeUtil.EffectTarget.None, RuneforgeUtil.Level.Overlay);
+end
+
+function RuneforgeItemSlotMixin:Refresh()
+	self:SetEnabled(self:GetRuneforgeFrame():HasValidItemForRuneforgeState());
 end
 
 function RuneforgeItemSlotMixin:SetItemLocation(itemLocation)
@@ -134,6 +170,10 @@ function RuneforgeItemSlotMixin:SetItem(itemLocation)
 
 	if self.onItemChangedEvent then
 		self:GetRuneforgeFrame():TriggerEvent(self.onItemChangedEvent);
+	end
+
+	if hasItem then
+		PlaySound(SOUNDKIT.UI_RUNECARVING_SELECT_ITEM);
 	end
 end
 
@@ -178,7 +218,9 @@ function RuneforgeUpgradeItemSlotMixin:SetTextureAndEffects()
 	normalTexture:SetPoint("CENTER"); -- Remove the standard -1 offset.
 
 	local pushedTexture = self:GetPushedTexture();
-	pushedTexture:SetAtlas("runecarving-upgrade-icon-slot-pressed", true);
+	pushedTexture:ClearAllPoints();
+	pushedTexture:SetPoint("CENTER");
+	pushedTexture:SetAtlas("runecarving-upgrade-icon-slot-empty", true);
 
 	self.SelectingTexture:SetAtlas("runecarving-upgrade-icon-slot-pressed", true);
 	self.SelectedTexture:SetSize(57, 57);
@@ -192,11 +234,13 @@ function RuneforgeUpgradeItemSlotMixin:OnClick(buttonName)
 		return;
 	end
 
+	local runeforgeFrame = self:GetRuneforgeFrame();
 	local cursorItem = C_Cursor.GetCursorItem();
-	if cursorItem and self:GetRuneforgeFrame():IsUpgradeItemValidForRuneforgeLegendary(cursorItem) then
+	if cursorItem and runeforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(cursorItem) then
 		self:SetItem(cursorItem);
 		ClearCursor();
 	else
+		runeforgeFrame.CraftingFrame:ShowFlyout(self, RuneforgeUtil.FlyoutType.UpgradeItem);
 		self:SetSelectingItem(true);
 	end
 end
@@ -212,9 +256,14 @@ end
 function RuneforgeUpgradeItemSlotMixin:OnShow()
 	self:UpdateEffectVisibility();
 	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.ResetItemSlot, self);
+	self:Refresh();
 end
 
 function RuneforgeUpgradeItemSlotMixin:OnHide()
 	self:ResetItemSlot();
 	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self);
+end
+
+function RuneforgeUpgradeItemSlotMixin:Refresh()
+	self:SetEnabled(self:GetRuneforgeFrame():HasValidUpgradeItem());
 end

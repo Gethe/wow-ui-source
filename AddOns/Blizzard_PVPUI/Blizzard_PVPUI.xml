@@ -728,6 +728,55 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="PVPWeeklyChestTemplate" virtual ="true" useParentLevel="true" mixin="PVPWeeklyChestMixin" >
+		<Size x="84" y="70"/>
+		<Anchors>
+			<Anchor point="TOP" y="-48"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FlairTexture" atlas="pvpqueue-chest-background">
+					<Size x="187" y="152"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinTextureBottom" inherits="store-itemicon-border-glowspin" alpha="0.2" alphaMode="ADD">
+					<Size x="202" y="205"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SpinTextureTop" inherits="store-itemicon-border-glowspin" alpha="0.7" alphaMode="ADD">
+					<Size x="202" y="205"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ChestTexture">
+					<Size x="187" y="152"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+				<Rotation childKey="SpinTextureTop" order="1" duration="60" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
 	<Frame name="PVPUIFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Size x="563" y="428"/>
 		<Anchors>
@@ -1393,6 +1442,12 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="WeeklyChest" inherits="PVPWeeklyChestTemplate" useParentLevel="true" hidden="true">
+										<Size x="84" y="70"/>
+										<Anchors>
+											<Anchor point="TOP" y="-48"/>
+										</Anchors>
+									</Frame>
 									<Cooldown parentKey="HonorLevelDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin">
 										<Size x="128" y="128"/>
 										<Anchors>
@@ -1466,53 +1521,11 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="WeeklyChest" useParentLevel="true" mixin="PVPWeeklyChestMixin">
+									<Frame parentKey="WeeklyChest" inherits="PVPWeeklyChestTemplate" useParentLevel="true" >
 										<Size x="84" y="70"/>
 										<Anchors>
 											<Anchor point="TOP" y="-48"/>
 										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<Texture parentKey="FlairTexture" atlas="pvpqueue-chest-background">
-													<Size x="187" y="152"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="SpinTextureBottom" inherits="store-itemicon-border-glowspin" alpha="0.2" alphaMode="ADD">
-													<Size x="202" y="205"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="BORDER">
-												<Texture parentKey="SpinTextureTop" inherits="store-itemicon-border-glowspin" alpha="0.7" alphaMode="ADD">
-													<Size x="202" y="205"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="ARTWORK">
-												<Texture parentKey="ChestTexture">
-													<Size x="187" y="152"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnShow method="OnShow"/>
-											<OnEnter method="OnEnter"/>
-											<OnLeave function="GameTooltip_Hide"/>
-										</Scripts>
-										<Animations>
-											<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
-												<Rotation childKey="SpinTextureTop" order="1" duration="60" degrees="-360"/>
-											</AnimationGroup>
-										</Animations>
 									</Frame>
 									<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
 										<Anchors>

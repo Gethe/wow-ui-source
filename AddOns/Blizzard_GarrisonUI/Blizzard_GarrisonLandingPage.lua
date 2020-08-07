@@ -76,16 +76,9 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:SetPoint("BOTTOM", self.Report, "BOTTOMLEFT", 194, 54);
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_8_0) then
 
-		local faction = UnitFactionGroup("player");
-		if ( faction == "Horde" ) then
-			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Horde", true);
-			self.Report.Background:ClearAllPoints();
-			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
-		else
-			self.Report.Background:SetAtlas("BfAMissionsLandingPage-Background-Alliance", true);
-			self.Report.Background:ClearAllPoints();
-			self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
-		end
+		self.Report.Background:ClearAllPoints();
+		self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
+		self.Report.Background:SetAtlas(("BfAMissionsLandingPage-Background-%s"):format(UnitFactionGroup("player")));
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
 		self:SetupCovenantCallings();
 		self:SetupSoulbind();
@@ -94,6 +87,15 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.FollowerTab.FollowerText:Hide();
 		self.FollowerTab.PortraitFrame:Hide();
 		self.FollowerTab.CovenantFollowerPortraitFrame:Show();
+
+		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+		local textureKit = covenantData and covenantData.textureKit;
+		self.Report.Background:SetShown(textureKit ~= nil);
+		if textureKit then
+			self.Report.Background:ClearAllPoints();
+			self.Report.Background:SetPoint("BOTTOM", GarrisonLandingPageReport, "BOTTOMLEFT", 190, 110);
+			self.Report.Background:SetAtlas(("ShadowlandsMissionsLandingPage-Background-%s"):format(textureKit));
+		end
 	end
 
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));

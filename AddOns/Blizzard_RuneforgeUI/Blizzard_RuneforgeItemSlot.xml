@@ -26,6 +26,7 @@
 			<OnLeave method="OnLeave"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</ItemButton>
 

@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 <Script file="ChatConfigFrame.lua"/>
 	<Button name="ConfigCategoryButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="10" y="16"/>
-		</Size>
+		<Size x="10" y="16"/>
 		<Scripts>
 			<OnLoad>
 				_G[self:GetName().."Highlight"]:SetVertexColor(0.11, 0.325, 0.48);
@@ -14,15 +12,9 @@
 			</OnClick>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
-			<Size>
-				<AbsDimension x="0" y="16"/>
-			</Size>
+			<Size x="0" y="16"/>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="2" y="1"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="2" y="1"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalLeft"/>
@@ -52,9 +44,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentTitle" inherits="GameFontNormal" parentKey="header">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-							<Offset x="0" y="2"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -84,9 +74,7 @@
 	</Frame>
 
 	<CheckButton name="ChatConfigBaseCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Scripts>
 			<OnClick>
 				local checked = self:GetChecked();
@@ -113,58 +101,38 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<CheckButton name="ChatConfigCheckButtonTemplate" parentKey="CheckButton" inherits="ChatConfigBaseCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="24" y="24"/>
-		</Size>
+		<Size x="24" y="24"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<HitRectInsets>
-			<AbsInset left="0" right="-145" top="0" bottom="0"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="-145" top="0" bottom="0"/>
 	</CheckButton>
 	<CheckButton name="ChatConfigSmallCheckButtonTemplate" inherits="ChatConfigBaseCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="20" y="20"/>
-		</Size>
+		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<HitRectInsets>
-			<AbsInset left="0" right="-55" top="0" bottom="0"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="-55" top="0" bottom="0"/>
 	</CheckButton>
 	<Frame name="ChatConfigCheckBoxTemplate" inherits="ChatConfigBorderBoxTemplate" virtual="true">
 		<Size x="200" y="26"/>
 		<Frames>
 			<CheckButton name="$parentCheck" parentKey="CheckButton" inherits="ChatConfigCheckButtonTemplate">
-				<Size>
-					<AbsDimension x="24" y="24"/>
-				</Size>
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset x="5" y="0"/>
-					</Anchor>
+					<Anchor point="LEFT" x="5" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
@@ -178,16 +146,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentSwatchBg">
-							<Size>
-								<AbsDimension x="14" y="14"/>
-							</Size>
+						<Texture name="$parentSwatchBg" parentKey="SwatchBg">
+							<Size x="14" y="14"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 							<Color r="1.0" g="1.0" b="1.0"/>
 						</Texture>
@@ -247,44 +209,28 @@
 		</Scripts>
 	</Frame>
 	<Frame name="ChatConfigSwatchTemplate" inherits="ChatConfigBorderBoxTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="200" y="26"/>
-		</Size>
+		<Size x="200" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="7" y="1"/>
-						</Anchor>
+						<Anchor point="LEFT" x="7" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentColorSwatch">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="-6" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" x="-6" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentSwatchBg">
-							<Size>
-								<AbsDimension x="14" y="14"/>
-							</Size>
+							<Size x="14" y="14"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 							<Color r="1.0" g="1.0" b="1.0"/>
 						</Texture>
@@ -300,40 +246,28 @@
 		</Frames>
 	</Frame>
 	<Button name="ChatConfigTabTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="64" y="32"/>
-		</Size>
+		<Size x="64" y="32"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="0" y="2"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" x="0" y="2"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab">
-					<Size>
-						<AbsDimension x="16" y="32"/>
-					</Size>
+					<Size x="16" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab">
-					<Size>
-						<AbsDimension x="44" y="32"/>
-					</Size>
+					<Size x="44" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab">
-					<Size>
-						<AbsDimension x="16" y="32"/>
-					</Size>
+					<Size x="16" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
 					</Anchors>
@@ -351,30 +285,16 @@
 			</OnLeave>
 		</Scripts>
 		<ButtonText name="$parentText">
-			<Size>
-				<AbsDimension x="0" y="8"/>
-			</Size>
+			<Size x="0" y="8"/>
 			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
-					<Offset>
-						<AbsDimension x="0" y="-5"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="0" y="-5"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentLeft">
-					<Offset>
-						<AbsDimension x="0" y="-7"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="RIGHT" relativeTo="$parentRight">
-					<Offset>
-						<AbsDimension x="0" y="-7"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" relativeTo="$parentLeft" x="0" y="-7"/>
+				<Anchor point="RIGHT" relativeTo="$parentRight" x="0" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
@@ -414,52 +334,32 @@
 			</Frame>
 			<Frame name="ChatConfigCategoryFrame" inherits="ChatConfigBoxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="12" y="-57"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
-						<Offset x="137" y="35"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="12" y="-57"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="137" y="35"/>
 				</Anchors>
 				<Frames>
 					<Button name="$parentButton1" inherits="ConfigCategoryButtonTemplate" text="CHAT" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="5" y="-7"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-5" y="-7"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="5" y="-7"/>
+							<Anchor point="TOPRIGHT" x="-5" y="-7"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentButton2" inherits="ConfigCategoryButtonTemplate" text="COMBAT" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-1"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT" relativeTo="$parentButton1" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="-1"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton1" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentButton3" inherits="ConfigCategoryButtonTemplate" text="GLOBAL_CHANNELS" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-1"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT" relativeTo="$parentButton2" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="-1"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton2" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentButton4" inherits="ConfigCategoryButtonTemplate" text="OTHER" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-1"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="-1"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 				</Frames>
@@ -481,12 +381,8 @@
 			</Frame>
 			<Frame name="ChatConfigBackgroundFrame" inherits="ChatConfigBoxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ChatConfigCategoryFrame" relativePoint="TOPRIGHT">
-						<Offset x="1" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset x="-12" y="35"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigCategoryFrame" relativePoint="TOPRIGHT" x="1" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="35"/>
 				</Anchors>
 			</Frame>
 			<Frame name="ChatConfigChatSettings">
@@ -498,9 +394,7 @@
 					<Frame name="$parentLeft" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="13" y="-30"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="13" y="-30"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -534,33 +428,25 @@
 					<Frame name="$parentCombat" inherits="ChatConfigBoxWithHeaderTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="13" y="-30"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="13" y="-30"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentPVP" inherits="ChatConfigBoxWithHeaderTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCombat" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-25"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentCombat" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentSystem" inherits="ChatConfigBoxWithHeaderTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCombat" relativePoint="TOPRIGHT">
-								<Offset x="50" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentCombat" relativePoint="TOPRIGHT" x="50" y="0"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentCreature" inherits="ChatConfigBoxWithHeaderTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSystem" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-25"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentSystem" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -569,39 +455,23 @@
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigCombatSettings">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ChatConfigCategoryFrame" relativePoint="TOPRIGHT">
-						<Offset x="1" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset x="-12" y="35"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigCategoryFrame" relativePoint="TOPRIGHT" x="1" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="35"/>
 				</Anchors>
 				<Frames>
 					<Frame name="$parentFilters" inherits="ChatConfigBoxTemplate">
-						<Size>
-							<AbsDimension x="0" y="0"/>
-						</Size>
+						<Size x="0" y="0"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="0" y="0"/>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
-								<Offset x="0" y="-85"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-85"/>
 						</Anchors>
 						<Frames>
 							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplateLight">
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="5" y="-6"/>
-									</Anchor>
-									<Anchor point="BOTTOMRIGHT">
-										<Offset x="-28" y="4"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="5" y="-6"/>
+									<Anchor point="BOTTOMRIGHT" x="-28" y="4"/>
 								</Anchors>
 								<Scripts>
 									<OnVerticalScroll>
@@ -611,54 +481,32 @@
 							</ScrollFrame>
 							<Button name="$parentButton1" inherits="ConfigFilterButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="5" y="-7"/>
-									</Anchor>
-									<Anchor point="TOPRIGHT">
-										<Offset x="-5" y="-7"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="5" y="-7"/>
+									<Anchor point="TOPRIGHT" x="-5" y="-7"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentButton2" inherits="ConfigFilterButtonTemplate" id="2">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
-									<Anchor point="TOPRIGHT" relativeTo="$parentButton1" relativePoint="BOTTOMRIGHT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+									<Anchor point="TOPRIGHT" relativeTo="$parentButton1" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentButton3" inherits="ConfigFilterButtonTemplate" id="3">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
-									<Anchor point="TOPRIGHT" relativeTo="$parentButton2" relativePoint="BOTTOMRIGHT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+									<Anchor point="TOPRIGHT" relativeTo="$parentButton2" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentButton4" inherits="ConfigFilterButtonTemplate" id="4">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
-									<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+									<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
-								<Size>
-									<AbsDimension x="60" y="22"/>
-								</Size>
+								<Size x="60" y="22"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -667,15 +515,9 @@
 								</Scripts>
 							</Button>
 							<Button name="$parentAddFilterButton" inherits="UIPanelButtonTemplate" text="ADD_FILTER">
-								<Size>
-									<AbsDimension x="80" y="22"/>
-								</Size>
+								<Size x="80" y="22"/>
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="$parentDeleteButton" relativePoint="LEFT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="RIGHT" relativeTo="$parentDeleteButton" relativePoint="LEFT" x="0" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -684,15 +526,9 @@
 								</Scripts>
 							</Button>
 							<Button name="$parentCopyFilterButton" inherits="UIPanelButtonTemplate" text="COPY_FILTER">
-								<Size>
-									<AbsDimension x="80" y="22"/>
-								</Size>
+								<Size x="80" y="22"/>
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="$parentAddFilterButton" relativePoint="LEFT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="RIGHT" relativeTo="$parentAddFilterButton" relativePoint="LEFT"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -702,17 +538,11 @@
 								</Scripts>
 							</Button>
 							<Button name="ChatConfigMoveFilterUpButton">
-								<Size>
-									<AbsDimension x="28" y="28"/>
-								</Size>
+								<Size x="28" y="28"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
-								<HitRectInsets>
-									<AbsInset left="6" right="6" top="7" bottom="7"/>
-								</HitRectInsets>
+								<HitRectInsets left="6" right="6" top="7" bottom="7"/>
 								<Scripts>
 									<OnClick>
 										ChatConfig_MoveFilterUp();
@@ -730,19 +560,11 @@
 								<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
 							</Button>
 							<Button name="ChatConfigMoveFilterDownButton">
-								<Size>
-									<AbsDimension x="28" y="28"/>
-								</Size>
+								<Size x="28" y="28"/>
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="ChatConfigMoveFilterUpButton" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="-8" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="ChatConfigMoveFilterUpButton" relativePoint="RIGHT" x="-8" y="0"/>
 								</Anchors>
-								<HitRectInsets>
-									<AbsInset left="6" right="6" top="7" bottom="7"/>
-								</HitRectInsets>
+								<HitRectInsets left="6" right="6" top="7" bottom="7"/>
 								<Scripts>
 									<OnClick>
 										ChatConfig_MoveFilterDown();
@@ -768,73 +590,53 @@
 						</Scripts>
 					</Frame>
 					<Frame name="CombatConfigMessageSources">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame" x="0" y="0"/>
 						</Anchors>
 						<Frames>
 							<Frame name="$parentDoneBy" inherits="ChatConfigBoxWithHeaderTemplate">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="13" y="-25"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="13" y="-25"/>
 								</Anchors>
 							</Frame>
 							<Frame name="$parentDoneTo" inherits="ChatConfigBoxWithHeaderTemplate">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentDoneBy" relativePoint="TOPRIGHT">
-										<Offset x="50" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentDoneBy" relativePoint="TOPRIGHT" x="50" y="0"/>
 								</Anchors>
 							</Frame>
 						</Frames>
 					</Frame>
 					<Frame name="CombatConfigMessageTypes">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 						</Anchors>
 						<Frames>
 							<Frame name="$parentLeft">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="11" y="-10"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="11" y="-10"/>
 								</Anchors>
 							</Frame>
 							<Frame name="$parentRight">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-										<Offset x="230" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="230" y="0"/>
 								</Anchors>
 							</Frame>
 							<Frame name="$parentMisc">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-20"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString inherits="GameFontHighlight" text="MISCELLANEOUS">
 											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-													<Offset x="0" y="0"/>
-												</Anchor>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -843,38 +645,28 @@
 						</Frames>
 					</Frame>
 					<Frame name="CombatConfigColors">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentExampleString1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 									<Size x="450" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="CombatConfigColors" relativePoint="TOPLEFT">
-											<Offset x="25" y="-27"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="CombatConfigColors" relativePoint="TOPLEFT" x="25" y="-27"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentExampleString2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 									<Size x="450" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentExampleString1" relativePoint="BOTTOMLEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="$parentExampleString1" relativePoint="BOTTOMLEFT"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentExampleTitle" inherits="GameFontNormalSmall" text="EXAMPLE_TEXT">
 									<Size x="0" y="13"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentExampleString1" relativePoint="TOP">
-											<Offset x="0" y="3"/>
-										</Anchor>
+										<Anchor point="BOTTOM" relativeTo="$parentExampleString1" relativePoint="TOP" x="0" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -883,40 +675,28 @@
 							<Frame name="$parentUnitColors" inherits="ChatConfigBoxWithHeaderTemplate">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="ChatConfigBackgroundFrame" relativePoint="BOTTOMLEFT">
-										<Offset x="13" y="89"/>
-									</Anchor>
+									<Anchor point="BOTTOMLEFT" relativeTo="ChatConfigBackgroundFrame" relativePoint="BOTTOMLEFT" x="13" y="89"/>
 								</Anchors>
 							</Frame>
 							<Frame name="$parentHighlighting" inherits="ChatConfigBorderBoxTemplate">
-								<Size>
-									<AbsDimension x="200" y="53"/>
-								</Size>
+								<Size x="200" y="53"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-25"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString name="$parentTitle" inherits="GameFontNormal" text="HIGHLIGHTING">
 											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-													<Offset x="0" y="2"/>
-												</Anchor>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
 									<CheckButton name="$parentLine" inherits="ChatConfigSmallCheckButtonTemplate">
-										<Size>
-											<AbsDimension x="24" y="24"/>
-										</Size>
+										<Size x="24" y="24"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CombatConfigColorsHighlighting" relativePoint="TOPLEFT">
-												<Offset x="6" y="-4"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="CombatConfigColorsHighlighting" relativePoint="TOPLEFT" x="6" y="-4"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -936,13 +716,9 @@
 										</Scripts>
 									</CheckButton>
 									<CheckButton name="$parentAbility" inherits="ChatConfigSmallCheckButtonTemplate">
-										<Size>
-											<AbsDimension x="24" y="24"/>
-										</Size>
+										<Size x="24" y="24"/>
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="$parentLine" relativePoint="RIGHT">
-												<Offset x="60" y="0"/>
-											</Anchor>
+											<Anchor point="LEFT" relativeTo="$parentLine" relativePoint="RIGHT" x="60" y="0"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -962,13 +738,9 @@
 										</Scripts>
 									</CheckButton>
 									<CheckButton name="$parentDamage" inherits="ChatConfigSmallCheckButtonTemplate">
-										<Size>
-											<AbsDimension x="24" y="24"/>
-										</Size>
+										<Size x="24" y="24"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CombatConfigColorsHighlightingLine" relativePoint="BOTTOMLEFT">
-												<Offset x="0" y="3"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="CombatConfigColorsHighlightingLine" relativePoint="BOTTOMLEFT" x="0" y="3"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -988,13 +760,9 @@
 										</Scripts>
 									</CheckButton>
 									<CheckButton name="$parentSchool" inherits="ChatConfigSmallCheckButtonTemplate">
-										<Size>
-											<AbsDimension x="24" y="24"/>
-										</Size>
+										<Size x="24" y="24"/>
 										<Anchors>
-											<Anchor point="LEFT" relativeTo="$parentDamage" relativePoint="RIGHT">
-												<Offset x="60" y="0"/>
-											</Anchor>
+											<Anchor point="LEFT" relativeTo="$parentDamage" relativePoint="RIGHT" x="60" y="0"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -1018,40 +786,28 @@
 							<Frame name="$parentColorize">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="TOPRIGHT">
-										<Offset x="50" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentUnitColors" relativePoint="TOPRIGHT" x="50" y="0"/>
 								</Anchors>
 								<Frames>
 									<Frame name="$parentUnitName" inherits="ChatConfigBorderBoxTemplate">
-										<Size>
-											<AbsDimension x="200" y="32"/>
-										</Size>
+										<Size x="200" y="32"/>
 										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset x="0" y="0"/>
-											</Anchor>
+											<Anchor point="TOPLEFT"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
 												<FontString inherits="GameFontNormal" text="COLORIZE">
 													<Anchors>
-														<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-															<Offset x="0" y="2"/>
-														</Anchor>
+														<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
 													</Anchors>
 												</FontString>
 											</Layer>
 										</Layers>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
-												<Size>
-													<AbsDimension x="24" y="24"/>
-												</Size>
+												<Size x="24" y="24"/>
 												<Anchors>
-													<Anchor point="LEFT">
-														<Offset x="7" y="0"/>
-													</Anchor>
+													<Anchor point="LEFT" x="7" y="0"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1077,23 +833,15 @@
 										</Frames>
 									</Frame>
 									<Frame name="$parentSpellNames" inherits="ChatConfigBorderBoxTemplate">
-										<Size>
-											<AbsDimension x="200" y="52"/>
-										</Size>
+										<Size x="200" y="52"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="$parentUnitName" relativePoint="BOTTOMLEFT">
-												<Offset x="0" y="0"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="$parentUnitName" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
-												<Size>
-													<AbsDimension x="24" y="24"/>
-												</Size>
+												<Size x="24" y="24"/>
 												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="7" y="-4"/>
-													</Anchor>
+													<Anchor point="TOPLEFT" x="7" y="-4"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1114,9 +862,7 @@
 											</CheckButton>
 											<CheckButton name="$parentSchoolColoring" inherits="ChatConfigSmallCheckButtonTemplate">
 												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentCheck" relativePoint="BOTTOMLEFT">
-														<Offset x="10" y="0"/>
-													</Anchor>
+													<Anchor point="TOPLEFT" relativeTo="$parentCheck" relativePoint="BOTTOMLEFT" x="10" y="0"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1136,28 +882,16 @@
 												</Scripts>
 											</CheckButton>
 											<Button name="$parentColorSwatch">
-												<Size>
-													<AbsDimension x="16" y="16"/>
-												</Size>
+												<Size x="16" y="16"/>
 												<Anchors>
-													<Anchor point="TOPRIGHT">
-														<Offset>
-															<AbsDimension x="-8" y="-8"/>
-														</Offset>
-													</Anchor>
+													<Anchor point="TOPRIGHT" x="-8" y="-8"/>
 												</Anchors>
 												<Layers>
 													<Layer level="BACKGROUND">
 														<Texture name="$parentSwatchBg">
-															<Size>
-																<AbsDimension x="14" y="14"/>
-															</Size>
+															<Size x="14" y="14"/>
 															<Anchors>
-																<Anchor point="CENTER">
-																	<Offset>
-																		<AbsDimension x="0" y="0"/>
-																	</Offset>
-																</Anchor>
+																<Anchor point="CENTER"/>
 															</Anchors>
 															<Color r="1.0" g="1.0" b="1.0"/>
 														</Texture>
@@ -1171,23 +905,15 @@
 										</Frames>
 									</Frame>
 									<Frame name="$parentDamageNumber" inherits="ChatConfigBorderBoxTemplate">
-										<Size>
-											<AbsDimension x="200" y="52"/>
-										</Size>
+										<Size x="200" y="52"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="$parentSpellNames" relativePoint="BOTTOMLEFT">
-												<Offset x="0" y="0"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="$parentSpellNames" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
-												<Size>
-													<AbsDimension x="24" y="24"/>
-												</Size>
+												<Size x="24" y="24"/>
 												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="7" y="-4"/>
-													</Anchor>
+													<Anchor point="TOPLEFT" x="7" y="-4"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1208,9 +934,7 @@
 											</CheckButton>
 											<CheckButton name="$parentSchoolColoring" inherits="ChatConfigSmallCheckButtonTemplate">
 												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentCheck" relativePoint="BOTTOMLEFT">
-														<Offset x="10" y="0"/>
-													</Anchor>
+													<Anchor point="TOPLEFT" relativeTo="$parentCheck" relativePoint="BOTTOMLEFT" x="10" y="0"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1230,28 +954,16 @@
 												</Scripts>
 											</CheckButton>
 											<Button name="$parentColorSwatch">
-												<Size>
-													<AbsDimension x="16" y="16"/>
-												</Size>
+												<Size x="16" y="16"/>
 												<Anchors>
-													<Anchor point="TOPRIGHT">
-														<Offset>
-															<AbsDimension x="-8" y="-8"/>
-														</Offset>
-													</Anchor>
+													<Anchor point="TOPRIGHT" x="-8" y="-8"/>
 												</Anchors>
 												<Layers>
 													<Layer level="BACKGROUND">
 														<Texture name="$parentSwatchBg">
-															<Size>
-																<AbsDimension x="14" y="14"/>
-															</Size>
+															<Size x="14" y="14"/>
 															<Anchors>
-																<Anchor point="CENTER">
-																	<Offset>
-																		<AbsDimension x="0" y="0"/>
-																	</Offset>
-																</Anchor>
+																<Anchor point="CENTER"/>
 															</Anchors>
 															<Color r="1.0" g="1.0" b="1.0"/>
 														</Texture>
@@ -1265,23 +977,15 @@
 										</Frames>
 									</Frame>
 									<Frame name="$parentDamageSchool" inherits="ChatConfigBorderBoxTemplate">
-										<Size>
-											<AbsDimension x="200" y="32"/>
-										</Size>
+										<Size x="200" y="32"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="$parentDamageNumber" relativePoint="BOTTOMLEFT">
-												<Offset x="0" y="0"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="$parentDamageNumber" relativePoint="BOTTOMLEFT"/>
 										</Anchors>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
-												<Size>
-													<AbsDimension x="24" y="24"/>
-												</Size>
+												<Size x="24" y="24"/>
 												<Anchors>
-													<Anchor point="LEFT">
-														<Offset x="7" y="0"/>
-													</Anchor>
+													<Anchor point="LEFT" x="7" y="0"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1303,23 +1007,15 @@
 										</Frames>
 									</Frame>
 									<Frame name="$parentEntireLine" inherits="ChatConfigBorderBoxTemplate">
-										<Size>
-											<AbsDimension x="200" y="52"/>
-										</Size>
+										<Size x="200" y="52"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="$parentDamageSchool" relativePoint="BOTTOMLEFT">
-												<Offset x="0" y="0"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="$parentDamageSchool" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 										</Anchors>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
-												<Size>
-													<AbsDimension x="24" y="24"/>
-												</Size>
+												<Size x="24" y="24"/>
 												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="7" y="-4"/>
-													</Anchor>
+													<Anchor point="TOPLEFT" x="7" y="-4"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1340,9 +1036,7 @@
 											</CheckButton>
 											<CheckButton name="$parentBySource" inherits="UIRadioButtonTemplate">
 												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentCheck" relativePoint="BOTTOMLEFT">
-														<Offset x="10" y="0"/>
-													</Anchor>
+													<Anchor point="TOPLEFT" relativeTo="$parentCheck" relativePoint="BOTTOMLEFT" x="10" y="0"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1359,9 +1053,7 @@
 											</CheckButton>
 											<CheckButton name="$parentByTarget" inherits="UIRadioButtonTemplate">
 												<Anchors>
-													<Anchor point="LEFT" relativeTo="$parentBySourceText" relativePoint="RIGHT">
-														<Offset x="10" y="0"/>
-													</Anchor>
+													<Anchor point="LEFT" relativeTo="$parentBySourceText" relativePoint="RIGHT" x="10" y="0"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
@@ -1389,51 +1081,37 @@
 						</Scripts>
 					</Frame>
 					<Frame name="CombatConfigFormatting">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame">
-								<Offset x="10" y="0"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame" x="10" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentExampleString1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 									<Size x="450" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="15" y="-27"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="15" y="-27"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentExampleString2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 									<Size x="450" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentExampleString1" relativePoint="BOTTOMLEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="$parentExampleString1" relativePoint="BOTTOMLEFT"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentExampleTitle" inherits="GameFontNormalSmall" text="EXAMPLE_TEXT">
 									<Size x="0" y="13"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentExampleString1" relativePoint="TOP">
-											<Offset x="0" y="3"/>
-										</Anchor>
+										<Anchor point="BOTTOM" relativeTo="$parentExampleString1" relativePoint="TOP" x="0" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<CheckButton name="$parentShowTimeStamp" inherits="ChatConfigCheckButtonTemplate">
-								<Size>
-									<AbsDimension x="24" y="24"/>
-								</Size>
+								<Size x="24" y="24"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentExampleString2" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-20"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentExampleString2" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1453,13 +1131,9 @@
 								</Scripts>
 							</CheckButton>
 							<CheckButton name="$parentShowBraces" inherits="ChatConfigCheckButtonTemplate">
-								<Size>
-									<AbsDimension x="24" y="24"/>
-								</Size>
+								<Size x="24" y="24"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentShowTimeStamp" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-15"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentShowTimeStamp" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1480,9 +1154,7 @@
 							</CheckButton>
 							<CheckButton name="$parentUnitNames" inherits="ChatConfigSmallCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentShowBraces" relativePoint="BOTTOMLEFT">
-										<Offset x="10" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentShowBraces" relativePoint="BOTTOMLEFT" x="10" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1507,9 +1179,7 @@
 							</CheckButton>
 							<CheckButton name="$parentSpellNames" inherits="ChatConfigSmallCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentUnitNames" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentUnitNames" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1530,9 +1200,7 @@
 							</CheckButton>
 							<CheckButton name="$parentItemNames" inherits="ChatConfigSmallCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentSpellNames" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-2"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentSpellNames" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1553,9 +1221,7 @@
 							</CheckButton>
 							<CheckButton name="$parentFullText" inherits="ChatConfigCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentItemNames" relativePoint="BOTTOMLEFT">
-										<Offset x="-10" y="-13"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentItemNames" relativePoint="BOTTOMLEFT" x="-10" y="-13"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1582,27 +1248,19 @@
 					<Frame name="CombatConfigSettings">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="13" y="-25"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="13" y="-25"/>
 						</Anchors>
 						<Frames>
 							<EditBox name="$parentNameEditBox" letters="32" autoFocus="false" inherits="InputBoxTemplate">
-								<Size>
-									<AbsDimension x="150" y="20"/>
-								</Size>
+								<Size x="150" y="20"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CombatConfigFormatting" relativePoint="TOPLEFT">
-										<Offset x="27" y="-26"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="CombatConfigFormatting" relativePoint="TOPLEFT" x="27" y="-26"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString inherits="GameFontNormalSmall" text="FILTER_NAME">
 											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-													<Offset x="0" y="2"/>
-												</Anchor>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -1619,15 +1277,9 @@
 								</Scripts>
 							</EditBox>
 							<Button name="$parentSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
-								<Size>
-									<AbsDimension x="78" y="22"/>
-								</Size>
+								<Size x="78" y="22"/>
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentNameEditBox" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="8" y="-1"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="$parentNameEditBox" relativePoint="RIGHT" x="8" y="-1"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -1636,13 +1288,9 @@
 								</Scripts>
 							</Button>
 							<CheckButton name="$parentShowQuickButton" inherits="ChatConfigCheckButtonTemplate">
-								<Size>
-									<AbsDimension x="24" y="24"/>
-								</Size>
+								<Size x="24" y="24"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CombatConfigSettingsNameEditBox" relativePoint="BOTTOMLEFT">
-										<Offset x="-6" y="-19"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="CombatConfigSettingsNameEditBox" relativePoint="BOTTOMLEFT" x="-6" y="-19"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1664,9 +1312,7 @@
 							</CheckButton>
 							<CheckButton name="$parentSolo" inherits="ChatConfigSmallCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentShowQuickButton" relativePoint="BOTTOMLEFT">
-										<Offset x="20" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentShowQuickButton" relativePoint="BOTTOMLEFT" x="20" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1686,9 +1332,7 @@
 							</CheckButton>
 							<CheckButton name="$parentParty" inherits="ChatConfigSmallCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentSolo" relativePoint="RIGHT">
-										<Offset x="60" y="0"/>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="$parentSolo" relativePoint="RIGHT" x="60" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1708,9 +1352,7 @@
 							</CheckButton>
 							<CheckButton name="$parentRaid" inherits="ChatConfigSmallCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentParty" relativePoint="RIGHT">
-										<Offset x="60" y="0"/>
-									</Anchor>
+									<Anchor point="LEFT" relativeTo="$parentParty" relativePoint="RIGHT" x="60" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1768,13 +1410,9 @@
 				</Scripts>
 			</Button>
 			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">
-				<Size>
-					<AbsDimension x="170" y="22"/>
-				</Size>
+				<Size x="170" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefaultButton">
-						<Offset x="0" y="0"/>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefaultButton"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1783,15 +1421,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL" hidden="true">
-				<Size>
-					<AbsDimension x="78" y="22"/>
-				</Size>
+				<Size x="78" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-11" y="13"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="13"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1801,15 +1433,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size>
-					<AbsDimension x="78" y="22"/>
-				</Size>
+				<Size x="78" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-11" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="RIGHT" x="-11" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

@@ -1,4 +1,7 @@
 
+local TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_ID = 90;
+local TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_OFFSET = -220; 
+
 local gossipButtonTextureKitRegions = {
 	["Background"] = "jailerstower-wayfinder-tierbackground-%s",
 }
@@ -19,6 +22,10 @@ end
 function TorghastLevelPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
+
+	local smokeEffectDescription = { effectID = TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_ID, offsetY = TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_OFFSET, };
+	self.ModelScene:AddDynamicEffect(smokeEffectDescription, self);
+
 	self:BuildOptionList();
 	self:SetupGrid();
 	self:SetupLevelButtons(); 
@@ -174,7 +181,6 @@ end
 TorghastLevelPickerRewardCircleMixin = {}; 
 
 local function TorghastLevelPickerRewardSortFunction(firstValue, secondValue)
-	print(firstValue, secondValue)
 	return firstValue > secondValue;
 end
 

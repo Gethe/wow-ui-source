@@ -228,7 +228,7 @@ function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
 end
 
 function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
-	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", nil, self);
+	EventRegistry:UnregisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self);
 
 	NPE_TutorialKeyboardMouseFrame_Frame:HideTutorial();
 	self.shortCut = true;
@@ -991,7 +991,7 @@ function Class_AddSpellToActionBar:OnBegin(spellID, warningString, spellMicroBut
 end
 
 function Class_AddSpellToActionBar:SpellBookFrameShow()
-	EventRegistry:RegisterCallback("SpellBookFrame.Show", nil, self);
+	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
 	EventRegistry:RegisterCallback("SpellBookFrame.Hide", self.SpellBookFrameHide, self);
 	self:HidePointerTutorials();
 	ActionButton_HideOverlayGlow(SpellbookMicroButton);
@@ -1062,8 +1062,8 @@ end
 
 function Class_AddSpellToActionBar:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
-	EventRegistry:RegisterCallback("SpellBookFrame.Show", nil, self);
-	EventRegistry:RegisterCallback("SpellBookFrame.Hide", nil, self);
+	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
+	EventRegistry:UnregisterCallback("SpellBookFrame.Hide", self);
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 	NPE_TutorialDragButton:Hide();
@@ -1412,6 +1412,10 @@ function Class_LootCorpse:OnUnsuppressed()
 end
 
 function Class_LootCorpse:Display()
+	self.Timer = C_Timer.NewTimer(15, function()
+		self:Complete();
+	end);
+
 	local prompt = NPEV2_LOOT_CORPSE;
 	if (self.QuestMobID) then
 		prompt = NPEV2_LOOT_CORPSE_QUEST;
@@ -1421,6 +1425,10 @@ function Class_LootCorpse:Display()
 end
 
 function Class_LootCorpse:OnComplete()
+	if self.Timer then
+		self.Timer:Cancel();
+	end
+
 	Tutorials.LootPointer:Complete();
 
 	if (self.QuestMobID) then
@@ -1488,7 +1496,7 @@ function Class_EquipFirstItemWatcher:CheckForUpgrades()
 	local upgrades = self:GetBestItemUpgrades();
 	local slot, item = next(upgrades);
 
-	if item then
+	if item and slot ~= INVSLOT_TABARD then
 		Tutorials.EquipTutorial:ForceBegin(item);
 		return true;
 	end
@@ -1649,6 +1657,7 @@ function Class_EquipTutorial:OnBegin(data)
 
 	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 
 	EventRegistry:RegisterCallback("ContainerFrame.AllBagsClosed", self.BagClosed, self);
 	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
@@ -1723,9 +1732,8 @@ function Class_EquipTutorial:BagClosed()
 	if self.success then
 		self:Complete();
 		return;
-	else
-		self:Reset();
 	end
+	self:Reset();
 end
 
 function Class_EquipTutorial:ShowCharacterSheetPrompt()
@@ -1733,35 +1741,31 @@ function Class_EquipTutorial:ShowCharacterSheetPrompt()
 		self:CharacterSheetOpened();
 		return;
 	end
-	self.onShowID = Dispatcher:RegisterScript(CharacterFrame, "OnShow", function() self:CharacterSheetOpened() end, true);
+	EventRegistry:RegisterCallback("CharacterFrame.Show", self.CharacterSheetOpened, self);
 
 	local key = TutorialHelper:GetCharacterBinding();
 	self:ShowPointerTutorial(TutorialHelper:FormatString(string.format(NPEV2_OPENCHARACTERSHEET, key)), "DOWN", CharacterMicroButton, 0, 0);
 end
 
 function Class_EquipTutorial:CharacterSheetOpened()
-	self.onHideID = Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:CharacterSheetClosed() end, true);
+	EventRegistry:RegisterCallback("CharacterFrame.Hide", self.CharacterSheetClosed, self);
 	self:HidePointerTutorials();
 
 	if self:CheckReady() then
 		self.AnimTimer = C_Timer.NewTimer(0.1, function()
 			self:StartAnimation();
 		end);
-	else
-		-- start over
-		self:Reset();
+		return;
 	end
+	self:Reset();
 end
 
 function Class_EquipTutorial:CharacterSheetClosed()
+	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
+	
 	if self.success then
 		self:Complete();
 		return;
-	end
-
-	if self.onHideID then
-		Dispatcher:UnregisterScript(CharacterFrame, "OnHide", self.onHideID);
-		self.onHideID = nil;
 	end
 	self:Reset();
 end
@@ -1781,12 +1785,17 @@ end
 
 function Class_EquipTutorial:PLAYER_EQUIPMENT_CHANGED()
 	if (GetInventoryItemID("player", self.data.CharacterSlot) == self.data.ItemID) then
+		-- the player successfully equipped the item
 		Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 		self.success = true;
 		NPE_TutorialDragButton:Hide();
-		if CharacterFrame:IsVisible() then
+		self.animationPlaying = false;
+
+		if CharacterFrame:IsVisible() and self.destFrame then
 			self:ShowPointerTutorial(NPEV2_SUCCESSFULLY_EQUIPPED, "LEFT", self.destFrame);
-			Dispatcher:RegisterScript(CharacterFrame, "OnHide", function() self:Complete() end, true);
+
+			EventRegistry:RegisterCallback("CharacterFrame.Hide", self.CharacterSheetClosed, self);
+
 			self.EquipmentChangedTimer = C_Timer.NewTimer(8, function()
 				self:Complete();
 			end);
@@ -1828,16 +1837,13 @@ function Class_EquipTutorial:StartAnimation()
 	if self.originFrame and self.destFrame then
 		self.newItemPointerID = self:AddPointerTutorial(NPEV2_DRAG_TO_EQUIP, "DOWN", self.originFrame, 0, 0);
 
-		Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 		NPE_TutorialDragButton:Show(self.originFrame, self.destFrame);
+		self.animationPlaying = true;
 	end
 end
 
-function Class_EquipTutorial:UpdateDragOrigin()
+function Class_EquipTutorial:UpdateItemContainerAndSlotInfo()
 	local currentItemID = self.data.ItemID;
-
-	local itemInfo = {GetContainerItemInfo(self.data.Container, self.data.ContainerSlot)};
-
 	if itemInfo and itemInfo[10] == currentItemID then
 		-- nothing in the inventory changed that effected the current tutorial
 	else
@@ -1845,6 +1851,7 @@ function Class_EquipTutorial:UpdateDragOrigin()
 		local itemFrame = nil;
 		local maxNumContainters = 4;
 
+		local itemFound = false;
 		for containerIndex = 0, maxNumContainters do
 			local slots = GetContainerNumSlots(containerIndex);
 			if (slots > 0) then
@@ -1854,28 +1861,58 @@ function Class_EquipTutorial:UpdateDragOrigin()
 					if itemID and itemID == currentItemID then
 						self.data.Container = containerIndex;
 						self.data.ContainerSlot = slotIndex;
-						itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
+						itemFound = true;
 						break;
 					end
 				end
 			end
 		end
-		if itemFrame then
-			self:HidePointerTutorial(self.newItemPointerID);
-			self:StartAnimation();
-		else
-			self:Complete();
+		if not itemFound then
+			-- somehow the item is gone from our containers, maybe it was sold or already equipped
+			self.data = nil;
+		end
+	end
+end
+
+function Class_EquipTutorial:UpdateDragOrigin()
+	if itemInfo and itemInfo[10] == currentItemID then
+		-- nothing in the inventory changed that effected the current tutorial
+	else
+		self:UpdateItemContainerAndSlotInfo()
+		if self.data then
+			itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
+			if itemFrame then
+				self:HidePointerTutorial(self.newItemPointerID);
+				self:StartAnimation();
+			else
+				self:Complete();
+			end
 		end
 	end
 end
 
 function Class_EquipTutorial:BAG_UPDATE_DELAYED()
-	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
-	self:UpdateDragOrigin();
+	-- check to see if the player moved the item being tutorialized
+	self:UpdateItemContainerAndSlotInfo()
+	if self.data then
+		if self.animationPlaying == true then
+			self:UpdateDragOrigin();
+		end
+	else
+		-- for some reason, the item is gone.  maybe the player sold it
+		self:Complete();
+	end
+end
+
+function Class_EquipTutorial:OnInterrupt()
 end
 
 function Class_EquipTutorial:OnComplete()
 	NPE_TutorialDragButton:Hide();
+	self.originFrame = nil;
+	self.destFrame = nil;
+	self.animationPlaying = false;
+
 	self.data = nil;
 
 	if self.EquipmentChangedTimer then
@@ -1887,16 +1924,9 @@ function Class_EquipTutorial:OnComplete()
 	EventRegistry:UnregisterCallback("ContainerFrame.CloseBag", self);
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBackpack", self);
 	EventRegistry:UnregisterCallback("ContainerFrame.CloseBackpack", self);
-
-	if self.onShowID then
-		Dispatcher:UnregisterScript(CharacterFrame, "OnShow", self.onShowID);
-		self.onShowID = nil;
-	end
-
-	if self.onHideID then
-		Dispatcher:UnregisterScript(CharacterFrame, "OnHide", self.onHideID);
-		self.onHideID = nil;
-	end
+	EventRegistry:UnregisterCallback("CharacterFrame.Show", self);
+	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
+	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 
 	self.Timer = C_Timer.NewTimer(0.1, function()
 		Tutorials.QueueSystem:TutorialFinished();
@@ -2961,6 +2991,8 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_HunterTameTutorial = class("HunterTameTutorial", Class_TutorialBase);
 function Class_HunterTameTutorial:OnBegin()
+	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
+
 	self:RequestBottomLeftActionBar();
 	if not self.requested then
 		if MultiBarBottomLeft:IsVisible() then
@@ -3005,7 +3037,7 @@ end
 function Class_HunterTameTutorial:StartTameTutorial()
 	local button = TutorialHelper:GetActionButtonBySpellID(1515);
 	if button then
-		self:ShowPointerTutorial(NPEV2_HUNTER_TAME_ANIMAL, "DOWN", button, 0, 25, nil, "UP");
+		self:ShowPointerTutorial(NPEV2_HUNTER_TAME_ANIMAL, "LEFT", button, 0, 25, nil, "UP");
 		Dispatcher:RegisterEvent("PET_STABLE_UPDATE", self);
 	else
 		self:AddHunterSpellsToActionBar();
@@ -3084,8 +3116,13 @@ function Class_HunterTameTutorial:UPDATE_EXTRA_ACTIONBAR(data)
 		else
 			self:AddHunterSpellsToActionBar();
 		end
-	else
-		print("dont know spells");
+	end
+end
+
+function Class_HunterTameTutorial:QUEST_REMOVED(questIDRemoved)
+	local questID = TutorialHelper:GetFactionData().HunterTameTutorialQuestID;
+	if questID == questIDRemoved then
+		self:Complete();
 	end
 end
 
@@ -3233,7 +3270,6 @@ end
 
 Class_MountTutorial = class("MountTutorial", Class_TutorialBase);
 function Class_MountTutorial:OnBegin(mountID)	
-	--EventRegistry:RegisterCallback("MountJournal.OnShow", self.MountJournalShow, self);
 	EventRegistry:RegisterCallback("MountJournal.OnHide", self.MountJournalHide, self);
 
 	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);

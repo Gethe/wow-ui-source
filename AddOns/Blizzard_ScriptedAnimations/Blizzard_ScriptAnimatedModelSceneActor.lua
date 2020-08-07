@@ -17,18 +17,50 @@ end
 -- This isn't a frame so its update function is called through its parent.
 function ScriptAnimatedModelSceneActorMixin:DeltaUpdate(elapsed)
 	self.elapsedTime = (self.elapsedTime or 0) + elapsed;
-	if self.trajectory and self:IsActive() then
-		local positionX, positionY, newTrajectory = self.trajectory(self.source, self.target, self.elapsedTime, self.duration);
-		
-		if newTrajectory then
-			self.trajectory = newTrajectory;
+	if self:IsActive() then
+		if self.trajectory then
+			local positionX, positionY, newTrajectory = self.trajectory(self.source, self.target, self.elapsedTime, self.duration);
+			
+			if newTrajectory then
+				self.trajectory = newTrajectory;
+			end
+
+			if positionX and positionY then
+				self:GetModelScene():SetActorPositionFromPixels(self, positionX + self.dynamicOffsetX, positionY + self.dynamicOffsetY, self.dynamicOffsetZ);
+				self:Show();
+			else
+				self:Hide();
+			end
 		end
 
-		if positionX and positionY then
-			self:GetModelScene():SetActorPositionFromPixels(self, positionX + self.dynamicOffsetX, positionY + self.dynamicOffsetY, self.dynamicOffsetZ);
-			self:Show();
-		else
-			self:Hide();
+		local i = 1;
+		while i <= #self.futureTransformations do
+			local transformation = self.futureTransformations[i];
+			if self.elapsedTime >= transformation.startTime then
+				table.insert(self.activeTransformations, transformation);
+				self.futureTransformations[i] = self.futureTransformations[#self.futureTransformations];
+				self.futureTransformations[#self.futureTransformations] = nil;
+			else
+				i = i + 1;
+			end
+		end
+
+		local j = 1;
+		while j <= #self.activeTransformations do
+			local transformation = self.activeTransformations[j];
+			local data = transformation.data;
+			local callback = transformation.overrideCallback or data.transformationCallback;
+			local transformationFinished, newTransformationCallback = callback(self, self.elapsedTime - transformation.startTime, data.duration, unpack(data.args, 1, data.args.n));
+			if transformationFinished then
+				self.activeTransformations[j] = self.activeTransformations[#self.activeTransformations];
+				self.activeTransformations[#self.activeTransformations] = nil;
+			else
+				j = j + 1;
+
+				if newTransformationCallback then
+					transformation.overrideCallback = newTransformationCallback;
+				end
+			end
 		end
 	end
 end
@@ -62,7 +94,7 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	end
 
 	local animationSpeed = self:GetModelScene():GetEffectSpeed() * animationSpeed;
-	self:SetAnimation(0, 0, animationSpeed);
+	self:SetAnimation(effectDescription.animation or 0, 0, animationSpeed, effectDescription.animationStartOffset);
 
 	self.elapsedTime = nil;
 
@@ -79,6 +111,22 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	else
 		self:SetYaw(effectDescription.yawRadians);
 	end
+
+	self.futureTransformations = {};
+	self.activeTransformations = {};
+	if effectDescription.transformations then
+		for i, transformation in ipairs(effectDescription.transformations) do
+			if transformation.timing == Enum.ScriptedAnimationTransformationTiming.BeginWithEffect then
+				table.insert(self.activeTransformations, { startTime = 0, data = transformation, });
+			elseif transformation.timing == Enum.ScriptedAnimationTransformationTiming.FinishWithEffect then
+				local startTime = self.duration - transformation.duration;
+				table.insert(self.futureTransformations, { startTime = startTime, data = transformation, });
+			end
+		end
+	end
+
+	-- We need to reset any state that may have been modified by transformations.
+	self:SetAlpha(1.0);
 
 	self:DeltaUpdate(0);
 end

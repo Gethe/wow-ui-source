@@ -30,7 +30,7 @@
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="23" y="9" />
 				</Anchors>
 			</Button>
-			<Button parentKey="RenownTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="COVENANT_SANCTUM_TAB_RENOWN" hidden="true">
+			<Button parentKey="RenownTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="COVENANT_SANCTUM_TAB_RENOWN">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
 				</Anchors>

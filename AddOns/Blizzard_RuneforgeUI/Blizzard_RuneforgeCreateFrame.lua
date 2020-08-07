@@ -1,20 +1,34 @@
 
 RuneforgeCreateFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
+local RuneforgeCreateFrameEvents = {
+	"UNIT_INVENTORY_CHANGED",
+};
+
 function RuneforgeCreateFrameMixin:OnLoad()
 	self.Cost:SetTextAnchorPoint("CENTER");
 	self:UpdateCost();
 end
 
 function RuneforgeCreateFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, RuneforgeCreateFrameEvents);
+
 	self:RegisterRefreshMethod(self.Refresh);
 	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self.Refresh, self);
 	self:Refresh();
 end
 
 function RuneforgeCreateFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, RuneforgeCreateFrameEvents);
+
 	self:UnregisterRefreshMethod();
 	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self);
+end
+
+function RuneforgeCreateFrameMixin:OnEvent(event)
+	if event == "UNIT_INVENTORY_CHANGED" then
+		self:Refresh();
+	end
 end
 
 function RuneforgeCreateFrameMixin:CraftItem()
@@ -23,9 +37,11 @@ function RuneforgeCreateFrameMixin:CraftItem()
 		local baseItem = runeforgeFrame:GetItem();
 		local upgradeItem = runeforgeFrame:GetUpgradeItem();
 		C_LegendaryCrafting.UpgradeRuneforgeLegendary(baseItem, upgradeItem);
+		PlaySound(SOUNDKIT.UI_RUNECARVING_UPGRADE_START);
 	else
 		local craftDescription = runeforgeFrame:GetCraftDescription();
 		C_LegendaryCrafting.CraftRuneforgeLegendary(craftDescription);
+		PlaySound(SOUNDKIT.UI_RUNECARVING_CREATE_START);
 	end
 end
 

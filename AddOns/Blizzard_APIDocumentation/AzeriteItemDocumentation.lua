@@ -104,10 +104,33 @@ local AzeriteItem =
 				{ Name = "isAzeriteItem", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsAzeriteItemEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "AzeriteItemEnabledStateChanged",
+			Type = "Event",
+			LiteralName = "AZERITE_ITEM_ENABLED_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "AzeriteItemExperienceChanged",
 			Type = "Event",

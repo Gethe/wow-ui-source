@@ -13,9 +13,11 @@ function CovenantCallingQuestMixin:Update()
 end
 
 function CovenantCallingQuestMixin:UpdateIcon()
-	local icon = self.calling:GetIcon(self.covenantData);
-	self.Icon:SetTexture(icon);
-	self.Highlight:SetTexture(icon);
+	if self.covenantData then
+		local icon = self.calling:GetIcon(self.covenantData);
+		self.Icon:SetTexture(icon);
+		self.Highlight:SetTexture(icon);
+	end
 end
 
 function CovenantCallingQuestMixin:UpdateBang()
@@ -187,24 +189,31 @@ function CovenantCallingsMixin:Update()
 end
 
 function CovenantCallingsMixin:UpdateBackground()
-	local decor = ("shadowlands-landingpage-callingsdecor-%s"):format(self.covenantData.textureKit);
-	self.Decor:SetAtlas(decor, true);
+	if self.covenantData then
+		local decor = ("shadowlands-landingpage-callingsdecor-%s"):format(self.covenantData.textureKit);
+		self.Decor:SetAtlas(decor, true);
+	end
 end
 
 function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
-	self:ProcessCallings(callings);
-
 	self.pool:ReleaseAll();
 
-	local frames = {};
-	for index, calling in ipairs(self.callings) do
-		local callingFrame = self.pool:Acquire();
-		callingFrame:Set(calling, self.covenantData);
-		table.insert(frames, callingFrame);
-	end
+	local unlocked = C_CovenantCallings.AreCallingsUnlocked();
+	self:SetShown(unlocked);
 
-	AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -42, 0), self.layout);
-	self:Layout();
+	if unlocked and self.covenantData then
+		self:ProcessCallings(callings);
+
+		local frames = {};
+		for index, calling in ipairs(self.callings) do
+			local callingFrame = self.pool:Acquire();
+			callingFrame:Set(calling, self.covenantData);
+			table.insert(frames, callingFrame);
+		end
+
+		AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -42, 0), self.layout);
+		self:Layout();
+	end
 end
 
 -- TODO: Not sure how we want the sort to behave yet...maybe using time remaining similar to emissary quests?

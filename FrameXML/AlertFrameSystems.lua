@@ -905,11 +905,15 @@ function NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank)
 	return nil;
 end
 
-function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
+function NewRecipeLearnedAlertFrame_SetUp(self, recipeID, recipeLevel)
 	local tradeSkillID, skillLineName, parentTradeSkillID = C_TradeSkillUI.GetTradeSkillLineForRecipe(recipeID);
 	if tradeSkillID then
 		local recipeName = GetSpellInfo(recipeID);
 		if recipeName then
+			if recipeLevel ~= nil then
+				recipeName = TRADESKILL_RECIPE_LEVEL_RECIPE_FORMAT:format(recipeName, recipeLevel);
+			end
+
 			PlaySound(SOUNDKIT.UI_PROFESSIONS_NEW_RECIPE_LEARNED_TOAST);
 
 			self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");

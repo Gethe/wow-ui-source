@@ -137,3 +137,13 @@ function FindInTableIf(tbl, pred)
 
 	return nil;
 end
+
+function SafePack(...)
+	local tbl = { ... };
+	tbl.n = select("#", ...);
+	return tbl;
+end
+
+function SafeUnpack(tbl)
+	return unpack(tbl, 1, tbl.n);
+end

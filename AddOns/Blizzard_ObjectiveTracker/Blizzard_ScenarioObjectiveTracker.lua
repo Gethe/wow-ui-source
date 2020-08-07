@@ -878,7 +878,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 
 	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType, _, textureKit = C_Scenario.GetInfo();
 	local rewardsFrame = ObjectiveTrackerScenarioRewardsFrame;
-	if ( numStages == 0 ) then
+	if ( numStages == 0 or IsOnGroundFloorInJailersTower() ) then
 		ScenarioBlocksFrame_Hide();
 		self:EndLayout();
 		return;

@@ -98,10 +98,14 @@
 			<Frame parentKey="CombatCompleteSuccessFrame" setAllPoints="true" hidden="true" enableMouse="true">
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="CombatCompleteBurst" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
-							<Size x="80" y="80"/>
+						<Texture parentKey="CombatCompleteBurstCW" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.CombatCompleteLineTop" relativePoint="CENTER" x="0" y="45"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CombatCompleteBurstCCW" atlas="Adventure-MissionEnd-Burst" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CombatCompleteLineTop" relativePoint="CENTER" x="0" y="45"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="CombatCompleteLineTop" atlas="Adventure-MissionEnd-Line" useAtlasSize="true">
@@ -116,11 +120,21 @@
 								<Anchor point="CENTER" relativeKey="$parent.CombatCompleteLineTop" x="0" y="-60"/>
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="MaskTop" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="400" y="200"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.CombatCompleteLineTop"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="CombatCompleteBurstCW"/>
+								<MaskedTexture childKey="CombatCompleteBurstCCW"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="4">
-						<Texture parentKey="CovenantCrest" hidden="true" useAtlasSize="true">
+						<Texture parentKey="CovenantCrest" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.CombatCompleteLineTop" relativePoint="TOP" y="-30"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="TextCenter" text="COVENANT_MISSIONS_COMBAT_COMPLETE" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE" hidden="False">
@@ -140,6 +154,20 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="RotateStarbursts" looping="REPEAT">
+						<Rotation childKey="CombatCompleteBurstCCW" order="1" duration="90" degrees="-360"/>
+						<Rotation childKey="CombatCompleteBurstCW" order="1" duration="90" degrees="540"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnShow>
+						self.RotateStarbursts:Play();
+					</OnShow>
+					<OnHide>
+						self.RotateStarbursts:Stop();
+					</OnHide>
+				</Scripts>
 			</Frame>
 	
 			<Frame parentKey="FinalRewardsPanel" setAllPoints= "true" hidden="true" enableMouse="true">

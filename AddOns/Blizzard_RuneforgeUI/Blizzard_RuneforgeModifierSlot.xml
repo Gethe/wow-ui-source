@@ -67,7 +67,7 @@
 		</Scripts>
 	</ItemButton>
 
-	<Frame name="RuneforgeModifierSelectorFrameTemplate" mixin="RuneforgeModifierSelectorFrameMixin" virtual="true">
+	<Frame name="RuneforgeModifierSelectorFrameTemplate" mixin="RuneforgeModifierSelectorFrameMixin" enableMouse="true" virtual="true">
 		<Size x="77" y="243"/>
 		<Layers>
 			<Layer level="BACKGROUND">

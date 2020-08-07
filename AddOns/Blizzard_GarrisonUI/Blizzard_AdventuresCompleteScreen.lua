@@ -8,7 +8,11 @@ AdventuresCompleteScreenContinueButtonMixin = {};
 function AdventuresCompleteScreenContinueButtonMixin:OnClick()
 	local completeScreen = self:GetParent():GetParent();
 	if completeScreen.replayFinished then 
-		completeScreen:ShowRewardsScreen();
+		if completeScreen:ShouldShowRewardsScreen() then
+			completeScreen:ShowRewardsScreen();
+		else
+			completeScreen:CloseMissionComplete();
+		end
 	else
 		completeScreen:SkipToTheEndOfMission();
 	end
@@ -64,7 +68,7 @@ end
 
 function AdventuresCompleteScreenMixin:ShowRewardsScreen()
 	if self.currentMission then
-		self.RewardsScreen:ShowRewardsScreen(self.currentMission);
+		self.RewardsScreen:ShowRewardsScreen(self.currentMission, self.autoCombatResult.winner);
 
 		self:DisableCompleteFrameButtons();
 	end
@@ -134,7 +138,7 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 
 	self.AdventuresCombatLog:Clear();
 	self.RewardsScreen:Reset();
-	self.CompleteFrame.ContinueButton:SetText(CONTINUE);
+	self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_SKIP_TO_END);
 	self.replayFinished = false;
 	self:EnableCompleteFrameButtons();
 end
@@ -170,6 +174,8 @@ function AdventuresCompleteScreenMixin:ToggleReplaySpeed()
 	else
 		self:SetReplaySpeed(FastSpeed);
 	end
+
+	PlaySound(self.replaySpeed > SlowSpeed and SOUNDKIT.UI_ADVENTURES_FAST_FORWARD_ACTIVATED or SOUNDKIT.UI_ADVENTURES_FAST_FORWARD_DEACTIVATED );
 end
 
 function AdventuresCompleteScreenMixin:SetReplaySpeed(replaySpeed)
@@ -334,6 +340,12 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 					end
 				end
 
+				if #combatLogEvent.targetInfo > 5 then
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE);
+				elseif #combatLogEvent.targetInfo > 1 then		
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM);
+				end
+
 				return false;
 			end
 
@@ -385,7 +397,7 @@ function AdventuresCompleteScreenMixin:FinishReplay()
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
 	self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
 	self.replayFinished = true;
-	self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_COMPLETE_SCREEN_REWARDS);
+	self:UpdateButtonTextToState();
 end
 
 function AdventuresCompleteScreenMixin:SkipToTheEndOfMission()
@@ -407,8 +419,22 @@ function AdventuresCompleteScreenMixin:SkipToTheEndOfMission()
 	self:FinishReplay();
 end
 
+function AdventuresCompleteScreenMixin:ShouldShowRewardsScreen()
+	return self.autoCombatResult.winner or self.RewardsScreen:HasExperienceRewards();
+end
+
 function AdventuresCompleteScreenMixin:GetCovenantMissionFrame()
 	return self:GetParent();
+end
+
+function AdventuresCompleteScreenMixin:UpdateButtonTextToState()
+	if self.autoCombatResult.winner then					--Full rewards
+		self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_GO_TO_REWARDS);
+	elseif  self.RewardsScreen:HasExperienceRewards() then	--Only experience rewards
+		self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_GO_TO_SPOILS);
+	else													--Complete failure
+		self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_RETURN_TO_MISSIONS);
+	end
 end
 
 function AdventuresCompleteScreenMixin:DisableCompleteFrameButtons()

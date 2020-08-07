@@ -323,7 +323,7 @@ function KeyBindingFrameMixin:AttemptKeybind(keyOrButton, selectedAction, bindin
 		local keyPressed = GetConvertedKeyOrButton(keyOrButton);
 
 		if not IsKeyPressIgnoredForBinding(keyPressed) then
-			keyPressed = CreateKeyChordString(keyPressed);
+			keyPressed = CreateKeyChordStringUsingMetaKeyState(keyPressed);
 
 			-- Unbind the current action
 			local key1, key2 = GetBindingKey(selectedAction, bindingMode);

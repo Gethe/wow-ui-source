@@ -192,16 +192,3 @@ function SoulbindsSelectButtonMixin:PlayActivationChangedFx()
 	local ACTIVATE_CHANGED_FX = 72;
 	self:AddActiveEffect(ACTIVATE_CHANGED_FX);
 end
-
-SoulbindsActiveMarkerMixin = {}
-
-function SoulbindsActiveMarkerMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local bonusSpellID = 337601;
-	GameTooltip:SetSpellByID(bonusSpellID);
-	GameTooltip:Show();
-end
-
-function SoulbindsActiveMarkerMixin:OnLeave()
-	GameTooltip:Hide();
-end

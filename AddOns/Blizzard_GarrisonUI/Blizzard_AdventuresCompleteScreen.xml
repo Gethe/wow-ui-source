@@ -112,7 +112,7 @@
 				</Layers>
 				<Frames>
 					<Button parentKey="ContinueButton" mixin="AdventuresCompleteScreenContinueButtonMixin" inherits="UIPanelButtonTemplate" text="CONTINUE">
-						<Size x="120" y="22"/>
+						<Size x="160" y="22"/>
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="1"/>
 						</Anchors>

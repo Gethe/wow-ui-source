@@ -1692,13 +1692,16 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
 	if color1 then
 		self.ColorSwatch1:Show();
+		self.ColorSwatch1Glow:Show();
 		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
 
 		if color2 then
 			self.ColorSwatch2:Show();
+			self.ColorSwatch2Glow:Show();
 			self.ColorSwatch2:SetVertexColor(color2:GetRGB());
 		else
 			self.ColorSwatch2:Hide();
+			self.ColorSwatch2Glow:Hide();
 		end
 
 		self.SelectionName:Hide();
@@ -1706,7 +1709,9 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	elseif selectionData.name ~= "" then
 		self.ColorSwatch1:Hide();
+		self.ColorSwatch1Glow:Hide();
 		self.ColorSwatch2:Hide();
+		self.ColorSwatch2Glow:Hide();
 		self.SelectionName:Show();
 		self.SelectionName:SetWidth(0);
 		self.SelectionName:SetText(selectionData.name);
@@ -1714,7 +1719,9 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	else
 		self.ColorSwatch1:Hide();
+		self.ColorSwatch1Glow:Hide();
 		self.ColorSwatch2:Hide();
+		self.ColorSwatch2Glow:Hide();
 		self.SelectionName:Hide();
 		self.SelectionNumber:SetWidth(0);
 		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");

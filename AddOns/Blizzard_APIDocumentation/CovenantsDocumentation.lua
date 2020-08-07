@@ -26,7 +26,7 @@ local Covenants =
 
 			Returns =
 			{
-				{ Name = "data", Type = "CovenantData", Nilable = false },
+				{ Name = "data", Type = "CovenantData", Nilable = true },
 			},
 		},
 		{
@@ -42,6 +42,15 @@ local Covenants =
 
 	Events =
 	{
+		{
+			Name = "CovenantChosen",
+			Type = "Event",
+			LiteralName = "COVENANT_CHOSEN",
+			Payload =
+			{
+				{ Name = "covenantID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

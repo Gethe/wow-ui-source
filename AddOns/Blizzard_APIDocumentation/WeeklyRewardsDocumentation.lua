@@ -147,6 +147,7 @@ local WeeklyRewards =
 				{ Name = "maxProgress", Type = "number", Nilable = false },
 				{ Name = "displayType", Type = "ConquestProgressBarDisplayType", Nilable = false },
 				{ Name = "unlocksCompleted", Type = "number", Nilable = false },
+				{ Name = "maxUnlocks", Type = "number", Nilable = false },
 				{ Name = "sampleItemHyperlink", Type = "string", Nilable = false },
 			},
 		},

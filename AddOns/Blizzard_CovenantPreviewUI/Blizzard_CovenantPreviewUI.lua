@@ -95,6 +95,10 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 	self.Background:SetShown(not self.showingFromPlayerChoice);
 end
 
+local function CovenantPreviewSortFunction(firstValue, secondValue)
+	return firstValue > secondValue;
+end
+
 function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 	if(not covenantInfo) then
 		return; 
@@ -107,6 +111,13 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 
 	self:SetupFramesWithTextureKit(); 
 	self:SetupModelSceneFrame(covenantInfo.transmogSetID, covenantInfo.mountID);
+	
+	if (covenantInfo.covenantAbilities and #covenantInfo.covenantAbilities > 1) then
+		table.sort(covenantInfo.covenantAbilities, function(a, b) 
+			return CovenantPreviewSortFunction(a.type, b.type); 
+		end);
+	end 
+
 	self:SetupAbilityButtons(covenantInfo.covenantAbilities);
 	self:SetupCovenantInfoPanel(covenantInfo); 
 	self:Show(); 

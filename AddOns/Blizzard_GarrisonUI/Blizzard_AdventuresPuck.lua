@@ -116,8 +116,8 @@ function AdventuresPuckMixin:StartCooldown(autoCombatSpellID)
 	end
 end
 
-function AdventuresPuckMixin:SetMaxHealth(maxHealth)
-	self.HealthBar:SetMaxHealth(maxHealth);
+function AdventuresPuckMixin:GetHealth()
+	return self.HealthBar:GetHealth();
 end
 
 function AdventuresPuckMixin:SetPuckDesaturation(desaturation)
@@ -140,6 +140,10 @@ end
 
 function AdventuresPuckMixin:PlayDeathAnimation()
 	self.DeathAnimationFrame.DeathAnimation:Play();
+	
+	if self.deathSound then
+		PlaySound(self.deathSound);
+	end
 end
 
 function AdventuresPuckMixin:OnEnter()
@@ -180,6 +184,7 @@ function AdventuresFollowerPuckMixin:OnLoad()
 	AdventuresPuckMixin.OnLoad(self);
 
 	self.PuckBorder:SetAtlas("Adventurers-Followers-Frame");
+	self.deathSound = SOUNDKIT.UI_ADVENTURES_DEATH_FRIENDLY;
 end
 
 function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
@@ -237,6 +242,7 @@ function AdventuresEnemyPuckMixin:OnLoad()
 	self.HealthBar:SetScale(0.7);
 
 	self.PuckBorder:SetAtlas("Adventures-Enemy-Frame");
+	self.deathSound = SOUNDKIT.UI_ADVENTURES_DEATH_ENEMY;
 end
 
 function AdventuresEnemyPuckMixin:SetEncounter(encounter)

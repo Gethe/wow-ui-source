@@ -3,15 +3,30 @@ UIPanelWindows["RuneforgeFrame"] = { area = "left", pushable = 3, showFailedFunc
 
 -- Determined by hand using positioning macros.
 local CircleRuneEffects = {
-	{ effectID = 60, offsetX = 51, offsetY = 149 },
-	{ effectID = 62, offsetX = 155, offsetY = 33 },
-	{ effectID = 63, offsetX = 156, offsetY = -39 },
-	{ effectID = 64, offsetX = 23, offsetY = -165 },
-	{ effectID = 65, offsetX = -54, offsetY = -153 },
-	{ effectID = 66, offsetX = -141, offsetY = -80 },
-	{ effectID = 67, offsetX = -129, offsetY = 94 },
-	{ effectID = 68, offsetX = -64, offsetY = 143 },
+	{ birthEffectID = 73, flashEffectID = 81, offsetX = 51, offsetY = 149 },
+	{ birthEffectID = 74, flashEffectID = 82, offsetX = 155, offsetY = 33 },
+	{ birthEffectID = 75, flashEffectID = 83, offsetX = 156, offsetY = -39 },
+	{ birthEffectID = 76, flashEffectID = 84, offsetX = 23, offsetY = -165 },
+	{ birthEffectID = 77, flashEffectID = 85, offsetX = -54, offsetY = -153 },
+	{ birthEffectID = 78, flashEffectID = 86, offsetX = -141, offsetY = -80 },
+	{ birthEffectID = 79, flashEffectID = 87, offsetX = -129, offsetY = 94 },
+	{ birthEffectID = 80, flashEffectID = 88, offsetX = -64, offsetY = 143 },
 };
+
+local CircleRuneFlashEffects = {};
+local CircleRuneBirthEffects = {};
+
+local function InitializeRuneEffects()
+	for i, effect in ipairs(CircleRuneEffects) do
+		local flashEffect = CopyTable(effect);
+		flashEffect.effectID = flashEffect.flashEffectID;
+		table.insert(CircleRuneFlashEffects, flashEffect);
+
+		local birthEffect = CopyTable(effect);
+		birthEffect.effectID = birthEffect.birthEffectID;
+		table.insert(CircleRuneBirthEffects, birthEffect);
+	end
+end
 
 
 RuneforgeFrameMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -31,31 +46,31 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 local RuneforgeFrameEvents = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
-};
-
-local RuneforgeFrameUnitEvents = {
-	"UNIT_SPELLCAST_SUCCEEDED",
+	"ITEM_CHANGED",
 };
 
 function RuneforgeFrameMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
+
 	self.ResultTooltip:Init();
-	self.runeforgeState = RuneforgeUtil.RuneforgeState.Craft
+	self.runeforgeState = RuneforgeUtil.RuneforgeState.Craft;
+
+	InitializeRuneEffects();
 end
 
 function RuneforgeFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RuneforgeFrameEvents);
-	FrameUtil.RegisterFrameForUnitEvents(self, RuneforgeFrameUnitEvents, "player");
 
 	self:RefreshCurrencyDisplay();
 	self:SetStaticEffectsShown(true);
 
 	self.Title:SetText(self:IsRuneforgeUpgrading() and RUNEFORGE_LEGENDARY_CRAFTING_FRAME_UPGRADE_TITLE or RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE);
+
+	PlaySound(SOUNDKIT.UI_RUNECARVING_OPEN_MAIN_WINDOW);
 end
 
 function RuneforgeFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFrameEvents);
-	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFrameUnitEvents);
 
 	C_LegendaryCrafting.CloseRuneforgeInteraction();
 
@@ -76,10 +91,16 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED" then
 		HideUIPanel(self);
-	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local unit, castGUID, spellID = ...;
-		if spellID == C_LegendaryCrafting.GetRuneforgeLegendaryCraftSpellID() then
-			self:SetItem(nil);
+	elseif event == "ITEM_CHANGED" then
+		local item = self:GetItem();
+		if item then
+			-- It's a bit odd to compare by item link, but we may not get the full inventory update until many frames later.
+			local previousItemLink, newItemLink = ...;
+			if previousItemLink == C_Item.GetItemLink(item) then
+				LegendaryItemAlertSystem:AddAlert(newItemLink);
+				PlaySound(SOUNDKIT.UI_RUNECARVING_CREATE_COMPLETE);
+				self:Close();
+			end
 		end
 	end
 end
@@ -101,6 +122,8 @@ function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
 end
 
 function RuneforgeFrameMixin:SetRunesShown(shown)
+	self.runesShown = shown;
+
 	if self.runeEffects and not shown then
 		for i, effectController in ipairs(self.runeEffects) do
 			effectController:CancelEffect();
@@ -110,10 +133,18 @@ function RuneforgeFrameMixin:SetRunesShown(shown)
 	elseif not self.runeEffects and shown then
 		self.runeEffects = {};
 
-		for i, effect in ipairs(CircleRuneEffects) do
+		for i, effect in ipairs(CircleRuneBirthEffects) do
 			local effectController = self.OverlayModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
-			table.insert(self.runeEffects, effectController);
+			self.runeEffects[i] = effectController;
 		end
+
+		self:FlashRunes();
+	end
+end
+
+function RuneforgeFrameMixin:FlashRunes()
+	for i, effect in ipairs(CircleRuneFlashEffects) do
+		self.OverlayModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
 	end
 end
 
@@ -169,7 +200,7 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
-	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, 0);
+	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, -6);
 
 	local itemID = C_Item.GetItemID(baseItem);
 	local itemLevel = C_Item.GetCurrentItemLevel(baseItem);
@@ -244,14 +275,87 @@ function RuneforgeFrameMixin:GetCraftDescription()
 	return C_LegendaryCrafting.MakeRuneforgeCraftDescription(baseItem, powerID, modifiers);
 end
 
+function RuneforgeFrameMixin:HasValidItemForRuneforgeState()
+	if self:IsRuneforgeUpgrading() then
+		if not self:HasAnyItem(C_LegendaryCrafting.IsRuneforgeLegendary) then
+			return false;
+		end
+	else
+		if not self:HasAnyItem(C_LegendaryCrafting.IsValidRuneforgeBaseItem) then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function RuneforgeFrameMixin:HasValidUpgradeItem()
+	return self:IsRuneforgeUpgrading() and self:HasAnyItem(GenerateClosure(self.IsUpgradeItemValidForRuneforgeLegendary, self));
+end
+
+function RuneforgeFrameMixin:HasAnyItem(filterFunction)
+	local results = {};
+	self.CraftingFrame:GetRuneforgeFlyoutItemsCallback(filterFunction, results);
+	return next(results) ~= nil;
+end
+
+function RuneforgeFrameMixin:IsAnyPowerAvailable()
+	local powers = self:GetPowers();
+	for i, powerID in ipairs(powers) do
+		local powerInfo = C_LegendaryCrafting.GetRuneforgePowerInfo(powerID);
+		if powerInfo.state == Enum.RuneforgePowerState.Available then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function RuneforgeFrameMixin:GetNumAvailableModifierTypes()
+	local count = 0;
+	local modifierItemIDs = C_LegendaryCrafting.GetRuneforgeModifiers();
+	for i, modifierItemID in ipairs(modifierItemIDs) do
+		if ItemUtil.GetOptionalReagentCount(modifierItemID) > 0 then
+			count = count + 1;
+		end
+	end
+
+	return count;
+end
+
 function RuneforgeFrameMixin:CanCraftRuneforgeLegendary()
+	local isUpgrading = self:IsRuneforgeUpgrading();
+	if isUpgrading then
+		if not self:HasValidItemForRuneforgeState() then
+			return false, RUNEFORGE_LEGENDARY_ERROR_NO_LEGENDARY_AVAILABLE;
+		end
+	else
+		if not self:HasValidItemForRuneforgeState() then
+			return false, RUNEFORGE_LEGENDARY_ERROR_NO_BASE_ITEM_AVAILABLE;
+		end
+
+		if not self:IsAnyPowerAvailable() then
+			return false, RUNEFORGE_LEGENDARY_ERROR_NO_POWER;
+		end
+
+		local availableModifierTypes = self:GetNumAvailableModifierTypes();
+		if availableModifierTypes == 0 then
+			return false, RUNEFORGE_LEGENDARY_ERROR_NO_MODIFIERS;
+		elseif availableModifierTypes == 1 then
+			return false, RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_MODIFIERS;
+		end
+	end
+
 	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
 
 	if baseItem == nil then
 		return false, nil;
 	end
 
-	local isUpgrading = self:IsRuneforgeUpgrading();
+	if isUpgrading and not self:HasValidUpgradeItem() then
+		return false, RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_NO_UPGRADE_ITEM_AVAILABLE;
+	end
+	
 	local upgradeItem = self:GetUpgradeItem();
 	if isUpgrading and (upgradeItem == nil) then
 		return false, nil;

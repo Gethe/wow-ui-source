@@ -9,7 +9,13 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Sce
 
 UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
+local textureKitInfo =
+{
+	["jailerstower-scenario"] = {currencyContainerOffsets = {xOffset = 32, yOffset = -46}},
+}
+
 local DEFAULT_CURRENCY_FRAME_WIDTH = 95;
+local DEFAULT_CURRENCY_CONTAINER_OFFSETS = {xOffset = 19, yOffset = -46};
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
@@ -18,6 +24,10 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 	if waitingForStageUpdate then
 		return;
 	end
+
+	local textureKitInfo = textureKitInfo[widgetInfo.frameTextureKit];
+	local currencyContainerOffsets = textureKitInfo and textureKitInfo.currencyContainerOffsets or DEFAULT_CURRENCY_CONTAINER_OFFSETS;
+	self.CurrencyContainer:SetPoint("TOPLEFT", self, "TOPLEFT", currencyContainerOffsets.xOffset, currencyContainerOffsets.yOffset);
 
 	self.currencyPool:ReleaseAll();
 

@@ -33,7 +33,7 @@ function OptionalReagentListLineMixin:OnClick()
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	ScrollListLineMixin.OnClick(self);
+	TemplatedListElementMixin.OnClick(self);
 end
 
 function OptionalReagentListLineMixin:OnEnter()
@@ -61,7 +61,7 @@ function OptionalReagentListLineMixin:OnLeave()
 	self:UnregisterEvent("TRADE_SKILL_OPTIONAL_REAGENT_BONUS_TEXT_UPDATED");
 end
 
-function OptionalReagentListLineMixin:InitLine(optionalReagentList)
+function OptionalReagentListLineMixin:InitElement(optionalReagentList)
 	self.optionalReagentList = optionalReagentList;
 end
 
@@ -215,7 +215,7 @@ function OptionalReagentListMixin:OnOptionalReagentUpdated(event, optionalReagen
 end
 
 function OptionalReagentListMixin:InitScrollFrame()
-	self.ScrollList:SetLineTemplate("OptionalReagentListLineTemplate", self);
+	self.ScrollList:SetElementTemplate("OptionalReagentListLineTemplate", self);
 
 	local function GetNumResultsCallback()
 		return self:GetNumResults();
@@ -307,7 +307,7 @@ function OptionalReagentListMixin:GetOption(listIndex)
 end
 
 function OptionalReagentListMixin:RefreshScrollFrame()
-	self.ScrollList:RefreshScrollFrame();
+	self.ScrollList:RefreshListDisplay();
 end
 
 function OptionalReagentListMixin:RefreshSelectedListIndex(skipUpdates)
@@ -360,11 +360,11 @@ function OptionalReagentListMixin:GetTutorialLine()
 	for i = 1, #self.options do
 		local option = self.options[i];
 		if ItemUtil.GetOptionalReagentCount(option) > 0 then
-			return self.ScrollList:GetLine(i);
+			return self.ScrollList:GetElementFrame(i);
 		end
 	end
 
-	return self.ScrollList:GetLine(1);
+	return self.ScrollList:GetElementFrame(1);
 end
 
 

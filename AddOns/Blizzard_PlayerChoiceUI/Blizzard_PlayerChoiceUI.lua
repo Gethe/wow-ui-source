@@ -26,7 +26,7 @@ local MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES = 3;
 local RARITY_OFFSET = 1;
 
 local ANIMA_GLOW_MODEL_SCENE_ID = 342;
-local ANIMA_GLOW_FILE_ID = 3164512;
+local ANIMA_GLOW_FILE_ID = 3483478;
 
 local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_ENTERING_WORLD",
@@ -317,6 +317,16 @@ local choiceButtonLayout = {
 	},
 }
 
+local choiceModelSceneLayout = {
+	["jailerstower"] = {
+		effectID = 89, 
+		effectOffsetY = -250, 
+		effectOffsetX = 0, 
+		modelSceneYOffest = -120, 
+		modelSceneXOffest = 0, 
+	},
+}
+
 local hideButtonOverrideInfo = {
 	["jailerstower"] = { playerChoiceShowingText = HIDE, playerChoiceHiddenText = JAILERS_TOWER_PENDING_POWER_SELECTION},
 }
@@ -396,6 +406,7 @@ function PlayerChoiceFrameMixin:OnHide()
 	if(PlayerChoiceToggleButton:IsShown()) then
 		PlayerChoiceToggleButton:UpdateButtonState();
 	end
+	GameTooltip:Hide(); 
 end
 
 function PlayerChoiceFrameMixin:SetupTextureKits(frame, regions, overrideTextureKit)
@@ -680,6 +691,11 @@ function PlayerChoiceFrameMixin:UpdateNumActiveOptions(choiceInfo)
 			local existingGroupOptionInfo = self.optionData[existingGroupOptionIndex];
 			existingGroupOptionInfo.secondOptionInfo = optionInfo;
 
+			-- for grouped options the option is only disabled if all of them are
+			if not optionInfo.disabledOption then
+				existingGroupOptionInfo.disabledOption = false;
+			end
+
 			-- for grouped options the art is only desaturated if all of them are
 			if not optionInfo.desaturatedArt then
 				existingGroupOptionInfo.desaturatedArt = false;
@@ -715,8 +731,10 @@ function PlayerChoiceFrameMixin:Update()
 	local lastActiveOption;
 
 	local layout = borderLayout[self.uiTextureKit] or borderLayout[DEFAULT_TEXTURE_KIT];
+	local modelSceneLayout = choiceModelSceneLayout[self.uiTextureKit]; 
 	local shouldShowTitle = layout.showTitle;
 	local noTitleOffset = layout.noTitleOffset;
+	self.ModelScene:ClearEffects();
 	for i, option in ipairs(self.Options) do
 		if i > self.numActiveOptions then
 			self:UpdateOptionWidgetRegistration(option, nil);
@@ -730,17 +748,35 @@ function PlayerChoiceFrameMixin:Update()
 			if(option.rarity and self.uiTextureKit and self.uiTextureKit == "jailerstower") then 
 				optionInfo.description = option:SetupRarityDescription(optionInfo.description); 
 			end 
-			option.hasDesaturatedArt = optionInfo.desaturatedArt;
-			option.Artwork:SetDesaturated(option.hasDesaturatedArt);
-			option.ArtworkBorder:SetShown(not option.hasDesaturatedArt and optionInfo.choiceArtID > 0 );
-			option.ArtworkBorderDisabled:SetShown(option.hasDesaturatedArt);
+
+			option.showOptionDisabled = optionInfo.disabledOption;
+			option.hasDesaturatedArt = not option.showOptionDisabled and optionInfo.desaturatedArt;
+
+			option.Artwork:SetDesaturated(option.showOptionDisabled or option.hasDesaturatedArt);
+			option.ArtworkBorder:SetDesaturated(option.showOptionDisabled);
+			option.Header.Ribbon:SetDesaturated(option.showOptionDisabled);
+			option.SubHeader.BG:SetDesaturated(option.showOptionDisabled);
+			option.Background:SetDesaturated(option.showOptionDisabled);
+
 			option.uiTextureKit = optionInfo.uiTextureKit;
+
+			if (modelSceneLayout) then 
+				local effectDescription = { effectID = modelSceneLayout.effectID, offsetY = modelSceneLayout.effectOffsetY, offsetX = modelSceneLayout.effectOffsetX};
+				self.ModelScene:AddDynamicEffect(effectDescription, option);
+			end 
 
 			option.maxStacks = optionInfo.maxStacks;
 			option.spellID = optionInfo.spellID; 
 
 			option:ConfigureHeader(optionInfo.header, optionInfo.headerIconAtlasElement);
 			option:UpdateOptionSize();
+
+			local hasArtworkBorderArt = option.ArtworkBorder:IsShown();
+			option.ArtworkBorder:SetShown(hasArtworkBorderArt and not option.hasDesaturatedArt and optionInfo.choiceArtID > 0 );
+
+			local hasArtworkBorderDisabledArt = option.ArtworkBorderDisabled:IsShown();
+			option.ArtworkBorderDisabled:SetShown(hasArtworkBorderDisabledArt and option.hasDesaturatedArt);
+
 			option:SetupArtworkForOption();
 			option:UpdatePadding();
 			option.optID = optionInfo.responseIdentifier;
@@ -792,6 +828,12 @@ function PlayerChoiceFrameMixin:Update()
 	end
 
 	self:SetupRewards();
+
+	if (modelSceneLayout) then 
+		self.ModelScene:ClearAllPoints(); 
+		self.ModelScene:SetPoint("TOPLEFT"); 
+		self.ModelScene:SetPoint("BOTTOMRIGHT", modelSceneLayout.modelSceneXOffest, modelSceneLayout.modelSceneYOffest)
+	end 
 
 	-- title needs to reach across
 	if lastActiveOption and shouldShowTitle then

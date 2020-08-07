@@ -2167,7 +2167,7 @@
 
 	<Frame name="SelectionPopoutDetails" mixin="SelectionPopoutDetailsMixin" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<FontString parentKey="SelectionNumber" font="GameFontNormal" justifyH="LEFT">
 					<Size x="25" y="20"/>
 					<Anchors>
@@ -2191,6 +2191,21 @@
 						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT" x="18" y="-2"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ColorSwatch1Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch1" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ColorSwatch2Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="36" y="8"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch2" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture parentKey="ColorSelected" atlas="charactercreate-customize-palette-selected" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.ColorSwatch1" relativePoint="LEFT" x="-4"/>

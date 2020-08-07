@@ -55,7 +55,7 @@ local secureAttributeDrivers = {};
 local unitExistsWatchers = {};
 local unitExistsCache = setmetatable({},
                                      { __index = function(t,k)
-                                                     local v = true;
+                                                     local v = UnitExists(k) or false;
                                                      t[k] = v;
                                                      return v;
                                                  end

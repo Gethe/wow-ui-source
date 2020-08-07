@@ -637,6 +637,7 @@
 					<Anchor point="TOPRIGHT" x="1" y="2" />
 				</Anchors>
 			</Button>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW" enableMouse="false"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

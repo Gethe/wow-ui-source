@@ -1,7 +1,7 @@
 
-EffectControllerMixin = {};
+ScriptAnimatedEffectControllerMixin = {};
 
-function EffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution)
+function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution)
 	self.modelScene = modelScene;
 	self.effectID = effectID;
 	self.source = source;
@@ -11,13 +11,15 @@ function EffectControllerMixin:Init(modelScene, effectID, source, target, onEffe
 
 	self.activeBehaviors = {};
 	self.effectCount = 0;
+
+	self.loopingSoundEmitter = nil;
 end
 
-function EffectControllerMixin:GetEffect()
+function ScriptAnimatedEffectControllerMixin:GetEffect()
 	return ScriptedAnimationEffectsUtil.GetEffectByID(self.effectID);
 end
 
-function EffectControllerMixin:StartEffect()
+function ScriptAnimatedEffectControllerMixin:StartEffect()
 	self.effectCount = self.effectCount + 1;
 
 	self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self);
@@ -27,12 +29,24 @@ function EffectControllerMixin:StartEffect()
 		self:BeginBehavior(effect.startBehavior);
 	end
 
+	if effect.loopingSoundKitID then
+		local startingSound = nil;
+		local loopingSound = effect.loopingSoundKitID;
+
+		local endingSound = nil;
+		local loopStartDelay = 0;
+		local loopEndDelay = 0;
+		local loopFadeTime = 0;
+		self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+		self.loopingSoundEmitter:StartLoopingSound();
+	end
+	
 	if effect.startSoundKitID then
-		PlaySound(effect.startSoundKitID);
+		PlaySound(effect.startSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 
-function EffectControllerMixin:DeltaUpdate(elapsedTime)
+function ScriptAnimatedEffectControllerMixin:DeltaUpdate(elapsedTime)
 	if self.actor then
 		if self.actor:IsActive() then
 			self.actor:DeltaUpdate(elapsedTime);
@@ -59,18 +73,30 @@ function EffectControllerMixin:DeltaUpdate(elapsedTime)
 	end
 end
 
-function EffectControllerMixin:IsActive()
+function ScriptAnimatedEffectControllerMixin:IsActive()
 	return self.actor or #self.activeBehaviors > 0;
 end
 
-function EffectControllerMixin:FinishEffect()
+function ScriptAnimatedEffectControllerMixin:CancelLoopingSound()
+	if self.loopingSoundEmitter then
+		self.loopingSoundEmitter:CancelLoopingSound();
+	end
+end
+
+function ScriptAnimatedEffectControllerMixin:FinishLoopingSound()
+	if self.loopingSoundEmitter then
+		self.loopingSoundEmitter:FinishLoopingSound();
+	end
+end
+
+function ScriptAnimatedEffectControllerMixin:FinishEffect()
 	local effect = self:GetEffect();
 	if effect.finishBehavior then
 		self:BeginBehavior(effect.finishBehavior);
 	end
 
 	if effect.finishSoundKitID then
-		PlaySound(effect.finishSoundKitID);
+		PlaySound(effect.finishSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 
 	self:RunEffectFinish();
@@ -80,27 +106,31 @@ function EffectControllerMixin:FinishEffect()
 		self.actor = nil;
 	end
 
+	self:FinishLoopingSound();
+
 	if effect.finishEffectID then
 		self.effectID = effect.finishEffectID;
 		self:StartEffect();
+		self:UpdateActorDynamicOffsets();
+		self.actor:DeltaUpdate(0);
 	end
 
 	self:CheckResolution();
 end
 
-function EffectControllerMixin:CheckResolution()
+function ScriptAnimatedEffectControllerMixin:CheckResolution()
 	if not self:IsActive() then
 		self:RunEffectResolution();
 	end
 end
 
-function EffectControllerMixin:RunEffectResolution()
+function ScriptAnimatedEffectControllerMixin:RunEffectResolution()
 	if self.onEffectResolution then
 		self.onEffectResolution(self.effectCount);
 	end
 end
 
-function EffectControllerMixin:RunEffectFinish()
+function ScriptAnimatedEffectControllerMixin:RunEffectFinish()
 	if self.onEffectFinish then
 		if not self.onEffectFinish(self.effectCount) then
 			self.onEffectFinish = nil;
@@ -108,15 +138,22 @@ function EffectControllerMixin:RunEffectFinish()
 	end
 end
 
-function EffectControllerMixin:SetDynamicOffsets(pixelX, pixelY, pixelZ)
-	self.actor:SetDynamicOffsets(pixelX, pixelY, pixelZ);
+function ScriptAnimatedEffectControllerMixin:SetDynamicOffsets(pixelX, pixelY, pixelZ)
+	self.dynamicPixelX = pixelX;
+	self.dynamicPixelY = pixelY;
+	self.dynamicPixelZ = pixelZ;
+	self:UpdateActorDynamicOffsets();
 end
 
-function EffectControllerMixin:CancelEffect()
+function ScriptAnimatedEffectControllerMixin:UpdateActorDynamicOffsets()
+	self.actor:SetDynamicOffsets(self.dynamicPixelX, self.dynamicPixelY, self.dynamicPixelZ);
+end
+
+function ScriptAnimatedEffectControllerMixin:CancelEffect()
 	self:InternalCancelEffect();
 end
 
-function EffectControllerMixin:InternalCancelEffect(skipRemovingController)
+function ScriptAnimatedEffectControllerMixin:InternalCancelEffect(skipRemovingController)
 	if not skipRemovingController then
 		self.modelScene:RemoveEffectController(self);
 	end
@@ -129,11 +166,12 @@ function EffectControllerMixin:InternalCancelEffect(skipRemovingController)
 
 	self.activeBehaviors = {};
 
+	self:CancelLoopingSound();
 	self:RunEffectFinish();
 	self:RunEffectResolution();
 end
 
-function EffectControllerMixin:BeginBehavior(behavior)
+function ScriptAnimatedEffectControllerMixin:BeginBehavior(behavior)
 	local effect = self:GetEffect();
 	local cancelFunction, duration = behavior(effect, self.source, self.target, self.modelScene:GetEffectSpeed());
 	local finishTime = GetTime() + duration;
