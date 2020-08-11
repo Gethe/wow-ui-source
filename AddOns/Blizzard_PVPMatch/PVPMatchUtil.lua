@@ -17,7 +17,7 @@ PVPMatchUtil.MatchTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
 PVPMatchUtil.MatchTimeFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, true);
 
 function PVPMatchUtil.IsActiveMatchComplete()
-	return C_PvP.GetActiveMatchState() == Enum.PvpMatchState.Complete;
+	return C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Complete;
 end
 
 function PVPMatchUtil.GetColorIndex(factionIndex, useAlternateColor)
@@ -71,7 +71,7 @@ PVPMatchStyle = {
 			nineSliceLayout = "BFAMissionAlliance",
 		},
 		Neutral = {
-			nineSliceLayout = "BFAMissionNeutral",
+			nineSliceLayout = "GenericMetal",
 		},
 	},
 }
@@ -115,7 +115,7 @@ function PVPMatchUtil.UpdateTable(tableBuilder, scrollFrame)
 	HybridScrollFrame_Update(scrollFrame, visibleElementHeight, regionHeight);
 end
 
-function PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor)
+function PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor)
 	local index = PVPMatchUtil.GetColorIndex(factionIndex, useAlternateColor);
 	return PVPMatchStyle.PanelColors[index];
 end

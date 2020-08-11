@@ -1,4 +1,3 @@
-
 -- Set to false in some locale specific files.
 TIME_UTIL_WHITE_SPACE_STRIPPABLE = true;
 
@@ -124,6 +123,7 @@ end
 function SecondsFormatterMixin:FormatMillseconds(millseconds, abbreviation)
 	return self:Format(millseconds/1000, abbreviation);
 end
+
 function SecondsFormatterMixin:Format(seconds, abbreviation)
 	if (seconds == nil) then
 		return "";
@@ -194,4 +194,117 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 	end
 
 	return output;
+end
+
+function SecondsToClock(seconds, displayZeroHours)
+	seconds = math.max(seconds, 0);
+	local hours = math.floor(seconds / 3600);
+	seconds = seconds - (hours * 3600);
+	local minutes = math.floor(seconds / 60);
+	seconds = seconds % 60;
+	if hours > 0 or displayZeroHours then
+		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
+	else
+		return format(MINUTES_SECONDS, minutes, seconds);
+	end
+end
+
+function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
+	local time = "";
+	local count = 0;
+	local tempTime;
+	seconds = roundUp and ceil(seconds) or floor(seconds);
+	maxCount = maxCount or 2;
+	if ( seconds >= 86400  ) then
+		count = count + 1;
+		if ( count == maxCount and roundUp ) then
+			tempTime = ceil(seconds / 86400);
+		else
+			tempTime = floor(seconds / 86400);
+		end
+		if ( notAbbreviated ) then
+			time = D_DAYS:format(tempTime);
+		else
+			time = DAYS_ABBR:format(tempTime);
+		end
+		seconds = mod(seconds, 86400);
+	end
+	if ( count < maxCount and seconds >= 3600  ) then
+		count = count + 1;
+		if ( time ~= "" ) then
+			time = time..TIME_UNIT_DELIMITER;
+		end
+		if ( count == maxCount and roundUp ) then
+			tempTime = ceil(seconds / 3600);
+		else
+			tempTime = floor(seconds / 3600);
+		end
+		if ( notAbbreviated ) then
+			time = time..D_HOURS:format(tempTime);
+		else
+			time = time..HOURS_ABBR:format(tempTime);
+		end
+		seconds = mod(seconds, 3600);
+	end
+	if ( count < maxCount and seconds >= 60  ) then
+		count = count + 1;
+		if ( time ~= "" ) then
+			time = time..TIME_UNIT_DELIMITER;
+		end
+		if ( count == maxCount and roundUp ) then
+			tempTime = ceil(seconds / 60);
+		else
+			tempTime = floor(seconds / 60);
+		end
+		if ( notAbbreviated ) then
+			time = time..D_MINUTES:format(tempTime);
+		else
+			time = time..MINUTES_ABBR:format(tempTime);
+		end
+		seconds = mod(seconds, 60);
+	end
+	if ( count < maxCount and seconds > 0 and not noSeconds ) then
+		if ( time ~= "" ) then
+			time = time..TIME_UNIT_DELIMITER;
+		end
+		if ( notAbbreviated ) then
+			time = time..D_SECONDS:format(seconds);
+		else
+			time = time..SECONDS_ABBR:format(seconds);
+		end
+	end
+	return time;
+end
+
+function SecondsToTimeAbbrev(seconds)
+	local tempTime;
+	if ( seconds >= 86400  ) then
+		tempTime = ceil(seconds / 86400);
+		return DAY_ONELETTER_ABBR, tempTime;
+	end
+	if ( seconds >= 3600  ) then
+		tempTime = ceil(seconds / 3600);
+		return HOUR_ONELETTER_ABBR, tempTime;
+	end
+	if ( seconds >= 60  ) then
+		tempTime = ceil(seconds / 60);
+		return MINUTE_ONELETTER_ABBR, tempTime;
+	end
+	return SECOND_ONELETTER_ABBR, seconds;
+end
+
+function FormatShortDate(day, month, year)
+	if (year) then
+		if (LOCALE_enGB) then
+			return SHORTDATE_EU:format(day, month, year);
+		else
+			return SHORTDATE:format(day, month, year);
+		end
+	else
+		if (LOCALE_enGB) then
+			return SHORTDATENOYEAR_EU:format(day, month);
+		else
+			return SHORTDATENOYEAR:format(day, month);
+		end
+	end
 end

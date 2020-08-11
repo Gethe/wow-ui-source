@@ -17,8 +17,8 @@ local ATLAS_WITH_TEXTURE_KIT_PREFIX = "%s-%s";
 function BaseMapPoiPinMixin:SetTexture(poiInfo)
 	local atlasName = poiInfo.atlasName;
 	if atlasName then
-		if poiInfo.textureKitPrefix then
-			atlasName = ATLAS_WITH_TEXTURE_KIT_PREFIX:format(poiInfo.textureKitPrefix, atlasName);
+		if poiInfo.textureKit then
+			atlasName = ATLAS_WITH_TEXTURE_KIT_PREFIX:format(poiInfo.textureKit, atlasName);
 		end
 		
 		self.Texture:SetAtlas(atlasName, true);

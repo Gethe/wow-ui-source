@@ -96,7 +96,7 @@ function BlackMarketFrame_UpdateHotItem(self)
 
 		SetItemButtonQuality(self.HotDeal.Item, quality, link);
 
-		if (quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+		if (quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
 			self.HotDeal.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 		else
 			self.HotDeal.Name:SetTextColor(1.0, 0.82, 0);
@@ -162,7 +162,7 @@ function BlackMarketScrollFrame_Update()
 
 				SetItemButtonQuality(button.Item, quality, link);
 
-				if (quality and quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				if (quality and quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
 					button.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 				else
 					button.Name:SetTextColor(1.0, 0.82, 0);

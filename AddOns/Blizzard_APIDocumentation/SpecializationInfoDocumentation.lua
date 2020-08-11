@@ -7,6 +7,36 @@ local SpecializationInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerUsePVPTalentUI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseTalentSpecUI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseTalentUI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllSelectedPvpTalentIDs",
 			Type = "Function",
 

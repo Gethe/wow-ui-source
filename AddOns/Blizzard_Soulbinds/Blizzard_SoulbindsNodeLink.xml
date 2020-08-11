@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SoulbindsNodeLink.lua"/>
+
+	<Frame name="SoulbindTreeNodeLinkTemplate" mixin="SoulbindTreeNodeLinkMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Size x="12" y="53"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Foreground1" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Particles" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground2" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Gold" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground3" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground4" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground5" parentArray="foregrounds" atlas="Soulbinds_Link_Spirits" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground6" parentArray="foregrounds" atlas="Soulbinds_Link_Spirits" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="FillMask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Foreground1" />
+						<MaskedTexture childKey="Foreground2" />
+						<MaskedTexture childKey="Foreground3" />
+						<MaskedTexture childKey="Foreground4" />
+						<MaskedTexture childKey="Foreground5" />
+						<MaskedTexture childKey="Foreground6" />
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlowAnim1" looping="REPEAT">
+				<Alpha childkey="Foreground1" duration="1.2" order="1" smoothing="in_out" fromalpha=".7" toalpha="1" />
+				<Alpha childKey="Foreground1" duration="1.0" order="2" smoothing="in_out" fromAlpha="1" toAlpha=".7" />
+				<Alpha childkey="Foreground2" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="Foreground2" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+				<Alpha childkey="Foreground3" duration="1.2" order="1" smoothing="in_out" fromalpha=".6" toalpha=".8" />
+				<Alpha childKey="Foreground3" duration="1.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha=".6" />
+				<Alpha childkey="Foreground4" duration="3.2" order="1" smoothing="in_out" fromalpha=".3" toalpha=".7" />
+				<Alpha childKey="Foreground4" duration="3.0" order="2" smoothing="in_out" fromAlpha=".7" toAlpha=".3" />
+				<Alpha childkey="Foreground5" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="Foreground5" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim2" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground1" duration="16" order="1" offsetU="0" offsetV="1" />
+				<TextureCoordTranslation childKey="Foreground2" duration="16" order="1" offsetU="0" offsetV="1" />
+				<TextureCoordTranslation childKey="Foreground3" duration="16" order="1" offsetU="0" offsetV="-1" />
+				<Rotation childKey="Foreground4" duration="16" order="1" degrees="360" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim3" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground5" duration="4" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim4" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground6" duration="2" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim5" looping="REPEAT">
+				<Rotation childKey="Foreground6" duration="16" order="1" degrees="-45" />
+				<Rotation childKey="Foreground6" duration="16" order="2" degrees="45" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim6" looping="REPEAT">
+				<Rotation childKey="Foreground5" duration="32" order="1" degrees="45" />
+				<Rotation childKey="Foreground5" duration="32" order="2" degrees="-45" />
+			</AnimationGroup>	
+		</Animations>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -3,8 +3,8 @@
 ---------------------------------------------------------------------------------
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_8_0].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_8_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0].missionFollowerSortFunc =  GarrisonFollowerList_PrioritizeSpecializationAbilityMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSort;
 
 ---------------------------------------------------------------------------------
 -- BFA Mission Frame
@@ -34,9 +34,9 @@ do
 			TitleScrollOffset = 6,
 			TitleColor = CreateColor(0.192, 0.051, 0.008, 1),
 
-			titleSrollLeft = "HordeFrame_Title-End-2",
-			titleSrollRight = "HordeFrame_Title-End",
-			titleScollMiddle = "_HordeFrame_Title-Tile",
+			titleScrollLeft = "HordeFrame_Title-End-2",
+			titleScrollRight = "HordeFrame_Title-End",
+			titleScrollMiddle = "_HordeFrame_Title-Tile",
 
 			TopperOffset = -34,
 			Topper = "HordeFrame-Header",
@@ -68,9 +68,9 @@ do
 			TitleScrollOffset = -5,
 			TitleColor = CreateColor(0.008, 0.051, 0.192, 1),
 
-			titleSrollLeft = "AllianceFrame_Title-End-2",
-			titleSrollRight = "AllianceFrame_Title-End",
-			titleScollMiddle = "_AllianceFrame_Title-Tile",
+			titleScrollLeft = "AllianceFrame_Title-End-2",
+			titleScrollRight = "AllianceFrame_Title-End",
+			titleScrollMiddle = "_AllianceFrame_Title-Tile",
 
 			TopperOffset = -29,
 			Topper = "AllianceFrame-Header",
@@ -102,9 +102,9 @@ do
 		self.OverlayElements.Topper:SetPoint("BOTTOM", self.Top, "TOP", 0, styleData.TopperOffset);
 		self.OverlayElements.Topper:SetAtlas(styleData.Topper, true);
 
-		self.TitleScroll.ScrollLeft:SetAtlas(styleData.titleSrollLeft);
-		self.TitleScroll.ScrollRight:SetAtlas(styleData.titleSrollRight);
-		self.TitleScroll.ScrollMiddle:SetAtlas(styleData.titleScollMiddle);
+		self.TitleScroll.ScrollLeft:SetAtlas(styleData.titleScrollLeft);
+		self.TitleScroll.ScrollRight:SetAtlas(styleData.titleScrollRight);
+		self.TitleScroll.ScrollMiddle:SetAtlas(styleData.titleScrollMiddle);
 
 		self.TitleScroll:SetPoint("BOTTOM", self.OverlayElements.Topper, "BOTTOM", 0, styleData.TitleScrollOffset);
 		self.TitleText:SetParent(self.TitleScroll); -- Reusing existing title text label from base template
@@ -367,10 +367,10 @@ function BFAFollowerMissionPageMixin:GenerateSuccessTooltip(tooltipAnchor)
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddNormalLine(GameTooltip, tooltipAnchor:GetParent().tooltipText, true, true);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		local _, _, environment, environmentDesc = C_Garrison.GetMissionInfo(self.missionInfo.missionID);
-		if ( environment ) then
-			GameTooltip_AddNormalLine(GameTooltip, environment);
-			GameTooltip_AddColoredLine(GameTooltip, environmentDesc, HIGHLIGHT_FONT_COLOR, true);
+		local missionDeploymentInfo = C_Garrison.GetMissionDeploymentInfo(self.missionInfo.missionID);
+		if ( missionDeploymentInfo.environment ) then
+			GameTooltip_AddNormalLine(GameTooltip, missionDeploymentInfo.environment);
+			GameTooltip_AddColoredLine(GameTooltip, missionDeploymentInfo.environmentDesc, HIGHLIGHT_FONT_COLOR, true);
 		end
 		GameTooltip:Show();
 	else

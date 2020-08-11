@@ -135,14 +135,12 @@ function TalkingHeadFrame_PlayCurrent()
 	end
 
 	local currentDisplayInfo = model:GetDisplayInfo();
-	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead, textureKitID = C_TalkingHead.GetCurrentLineInfo();
+	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead, textureKit = C_TalkingHead.GetCurrentLineInfo();
 	local textFormatted = string.format(text);
 	if ( displayInfo and displayInfo ~= 0 ) then
-		local textureKit;
-		if ( textureKitID ~= 0 ) then
-			SetupTextureKits(textureKitID, frame.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-			SetupTextureKits(textureKitID, frame.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-			textureKit = GetUITextureKitInfo(textureKitID);
+		if textureKit then
+			SetupTextureKitOnRegions(textureKit, frame.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+			SetupTextureKitOnRegions(textureKit, frame.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 		else
 			SetupAtlasesOnRegions(frame.BackgroundFrame, talkingHeadDefaultAtlases, true);
 			SetupAtlasesOnRegions(frame.PortraitFrame, talkingHeadDefaultAtlases, true);

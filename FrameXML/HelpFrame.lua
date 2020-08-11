@@ -396,7 +396,7 @@ end
 
 function HelpFrameReportBugSubmit_OnClick()
 	local bugText = HelpFrameReportBugEditBox:GetText();
-	GMSubmitBug(bugText);
+	C_UserFeedback.SubmitBug(bugText, false);
 	HelpFrameReportBugEditBox:SetText("");
 	HideUIPanel(HelpFrame);
 end
@@ -406,7 +406,7 @@ end
 --
 function HelpFrameSubmitSuggestionSubmit_OnClick()
 	local suggestionText = HelpFrameSubmitSuggestionEditBox:GetText();
-	GMSubmitSuggestion(suggestionText);
+	C_UserFeedback.SubmitSuggestion(suggestionText);
 	HelpFrameSubmitSuggestionEditBox:SetText("");
 	HideUIPanel(HelpFrame);
 end
@@ -621,9 +621,6 @@ end
 --
 
 function TicketStatusFrameButton_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-
 	-- make sure this frame doesn't cover up the content in the parent
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
 end

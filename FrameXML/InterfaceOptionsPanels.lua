@@ -128,10 +128,12 @@ ControlsPanelOptions = {
 	deselectOnClick = { text = "GAMEFIELD_DESELECT_TEXT" },
 	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT" },
 	autoClearAFK = { text = "CLEAR_AFK" },
+	disableAELooting = { text = "DISABLE_AOE_LOOTING_DEFAULT_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
 	interactOnLeftClick = { text = "INTERACT_ON_LEFT_CLICK_TEXT" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
+	disableAELooting = { text = "Auto Loot Nearby Enemies"},
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
@@ -460,6 +462,7 @@ end
 DisplayPanelOptions = {
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	hideAdventureJournalAlerts = { text = "HIDE_ADVENTURE_JOURNAL_ALERTS" };
+	showInGameNavigation = { text = "SHOW_IN_GAME_NAVIGATION" };
     showTutorials = { text = "SHOW_TUTORIALS" },
 }
 
@@ -810,7 +813,7 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 
 	if ( event == "TWITTER_STATUS_UPDATE" ) then
 		local enabled, linked, screenName = ...;
-		if (enabled and not IsKioskModeEnabled()) then
+		if (enabled and not Kiosk.IsEnabled()) then
 			self.EnableTwitter:Show();
 			self.TwitterLoginButton:Show();
 			TwitterData["linked"] = linked;
@@ -1183,7 +1186,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	SetActionBarToggles(not not SHOW_MULTI_ACTIONBAR_1, not not SHOW_MULTI_ACTIONBAR_2, not not SHOW_MULTI_ACTIONBAR_3, not not SHOW_MULTI_ACTIONBAR_4, not not ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
-	StatusTrackingBarManager:UpdateBarTicks(); 
+	StatusTrackingBarManager:UpdateBarTicks();
 end
 
 function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, event, ...)
@@ -1331,6 +1334,14 @@ function InterfaceOptionsLargerNamePlate_OnLoad(self)
 	self.type = CONTROLTYPE_CHECKBOX;
 	self.defaultValue = "0";
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+end
+
+function InterfaceOptionsLargerNamePlate_OnShow(self)
+	if C_Commentator.IsSpectating() then
+		BlizzardOptionsPanel_CheckButton_Disable(self);
+	else
+		BlizzardOptionsPanel_CheckButton_Enable(self);
+	end
 end
 
 function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
@@ -1952,6 +1963,7 @@ AccessibilityPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
 	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+	overrideScreenFlash = { text = "OVERRIDE_SCREEN_FLASH" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)

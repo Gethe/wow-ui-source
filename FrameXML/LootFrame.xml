@@ -215,7 +215,7 @@
 			</Layer>
 			<Layer level="BORDER">
 				<!--BonusRoll-LootSpinnerBG-->
-				<Texture parentKey="LootSpinnerBG" file="Interface\LootFrame\LootToast">
+				<Texture parentKey="LootSpinnerBG" file="Interface\LootFrame\LootToast" hidden="true">
 					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="11" y="-12"/>
@@ -225,7 +225,7 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<!--ItemBorder-Gold-->
-				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast"  hidden="true">
 					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
@@ -298,65 +298,27 @@
 			<Frame parentKey="PromptFrame" useParentLevel="true" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Dice_02">
-							<Size x="36" y="36"/>
+						<Texture parentKey="Icon" atlas="BonusLoot-Chest">
+							<Size x="45" y="45"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" x="14" y="-15"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" x="9" y="-11"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="EncounterJournalLinkButton">
+					<Button parentKey="EncounterJournalLinkButton" mixin="EncounterJournalLinkButtonMixin">
 						<Size x="185" y="40"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="11" y="-13"/>
 						</Anchors>
 						<Scripts>
-							<OnShow function="EncounterJournalLinkButton_OnShow"/>
-							<OnEnter function="EncounterJournalLinkButton_OnEnter"/>
+							<OnShow method="OnShow"/>
+							<OnEnter method="OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
-							<OnClick function="OpenBonusRollEncounterJournalLink"/>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
-					<Frame parentKey="EncounterJournalLinkButtonHelp" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="220" y="100"/>
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="BonusRollFrame" relativePoint="TOP" x="0" y="8"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL">
-									<Size x="188" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-20"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="6" y="6"/>
-								</Anchors>
-								<Scripts>
-									<OnClick inherit="append">
-										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight() + 42);
-							</OnShow>
-						</Scripts>
-					</Frame>
 					<Frame parentKey="InfoFrame">
 						<Size x="135" y="38"/>
 						<Anchors>

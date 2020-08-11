@@ -111,12 +111,14 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 					reagent:SetPoint("TOP", reagents[i-1], "BOTTOM", 0, -6);
 				end
 
-				local name, quantity, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 
-				-- If we don't have a name here the data is not set up correctly, but this prevents lua errors later.
-				if (name) then
-					reagent.Icon:SetTexture(texture);
-					reagent.Name:SetText(name);
+				-- If we don't have currencyInfo here the data is not set up correctly, but this prevents lua errors later.
+				if (currencyInfo) then
+					local quantity = currencyInfo.quantity;
+					local quality = currencyInfo.quality;
+					reagent.Icon:SetTexture(currencyInfo.iconFileID);
+					reagent.Name:SetText(currencyInfo.name);
 					reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
 					-- Grayout items
 					if ( quantity < currencyNeeded ) then
@@ -162,7 +164,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 		self.StartWorkOrderButton:SetWidth(averageButtonWidth - buttonDiffOverTwo);
 
 		if (not quality) then
-			quality = LE_ITEM_QUALITY_COMMON;
+			quality = Enum.ItemQuality.Common;
 		end
 
 		if (not duration) then

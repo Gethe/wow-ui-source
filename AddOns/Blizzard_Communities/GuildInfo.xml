@@ -307,17 +307,18 @@
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="Container">
+			<Frame parentKey="Container" inherits="BackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-36"/>
 					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
 					<Anchor point="BOTTOM" x="0" y="42"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize val="12"/>
-					<TileSize val="8"/>
-					<BackgroundInsets left="1" right="1" top="1" bottom="1"/>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_12_1111" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
 				<Frames>
 					<ScrollFrame parentKey="ScrollFrame" inherits="MinimalScrollFrameTemplate">
 						<Anchors>
@@ -352,12 +353,6 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="90" y="22"/>
@@ -404,17 +399,18 @@
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="Container">
+			<Frame parentKey="Container" inherits="BackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-36"/>
 					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
 					<Anchor point="BOTTOM" x="0" y="42"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize val="12"/>
-					<TileSize val="8"/>
-					<BackgroundInsets left="1" right="1" top="1" bottom="1"/>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_12_1111" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
 				<Frames>
 					<ScrollFrame parentKey="ScrollFrame" inherits="MinimalScrollFrameTemplate">
 						<Anchors>
@@ -438,12 +434,6 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="90" y="22"/>

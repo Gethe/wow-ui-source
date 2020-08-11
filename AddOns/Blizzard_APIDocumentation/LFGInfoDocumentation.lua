@@ -7,6 +7,66 @@ local LFGInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerUseGroupFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFD",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFR",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePVP",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePremadeGroup",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseScenarioFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
 
@@ -57,11 +117,6 @@ local LFGInfo =
 				{ Name = "mapID", Type = "number", Nilable = false },
 				{ Name = "winner", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "LfgBonusFactionIdUpdated",
-			Type = "Event",
-			LiteralName = "LFG_BONUS_FACTION_ID_UPDATED",
 		},
 		{
 			Name = "LfgBootProposalUpdate",

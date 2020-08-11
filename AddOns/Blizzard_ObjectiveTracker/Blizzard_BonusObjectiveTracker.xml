@@ -73,8 +73,8 @@
 					</OnLoad>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						if GetSuperTrackedQuestID() ~= self.questID then
-							SetSuperTrackedQuestID(self.questID);
+						if C_SuperTrack.GetSuperTrackedQuestID() ~= self.questID then
+							C_SuperTrack.SetSuperTrackedQuestID(self.questID);
 						end
 
 						WorldMapPing_StartPingQuest(self.questID);

@@ -669,23 +669,6 @@ function LFGDungeonReadyPopup_OnUpdate(self, elapsed)
 	end
 end
 
-local DUNGEON_BACKDROP_TABLE = {
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-	tile = true,
-	tileSize = 32,
-	edgeSize = 32,
-	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
-
--- TODO: replace both backdrops with nineslice when gold trim is created.
-local RAID_BACKDROP_TABLE = {
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",
-	tile = true,
-	tileSize = 32,
-	edgeSize = 32,
-	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
-
 function LFGDungeonReadyPopup_Update()
 	local proposalExists, id, typeID, subtypeID, name, backgroundTexture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal();
 	if ( not proposalExists ) then
@@ -825,7 +808,7 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\LFR-Texture");
 			LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.00195313, 0.55273438, 0.29296875, 0.57812500);
 			LFGDungeonReadyDialog.bottomArt:SetSize(282, 73);
-			LFGDungeonReadyDialog:SetBackdrop(RAID_BACKDROP_TABLE);
+			LFGDungeonReadyDialog:SetBackdrop(BACKDROP_GOLD_DIALOG_32_32);
 		else
 			LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
 			LFGDungeonReadyDialog.filigree:SetTexCoord(0.02734, 0.59765, 0.578125, 1.0);
@@ -839,7 +822,7 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
 			end
 			LFGDungeonReadyDialog.bottomArt:SetSize(287, 72);
-			LFGDungeonReadyDialog:SetBackdrop(DUNGEON_BACKDROP_TABLE);
+			LFGDungeonReadyDialog:SetBackdrop(BACKDROP_DIALOG_32_32);
 		end
 
 		if ( showRole ) then
@@ -1409,17 +1392,6 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		lastFrame = _G[parentName.."Item"..(totalRewards - mod(totalRewards+1, 2))];
 	end
 
-	local bonusID, numKnownFactionsWithLFGBonus = GetLFGBonusFactionID();
-	if ( bonusRepAmount and bonusRepAmount > 0 and not doneToday and numKnownFactionsWithLFGBonus > 0 ) then
-		parentFrame.bonusRepFrame.bonusRep = bonusRepAmount;
-		parentFrame.bonusRepFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -8);
-		LFGRewardsFrameBonusRep_Update(parentFrame.bonusRepFrame);
-		parentFrame.bonusRepFrame:Show();
-		lastFrame = parentFrame.bonusRepFrame;
-	else
-		parentFrame.bonusRepFrame:Hide();
-	end
-
 	if ( experienceGained > 0 ) then
 		parentFrame.xpAmount:SetText(experienceGained);
 		parentFrame.xpLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 20, -10);
@@ -1568,41 +1540,6 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 		end
 		GameTooltip:Show();
 	end
-end
-
-function LFGRewardsFrameBonusRep_OnLoad(self)
-	self:RegisterEvent("LFG_BONUS_FACTION_ID_UPDATED")
-end
-
-function LFGRewardsFrameBonusRep_OnEvent(self, event, ...)
-	if ( event == "LFG_BONUS_FACTION_ID_UPDATED" ) then
-		LFGRewardsFrameBonusRep_Update(self);
-	end
-end
-
-function LFGRewardsFrameBonusRep_Update(self)
-	if ( not self.bonusRep ) then
-		return;
-	end
-
-	local bonusID = GetLFGBonusFactionID();
-	if ( bonusID ) then
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfoByID(bonusID);
-		if ( name ) then
-			local bonusRep = self.bonusRep;
-			if ( hasBonusRepGain ) then
-				bonusRep = bonusRep * 2;
-			end
-			self.ChosenFaction:SetFormattedText(LFG_BONUS_REPUTATION_FACTION, name, bonusRep);
-			self.ChosenFaction:Show();
-			self.ChooseButton:Hide();
-			return;
-		end
-	end
-
-	--Found no bonus reputation
-	self.ChooseButton:Show();
-	self.ChosenFaction:Hide();
 end
 
 --
@@ -1854,12 +1791,12 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	end
 
 	--If we're too high above the recommended level, we won't display it
-	if ( level - maxLevelDiff > recLevel ) then
+	if maxLevelDiff and ( level - maxLevelDiff > recLevel ) then
 		return false;
 	end
 
 	-- If we're not within the hard level requirements, we won't display it
-	if ( level < minLevel or level > maxLevel ) then
+	if ( level < minRecLevel or level > maxRecLevel ) then
 		return false;
 	end
 
@@ -1961,6 +1898,15 @@ function LFGDungeonList_DisableEntries()
 end
 
 function LFGDungeonList_SetDungeonEnabled(dungeonID, isEnabled)
+
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		if isEnabled then
+			EventRegistry:TriggerEvent("LFGDungeonList.DungeonEnabled", dungeonID);
+		else
+			EventRegistry:TriggerEvent("LFGDungeonList.DungeonDisabled", dungeonID);
+		end
+	end
+
 	SetLFGDungeonEnabled(dungeonID, isEnabled);
 	LFGEnabledList[dungeonID] = isEnabled;
 end
@@ -2196,9 +2142,9 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 end
 
 function LFG_IsRandomDungeonDisplayable(id)
-	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(id);
+	local name, typeID, subtypeID, minLevel, maxLevel, _, targetMinLevel, targetMaxLevel, expansionLevel, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
-	return ((myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel) or isTimewalker);
+	return ((myLevel >= targetMinLevel and myLevel <= targetMaxLevel and EXPANSION_LEVEL >= expansionLevel) or isTimewalker);
 end
 
 function LFGRandomList_OnEnter(self)

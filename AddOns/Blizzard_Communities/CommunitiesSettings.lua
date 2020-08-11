@@ -191,9 +191,9 @@ function CommunitiesSettingsGetRecruitmentSettingByValue(value)
 		return clubSettings.playStyleDungeon;
 	elseif (value == Enum.ClubFinderSettingFlags.Raids) then 
 		return clubSettings.playStyleRaids;
-	elseif (value == Enum.ClubFinderSettingFlags.Pvp) then 
+	elseif (value == Enum.ClubFinderSettingFlags.PvP) then 
 		return clubSettings.playStylePvp;
-	elseif (value == Enum.ClubFinderSettingFlags.Rp) then 
+	elseif (value == Enum.ClubFinderSettingFlags.RP) then 
 		return clubSettings.playStyleRP;
 	elseif (value == Enum.ClubFinderSettingFlags.Social) then 
 		return clubSettings.playStyleSocial;

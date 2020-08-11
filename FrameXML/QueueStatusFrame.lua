@@ -1185,7 +1185,7 @@ end
 function TogglePVPScoreboardOrResults()
 	if IsAddOnLoaded("Blizzard_PVPMatch") then
 		local matchState = C_PvP.GetActiveMatchState();
-		local isComplete = matchState == Enum.PvpMatchState.Complete;
+		local isComplete = matchState == Enum.PvPMatchState.Complete;
 		if isComplete then
 			if PVPMatchResults:IsShown() then
 				HideUIPanel(PVPMatchResults);
@@ -1196,7 +1196,7 @@ function TogglePVPScoreboardOrResults()
 			if PVPMatchScoreboard:IsShown() then
 				HideUIPanel(PVPMatchScoreboard);
 			else
-				local isActive = matchState == Enum.PvpMatchState.Active;
+				local isActive = matchState == Enum.PvPMatchState.Active;
 				if isActive and not C_PvP.IsMatchConsideredArena() then
 					PVPMatchScoreboard:BeginShow();
 				end

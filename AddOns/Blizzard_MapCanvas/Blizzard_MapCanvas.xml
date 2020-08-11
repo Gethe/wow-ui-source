@@ -49,7 +49,7 @@
 		</Scripts>
 	</ScrollFrame>
 
-	<Frame name="MapCanvasFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" frameStrata="MEDIUM" mixin="MapCanvasMixin" virtual="true">
+	<Frame name="MapCanvasFrameTemplate" toplevel="true" enableMouse="true" hidden="true" frameStrata="MEDIUM" mixin="MapCanvasMixin" virtual="true">
 		<Size x="1004" y="689"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -131,7 +131,7 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 		[self.ItemSlot.GlowOverlay] = "%s-glow",
 	}
 
-	SetupTextureKitsOnFrames(frameData.textureKitID, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrames(frameData.textureKit, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	if (frameData.description) then 
 		self.Description:SetText(frameData.description); 
@@ -186,7 +186,9 @@ function ItemInteractionMixin:UpdateMoney()
 end
 
 function ItemInteractionMixin:UpdateCurrency()
-	local _, amount, currencyTexture = GetCurrencyInfo(self.currencyTypeId);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
+	local amount = currencyInfo.quantity;
+	local currencyTexture = currencyInfo.iconFileID;
 	self.ButtonFrame.Currency.currencyID = self.currencyTypeId;
 	self.ButtonFrame.Currency.icon:SetTexture(currencyTexture);
 	self.ButtonFrame.Currency.count:SetText(self.cost);
@@ -206,7 +208,7 @@ end
 -- Enables or disables the button to interact with the item based off of your currency amount and if you have an item in the slot.
 function ItemInteractionMixin:UpdateActionButtonState()
 	if(self:CostsCurrency()) then 
-		local _, amount = GetCurrencyInfo(self.currencyTypeId);
+		local amount = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId).quantity;
 		self.ButtonFrame.ActionButton:SetEnabled(self.itemLocation ~= nil and amount >= self.cost);
 	elseif (self:CostsGold()) then
 		self.ButtonFrame.ActionButton:SetEnabled(self.itemLocation ~= nil and GetMoney() >= self.cost);
@@ -312,7 +314,9 @@ function ItemInteractionActionButtonMixin:OnMouseEnter()
 			GameTooltip_Hide();
 		end
 	elseif(interactFrame:CostsCurrency()) then 
-		local name, amount = GetCurrencyInfo(interactFrame.currencyTypeId);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(interactFrame.currencyTypeId);
+		local name = currencyInfo.name;
+		local amount = currencyInfo.quantity;
 		if (not self:IsEnabled() and amount < interactFrame:GetCost()) then
 			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 			GameTooltip_AddColoredLine(GameTooltip, NOT_ENOUGH_CURRENCY:format(name), RED_FONT_COLOR);

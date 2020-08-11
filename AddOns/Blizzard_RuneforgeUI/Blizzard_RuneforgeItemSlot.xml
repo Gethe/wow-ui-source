@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeItemSlot.lua"/>
+
+	<ItemButton name="RuneforgeItemSlotTemplate" mixin="RuneforgeItemSlotMixin" registerForClicks="LeftButtonDown, RightButtonDown" virtual="true">
+		<Size x="60" y="60"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectingTexture" atlas="runecarving-icon-center-pressed" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-center-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</ItemButton>
+
+	<ItemButton name="RuneforgeUpgradeItemSlotTemplate" inherits="RuneforgeItemSlotTemplate" mixin="RuneforgeUpgradeItemSlotMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="runecarving-upgrade-slot-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ItemButton>
+</Ui>

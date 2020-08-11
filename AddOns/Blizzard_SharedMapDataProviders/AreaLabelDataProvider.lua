@@ -6,9 +6,6 @@ function AreaLabelDataProviderMixin:OnAdded(mapCanvas)
 
 	if not self.Label then
 		self.Label = CreateFrame("FRAME", nil, self:GetMap():GetCanvasContainer(), "AreaLabelFrameTemplate");
-
-		self.setAreaLabelCallback = function(event, ...) self.Label:SetLabel(...); end;
-		self.clearAreaLabelCallback = function(event, ...) self.Label:ClearLabel(...); end;
 	else
 		self.Label:SetParent(self:GetMap():GetCanvasContainer());
 	end
@@ -17,15 +14,23 @@ function AreaLabelDataProviderMixin:OnAdded(mapCanvas)
 	self.Label:SetFrameStrata("HIGH");
 	self.Label.dataProvider = self;
 
-	self:GetMap():RegisterCallback("SetAreaLabel", self.setAreaLabelCallback);
-	self:GetMap():RegisterCallback("ClearAreaLabel", self.clearAreaLabelCallback);		
+	self:GetMap():RegisterCallback("SetAreaLabel", self.OnSetAreaLabel, self);
+	self:GetMap():RegisterCallback("ClearAreaLabel", self.OnClearAreaLabel, self);	
 
 	self.Label:Show();
 end
 
+function AreaLabelDataProviderMixin:OnSetAreaLabel(...)
+	self.Label:SetLabel(...);
+end
+
+function AreaLabelDataProviderMixin:OnClearAreaLabel(...)
+	self.Label:ClearLabel(...);
+end
+
 function AreaLabelDataProviderMixin:OnRemoved(mapCanvas)
-	self:GetMap():UnregisterCallback("SetAreaLabel", self.setAreaLabelCallback);
-	self:GetMap():UnregisterCallback("ClearAreaLabel", self.clearAreaLabelCallback);	
+	self:GetMap():UnregisterCallback("SetAreaLabel", self);
+	self:GetMap():UnregisterCallback("ClearAreaLabel", self);	
 	
 	self.Label.dataProvider = nil;
 	self.Label:ClearAllPoints();

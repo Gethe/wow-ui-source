@@ -1,1 +1,1 @@
-LoadAddOn("Blizzard_Console");
+-- Empty file, other sub-teams may override this, so we may not be in the clear to nuke yet.

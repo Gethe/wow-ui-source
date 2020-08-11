@@ -265,7 +265,7 @@ end
 --- GarrisonRecruitSelectFrame ---
 ----------------------------------
 function GarrisonRecruitSelectFrame_OnLoad(self)
-	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0);
 	self:RegisterEvent("GARRISON_RECRUIT_FOLLOWER_RESULT");
 	self:RegisterEvent("GARRISON_RECRUITMENT_FOLLOWERS_GENERATED");
 end

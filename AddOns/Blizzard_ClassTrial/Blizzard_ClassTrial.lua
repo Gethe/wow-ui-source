@@ -14,7 +14,7 @@ StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
 	button1 = ACCEPT,
 	button2 = ACCEPT,
 	button3 = CANCEL,
-
+	selectCallbackByIndex = true,
 	OnShow = function(self)
 		if #self.data >= 2 then
 			local info1 = C_CharacterServices.GetCharacterServiceDisplayData(self.data[1]);
@@ -209,7 +209,7 @@ local textureKitRegionInfo = {
 function ExpansionTrialDialogMixin:OnLoad()
 	local expansionTrialBoostType = 0;
 	local upgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(expansionTrialBoostType);
-	self:SetupTextureKit(upgradeDisplayData.popupInfo.textureKitPrefix, textureKitRegionInfo);
+	self:SetupTextureKit(upgradeDisplayData.popupInfo.textureKit, textureKitRegionInfo);
 
 	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
 	local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);

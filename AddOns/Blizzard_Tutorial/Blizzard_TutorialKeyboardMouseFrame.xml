@@ -148,14 +148,14 @@
 	</Frame>
 
 
-	<Frame name="NPE_TutorialInterfaceHelp" parent="UIParent" hidden="true" frameStrata="MEDIUM">
+	<Frame name="NPE_TutorialInterfaceHelp" parent="UIParent" hidden="true" frameStrata="MEDIUM" inherits="BackdropTemplate">
 		<Size x="200" y="50" />
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" relativeTo="ActionButton12" relativePoint="TOPRIGHT" x="4" y="10" />
 		</Anchors>
-		<Backdrop edgeFile="Interface\Glues\Common\TextPanel-Border" tile="true">
-			<EdgeSize val="16" />
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TEXT_PANEL_0_16" type="global"/>
+		</KeyValues>
 
 		<Layers>
 			<Layer level="BACKGROUND">

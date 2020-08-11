@@ -1,0 +1,83 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AchievementDisplayFrame.lua"/>
+
+	<Frame name="AchievementDisplayOverviewBulletTemplate" mixin="AchievementDisplayOverviewBulletMixin" virtual="true">
+		<Size x="200" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Check" atlas="AlliedRace-UnlockingFrame-Checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Dash" inherits="GameFontBlackMedium" text="QUEST_DASH">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="27" y="0"/>
+					</Anchors>
+					<Color color="PAPER_FRAME_DARK_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AchievementDisplayTemplate" mixin="AchievementDisplayMixin" virtual="true">
+		<Size x="287" y="0"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="HeaderBackground" atlas="AlliedRace-UnlockingFrame-BoxTopper" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="DescriptionBGBottom" atlas="AlliedRace-UnlockingFrame-Box" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DescriptionBG" atlas="!AlliedRace-UnlockingFrame-BoxTile">
+					<Size x="287" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HeaderBackground" relativePoint="BOTTOM" x="1" y="6"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.DescriptionBGBottom" relativePoint="TOP" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontNormal">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HeaderBackground" x="11" y="3"/>
+					</Anchors>
+					<Color color="PAPER_FRAME_EXPANDED_COLOR"/>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontBlack" justifyH="LEFT">
+					<Size x="260" y="30"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="=-20" y="-9"/>
+					</Anchors>
+					<Color color="PAPER_FRAME_DARK_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

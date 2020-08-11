@@ -28,7 +28,7 @@ function DungeonEntrancePinMixin:OnAcquired(dungeonEntranceInfo) -- override
 	self.journalInstanceID = dungeonEntranceInfo.journalInstanceID;
 end
 
-function DungeonEntrancePinMixin:OnClick()
+function DungeonEntrancePinMixin:OnMouseClickAction()
 	EncounterJournal_LoadUI();
 	EncounterJournal_OpenJournal(nil, self.journalInstanceID);
 end

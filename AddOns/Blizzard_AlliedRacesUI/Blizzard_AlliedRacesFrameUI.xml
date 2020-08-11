@@ -30,38 +30,6 @@
 			<OnClick method="OnClick" />
 		</Scripts>
 	</Button>
-	<Frame name="AlliedRaceOverviewBulletsTemplate" mixin="AlliedRacesBulletFrameMixin" virtual="true">
-		<Size x="200" y="20"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Check" atlas="AlliedRace-UnlockingFrame-Checkmark" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>			
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Dash" inherits="GameFontBlackMedium" text="QUEST_DASH">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</FontString>
-				<FontString parentKey="Text" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="27" y="0"/>
-					</Anchors>
-					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Frame>
 	<Frame name="AlliedRaceAbilityTemplate" virtual="true">
 		<Size x="300" y="36"/>
 		<Layers>
@@ -91,7 +59,7 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 6, 0);
 				GameTooltip:SetText(self.abilityName, HIGHLIGHT_FONT_COLOR:GetRGB());
-				GameTooltip:AddLine(self.abilityDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);			
+				GameTooltip:AddLine(self.abilityDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
@@ -102,7 +70,7 @@
 	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin" enableMouse="true" hidden="true">
 		<Size x="704" y="607"/>
 		<Anchors>
-			<Anchor point="LEFT" x="20" y="40"/> 
+			<Anchor point="LEFT" x="20" y="40"/>
 		</Anchors>
 		<Frames>
 			<PlayerModel parentKey="ModelFrame" mixin="ModelFrameMixin" enableMouse="true" useParentLevel="true" drawLayer="BORDER" inherits="ModelTemplate">
@@ -140,11 +108,11 @@
 							<OnClick>
 								local alliedRaceModelFrame = self:GetParent();
 								alliedRaceModelFrame.AlliedRacesFemaleButton:SetChecked(false);
-								
-								local alliedRaceFrame = self:GetParent():GetParent(); 
+
+								local alliedRaceFrame = self:GetParent():GetParent();
 								alliedRaceFrame:UpdateModel(self.MaleModelID);
 								alliedRaceFrame:SetRaceNameForGender("male");
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -157,10 +125,10 @@
 							<OnClick>
 								local alliedRaceModelFrame = self:GetParent();
 								alliedRaceModelFrame.AlliedRacesMaleButton:SetChecked(false);
-								local alliedRaceFrame = self:GetParent():GetParent(); 
+								local alliedRaceFrame = self:GetParent():GetParent();
 								alliedRaceFrame:UpdateModel(self.FemaleModelID);
 								alliedRaceFrame:SetRaceNameForGender("female");
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER); 
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 						</Scripts>
 						<NormalTexture atlas="AlliedRace-UnlockingFrame-Female"/>
@@ -223,50 +191,14 @@
 							<Frame parentKey="Child">
 								<Size x="275" y="1"/>
 								<Frames>
-									<Frame parentKey="ObjectivesFrame">
+									<Frame parentKey="ObjectivesFrame" inherits="AchievementDisplayTemplate">
+										<KeyValues>
+											<KeyValue key="title" type="global" value="ALLIED_RACE_UNLOCK_TEXT"/>
+										</KeyValues>
 										<Size x="287" y="0"/>
 										<Anchors>
 											<Anchor point="TOP" x="28" y="-20"/>
 										</Anchors>
-										<Layers>
-											<Layer level="BORDER">
-												<Texture parentKey="HeaderBackground" atlas="AlliedRace-UnlockingFrame-BoxTopper" useAtlasSize="true">
-													<Anchors>
-														<Anchor point="TOP"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="BACKGROUND">
-												<Texture parentKey="DescriptionBGBottom" atlas="AlliedRace-UnlockingFrame-Box" useAtlasSize="true">
-													<Anchors>
-														<Anchor point="BOTTOM" x="1" y="0"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="DescriptionBG" atlas="!AlliedRace-UnlockingFrame-BoxTile">
-													<Size x="287" y="0"/>
-													<Anchors>
-														<Anchor point="TOP" relativeKey="$parent.HeaderBackground" relativePoint="BOTTOM" x="1" y="6"/>
-														<Anchor point="BOTTOM" relativeKey="$parent.DescriptionBGBottom" relativePoint="TOP" x="1" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="ARTWORK">
-												<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontNormal" text="ALLIED_RACE_UNLOCK_TEXT">
-													<Size x="200" y="0"/>
-													<Anchors>
-														<Anchor point="LEFT" relativeKey="$parent.HeaderBackground" x="11" y="3"/>
-													</Anchors>
-													<Color r="0.929" g="0.788" b="0.620"/>
-												</FontString>
-												<FontString parentKey="Description" inherits="GameFontBlack" justifyH="LEFT">
-													<Size x="260" y="30"/>
-													<Anchors>
-														<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="=-20" y="-9"/>
-													</Anchors>
-													<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-												</FontString>
-											</Layer>
-										</Layers>
 									</Frame>
 								</Frames>
 								<Layers>
@@ -338,6 +270,6 @@
 			<OnEvent method="OnEvent"/>
 			<OnHide  method="OnHide"/>
 			<OnShow  method="OnShow"/>
-		</Scripts> 
+		</Scripts>
 	</Frame>
 </Ui>

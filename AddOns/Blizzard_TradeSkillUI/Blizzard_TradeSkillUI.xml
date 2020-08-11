@@ -58,15 +58,9 @@
 				</Anchors>
 				
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="RankText" inherits="WhiteNormalNumberFont" justifyH="CENTER">
-							<Size x="0" y="9"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</FontString>
+					<Layer level="OVERLAY">
 						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="8" y="17"/>
+							<Size x="9" y="20"/>
 							
 							<Anchors>
 								<Anchor point="LEFT" x="-3" y="0"/>
@@ -74,10 +68,10 @@
 							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
 						</Texture>
 						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="8" y="17"/>
+							<Size x="9" y="20"/>
 							
 							<Anchors>
-								<Anchor point="RIGHT" x="4" y="0"/>
+								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
 						</Texture>
@@ -88,6 +82,14 @@
 							</Anchors>
 							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
 						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<FontString parentKey="RankText" inherits="WhiteNormalNumberFont" justifyH="CENTER">
+							<Size x="0" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background">
@@ -229,6 +231,12 @@
 			</Button>
 
 			<Frame parentKey="LinkToDropDown" name="TradeSkillLinkToDropDown" inherits="UIDropDownMenuTemplate" />
+
+			<Frame parentKey="OptionalReagentList" inherits="OptionalReagentListTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />

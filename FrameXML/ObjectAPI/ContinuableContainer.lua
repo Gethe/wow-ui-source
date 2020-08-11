@@ -85,7 +85,7 @@ function ContinuableContainer:RecheckEvictableContinuables()
 				areAllLoaded = false;
 
 				self.numOutstanding = self.numOutstanding + 1;
-				table.insert(self.continuables, continuable:ContinueWithCancelOnItemLoad(self.onContinuableLoadedCallback));
+				table.insert(self.continuables, evictableObject:ContinueWithCancelOnItemLoad(self.onContinuableLoadedCallback));
 			end
 		end
 	end

@@ -2,13 +2,6 @@ function AccountLogin_OnLoad(self)
 	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
 
-	-- Color edit box backdrops
-	local backdropColor = DEFAULT_TOOLTIP_COLOR;
-	self.UI.AccountEditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.UI.AccountEditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-	self.UI.PasswordEditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.UI.PasswordEditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-
 	SetLoginScreenModel(LoginBackgroundModel);
 	AccountLogin_UpdateSavedData(self);
 
@@ -108,12 +101,12 @@ function AccountLogin_UpdateSavedData(self)
 	end
 	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" ) then
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 0, 255);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 150);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
 		AccountLogin.UI.AccountsDropDown:Show();
 		AccountLogin.UI.AccountsDropDown.active = true;
 	else
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 0, 275);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 170);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
 		AccountLogin.UI.AccountsDropDown:Hide();
 		AccountLogin.UI.AccountsDropDown.active = false;
 	end
@@ -131,7 +124,7 @@ function AccountLogin_Login()
 		local username = AccountLogin.UI.AccountEditBox:GetText();
 		C_Login.Login(string.gsub(username, "||", "|"), AccountLogin.UI.PasswordEditBox);
 		if ( AccountLoginDropDown:IsShown() ) then
-			C_Login.SelectGameAccount(GlueDropDownMenu_GetSelectedValue(AccountLoginDropDown));
+			C_Login.SelectGameAccount(UIDropDownMenu_GetSelectedValue(AccountLoginDropDown));
 		end
 	end
 
@@ -226,8 +219,8 @@ function WoWAccountSelect_Update()
 	end
 
 	self.Background:SetSize(275, 265);
-	self.Background.AcceptButton:SetPoint("BOTTOMLEFT", 8, 6);
-	self.Background.CancelButton:SetPoint("BOTTOMRIGHT", -8, 6);
+	self.Background.AcceptButton:SetPoint("BOTTOMLEFT", 15, 12);
+	self.Background.CancelButton:SetPoint("BOTTOMRIGHT", -15, 12);
 	self.Background.Container:SetPoint("BOTTOMRIGHT", -16, 36);
 
 	GlueScrollFrame_Update(self.Background.Container.ScrollFrame, #self.gameAccounts, MAX_ACCOUNTNAME_DISPLAYED, ACCOUNTNAME_BUTTON_HEIGHT);
@@ -263,23 +256,23 @@ end
 -- =============================================================
 
 function AccountLoginDropDown_OnLoad(self)
-	GlueDropDownMenu_SetWidth(self, 174);
-	GlueDropDownMenu_SetSelectedValue(self, 1);
+	UIDropDownMenu_SetWidth(self, 174);
+	UIDropDownMenu_SetSelectedValue(self, 1);
 	AccountLoginDropDownText:SetJustifyH("LEFT");
 	AccountLoginDropDown_SetupList();
-	GlueDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
+	UIDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
 end
 
 function AccountLoginDropDown_OnClick(self)
-	GlueDropDownMenu_SetSelectedValue(AccountLoginDropDown, self.value);
+	UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, self.value);
 end
 
 function AccountLoginDropDown_Initialize()
-	local selectedValue = GlueDropDownMenu_GetSelectedValue(AccountLoginDropDown);
+	local selectedValue = UIDropDownMenu_GetSelectedValue(AccountLoginDropDown);
 	local list = AccountLoginDropDown.list;
 	for i = 1, #list do
 		list[i].checked = (list[i].text == selectedValue);
-		GlueDropDownMenu_AddButton(list[i]);
+		UIDropDownMenu_AddButton(list[i]);
 	end
 end
 
@@ -291,8 +284,8 @@ function AccountLoginDropDown_SetupList()
 		if ( strsub(str, 1, 1) == "!" ) then
 			selected = true;
 			str = strsub(str, 2, #str);
-			GlueDropDownMenu_SetSelectedValue(AccountLoginDropDown, str);
-			GlueDropDownMenu_SetText(AccountLoginDropDown, str);
+			UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, str);
+			UIDropDownMenu_SetText(AccountLoginDropDown, str);
 		end
 		AccountLoginDropDown.list[i] = { ["text"] = str, ["value"] = str, ["selected"] = selected, func = AccountLoginDropDown_OnClick };
 		i = i + 1;
@@ -302,12 +295,6 @@ end
 -- =============================================================
 -- Token entry
 -- =============================================================
-
-function TokenEntry_OnLoad(self)
-	local backdropColor = DEFAULT_TOOLTIP_COLOR;
-	self.Background.EditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.Background.EditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-end
 
 function TokenEntry_OnShow(self)
 	self.Background.EditBox:SetText("");
@@ -340,12 +327,6 @@ end
 -- =============================================================
 -- Captcha entry
 -- =============================================================
-
-function CaptchaEntry_OnLoad(self)
-	local backdropColor = DEFAULT_TOOLTIP_COLOR;
-	self.Background.EditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.Background.EditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-end
 
 function CaptchaEntry_OnShow(self)
 	self.Background.EditBox:SetText("");

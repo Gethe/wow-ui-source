@@ -1,11 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GlueMenuFrame.lua"/>
-	<Button name="GlueMenuFrameButtonTemplate" inherits="GlueButtonSmallTemplateBlue" virtual="true">
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="5" bottom="5"/>
-		</HitRectInsets>
-	</Button>
 	<Frame name="GlueMenuFrame" inherits="GlueModalFrameTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
 		<Size x="195" y="255"/>
 		<Anchors>
@@ -18,7 +13,7 @@
 					<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Button parentKey="OptionsButton" inherits="GlueMenuFrameButtonTemplate" text="SYSTEMOPTIONS_MENU">
+			<Button parentKey="OptionsButton" inherits="GlueButtonSmallTemplate" text="SYSTEMOPTIONS_MENU">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>
 				</Anchors>
@@ -29,9 +24,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="CreditsButton" inherits="GlueMenuFrameButtonTemplate" text="CREDITS">
+			<Button parentKey="CreditsButton" inherits="GlueButtonSmallTemplate" text="CREDITS">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.OptionsButton" relativePoint="BOTTOM" x="0" y="10"/>
+					<Anchor point="TOP" relativeKey="$parent.OptionsButton" relativePoint="BOTTOM" x="0" y="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -40,9 +35,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="CinematicsButton" inherits="GlueMenuFrameButtonTemplate" text="CINEMATICS">
+			<Button parentKey="CinematicsButton" inherits="GlueButtonSmallTemplate" text="CINEMATICS">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.CreditsButton" relativePoint="BOTTOM" x="0" y="10"/>
+					<Anchor point="TOP" relativeKey="$parent.CreditsButton" relativePoint="BOTTOM" x="0" y="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -51,9 +46,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="ExitGameButton" inherits="GlueMenuFrameButtonTemplate" text="EXIT_GAME">
+			<Button parentKey="ExitGameButton" inherits="GlueButtonSmallTemplate" text="EXIT_GAME">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.CinematicsButton" relativePoint="BOTTOM" x="0" y="10"/>
+					<Anchor point="TOP" relativeKey="$parent.CinematicsButton" relativePoint="BOTTOM" x="0" y="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -61,9 +56,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="CloseButton" inherits="GlueMenuFrameButtonTemplate" text="CLOSE">
+			<Button parentKey="CloseButton" inherits="GlueButtonSmallTemplate" text="CLOSE">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="25"/>
+					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="28"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

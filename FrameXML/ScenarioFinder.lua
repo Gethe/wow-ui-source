@@ -1,4 +1,3 @@
-SCENARIO_MAX_SHOWN_LEVEL_DIFF = 5;
 NUM_SCENARIO_CHOICE_BUTTONS = 19;
 SCENARIOS_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 
@@ -86,7 +85,7 @@ function ScenarioQueueFrame_Update()
 
 	ScenariosList = GetScenariosChoiceOrder(ScenariosList);
 
-	LFGQueueFrame_UpdateLFGDungeonList(ScenariosList, ScenariosHiddenByCollapseList, checkedList, SCENARIOS_CURRENT_FILTER, SCENARIO_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(ScenariosList, ScenariosHiddenByCollapseList, checkedList, SCENARIOS_CURRENT_FILTER);
 
 	ScenarioQueueFrameSpecific_Update();
 end

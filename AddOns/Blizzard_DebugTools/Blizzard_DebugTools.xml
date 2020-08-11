@@ -195,7 +195,7 @@
 		</Scripts>
 	</Frame>
 
-	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" enableKeyboard="true">
+	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="SharedTooltipTemplate" enableKeyboard="true">
 		<Scripts>
 			<OnLoad function="FrameStackTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>
@@ -208,7 +208,7 @@
 		</Scripts>
 	</GameTooltip>
 
-	<GameTooltip name="EventTraceTooltip" frameStrata="TOOLTIP" hidden="true" parent="EventTraceFrame" inherits="GameTooltipTemplate">
+	<GameTooltip name="EventTraceTooltip" frameStrata="TOOLTIP" hidden="true" parent="EventTraceFrame" inherits="SharedTooltipTemplate">
 		<Scripts>
 			<OnLoad function="DebugTooltip_OnLoad"/>
 		</Scripts>

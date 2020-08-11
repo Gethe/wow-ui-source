@@ -131,7 +131,7 @@ function PlayerTalentFrame_Toggle(suggestedTalentTab)
 			else
 				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 			end
-			TalentMicroButtonAlert:Hide();
+			MainMenuMicroButton_HideAlert(TalentMicroButton);
 		end
 	else
 		PlayerTalentFrame_Close();
@@ -257,7 +257,7 @@ end
 function PlayerTalentFrame_OnShow(self)
 	-- Stop buttons from flashing after skill up
 	MicroButtonPulseStop(TalentMicroButton);
-	TalentMicroButtonAlert:Hide();
+	MainMenuMicroButton_HideAlert(TalentMicroButton);
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
@@ -279,7 +279,6 @@ function PlayerTalentFrame_OnShow(self)
 end
 
 function PlayerTalentFrame_OnHide()
-	HelpPlate_Hide();
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	-- clear caches
@@ -352,26 +351,6 @@ end
 
 function PlayerTalentFrame_HidePetSpecTab()
 	PlayerTalentFramePetSpecialization:Hide();
-end
-
-function PlayerTalentFrame_GetTutorial()
-	local tutorial;
-	local helpPlate;
-	local mainHelpButton;
-
-	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
-	if (selectedTab == TALENTS_TAB) then
-		tutorial = LE_FRAME_TUTORIAL_TALENT;
-		helpPlate = PlayerTalentFrame_HelpPlate;
-		mainHelpButton = PlayerTalentFrameTalents.MainHelpButton;
-	elseif (selectedTab == SPECIALIZATION_TAB) then
-		tutorial = LE_FRAME_TUTORIAL_SPEC;
-		helpPlate = PlayerSpecFrame_HelpPlate;
-		mainHelpButton = PlayerTalentFrameSpecialization.MainHelpButton;
-	elseif (selectedTab == PET_SPECIALIZATION_TAB) then
-		tutorial = LE_FRAME_TUTORIAL_SPEC;
-	end
-	return tutorial, helpPlate, mainHelpButton;
 end
 
 function PlayerTalentFrame_SetExpanded(expanded)
@@ -535,31 +514,6 @@ function PlayerTalentFrame_GetTalentSelections()
 	return unpack(talents);
 end
 
-PlayerSpecFrame_HelpPlate = {
-	FramePos = { x = 0,	y = -22 },
-	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 8, y = -30, width = 204, height = 382 },	ToolTipDir = "UP",		ToolTipText = SPEC_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 224, y = -6, width = 414, height = 408 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_2 },
-	[3] = { ButtonPos = { x = 355,	y = -409}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
-}
-
-PlayerTalentFrame_HelpPlate = {
-	FramePos = { x = 0,	y = -22 },
-	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 8, y = -48, width = 627, height = 55 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 15,	y = -206 }, HighLightBox = { x = 8, y = -105, width = 627, height = 308 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
-}
-
-function PlayerTalentFrame_ToggleTutorial()
-	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
-
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and PlayerTalentFrame:IsShown()) then
-		HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton );
-		SetCVarBitfield( "closedInfoFrames", tutorial, true );
-	else
-		HelpPlate_Hide(true);
-	end
-end
 
 -- PlayerTalentFrameRows
 
@@ -720,11 +674,10 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	end
 
 	-- setup talents talents tab
-	local meetsTalentLevel = playerLevel >= SHOW_TALENT_LEVEL;
 	talentTabWidthCache[TALENTS_TAB] = 0;
 	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	if ( tab ) then
-		if ( meetsTalentLevel ) then
+		if ( C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec() ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -804,14 +757,6 @@ function PlayerTalentFrameTab_OnClick(self)
 	PanelTemplates_SetTab(PlayerTalentFrame, id);
 	PlayerTalentFrame_Refresh();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-
-	HelpPlate_Hide();
-	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
-	if ( helpPlate and tutorial and not GetCVarBitfield("closedInfoFrames", tutorial)
-		and GetCVarBool("showTutorials") and PlayerTalentFrame:IsShown()) then
-		HelpPlate_ShowTutorialPrompt( helpPlate, mainHelpButton );
-		SetCVarBitfield( "closedInfoFrames", tutorial, true );
-	end
 end
 
 function PlayerTalentFrameTab_OnEnter(self)
@@ -827,9 +772,11 @@ end
 function PlayerTalentTab_OnLoad(self)
 	PlayerTalentFrameTab_OnLoad(self);
 
-	self:RegisterEvent("PLAYER_LEVEL_UP");
-	if (UnitLevel("player") == SHOW_TALENT_LEVEL and (GetNumUnspentTalents() > 0) and (self:GetID() == TALENTS_TAB)) then
-		SetButtonPulse(self, 60, 0.75);
+	if self:GetID() == TALENTS_TAB then
+		self:RegisterEvent("PLAYER_LEVEL_CHANGED");
+		if C_SpecializationInfo.CanPlayerUseTalentUI() and (GetNumUnspentTalents() > 0) then
+			SetButtonPulse(self, 60, 0.75);
+		end
 	end
 end
 
@@ -839,7 +786,7 @@ function PlayerTalentTab_OnClick(self)
 end
 
 function PlayerTalentTab_OnEvent(self, event, ...)
-	if ( UnitLevel("player") == (SHOW_TALENT_LEVEL - 1) and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID() ) then
+	if C_SpecializationInfo.CanPlayerUseTalentUI() and (GetNumUnspentTalents() > 0) and (PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID()) then
 		SetButtonPulse(self, 60, 0.75);
 	end
 end
@@ -1104,6 +1051,9 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	local playerTalentSpec = GetSpecialization(nil, self.isPet, specs[selectedSpec].talentGroup);
 	local shownSpec = spec or playerTalentSpec or 1;
 	local numSpecs = GetNumSpecializations(nil, self.isPet);
+	if ( shownSpec > numSpecs ) then 
+		shownSpec = 1;
+	end
 	local petNotActive = self.isPet and not IsPetActive();
 	local sex = self.isPet and UnitSex("pet") or UnitSex("player");
 	-- do spec buttons
@@ -1224,7 +1174,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 	-- disable Learn button
 	local disableLearnButton = not self.isPet and ( playerTalentSpec and shownSpec == playerTalentSpec );
-    if(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL) then
+    if(disableLearnButton or not C_SpecializationInfo.CanPlayerUseTalentSpecUI()) then
 		self.learnButton:Disable();
 		self.learnButton.Flash:Hide();
 		self.learnButton.FlashAnim:Stop();
@@ -1326,26 +1276,18 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 end
 
 function PlayerTalentFrameTalents_OnLoad(self)
-	local _, class = UnitClass("player");
-	local talentLevels = CLASS_TALENT_LEVELS[class] or CLASS_TALENT_LEVELS["DEFAULT"];
-	for i=1, MAX_TALENT_TIERS do
-		self["tier"..i].level:SetText(talentLevels[i]);
-	end
-
 	-- Setup table to support immediate UI updates when picking talents
 	self.talentInfo = {};
 end
 
 function PlayerTalentFrameTalents_OnShow(self)
 	local playerLevel = UnitLevel("player");
-	if ( playerLevel >= SHOW_TALENT_LEVEL and AreTalentsLocked() ) then
+	if ( C_SpecializationInfo.CanPlayerUseTalentUI() and AreTalentsLocked() ) then
 		PlayerTalentFrameLockInfo:Show();
 		PlayerTalentFrameLockInfo.Title:SetText(TALENTS_FRAME_TALENT_LOCK_TITLE);
 		PlayerTalentFrameLockInfo.Text:SetText(TALENTS_FRAME_TALENT_LOCK_DESC)
-		PlayerTalentFrameTalentsTutorialButton:Hide();
 	else
 		PlayerTalentFrameLockInfo:Hide();
-		PlayerTalentFrameTalentsTutorialButton:Show();
 	end
 end
 
@@ -1480,17 +1422,7 @@ end
 
 function PvpTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK)) then
-		local helpTipInfo = {
-			text = PVP_TALENT_FIRST_TALENT,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_TALENTS_FIRST_UNLOCK,
-			targetPoint = HelpTip.Point.RightEdgeCenter,
-			offsetX = -2,
-		};
-		HelpTip:Show(self.TrinketSlot, helpTipInfo);
-	end
+
 	self:Update();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
@@ -1524,7 +1456,7 @@ function PvpTalentFrameMixin:ClearPendingRemoval()
 end
 
 function PvpTalentFrameMixin:Update()
-	if (not C_PvP.IsWarModeFeatureEnabled() or UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
+	if (not C_PvP.IsWarModeFeatureEnabled() or not C_SpecializationInfo.CanPlayerUsePVPTalentUI()) then
 		self:Hide();
 		PlayerTalentFrameTalentsPvpTalentButton:Hide();
 		PlayerTalentFrame_SetExpanded(false);

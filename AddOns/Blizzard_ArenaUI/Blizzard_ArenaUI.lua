@@ -57,12 +57,12 @@ function ArenaEnemyFrames_ResetCrowdControlCooldownData()
 end
 
 function ArenaEnemyFrames_OnShow(self)
-	DurabilityFrame_SetAlerts();
+	DurabilityFrame:SetAlerts();
 	UIParent_ManageFramePositions();
 end
 
 function ArenaEnemyFrames_OnHide(self)	
-	DurabilityFrame_SetAlerts();
+	DurabilityFrame:SetAlerts();
 	UIParent_ManageFramePositions();
 end
 
@@ -430,12 +430,12 @@ function ArenaPrepFrames_OnEvent(self, event, ...) --also called in OnLoad
 end
 
 function ArenaPrepFrames_OnShow(self)
-	DurabilityFrame_SetAlerts();
+	DurabilityFrame:SetAlerts();
 	UIParent_ManageFramePositions()
 end
 
 function ArenaPrepFrames_OnHide(self)
-	DurabilityFrame_SetAlerts();
+	DurabilityFrame:SetAlerts();
 	UIParent_ManageFramePositions();
 end
 

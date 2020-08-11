@@ -1161,6 +1161,9 @@
 		LoadAddOn("Blizzard_DebugTools");
 		FrameStackTooltip_ToggleDefaults();
 	</Binding>
+	<Binding name="TOGGLECUSTOMIZATIONDEBUGINFO" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCustomizationDebugInfo();
+	</Binding>
   <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>
@@ -1265,6 +1268,9 @@
 	</Binding>
 	<Binding name="FLIPCAMERAYAW" category="BINDING_HEADER_CAMERA">
 		FlipCameraYaw(180);
+	</Binding>
+	<Binding name="CENTERCAMERA" category="BINDING_HEADER_CAMERA">
+		CenterCamera();
 	</Binding>
 	<!--  header="RAID_TARGET" -->
 	<Binding name="RAIDTARGET8" category="BINDING_HEADER_RAID_TARGET">

@@ -238,13 +238,8 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="AdventureMap_MissionPinTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" mixin="AdventureMap_MissionTooltipMixin">
+	<Frame name="AdventureMap_MissionPinTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate" mixin="AdventureMap_MissionTooltipMixin">
 		<Size x="250" y="256"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
-		</Backdrop>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" parentArray="Lines" inherits="GameFontNormalMed2" justifyH="LEFT" wordwrap="true">
@@ -388,10 +383,6 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
 			<OnUpdate method="OnUpdate" />
 			<OnHide method="OnHide" />
 		</Scripts>

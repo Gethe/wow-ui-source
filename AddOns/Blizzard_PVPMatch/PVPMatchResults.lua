@@ -162,7 +162,7 @@ function PVPMatchResultsMixin:Shutdown()
 	HideUIPanel(self);
 end
 function PVPMatchResultsMixin:OnEvent(event, ...)
-	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() ~= Enum.PvpMatchState.Inactive) then
+	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() ~= Enum.PvPMatchState.Inactive) then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
 	elseif event == "PLAYER_LEAVING_WORLD" then
 		self:Shutdown();
@@ -339,7 +339,7 @@ function PVPMatchResultsMixin:HaveConquestData()
 end
 function PVPMatchResultsMixin:OnUpdate()
 	if self.UpdateLeaveButton then
-		self:UpdateLeaveButton();		
+		self:UpdateLeaveButton();
 	end
 
 	PVPMatchUtil.UpdateTable(self.tableBuilder, self.scrollFrame);
@@ -435,7 +435,7 @@ function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
 		button:Init(useAlternateColor);
 	end
 
-	local r, g, b = PVPMatchStyle.GetPanelColor(factionIndex, useAlternateColor):GetRGB();
+	local r, g, b = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor):GetRGB();
 	for k, frame in pairs(self.tintFrames) do
 		frame:SetVertexColor(r, g, b);
 	end

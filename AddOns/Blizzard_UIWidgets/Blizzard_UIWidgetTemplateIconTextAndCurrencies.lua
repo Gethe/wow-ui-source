@@ -17,7 +17,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetCont
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.currencyPool:ReleaseAll();
 
-	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions);
+	SetupTextureKitOnRegions(widgetInfo.textureKit, self, textureKitRegions);
 	self.Text:SetText(widgetInfo.text);
 	local enabledState = widgetInfo.enabledState;
 	if widgetInfo.enabledState == Enum.WidgetEnabledState.Enabled then

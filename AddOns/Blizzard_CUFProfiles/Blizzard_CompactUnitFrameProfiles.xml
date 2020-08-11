@@ -109,9 +109,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!--OnLoad>
-				CompactUnitFrameProfilesSlider_Initialize(self);
-			</OnLoad-->
 			<OnValueChanged>
 				CompactUnitFrameProfilesSlider_OnValueChanged(self, value, userInput);
 			</OnValueChanged>
@@ -637,7 +634,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="10" y="-15"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								CompactUnitFrameProfilesSlider_InitializeWidget(self, "frameHeight", SHORT, TALL);
 							</OnLoad>
 						</Scripts>
@@ -647,7 +644,7 @@
 							<Anchor point="LEFT" relativeTo="$parentHeightSlider" relativePoint="RIGHT" x="40" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								CompactUnitFrameProfilesSlider_InitializeWidget(self, "frameWidth", NARROW, WIDE);
 							</OnLoad>
 						</Scripts>

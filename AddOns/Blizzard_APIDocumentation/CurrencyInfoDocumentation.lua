@@ -1,6 +1,6 @@
 local CurrencyInfo =
 {
-	Name = "CurrencyInfo",
+	Name = "CurrencySystem",
 	Type = "System",
 	Namespace = "C_CurrencyInfo",
 
@@ -22,12 +22,36 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "ExpandCurrencyList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "expand", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAzeriteCurrencyID",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "azeriteCurrencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBackpackCurrencyInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "BackpackCurrencyInfo", Nilable = false },
 			},
 		},
 		{
@@ -75,6 +99,86 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetCurrencyInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyInfoFromLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "number", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyListInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyListLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyListSize",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyListSize", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFactionGrantedByCurrency",
 			Type = "Function",
 			Documentation = { "Gets the faction ID for currency that is immediately converted into reputation with that faction instead." },
@@ -113,6 +217,35 @@ local CurrencyInfo =
 				{ Name = "isCurrencyContainer", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "PickupCurrency",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCurrencyBackpack",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "backpack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCurrencyUnused",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "unused", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -140,6 +273,17 @@ local CurrencyInfo =
 	Tables =
 	{
 		{
+			Name = "BackpackCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "currencyTypesID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CurrencyDisplayInfo",
 			Type = "Structure",
 			Fields =
@@ -150,6 +294,27 @@ local CurrencyInfo =
 				{ Name = "quality", Type = "number", Nilable = false },
 				{ Name = "displayAmount", Type = "number", Nilable = false },
 				{ Name = "actualAmount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isHeader", Type = "bool", Nilable = false },
+				{ Name = "isHeaderExpanded", Type = "bool", Nilable = false },
+				{ Name = "isTypeUnused", Type = "bool", Nilable = false },
+				{ Name = "isShowInBackpack", Type = "bool", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "maxQuantity", Type = "number", Nilable = false },
+				{ Name = "canEarnPerWeek", Type = "bool", Nilable = false },
+				{ Name = "quantityEarnedThisWeek", Type = "number", Nilable = false },
+				{ Name = "isTradeable", Type = "bool", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
+				{ Name = "maxWeeklyQuantity", Type = "number", Nilable = false },
+				{ Name = "discovered", Type = "bool", Nilable = false },
 			},
 		},
 	},

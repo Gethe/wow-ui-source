@@ -2,17 +2,12 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ScrollList.lua"/>
 
-	<Button name="ScrollListLineTemplate" mixin="ScrollListLineMixin" virtual="true">
+	<Button name="ScrollListLineTemplate" mixin="ScrollListLineMixin" inherits="TemplatedListElementTemplate" virtual="true">
 		<Size x="0" y="20"/>
 		<Anchors>
 			<Anchor point="LEFT"/>
 			<Anchor point="RIGHT"/>
 		</Anchors>
-		<Scripts>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 		<NormalTexture setAllPoints="true" file="Interface\GuildFrame\GuildFrame">
 			<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
 		</NormalTexture>
@@ -33,7 +28,7 @@
 	</Button>
 
 
-	<Frame name="ScrollListTemplate" mixin="ScrollListMixin" virtual="true">
+	<Frame name="ScrollListTemplate" mixin="ScrollListMixin" inherits="TemplatedListTemplate" virtual="true">
 		<Frames>
 			<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Anchors>
@@ -41,15 +36,6 @@
 					<Anchor point="BOTTOMRIGHT" x="-28" y="3"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="ArtOverlay" setAllPoints="true" clipChildren="true">
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="SelectedHighlight" hidden="true">
-									<Color r="1" g="0.8" b="0.2" a="0.2"/>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
 					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-10"/>
@@ -70,8 +56,5 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnShow method="OnShow"/>
-		</Scripts>
 	</Frame>
 </Ui>

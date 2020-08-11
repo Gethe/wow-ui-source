@@ -1,0 +1,74 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeCraftingFrame.lua"/>
+
+	<Frame name="RuneforgeCraftingFrameTemplate" mixin="RuneforgeCraftingFrameMixin" virtual="true">
+		<Size x="448" y="454"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="RunesGlow" atlas="runecarving-frame-glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+							<Alpha childKey="SelectedTexture" duration="0.2" fromAlpha="0.25" toAlpha="1" order="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER">
+				<Texture parentKey="Background" atlas="runecarving-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ItemButton parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="CENTER" x="7" y="-6"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="UpgradeItemSlot" inherits="RuneforgeUpgradeItemSlotTemplate" frameLevel="900" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BaseItemSlot" relativePoint="BOTTOM" x="0" y="-16"/>
+				</Anchors>
+			</ItemButton>
+
+			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-82" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="45" y="-9"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PowerFrame" inherits="RuneforgePowerFrameTemplate" frameStrata="HIGH" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PowerSlot" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="20" y="-20"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

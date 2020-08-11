@@ -90,7 +90,7 @@ local VignetteInfo =
 			Fields =
 			{
 				{ Name = "Normal", Type = "VignetteType", EnumValue = 0 },
-				{ Name = "PvpBounty", Type = "VignetteType", EnumValue = 1 },
+				{ Name = "PvPBounty", Type = "VignetteType", EnumValue = 1 },
 			},
 		},
 		{
@@ -111,6 +111,7 @@ local VignetteInfo =
 				{ Name = "vignetteID", Type = "number", Nilable = false },
 				{ Name = "type", Type = "VignetteType", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
+				{ Name = "widgetSetID", Type = "number", Nilable = true },
 			},
 		},
 	},

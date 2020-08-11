@@ -83,7 +83,7 @@ function InspectPVPFrame_Update()
 
 	InspectPVPFrame.HKs:SetFormattedText(INSPECT_HONORABLE_KILLS, lifetimeHKs);
 
-	if (level < SHOW_PVP_TALENT_LEVEL) then
+	if not C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
 		InspectPVPFrame.SmallWreath:Hide();
 		InspectPVPFrame.HonorLevel:Hide();
 		InspectPVPFrame.RatedBG:Hide();

@@ -183,11 +183,13 @@ function ContributeButtonMixin:UpdateTooltip()
 			EmbeddedItemTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
 			GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
 
-			local rcName, rcAvailable, rcFormatString;
+			local rcName, rcAvailable, rcFormatString, rcAmount;
 			local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(self.contributionID);
 			local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(self.contributionID);
 			if currencyID then
-				rcName, rcAvailable = GetCurrencyInfo(currencyID);
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+				rcName = currencyInfo.name;
+				rcAvailable = currencyInfo.quantity > 0;
 				rcAmount = currencyAmount;
 				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT;
 			elseif itemID then

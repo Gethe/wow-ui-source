@@ -1,4 +1,4 @@
-PTR_IssueReporter = CreateFrame("Frame", nil, UIParent)
+PTR_IssueReporter = CreateFrame("Frame", nil, GetAppropriateTopLevelParent())
 PTR_IssueReporter.Data = {
     UnitTokens = {
         Player = "player",
@@ -14,6 +14,8 @@ PTR_IssueReporter.Data = {
     RegisteredFrameAttachedEvents = {},
     FrameAttachedSurveyFrames = {},
     RegisteredEventFunctions = {},
+    RegisteredSlashSetups = {},
+    RegisteredSlashSurveys = {},
     DefaultKeybind = "F6",
     SuppressedLocations = {},
     BugReportString = "I have encountered a bug.",
@@ -25,13 +27,14 @@ PTR_IssueReporter.Data = {
     FrameComponents = {},
     UnusedFrameComponents = {},
     SubmitText = "Submit",
+    NextText = "Next",
     FrameComponentMargin = 3,
     PopSurveyQueue = {},
     IsLoaded = false,
     SubmitButtonHeight = 32,
 }
+
 PTR_IssueReporter.Assets = {
-    TestBorder = "Interface\\DialogFrame\\UI-DialogBox-TestWatermark-Border",
     InfoIcon = "Interface\\FriendsFrame\\InformationIcon.blp",
     InfoIconHighlight = "Interface\\FriendsFrame\\InformationIcon-Highlight.blp",
     ConfusedIcon = "Interface\\TutorialFrame\\TutorialFrame-QuestionMark",
@@ -63,11 +66,73 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.Data.RegisteredButtonEndEvents.FallbackEvents = {}
     
     PTR_IssueReporter.CreateReports()
+    PTR_IssueReporter.RunPreviousSetupCommands()
     PTR_IssueReporter.CreateMainView()
-    
-    C_Timer.NewTicker(5, PTR_IssueReporter.CheckSurveyQueue)
+    if not(IsOnGlueScreen()) then
+        C_Timer.NewTicker(5, PTR_IssueReporter.CheckSurveyQueue)
+    end
     PTR_IssueReporter.Data.IsLoaded = true
     PTR_IssueReporter.HandleMapEvents()
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.GlueInit()
+    Blizzard_PTRIssueReporter_Saved = Blizzard_PTRIssueReporter_Saved or {}
+    
+    for key, value in pairs (PTR_IssueReporter.ReportEventTypes) do
+        PTR_IssueReporter.Data.RegisteredSurveys[key] = {}
+        PTR_IssueReporter.Data.RegisteredButtonEvents[key]  = {}
+        PTR_IssueReporter.Data.RegisteredButtonEndEvents[key]  = {}
+        PTR_IssueReporter.Data.RegisteredFrameAttachedEvents[key] = {}
+        PTR_IssueReporter.Data.RegisteredEventFunctions[key] = {}
+    end
+    
+    PTR_IssueReporter.Data.RegisteredSurveys.FallbackEvents = {}
+    PTR_IssueReporter.Data.RegisteredButtonEvents.FallbackEvents = {}
+    PTR_IssueReporter.Data.RegisteredButtonEndEvents.FallbackEvents = {}
+
+    PTR_IssueReporter.CreateReports()
+    PTR_IssueReporter.RunPreviousSetupCommands()
+    PTR_IssueReporter.CreateMainView()    
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SlashHandeler(msg)
+    local words = {}
+    for s in msg:gmatch("[^ ]+") do
+        table.insert(words, s)
+    end
+    
+    local unlockWord = words[2]
+    if (strupper(words[1]) == "ENABLE") and (unlockWord) and (type(PTR_IssueReporter.Data.RegisteredSlashSetups[strupper(unlockWord)]) == "function") then
+        if not (Blizzard_PTRIssueReporter_Saved.RanSetups) then
+            Blizzard_PTRIssueReporter_Saved.RanSetups = {}
+        end
+        
+        if not (Blizzard_PTRIssueReporter_Saved.RanSetups[strupper(unlockWord)]) then
+            PTR_IssueReporter.Data.RegisteredSlashSetups[strupper(unlockWord)]()
+            print(string.format("%s Survey's have been Enabled!", unlockWord))
+            Blizzard_PTRIssueReporter_Saved.RanSetups[strupper(unlockWord)] = true
+        end
+    elseif (strupper(words[1]) == "SURVEY") and (unlockWord) and (PTR_IssueReporter.Data.RegisteredSlashSurveys[strupper(unlockWord)]) then
+        PTR_IssueReporter.PopStandaloneSurvey(PTR_IssueReporter.Data.RegisteredSlashSurveys[strupper(unlockWord)])
+    end
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.RegisterSetupCommand(unlockWord, func)
+    PTR_IssueReporter.Data.RegisteredSlashSetups[strupper(unlockWord)] = func
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.RegisterSurveyPopCommand(unlockWord, survey)
+    PTR_IssueReporter.Data.RegisteredSlashSurveys[strupper(unlockWord)] = survey
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.RunPreviousSetupCommands()
+    if (Blizzard_PTRIssueReporter_Saved) and (Blizzard_PTRIssueReporter_Saved.RanSetups) then --
+        for ranSetup, value in pairs (Blizzard_PTRIssueReporter_Saved.RanSetups) do
+            if (PTR_IssueReporter.Data.RegisteredSlashSetups[ranSetup]) then
+                PTR_IssueReporter.Data.RegisteredSlashSetups[ranSetup]()
+            end        
+        end
+    end
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.GetKeybind()
@@ -106,8 +171,8 @@ function PTR_IssueReporter.CreateSurvey(reportID, reportTitle)
         DynamicTitleTokens = {},
     }
     
-    function newSurvey:AddDataCollection(index, questionType, ...)
-        PTR_IssueReporter.AddDataCollectorToReport(self, index, questionType, ...)
+    function newSurvey:AddDataCollection(questionType, ...)
+        PTR_IssueReporter.AddDataCollectorToReport(self, questionType, ...)
     end
     
     function newSurvey:RegisterPopEvent(popEventType, eventArgument)    
@@ -127,8 +192,12 @@ function PTR_IssueReporter.CreateSurvey(reportID, reportTitle)
         PTR_IssueReporter.RegisterEventToReport(PTR_IssueReporter.Data.RegisteredButtonEndEvents, self, popEventType, eventArgument)
     end
     
-    function newSurvey:RegisterFrameAttachedSurvey(frame, startEvent, endEvent, xOffset, yOffset)
-        PTR_IssueReporter.AttachSurveyToFrameOnEvent(self, frame, startEvent, endEvent, xOffset, yOffset)
+    function newSurvey:PopSurveyOnSubmit(survey)
+        newSurvey.OnSubmitPoppedSurvey = survey
+    end
+    
+    function newSurvey:RegisterFrameAttachedSurvey(frame, startEvent, endEvent, xOffset, yOffset, point, relativePoint)
+        PTR_IssueReporter.AttachSurveyToFrameOnEvent(self, frame, startEvent, endEvent, xOffset, yOffset, point, relativePoint)
     end
     
     function newSurvey:PopulateDynamicTitleToken(index, dataPackageKey, functionToUse)
@@ -165,22 +234,21 @@ PTR_IssueReporter.DataCollectorTypes = {
     RunFunction = 4,
     FromDataPackage = 5, 
     SurveyID = 6,
+    TextBlock = 7,
 }
 
-function PTR_IssueReporter.AddDataCollectorToReport(survey, index, collectorType, ...)
+function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
     local types = PTR_IssueReporter.DataCollectorTypes
     
     if (survey) and (survey.Collectors) then
         if (collectorType == types.SelectOne_MultipleChoiceQuestion) or (collectorType == types.SelectMultiple_MultipleChoiceQuestion) then
             local question, choices, displayVertically = ...
-            
             if (question) and (choices) and ((type(choices) == "table")) then                
                 if (displayVertically == null) then
                     displayVertically = false
                 end
                 
                 local newDataCollector = {
-                    index = index,
                     collectorType = collectorType,
                     question = question,
                     choices = choices,
@@ -195,7 +263,6 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, index, collectorType
             
             if (question) then
                 local newDataCollector = {
-                    index = index,
                     collectorType = collectorType,
                     question = question,
                     choices = choices,
@@ -208,7 +275,6 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, index, collectorType
 
             if (collectorFunction) then
                 local newDataCollector = {
-                    index = index,
                     collectorType = collectorType,
                     collectorFunction = collectorFunction,
                 }
@@ -221,7 +287,6 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, index, collectorType
 
             if (dataPackageKey) then
                 local newDataCollector = {
-                    index = index,
                     collectorType = collectorType,
                     dataPackageKey = dataPackageKey,
                 }
@@ -229,8 +294,15 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, index, collectorType
             end
         elseif collectorType == types.SurveyID then
             local newDataCollector = {
-                index = index,
                 collectorType = collectorType,
+            }
+            table.insert(survey.Collectors, newDataCollector)
+        elseif collectorType == types.TextBlock then
+            local text = ...
+            
+            local newDataCollector = {
+                collectorType = collectorType,
+                text = text,
             }
             table.insert(survey.Collectors, newDataCollector)
         end
@@ -257,11 +329,13 @@ function PTR_IssueReporter.RegisterEventToReport(tableToUse, survey, popEventTyp
     end
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachSurveyToFrameOnEvent(survey, frameToAttach, showPopEventType, hidePopEventType, xOffset, yOffset)
+function PTR_IssueReporter.AttachSurveyToFrameOnEvent(survey, frameToAttach, showPopEventType, hidePopEventType, xOffset, yOffset, point, relativePoint)
     if (survey) and (showPopEventType) and (PTR_IssueReporter.ReportEventTypes[showPopEventType]) and (hidePopEventType) then
         local framePopData = {
             xOffset = xOffset or 0,
             yOffset = yOffset or 0,
+            point = point or "TOP",
+            relativePoint = relativePoint or "BOTTOM",
             survey = survey,
             endEvent = hidePopEventType,
             frame = frameToAttach,
@@ -382,7 +456,7 @@ function PTR_IssueReporter.HandleTooltipKeypress()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.QueueStandaloneSurvey(event, survey, dataPackage)
-    if (event == PTR_IssueReporter.ReportEventTypes.UIButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.Tooltip) then -- These event types warrant an immediate pop due to them being prompted from the player, the rest should be delayed until combat ends since their are prompted from game state
+    if (IsOnGlueScreen() or event == PTR_IssueReporter.ReportEventTypes.UIButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.Tooltip) then -- These event types warrant an immediate pop due to them being prompted from the player, the rest should be delayed until combat ends since their are prompted from game state
         PTR_IssueReporter.PopStandaloneSurvey(survey, dataPackage)
     else
         table.insert(PTR_IssueReporter.Data.PopSurveyQueue, {survey = survey, dataPackage = dataPackage})
@@ -434,7 +508,6 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
     PTR_IssueReporter.CleanReportFrame(surveyFrame)
     
     local types = PTR_IssueReporter.DataCollectorTypes
-    table.sort (survey.Collectors, function (k1, k2) return tonumber(k1.index) < tonumber(k2.index) end)
     local collectedString = ""
     local totalFrameHeight = 0
     
@@ -446,8 +519,9 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
         PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
     end
     
-    for key, collector in pairs (survey.Collectors) do        
-        local newString = ""        
+    for key, collector in pairs (survey.Collectors) do   
+        local newString = "" 
+        local skipExpandingString = false
         if (collector.collectorType == types.RunFunction) then
             if (collector.collectorFunction) and (type(collector.collectorFunction) == "function") then
                 newString = collector.collectorFunction(dataPackage)
@@ -465,17 +539,23 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
             newString = "%s"
         elseif (collector.collectorType == types.SurveyID) then
             newString = survey.ID
+        elseif (collector.collectorType == types.TextBlock) then
+            PTR_IssueReporter.AttachTextBlock(surveyFrame, collector.text)
+            skipExpandingString = true
         end
         
-        if collectedString == "" then
-            collectedString = string.format("%s", newString)
-        else
-            collectedString = string.format("%s,%s", collectedString, newString)
+        if not (skipExpandingString) then
+            if collectedString == "" then
+                collectedString = string.format("%s", newString)
+            else
+                collectedString = string.format("%s,%s", collectedString, newString)
+            end
         end
     end
     
     surveyFrame:SetHeight(surveyFrame.FrameHeight - PTR_IssueReporter.Data.FrameComponentMargin)
     surveyFrame.SurveyString = collectedString
+    surveyFrame.CurrentSurvey = survey
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.PopFrameAttachedSurvey(framePopData, dataPackage)
@@ -502,12 +582,12 @@ function PTR_IssueReporter.PopFrameAttachedSurvey(framePopData, dataPackage)
         local surveyFrame = PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame]
         surveyFrame:Show()
         PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, framePopData.survey, dataPackage)
-        surveyFrame:SetPoint("TOP", framePopData.frame, "BOTTOM", framePopData.xOffset or 0, framePopData.yOffset or 0)
+        surveyFrame:SetPoint(framePopData.point, framePopData.frame, framePopData.relativePoint, framePopData.xOffset, framePopData.yOffset)
     end
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.PopStandaloneSurvey(survey, dataPackage)
-    local standaloneSurveyFrame = PTR_IssueReporter.GetStandaloneSurveyFrame()    
+    local standaloneSurveyFrame = PTR_IssueReporter.GetStandaloneSurveyFrame((survey.OnSubmitPoppedSurvey)) --survey.OnSubmitPoppedSurvey)    
     PTR_IssueReporter.BuildSurveyFrameFromSurveyData(standaloneSurveyFrame.SurveyFrame, survey, dataPackage)
     standaloneSurveyFrame:Hide() -- Makes sure that the OnShow function fires to ensure proper positioning
     standaloneSurveyFrame:Show()
@@ -521,7 +601,30 @@ end
 local function PlayerEnteringWorldHandler()
     PTR_IssueReporter.Init()
     PTR_IssueReporter:UnregisterEvent("PLAYER_ENTERING_WORLD")  
+    
+    SLASH_PTRFEEDBACK1 = "/PTR"
+    SLASH_PTRFEEDBACK2 = "/PTRFEEDBACK"
+    SlashCmdList["PTRFEEDBACK"] = PTR_IssueReporter.SlashHandeler
 end
-PTR_IssueReporter:RegisterEvent("PLAYER_ENTERING_WORLD")  
-PTR_IssueReporter:SetScript("OnEvent", PlayerEnteringWorldHandler)
+if not(IsOnGlueScreen()) then
+	PTR_IssueReporter:RegisterEvent("PLAYER_ENTERING_WORLD")  
+	PTR_IssueReporter:SetScript("OnEvent", PlayerEnteringWorldHandler)
+end
+
+local function PlayerEnteringCharacterCustomization()
+    if PTR_IssueReporter.ReportBug then
+        PTR_IssueReporter:Show()
+    else
+        PTR_IssueReporter.GlueInit()
+    end
+end
+
+local function CustomizationScreenExit()
+    PTR_IssueReporter:Hide()
+end
+
+if IsOnGlueScreen() then
+    CharCustomizeFrame:HookScript("OnShow", PlayerEnteringCharacterCustomization)
+    CharCustomizeFrame:HookScript("OnHide", CustomizationScreenExit)
+end
 ----------------------------------------------------------------------------------------------------

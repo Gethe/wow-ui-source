@@ -92,9 +92,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
@@ -282,9 +280,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
@@ -412,9 +408,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
@@ -767,7 +761,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -791,7 +785,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -830,7 +824,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -850,7 +844,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -895,12 +889,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.ToggleTest" relativePoint="RIGHT" x="3" y="0"/>
 							<Anchor point="RIGHT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-								self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-							</OnLoad>
-						</Scripts>
 						<Frames>
 							<StatusBar parentKey="Status" inherits="TextStatusBar">
 								<Anchors>

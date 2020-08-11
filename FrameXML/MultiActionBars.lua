@@ -12,7 +12,7 @@ function MultiActionButtonDown (bar, id)
 	end
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
+		button:UpdateState();
 	end
 end
 
@@ -22,7 +22,7 @@ function MultiActionButtonUp (bar, id)
 		button:SetButtonState("NORMAL");
 		if(not GetCVarBool("ActionButtonUseKeyDown")) then
 			SecureActionButton_OnClick(button, "LeftButton");
-			ActionButton_UpdateState(button);
+			button:UpdateState();
 		end
 	end
 end
@@ -134,9 +134,9 @@ function MultiActionBar_UpdateGrid (barName, show, reason)
 	for i = 1, NUM_MULTIBAR_BUTTONS do
 		local button = _G[barName.."Button"..i];
 		if ( show and not button.noGrid) then
-			ActionButton_ShowGrid(button, reason);
+			button:ShowGrid(reason);
 		else
-			ActionButton_HideGrid(button, reason);
+			button:HideGrid(reason);
 		end
 	end
 end

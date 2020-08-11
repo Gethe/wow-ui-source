@@ -1,4 +1,4 @@
-AzeriteEmpoweredItemUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+AzeriteEmpoweredItemUIMixin = CreateFromMixins(CallbackRegistryMixin);
 
 AzeriteEmpoweredItemUIMixin:GenerateCallbackEvents(
 {
@@ -16,7 +16,7 @@ local AZERITE_EMPOWERED_FRAME_EVENTS = {
 AZERITE_EMPOWERED_ITEM_MAX_TIERS = 5;
 
 function AzeriteEmpoweredItemUIMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
 
 	UIPanelWindows[self:GetName()] = { area = "left", pushable = 1, xoffset = 35, yoffset = -9, bottomClampOverride = 100, checkFit = 1, showFailedFunc = function() self:OnShowFailed(); end, };
 
@@ -117,7 +117,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame, animationBegin)
 	if animationBegin then
-		ShakeFrameRandom(self.ClipFrame.BackgroundFrame, 1, .7, .05);
+		ScriptAnimationUtil.ShakeFrameRandom(self.ClipFrame.BackgroundFrame, 1, .7, .05);
 	else
 		self:OnTierAnimationProgress(tierFrame, nil);
 

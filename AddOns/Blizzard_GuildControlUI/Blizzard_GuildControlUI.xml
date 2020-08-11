@@ -1247,17 +1247,6 @@
 						<Offset x="13" y="58"/>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="GuildBankTabLabel" inherits="GameFontHighlightSmall" text="GUILDBANK_TAB_COLON">
@@ -1407,12 +1396,6 @@
 						</Anchors>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

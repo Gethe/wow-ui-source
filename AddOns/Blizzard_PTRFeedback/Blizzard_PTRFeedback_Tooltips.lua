@@ -19,11 +19,11 @@ function PTR_IssueReporter.SetupSpellTooltips()
             PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.spell, id, name)
         end
     end
-    
-    hooksecurefunc(GameTooltip, "SetUnitAura", setAuraTooltipFunction)    
+
+    hooksecurefunc(GameTooltip, "SetUnitAura", setAuraTooltipFunction)
     hooksecurefunc(GameTooltip, "SetUnitBuff", function(self, unit, slotNumber) setAuraTooltipFunction(self, unit, slotNumber, "HELPFUL") end)
     hooksecurefunc(GameTooltip, "SetUnitDebuff", function(self, unit, slotNumber) setAuraTooltipFunction(self, unit, slotNumber, "HARMFUL") end)
-    
+
     hooksecurefunc("SetItemRef", function(link, ...)
         local id = tonumber(link:match("spell:(%d+)"))
         local name = GetSpellInfo(id)
@@ -34,7 +34,7 @@ function PTR_IssueReporter.SetupSpellTooltips()
 
     GameTooltip:HookScript("OnTooltipSetSpell", function(self)
         local name, id = self:GetSpell()
-        if (id) then 
+        if (id) then
             PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.spell, id, name)
         end
     end)
@@ -82,10 +82,11 @@ end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupQuestTooltips()
     hooksecurefunc("QuestMapLogTitleButton_OnEnter", function(self)
-        local title = GetQuestLogTitle(self.questLogIndex)
-        local questID = select(8, GetQuestLogTitle(self.questLogIndex))
-        if (questID) and (title) then
-            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title)
+    	if self.questID then
+        	local title = C_QuestLog.GetTitleForQuestID(self.questID);
+        	if title then
+            	PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, self.questID, title)
+        	end
         end
      end)
 end
@@ -110,15 +111,15 @@ function PTR_IssueReporter.SetupAchievementTooltips()
                     GameTooltip:Hide()
                 end)
             end
-            frame:UnregisterEvent("ADDON_LOADED")            
+            frame:UnregisterEvent("ADDON_LOADED")
         end
     end)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupCurrencyTooltips()
     hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
-        local id = tonumber(string.match(GetCurrencyListLink(index),"currency:(%d+)"))
-        local name = GetCurrencyInfo(id)
+        local id = tonumber(string.match(C_CurrencyInfo.GetCurrencyListLink(index),"currency:(%d+)"))
+        local name = C_CurrencyInfo.GetCurrencyInfo(id).name
         if (id) then
             PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.currency, id, name)
         end

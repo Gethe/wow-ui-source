@@ -34,7 +34,7 @@ end
 
 function BoostTutorial:SCENARIO_UPDATE()
 	if not IsBoostTutorialScenario() then
-		MainMenuMicroButton_SetAlertsEnabled(true);
+		MainMenuMicroButton_SetAlertsEnabled(true, "boostTutorial");
 		self:UnhighlightSpells();
 	end
 end
@@ -211,7 +211,7 @@ function BoostTutorial:Init()
 	local eventFrame = CreateFrame("Frame");
 	eventFrame:SetScript("OnEvent", function (frame, ...) self:OnEvent(...) end);
 
-	MainMenuMicroButton_SetAlertsEnabled(false);
+	MainMenuMicroButton_SetAlertsEnabled(false, "boostTutorial");
 
 	eventFrame:RegisterEvent("TUTORIAL_UNHIGHLIGHT_SPELL");
 	eventFrame:RegisterEvent("TUTORIAL_HIGHLIGHT_SPELL");

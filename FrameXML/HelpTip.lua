@@ -12,9 +12,13 @@
 		cvar, cvarValue,						-- cvar to set when closed by user or from HelpTip:Acknowledge()
 		cvarBitfield, bitfieldFlag,				-- cvarbitfield to set when closed by user or from HelpTip:Acknowledge()
 		onHideCallback, callbackArg,			-- callback whenever the helptip is closed:  onHideCallback(acknowledged, callbackArg)
+		onAcknowledgeCallback					-- callback whenever the helptip is closed by the user clicking its button: onAcknowledgeCallback(callbackArg)
 		checkCVars = false,						-- on: helptip will only be shown if the cvar or cvarBitfield is not set
 		autoEdgeFlipping = false,				-- on: will flip helptip to opposite edge based on relative region's center vs helptip's center during OnUpdate
+		autoHorizontalSlide = false,			-- on: will change the alignment to fit helptip on screen during OnUpdate
 		useParentStrata	= false,				-- whether to use parent framestrata
+		system = ""								-- reference string
+		systemPriority = 0,						-- if a system and a priority is specified, higher priority helptips will close another helptip in that system
 	}
 ]]--
 
@@ -51,6 +55,7 @@ HelpTip.ButtonStyle = {
 	Close = 2,
 	Okay = 3,
 	GotIt = 4,
+	Next = 5,
 };
 
 -- internal use enums
@@ -108,11 +113,16 @@ HelpTip.Buttons = {
 	[HelpTip.ButtonStyle.Close]	= { textWidthAdj = -6,	heightAdj = 0,	parentKey = "CloseButton" },
 	[HelpTip.ButtonStyle.Okay]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = OKAY },
 	[HelpTip.ButtonStyle.GotIt]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_BUTTON_GOT_IT },
+	[HelpTip.ButtonStyle.Next]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = NEXT },
 };
 
-HelpTip.verticalPadding	 = 29;
-HelpTip.minimumHeight	 = 69;
+HelpTip.verticalPadding	 = 31;
+HelpTip.minimumHeight	 = 72;
 HelpTip.defaultTextWidth = 196;
+HelpTip.width = 226;
+HelpTip.halfWidth = HelpTip.width / 2;
+
+HelpTip.supressHelpTips = {};
 
 do
 	local function HelpTipReset(framePool, frame)
@@ -122,6 +132,19 @@ do
 	end
 
 	HelpTip.framePool = CreateFramePool("FRAME", nil, "HelpTipTemplate", HelpTipReset);
+end
+
+function HelpTip:SetHelpTipsEnabled(flag, enabled)
+	HelpTip.supressHelpTips[flag] = enabled or false;
+end
+
+function HelpTip:AreHelpTipsEnabled()
+	for flagType, flagValue in pairs(self.supressHelpTips) do
+		if not flagValue then
+			return false;
+		end
+	end
+	return true;
 end
 
 function HelpTip:Show(parent, info, relativeRegion)
@@ -144,6 +167,14 @@ function HelpTip:Show(parent, info, relativeRegion)
 end
 
 function HelpTip:CanShow(info)
+	if Kiosk.IsEnabled() then
+		return false;
+	end
+
+	if not self:AreHelpTipsEnabled() then
+		return false;
+	end
+
 	if info.checkCVars then
 		if info.cvar then
 			if GetCVar(info.cvar) ~= info.cvarValue then
@@ -156,14 +187,57 @@ function HelpTip:CanShow(info)
 			end
 		end
 	end
+
+	-- priority
+	if info.system and info.systemPriority then
+		for frame in self.framePool:EnumerateActive() do
+			if frame.info.system == info.system and frame.info.systemPriority then
+				if info.systemPriority > frame.info.systemPriority then
+					frame:Close();
+					-- by design there can only be one such frame, no need to keep going
+					break;
+				else
+					-- higher or equal priority is already shown
+					return false;
+				end
+			end
+		end
+	end
+
 	return true;
 end
 
+function HelpTip:ForceHideAll()
+	self:SetHelpTipsEnabled("ForceHideAll", false);
+	self.framePool:ReleaseAll();
+	self:SetHelpTipsEnabled("ForceHideAll", true);
+end
+
+function HelpTip:HideAllSystem(system)
+	local framesToClose = { };
+
+	for frame in self.framePool:EnumerateActive() do
+		if frame.info.system == system then
+			tinsert(framesToClose, frame);
+		end
+	end
+
+	for i, frame in ipairs(framesToClose) do
+		frame:Close();
+	end	
+end
+
 function HelpTip:HideAll(parent)
+	local framesToClose = { };
+
 	for frame in self.framePool:EnumerateActive() do
 		if frame:Matches(parent) then
-			frame:Close();
+			tinsert(framesToClose, frame);
 		end
+	end
+
+	for i, frame in ipairs(framesToClose) do
+		frame:Close();
 	end
 end
 
@@ -188,6 +262,15 @@ end
 function HelpTip:IsShowingAny(parent)
 	for frame in self.framePool:EnumerateActive() do
 		if frame:Matches(parent) then
+			return true;
+		end
+	end
+	return false;
+end
+
+function HelpTip:IsShowingAnyInSystem(system)
+	for frame in self.framePool:EnumerateActive() do
+		if frame.info.system == system then
 			return true;
 		end
 	end
@@ -236,6 +319,9 @@ function HelpTipTemplateMixin:OnHide()
 	if info.onHideCallback then
 		info.onHideCallback(self.acknowledged, info.callbackArg);
 	end
+	if self.acknowledged and info.onAcknowledgeCallback then
+		info.onAcknowledgeCallback(info.callbackArg);
+	end
 	HelpTip:Release(self);
 end
 
@@ -247,21 +333,49 @@ end
 
 function HelpTipTemplateMixin:OnUpdate()
 	local rx, ry = self.relativeRegion:GetCenter();
-	local ux, uy = UIParent:GetCenter();
 	local targetPoint = self.info.targetPoint;
+	local targetAlignment = self.info.alignment;
 
-	local useMin;
-	if HelpTip:IsPointVertical(targetPoint) then
-		useMin = ry <= uy;
-	else
-		useMin = rx <= ux;
+	if self.info.autoHorizontalSlide then
+		-- check right edge first
+		local rightEdge = UIParent:GetRight();
+		local canFitOnRight = rx + HelpTip.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Right][1] < rightEdge;
+		if not canFitOnRight then
+			if rx + HelpTip.halfWidth < rightEdge then
+				targetAlignment = HelpTip.Alignment.Center;
+			else
+				targetAlignment = HelpTip.Alignment.Right;
+			end
+		else
+			-- left edge
+			local leftEdge = UIParent:GetLeft();
+			local canFitOnLeft = rx - HelpTip.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Left][1] > leftEdge;
+			if not canFitOnLeft then
+				if rx - HelpTip.halfWidth > leftEdge then
+					targetAlignment = HelpTip.Alignment.Center;
+				else
+					targetAlignment = HelpTip.Alignment.Left;
+				end
+			end
+		end
 	end
-	if useMin then
-		targetPoint = min(self.flippedTargetPoint, targetPoint);
-	else
-		targetPoint = max(self.flippedTargetPoint, targetPoint);
+
+	if self.info.autoEdgeFlipping then
+		local ux, uy = UIParent:GetCenter();
+		local useMin;
+		if HelpTip:IsPointVertical(targetPoint) then
+			useMin = ry <= uy;
+		else
+			useMin = rx <= ux;
+		end
+		if useMin then
+			targetPoint = min(self.flippedTargetPoint, targetPoint);
+		else
+			targetPoint = max(self.flippedTargetPoint, targetPoint);
+		end
 	end
-	self:AnchorAndRotate(targetPoint);
+
+	self:AnchorAndRotate(targetPoint, targetAlignment);
 end
 
 function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
@@ -278,6 +392,9 @@ function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
 		local targetPoint = self:GetTargetPoint();
 		local pointInfo = HelpTip.PointInfo[targetPoint];
 		self.flippedTargetPoint = pointInfo.oppositePoint;
+		self:SetScript("OnUpdate", function() self:OnUpdate(); end);
+	end
+	if info.autoHorizontalSlide then
 		self:SetScript("OnUpdate", function() self:OnUpdate(); end);
 	end
 
@@ -298,17 +415,16 @@ function HelpTipTemplateMixin:GetButtonInfo()
 	return HelpTip.Buttons[buttonStyle];
 end
 
-function HelpTipTemplateMixin:AnchorAndRotate(overrideTargetPoint)
+function HelpTipTemplateMixin:AnchorAndRotate(overrideTargetPoint, overrideAlignment)
 	local baseTargetPoint = self:GetTargetPoint();
 	local targetPoint = overrideTargetPoint or baseTargetPoint;
-	if targetPoint == self.appliedTargetPoint then
+	local alignment = overrideAlignment or self:GetAlignment();
+	if targetPoint == self.appliedTargetPoint and alignment == self.appliedAlignment then
 		return;
 	end
 
 	local pointInfo = HelpTip.PointInfo[targetPoint];
-	local alignment = self:GetAlignment();
 	local rotationInfo = HelpTip.Rotations[pointInfo.arrowRotation];
-
 	-- anchor
 	local arrowAnchor = rotationInfo.anchors[alignment];
 	local offsetX, offsetY = TransformOffsetsForRotation(HelpTip.DistanceOffsets[alignment], rotationInfo);
@@ -333,6 +449,7 @@ function HelpTipTemplateMixin:AnchorAndRotate(overrideTargetPoint)
 		self:RotateArrow(pointInfo.arrowRotation);
 		self:AnchorArrow(rotationInfo, alignment);
 	end
+	self.appliedAlignment = alignment;
 	self.appliedTargetPoint = targetPoint;
 end
 
@@ -343,12 +460,12 @@ function HelpTipTemplateMixin:Layout()
 
 	-- starting defaults
 	local textOffsetX = 15;
-	local textOffsetY = 0;
+	local textOffsetY = 1;
 	local textWidth = HelpTip.defaultTextWidth;
 	local height = HelpTip.verticalPadding;
 	-- button
 	textWidth = textWidth + buttonInfo.textWidthAdj;
-	textOffsetY = buttonInfo.heightAdj / 2;
+	textOffsetY = textOffsetY + buttonInfo.heightAdj / 2;
 	height = height + buttonInfo.heightAdj;
 	if buttonInfo.parentKey then
 		self[buttonInfo.parentKey]:Show();
@@ -376,7 +493,14 @@ function HelpTipTemplateMixin:ApplyText()
 	local color = info.textColor or HIGHLIGHT_FONT_COLOR;
 	self.Text:SetTextColor(color:GetRGB());
 
-	local justifyH = info.textJustifyH or "LEFT";
+	local justifyH = info.textJustifyH;
+	if not justifyH then
+		if self.Text:GetNumLines() == 1 then
+			justifyH = "CENTER";
+		else
+			justifyH = "LEFT";
+		end
+	end
 	self.Text:SetJustifyH(justifyH);
 end
 
@@ -423,6 +547,7 @@ function HelpTipTemplateMixin:Reset()
 	-- flippity flip settings
 	self.appliedTargetPoint = nil;
 	self.flippedTargetPoint = nil;
+	self.appliedAlignment = nil;
 	self:SetScript("OnUpdate", nil);
 end
 

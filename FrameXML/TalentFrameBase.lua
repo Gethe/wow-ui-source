@@ -52,7 +52,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 		local talentRow = TalentFrame["tier"..tier];
 		local rowAvailable = true;
 		
-		local tierAvailable, selectedTalent = GetTalentTierInfo(tier, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
+		local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(tier, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
 		-- Skip updating rows that we recently selected a talent for but have not received a server response
 		if (TalentFrame.inspect or not TalentFrame.talentInfo[tier] or
 			(selectedTalent ~= 0 and TalentFrame.talentInfo[tier] == selectedTalent)) then
@@ -100,7 +100,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 						SetDesaturation(button.icon, not (selected or grantedByAura));
 						button.border:SetShown(selected or grantedByAura);
 						if ( grantedByAura ) then
-							local color = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_LEGENDARY];
+							local color = ITEM_QUALITY_COLORS[Enum.ItemQuality.Legendary];
 							button.border:SetVertexColor(color.r, color.g, color.b);
 						else
 							button.border:SetVertexColor(1, 1, 1);
@@ -120,6 +120,8 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 			TalentFrame_UpdateRowGlow(talentRow, restartGlow);
 			-- do tier level number after every row
 			if(talentRow.level ~= nil) then
+				talentRow.level:SetText(tierUnlockLevel);
+
 				if ( selectedTalent == 0 and tierAvailable) then
 					talentRow.level:SetTextColor(1, 0.82, 0);
 				else
@@ -192,11 +194,6 @@ local SLOT_NEW_STATE_ACKNOWLEDGED = 3;
 
 function PvpTalentSlotMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
-	if (self.isTrinket) then
-		self.Arrow:SetSize(43, 44);
-		self.Arrow:SetPoint("LEFT", self.Border, "RIGHT", -16, -1);
-		self.Texture:SetSize(41, 41);
-	end
 	self.slotNewState = SLOT_NEW_STATE_OFF;
 end
 

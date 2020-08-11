@@ -313,9 +313,6 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 	local id = self:GetID();
 	local partyID = "party"..id;
 
-	local inPhase = UnitInPhase(partyID);
-	local notInSameWarMode = UnitIsWarModePhased(partyID);
-
 	if ( UnitInOtherParty(partyID) ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
@@ -344,23 +341,19 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 			self.notPresentIcon.Border:Hide();
 			self.notPresentIcon:Show();
 		end
-	elseif ( (notInSameWarMode or not inPhase) and UnitIsConnected(partyID) ) then
-		self:SetAlpha(0.6);
-		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
-		self.notPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
-		self.notPresentIcon.Border:Hide();
-		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
-		if ( notInSameWarMode ) then
-			if C_PvP.IsWarModeDesired() then
-				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_DISABLED;
-			else
-				self.notPresentIcon.tooltip = PARTY_PLAYER_WARMODE_ENABLED;
-			end
-		end
-		self.notPresentIcon:Show();
 	else
-		self:SetAlpha(1);
-		self.notPresentIcon:Hide();
+		local phaseReason = UnitIsConnected(partyID) and UnitPhaseReason(partyID) or nil;
+		if phaseReason then
+			self:SetAlpha(0.6);
+			self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
+			self.notPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+			self.notPresentIcon.Border:Hide();
+			self.notPresentIcon.tooltip = PartyUtil.GetPhasedReasonString(phaseReason, partyID);
+			self.notPresentIcon:Show();
+		else
+			self:SetAlpha(1);
+			self.notPresentIcon:Hide();
+		end
 	end
 
 	PartyMemberFrame_UpdateVoiceActivityNotification(self);
@@ -380,12 +373,12 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		if ( UnitExists("party"..self:GetID()) ) then
 			PartyMemberFrame_UpdateMember(self);
 			PartyMemberFrame_UpdateOnlineStatus(self);
+			PartyMemberFrame_UpdateAssignedRoles(self);
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
-		return;
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
 	elseif ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then

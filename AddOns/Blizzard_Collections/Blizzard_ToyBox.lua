@@ -20,6 +20,18 @@ function ToyBox_OnLoad(self)
 	self.OnPageChanged = function(userAction)
 		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		ToyBox_UpdateButtons();
+		if userAction and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) then
+			local helpTipInfo = {
+				text = TOYBOX_MOUSEWHEEL_PAGING_HELP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				hideArrow = true,
+				offsetX = 44,
+			};
+			HelpTip:Show(self, helpTipInfo, self.PagingFrame);
+		end
 	end
 end
 
@@ -54,7 +66,7 @@ function ToyBox_OnShow(self)
 
 	if(C_ToyBox.HasFavorites()) then
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
-		self.favoriteHelpBox:Hide();
+		HelpTip:Hide(self, TOYBOX_FAVORITE_HELP);
 	end
 
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");
@@ -77,7 +89,7 @@ end
 
 function ToyBox_OnMouseWheel(self, value)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true);
-	self.mousewheelPagingHelpBox:Hide();
+	HelpTip:Hide(self, TOYBOX_MOUSEWHEEL_PAGING_HELP);
 	ToyBox.PagingFrame:OnMouseWheel(value);
 end
 
@@ -98,7 +110,7 @@ function ToyBoxOptionsMenu_Init(self, level)
 		info.func = function()
 			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, true);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
-			ToyBox.favoriteHelpBox:Hide();
+			HelpTip:Hide(ToyBox, TOYBOX_FAVORITE_HELP);
 		end
 	end
 
@@ -268,9 +280,17 @@ function ToySpellButton_UpdateButton(self)
 				ToyBox.firstCollectedToyID = self.itemID;
 			end
 
-			if (ToyBox.firstCollectedToyID == self.itemID and not ToyBox.favoriteHelpBox:IsVisible() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
-				ToyBox.favoriteHelpBox:Show();
-				ToyBox.favoriteHelpBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -5, -20);
+			if (ToyBox.firstCollectedToyID == self.itemID and not HelpTip:IsShowing(ToyBox, TOYBOX_FAVORITE_HELP) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+				local helpTipInfo = {
+					text = TOYBOX_FAVORITE_HELP,
+					buttonStyle = HelpTip.ButtonStyle.Close,
+					cvarBitfield = "closedInfoFrames",
+					bitfieldFlag = LE_FRAME_TUTORIAL_TOYBOX_FAVORITE,
+					targetPoint = HelpTip.Point.BottomEdgeCenter,
+					alignment = HelpTip.Alignment.Left,
+					offsetY = 0,
+				};
+				HelpTip:Show(ToyBox, helpTipInfo, self);
 			end
 		else
 			iconTexture:Hide();
@@ -315,7 +335,7 @@ function ToySpellButton_UpdateButton(self)
 end
 
 function ToyBox_UpdateButtons()
-	ToyBox.favoriteHelpBox:Hide();
+	HelpTip:Hide(ToyBox, TOYBOX_FAVORITE_HELP);
 	for i = 1, TOYS_PER_PAGE do
 	    local button = ToyBox.iconsFrame["spellButton"..i];
 		ToySpellButton_UpdateButton(button);

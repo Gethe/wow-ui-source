@@ -16,23 +16,23 @@ function ClickToZoomDataProviderMixin:FadeOut()
 	self.MapLabel.FadeOutAnim:Play();
 end
 
+function ClickToZoomDataProviderMixin:OnZoneLabelFadeIn(isContinent)
+	if isContinent then
+		self:FadeIn();
+	end
+end
+
+function ClickToZoomDataProviderMixin:OnZoneLabelFadeOut(isContinent)
+	if isContinent then
+		self:FadeOut();
+	end
+end
+
 function ClickToZoomDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	
-	self.fadeInCallback = self.fadeInCallback or function(event, isContinent)
-		if isContinent then
-			self:FadeIn();
-		end
-	end
-	
-	self.fadeOutCallback = self.fadeOutCallback or function(event, isContinent)
-		if isContinent then
-			self:FadeOut();
-		end
-	end
-	
-	self:GetMap():RegisterCallback("ZoneLabelFadeInStart", self.fadeInCallback);
-	self:GetMap():RegisterCallback("ZoneLabelFadeOutStart", self.fadeOutCallback);
+
+	self:GetMap():RegisterCallback("ZoneLabelFadeInStart", self.OnZoneLabelFadeIn, self);
+	self:GetMap():RegisterCallback("ZoneLabelFadeOutStart", self.OnZoneLabelFadeOut, self);
 
 	if self.MapLabel then
 		self.MapLabel:SetParent(self:GetMap());
@@ -47,8 +47,8 @@ function ClickToZoomDataProviderMixin:OnAdded(mapCanvas)
 end
 
 function ClickToZoomDataProviderMixin:OnRemoved(mapCanvas)
-	self:GetMap():UnregisterCallback("ZoneLabelFadeInStart", self.fadeInCallback);
-	self:GetMap():UnregisterCallback("ZoneLabelFadeOutStart", self.fadeOutCallback);	
+	self:GetMap():UnregisterCallback("ZoneLabelFadeInStart", self);
+	self:GetMap():UnregisterCallback("ZoneLabelFadeOutStart", self);	
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end

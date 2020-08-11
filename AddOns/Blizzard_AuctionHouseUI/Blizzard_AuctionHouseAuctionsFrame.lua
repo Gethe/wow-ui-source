@@ -27,7 +27,7 @@ end
 
 AuctionHouseAuctionsSummaryLineMixin = {};
 
-function AuctionHouseAuctionsSummaryLineMixin:InitLine(auctionsFrame)
+function AuctionHouseAuctionsSummaryLineMixin:InitElement(auctionsFrame)
 	self.auctionsFrame = auctionsFrame;
 end
 
@@ -206,7 +206,7 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 	if event == "OWNED_AUCTIONS_UPDATED" then
 		self.AllAuctionsList:SetSelectedEntry(nil);
 		self.AllAuctionsList:Reset();
-		self.SummaryList:RefreshScrollFrame();
+		self.SummaryList:RefreshListDisplay();
 		self:ValidateDisplayMode();
 	elseif event == "ITEM_SEARCH_RESULTS_UPDATED" then
 		self.ItemList:DirtyScrollFrame();
@@ -216,7 +216,7 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 		self.BidsList:DirtyScrollFrame();
 
 		if self:IsDisplayingBids() then
-			self.SummaryList:RefreshScrollFrame();
+			self.SummaryList:RefreshListDisplay();
 			self:ValidateDisplayMode();
 		end
 
@@ -224,7 +224,7 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 		self.BidsList:DirtyScrollFrame();
 
 		if self:IsDisplayingBids() then
-			self.SummaryList:RefreshScrollFrame();
+			self.SummaryList:RefreshListDisplay();
 		end
 	elseif event == "AUCTION_CANCELED" then
 		self:RefreshSeachResults();
@@ -241,7 +241,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeSummaryList()
 	end
 
 	self.SummaryList:SetSelectionCallback(OnSummaryLineSelectedCallback);
-	self.SummaryList:SetLineTemplate("AuctionHouseAuctionsSummaryLineTemplate", self);
+	self.SummaryList:SetElementTemplate("AuctionHouseAuctionsSummaryLineTemplate", self);
 end
 
 function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
@@ -489,7 +489,7 @@ end
 function AuctionHouseAuctionsFrameMixin:OnBidsListSearchResultSelected(bidInfo)
 	if bidInfo then
 		local isOwnerItem = false;
-		self:SetAuction(bidInfo.auctionID, bidInfo.minBid, bidInfo.buyoutAmount, isOwnerItem);
+		self:SetAuction(bidInfo.auctionID, bidInfo.minBid, bidInfo.buyoutAmount, isOwnerItem, bidInfo.bidder);
 	else
 		self:SetAuction(nil);
 	end
@@ -501,7 +501,7 @@ function AuctionHouseAuctionsFrameMixin:OnItemSearchResultSelected(itemSearchRes
 			self:SelectAuction(itemSearchResultInfo);
 			self:SetAuction(nil);
 		else
-			self:SetAuction(itemSearchResultInfo.auctionID, itemSearchResultInfo.minBid, itemSearchResultInfo.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(itemSearchResultInfo));
+			self:SetAuction(itemSearchResultInfo.auctionID, itemSearchResultInfo.minBid, itemSearchResultInfo.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(itemSearchResultInfo), itemSearchResultInfo.bidder);
 		end
 	else
 		self:SelectAuction(nil);

@@ -284,15 +284,54 @@ function ChannelRosterButtonMixin:UpdateNameSize()
 	end
 end
 
+function ChannelRosterButtonMixin:GetMemberChannelRank()
+	local channel = ChannelFrame:GetList():GetSelectedChannelButton();
+	if channel then
+		local ruleset, activePlayerRole = channel:GetChannelRuleset();
+		if ruleset == Enum.ChatChannelRuleset.Mentor then
+			local playerLocation = self:GetMemberPlayerLocation();
+			if playerLocation then
+				local role = C_PlayerMentorship.GetMentorshipStatus(playerLocation);
+				-- Only returning ranks for those player who don't match the local player.
+				if playerLocation and role ~= activePlayerRole then
+					if role == Enum.PlayerMentorshipStatus.Mentor then
+						return "mentor";
+					elseif role == Enum.PlayerMentorshipStatus.Newcomer then
+						return "newcomer";
+					end
+				end
+			end
+
+			return;
+		end
+	end
+
+	if self:IsMemberOwner() then
+		return "owner";
+	elseif self:IsMemberModerator() then
+		return "moderator";
+	end
+end
+
+local channelRankImages =
+{
+	mentor = { isAtlas = true, asset = "newplayerchat-chaticon-guide" },
+	newcomer = { isAtlas = true, asset = "newplayerchat-chaticon-newcomer" },
+	owner = { asset = "Interface\\GroupFrame\\UI-Group-LeaderIcon" },
+	moderator = { asset = "Interface\\GroupFrame\\UI-Group-AssistantIcon" },
+}
+
 function ChannelRosterButtonMixin:UpdateRankVisibleState()
-	self.showRank = self:IsMemberLeadership();
+	local channelRank = self:GetMemberChannelRank();
+	self.showRank = channelRank ~= nil;
 	self.Rank:SetShown(self.showRank);
 
 	if self.showRank then
-		if self:IsMemberOwner() then
-			self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
-		elseif self:IsMemberModerator() then
-			self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
+		local rankImage = channelRankImages[channelRank];
+		if rankImage.isAtlas then
+			self.Rank:SetAtlas(rankImage.asset);
+		else
+			self.Rank:SetTexture(rankImage.asset);
 		end
 	end
 end

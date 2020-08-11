@@ -6,42 +6,25 @@
 
 	<Frame name="AudioOptionsFrame" inherits="OptionsFrameTemplate">
 		<Frames>
-			<Button name="$parentCancel" inherits="GlueButtonSmallTemplateBlue" text="CANCEL">
-				<Size>
-					<AbsDimension x="110" y="38"/>
-				</Size>
+			<Button name="$parentCancel" inherits="GlueButtonSmallTemplate" text="CANCEL">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="17"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="AudioOptionsFrameCancel_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentOkay" inherits="GlueButtonSmallTemplateBlue" text="OKAY">
-				<Size>
-					<AbsDimension x="110" y="38"/>
-				</Size>
+			<Button name="$parentOkay" inherits="GlueButtonSmallTemplate" text="OKAY">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT" x="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="AudioOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentDefault" inherits="GlueButtonSmallTemplateBlue" text="DEFAULTS">
-				<Size>
-					<AbsDimension x="110" y="38"/>
-				</Size>
+			<Button name="$parentDefault" inherits="GlueButtonSmallTemplate" text="DEFAULTS">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="16" y="8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="23" y="17"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

@@ -23,7 +23,7 @@ local HIDE_MOST = {
 	MultiBarRight		= "hidden",
 	FocusFrame			= "hidden",
 	TemporaryEnchantFrame = "hidden",
-	ZoneAbilityFrame	= "hidden",
+	ExtraAbilityContainer	= "hidden",
 	OrderHallCommandBar	= "hidden",
 	TalentMicroButtonAlert	="hidden",
 	PVPMatchScoreboard = "hidden",
@@ -160,6 +160,10 @@ end
 
 function RemoveFrameLock(lock)
 	setFrameLock(lock, false);
+end
+
+function SetFrameLock(lock, enabled)
+	setFrameLock(lock, enabled);
 end
 
 function UpdateFrameLock(frame)

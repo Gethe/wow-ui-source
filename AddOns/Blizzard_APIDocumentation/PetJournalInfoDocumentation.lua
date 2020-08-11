@@ -214,9 +214,9 @@ local PetJournalInfo =
 		{
 			Name = "PetJournalError",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "None", Type = "PetJournalError", EnumValue = 0 },
@@ -225,6 +225,7 @@ local PetJournalInfo =
 				{ Name = "InvalidFaction", Type = "PetJournalError", EnumValue = 3 },
 				{ Name = "NoFavoritesToSummon", Type = "PetJournalError", EnumValue = 4 },
 				{ Name = "NoValidRandomSummon", Type = "PetJournalError", EnumValue = 5 },
+				{ Name = "InvalidCovenant", Type = "PetJournalError", EnumValue = 6 },
 			},
 		},
 	},

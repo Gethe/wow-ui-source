@@ -329,7 +329,7 @@ SECURE_ACTIONS.actionbar =
 
 SECURE_ACTIONS.action =
     function (self, unit, button)
-        local action = ActionButton_CalculateAction(self, button);
+        local action = self:CalculateAction(button);
         if ( action ) then
             -- Save macros in case the one for this action is being edited
             securecall("MacroFrame_SaveMacro");
@@ -365,7 +365,7 @@ SECURE_ACTIONS.flyout =
 
 SECURE_ACTIONS.multispell =
     function (self, unit, button)
-        local action = ActionButton_CalculateAction(self, button);
+        local action = self:CalculateAction(button);
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
         if ( action and spell ) then
             SetMultiCastSpell(action, tonumber(spell) or spell);
@@ -576,6 +576,28 @@ SECURE_ACTIONS.worldmarker =
 			end
 		end
 	end;
+
+ SecureActionButtonMixin = {};
+
+function SecureActionButtonMixin:CalculateAction(button)
+    if ( not button ) then
+        button = SecureButton_GetEffectiveButton(self);
+    end
+    if ( self:GetID() > 0 ) then
+        local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
+        if ( not page ) then
+            page = GetActionBarPage();
+            if ( self.isExtra ) then
+                page = GetExtraBarIndex();
+            elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
+                page = GetMultiCastBarIndex();
+            end
+        end
+        return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));
+    else
+        return SecureButton_GetModifiedAttribute(self, "action", button) or 1;
+    end
+end
 
 function SecureActionButton_OnClick(self, button, down)
     -- TODO check with Tom etc if this is kosher

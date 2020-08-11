@@ -156,6 +156,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(WaypointLocationDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -206,6 +207,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BATTLEFIELD_FLAG");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WAYPOINT_LOCATION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_ABOVE_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CORPSE");
@@ -215,6 +217,7 @@ end
 function WorldMapMixin:AddOverlayFrames()
 	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
 	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNTOGGLEBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
+	self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -36, -2);
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
@@ -300,13 +303,13 @@ end
 
 function WorldMapMixin:SetOverlayFrameLocation(frame, location)
 	frame:ClearAllPoints();
-	if location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT then
+	if location == Enum.MapOverlayDisplayLocation.BottomLeft then
 		frame:SetPoint("BOTTOMLEFT", frame.relativeFrame, 15, 15);
-	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_LEFT then
+	elseif location == Enum.MapOverlayDisplayLocation.TopLeft then
 		frame:SetPoint("TOPLEFT", frame.relativeFrame, 15, -15);
-	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+	elseif location == Enum.MapOverlayDisplayLocation.BottomRight then
 		frame:SetPoint("BOTTOMRIGHT", frame.relativeFrame, -18, 15);
-	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_RIGHT then
+	elseif location == Enum.MapOverlayDisplayLocation.TopRight then
 		frame:SetPoint("TOPRIGHT", frame.relativeFrame, -15, -15);
 	end
 end

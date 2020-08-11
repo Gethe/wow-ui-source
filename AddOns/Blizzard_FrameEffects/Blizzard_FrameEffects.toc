@@ -1,0 +1,4 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Frame Effects
+
+ButtonPulseGlow.xml

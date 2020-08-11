@@ -1,0 +1,78 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventuresBoard.lua"/>
+
+
+	<Frame name="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SocketTexture" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DesaturatedTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
+				<KeyValues>
+					<KeyValue key="targetingTextureAtlas" type="string" value="Adventures-Target-Indicator-desat"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="EnemyEmptySocketTemplate" inherits="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Size x="76" y="76"/>
+	</Frame>
+
+	<Frame name="FollowerEmptySocketTemplate" inherits="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Size x="108" y="108"/>
+	</Frame>
+	
+	<Frame name="AdventuresBoardTemplate" mixin="AdventuresBoardMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="enemyTemplate" type="string" value="AdventuresEnemyPuckTemplate"/>
+			<KeyValue key="followerTemplate" type="string" value="AdventuresFollowerPuckTemplate"/>
+			<KeyValue key="enemySocketTemplate" type="string" value="EnemyEmptySocketTemplate"/>
+			<KeyValue key="followerSocketTemplate" type="string" value="FollowerEmptySocketTemplate"/>
+		</KeyValues>
+		<Size x="556" y="455"/>
+		<Frames>
+			<Frame parentKey="EnemyContainer" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeOut">
+						<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="FollowerContainer" inherits="ResizeLayoutFrame" frameLevel="20">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventuresBoardCombatTemplate" mixin="AdventuresBoardCombatMixin" inherits="AdventuresBoardTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="TextContainer" frameLevel="1000" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,0 +1,7 @@
+## Title: Blizzard_CharacterCreate
+## Author: Blizzard Entertainment
+## AllowLoad: Glue
+## RequiredDep: Blizzard_CharacterCustomize
+## LoadOnDemand: 1
+Blizzard_CharacterCreate.lua
+Blizzard_CharacterCreate.xml

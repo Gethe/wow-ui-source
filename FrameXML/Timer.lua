@@ -1,10 +1,12 @@
 TIMER_MINUTES_DISPLAY = "%d:%02d"
 TIMER_TYPE_PVP = 1;
 TIMER_TYPE_CHALLENGE_MODE = 2;
+TIMER_TYPE_PLAYER_COUNTDOWN = 3; 
 
 local TIMER_DATA = {
 	[1] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
 	[2] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
+	[3] = { mediumMarker = 31, largeMarker = 11, updateInterval = 10, finishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_FINISHED, bigNumberSoundKitID = SOUNDKIT.UI_COUNTDOWN_TIMER, mediumNumberFinishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_MEDIUM_NUMBER_FINISHED, barShowSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_STARTS, barHideSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_FINISHED},
 };
 
 TIMER_NUMBERS_SETS = {};
@@ -81,7 +83,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			end
 		end
 
-		if isTimerRunning then
+		if isTimerRunning and timer.type ~= TIMER_TYPE_PLAYER_COUNTDOWN then
 			-- don't interupt the final count down
 			if not timer.startNumbers:IsPlaying() then
 				timer.time = timeSeconds;
@@ -159,14 +161,19 @@ function StartTimer_BigNumberOnUpdate(self, elapsed)
 		if ( self.barShowing ) then
 			self.barShowing = false;
 			self.fadeBarOut:Play();
+			if (TIMER_DATA[self.type].barHideSoundKitID) then 
+				PlaySound(TIMER_DATA[self.type].barHideSoundKitID); 
+			end 
 		else
 			self.startNumbers:Play();
 		end
 	elseif not self.barShowing then
 		self.fadeBarIn:Play();
 		self.barShowing = true;
+		if (TIMER_DATA[self.type].barShowSoundKitID) then 
+			PlaySound(TIMER_DATA[self.type].barShowSoundKitID); 
+		end 
 	elseif self.updateTime <= 0 then
-		QueryWorldCountdownTimer(self.type);
 		self.updateTime = TIMER_DATA[self.type].updateInterval;
 	end
 
@@ -232,7 +239,11 @@ function StartTimer_SetTexNumbers(self, ...)
 	end
 	
 	if numberOffset > 0 then
-		PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+		if(TIMER_DATA[self.type].bigNumberSoundKitID and numShown < TIMER_DATA[self.type].largeMarker ) then 
+			PlaySound(TIMER_DATA[self.type].bigNumberSoundKitID); 
+		else 
+			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+		end 
 		digits[1]:ClearAllPoints();
 		if self.anchorCenter or C_Commentator.IsSpectating() then
 			digits[1]:SetPoint("CENTER", TimerTracker, "CENTER", numberOffset - digits[1].hw, 0);
@@ -265,7 +276,10 @@ function StartTimer_SetGoTexture(timer)
 	elseif ( timer.type == TIMER_TYPE_CHALLENGE_MODE ) then
 		timer.GoTexture:SetTexture("Interface\\Timer\\Challenges-Logo");
 		timer.GoTextureGlow:SetTexture("Interface\\Timer\\ChallengesGlow-Logo");
-	end
+	elseif (timer.type == TIMER_TYPE_PLAYER_COUNTDOWN) then 
+		timer.GoTexture:SetTexture("")
+		timer.GoTextureGlow:SetTexture("")
+	end 
 end
 
 function StartTimer_NumberAnimOnFinished(self)
@@ -276,8 +290,12 @@ function StartTimer_NumberAnimOnFinished(self)
 		end	
 		self.startNumbers:Play();
 	else
+		if(TIMER_DATA[self.type].finishedSoundKitID) then
+			PlaySound(TIMER_DATA[self.type].finishedSoundKitID); 
+		else
+			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_FINISHED);
+		end
 		FreeTimerTrackerTimer(self);
-		PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_FINISHED);
 		self.GoTextureAnim:Play();
 	end
 end
@@ -289,5 +307,9 @@ function StartTimer_SwitchToLargeDisplay(self)
 		self.digit1.width, self.digit2.width = self.style.w, self.style.w;
 		self.digit1:SetSize(self.style.w, self.style.h);
 		self.digit2:SetSize(self.style.w, self.style.h);
+
+		if(TIMER_DATA[self.type].mediumNumberFinishedSoundKitID) then 
+			PlaySound(TIMER_DATA[self.type].mediumNumberFinishedSoundKitID);
+		end 
 	end
 end

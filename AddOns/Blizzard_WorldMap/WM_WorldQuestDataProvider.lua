@@ -47,7 +47,5 @@ end
 
 function WorldMap_WorldQuestPinMixin:RefreshVisuals()
 	WorldQuestPinMixin.RefreshVisuals(self);
-
-	local effectivelyTracked = IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID);
-	self.TrackedCheck:SetShown(effectivelyTracked);
+	self.TrackedCheck:SetShown(WorldMap_IsWorldQuestEffectivelyTracked(self.questID));
 end

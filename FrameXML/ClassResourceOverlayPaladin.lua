@@ -2,7 +2,7 @@ PaladinResourceOverlay = {};
 
 function PaladinResourceOverlay:OnLoad()
 	self.class = "PALADIN";
-	self.spec = SPEC_PALADIN_RETRIBUTION;
+	--self.spec = SPEC_PALADIN_RETRIBUTION;
 	self.powerToken = "HOLY_POWER";
 
 	for i = 1, #self.Runes do

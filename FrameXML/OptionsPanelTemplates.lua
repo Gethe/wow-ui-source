@@ -386,6 +386,7 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 					end
 
 					if ( control.type == CONTROLTYPE_SLIDER ) then
+						BackdropTemplateMixin.OnBackdropLoaded(control);
 						BlizzardOptionsPanel_Slider_Enable(control);
 						control:SetMinMaxValues(minValue, maxValue);
 						control:SetValueStep(entry.valueStep);

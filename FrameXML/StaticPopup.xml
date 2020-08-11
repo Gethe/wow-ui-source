@@ -217,14 +217,9 @@
 					<AbsDimension x="37" y="37"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parentButton1" relativePoint="TOP">
+					<Anchor point="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="8"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="82" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

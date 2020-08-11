@@ -72,6 +72,7 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 			if itemKeyInfo and itemKeyInfo.battlePetLink then
 				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
 				BattlePetToolTip_ShowLink(itemKeyInfo.battlePetLink);
+				AuctionHouseUtil.AppendBattlePetVariationLines(BattlePetTooltip);
 			else
 				BattlePetTooltip:Hide();
 				GameTooltip:Hide();
@@ -101,7 +102,7 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 			local itemKey = self:GetItemKey();
 			if itemKey then
 				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-				GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix);
+				GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(itemKey));
 				GameTooltip:Show();
 			else
 				local itemLink = self:GetItemLink();
@@ -658,10 +659,10 @@ function AuctionHouseBidFrameMixin:OnLoad()
 	MoneyInputFrame_SetCopperShown(self.BidAmount, false);
 end
 
-function AuctionHouseBidFrameMixin:SetPrice(minBid, isOwnerItem)
+function AuctionHouseBidFrameMixin:SetPrice(minBid, isOwnerItem, isPlayerHighBid)
 	MoneyInputFrame_SetCopper(self.BidAmount, minBid);
 
-	if minBid == 0 then
+	if isPlayerHighBid or minBid == 0 then
 		MoneyInputFrame_SetEnabled(self.BidAmount, false);
 		self.BidButton:SetDisableTooltip("");
 	elseif minBid > GetMoney() then

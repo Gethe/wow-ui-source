@@ -50,6 +50,20 @@ local QuestLineInfo =
 			},
 		},
 		{
+			Name = "IsComplete",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestQuestLinesForMap",
 			Type = "Function",
 
@@ -93,6 +107,7 @@ local QuestLineInfo =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
 				{ Name = "isDaily", Type = "bool", Nilable = false },
+				{ Name = "isCampaign", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
 			},
 		},

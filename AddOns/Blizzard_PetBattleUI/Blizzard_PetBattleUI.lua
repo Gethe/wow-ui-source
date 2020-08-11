@@ -1178,8 +1178,6 @@ function PetBattleUnitTooltip_OnLoad(self)
 
 	self.weakToTextures = { self.WeakTo1 };
 	self.resistantToTextures = { self.ResistantTo1 };
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function PetBattleUnitFrameDropDown_ReportUnit(btn, name, petIndex)

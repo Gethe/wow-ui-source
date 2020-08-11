@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_FlightMap.lua"/>
 
-	<Frame name="FlightMapFrame" inherits="MapCanvasFrameTemplate" mixin="FlightMapMixin">
+	<Frame name="FlightMapFrame" parent="UIParent" inherits="MapCanvasFrameTemplate" mixin="FlightMapMixin">
 		<Size x="1004" y="689"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

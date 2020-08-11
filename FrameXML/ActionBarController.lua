@@ -45,6 +45,8 @@ function ActionBarController_OnLoad(self)
 	
 	-- hack to fix crasy animation on bars when action bar is also animating
 	StatusTrackingBarManager:SetBarAnimation(ActionBarBusy);
+
+	MainMenuMicroButton_Init();
 end
 
 
@@ -127,7 +129,7 @@ function ActionBarController_UpdateAll(force)
 		end
 		
 		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
-			ActionButton_UpdateAction(frame, force);
+			frame:UpdateAction(force);
 		end
 	else
 		-- Otherwise, display the normal action bar
@@ -142,7 +144,7 @@ end
 function ActionBarController_ResetToDefault(force)
 	MainMenuBarArtFrame:SetAttribute("actionpage", GetActionBarPage());
 	for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
-		ActionButton_UpdateAction(frame, force);
+		frame:UpdateAction(force);
 	end
 end
 

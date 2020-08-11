@@ -73,7 +73,26 @@ function AuctionHouseTableCellItemKeyMixin:UpdateDisplay(itemKey, itemKeyInfo)
 end
 
 
-AuctionHouseTableCellTextTooltipMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+AuctionHouseTableCellTooltipMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+
+function AuctionHouseTableCellTooltipMixin:OnEnter()
+	ExecuteFrameScript(self:GetParent(), "OnEnter");
+	
+	self:ShowTooltip(GameTooltip);
+end
+
+function AuctionHouseTableCellTooltipMixin:OnLeave()
+	ExecuteFrameScript(self:GetParent(), "OnLeave");
+
+	GameTooltip_Hide();
+end
+
+function AuctionHouseTableCellTooltipMixin:ShowTooltip(tooltip)
+	-- Implement in your derived mixin.
+end
+
+
+AuctionHouseTableCellTextTooltipMixin = CreateFromMixins(AuctionHouseTableCellTooltipMixin);
 
 function AuctionHouseTableCellTextTooltipMixin:UpdateText(newText)
 	self.Text:SetText(newText);
@@ -87,22 +106,6 @@ function AuctionHouseTableCellTextTooltipMixin:UpdateHitRect()
 	else
 		self:SetHitRectInsets(hitRectInset, 0, 0, 0);
 	end
-end
-
-function AuctionHouseTableCellTextTooltipMixin:OnEnter()
-	ExecuteFrameScript(self:GetParent(), "OnEnter");
-	
-	self:ShowTooltip(GameTooltip);
-end
-
-function AuctionHouseTableCellTextTooltipMixin:OnLeave()
-	ExecuteFrameScript(self:GetParent(), "OnLeave");
-
-	GameTooltip_Hide();
-end
-
-function AuctionHouseTableCellItemKeyMixin:ShowTooltip(tooltip)
-	-- Implement in your derived mixin.
 end
 
 
@@ -169,7 +172,7 @@ function AuctionHouseTableCellCommoditiesQuantityMixin:Init(...)
 end
 
 function AuctionHouseTableCellCommoditiesQuantityMixin:Populate(rowData, dataIndex)
-	self.Text:SetText(rowData.quantity);
+	self.Text:SetText(BreakUpLargeNumbers(rowData.quantity));
 end
 
 
@@ -291,6 +294,9 @@ function AuctionHouseTableCellBidMixin:Populate(rowData, dataIndex)
 		self:UpdateWidth(rowData, dataIndex);
 		self:UpdateTextColor(rowData, dataIndex);
 	end
+
+	local hasBuyout = rowData.buyoutAmount ~= nil;
+	self.Checkmark:SetShown(not hasBuyout and rowData.containsOwnerItem);
 end
 
 function AuctionHouseTableCellBidMixin:UpdateTextColor(rowData, dataIndex)
@@ -312,7 +318,7 @@ function AuctionHouseTableCellBuyoutMixin:Populate(rowData, dataIndex)
 		self:UpdateWidth(rowData, dataIndex);
 	end
 
-	self.Checkmark:SetShown(rowData.containsOwnerItem);
+	self.Checkmark:SetShown(hasBuyout and rowData.containsOwnerItem);
 end
 
 function AuctionHouseTableCellBuyoutMixin:UpdateWidth(rowData, dataIndex)
@@ -497,15 +503,74 @@ function AuctionHouseTableCellAuctionsBidMixin:UpdateTextColor(rowData, dataInde
 end
 
 
-AuctionHouseTableCellAllAuctionsBidMixin = CreateFromMixins(AuctionHouseTableCellAuctionsBidMixin);
+AuctionHouseTableCellAllAuctionsPriceMixin = CreateFromMixins(AuctionHouseTableCellTooltipMixin);
+
+function AuctionHouseTableCellAllAuctionsPriceMixin:Populate(rowData, dataIndex)
+	self:UpdateBidder();
+end
+
+function AuctionHouseTableCellAllAuctionsPriceMixin:OnEvent(event, ...)
+	if event == "OWNED_AUCTION_BIDDER_INFO_RECEIVED" then
+		local auctionID, bidderName = ...;
+		if auctionID == self.rowData.auctionID then
+			self.rowData.bidder = bidderName;
+			self:UnregisterEvent("OWNED_AUCTION_BIDDER_INFO_RECEIVED");
+			
+			if GameTooltip:GetOwner() == self then
+				self:ShowTooltip(GameTooltip);
+			end
+		end
+	end
+end
+
+function AuctionHouseTableCellAllAuctionsPriceMixin:UpdateBidder()
+	local rowData = self.rowData;
+	if rowData.bidder then
+		if rowData.bidder == "" then
+			local updatedName = C_AuctionHouse.RequestOwnedAuctionBidderInfo(rowData.auctionID);
+			if updatedName then
+				rowData.bidder = updatedName;
+			else
+				self:RegisterEvent("OWNED_AUCTION_BIDDER_INFO_RECEIVED");
+			end
+		end
+	end
+end
+
+
+AuctionHouseTableCellAllAuctionsBidMixin = CreateFromMixins(AuctionHouseTableCellAllAuctionsPriceMixin, AuctionHouseTableCellAuctionsBidMixin);
+
+function AuctionHouseTableCellAllAuctionsBidMixin:Populate(rowData, dataIndex)
+	AuctionHouseTableCellAllAuctionsPriceMixin.Populate(self, rowData, dataIndex);
+	AuctionHouseTableCellAuctionsBidMixin.Populate(self, rowData, dataIndex);
+end
 
 function AuctionHouseTableCellAllAuctionsBidMixin:UpdateWidth(rowData, dataIndex)
 	local maxWidth = self:IsDisplayingBids() and self:GetAuctionHouseFrame():GetMaxBidPriceWidthForAllBids(self.MoneyDisplay:GetFontObject()) or self:GetAuctionHouseFrame():GetMaxBidPriceWidthForAllAuctions(self.MoneyDisplay:GetFontObject());
 	self.MoneyDisplay:SetWidth(maxWidth);
 end
 
+function AuctionHouseTableCellAllAuctionsBidMixin:ShowTooltip(tooltip)
+	self:UpdateBidder();
 
-AuctionHouseTableCellAuctionsBuyoutMixin = CreateFromMixins(AuctionHouseTableCellAuctionsPriceMixin, AuctionHouseTableCellBuyoutMixin);
+	local rowData = self.rowData;
+	local bidder = rowData.bidder;
+	if bidder then
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		local wrap = true;
+		if rowData.status == Enum.AuctionStatus.Sold then
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUYER_FORMAT:format(bidder), wrap);
+		else
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_HIGH_BIDDER_FORMAT:format(bidder), wrap);
+		end
+
+		tooltip:Show();
+	end
+end
+
+
+AuctionHouseTableCellAuctionsBuyoutMixin = CreateFromMixins(AuctionHouseTableCellAllAuctionsPriceMixin, AuctionHouseTableCellAuctionsPriceMixin, AuctionHouseTableCellBuyoutMixin);
 
 function AuctionHouseTableCellAuctionsBuyoutMixin:Init(...)
 	AuctionHouseTableCellAuctionsPriceMixin.Init(self, ...);
@@ -513,8 +578,24 @@ function AuctionHouseTableCellAuctionsBuyoutMixin:Init(...)
 end
 
 function AuctionHouseTableCellAuctionsBuyoutMixin:Populate(rowData, dataIndex)
+	AuctionHouseTableCellAllAuctionsPriceMixin.Populate(self, rowData, dataIndex);
 	AuctionHouseTableCellAuctionsPriceMixin.Populate(self, rowData, dataIndex);
 	AuctionHouseTableCellBuyoutMixin.Populate(self, rowData, dataIndex);
+end
+
+function AuctionHouseTableCellAuctionsBuyoutMixin:ShowTooltip(tooltip)
+	self:UpdateBidder();
+
+	local rowData = self.rowData;
+	local bidder = rowData.bidder;
+	if bidder and rowData.status == Enum.AuctionStatus.Sold then
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		local wrap = true;
+		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUYER_FORMAT:format(bidder), wrap);
+
+		tooltip:Show();
+	end
 end
 
 
@@ -532,9 +613,20 @@ end
 
 AuctionHouseTableCellAuctionsOwnersMixin = CreateFromMixins(AuctionHouseTableCellAuctionsTextMixin);
 
+function AuctionHouseTableCellAuctionsOwnersMixin:Init(owner, disableTooltip)
+	AuctionHouseTableCellAuctionsTextMixin.Init(self, owner);
+	self.disableTooltip = disableTooltip;
+end
+
 function AuctionHouseTableCellAuctionsOwnersMixin:Populate(rowData, dataIndex)
 	AuctionHouseTableCellOwnersMixin.Populate(self, rowData, dataIndex);
 	AuctionHouseTableCellAuctionsTextMixin.Populate(self, rowData, dataIndex);
+end
+
+function AuctionHouseTableCellAuctionsOwnersMixin:ShowTooltip(tooltip)
+	if not self.disableTooltip then
+		AuctionHouseTableCellOwnersMixin.ShowTooltip(self, tooltip);
+	end
 end
 
 
@@ -665,7 +757,7 @@ AuctionHouseTableCellQuantityMixin = CreateFromMixins(AuctionHouseTableCellMixin
 function AuctionHouseTableCellQuantityMixin:Populate(rowData, dataIndex)
 	local noneAvailable = self.rowData.totalQuantity == 0;
 	self.Text:SetFontObject(noneAvailable and PriceFontGray or PriceFontWhite);
-	self.Text:SetText(rowData.totalQuantity);
+	self.Text:SetText(BreakUpLargeNumbers(rowData.totalQuantity));
 end
 
 
@@ -722,7 +814,7 @@ function AuctionHouseTableCellItemQuantityMixin:Populate(rowData, dataIndex)
 		self.Text:SetText(AuctionHouseUtil.GetBidTextFromStatus(bidStatus));
 		self.Text:SetFontObject(Number13FontGray);
 	else
-		self.Text:SetText(rowData.quantity);
+		self.Text:SetText(BreakUpLargeNumbers(rowData.quantity));
 		self.Text:SetFontObject(PriceFontWhite);
 	end
 end
@@ -828,7 +920,7 @@ function AuctionHouseTableBuilder.GetAllAuctionsLayout(owner, itemList)
 		tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellAuctionsItemDisplayTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Bid, "AuctionHouseTableCellAllAuctionsBidTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, BUYOUT_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellAllAuctionsBuyoutTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 50, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellTimeLeftTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 50, 0, STANDARD_PADDING, Enum.AuctionHouseSortOrder.TimeRemaining, "AuctionHouseTableCellTimeLeftTemplate");
 	end
 
 	return LayoutAllAuctionsTableBuilder;
@@ -842,7 +934,7 @@ function AuctionHouseTableBuilder.GetBidsListLayout(owner, itemList)
 		tableBuilder:AddFillColumn(owner, 0, 1.0, 10, 0, Enum.AuctionHouseSortOrder.Name, "AuctionHouseTableCellAuctionsItemDisplayTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, 10, 0, Enum.AuctionHouseSortOrder.Bid, "AuctionHouseTableCellAllAuctionsBidTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, BUYOUT_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, 10, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellAllAuctionsBuyoutTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 115, 0, 10, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 140, 0, 10, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
 	end
 
 	return LayoutBidsListTableBuilder;
@@ -858,7 +950,10 @@ function AuctionHouseTableBuilder.GetAuctionsItemListLayout(owner, itemList)
 
 		tableBuilder:AddFillColumn(owner, 1.0, 40, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 90, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate");
+
+		local disableTooltip = true;
+		tableBuilder:AddFixedWidthColumn(owner, 0, 90, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate", disableTooltip);
+		
 		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 10, nil, "AuctionHouseTableCellTimeLeftTemplate");
 	end
 
@@ -872,7 +967,7 @@ function AuctionHouseTableBuilder.GetCommoditiesAuctionsListLayout(owner, itemLi
 
 		tableBuilder:AddUnsortableFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, 10, 0, AUCTION_HOUSE_HEADER_UNIT_PRICE, "AuctionHouseTableCellAuctionsUnitPriceTemplate");
 
-		tableBuilder:AddFixedWidthColumn(owner, 0, 40, 0, 0, nil, "AuctionHouseTableCellAuctionsCommoditiesQuantityTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 0, nil, "AuctionHouseTableCellAuctionsCommoditiesQuantityTemplate");
 		tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 0, nil, "AuctionHouseTableEmptyTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 90, 0, 0, nil, "AuctionHouseTableCellAuctionsOwnersTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 60, 0, 10, nil, "AuctionHouseTableCellTimeLeftTemplate");
@@ -881,7 +976,7 @@ function AuctionHouseTableBuilder.GetCommoditiesAuctionsListLayout(owner, itemLi
 	return LayoutCommoditiesAuctionsListTableBuilder;
 end
 
-function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfoColumnText, sortable)
+function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfoColumnText)
 	local function LayoutBrowseListTableBuilder(tableBuilder)
 		tableBuilder:SetColumnHeaderOverlap(2);
 		tableBuilder:SetHeaderContainer(itemList:GetHeaderContainer());
@@ -894,12 +989,8 @@ function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfo
 		nameColumn:GetHeaderFrame():SetText(AUCTION_HOUSE_BROWSE_HEADER_NAME);
 
 		if extraInfoColumnText then
-			if sortable then
-				local extraInfoColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellLevelTemplate");
-				extraInfoColumn:GetHeaderFrame():SetText(extraInfoColumnText);
-			else
-				tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, extraInfoColumnText, "AuctionHouseTableCellLevelTemplate");
-			end
+			local extraInfoColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 55, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellLevelTemplate");
+			extraInfoColumn:GetHeaderFrame():SetText(extraInfoColumnText);
 		end
 
 		local quantityHeaderText = AuctionHouseUtil.GetHeaderNameFromSortOrder(Enum.AuctionHouseSortOrder.Quantity);
@@ -949,7 +1040,7 @@ function AuctionHouseTableBuilder.GetItemBuyListLayout(owner, itemList)
 
 		tableBuilder:AddFillColumn(owner, 0, 1.0, STANDARD_PADDING, 0, nil, "AuctionHouseTableCellItemQuantityLeftTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, 0, nil, "AuctionHouseTableCellExtraInfoTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, 0, 115, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
+		tableBuilder:AddFixedWidthColumn(owner, 0, 140, STANDARD_PADDING, STANDARD_PADDING, nil, "AuctionHouseTableCellTimeLeftBandTemplate");
 	end
 
 	return LayoutItemBuyListTableBuilder;

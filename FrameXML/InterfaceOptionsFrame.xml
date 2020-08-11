@@ -65,28 +65,24 @@
 						<Offset x="22" y="-40"/>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = CATEGORY;
-						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
-						self.update = InterfaceCategoryList_Update;
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="InterfaceOptionsListButtonTemplate" type="string"/>
+					<KeyValue key="update" value="InterfaceCategoryList_Update" type="global"/>
+				</KeyValues>
 			</Frame>
 			<Frame name="$parentAddOns" inherits="OptionsFrameListTemplate" hidden="true">
 				<Size x="175" y="569"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = ADDONS
-						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
-						self.update = InterfaceAddOnsList_Update;
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="labelText" value="ADDONS" type="global"/>
+					<KeyValue key="buttonTemplate" value="InterfaceOptionsListButtonTemplate" type="string"/>
+					<KeyValue key="update" value="InterfaceAddOnsList_Update" type="global"/>
+				</KeyValues>
 			</Frame>
-			<Frame name="$parentPanelContainer">
+			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
 						<Offset x="16" y="0"/>
@@ -98,22 +94,9 @@
 						<Offset x="-22" y="0"/>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 			</Frame>
 			<Button name="$parentTab1" inherits="OptionsFrameTabButtonTemplate" text="GAME" id="1" hidden="true">
 				<Anchors>

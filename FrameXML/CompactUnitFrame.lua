@@ -7,9 +7,11 @@ CUF_NAME_SECTION_SIZE = 15;
 CUF_AURA_BOTTOM_OFFSET = 2;
 
 function CompactUnitFrame_OnLoad(self)
-	if ( not self:GetName() ) then
+	-- Names are required for concatenation of compact unit frame names. Search for
+	-- Name.."HealthBar" for examples. This is ignored by nameplates.
+	if not self.ignoreCUFNameRequirement and not self:GetName() then
 		self:Hide();
-		error("CompactUnitFrames must have a name");	--Sorry! Don't feel like re-writing unit popups.
+		error("CompactUnitFrames must have a name");
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -60,6 +62,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
+		CompactUnitFrame_UpdateWidgetsOnlyMode(self);
 		CompactUnitFrame_UpdateHealthBorder(self);
 		CompactUnitFrame_UpdateWidgetSet(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
@@ -81,7 +84,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateMaxHealth(self);
 				CompactUnitFrame_UpdateHealth(self);
 				CompactUnitFrame_UpdateHealPrediction(self);
-			elseif ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
+			elseif ( event == "UNIT_HEALTH" ) then
 				CompactUnitFrame_UpdateHealth(self);
 				CompactUnitFrame_UpdateStatusText(self);
 				CompactUnitFrame_UpdateHealPrediction(self);
@@ -226,9 +229,13 @@ function CompactUnitFrame_SetOptionTable(frame, optionTable)
 end
 
 function CompactUnitFrame_RegisterEvents(frame)
-	frame:SetScript("OnEvent", CompactUnitFrame_OnEvent);
+	local onEventHandler = frame.OnEvent or CompactUnitFrame_OnEvent;
+	frame:SetScript("OnEvent", onEventHandler);
+
 	CompactUnitFrame_UpdateUnitEvents(frame);
-	frame:SetScript("OnUpdate", CompactUnitFrame_OnUpdate);
+
+	local onUpdate = frame.OnUpdate or CompactUnitFrame_OnUpdate;
+	frame:SetScript("OnUpdate", onUpdate);
 end
 
 function CompactUnitFrame_UpdateUnitEvents(frame)
@@ -239,7 +246,6 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	end
 	frame:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_POWER_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
@@ -305,6 +311,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdatePower(frame);
 		CompactUnitFrame_UpdatePowerColor(frame);
 		CompactUnitFrame_UpdateName(frame);
+		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
 		CompactUnitFrame_UpdateAggroFlash(frame);
@@ -398,6 +405,8 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			--Try to color it by class.
 			local localizedClass, englishClass = UnitClass(frame.unit);
 			local classColor = RAID_CLASS_COLORS[englishClass];
+			--debug
+			--classColor = RAID_CLASS_COLORS["PRIEST"];
 			if ( (frame.optionTable.allowClassColorsForNPCs or UnitIsPlayer(frame.unit) or UnitTreatAsPlayerForDisplay(frame.unit)) and classColor and frame.optionTable.useClassColors ) then
 				-- Use class colors for players if class color option is turned on
 				r, g, b = classColor.r, classColor.g, classColor.b;
@@ -516,6 +525,9 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 end
 
 function ShouldShowName(frame)
+	if UnitNameplateShowsWidgetsOnly(frame.unit) then
+		return false;
+	end
 	if ( frame.optionTable.displayName ) then
 		local failedRequirement = false;
 		if ( frame.optionTable.displayNameByPlayerNameRules ) then
@@ -538,7 +550,47 @@ function ShouldShowName(frame)
 	return false;
 end
 
+function CompactUnitFrame_UpdateWidgetsOnlyMode(frame)
+	local inWidgetsOnlyMode = UnitNameplateShowsWidgetsOnly(frame.unit);
+
+	frame.healthBar:SetShown(not inWidgetsOnlyMode and not frame.hideHealthbar);
+
+	if frame.castBar and not frame.optionTable.hideCastbar then
+		if inWidgetsOnlyMode then
+			CastingBarFrame_SetUnit(frame.castBar, nil, nil, nil);
+			frame.hideCastbar = true;
+		else
+			CastingBarFrame_SetUnit(frame.castBar, frame.unit, false, true);
+		end
+	end
+
+	if frame.BuffFrame then
+		frame.BuffFrame:SetShown(not inWidgetsOnlyMode);
+	end
+
+	if frame.ClassificationFrame then
+		frame.ClassificationFrame:SetShown(not inWidgetsOnlyMode);
+	end
+
+	if frame.RaidTargetFrame then
+		frame.RaidTargetFrame:SetShown(not inWidgetsOnlyMode);
+	end
+
+	if frame.WidgetContainer then
+		frame.WidgetContainer:ClearAllPoints();
+		if inWidgetsOnlyMode then
+			PixelUtil.SetPoint(frame.WidgetContainer, "BOTTOM", frame, "BOTTOM", 0, 0);
+		else
+			PixelUtil.SetPoint(frame.WidgetContainer, "TOP", frame.castBar, "BOTTOM", 0, 0);
+		end
+	end
+end
+
 function CompactUnitFrame_UpdateName(frame)
+	if frame.UpdateNameOverride and frame:UpdateNameOverride() then
+		return;
+	end
+
 	if ( not ShouldShowName(frame) ) then
 		frame.name:Hide();
 	else
@@ -615,6 +667,10 @@ local function SetBorderColor(frame, r, g, b, a)
 end
 
 function CompactUnitFrame_UpdateHealthBorder(frame)
+	if frame.UpdateHealthBorderOverride and frame:UpdateHealthBorderOverride() then
+		return;
+	end
+
 	if frame.optionTable.selectedBorderColor and UnitIsUnit(frame.displayedUnit, "target") then
 		SetBorderColor(frame, frame.optionTable.selectedBorderColor:GetRGBA());
 		return;
@@ -717,12 +773,41 @@ function CompactUnitFrame_UpdateStatusText(frame)
 	end
 end
 
+local fakeIndex = 1;
+local fakeSetup = {
+	{
+		myHeal = 1000,
+		allHeal = 1500,
+		absorb = 1200,
+		healAbsorb = 0,
+		healthMult = .5;
+	},
+	{
+		myHeal = 2500,
+		allHeal = 5000,
+		absorb = 2000,
+		healAbsorb = 12000,
+		healthMult = .5;
+	}
+};
+
 --WARNING: This function is very similar to the function UnitFrameHealPredictionBars_Update in UnitFrame.lua.
 --If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.05;
 function CompactUnitFrame_UpdateHealPrediction(frame)
+	--if not frame.fakeIndex then
+	--	frame.fakeIndex = fakeIndex;
+	--	fakeIndex = fakeIndex + 1;
+	--	if fakeIndex > #fakeSetup then
+	--		fakeIndex = 1;
+	--	end
+	--end
+	--local fake = fakeSetup[frame.fakeIndex];
+
 	local _, maxHealth = frame.healthBar:GetMinMaxValues();
 	local health = frame.healthBar:GetValue();
+	--health = maxHealth * fake.healthMult;
+	--PixelUtil.SetStatusBarValue(frame.healthBar, health);
 
 	if ( maxHealth <= 0 ) then
 		return;
@@ -742,11 +827,15 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 	end
 
 	local myIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit, "player") or 0;
+	--myIncomingHeal = fake.myHeal;
 	local allIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit) or 0;
+	--allIncomingHeal = fake.allHeal;
 	local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit) or 0;
+	--totalAbsorb = fake.absorb;
 
 	--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
 	local myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.displayedUnit) or 0;
+	--myCurrentHealAbsorb = fake.healAbsorb;
 	if ( health < myCurrentHealAbsorb ) then
 		frame.overHealAbsorbGlow:Show();
 		myCurrentHealAbsorb = health;
@@ -754,9 +843,11 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 		frame.overHealAbsorbGlow:Hide();
 	end
 
+	local customOptions = frame.customOptions;
+	local maxHealOverflowRatio = customOptions and customOptions.maxHealOverflowRatio or MAX_INCOMING_HEAL_OVERFLOW;
 	--See how far we're going over the health bar and make sure we don't go too far out of the frame.
-	if ( health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
-		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health + myCurrentHealAbsorb;
+	if ( health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * maxHealOverflowRatio ) then
+		allIncomingHeal = maxHealth * maxHealOverflowRatio - health + myCurrentHealAbsorb;
 	end
 
 	local otherIncomingHeal = 0;
@@ -990,20 +1081,19 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 				frame.centerStatusIcon.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED;
 				frame.centerStatusIcon:Show();
 			end
-		elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and (not UnitInPhase(frame.unit) or UnitIsWarModePhased(frame.unit)) ) then
-			frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
-			frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
-			frame.centerStatusIcon.border:Hide();
-			frame.centerStatusIcon.tooltip = PARTY_PHASED_MESSAGE;
-			if ( UnitIsWarModePhased(frame.unit) ) then
-				if C_PvP.IsWarModeDesired() then
-					frame.centerStatusIcon.tooltip = PARTY_PLAYER_WARMODE_DISABLED;
-				else
-					frame.centerStatusIcon.tooltip = PARTY_PLAYER_WARMODE_ENABLED;
+		else
+			if frame.inDistance and frame.optionTable.displayInOtherPhase then
+				local phaseReason = UnitPhaseReason(frame.unit);
+				if phaseReason then
+					frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
+					frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+					frame.centerStatusIcon.border:Hide();
+					frame.centerStatusIcon.tooltip = PartyUtil.GetPhasedReasonString(phaseReason, frame.unit);
+					frame.centerStatusIcon:Show();
+					return;
 				end
 			end
-			frame.centerStatusIcon:Show();
-		else
+
 			frame.centerStatusIcon:Hide();
 		end
 	end
@@ -1018,7 +1108,7 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 			if ( classification == "elite" or classification == "worldboss" ) then
 				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
 				frame.classificationIndicator:Show();
-			elseif ( classification == "rareelite" ) then
+			elseif ( classification == "rareelite" or classification == "rare" ) then
 				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
 				frame.classificationIndicator:Show();
 			else
@@ -1030,37 +1120,13 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 	end
 end
 
-local function WidgetsLayout(widgetContainer, sortedWidgets)
-	local widgetsWidth = 0;
-	local maxWidgetHeight = 0;
-
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("LEFT", widgetContainer, "LEFT", 0, 0);
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("LEFT", relative, "RIGHT", 2, 0);
-		end
-
-		widgetsWidth = widgetsWidth + widgetFrame:GetWidgetWidth();
-
-		local widgetHeight = widgetFrame:GetWidgetHeight();
-		if widgetHeight > maxWidgetHeight then
-			maxWidgetHeight = widgetHeight;
-		end
-	end
-
-	widgetContainer:SetHeight(math.max(maxWidgetHeight, 1));
-	widgetContainer:SetWidth(math.max(widgetsWidth, 1));
-end
-
 function CompactUnitFrame_UpdateWidgetSet(frame)
 	if not frame.WidgetContainer then
 		return;
 	end
 
 	local widgetSetID = UnitWidgetSet(frame.unit);
-	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, WidgetsLayout);
+	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, DefaultWidgetLayout, nil, frame.unit);
 end
 
 function CompactUnitFrame_ClearWidgetSet(frame)
@@ -1266,17 +1332,17 @@ do
 end
 
 local PvPClassificationIcons = {
-	[Enum.PvpUnitClassification.FlagCarrierHorde] = "nameplates-icon-flag-horde",
-	[Enum.PvpUnitClassification.FlagCarrierAlliance] = "nameplates-icon-flag-alliance",
-	[Enum.PvpUnitClassification.FlagCarrierNeutral] = "nameplates-icon-flag-neutral",
-	[Enum.PvpUnitClassification.CartRunnerHorde] = "nameplates-icon-cart-horde",
-	[Enum.PvpUnitClassification.CartRunnerAlliance] = "nameplates-icon-cart-alliance",
-	[Enum.PvpUnitClassification.AssassinHorde] = "nameplates-icon-bounty-horde",
-	[Enum.PvpUnitClassification.AssassinAlliance] = "nameplates-icon-bounty-alliance",
-	[Enum.PvpUnitClassification.OrbCarrierBlue] = "nameplates-icon-orb-blue",
-	[Enum.PvpUnitClassification.OrbCarrierGreen] = "nameplates-icon-orb-green",
-	[Enum.PvpUnitClassification.OrbCarrierOrange] = "nameplates-icon-orb-orange",
-	[Enum.PvpUnitClassification.OrbCarrierPurple] = "nameplates-icon-orb-purple",
+	[Enum.PvPUnitClassification.FlagCarrierHorde] = "nameplates-icon-flag-horde",
+	[Enum.PvPUnitClassification.FlagCarrierAlliance] = "nameplates-icon-flag-alliance",
+	[Enum.PvPUnitClassification.FlagCarrierNeutral] = "nameplates-icon-flag-neutral",
+	[Enum.PvPUnitClassification.CartRunnerHorde] = "nameplates-icon-cart-horde",
+	[Enum.PvPUnitClassification.CartRunnerAlliance] = "nameplates-icon-cart-alliance",
+	[Enum.PvPUnitClassification.AssassinHorde] = "nameplates-icon-bounty-horde",
+	[Enum.PvPUnitClassification.AssassinAlliance] = "nameplates-icon-bounty-alliance",
+	[Enum.PvPUnitClassification.OrbCarrierBlue] = "nameplates-icon-orb-blue",
+	[Enum.PvPUnitClassification.OrbCarrierGreen] = "nameplates-icon-orb-green",
+	[Enum.PvPUnitClassification.OrbCarrierOrange] = "nameplates-icon-orb-orange",
+	[Enum.PvPUnitClassification.OrbCarrierPurple] = "nameplates-icon-orb-purple",
 }
 
 function CompactUnitFrame_UpdatePvPClassificationIndicator(frame)
@@ -1912,11 +1978,13 @@ function DefaultCompactNamePlateFrameSetup(frame, options)
 end
 
 function DefaultCompactNamePlateFrameAnchors(frame)
+	if not frame.customOptions or not frame.customOptions.ignoreBarPoints then
 	PixelUtil.SetPoint(frame.castBar, "BOTTOMLEFT", frame, "BOTTOMLEFT", 12, 6);
 	PixelUtil.SetPoint(frame.castBar, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 6);
 
 	PixelUtil.SetPoint(frame.healthBar, "BOTTOMLEFT", frame.castBar, "TOPLEFT", 0, 2);
 	PixelUtil.SetPoint(frame.healthBar, "BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 2);
+	end
 
 	DefaultCompactNamePlateFrameAnchorInternal(frame, DefaultCompactNamePlateFrameSetUpOptions);
 end
@@ -1944,10 +2012,15 @@ end
 function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOptions)
 	frame:SetAllPoints(frame:GetParent());
 
-	frame.castBar:SetHeight(setupOptions.castBarHeight);
-	local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
-	frame.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight, fontFlags);
+	local customOptions = frame.customOptions;
+	frame.castBar:SetHeight(customOptions and customOptions.castBarHeight or setupOptions.castBarHeight);
 
+	local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
+	frame.castBar.Text:SetFont(fontName, customOptions and customOptions.castBarFontHeight or setupOptions.castBarFontHeight, fontFlags);
+
+	if customOptions and customOptions.nameFont then
+		frame.name:SetFontObject(customOptions.nameFont);
+	else
 	if setupOptions.useFixedSizeFont then
 		frame.name:SetIgnoreParentScale(false);
 		if setupOptions.useLargeNameFont then
@@ -1963,7 +2036,9 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 			frame.name:SetFontObject(SystemFont_NamePlate);
 		end
 	end
+	end
 
+	frame.hideHealthbar = setupOptions.hideHealthbar;
 	frame.healthBar:SetShown(not setupOptions.hideHealthbar);
 
 	frame.selectionHighlight:SetParent(frame.healthBar);
@@ -2024,24 +2099,36 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 	frame.castBar.BorderShield:ClearAllPoints();
 	PixelUtil.SetPoint(frame.castBar.BorderShield, "CENTER", frame.castBar, "LEFT", 0, 0);
 
+	local customOptions = frame.customOptions;
+	if not customOptions or not customOptions.ignoreIconSize then
 	PixelUtil.SetSize(frame.castBar.Icon, setupOptions.castIconWidth, setupOptions.castIconHeight);
+	end
+
+	if not customOptions or not customOptions.ignoreIconPoint then
 	frame.castBar.Icon:ClearAllPoints();
 	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, 0);
+	end
 
+	if not customOptions or not customOptions.ignoreBarSize then
 	PixelUtil.SetHeight(frame.healthBar, setupOptions.healthBarHeight);
+	end
 
 	PixelUtil.SetPoint(frame.name, "BOTTOM", frame.healthBar, "TOP", 0, 4);
 	PixelUtil.SetHeight(frame.name, frame.name:GetLineHeight());
 
+	if not customOptions or not customOptions.ignoreOverAbsorbGlow then
 	frame.overAbsorbGlow:ClearAllPoints();
 	PixelUtil.SetPoint(frame.overAbsorbGlow, "BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -4, -1);
 	PixelUtil.SetPoint(frame.overAbsorbGlow, "TOPLEFT", frame.healthBar, "TOPRIGHT", -4, 1);
 	PixelUtil.SetHeight(frame.overAbsorbGlow, 8);
+	end
 
+	if not customOptions or not customOptions.ignoreOverHealAbsorbGlow then
 	frame.overHealAbsorbGlow:ClearAllPoints();
 	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 2, -1);
 	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "TOPRIGHT", frame.healthBar, "TOPLEFT", 2, 1);
 	PixelUtil.SetWidth(frame.overHealAbsorbGlow, 8);
+	end
 
 	frame.healthBar.border:UpdateSizes();
 end

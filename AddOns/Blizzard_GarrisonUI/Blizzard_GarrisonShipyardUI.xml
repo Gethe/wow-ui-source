@@ -287,13 +287,8 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="GarrisonBonusAreaTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+	<Frame name="GarrisonBonusAreaTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="250" y="1"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
-		</Backdrop>
 		<Frames>
 			<Frame parentKey="BonusArea" parentArray="BonusAreas" inherits="GarrisonBonusAreaTooltipFrameTemplate">
 				<Anchors>
@@ -301,21 +296,10 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 
-	<Frame name="GarrisonShipyardMapMissionTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+	<Frame name="GarrisonShipyardMapMissionTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="250" y="256"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
-		</Backdrop>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -502,12 +486,6 @@
 				</KeyValues>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 
 	<Frame name="GarrisonShipyardMissionPageBaseTemplate" virtual="true">
@@ -1690,7 +1668,7 @@
 					<Anchor point="TOPRIGHT" x="-12" y="30"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, LE_FOLLOWER_TYPE_SHIPYARD_6_2, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
+					<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, Enum.GarrisonFollowerType.FollowerType_6_2, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1702,7 +1680,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="followerTypeID" value="LE_FOLLOWER_TYPE_SHIPYARD_6_2" type="global"/>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_2" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">

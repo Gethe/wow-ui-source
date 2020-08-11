@@ -112,21 +112,14 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
-	<Button name="LookingForGuildGuildTemplate" virtual="true" hidden="true">
+	<Button name="LookingForGuildGuildTemplate" virtual="true" hidden="true" inherits="BackdropTemplate">
 		<Size>
 			<AbsDimension x="320" y="84"/>
 		</Size>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="12"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="12"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_12_12_4444" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.3" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
@@ -244,9 +237,6 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:SetBackdropColor(1, 1, 1, 0.3);
-			</OnLoad>
 			<OnClick function="LookingForGuildGuild_OnClick"/>
 			<OnEnter function="LookingForGuildGuild_ShowTooltip"/>
 			<OnLeave>
@@ -261,21 +251,14 @@
 			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
 		</HighlightTexture>
 	</Button>
-	<Button name="LookingForGuildAppTemplate" virtual="true">
+	<Button name="LookingForGuildAppTemplate" inherits="BackdropTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="320" y="30"/>
 		</Size>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="12"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="12"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_12_12_4444" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.3" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentGuildName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
@@ -328,9 +311,6 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:SetBackdropColor(1, 1, 1, 0.3);
-			</OnLoad>
 			<OnEnter>
 				self.removeButton:Show();
 				LookingForGuildApp_ShowTooltip(self);

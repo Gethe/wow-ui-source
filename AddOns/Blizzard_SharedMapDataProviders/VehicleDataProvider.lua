@@ -30,8 +30,8 @@ function VehicleDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local numVehicles = GetNumBattlefieldVehicles();
 	for i = 1, numVehicles do
-		local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i, mapID);
-		if vehicleX and isAlive and not isPlayer and VehicleUtil.IsValidVehicleType(vehicleType) then
+		local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(i, mapID);
+		if vehicleInfo.x and vehicleInfo.isAlive and not vehicleInfo.isPlayer and vehicleInfo.atlas then
 			self:GetMap():AcquirePin("VehiclePinTemplate", i);
 		end
 	end
@@ -54,27 +54,25 @@ function VehiclePinMixin:OnAcquired(vehicleIndex)
 end
 
 function VehiclePinMixin:Refresh()
-	local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
-	local vehicleInfo = VehicleUtil.GetVehicleInfo(vehicleType);
-	self.Texture:SetRotation(orientation);
-	self.Texture:SetTexture(VehicleUtil.GetVehicleTexture(vehicleType, isOccupied));
-	self:SetWidth(vehicleInfo:GetWidth());
-	self:SetHeight(vehicleInfo:GetHeight());
-	self.name = unitName;
-	if vehicleInfo:ShouldDrawBelowPlayerBlips() then
+	local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
+	self.Texture:SetRotation(vehicleInfo.facing);
+	self.Texture:SetAtlas(vehicleInfo.atlas);
+	self:SetWidth(vehicleInfo.textureWidth);
+	self:SetHeight(vehicleInfo.textureHeight);
+	self.name = vehicleInfo.name;
+	if vehicleInfo.shouldDrawBelowPlayerBlips then
 		self:UseFrameLevelType("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
 	else
 		self:UseFrameLevelType("PIN_FRAME_LEVEL_VEHICLE_ABOVE_GROUP_MEMBER");
 	end
-	
-	self:SetPosition(vehicleX, vehicleY);
+	self:SetPosition(vehicleInfo.x, vehicleInfo.y);
 end
 
 function VehiclePinMixin:OnUpdate()
-	local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
-	if vehicleX and isAlive and not isPlayer then
-		self:SetPosition(vehicleX, vehicleY);
-		self.Texture:SetRotation(orientation);
+	local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
+	if vehicleInfo.x and vehicleInfo.isAlive and not vehicleInfo.isPlayer then
+		self:SetPosition(vehicleInfo.x, vehicleInfo.y);
+		self.Texture:SetRotation(vehicleInfo.facing);
 	else
 		self:Hide();
 	end
@@ -84,12 +82,12 @@ function VehiclePinMixin:OnMouseEnter(motion)
 	local tooltipText = "";
 	for pin in self:GetMap():EnumeratePinsByTemplate("VehiclePinTemplate") do
 		if pin:IsVisible() and pin:IsMouseOver() then
-			local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(pin:GetVehicleIndex(), self:GetMap():GetMapID());
-			if unitName then
+			local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
+			if vehicleInfo.name then
 				if tooltipText == "" then
-					tooltipText = unitName;
+					tooltipText = vehicleInfo.name;
 				else
-					tooltipText = tooltipText.."|n"..unitName;
+					tooltipText = tooltipText.."|n"..vehicleInfo.name;
 				end
 			end
 		end

@@ -115,7 +115,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="-16" y="-3"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="NoteBackground" enableMouse="true">
+			<Frame parentKey="NoteBackground" enableMouse="true" inherits="TooltipBackdropTemplate">
 				<Size x="181" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.NoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
@@ -130,22 +130,11 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropColorAlpha" value="0.25" type="number"/>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
-					</OnLoad>
 					<OnMouseUp>
 						local memberInfo = self:GetParent():GetMemberInfo();
 						if memberInfo ~= nil and memberInfo.guid ~= nil then
@@ -156,7 +145,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="OfficerNoteBackground">
+			<Frame parentKey="OfficerNoteBackground" inherits="TooltipBackdropTemplate">
 				<Size x="181" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.OfficerNoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
@@ -171,22 +160,11 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropColorAlpha" value="0.25" type="number"/>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
-					</OnLoad>
 					<OnMouseUp>
 						local memberInfo = self:GetParent():GetMemberInfo();
 						if memberInfo ~= nil and memberInfo.guid ~= nil then

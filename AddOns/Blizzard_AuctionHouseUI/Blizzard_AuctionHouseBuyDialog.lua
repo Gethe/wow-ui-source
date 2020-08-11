@@ -230,7 +230,7 @@ function AuctionHouseBuyDialogMixin:SetItemID(itemID, quantity, unitPricePreview
 	local itemName = C_Item.GetItemNameByID(itemID);
 	local itemQuality = C_Item.GetItemQualityByID(itemID);
 	if itemName and itemQuality then
-		local itemQualityColor = ITEM_QUALITY_COLORS[quality or LE_ITEM_QUALITY_COMMON];
+		local itemQualityColor = ITEM_QUALITY_COLORS[quality or Enum.ItemQuality.Common];
 		local itemDisplayText = itemQualityColor.color:WrapTextInColorCode(itemName or "");
 		self.ItemDisplay.ItemText:SetText(AUCTION_HOUSE_DIALOG_ITEM_FORMAT:format(itemDisplayText, quantity));
 	end

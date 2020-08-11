@@ -21,20 +21,6 @@ local QuestTaskInfo =
 			},
 		},
 		{
-			Name = "GetDistanceSqToQuest",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "distanceSquared", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetQuestInfoByQuestID",
 			Type = "Function",
 

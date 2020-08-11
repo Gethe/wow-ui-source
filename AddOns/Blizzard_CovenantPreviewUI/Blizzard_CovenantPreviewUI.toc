@@ -1,0 +1,5 @@
+## Title: Blizzard Covenant Preview UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_CovenantPreviewUI.xml

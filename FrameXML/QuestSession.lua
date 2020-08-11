@@ -112,8 +112,6 @@ end
 QuestSessionDialogMixin = {};
 
 function QuestSessionDialogMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self); -- TODO: Convert layoutFrames to intrinsics?  this is painful
-
 	self.ButtonContainer.Confirm:SetText(self.confirmText);
 	self.ButtonContainer.Decline:SetText(self.cancelText);
 	self.Divider:SetShown(self.showDivider);
@@ -980,10 +978,7 @@ function QuestSessionManagerMixin:ShouldSessionManagementUIBeVisible()
 end
 
 function QuestSessionManagerMixin:GetProposedPlayerLevel()
-	local minLevel = PartyUtil.GetMinLevel();
-
-	local useModernExpansionLevels = true;
-	local proposedSessionLevel = GetMaxLevelForExpansionLevel(GetExpansionForLevel(minLevel), useModernExpansionLevels);
+	local proposedSessionLevel = C_QuestSession.GetProposedMaxLevelForSession();
 	return math.min(UnitLevel("player"), proposedSessionLevel);
 end
 

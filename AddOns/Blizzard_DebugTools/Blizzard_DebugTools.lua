@@ -19,6 +19,10 @@ local _timeSinceLast = 0;
 local _timer = CreateFrame("FRAME");
 _timer:SetScript("OnUpdate", function (self, elapsed) _framesSinceLast = _framesSinceLast + 1; _timeSinceLast = _timeSinceLast + elapsed; end);
 
+function CanAccessObject(obj)
+	return issecure() or not obj:IsForbidden();
+end
+
 function EventTraceFrame_OnLoad (self)
 	self.buttons = {};
 	self.events = {};
@@ -504,9 +508,8 @@ function EventTraceFrameEventHideButton_OnClick (button)
 end
 
 function DebugTooltip_OnLoad(self)
+	SharedTooltip_OnLoad(self);
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function FrameStackTooltip_OnDisplaySizeChanged(self)
@@ -549,8 +552,8 @@ function FrameStackTooltip_OnFramestackVisibilityUpdated(self)
 end
 
 function FrameStackTooltip_OnLoad(self)
-	Mixin(self, CallbackRegistryBaseMixin);
-	CallbackRegistryBaseMixin.OnLoad(self);
+	Mixin(self, CallbackRegistryMixin);
+	CallbackRegistryMixin.OnLoad(self);
 	self:GenerateCallbackEvents({ "FrameStackOnHighlightFrameChanged", "FrameStackOnShow", "FrameStackOnHide", "FrameStackOnTooltipCleared" });
 
 	DebugTooltip_OnLoad(self);

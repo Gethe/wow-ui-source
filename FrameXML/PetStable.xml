@@ -248,11 +248,6 @@
 								<Anchor point="TOPLEFT" x="48" y="-8"/>
 							</Anchors>
 						</FontString>
-						<FontString name="PetStableLevelText" inherits="GameFontHighlightSmallLeft">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="48" y="2"/>
-							</Anchors>
-						</FontString>
 						<FontString name="PetStableTypeText" inherits="GameFontHighlightSmallRight">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>

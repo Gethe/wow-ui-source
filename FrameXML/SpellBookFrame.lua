@@ -71,13 +71,17 @@ function ToggleSpellBook(bookType)
 		SpellBookFrame.bookType = bookType;
 		ShowUIPanel(SpellBookFrame);
 	end
+end
 
-	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum()
-	if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials") ) then
-		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
-			HelpPlate_ShowTutorialPrompt( helpPlate, SpellBookFrame.MainHelpButton );
-			SetCVarBitfield( "closedInfoFrames", tutorial, true );
-		end
+function SpellBookFrame_UpdateHelpPlate()
+	if ( IsPlayerInitialSpec() ) then
+		SpellBookFrame_HelpPlate[2].HighLightBox.height = 100;
+		SpellBookFrame_HelpPlate[3].HighLightBox.height = GetNumSpecializations() * 50;
+		SpellBookFrame_HelpPlate[3].HighLightBox.y = -125;
+	else
+		SpellBookFrame_HelpPlate[2].HighLightBox.height = 150;
+		SpellBookFrame_HelpPlate[3].HighLightBox.height = (GetNumSpecializations() - 1) * 50;
+		SpellBookFrame_HelpPlate[3].HighLightBox.y = -175;
 	end
 end
 
@@ -186,6 +190,7 @@ end
 
 function SpellBookFrame_OnShow(self)
 	SpellBookFrame_Update();
+	EventRegistry:TriggerEvent("SpellBookFrame.Show");
 
 	-- If there are tabs waiting to flash, then flash them... yeah..
 	if ( self.flashTabs ) then
@@ -198,29 +203,6 @@ function SpellBookFrame_OnShow(self)
 
 	SpellBookFrame_PlayOpenSound();
 	MicroButtonPulseStop(SpellbookMicroButton);
-
-	-- if boosted, find the first locked spell and display a tip next to it
-	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
-		local spellSlot;
-		for i = 1, SPELLS_PER_PAGE do
-			local spellBtn = _G["SpellButton" .. i];
-			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
-			if (slotType == "FUTURESPELL") then
-				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
-					spellSlot = spellBtn;
-				end
-			end
-		end
-
-		if ( spellSlot ) then
-			SpellLockedTooltip:Show();
-			SpellLockedTooltip:SetPoint("LEFT", spellSlot, "RIGHT", 16, 0);
-		else
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true);
-		end
-	else
-		SpellLockedTooltip:Hide();
-	end
 end
 
 function SpellBookFrame_Update()
@@ -303,6 +285,33 @@ function SpellBookFrame_Update()
 	if(tabUpdate) then
 		tabUpdate()
 	end
+
+	-- if boosted, find the first locked spell and display a tip next to it
+	HelpTip:Hide(SpellBookFrame, BOOSTED_CHAR_LOCKED_SPELL_TIP);
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
+		local spellSlot;
+		for i = 1, SPELLS_PER_PAGE do
+			local spellBtn = _G["SpellButton" .. i];
+			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
+			if (slotType == "FUTURESPELL") then
+				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
+					spellSlot = spellBtn;
+				end
+			end
+		end
+
+		if ( spellSlot ) then
+			local helpTipInfo = {
+				text = BOOSTED_CHAR_LOCKED_SPELL_TIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -6,
+			};
+			HelpTip:Show(SpellBookFrame, helpTipInfo, spellSlot);
+		end
+	end
 end
 
 function SpellBookFrame_UpdateSpells ()
@@ -356,6 +365,70 @@ function SpellBookFrame_UpdatePages()
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
 end
 
+-- ------------------------------------------------------------------------------------------------------------
+-- returns the spell button, if it can find it, for the spellID passed in
+local buttonOrder = {1,3,5,7,9,11,2,4,6,8,10,12};
+function SpellBookFrame_OpenToSpell(spellID, toggleFlyout)
+	SpellBookFrame.bookType = BOOKTYPE_SPELL;
+	ShowUIPanel(SpellBookFrame);
+	local numTabs = GetNumSpellTabs();
+
+	local slot = FindFlyoutSlotBySpellID(spellID);
+	if (slot <= 0) then
+		slot = FindSpellBookSlotBySpellID(spellID);
+	end
+	if slot then
+		for tabIndex = 1, numTabs do
+			local _, _, offset, numSlots = GetSpellTabInfo(tabIndex);
+
+			if slot <= offset + numSlots then
+				-- get to the correct tab and page
+				local spellIndex = slot - offset;
+				local page = 1;
+				if spellIndex > SPELLS_PER_PAGE then
+					page = math.ceil(spellIndex / SPELLS_PER_PAGE);
+					spellIndex = spellIndex - ((page - 1) * SPELLS_PER_PAGE);
+				end
+				SPELLBOOK_PAGENUMBERS[tabIndex] = page;
+				SpellBookFrame.selectedSkillLine = tabIndex;
+				SpellBookFrame_Update();
+
+				--now we need to find the spell button, which COULD be a flyout button
+				local slotType, actionID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+				if ( slotType == "FLYOUT" ) then
+					-- find the ACTUAL flyout button
+					local buttonIndex = buttonOrder[spellIndex];
+					local flyoutButton = _G["SpellButton" .. buttonIndex];
+
+					--find the spellbutton INSIDE the flyout
+					local numButtons = 1;
+					local _, _, numSlots = GetFlyoutInfo(actionID);
+					for i = 1, numSlots do
+						local flyoutSpellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(actionID, i);
+						if spellID == flyoutSpellID then -- we found it
+							--open the flyout
+							if toggleFlyout then
+								SpellFlyout:Toggle(actionID, flyoutButton, "RIGHT", 1, false, flyoutButton.offSpecID, true);
+							end
+							local returnButton = _G["SpellFlyoutButton"..i];
+							return returnButton, flyoutButton;
+						end
+						local button = _G["SpellFlyoutButton"..i];
+						if (button and button:IsShown()) then
+							numButtons = numButtons + 1;
+						end
+					end
+				else
+					-- this is just a regular spell button
+					local buttonIndex = buttonOrder[spellIndex];
+					local returnButton = _G["SpellButton" .. buttonIndex];
+					return returnButton;
+				end
+			end
+		end
+	end
+end
+
 function SpellBookFrame_PlayOpenSound()
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
@@ -379,6 +452,7 @@ end
 function SpellBookFrame_OnHide(self)
 	HelpPlate_Hide();
 	SpellBookFrame_PlayCloseSound();
+	EventRegistry:TriggerEvent("SpellBookFrame.Hide");
 
 	-- Stop the flash frame from flashing if its still flashing.. flash flash flash
 	UIFrameFlashStop(SpellBookTabFlashFrame);
@@ -389,8 +463,6 @@ function SpellBookFrame_OnHide(self)
 
 	-- Hide multibar slots
 	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
-
-	SpellLockedTooltip:Hide();
 
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();
@@ -700,7 +772,7 @@ function SpellButton_UpdateButton(self)
 	end
 
 	-- If no spell, hide everything and return, or kiosk mode and future spell
-	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and IsKioskModeEnabled())) then
+	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and Kiosk.IsEnabled())) then
 		iconTexture:Hide();
 		levelLinkLockTexture:Hide();
 		levelLinkLockBg:Hide();
@@ -844,7 +916,7 @@ function SpellButton_UpdateButton(self)
 
 		if self.SpellHighlightTexture then
 			self.SpellHighlightTexture:Hide();
-			if ( SpellBookFrame.selectedSkillLine == 2 or SpellBookFrame.bookType == BOOKTYPE_PET ) then
+			if ( (SpellBookFrame.selectedSkillLine > 1 and not isOffSpec) or SpellBookFrame.bookType == BOOKTYPE_PET ) then
 				if ( slotType == "SPELL" ) then
 					-- If the spell is passive we never show the highlight.  Otherwise, check if there are any action
 					-- buttons with this spell.
@@ -1412,8 +1484,8 @@ SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
 	[1] = { ButtonPos = { x = 250,	y = -50},	HighLightBox = { x = 65, y = -25, width = 460, height = 462 },	ToolTipDir = "DOWN",	ToolTipText = SPELLBOOK_HELP_1 },
-	[2] = { ButtonPos = { x = 520,	y = -30 },	HighLightBox = { x = 540, y = -5, width = 46, height = 100 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
-	[3] = { ButtonPos = { x = 520,	y = -150},	HighLightBox = { x = 540, y = -125, width = 46, height = 200 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
+	[2] = { ButtonPos = { x = 520,	y = -30 },	HighLightBox = { x = 540, y = -5, width = 46, height = 150 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
+	[3] = { ButtonPos = { x = 520,	y = -150},	HighLightBox = { x = 540, y = -175, width = 46, height = 100 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
 }
 
 ProfessionsFrame_HelpPlate = {
@@ -1424,6 +1496,7 @@ ProfessionsFrame_HelpPlate = {
 }
 
 function SpellBook_ToggleTutorial()
+	SpellBookFrame_UpdateHelpPlate();
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
 		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );

@@ -34,13 +34,18 @@ function MapUtil.ShouldShowTask(mapID, info)
 end
 
 function MapUtil.MapHasUnlockedBounties(mapID)
-	local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
-	return displayLocation and not lockedQuestID and #bounties > 0;
+	local displayLocation, lockedQuestID, bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	if displayLocation and (not lockedQuestID or not C_QuestLog.IsOnQuest(lockedQuestID)) then
+		local bounties = C_QuestLog.GetBountiesForMapID(mapID);
+		return bounties and #bounties > 0;
+	end
+
+	return false;
 end
 
 function MapUtil.MapHasEmissaries(mapID)
-	local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
-	return not not displayLocation;
+	local displayLocation, lockedQuestID, bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	return displayLocation ~= nil;
 end
 
 function MapUtil.FindBestAreaNameAtMouse(mapID, normalizedCursorX, normalizedCursorY)

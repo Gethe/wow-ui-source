@@ -19,7 +19,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 
 	local previousResourceFrame;
 
-	local hasFrame = (widgetInfo.frameTextureKitID ~= 0);
+	local hasFrame = widgetInfo.frameTextureKit ~= nil;
 
 	local resourceWidth = 0;
 	local resourceHeight = 0;
@@ -52,7 +52,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 		previousResourceFrame = resourceFrame;
 	end
 	
-	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	if hasFrame then
 		self:SetWidth(self.Frame:GetWidth() + 45);

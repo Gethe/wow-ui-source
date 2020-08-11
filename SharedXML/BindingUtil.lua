@@ -6,6 +6,9 @@ local metaKeys =
 	RCTRL = 4,
 	LSHIFT = 5,
 	RSHIFT = 6,
+	ALT = 7,
+	CTRL = 8,
+	SHIFT = 9,
 };
 
 local ignoredKeys =
@@ -100,7 +103,11 @@ function CreateKeyChordStringFromTable(keys, preventSort)
 	return table.concat(keys, "-");
 end
 
-function CreateKeyChordString(key)
+function CreateKeyChordString(key, ...)
+	return CreateKeyChordStringFromTable({ key, ... });
+end
+
+function CreateKeyChordStringUsingMetaKeyState(key)
 	local chord = {};
 	if IsAltKeyDown() then
 		table.insert(chord, "ALT");

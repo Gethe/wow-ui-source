@@ -53,6 +53,10 @@ local ReportSystem =
 			Type = "Function",
 		},
 		{
+			Name = "ReportStuckInCombat",
+			Type = "Function",
+		},
+		{
 			Name = "SendReportPlayer",
 			Type = "Function",
 			Documentation = { "Not allowed to be called by addons" },

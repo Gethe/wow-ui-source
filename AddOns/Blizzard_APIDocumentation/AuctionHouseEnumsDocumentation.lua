@@ -50,9 +50,9 @@ local AuctionHouseEnums =
 		{
 			Name = "AuctionHouseSortOrder",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Price", Type = "AuctionHouseSortOrder", EnumValue = 0 },
@@ -60,6 +60,7 @@ local AuctionHouseEnums =
 				{ Name = "Level", Type = "AuctionHouseSortOrder", EnumValue = 2 },
 				{ Name = "Bid", Type = "AuctionHouseSortOrder", EnumValue = 3 },
 				{ Name = "Buyout", Type = "AuctionHouseSortOrder", EnumValue = 4 },
+				{ Name = "TimeRemaining", Type = "AuctionHouseSortOrder", EnumValue = 5 },
 			},
 		},
 		{

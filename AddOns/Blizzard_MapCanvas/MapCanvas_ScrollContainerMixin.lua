@@ -405,6 +405,7 @@ function MapCanvasScrollControllerMixin:SetMapID(mapID)
 	self.mapID = mapID;
 
 	self:OnCanvasSizeChanged();
+	self:GetMap():AddMaskableTexture(self.Child.TiledBackground);
 end
 
 function MapCanvasScrollControllerMixin:OnCanvasSizeChanged()

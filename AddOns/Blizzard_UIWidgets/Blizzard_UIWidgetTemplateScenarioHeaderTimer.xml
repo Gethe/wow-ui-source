@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateScenarioHeaderTimer" inherits="UIWidgetBaseScenarioHeaderTemplate" virtual="true" mixin="UIWidgetTemplateScenarioHeaderTimerMixin">
+		<Frames>
+			<Frame parentKey="Timer" inherits="UIWidgetTemplateTooltipFrame">
+				<Size x="233" y="38"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" justifyH="LEFT" inherits="GameFontHighlightHuge2">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar parentKey="TimerBar" inherits="UIWidgetTemplateTooltipFrame">
+				<Size x="233" y="9"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="4"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+	</Frame>
+</Ui>

@@ -92,7 +92,8 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="NineSlicePanelTemplate">
 				<KeyValues>
-					<KeyValue key="layoutType" value="PartyPoseFrameTemplate" type="string"/>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="partypose-scoreboard" type="string"/>
 				</KeyValues>
 			</Frame>
 		</Frames>

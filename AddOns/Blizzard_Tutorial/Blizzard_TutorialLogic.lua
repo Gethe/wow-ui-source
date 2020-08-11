@@ -40,7 +40,7 @@ function TutorialHelper:FormatString(str)
 			local bindingString;
 
 			if (spellID) then
-				local btn = self:GetActionButtonBySpellID(tostring(spellID));
+				local btn = self:GetActionButtonBySpellID(tonumber(spellID));
 				if (btn) then
 					bindingString = GetBindingKey("ACTIONBUTTON" .. btn.action);
 				end
@@ -120,7 +120,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:IsQuestCompleteOrActive(questID)
-	return C_QuestLog.IsQuestFlaggedCompleted(questID) or (GetQuestLogIndexByID(questID) > 0);
+	return C_QuestLog.IsQuestFlaggedCompleted(questID) or C_QuestLog.GetLogIndexForQuestID(questID) ~= nil;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -167,10 +167,10 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetGossipBindIndex()
-	local gossipOptions = { GetGossipOptions() };
-	for i = 1, #gossipOptions, 1 do
-		if gossipOptions[i] == "binder" then
-			return i / 2;
+	local GossipOptions = C_GossipInfo.GetOptions();
+	for i, gossipOption in ipairs(GossipOptions) do
+		if gossipOption.type == "binder" then
+			return i;
 		end
 	end
 end
@@ -741,10 +741,11 @@ function Class_Intro_MapHighlights:OnBegin()
 	self.Prompt = NPE_MAPCALLOUTBASE;
 	local hasBlob = false;
 
-	for i = 1, GetNumQuestLogEntries() do
-		if (IsQuestWatched(i)) then
-			local questID = select(8, GetQuestLogTitle(i));
-			hasBlob = GetQuestPOIBlobCount(questID) > 0;
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		if QuestUtils_IsQuestWatched(questID) and GetQuestPOIBlobCount(questID) > 0 then
+			hasBlob = true;
+			break;
 		end
 	end
 
@@ -840,7 +841,12 @@ local Class_SelectMobWatcher = class("SelectMobWatcher", Class_TutorialBase);
 
 function Class_SelectMobWatcher:OnBegin()
 	-- Use a leash on the first unit if it's defined, otherwise, lease the player's current location
-	local unit = TutorialHelper:GetRacialData().FirstKillQuestUnit;
+	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
+
+	local unit = tutorialData.FirstKillQuestUnit;
 	if (unit) then
 		NPE_RangeManager:StartWatching( unit, NPE_RangeManager.Type.Unit, 20, function() self:Complete(); end);
 	else
@@ -1973,11 +1979,9 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 	local areAllItemsUsable = true;
 
 	-- Figure out if all the items are usable
-	local questID = GetQuestID(); -- the last ID that was brought up in a quest frame
-	local questLogIndex = GetQuestLogIndexByID(questID) -- find the index in the quest log
-	SelectQuestLogEntry(questLogIndex) -- select it behind the secenes for the next two function calls
-	local numChoices = GetNumQuestLogChoices()
-	for i = 1, numChoices do
+	local questID = GetQuestID();
+	C_QuestLog.SetSelectedQuest(questID);
+	for i = 1, GetNumQuestLogChoices(questID) do
 		local isUsable = select(5, GetQuestLogChoiceInfo(i));
 		if (not isUsable) then
 			areAllItemsUsable = false;
@@ -2297,8 +2301,8 @@ function Class_GossipWatcher:OnBegin()
 end
 
 function Class_GossipWatcher:GOSSIP_SHOW()
-	local numActiveQuests = GetNumGossipActiveQuests(); -- (?) quests ready to turn in
-	local numAvailabelQuests = GetNumGossipAvailableQuests(); -- (!) quests available to pick up
+	local numActiveQuests = C_GossipInfo.GetNumActiveQuests(); -- (?) quests ready to turn in
+	local numAvailabelQuests = C_GossipInfo.GetNumAvailableQuests(); -- (!) quests available to pick up
 	local shouldBind = TutorialHelper:GetGossipBindIndex() and (GetBindLocation() ~= GetMinimapZoneText());
 
 	if ((numActiveQuests + numAvailabelQuests) > 0) then
@@ -2334,17 +2338,18 @@ function Class_GossipQuestPointer:OnBegin()
 
 	Dispatcher:RegisterEvent("GOSSIP_CLOSED", function() self:Complete() end, true);
 
-	local numActiveQuests = GetNumGossipActiveQuests(); -- (?) quests ready to turn in
-	local numAvailabelQuests = GetNumGossipAvailableQuests(); -- (!) quests available to pick up
+	local numActiveQuests = C_GossipInfo.GetNumActiveQuests(); -- (?) quests ready to turn in
+	local numAvailabelQuests = C_GossipInfo.GetNumAvailableQuests(); -- (!) quests available to pick up
 
 	local questText;
 	local pointerText;
 
-	if ((numActiveQuests > 0) and (select(4, GetGossipActiveQuests()))) then
-		questText = GetGossipActiveQuests();
+	local gossipQuests = C_GossipInfo.GetActiveQuests();
+	if ((numActiveQuests > 0) and (gossipQuests[1].isComplete)) then
+		questText = gossipQuests[1].title;
 		pointerText = formatStr(NPE_GOSSIPQUESTACTIVE);
 	elseif (numAvailabelQuests > 0) then
-		questText = GetGossipAvailableQuests();
+		questText =	gossipQuests[1].title;
 		pointerText	 = formatStr(NPE_GOSSIPQUESTAVAILABLE);
 	end
 
@@ -2352,8 +2357,8 @@ function Class_GossipQuestPointer:OnBegin()
 
 	-- Try to find the actual gossip button
 	if (questText) then
-		for i = 1, 10 do
-			local btn = _G["GossipTitleButton" .. i];
+		for i=1, GossipFrame_GetTitleButtonCount() do
+			local btn = GossipFrame_GetTitleButton(i);
 			if (btn) then
 				local text = btn:GetText();
 				if (text and string.match(text, questText)) then
@@ -2401,17 +2406,17 @@ function Class_GossipBindPointer:OnBegin()
 
 	if (bindButtonIndex) then
 		-- offset the index by the first gossip button
-		for i = 1, 32 do
-			local btn = _G["GossipTitleButton" .. i];
-			if ((btn.type) == "Gossip") then
+		for i=1, GossipFrame_GetTitleButtonCount() do
+			local btn = GossipFrame_GetTitleButton(i);
+			if btn and btn.type == "Gossip" then
 				bindButtonIndex = bindButtonIndex + (i - 1);
 				break;
 			end
 		end
 
-		local button = _G["GossipTitleButton" .. bindButtonIndex];
+		local button = GossipFrame_GetTitleButton(bindButtonIndex);
 
-		if (button) then
+		if button then
 			local x, y = TutorialHelper:GetFrameButtonEdgeOffset(GossipFrame, button);
 
 			self:ShowPointerTutorial(formatStr(NPE_BINDPOINTER), "LEFT", GossipFrame, x, y, "TOPRIGHT");
@@ -2434,7 +2439,7 @@ local Class_InteractThenGossipA = class("InteractThenGossipA", Class_TutorialBas
 function Class_InteractThenGossipA:OnBegin(data)
 	self:ShowScreenTutorial(formatStr(NPE_NPCINTERACT));
 	Dispatcher:RegisterEvent("GOSSIP_SHOW", function()
-			local btn = GossipTitleButton1;
+			local btn = GossipFrame_GetTitleButton(1);
 			if (btn and btn:IsVisible()) then
 				self:Complete();
 			end
@@ -2463,8 +2468,8 @@ function Class_InteractThenGossipB:GOSSIP_SHOW()
 end
 
 function Class_InteractThenGossipB:PointAtButton()
-	local btn = GossipTitleButton1;
-	if (btn and btn:IsVisible()) then
+	local btn = GossipFrame_GetTitleButton(1);
+	if btn and btn:IsVisible() then
 		local x, y = TutorialHelper:GetFrameButtonEdgeOffset(GossipFrame, btn);
 		self:ShowPointerTutorial(formatStr(NPE_NPCGOSSIP), "LEFT", GossipFrame, x, y, "TOPRIGHT");
 	end
@@ -2745,12 +2750,15 @@ function Tutorials:Begin()
 	-- Turn on specific tutorials
 	local level = UnitLevel("player");
 
-	-- First Quest
-	local startingQuest = TutorialHelper:FilterByClass(TutorialHelper:GetRacialData().StartingQuest);
-	if (not TutorialHelper:IsQuestCompleteOrActive(startingQuest)) then
-		Tutorials.Intro_Interact:Begin();
-	else -- things that have to happen if the into is skipped
-		NPE_TutorialKeyboardMouseFrame:ShowHelpFrame()
+	local tutorialData = TutorialHelper:GetRacialData();
+	if tutorialData then
+		-- First Quest
+		local startingQuest = TutorialHelper:FilterByClass(tutorialData.StartingQuest);
+		if (not TutorialHelper:IsQuestCompleteOrActive(startingQuest)) then
+			Tutorials.Intro_Interact:Begin();
+		else -- things that have to happen if the into is skipped
+			NPE_TutorialKeyboardMouseFrame:ShowHelpFrame()
+		end
 	end
 
 	-- Callout what button to click on to accept a quest
@@ -2807,6 +2815,9 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function Tutorials:Quest_Accepted(questData)
 	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
 	local questID = questData.QuestID;
 
 	-- -----------------------------------------------
@@ -2981,14 +2992,18 @@ end
 function Tutorials:Quest_ObjectivesComplete(questData)
 	local questID = questData.QuestID;
 	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
 
 	-- -----------------------------------------------
 	-- All active quests complete
 	local allQuestsReadyForTurnIn = true;
 
-	for i = 1, GetNumQuestLogEntries() do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(i);
-		if ((not isHeader) and (GetQuestTagInfo(questID) ~= QUEST_TAG_ACCOUNT) and (not isComplete)) then
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		-- Only check valid non-account quests.
+		if questID and not C_QuestLog.IsAccountQuest(questID) and not C_QuestLog.ReadyForTurnIn(questID) then
 			allQuestsReadyForTurnIn = false;
 			break;
 		end
@@ -3024,6 +3039,9 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function Tutorials:Quest_TurnedIn(questData)
 	local tutorialData = TutorialHelper:GetRacialData();
+	if not tutorialData then
+		return;
+	end
 
 	-- -----------------------------------------------
 	-- close the Open Map prompt if it's still up when they complete a quest

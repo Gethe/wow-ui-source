@@ -89,7 +89,7 @@ function EncounterJournalPinMixin:OnMouseLeave()
 	end
 end
 
-function EncounterJournalPinMixin:OnClick()
+function EncounterJournalPinMixin:OnMouseClickAction()
 	EncounterJournal_LoadUI();
 	EncounterJournal_OpenJournal(nil, self.instanceID, self.encounterID);
 end

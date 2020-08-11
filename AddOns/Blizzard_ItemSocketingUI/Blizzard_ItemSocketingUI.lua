@@ -22,6 +22,7 @@ function ItemSocketingFrame_OnLoad(self)
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
 	self:RegisterEvent("SOCKET_INFO_CLOSE");
 	self:RegisterEvent("SOCKET_INFO_BIND_CONFIRM");
+	self:RegisterEvent("SOCKET_INFO_REFUNDABLE_CONFIRM");
 	self:RegisterEvent("SOCKET_INFO_ACCEPT");
 	self:RegisterEvent("SOCKET_INFO_SUCCESS");
 	self:RegisterEvent("SOCKET_INFO_FAILURE");
@@ -45,6 +46,8 @@ function ItemSocketingFrame_OnEvent(self, event, ...)
 		HideUIPanel(ItemSocketingFrame);
 	elseif ( event == "SOCKET_INFO_BIND_CONFIRM" ) then
 		StaticPopup_Show("BIND_SOCKET");
+	elseif ( event == "SOCKET_INFO_REFUNDABLE_CONFIRM" ) then
+		StaticPopup_Show("REFUNDABLE_SOCKET");
 	elseif ( event == "SOCKET_INFO_ACCEPT" ) then
 		self.isSocketing = true;
 		ItemSocketingSocketButton_Disable();

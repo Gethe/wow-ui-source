@@ -39,7 +39,7 @@ local ICON_OFFSET = 12;
 
 function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
-	local textureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
+	local textureKit = widgetInfo.textureKit;
 
 	SetupTextureKitOnRegions(textureKit, self.LeftBar, leftBarTextureKitRegions);
 	SetupTextureKitOnRegions(textureKit, self.RightBar, rightBarTextureKitRegions);

@@ -6,8 +6,6 @@
 
 
 
-LFR_MAX_SHOWN_LEVEL_DIFF = 15;
-
 NUM_LFR_CHOICE_BUTTONS = 16;
 
 NUM_LFR_LIST_BUTTONS = 21;
@@ -309,7 +307,7 @@ function LFRQueueFrame_Update()
 
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
 
-	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFR_CURRENT_FILTER, LFR_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFR_CURRENT_FILTER);
 
 	LFRQueueFrameSpecificList_Update();
 end

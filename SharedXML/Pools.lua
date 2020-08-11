@@ -85,6 +85,10 @@ function ObjectPoolMixin:GetNextActive(current)
 	return (next(self.activeObjects, current));
 end
 
+function ObjectPoolMixin:GetNextInactive(current)
+	return (next(self.inactiveObjects, current));
+end
+
 function ObjectPoolMixin:IsActive(object)
 	return (self.activeObjects[object] ~= nil);
 end
@@ -302,6 +306,35 @@ function FramePoolCollectionMixin:EnumerateActive()
 				currentPoolKey, currentPool = next(self.pools, currentPoolKey);
 				if currentPool then
 					currentObject = currentPool:GetNextActive();
+				else
+					break;
+				end
+			end
+		end
+
+		return currentObject;
+	end, nil;
+end
+
+function FramePoolCollectionMixin:EnumerateInactiveByTemplate(template)
+	local pool = self:GetPool(template);
+	if pool then
+		return pool:EnumerateInactive();
+	end
+
+	return nop;
+end
+
+function FramePoolCollectionMixin:EnumerateInactive()
+	local currentPoolKey, currentPool = next(self.pools, nil);
+	local currentObject = nil;
+	return function()
+		if currentPool then
+			currentObject = currentPool:GetNextInactive(currentObject);
+			while not currentObject do
+				currentPoolKey, currentPool = next(self.pools, currentPoolKey);
+				if currentPool then
+					currentObject = currentPool:GetNextInactive();
 				else
 					break;
 				end

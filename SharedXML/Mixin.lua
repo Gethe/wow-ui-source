@@ -1,4 +1,4 @@
-﻿---------------
+---------------
 --NOTE - Please do not change this section without talking to the UI team
 local _, tbl = ...;
 if tbl then

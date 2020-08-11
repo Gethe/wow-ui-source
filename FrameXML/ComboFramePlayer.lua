@@ -8,6 +8,7 @@ function ComboPointPowerBar:OnLoad()
 
 	self.class = "ROGUE";
 	self:SetPowerTokens("COMBO_POINTS");
+	self:SetTooltip(COMBO_POINTS_POWER, COMBO_POINTS_ROGUE_TOOLTIP);
 
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i].on = false;
@@ -22,6 +23,8 @@ function ComboPointPowerBar:OnEvent(event, arg1, arg2)
 		self:Setup();
 	elseif (event == "UNIT_MAXPOWER") then
 		self:UpdateMaxPower();
+	elseif (event == "UNIT_POWER_POINT_CHARGE") then
+		self:UpdateChargedPowerPoints();
 	else
 		ClassPowerBar.OnEvent(self, event, arg1, arg2);
 	end
@@ -45,6 +48,7 @@ function ComboPointPowerBar:Setup()
 		local unit = self:GetParent().unit;
 		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit);
 		self:RegisterUnitEvent("UNIT_MAXPOWER", unit);
+		self:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", unit);
 		self:SetPoint("TOP", self:GetParent(), "BOTTOM", xOffset, 38);
 		self:SetFrameLevel(frameLevel);
 		self:Show();
@@ -54,6 +58,7 @@ function ComboPointPowerBar:Setup()
 		self:Hide();
 		self:UnregisterEvent("UNIT_POWER_FREQUENT");
 		self:UnregisterEvent("UNIT_MAXPOWER");
+		self:UnregisterEvent("UNIT_POWER_POINT_CHARGE");
 	end
 end
 
@@ -65,6 +70,7 @@ function ComboPointPowerBar:SetupDruid()
 		showBar = (powerType == Enum.PowerType.Energy);
 		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
 		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+		self:SetTooltip(COMBO_POINTS_POWER, COMBO_POINTS_DRUID_TOOLTIP);
 	end
 	return showBar;
 end
@@ -204,5 +210,32 @@ function ComboPointPowerBar:UpdatePower()
 		end
 
 		self.lastPower = comboPoints;
+	end
+
+	self:UpdateChargedPowerPoints();
+end
+
+function ComboPointPowerBar:UpdateChargedPowerPoints()
+	local chargedPowerPoints = GetUnitChargedPowerPoints(self:GetParent().unit);
+	-- there's only going to be 1 max
+	local chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1];
+	for i = 1, self.maxUsablePoints do
+		local comboPointFrame = self.ComboPoints[i];
+		local isCharged = i == chargedPowerPointIndex;
+		if comboPointFrame.isCharged ~= isCharged then
+			comboPointFrame.isCharged = isCharged;
+			if isCharged then
+				comboPointFrame.Point:SetAtlas("ComboPoints-ComboPoint-Kyrian");
+				comboPointFrame.PointOff:SetAtlas("ComboPoints-PointBg-Kyrian");
+				if comboPointFrame.on then
+					comboPointFrame.on = false;
+					comboPointFrame.AnimIn:Stop();
+				end
+				self:AnimIn(comboPointFrame);
+			else
+				comboPointFrame.Point:SetAtlas("ComboPoints-ComboPoint");
+				comboPointFrame.PointOff:SetAtlas("ComboPoints-PointBg");
+			end
+		end
 	end
 end

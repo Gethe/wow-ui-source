@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_LandingSoulbindPanel.lua"/>
+	<Frame name="LandingPageSoulbindPanelTemplate" mixin="LandingPageSoulbindButtonMixin" virtual="true">
+		<Size x="350" y="200"/>
+		<Layers>
+			<Layer level="Background">
+				<Texture atlas="shadowlands-landingpage-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="Overlay">
+				<FontString parentKey="Label" text="LANDING_PAGE_SOULBIND_SECTION_HEADER" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="45" y="-14"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SoulbindButton" inherits="LandingPageSoulbindButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" y="25"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

@@ -107,12 +107,6 @@ function AuctionHouseCommoditiesBuyListMixin:OnLoad()
 
 	self:SetTableBuilderLayout(AuctionHouseTableBuilder.GetCommoditiesBuyListLayout(self));
 
-	local function QuantitySelectionChangedCallback(event, quantity)
-		self:SetQuantitySelected(quantity);
-	end
-
-	self.quantitySelectionChangedCallback = QuantitySelectionChangedCallback;
-
 	self.quantitySelected = 1;
 
 	self.ScrollFrame:SetPoint("TOPLEFT", self.HeaderContainer, "TOPLEFT", 0, -6);
@@ -202,13 +196,17 @@ end
 function AuctionHouseCommoditiesBuyListMixin:OnShow()
 	AuctionHouseCommoditiesListMixin.OnShow(self);
 
-	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelectionChangedCallback);
+	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.OnCommoditiesQuantitySelectionChanged, self);
 end
 
 function AuctionHouseCommoditiesBuyListMixin:OnHide()
 	AuctionHouseCommoditiesListMixin.OnHide(self);
 
-	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.quantitySelectionChangedCallback);
+	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self);
+end
+
+function AuctionHouseCommoditiesBuyListMixin:OnCommoditiesQuantitySelectionChanged(quantity)
+	self:SetQuantitySelected(quantity);
 end
 
 function AuctionHouseCommoditiesBuyListMixin:SetItemID(itemID)
