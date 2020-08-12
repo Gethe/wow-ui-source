@@ -191,6 +191,13 @@ function MawBuffMixin:OnEnter()
 	self.HighlightBorder:Show(); 
 end
 
+function MawBuffMixin:OnClick()
+	if (IsModifiedClick("CHATLINK")) then
+		ChatEdit_InsertLink(GetMawPowerLinkBySpellID(self.spellID));
+		return;
+	end
+end
+
 function MawBuffMixin:OnLeave()
 	GameTooltip_Hide(); 
 	self.HighlightBorder:Hide(); 

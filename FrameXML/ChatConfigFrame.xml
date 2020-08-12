@@ -139,28 +139,15 @@
 	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
 		<Frames>
-			<Button name="$parentColorSwatch" parentKey="ColorSwatch">
-				<Size x="16" y="16"/>
+			<Button name="$parentColorSwatch" parentKey="ColorSwatch" inherits="ColorSwatchTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="178" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentSwatchBg" parentKey="SwatchBg">
-							<Size x="14" y="14"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<Color r="1.0" g="1.0" b="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnClick>
 						MessageTypeColor_OpenColorPicker(self, button, down);
 					</OnClick>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
 		</Frames>
 	</Frame>

@@ -1691,18 +1691,20 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
 	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
 	if color1 then
-		self.ColorSwatch1:Show();
-		self.ColorSwatch1Glow:Show();
-		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
-
 		if color2 then
 			self.ColorSwatch2:Show();
 			self.ColorSwatch2Glow:Show();
 			self.ColorSwatch2:SetVertexColor(color2:GetRGB());
+			self.ColorSwatch1:SetAtlas("charactercreate-customize-palette-half");
 		else
 			self.ColorSwatch2:Hide();
 			self.ColorSwatch2Glow:Hide();
+			self.ColorSwatch1:SetAtlas("charactercreate-customize-palette");
 		end
+
+		self.ColorSwatch1:Show();
+		self.ColorSwatch1Glow:Show();
+		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
 
 		self.SelectionName:Hide();
 		self.SelectionNumber:SetWidth(25);

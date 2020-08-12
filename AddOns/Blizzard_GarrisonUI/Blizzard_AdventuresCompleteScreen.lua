@@ -371,6 +371,9 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 		end
 	else
 		self.Board:AddCombatEventText(combatLogEvent);
+		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura then
+			self.Board:UpdateBoardAuraState(combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura, combatLogEvent);
+		end
 	end
 end
 

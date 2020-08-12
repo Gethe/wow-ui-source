@@ -10,6 +10,9 @@ end
 function CharCustomizeParentFrameBaseMixin:PreviewCustomizationChoice(optionID, choiceID)
 end
 
+function CharCustomizeParentFrameBaseMixin:ResetCustomizationPreview()
+end
+
 function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
 end
 
@@ -418,9 +421,6 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	self.categoryID = categoryData.id;
 	self.layoutIndex = categoryData.orderIndex;
 
-	self:ClearTooltipLines();
-	--self:AddTooltipLine(categoryData.name);
-
 	if showDebugTooltipInfo then
 		self:AddBlankTooltipLine();
 		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
@@ -447,6 +447,13 @@ CharCustomizeShapeshiftFormButtonMixin = CreateFromMixins(CharCustomizeCategoryB
 function CharCustomizeShapeshiftFormButtonMixin:SetupAnchors(tooltip)
 	tooltip:SetOwner(self, "ANCHOR_NONE");
 	tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", self.tooltipXOffset, self.tooltipYOffset);
+end
+
+function CharCustomizeShapeshiftFormButtonMixin:SetCategory(categoryData, selectedCategoryID)
+	CharCustomizeCategoryButtonMixin.SetCategory(self, categoryData, selectedCategoryID);
+
+	self:ClearTooltipLines();
+	self:AddTooltipLine(categoryData.name);
 end
 
 CharCustomizeSexButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
@@ -701,8 +708,8 @@ function CharCustomizeMixin:PreviewCustomizationChoice(optionID, choiceID)
 	self.parentFrame:PreviewCustomizationChoice(optionID, choiceID);
 end
 
-function CharCustomizeMixin:ResetCustomizationPreview(optionData)
-	self.parentFrame:PreviewCustomizationChoice(optionData.id, optionData.choices[optionData.currentChoiceIndex].id);
+function CharCustomizeMixin:ResetCustomizationPreview()
+	self.parentFrame:ResetCustomizationPreview();
 end
 
 function CharCustomizeMixin:Reset()
@@ -1014,22 +1021,29 @@ function CharCustomizeMixin:HidePopouts(exemptPopout)
 	end
 end
 
+function CharCustomizeMixin:ResetPreviewIfDirty()
+	if self.previewIsDirty then
+		self.previewIsDirty = false;
+		self:ResetCustomizationPreview();
+	end
+end
+
 function CharCustomizeMixin:OnOptionPopoutEntryClick(option, entryData)
+	self.previewIsDirty = false;
 	self:SetCustomizationChoice(option.optionData.id, entryData.id);
 end
 
 function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)
-	self:PreviewCustomizationChoice(option.optionData.id, entry.selectionData.id);
-	self.pendingPreviewResetOptionData = nil;
+	if not entry.isSelected then
+		self.previewIsDirty = false;
+		self:PreviewCustomizationChoice(option.optionData.id, entry.selectionData.id);
+	end
 end
 
 function CharCustomizeMixin:OnOptionPopoutEntryMouseLeave(option, entry)
-	self.pendingPreviewResetOptionData = option.optionData;
+	self.previewIsDirty = true;
 end
 
 function CharCustomizeMixin:OnUpdate()
-	if self.pendingPreviewResetOptionData then
-		self:ResetCustomizationPreview(self.pendingPreviewResetOptionData);
-		self.pendingPreviewResetOptionData = nil;
-	end
+	self:ResetPreviewIfDirty();
 end

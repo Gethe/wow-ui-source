@@ -106,6 +106,8 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self.duration = effectDescription.duration;
 	self:SetScale(effectDescription.visualScale);
 
+	self:SetParticleOverrideScale(effectDescription.particleOverrideScale);
+
 	if self.source and self.target and self.source ~= self.target then
 		self:SetYaw(GetAngleForModel(self.source, self.target));
 	else

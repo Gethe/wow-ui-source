@@ -144,15 +144,21 @@
 					<Anchor point="BOTTOMRIGHT" x="-33" y="26"/>
 				</Anchors>
 			</ScrollFrame>
-			<Button parentKey="ActivateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">
+			<Button parentKey="ActivateSoulbindButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">
 				<Size x="152" y="22"/>
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" x="-93" y="77"/>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="-93" y="70"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="ResetButton" inherits="SoulbindsUndoButtonTemplate" motionScriptsWhileDisabled="true">
+			<Button parentKey="CommitConduitsButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_APPLY_CONDUITS_BUTTON">
+				<Size x="152" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ActivateButton" relativePoint="RIGHT" x="8"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.ActivateSoulbindButton" relativePoint="TOP" x="0" y="7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ResetConduitsButton" inherits="SoulbindsUndoButtonTemplate" motionScriptsWhileDisabled="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ActivateSoulbindButton" relativePoint="RIGHT" x="8"/>
 				</Anchors>
 			</Button>
 		</Frames>

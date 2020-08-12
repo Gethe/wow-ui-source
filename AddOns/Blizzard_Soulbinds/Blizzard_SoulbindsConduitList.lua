@@ -1,3 +1,5 @@
+local CONDUIT_PENDING_INSTALL_FONT_COLOR = CreateColor(0.0, 0.8, 1.0);
+
 ConduitListCategoryButtonMixin = CreateFromMixins(CallbackRegistryMixin);
 
 ConduitListCategoryButtonMixin:GenerateCallbackEvents(
@@ -68,14 +70,21 @@ function ConduitListCategoryButtonMixin:SetExpanded(expanded)
 	self.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
 end
 
-ConduitListConduitButtonMixin = CreateFromMixins(CallbackRegistryMixin);
+ConduitListConduitButtonMixin = {};
 
-ConduitListConduitButtonMixin:GenerateCallbackEvents(
-	{
-		"OnEnter",
-		"OnLeave",
-	}
-);
+ConduitListConduitButtonMixin.State =
+{
+	Uninstalled = 1,
+	Installed = 2,
+	Pending = 3,
+}
+
+ConduitListConduitButtonEvents = {
+	"SOULBIND_PENDING_CONDUIT_CHANGED",
+	"SOULBIND_CONDUIT_INSTALLED",
+	"SOULBIND_CONDUIT_UNINSTALLED",
+};
+
 function ConduitListConduitButtonMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 end
@@ -99,8 +108,9 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	local r, g, b = color.r, color.g, color.b;
 	self.IconOverlay:SetVertexColor(r, g, b);
 	self.IconOverlay2:SetVertexColor(r, g, b);
+	self.IconOverlayDark:SetVertexColor(0, 0, 0);
 	self.ConduitName:SetTextColor(r, g, b);
-	
+
 	self.ConduitName:ClearAllPoints();
 	local specName = conduitData.conduitSpecName;
 	if specName then
@@ -113,6 +123,38 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 		self.SpecName:SetText("");
 	end
 
+	self:SanitizeAvailability();
+end
+
+function ConduitListConduitButtonMixin:OnEvent(event, ...)
+	if event == "SOULBIND_PENDING_CONDUIT_CHANGED" then
+		local nodeID, conduitID, pending = ...;
+		if conduitID == self.conduitData.conduitID then
+			if pending then
+				self:UpdateVisuals(ConduitListConduitButtonMixin.State.Pending);
+			else
+				self:UpdateVisuals(ConduitListConduitButtonMixin.State.Uninstalled);
+			end
+		end
+	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
+		local nodeID, conduitData = ...;
+		if conduitData.conduitID == self.conduitData.conduitID then
+			self:UpdateVisuals(ConduitListConduitButtonMixin.State.Installed);
+		end
+	elseif event == "SOULBIND_CONDUIT_UNINSTALLED" then
+		local nodeID, conduitData = ...;
+		if conduitData.conduitID == self.conduitData.conduitID then
+			self:UpdateVisuals(ConduitListConduitButtonMixin.State.Uninstalled);
+		end
+	end
+end
+
+function ConduitListConduitButtonMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, ConduitListConduitButtonEvents);
+end
+
+function ConduitListConduitButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, ConduitListConduitButtonEvents);
 end
 
 function ConduitListConduitButtonMixin:MatchesID(conduitID)
@@ -126,58 +168,119 @@ function ConduitListConduitButtonMixin:PlayUpdateAnimation()
 		glow.Anim:Play();
 	end
 
-	if not self.ModelScene.effect then
-		local forceUpdate, stopAnim = true, true;
-		self.ModelScene.effect = StaticModelInfo.SetupModelScene(self.ModelScene, ADD_CONDUIT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
+	-- Commented out until animation work is finished.
+	--if not self.ModelScene.effect then
+	--	local forceUpdate, stopAnim = true, true;
+	--	self.ModelScene.effect = StaticModelInfo.SetupModelScene(self.ModelScene, ADD_CONDUIT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
+	--end
+	--
+	--self.ModelScene:SetDesaturation(1.0);
+	--local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay = 0.79, duration = 0.769, speed = 1 },};
+	--self.ModelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
+end
+
+function ConduitListConduitButtonMixin:UpdateVisuals(state)
+	local installed = state == ConduitListConduitButtonMixin.State.Installed;
+	local pending = state == ConduitListConduitButtonMixin.State.Pending;
+	local dark = installed or pending;
+	self.IconOverlayDark:SetShown(dark);
+	self.IconDark:SetShown(dark);
+	self.ConduitName:SetAlpha(dark and .5 or 1);
+	self.SpecName:SetAlpha(dark and .5 or 1);
+	
+	self.Pending:SetShown(pending);
+end
+
+function ConduitListConduitButtonMixin:SanitizeAvailability()
+	self:UpdateVisuals(self:GetState());
+end
+
+function ConduitListConduitButtonMixin:GetState()
+	local soulbindID = Soulbinds.GetOpenSoulbind();
+	local conduitID = self.conduitData.conduitID;
+	local installed = C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID);
+	if installed then
+		return ConduitListConduitButtonMixin.State.Installed;
 	end
 
-	self.ModelScene:SetDesaturation(1.0);
-	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay = 0.79, duration = 0.769, speed = 1 },};
-	self.ModelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
+	local pending = C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID);
+	if pending then
+		return ConduitListConduitButtonMixin.State.Pending;
+	end
+	return ConduitListConduitButtonMixin.State.Uninstalled;
 end
 
 function ConduitListConduitButtonMixin:OnClick(buttonName)
-	self:CreateCursor();
+	if buttonName == "LeftButton" then
+		self:CreateCursor();
+	elseif buttonName == "RightButton" then
+		local soulbindID = Soulbinds.GetOpenSoulbind();
+		local conduitID = self.conduitData.conduitID;
+		if C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID) then
+			local nodeID = C_Soulbinds.GetPendingNodeIDInSoulbind(soulbindID, conduitID);
+			if nodeID > 0 then
+				C_Soulbinds.RemovePendingConduit(nodeID);
+			end
+		end
+	end
 end
 
 function ConduitListConduitButtonMixin:OnDragStart()
 	self:CreateCursor();
 end
 
-function ConduitListConduitButtonMixin:OnDragStop()
-end
-
 function ConduitListConduitButtonMixin:CreateCursor()
-	local conduitCollectionCursor = 20; -- FIXME tagify
-	SetCursorVirtualItem(self.conduitData.conduitItemID, conduitCollectionCursor);
+	if C_Soulbinds.IsConduitInstalledInSoulbind(Soulbinds.GetOpenSoulbind(), self.conduitData.conduitID) then
+		return;
+	end
+
+	SetCursorVirtualItem(self.conduitData.conduitItemID, Enum.UICursorType.ConduitCollectionItem);
 end
 
 function ConduitListConduitButtonMixin:OnEnter(conduitData)
 	local onConduitLoad = function()
+		if self.conduitOnSpellLoadCb then
+			self.conduitOnSpellLoadCb = nil;
+		end
+
 		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT");
-		GameTooltip:SetConduit(self.conduit:GetConduitID(), self.conduit:GetRank()); 
+		
+		local conduitID = self.conduit:GetConduitID();
+		GameTooltip:SetConduit(conduitID, self.conduit:GetConduitRank());
+
+		local soulbindID = Soulbinds.GetOpenSoulbind();
+		if C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID) then
+			GameTooltip_AddErrorLine(GameTooltip, CONDUIT_COLLECTION_ITEM_SOCKETED);
+		elseif C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID) then
+			GameTooltip_AddColoredLine(GameTooltip, CONDUIT_COLLECTION_ITEM_PENDING, CONDUIT_PENDING_INSTALL_FONT_COLOR);
+		end
 		GameTooltip:Show();
 	end;
-	self.conduit:ContinueOnSpellLoad(onConduitLoad);
+
+	self.conduitOnSpellLoadCb = self.conduit:ContinueWithCancelOnSpellLoad(onConduitLoad);
 
 	for index, element in ipairs(self.Hovers) do
 		element:Show();
 	end
 
-	-- FIXME
-	--self:TriggerEvent(ConduitListConduitButtonMixin.Event.OnEnter);
-	SoulbindViewer:OnCollectionConduitEnter(self.conduitData.conduitType);
+	local conduitType = self.conduitData.conduitType;
+	Soulbinds.SetPreviewConduitType(conduitType);
+	SoulbindViewer:OnCollectionConduitEnter(conduitType);
 end
 
 function ConduitListConduitButtonMixin:OnLeave(collectionData)
+	if self.conduitOnSpellLoadCb then
+		self.conduitOnSpellLoadCb();
+		self.conduitOnSpellLoadCb = nil;
+	end
+
 	GameTooltip_Hide();
 
 	for index, element in ipairs(self.Hovers) do
 		element:Hide();
 	end
 	
-	-- FIXME
-	--self:TriggerEvent(ConduitListConduitButtonMixin.Event.OnLeave);
+	Soulbinds.SetPreviewConduitType(nil);
 	SoulbindViewer:OnCollectionConduitLeave();
 end
 
@@ -204,18 +307,29 @@ function ConduitListSectionMixin:OnLeave()
 	-- FIXME Forward button events to section.
 end
 
-function ConduitListSectionMixin:Init(conduitType)
-	local collection = C_Soulbinds.GetConduitCollection(conduitType);
+function ConduitListSectionMixin:Init()
+	local collection = C_Soulbinds.GetConduitCollection(self.conduitType);
 	local isIndexTable = true;
 	local activeCovenantID = C_Covenants.GetActiveCovenantID();
 	local includeIf = function(collectionData)
 		local covenantID = collectionData.covenantID;
-		return not covenantID or covenantID == activeCovenantID and collectionData.conduitID > 3; -- conduitID > 3 temp
+		return not covenantID or covenantID == activeCovenantID;
 	end;
-	self.collection = tFilter(collection, includeIf, isIndexTable)
-	self.CategoryButton:Init(conduitType);
+	self.collection = tFilter(collection, includeIf, isIndexTable);
 
-	self:BuildConduits();
+	table.sort(self.collection, function(a, b)
+		local s1 = a.conduitSpecName or "";
+		local s2 = b.conduitSpecName or "";
+		local compare = strcmputf8i(s1, s2);
+		if compare == 0 then
+			return a.conduitRank < b.conduitRank;
+		end
+		return compare < 0;
+	end);
+
+	self.CategoryButton:Init(self.conduitType);
+
+	return self:BuildConduits();
 end
 
 function ConduitListSectionMixin:FindConduitbutton(conduitID)
@@ -224,7 +338,6 @@ function ConduitListSectionMixin:FindConduitbutton(conduitID)
 			return conduitButton;
 		end
 	end
-	return false;
 end
 
 function ConduitListSectionMixin:AddCollectionData(collectionData)
@@ -260,6 +373,8 @@ function ConduitListSectionMixin:BuildConduits()
 	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, count, anchor, layout);
 
 	self:UpdateLayout();
+
+	return count > 0;
 end
 
 function ConduitListSectionMixin:OnExpandedChanged(expanded)
@@ -280,6 +395,7 @@ local ConduitListEvents =
 {
 	"SOULBIND_CONDUIT_COLLECTION_UPDATED",
 	"SOULBIND_CONDUIT_COLLECTION_REMOVED",
+	"SOULBIND_CONDUIT_COLLECTION_CLEARED",
 };
 
 function ConduitListMixin:OnLoad()
@@ -301,6 +417,8 @@ function ConduitListMixin:OnEvent(event, ...)
 		self:OnCollectionDataUpdated(collectionData);
 	elseif event == "SOULBIND_CONDUIT_COLLECTION_REMOVED" then
 		self:Init();
+	elseif event == "SOULBIND_CONDUIT_COLLECTION_CLEARED" then
+		self:Init();
 	end
 end
 
@@ -313,9 +431,12 @@ function ConduitListMixin:OnHide()
 end
 
 function ConduitListMixin:Init()
-	self.ScrollChild.Potency:Init(Enum.SoulbindConduitType.Potency);
-	self.ScrollChild.Endurance:Init(Enum.SoulbindConduitType.Endurance);
-	self.ScrollChild.Finesse:Init(Enum.SoulbindConduitType.Finesse);
+	for index, list in ipairs(self.ScrollChild.Lists) do
+		list.layoutIndex = index;
+		local populated = list:Init();
+		list:SetShown(populated);
+	end
+	self.ScrollChild:Layout();
 end
 
 function ConduitListMixin:OnCollectionDataUpdated(collectionData)

@@ -122,6 +122,7 @@ local PlayerChoice =
 				{ Name = "soundKitID", Type = "number", Nilable = true },
 				{ Name = "hasRewards", Type = "bool", Nilable = false },
 				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = false },
+				{ Name = "rarityColor", Type = "table", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "typeArtID", Type = "number", Nilable = true },
 				{ Name = "uiTextureKit", Type = "string", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },

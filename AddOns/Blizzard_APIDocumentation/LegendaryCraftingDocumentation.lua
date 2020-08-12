@@ -122,6 +122,20 @@ local LegendaryCrafting =
 			},
 		},
 		{
+			Name = "GetRuneforgePowerSlots",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "runeforgePowerID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "slotNames", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRuneforgePowers",
 			Type = "Function",
 

@@ -75,6 +75,20 @@ function CharacterCreateMixin:OnLoad()
 
 	self:SetSequence(0);
 	self:SetCamera(0);
+	self:OnDisplaySizeChanged();
+end
+
+function CharacterCreateMixin:OnDisplaySizeChanged()
+	local width = GetScreenWidth();
+	local height = GetScreenHeight();
+
+	local MAX_ASPECT = 16 / 9;
+	local currentAspect = width / height;
+
+	local atlasName = (currentAspect - MAX_ASPECT > 0.001) and "charactercreate-vignette-sides-widescreen" or "charactercreate-vignette-sides";
+
+	self.LeftBackgroundOverlay:SetAtlas(atlasName);
+	self.RightBackgroundOverlay:SetAtlas(atlasName);
 end
 
 function CharacterCreateMixin:OnEvent(event, ...)
@@ -136,6 +150,8 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			showDebugTooltipInfo = (cvarValue == "1");
 			RaceAndClassFrame:UpdateButtons();
 		end
+	elseif event == "DISPLAY_SIZE_CHANGED" then
+		self:OnDisplaySizeChanged();
 	end
 
 	if showError then
@@ -296,9 +312,45 @@ function CharacterCreateMixin:EnableZoneChoiceMode(enable)
 	self:ZoomCamera(enable and zoomAmount or -zoomAmount, ZOOM_TIME_SECONDS, force);
 
 	if enable then
-		C_CharacterCreation.SetModelsHiddenState(true);
+		self:AlphaCharacterToTarget(0);
 	else
-		C_Timer.After(ZOOM_TIME_SECONDS, function() C_CharacterCreation.SetModelsHiddenState(false); end);
+		self:AlphaCharacterToTarget(1, ZOOM_TIME_SECONDS);
+	end
+end
+
+function CharacterCreateMixin:AlphaCharacterToTarget(targetAlpha, duration)
+	duration = duration or 0;
+
+	if duration == 0 then
+		C_CharacterCreation.SetModelAlpha(targetAlpha);
+		self:SetScript("OnUpdate", nil);
+		return;
+	end
+
+	local currentAlpha = C_CharacterCreation.GetModelAlpha();
+	local alphaDiff = targetAlpha - currentAlpha;
+	self.perSecondAlpha = alphaDiff / duration;
+	self.targetAlpha = targetAlpha;
+	self:SetScript("OnUpdate", self.OnUpdateAlphaCharacter);
+end
+
+function CharacterCreateMixin:OnUpdateAlphaCharacter(elapsed)
+	local alphaAmount = self.perSecondAlpha * elapsed;
+	local currentAlpha = C_CharacterCreation.GetModelAlpha();
+	local newAlpha = currentAlpha + alphaAmount;
+
+	local reachedTarget;
+	if self.perSecondAlpha < 0 then
+		reachedTarget = (newAlpha <= self.targetAlpha);
+	else
+		reachedTarget = (newAlpha >= self.targetAlpha);
+	end
+
+	if reachedTarget then
+		C_CharacterCreation.SetModelAlpha(self.targetAlpha);
+		self:SetScript("OnUpdate", nil);
+	else
+		C_CharacterCreation.SetModelAlpha(newAlpha);
 	end
 end
 
@@ -455,9 +507,13 @@ function CharacterCreateMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
+function CharacterCreateMixin:ResetCustomizationPreview()
+	C_CharacterCreation.ClearPreviewChoices();
+end
+
 function CharacterCreateMixin:PreviewCustomizationChoice(optionID, choiceID)
 	-- It is important that we DON'T call UpdateCharCustomizationFrame here because we want to keep the current selections
-	C_CharacterCreation.SetCustomizationChoice(optionID, choiceID);
+	C_CharacterCreation.PreviewCustomizationChoice(optionID, choiceID);
 end
 
 function CharacterCreateMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
@@ -473,12 +529,8 @@ function CharacterCreateMixin:SetViewingAlteredForm(viewingAlteredForm)
 	self:UpdateCharCustomizationFrame();
 end
 
-function CharacterCreateMixin:GetTargetRotation(mode)
-	return 0;
-end
-
 function CharacterCreateMixin:ResetCharacterRotation(mode, instantRotate)
-	self:RotateCharacterToTarget(self:GetTargetRotation(mode or self.currentMode), instantRotate and 0 or ROTATION_ADJUST_SECONDS);
+	self:RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), instantRotate and 0 or ROTATION_ADJUST_SECONDS);
 end
 
 function CharacterCreateMixin:ZoomCamera(zoomAmount, zoomTime, force)
@@ -939,7 +991,7 @@ function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
 
 		local spellVisualKitID = self.selectedClassData.spellVisualKitID;
 		if spellVisualKitID then
-			self:GetParent():RotateCharacterToTarget(0, 0);
+			self:GetParent():RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), 0);
 
 			self.currentSpellVisualKitID = spellVisualKitID;
 			

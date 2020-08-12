@@ -27,6 +27,10 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
 	</Frame>
 	
 	<Frame name="CovenantSanctumRenownRewardTemplate" mixin="CovenantSanctumRenownRewardMixin" virtual="true">
@@ -58,13 +62,7 @@
 				<FontString parentKey="Name" inherits="GameFontNormalMed2" justifyH="LEFT">
 					<Size x="226" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="134" y="-45"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size x="226" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						<Anchor point="LEFT" x="134" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -76,6 +74,10 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
 	</Frame>
 
 	<Frame parentKey="RenownTab" mixin="CovenantSanctumRenownTabMixin" parent="CovenantSanctumFrame" hidden="true" setAllPoints="true">

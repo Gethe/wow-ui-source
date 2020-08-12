@@ -11,7 +11,7 @@ ScrollListMixin = {};
 
 function ScrollListMixin:InitializeList()
 	self.ScrollFrame.update = function()
-		self:RefreshScrollFrame();
+		self:RefreshListDisplay();
 	end;
 
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, self:GetElementTemplate(), 0, 0);

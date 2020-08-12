@@ -128,6 +128,16 @@ function AccumulateIf(tbl, pred)
 	return count;
 end
 
+function ContainsIf(tbl, pred)
+	for k, v in pairs(tbl) do
+		if (pred(v)) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function FindInTableIf(tbl, pred)
 	for k, v in pairs(tbl) do
 		if (pred(v)) then

@@ -297,6 +297,8 @@ function SetItemRef(link, text, button, chatFrame)
 		elseif category == "services" then
 			StoreFrame_SetServicesCategory();
 			ToggleStoreUI();
+		elseif category == "gametime" then
+			StoreFrame_OpenGameTimeCategory();
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then

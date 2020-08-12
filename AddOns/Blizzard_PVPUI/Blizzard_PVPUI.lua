@@ -14,6 +14,7 @@ local SEASON_STATE_DISABLED = 4;
 local CONQUEST_CURRENCY_ID = 1602;
 local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
 
+local BFA_START_SEASON = 26
 local SL_START_SEASON = 30;
 
 ---------------------------------------------------------------
@@ -380,7 +381,11 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
+		if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON_LEGACY:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
+		else
+			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
+		end
 	end
 end
 
@@ -1521,34 +1526,9 @@ function PVPUIHonorInsetMixin:Update()
 	return 0;
 end
 
-function PVPUIHonorInsetMixin:LegacyDisplayCasualPanel()
-	local panel = self.CasualPanel;
-	local lifetimeHonorKills = GetPVPLifetimeStats();
-	
-	panel.HKLabel:SetText(HONORABLE_KILLS);
-	panel.HKLabel:SetPoint("TOP", 0, -184);
-
-	panel.HKValue:SetText(BreakUpLargeNumbers(lifetimeHonorKills));
-	panel.HKValue:Show();
-
-	panel.WeeklyChest:Hide();
-	panel.HonorLevelDisplay:SetPoint("TOP", 0, -25);
-end
-
 function PVPUIHonorInsetMixin:DisplayCasualPanel()
-	local panel = self.CasualPanel;
-	panel:Show();
+	self.CasualPanel:Show();
 	self.RatedPanel:Hide();
-
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
-		self:LegacyDisplayCasualPanel();
-		return;
-	end
-
-	panel.HKLabel:SetText(RATED_PVP_WEEKLY_VAULT);
-	panel.HKLabel:SetPoint("TOP", 0, -12);
-	panel.WeeklyChest:Show();
-	panel.HonorLevelDisplay:SetPoint("TOP", panel.WeeklyChest, "BOTTOM", 0, -90);
 end
 
 local SEASON_REWARD_ACHIEVEMENTS = {
@@ -1597,54 +1577,8 @@ local function GetPVPSeasonAchievementID(seasonID)
 end
 
 function PVPUIHonorInsetMixin:DisplayRatedPanel()
-	local panel = self.RatedPanel;
-	panel:Show();
+	self.RatedPanel:Show();
 	self.CasualPanel:Hide();
-
-	local showSeasonReward = false;
-	local seasonState = ConquestFrame.seasonState;
-	if seasonState ~= SEASON_STATE_PRESEASON then
-		local seasonID = GetCurrentArenaSeason();
-		if seasonID == NO_ARENA_SEASON then
-			seasonID = GetPreviousArenaSeason();
-		end
-		if seasonID and seasonID >= SL_START_SEASON then
-			local achievementID = GetPVPSeasonAchievementID(seasonID);
-			if achievementID ~= nil then
-				showSeasonReward = true;
-				panel.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
-			end
-		end
-	end
-	panel.SeasonRewardFrame:SetShown(showSeasonReward);
-
-	if seasonState == SEASON_STATE_PRESEASON then
-		panel.Tier:Hide();
-	else
-		panel.Tier:Show();
-
-		if seasonState == SEASON_STATE_OFFSEASON then
-			panel.Tier.Title:SetText(PVP_LAST_SEASON_HIGH);
-			panel.Tier.Title:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		else
-			panel.Tier.Title:SetText(PVP_SEASON_HIGH);
-			panel.Tier.Title:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		end
-
-		local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
-		local tierInfo = C_PvP.GetPvpTierInfo(tierID);
-		ConquestFrame_SetPanelTierInfo(panel.Tier, tierInfo);
-
-		local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);
-		if nextTierInfo and seasonState ~= SEASON_STATE_OFFSEASON then
-			panel.Tier.NextTier.tierInfo = nextTierInfo;
-			panel.Tier.NextTier.Icon:SetTexture(nextTierInfo.tierIconID);
-			panel.Tier.NextTier:Show();
-		else
-			panel.Tier.NextTier.tierInfo = nil;
-			panel.Tier.NextTier:Hide();
-		end
-	end
 end
 
 PVPUIHonorLevelDisplayMixin = { };
@@ -2069,7 +2003,7 @@ function PVPWeeklyChestMixin:OnEnter()
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, RATED_PVP_WEEKLY_VAULT_TITLE);
+	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 
 	local canClaimRewards = C_WeeklyRewards.CanClaimPVPRewards();
 	if canClaimRewards then
@@ -2121,16 +2055,117 @@ function PVPNewSeasonPopupOnClick(self)
 	SetCVar("newPvpSeason", GetCurrentArenaSeason() - SL_START_SEASON + 1);
 end
 
-PVPWeeklyRatedPanelMixin = { };
+PVPWeeklyCasualPanelMixin = { };
+function PVPWeeklyCasualPanelMixin:LegacyOnShow()
+	local lifetimeHonorKills = GetPVPLifetimeStats();
+	
+	self.HKLabel:SetText(HONORABLE_KILLS);
+	self.HKLabel:SetPoint("TOP", 0, -184);
 
+	self.HKValue:SetText(BreakUpLargeNumbers(lifetimeHonorKills));
+	self.HKValue:Show();
+
+	self.WeeklyChest:Hide();
+	self.HonorLevelDisplay:SetPoint("TOP", 0, -25);
+end
+
+function PVPWeeklyCasualPanelMixin:OnShow()
+	local serverExpansionLevel = GetServerExpansionLevel();
+	if serverExpansionLevel < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyOnShow();
+		return;
+	end
+
+	local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
+	local playerLevel = UnitLevel("player");
+	local Label = self.HKLabel;
+	if playerLevel < maxLevel then
+		Label:Hide();
+		self.WeeklyChest:Hide();
+		self.HonorLevelDisplay:SetPoint("TOP", 0, -25);
+	else
+		Label:SetText(RATED_PVP_WEEKLY_VAULT);
+		Label:SetPoint("TOP", 0, -12);
+		Label:Show();
+		self.WeeklyChest:Show();
+		self.HonorLevelDisplay:SetPoint("TOP", self.WeeklyChest, "BOTTOM", 0, -90);
+	end
+end
+
+
+PVPWeeklyRatedPanelMixin = { };
 function PVPWeeklyRatedPanelMixin:LegacyOnShow()
 	self.Label:SetText(RATED_PVP_WEEKLY_CHEST);
 end
 
 function PVPWeeklyRatedPanelMixin:OnShow()
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+	local showSeasonReward = false;
+	local seasonState = ConquestFrame.seasonState;
+	if seasonState ~= SEASON_STATE_PRESEASON then
+		local seasonID = GetCurrentArenaSeason();
+		if seasonID == NO_ARENA_SEASON then
+			seasonID = GetPreviousArenaSeason();
+		end
+		if seasonID and seasonID >= SL_START_SEASON then
+			local achievementID = GetPVPSeasonAchievementID(seasonID);
+			if achievementID ~= nil then
+				showSeasonReward = true;
+				self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
+			end
+		end
+	end
+	self.SeasonRewardFrame:SetShown(showSeasonReward);
+
+	local Tier = self.Tier;
+	if seasonState == SEASON_STATE_PRESEASON then
+		Tier:Hide();
+	else
+		Tier:Show();
+
+		local Title = Tier.Title;
+		if seasonState == SEASON_STATE_OFFSEASON then
+			Title:SetText(PVP_LAST_SEASON_HIGH);
+			Title:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		else
+			Title:SetText(PVP_SEASON_HIGH);
+			Title:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		end
+
+		local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
+		local tierInfo = C_PvP.GetPvpTierInfo(tierID);
+		ConquestFrame_SetPanelTierInfo(Tier, tierInfo);
+
+		local NextTier = Tier.NextTier;
+		local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);
+		if nextTierInfo and seasonState ~= SEASON_STATE_OFFSEASON then
+			NextTier.tierInfo = nextTierInfo;
+			NextTier.Icon:SetTexture(nextTierInfo.tierIconID);
+			NextTier:Show();
+		else
+			NextTier.tierInfo = nil;
+			NextTier:Hide();
+		end
+	end
+
+	local serverExpansionLevel = GetServerExpansionLevel();
+
+	local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
+	local playerLevel = UnitLevel("player");
+	local Label = self.Label;
+	if playerLevel < maxLevel then
+		Label:Hide();
+		self.WeeklyChest:Hide();
+		Tier:SetPoint("TOP", 0, -32);
+	else
+		Label:SetText(RATED_PVP_WEEKLY_VAULT);
+		Label:Show();
+		self.WeeklyChest:Show();
+		Tier:SetPoint("TOP", self.WeeklyChest, "BOTTOM", 0, -90);
+	end
+
+	if serverExpansionLevel < LE_EXPANSION_SHADOWLANDS then
 		self:LegacyOnShow();
 		return;
 	end
-	self.Label:SetText(RATED_PVP_WEEKLY_VAULT);
+	Label:SetText(RATED_PVP_WEEKLY_VAULT);
 end

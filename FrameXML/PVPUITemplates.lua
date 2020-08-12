@@ -121,9 +121,12 @@ function PVPConquestRewardMixin:TryShowTooltip()
 	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR);
 	else
+		local unlocksCompleted = weeklyProgress.unlocksCompleted;
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
 		local message;
-		if progress < maxProgress then
+		if itemLevel == 0 and unlocksCompleted == 0 then
+			message = CONQUEST_PVP_WEEK_NO_CONQUEST;
+		elseif progress < maxProgress then
 			if displayType == Enum.ConquestProgressBarDisplayType.FirstChest then
 				message = CONQUEST_PVP_WEEK_FIRST_CHEST:format(maxProgress, itemLevel);
 			elseif displayType == Enum.ConquestProgressBarDisplayType.AdditionalChest then

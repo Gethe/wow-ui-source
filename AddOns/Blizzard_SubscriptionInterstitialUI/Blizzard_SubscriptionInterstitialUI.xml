@@ -2,36 +2,126 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SubscriptionInterstitialUI.lua"/>
 
-	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" topLevel="true" hidden="true">
-		<Size x="820" y="500"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
+	<Frame name="SubscriptionInterstitialBulletPointTemplate" mixin="SubscriptionInterstitialSubscribeButtonMixin" virtual="true">
+		<Size x="320" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Background" atlas="UI-EJ-BattleforAzeroth" useAtlasSize="true">
+				<Texture parentKey="Bullet" atlas="interstitial-newplayerexperience-upgrade-bullet" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" font="SystemFont_Shadow_Large" justifyH="LEFT">
+					<Size x="290" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Bullet" relativePoint="RIGHT" x="13" y="0"/>
+					</Anchors>
+					<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SubscriptionInterstitialSubscribeButtonTemplate" mixin="SubscriptionInterstitialSubscribeButtonMixin" virtual="true">
+		<Size x="800" y="480"/>
+		<Anchors>
+			<Anchor point="CENTER" x="-1" y="-1"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" topLevel="true" hidden="true">
+		<Size x="816" y="536"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<Frames>
-			<Frame parentKey="Inset" inherits="InsetFrameTemplate">
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="false" frameLevel="1000">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-26"/>
 					<Anchor point="BOTTOMRIGHT" x="-6" y="26"/>
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="SubscribeButton" mixin="SubscriptionInterstitialSubscribeButtonMixin" inherits="UIPanelButtonTemplate" text="[PH] Subscribe Now">
-				<Size x="160" y="22"/>
+			<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" frameLevel="500">
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-3" y="2"/>
 				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-				</Scripts>
+			</Frame>
+
+			<Button parentKey="SubscribeButton" inherits="SubscriptionInterstitialSubscribeButtonTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="interstitial-newplayerexperience-subscribe" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FirstLine" font="Game58Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
+							<Anchors>
+								<Anchor point="TOP" x="-152" y="-142"/>
+							</Anchors>
+							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+						</FontString>
+						<FontString parentKey="SecondLine" font="Game52Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
+							<Anchors>
+								<Anchor point="TOP" x="-152" y="-203"/>
+							</Anchors>
+							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+						</FontString>
+						<FontString parentKey="ThirdLine" font="Game69Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
+							<Anchors>
+								<Anchor point="TOP" x="-152" y="-256"/>
+							</Anchors>
+							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+						</FontString>
+						<FontString parentKey="ButtonText" font="SystemFont_Large" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_BUTTON">
+							<Anchors>
+								<Anchor point="BOTTOM" x="-154" y="68"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+
+			<Button parentKey="UpgradeButton" mixin="SubscriptionInterstitialUpgradeButtonMixin" inherits="SubscriptionInterstitialSubscribeButtonTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="interstitial-newplayerexperience-upgrade" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="TitleLine" font="Game40Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE">
+							<Anchors>
+								<Anchor point="TOP" x="-152" y="-82"/>
+							</Anchors>
+							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+						</FontString>
+						<FontString parentKey="TitleSubText" font="Game17Font_Shadow" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE_SUBTEXT">
+							<Anchors>
+								<Anchor point="TOP" x="-152" y="-122"/>
+							</Anchors>
+							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+						</FontString>
+						<FontString parentKey="ButtonText" font="SystemFont_Med3" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_BUTTON">
+							<Anchors>
+								<Anchor point="BOTTOM" x="-152" y="91"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Button>
 
 			<Button parentKey="CloseButton" mixin="SubscriptionInterstitialCloseButtonMixin" inherits="UIPanelCloseButtonNoScripts">

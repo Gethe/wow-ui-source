@@ -2167,11 +2167,10 @@ local JustFinishedOrdering = false;
 function StoreFrame_GetDefaultCategory()
 	local productGroups = C_StoreSecure.GetProductGroups();
 	local needsNewCategory = not StoreFrame_GetSelectedCategoryID() or StoreFrame_IsProductGroupDisabled(StoreFrame_GetSelectedCategoryID());
-	local isTrial = IsTrialAccount();
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
 		if not StoreFrame_IsProductGroupDisabled(groupID) then
-			if needsNewCategory or isTrial or groupID == StoreFrame_GetSelectedCategoryID() then
+			if needsNewCategory or groupID == StoreFrame_GetSelectedCategoryID() then
 				return groupID;
 			end
 		end
@@ -2497,31 +2496,26 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 	elseif ( name == "opengamescategory" ) then
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
-			SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
-
-			if ( not IsOnGlueScreen() and not self:IsShown() ) then
-				--We weren't showing, now we are. We should hide all other panels.
-				Outbound.CloseAllWindows();
-			end
-
 			self:Show();
+			SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 		else
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 			LoadURLIndex(2);
 		end
-
+	elseif ( name == "opengametimecategory" ) then
+		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
+			self:Show();
+			SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
+		else
+			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+			LoadURLIndex(2);
+		end
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 	elseif ( name == "selectboost") then
 		SelectBoostForPurchase(WOW_SERVICES_CATEGORY_ID, value.boostType, value.reason, value.guid);
 	elseif ( name == "selectgametime" ) then
 		SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
-		for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
-			if card and card:IsShown() then
-				local buyButton = card.BuyButton;
-				buyButton:GetScript("OnClick")(buyButton);
-			end
-		end
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);

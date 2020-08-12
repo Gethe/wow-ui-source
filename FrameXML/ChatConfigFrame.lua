@@ -982,10 +982,9 @@ function ChatConfig_UpdateCheckboxes(frame)
 				if ( value.isBlank ) then
 					colorSwatch:Hide();
 				else
-					_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetMessageTypeColor(value.type));
+					_G[baseName.."ColorSwatch"].Color:SetVertexColor(GetMessageTypeColor(value.type));
 					colorSwatch.type = value.type;
 					colorSwatch:Show();
-					PixelUtil.SetSize(colorSwatch.SwatchBg, 14, 14, 14, 14);
 				end
 			end
 		end
@@ -1392,7 +1391,7 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			else
 				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetColorRGB());
 			end
-			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName()].Color:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorCancel = function()
@@ -1404,7 +1403,7 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			else
 				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
 			end
-			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName()].Color:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 }

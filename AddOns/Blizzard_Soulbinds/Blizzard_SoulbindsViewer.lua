@@ -1,7 +1,16 @@
+local ResetConduitsFormatter = CreateFromMixins(SecondsFormatterMixin);
+ResetConduitsFormatter:Init(SECONDS_PER_HOUR, SecondsFormatter.Abbreviation.None, true, true);
+
+function ResetConduitsFormatter:GetDesiredUnitCount(seconds)
+	return 1;
+end
+
 local SoulbindViewerEvents =
 {
 	"SOULBIND_FORGE_INTERACTION_ENDED",
 	"SOULBIND_ACTIVATED",
+	"SOULBIND_PENDING_CONDUIT_CHANGED",
+	"SOULBIND_CONDUIT_INSTALLED"
 };
 
 SoulbindViewerMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -16,30 +25,15 @@ function SoulbindViewerMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 
-	self.ActivateButton:SetScript("OnClick", function()
-		self:OnActivateSoulbindClicked();
-	end);
-
-	local function SetActivationTooltip(text)
-		GameTooltip:SetOwner(self.ActivateButton, "ANCHOR_RIGHT");
-		GameTooltip_AddErrorLine(GameTooltip, text);
-		GameTooltip:Show();
-	end;
-
-	self.ActivateButton:SetScript("OnEnter", function()
-		local activateResult, errorDesc = C_Soulbinds.CanActivateSoulbind(self:GetOpenSoulbindID());
-		if not activateResult then
-			SetActivationTooltip(errorDesc);
-		end
-	end);
-	self.ActivateButton:SetScript("OnLeave", GameTooltip_Hide);
-
-	self.ResetButton:SetScript("OnClick", function()
-		local dialogCallback = GenerateClosure(self.ResetOpenSoulbind, self);
-		StaticPopup_Show("SOULBIND_RESET_TREE", nil, nil, dialogCallback);
-	end);
+	self.ActivateSoulbindButton:SetScript("OnClick", GenerateClosure(self.OnActivateSoulbindClicked, self));
+	self.ActivateSoulbindButton:SetScript("OnEnter", GenerateClosure(self.OnActivateSoulbindEnter, self));
+	self.ActivateSoulbindButton:SetScript("OnLeave", GenerateClosure(self.OnActivateSoulbindLeave, self));
+	self.CommitConduitsButton:SetScript("OnClick", GenerateClosure(self.OnCommitConduitsClicked, self));
+	self.ResetConduitsButton:SetScript("OnClick", GenerateClosure(self.OnResetConduitsClicked, self));
+	self.ResetConduitsButton:SetScript("OnEnter", GenerateClosure(self.OnResetConduitsButtonEnter, self));
+	self.ResetConduitsButton:SetScript("OnLeave", GenerateClosure(self.OnResetConduitsButtonLeave, self));
+	self.CloseButton:SetScript("OnClick", GenerateClosure(self.OnCloseButtonClicked, self));
 
 	self.Tree:RegisterCallback(SoulbindTreeMixin.Event.OnNodeChanged, self.OnNodeChanged, self);
 	self.SelectGroup:RegisterCallback(SoulbindSelectGroupMixin.Event.OnSoulbindSelected, self.OnSoulbindSelected, self);
@@ -51,90 +45,102 @@ function SoulbindViewerMixin:OnLoad()
 	self.ShadowLeft:SetTexCoord(1, 0, 1, 0);
 end
 
+function SoulbindViewerMixin:OnCloseButtonClicked()
+	if C_Soulbinds.HasAnyPendingConduits() then
+		local onConfirm = function()
+			UIPanelCloseButton_OnClick(self.CloseButton);
+		end
+		StaticPopup_Show("SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION", nil, nil, onConfirm);
+	else
+		UIPanelCloseButton_OnClick(self.CloseButton);
+	end
+end
+
 function SoulbindViewerMixin:OnEvent(event, ...)
 	if event == "SOULBIND_FORGE_INTERACTION_STARTED" then
 		self:Open();
 	elseif event == "SOULBIND_FORGE_INTERACTION_ENDED" then
 		HideUIPanel(self);
 	elseif event == "SOULBIND_ACTIVATED" then
+		local soulbindID = ...;
 		self:OnSoulbindActivated(...);
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
-		self:UpdateResetButton();
+	elseif event == "SOULBIND_PENDING_CONDUIT_CHANGED" then
+		local nodeID, conduitID, pending = ...;
+		self:OnConduitChanged();
+	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
+		self:UpdateButtons();
 	end
 end
 
 function SoulbindViewerMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SoulbindViewerEvents);
 
-	self.ResetButton:SetScript("OnEnter", GenerateClosure(self.SetupResetButtonTooltip, self));
-	self.ResetButton:SetScript("OnLeave", GenerateClosure(self.HideResetButtonTooltip, self));
-	self.ResetButton:SetShown(C_Soulbinds.IsAtSoulbindForge());
+	self.ResetConduitsButton:SetShown(C_Soulbinds.CanModifySoulbind());
 
 	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
 end
 
-function SoulbindViewerMixin:HideResetButtonTooltip()
+function SoulbindViewerMixin:OnResetConduitsButtonLeave()
 	GameTooltip:Hide();
 end
 
-function SoulbindViewerMixin:SetupResetButtonTooltip()
-	GameTooltip:SetOwner(self.ResetButton, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, SOULBIND_RESET_BUTTON);
+function SoulbindViewerMixin:OnResetConduitsButtonEnter()
+	GameTooltip:SetOwner(self.ResetConduitsButton, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, CONDUIT_RESET_BUTTON_HEADER);
 
-	for _, currencyCostData in ipairs(self.soulbindData.resetData.currencyCosts) do
-		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(currencyCostData.currencyID, currencyCostData.quantity);
-		if currencyInfo then
-			local markup = CreateTextureMarkup(currencyInfo.icon, 14, 14, 14, 14, 0, 1, 0, 1, 0, -1);
-			local currentCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyCostData.currencyID);
-			local text = SOULBIND_RESET_CURRENCY_FORMAT:format(currencyInfo.displayAmount, markup, currencyInfo.name);
-			local cannotAfford = currentCurrencyInfo.quantity < currencyInfo.displayAmount;
-			if cannotAfford then
-				GameTooltip_AddErrorLine(GameTooltip, text);
-			else
-				GameTooltip_AddHighlightLine(GameTooltip, text);
-			end
-
-			local canReset = self.Tree:HasSelectedNodes();
-			if not canReset then
-				GameTooltip_AddErrorLine(GameTooltip, SOULBIND_RESET_INELIGIBLE);
-			end
-		end
+	if self.ResetConduitsButton:IsEnabled() then
+		GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_AVAILABLE);
+	else
+		local seconds = C_DateAndTime.GetSecondsUntilWeeklyReset();
+		local time = ResetConduitsFormatter:Format(C_DateAndTime.GetSecondsUntilWeeklyReset())
+		GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_AVAILABLE_IN:format(time));
 	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_INSTRUCTION);
+	
+	if not C_Soulbinds.HasAnyInstalledConduitInSoulbind(self.soulbindData.ID) then
+		GameTooltip_AddErrorLine(GameTooltip, CONDUIT_RESET_INELIGIBLE);
+	end
+
+	-- Temp
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, SOULBIND_RESET_BUTTON_TEMP);
 
 	GameTooltip:Show();
 end
 
 function SoulbindViewerMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindViewerEvents);
-	C_Soulbinds.EndInteraction();
+	C_Soulbinds.CloseUI();
 
 	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI);
 end
 
+function SoulbindViewerMixin:UpdateButtons()
+	self:UpdateResetConduitsButton();
+	self:UpdateActivateSoulbindButton();
+	self:UpdateCommitConduitsButton();
+end
+
+function SoulbindViewerMixin:OnConduitChanged()
+	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
+	self:UpdateButtons();
+end
+
 function SoulbindViewerMixin:OnNodeChanged()
-	self:UpdateResetButton();
-	self:UpdateActivateButton();
+	self:UpdateButtons();
 end
 
-function SoulbindViewerMixin:CanAffordReset()
-	for _, currencyCostData in ipairs(self.soulbindData.resetData.currencyCosts) do
-		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(currencyCostData.currencyID, currencyCostData.quantity);
-		if currencyInfo then
-			local currentCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyCostData.currencyID);
-			local cannotAfford = currentCurrencyInfo.quantity < currencyInfo.displayAmount;
-			if cannotAfford then
-				return false;
-			end
-		end
+function SoulbindViewerMixin:UpdateResetConduitsButton()
+	local shown = C_Soulbinds.CanModifySoulbind();
+	self.ResetConduitsButton:SetShown(shown);
+	if shown then
+		local soulbindID = self.soulbindData.ID;
+		local enabled = C_Soulbinds.HasAnyInstalledConduitInSoulbind(soulbindID) and C_Soulbinds.CanResetConduitsInSoulbind(soulbindID);
+		self.ResetConduitsButton:SetEnabled(enabled);
+		self.ResetConduitsButton:SetAlpha(enabled and 1 or .6);
 	end
-	return true;
-end
-
-function SoulbindViewerMixin:UpdateResetButton()
-	self.ResetButton:SetShown(C_Soulbinds.IsAtSoulbindForge());
-	local enabled = self.Tree:HasSelectedNodes() and self:CanAffordReset();
-	self.ResetButton:SetEnabled(enabled);
-	self.ResetButton:SetAlpha(enabled and 1 or .6);
 end
 
 function SoulbindViewerMixin:Open()
@@ -147,7 +153,6 @@ end
 function SoulbindViewerMixin:OpenSoulbind(soulbindID)
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
 	local covenantData = C_Covenants.GetCovenantData(soulbindData.covenantID);
-	
 	self:Init(covenantData, soulbindData);
 	ShowUIPanel(SoulbindViewer);
 end
@@ -165,7 +170,6 @@ function SoulbindViewerMixin:Init(covenantData, soulbindData)
 	self.Background2:SetAtlas(background, true);
 
 	self.SelectGroup:Init(covenantData, soulbindData.ID);
-	self.ConduitList:Init();
 end
 
 function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex)
@@ -177,14 +181,21 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	self.soulbindData = soulbindData;
 
 	self.Tree:Init(soulbindData);
+	self.ConduitList:Init();
 
-	self:UpdateActivateButton();
-	self:UpdateResetButton();
+	local open = self:IsActiveSoulbindOpen();
+	self.Background:SetDesaturated(not open);
+	self.Background2:SetDesaturated(not open);
+
+	self:UpdateButtons();
 
 	self:TriggerEvent(SoulbindViewerMixin.Event.OnSoulbindChanged, self.covenantData, soulbindData);
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
+	local open = self:IsActiveSoulbindOpen();
+	self.Background:SetDesaturated(not open);
+	self.Background2:SetDesaturated(not open);
 	self.Background2.ActivateAnim:Play();
 	self.ActivateFX.ActivateAnim:Play();
 	self.Fx.ActivateFXLensFlare1.ActivateAnim:Play();
@@ -193,7 +204,7 @@ function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
 	self.Fx.ActivateFXRunes2.ActivateAnim:Play();
 	self.SelectGroup:OnSoulbindActivated(soulbindID);
 	self.Tree:Init(C_Soulbinds.GetSoulbindData(soulbindID));
-	self:UpdateResetButton();
+	self:UpdateButtons();
 end
 
 function SoulbindViewerMixin:GetCovenantData()
@@ -204,19 +215,24 @@ function SoulbindViewerMixin:GetSoulbindData()
 	return self.soulbindData;
 end
 
-function SoulbindViewerMixin:UpdateActivateButton()
+function SoulbindViewerMixin:UpdateActivateSoulbindButton()
 	local openSoulbindID = self:GetOpenSoulbindID();
 	local canActivate = C_Soulbinds.CanActivateSoulbind(openSoulbindID);
 	local enabled = canActivate and not self:IsActiveSoulbindOpen() and C_Covenants.GetActiveCovenantID() == self:GetCovenantData().ID;
 	
-	self.ActivateButton:SetEnabled(enabled);
+	self.ActivateSoulbindButton:SetEnabled(enabled);
 
 	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
 		local showTutorial = enabled and self.Tree:HasSelectedNodes() and not GetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex);
-		ButtonPulseGlow:SetShown(self.ActivateButton, showTutorial);
+		ButtonPulseGlow:SetShown(self.ActivateSoulbindButton, showTutorial);
 	else
-		ButtonPulseGlow:Hide(self.ActivateButton);
+		ButtonPulseGlow:Hide(self.ActivateSoulbindButton);
 	end
+end
+
+function SoulbindViewerMixin:UpdateCommitConduitsButton()
+	local pending = C_Soulbinds.HasAnyPendingConduits();
+	self.CommitConduitsButton:SetShown(pending);
 end
 
 function SoulbindViewerMixin:IsActiveSoulbindOpen()
@@ -227,20 +243,44 @@ function SoulbindViewerMixin:GetOpenSoulbindID()
 	return self.soulbindData.ID;
 end
 
-function SoulbindViewerMixin:ResetOpenSoulbind()
-	C_Soulbinds.ResetSoulbind(self:GetOpenSoulbindID());
-	PlaySound(SOUNDKIT.SOULBINDS_RESET_SOULBIND);
-end
-
 function SoulbindViewerMixin:OnActivateSoulbindClicked()
-	self.ActivateButton:SetEnabled(false);
+	self.ActivateSoulbindButton:SetEnabled(false);
 	C_Soulbinds.ActivateSoulbind(self:GetOpenSoulbindID());
 	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
 
 	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
-		ButtonPulseGlow:Hide(self.ActivateButton);
+		ButtonPulseGlow:Hide(self.ActivateSoulbindButton);
 		SetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex, true);
 	end
+end
+
+function SoulbindViewerMixin:OnActivateSoulbindEnter()
+	local activateResult, errorDesc = C_Soulbinds.CanActivateSoulbind(self:GetOpenSoulbindID());
+	if not activateResult then
+		GameTooltip:SetOwner(self.ActivateSoulbindButton, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, errorDesc);
+		GameTooltip:Show();
+	end
+end
+
+function SoulbindViewerMixin:OnActivateSoulbindLeave()
+	GameTooltip_Hide();
+end
+
+function SoulbindViewerMixin:OnCommitConduitsClicked()
+	local onConfirm = function()
+		C_Soulbinds.CommitPendingConduits();
+		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
+	end
+	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", nil, nil, onConfirm);
+end
+
+function SoulbindViewerMixin:OnResetConduitsClicked()
+	local onConfirm = function()
+		C_Soulbinds.ResetSoulbindConduits(self:GetOpenSoulbindID());
+		PlaySound(SOUNDKIT.SOULBINDS_RESET_CONDUITS);
+	end
+	StaticPopup_Show("SOULBIND_RESET_TREE", nil, nil, onConfirm);
 end
 
 function SoulbindViewerMixin:OnCollectionConduitEnter(conduitType)
@@ -253,6 +293,34 @@ end
 
 StaticPopupDialogs["SOULBIND_RESET_TREE"] = {
 	text = SOULBIND_RESET_TREE,
+	button1 = RESET,
+	button2 = CANCEL,
+	enterClicksFirstButton = true,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+
+	OnButton1 = function(self, callback)
+		callback();
+	end,
+};
+
+StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
+	text = CONDUIT_NO_CHANGES_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	enterClicksFirstButton = true,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+
+	OnButton1 = function(self, callback)
+		callback();
+	end,
+};
+
+StaticPopupDialogs["SOULBIND_CONDUIT_INSTALL_CONFIRM"] = {
+	text = CONDUIT_INSTALL_CONFIRM,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	enterClicksFirstButton = true,

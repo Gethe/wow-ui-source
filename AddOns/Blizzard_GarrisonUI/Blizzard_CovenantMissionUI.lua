@@ -103,12 +103,12 @@ local COVENANT_MISSION_EVENTS = {
 	"GARRISON_RANDOM_MISSION_ADDED",
 	"CURRENT_SPELL_CAST_CHANGED",
 	"GARRISON_FOLLOWER_XP_CHANGED",
-	"GARRISON_AUTO_MISSION_TARGETING_RESPONSE"
+	"ADVENTURE_MAP_CLOSE",
 };
 
 function CovenantMission:OnEventMainFrame(event, ...)
-	if event == "GARRISON_AUTO_MISSION_TARGETING_RESPONSE" then
-		self:UpdateSpellTargeting(...);
+	if event == "ADVENTURE_MAP_CLOSE" then
+		self.CloseButton:Click();
 	else
 		GarrisonFollowerMission.OnEventMainFrame(self, event, ...);
 	end
@@ -133,8 +133,6 @@ function CovenantMission:OnShowMainFrame()
 	self:UpdateCurrency();
 
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
-
-	self.MissionTargetInfo = {};
 end
 
 function CovenantMission:OnHideMainFrame()
@@ -147,7 +145,6 @@ function CovenantMission:OnHideMainFrame()
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameDragStop, self);
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameReceiveDrag, self);
 
-	self.MissionTargetInfo = {};
 	C_AdventureMap.Close(); --Opening the table implicitly opens an Adventure Map, this clears the npc on it.
 end
 
@@ -406,15 +403,9 @@ function CovenantMission:GetPlacerUpdate()
 				return;
 			end
 
-			local spellID = covenantPlacer.info.autoCombatSpells[1].autoCombatSpellID;
-			local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, spellID, hoverBoardIndex);
-			if targetingIndices then
-				self.casterBoardIndex = hoverBoardIndex;
-				local useLoop = true;
-				missionPage.Board:TriggerEnemyTargetingReticles(targetingIndices, useLoop);
-			else
-				C_Garrison.RequestAutoMissionTargetingInfo(missionID, spellID);
-			end
+			self.casterBoardIndex = hoverBoardIndex;
+			local useLoop = true;
+			missionPage.Board:TriggerEnemyTargetingReticles(C_Garrison.GetAutoMissionTargetingInfo(missionID, covenantPlacer.info.garrFollowerID, hoverBoardIndex), useLoop);
 		end
 	end
 
@@ -539,12 +530,8 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	if info.autoCombatSpells[1] ~= nil then
 		self.casterSpellIndex = frame.boardIndex;
 		self.lastAssignedSpell = info.autoCombatSpells[1].autoCombatSpellID;
-		local targetingIndices = self:GetTargetIndicesForCasterIndex(missionID, self.lastAssignedSpell, self.casterSpellIndex);
-		if targetingIndices then
-			missionPage.Board:TriggerEnemyTargetingReticles(targetingIndices);
-		else
-			C_Garrison.RequestAutoMissionTargetingInfo(missionID, self.lastAssignedSpell);
-		end
+		local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfo(missionID, info.garrFollowerID, self.casterSpellIndex);
+		missionPage.Board:TriggerEnemyTargetingReticles(abilityTargetInfos);
 	end
 
 	frame:SetFollowerGUID(info.followerID, info);
@@ -602,33 +589,6 @@ end
 
 function CovenantMission:GetStartMissionButtonFrame(missionPage)
 	return missionPage.StartMissionFrame.ButtonFrame;
-end
-
-function CovenantMission:UpdateSpellTargeting(missionID, autoSpellID, targetingIndices)
-	EventRegistry:TriggerEvent("CovenantMission.CancelTargetingAnimation");
-
-	if not self.MissionTargetInfo[missionID] then
-		self.MissionTargetInfo[missionID] = {};
-	end
-
-	self.MissionTargetInfo[missionID][autoSpellID] = targetingIndices;
-	local currentTargetIndices = self:GetTargetIndicesForCasterIndex(missionID, autoSpellID, self.casterSpellIndex);
-
-	if self.lastAssignedSpell == autoSpellID then
-		self:GetMissionPage().Board:TriggerEnemyTargetingReticles(currentTargetIndices);
-	end
-end
-
-function CovenantMission:GetTargetIndicesForCasterIndex(missionID, autoSpellID, boardIndex)
-	if self.MissionTargetInfo[missionID] and self.MissionTargetInfo[missionID][autoSpellID] then
-		for _, targetInfo in ipairs(self.MissionTargetInfo[missionID][autoSpellID]) do
-			if targetInfo.casterBoardIndex == boardIndex then
-				return targetInfo.targetIndices;
-			end
-		end
-	end
-
-	return nil;
 end
 
 ---------------------------------------------------------------------------------

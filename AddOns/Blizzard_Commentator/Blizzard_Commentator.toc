@@ -1,7 +1,6 @@
 ## Title: Blizzard_Commentator
 ## SavedVariables: CommentatorSave
 ## LoadOnDemand: 1
-## RequiredDep: Blizzard_ScriptedAnimations
 
 FadeToBlack.xml
 CommentatorVictoryFanfare.xml

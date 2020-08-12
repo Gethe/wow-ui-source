@@ -126,6 +126,14 @@ local function _createFlyoutBG(buttonAnchor)
 	local numBGs = buttonAnchor["numBGs"];
 	numBGs = numBGs + 1;
 	local texture = buttonAnchor:CreateTexture(nil, nil, "EquipmentFlyoutTexture");
+
+	local itemButton = buttonAnchor:GetParent().button;
+	local flyoutSettings = itemButton:GetParent().flyoutSettings;
+	local customBackground = flyoutSettings.customBackground;
+	if customBackground then
+		texture:SetTexture(customBackground);
+	end
+
 	buttonAnchor["bg" .. numBGs] = texture;
 	buttonAnchor["numBGs"] = numBGs;
 	return texture;
@@ -171,6 +179,8 @@ function EquipmentFlyout_Show(itemButton)
 	flyout:SetScript("OnUpdate", flyoutSettings.customFlyoutOnUpdate or EquipmentFlyout_OnUpdate);
 
 	flyout.Highlight:SetShown(not flyoutSettings.hideFlyoutHighlight);
+
+	EquipmentFlyout_SetBackgroundTexture(flyoutSettings.customBackground or [[Interface\PaperDollInfoFrame\UI-GearManager-Flyout]]);
 
 	flyoutSettings.getItemsFunc(id, itemTable);
 	for location, itemID in next, itemTable do
@@ -555,6 +565,19 @@ function EquipmentFlyout_SetTooltipAnchor(button)
 	if ( EquipmentFlyoutFrame:IsShown() ) then
 		GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6);
 		return true;
+	end
+end
+
+function EquipmentFlyout_SetBackgroundTexture(texture)
+	local self = EquipmentFlyoutFrame;
+
+	self.NavigationFrame.BottomBackground:SetTexture(texture);
+	self.buttonFrame.bg1:SetTexture(texture);
+
+	local buttonAnchor = self.buttonFrame;
+	local numBGs = buttonAnchor["numBGs"];
+	for i = 1, numBGs do
+		buttonAnchor["bg" .. i]:SetTexture(texture);
 	end
 end
 

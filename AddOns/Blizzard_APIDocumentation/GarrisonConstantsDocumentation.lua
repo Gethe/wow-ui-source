@@ -117,6 +117,21 @@ local GarrisonConstants =
 			},
 		},
 		{
+			Name = "GarrAutoPreviewTargetType",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "None", Type = "GarrAutoPreviewTargetType", EnumValue = 0 },
+				{ Name = "Damage", Type = "GarrAutoPreviewTargetType", EnumValue = 1 },
+				{ Name = "Heal", Type = "GarrAutoPreviewTargetType", EnumValue = 2 },
+				{ Name = "Buff", Type = "GarrAutoPreviewTargetType", EnumValue = 4 },
+				{ Name = "Debuff", Type = "GarrAutoPreviewTargetType", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "GarrFollowerMissionCompleteState",
 			Type = "Enumeration",
 			NumValues = 4,

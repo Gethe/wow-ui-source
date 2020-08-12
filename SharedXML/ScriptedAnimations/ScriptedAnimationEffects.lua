@@ -251,6 +251,11 @@ local TrajectoryToCallback = {
 -- (3) Looping sound effects
 -- An additional columns to support controlling animations
 -- loopingSoundKitID: a looping sound effect that plays while the effect is active.
+--
+-- (4) Particle scaling
+-- An additional column to support an override for the particle scale, which will match the actor
+-- scale by default.
+-- particleOverrideScale: the override scale for particles.
 
 Enum.ScriptedAnimationTransformation = {};
 Enum.ScriptedAnimationTransformation.Alpha = 1;
@@ -333,6 +338,29 @@ local ScriptAnimationTableExtension = {
 		animation = 215, 
 	},
 };
+
+-- Split into chunks of 10. These effects were created with old-style particle scaling,
+-- so to preserve their current behavior they all have a particleOverrideScale of 1.0.
+local LegacyParticleScaleEffects = {
+	2, 3, 4, 5, 6, 8, 9, 10, 11, 12,
+	15, 16, 17, 18, 19, 20, 21, 22, 25, 30,
+	36, 37, 43, 44, 45, 46, 48, 49, 50, 53,
+	54, 55, 57, 58, 59, 60, 61, 62, 63, 64,
+	65, 77, 67, 68, 70, 72, 73, 74, 75, 76,
+	77, 78, 79, 80, 81, 82, 83, 84, 85, 86,
+	87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
+	97
+};
+
+for i, effectID in ipairs(LegacyParticleScaleEffects) do
+	local effectExtension = ScriptAnimationTableExtension[effectID];
+	if not effectExtension then
+		effectExtension = {};
+		ScriptAnimationTableExtension[effectID] = effectExtension;
+	end
+
+	effectExtension.particleOverrideScale = 1.0;
+end
 
 
 local function LoadScriptedAnimationEffects()

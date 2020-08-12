@@ -1407,7 +1407,7 @@ function FormatProfession(frame, index)
 		-- trial cap
 		if ( GameLimitedMode_IsActive() ) then
 			local _, _, profCap = GetRestrictedAccountData();
-			if rank >= profCap then
+			if rank >= profCap and profCap > 0 then
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;

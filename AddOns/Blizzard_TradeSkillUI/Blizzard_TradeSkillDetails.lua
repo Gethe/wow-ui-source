@@ -1055,3 +1055,23 @@ end
 function TradeSkillRecipeLevelBarMixin:IsMaxLevel()
 	return self.currentExperience == nil;
 end
+
+
+TradeSkillRecipeLevelSelectorMixin = {};
+
+function TradeSkillRecipeLevelSelectorMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, TRADESKILL_RECIPE_LEVEL_DROPDOWN_TOOLTIP_TITLE);
+	GameTooltip_AddNormalLine(GameTooltip, TRADESKILL_RECIPE_LEVEL_DROPDOWN_TOOLTIP_INFO);
+	GameTooltip:Show();
+end
+
+function TradeSkillRecipeLevelSelectorMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function TradeSkillRecipeLevelSelectorMixin:OnMouseDown()
+	UIMenuButtonStretchMixin.OnMouseDown(self, button);
+	ToggleDropDownMenu(1, nil, self:GetParent().RecipeLevelDropDown, self, 110, 15);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end

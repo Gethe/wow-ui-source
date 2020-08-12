@@ -1,17 +1,20 @@
 Soulbinds = {};
 
-function Soulbinds.GetConduitDataAtCursor()
-	local itemType, itemID = GetCursorInfo();
-	if itemType == "conduit" then
-		-- FIXME replace itemid
-		local conduitType = C_Soulbinds.GetItemConduitTypeByItemID(itemID);
-		local conduitID = C_Soulbinds.GetConduitID(itemID);
-		return conduitType, conduitID;
-	end
+function Soulbinds.HasConduitAtCursor()
+	return C_Soulbinds.GetConduitCollectionDataAtCursor() ~= nil;
 end
 
-function Soulbinds.HasConduitAtCursor()
-	return Soulbinds.GetConduitDataAtCursor() ~= nil;
+local previewConduitType = nil;
+function Soulbinds.SetPreviewConduitType(conduitType)
+	previewConduitType = conduitType;
+end
+
+function Soulbinds.GetPreviewConduitType()
+	return previewConduitType;
+end
+
+function Soulbinds.GetOpenSoulbind()
+	return SoulbindViewer.Tree.soulbindID;
 end
 
 function Soulbinds.HasNewSoulbindTutorial(soulbindID)

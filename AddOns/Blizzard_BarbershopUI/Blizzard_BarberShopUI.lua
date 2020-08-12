@@ -120,9 +120,13 @@ function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
+function BarberShopMixin:ResetCustomizationPreview()
+	C_BarberShop.ClearPreviewChoices();
+end
+
 function BarberShopMixin:PreviewCustomizationChoice(optionID, choiceID)
 	-- It is important that we DON'T call UpdateCharCustomizationFrame here because we want to keep the current selections
-	C_BarberShop.SetCustomizationChoice(optionID, choiceID);
+	C_BarberShop.PreviewCustomizationChoice(optionID, choiceID);
 end
 
 function BarberShopMixin:GetCurrentCameraZoom()

@@ -1961,6 +1961,8 @@ AccessibilityPanelOptions = {
 	enableMovePad = { text = "MOVE_PAD" },
     movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
+	motionSickness = { text = "MOTION_SICKNESS_DROPDOWN" },
+	shakeStrengthCamera = { text = "ADJUST_MOTION_SICKNESS_SHAKE" },
 	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
 	colorblindSimulator = { text = "COLORBLIND_FILTER" },
 	overrideScreenFlash = { text = "OVERRIDE_SCREEN_FLASH" },
@@ -2062,4 +2064,136 @@ end
 
 function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick(self)
 	InterfaceOptionsAccessibilityPanelColorFilterDropDown:SetValue(self.value);
+end
+
+local cameraKeepCharacterCentered = "CameraKeepCharacterCentered";
+local cameraReduceUnexpectedMovement = "CameraReduceUnexpectedMovement";
+local motionSicknessOptions = {
+	{ text = MOTION_SICKNESS_CHARACTER_CENTERED, [cameraKeepCharacterCentered] = "1", [cameraReduceUnexpectedMovement] = "0" },
+	{ text = MOTION_SICKNESS_REDUCE_CAMERA_MOTION, [cameraKeepCharacterCentered] = "0", [cameraReduceUnexpectedMovement] = "1" },
+	{ text = MOTION_SICKNESS_BOTH, [cameraKeepCharacterCentered] = "1", [cameraReduceUnexpectedMovement] = "1" },
+	{ text = MOTION_SICKNESS_NONE, [cameraKeepCharacterCentered] = "0", [cameraReduceUnexpectedMovement] = "0" },
+}
+
+local function GetMotionSicknessSelected()
+	local SelectedcameraKeepCharacterCentered = GetCVar(cameraKeepCharacterCentered);
+	local SelectedcameraReduceUnexpectedMovement = GetCVar(cameraReduceUnexpectedMovement);
+
+	for option, cvars in pairs(motionSicknessOptions) do
+		if ( cvars[cameraKeepCharacterCentered] == SelectedcameraKeepCharacterCentered and cvars[cameraReduceUnexpectedMovement] == SelectedcameraReduceUnexpectedMovement ) then
+			return option;
+		end
+	end
+end
+
+
+function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.value = GetMotionSicknessSelected();
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, self.value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				BlizzardOptionsPanel_SetCVarSafe(cameraKeepCharacterCentered, motionSicknessOptions[value][cameraKeepCharacterCentered]);
+				BlizzardOptionsPanel_SetCVarSafe(cameraReduceUnexpectedMovement, motionSicknessOptions[value][cameraReduceUnexpectedMovement]);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end
+
+		self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelMotionSicknessDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnClick;
+
+	for key, value in ipairs(motionSicknessOptions) do
+		info.text = value.text;
+		info.value = key;
+		info.checked = key == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelMotionSicknessDropdown:SetValue(self.value);
+end
+
+local shakeStrengthCamera = "ShakeStrengthCamera";
+local shakeStrengthUI = "ShakeStrengthUI";
+local shakeIntensityOptions = {
+	{ text= SHAKE_INTENSITY_NONE, [shakeStrengthCamera] = "0", [shakeStrengthUI] = "0" },
+	{ text = SHAKE_INTENSITY_REDUCED, [shakeStrengthCamera] = ".25", shakeStrengthUI = ".25" },
+	{ text = SHAKE_INTENSITY_FULL, [shakeStrengthCamera] = "1", shakeStrengthUI = "1" },
+}
+
+function GetShakeIntensitySelected()
+	local intensity = GetCVar(shakeStrengthCamera);
+
+	for option, cvar in pairs(shakeIntensityOptions) do
+		if ( intensity == cvar[shakeStrengthCamera] ) then
+			return option;
+		end
+	end
+
+	return -1;
+end
+
+function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.value = GetShakeIntensitySelected();
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, self.value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+
+				BlizzardOptionsPanel_SetCVarSafe(shakeStrengthCamera, shakeIntensityOptions[self.value][shakeStrengthCamera]);
+				BlizzardOptionsPanel_SetCVarSafe(shakeStrengthUI, shakeIntensityOptions[self.value][shakeStrengthUI]);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end
+
+		self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+		self.RefreshValue = 
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelShakeIntensityDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick;
+
+	for key, value in ipairs(shakeIntensityOptions) do
+		info.text = value.text;
+		info.value = key;
+		info.checked = key == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelShakeIntensityDropdown:SetValue(self.value);
 end

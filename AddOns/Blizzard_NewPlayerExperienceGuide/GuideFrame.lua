@@ -122,7 +122,7 @@ do
 			AddUserCriteria(objectivesFrame);
 		end
 
-		self.ScrollFrame.ConfirmationButton:SetEnabled(self:CanGuide());
+		self.ScrollFrame.ConfirmationButton:SetEnabled((self:GetState() ~= Enum.GuideFrameState.StartGuiding) or self:CanGuide());
 		self.ScrollFrame.ConfirmationButton:SetText(params.buttonText);
 
 		self.ScrollFrame.ConfirmationButton:ClearAllPoints();

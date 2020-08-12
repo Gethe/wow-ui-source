@@ -223,7 +223,7 @@ local function GenerateRankText(skillLineName, skillLineRank, skillLineMaxRank, 
 
 	if GameLimitedMode_IsActive() then
 		local _, _, profCap = GetRestrictedAccountData();
-		if skillLineRank >= profCap then
+		if skillLineRank >= profCap and profCap > 0 then
 			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
 		end
 	end

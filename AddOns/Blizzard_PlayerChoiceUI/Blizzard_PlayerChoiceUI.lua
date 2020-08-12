@@ -64,8 +64,8 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	whileDead = 1,
 }
 
-local contentTextureKitRegions = {
-	["Header"] = "warboard-header-%s",
+local borderFrameTextureKitRegions = {
+	["Header"] = "UI-Frame-%s-Header",
 }
 
 local titleTextureKitRegions = {
@@ -166,6 +166,7 @@ local borderLayout = {
 		closeBorderX = 0,
 		closeBorderY = 0,
 		header = -55,
+		setAtlasVisibility = true,
 		showHeader = true,
 		showTitle = true,
 		frameOffsetY = 0,
@@ -176,6 +177,7 @@ local borderLayout = {
 		closeBorderX = -1,
 		closeBorderY = 1,
 		header = -61,
+		setAtlasVisibility = true,
 		showHeader = true,
 		showTitle = true,
 		frameOffsetY = 0,
@@ -186,6 +188,7 @@ local borderLayout = {
 		closeBorderX = -1,
 		closeBorderY = 1,
 		header = 0,
+		setAtlasVisibility = true,
 		showTitle = true,
 		frameOffsetY = 0,
 		useFourCornersBorderNineSlice = true,
@@ -196,6 +199,7 @@ local borderLayout = {
 		closeBorderX = -1,
 		closeBorderY = 1,
 		header = 0,
+		setAtlasVisibility = true,
 		showTitle = true,
 		frameOffsetY = 0,
 	},
@@ -205,6 +209,7 @@ local borderLayout = {
 		closeBorderX = -1,
 		closeBorderY = 1,
 		header = 0,
+		setAtlasVisibility = true,
 		showTitle = true,
 		frameOffsetY = 0,
 	},
@@ -242,7 +247,7 @@ local borderLayout = {
 	["Kyrian"] = {
 		closeButtonX = 1,
 		closeBorderX = 0,
-		closeButtonY = -2,
+		closeButtonY = 2,
 		closeBorderY = 1,
 		showTitle = true,
 		setAtlasVisibility = true,
@@ -447,6 +452,7 @@ function PlayerChoiceFrameMixin:TryShow()
 
 	self.setAtlasVisibility = layout.setAtlasVisibility;
 
+	self:SetupTextureKits(self.BorderFrame, borderFrameTextureKitRegions);
 	self:SetupTextureKits(self.Title, titleTextureKitRegions);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 
@@ -745,6 +751,9 @@ function PlayerChoiceFrameMixin:Update()
 			local optionInfo = self.optionData[i];
 
 			option.rarity = optionInfo.rarity;
+			if(optionInfo.rarityColor) then
+				option.rarityColor = optionInfo.rarityColor;
+			end
 			if(option.rarity and self.uiTextureKit and self.uiTextureKit == "jailerstower") then 
 				optionInfo.description = option:SetupRarityDescription(optionInfo.description); 
 			end 
@@ -794,8 +803,8 @@ function PlayerChoiceFrameMixin:Update()
 			option.OptionButtonsContainer:ConfigureButtons(optionInfo, self.uiTextureKit);
 
 			-- We want to override the texture text color if this is jailers tower.
-			if(self.uiTextureKit == "jailerstower") then
-				option.Header.Text:SetTextColor(BAG_ITEM_QUALITY_COLORS[option.rarity + RARITY_OFFSET]:GetRGBA());
+			if(self.uiTextureKit == "jailerstower" and option.rarityColor) then
+				option.Header.Text:SetTextColor(option.rarityColor:GetRGBA());
 			end
 
 			option.Background:ClearAllPoints();
@@ -846,8 +855,8 @@ function PlayerChoiceFrameMixin:Update()
 		self.Title.Middle:SetPoint("LEFT", self.Title.Left, "RIGHT");
 		self.Title.Middle:SetPoint("RIGHT", self.Title.Right, "LEFT");
 	else 
-		self.Title.Middle:SetPoint("LEFT", self.Title.Left, "RIGHT", -60);
-		self.Title.Middle:SetPoint("RIGHT", self.Title.Right, "LEFT", 60);
+		self.Title.Middle:SetPoint("LEFT", self.Title.Left, "RIGHT", -60, 0);
+		self.Title.Middle:SetPoint("RIGHT", self.Title.Right, "LEFT", 60, 0);
 	end 
 
 	self.Title:SetShown(shouldShowTitle);
@@ -902,7 +911,11 @@ function PlayerChoiceFrameMixin:SetupRewards()
 				optionFrameRewards.lastReward = optionFrameRewards:GetReputationRewardsFrame(reputationReward);
 			end
 
-			optionFrameRewards:MarkDirty();
+			optionFrameRewards:Layout();
+
+			self["Option"..i].RewardsFrame:SetHeight(optionFrameRewards:GetHeight());
+		else
+			self["Option"..i].RewardsFrame:SetHeight(1);
 		end
 	end
 end
@@ -964,7 +977,6 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	local layoutInfo = self:GetOptionLayoutInfo();
 	local optionButtonLayout = choiceButtonLayout[self:GetParent().uiTextureKit] or choiceButtonLayout["default"];
 	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver);
-	self:GetPaddingFrame():SetHeight(1);
 	self:UpdatePadding(1);
 end
 

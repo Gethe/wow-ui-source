@@ -13,7 +13,7 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "followerID", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = true },
 			},
 
@@ -29,6 +29,22 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "damageClassStrings", Type = "table", InnerType = "AutoCombatDamageClassString", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAutoMissionTargetingInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
 			},
 		},
 		{
@@ -328,16 +344,6 @@ local GarrisonInfo =
 			},
 		},
 		{
-			Name = "RequestAutoMissionTargetingInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "garrAutoSpellID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "RushHealFollower",
 			Type = "Function",
 
@@ -371,17 +377,6 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GarrisonAutoMissionTargetingResponse",
-			Type = "Event",
-			LiteralName = "GARRISON_AUTO_MISSION_TARGETING_RESPONSE",
-			Payload =
-			{
-				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "garrAutoSpellID", Type = "number", Nilable = false },
-				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
 			},
 		},
 		{
@@ -903,6 +898,7 @@ local GarrisonInfo =
 				{ Name = "schoolMask", Type = "number", Nilable = false },
 				{ Name = "effectIndex", Type = "number", Nilable = false },
 				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+				{ Name = "auraType", Type = "number", Nilable = false },
 				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionCombatEventInfo", Nilable = false },
 			},
 		},
@@ -919,8 +915,8 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
-				{ Name = "targetIndices", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "targetIndex", Type = "number", Nilable = false },
+				{ Name = "previewType", Type = "number", Nilable = false },
 			},
 		},
 		{

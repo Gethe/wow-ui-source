@@ -6,7 +6,6 @@ local RuneforgeCraftingFrameEvents = {
 };
 
 function RuneforgeCraftingFrameMixin:OnLoad()
-
 	self.flyoutSettings = {
 		customFlyoutOnUpdate = nop,
 		hasPopouts = true,
@@ -30,10 +29,14 @@ function RuneforgeCraftingFrameMixin:OnLoad()
 		self:SetUpgradeItem(flyoutButton:GetItemLocation());
 	end
 
-	self.flyoutTypeToCallbacks = {
-		[RuneforgeUtil.FlyoutType.BaseItem] = { C_LegendaryCrafting.IsValidRuneforgeBaseItem, SelectFlyoutItemButtonCallback },
-		[RuneforgeUtil.FlyoutType.Legendary] = { C_LegendaryCrafting.IsRuneforgeLegendary, SelectFlyoutItemButtonCallback },
-		[RuneforgeUtil.FlyoutType.UpgradeItem] = { UpgradeItemValidation, UpgradeItemSelectFlyoutItemButtonCallback },
+	local function CreateSettingsTable(filterFunction, selectionCallback, customBackground)
+		return { filterFunction = filterFunction, selectionCallback = selectionCallback, customBackground = customBackground, };
+	end
+
+	self.flyoutTypeToSettings = {
+		[RuneforgeUtil.FlyoutType.BaseItem] = CreateSettingsTable(C_LegendaryCrafting.IsValidRuneforgeBaseItem, SelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarving-Flyout]]),
+		[RuneforgeUtil.FlyoutType.Legendary] = CreateSettingsTable(C_LegendaryCrafting.IsRuneforgeLegendary, SelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarvingUpgrade-Flyout]]),
+		[RuneforgeUtil.FlyoutType.UpgradeItem] = CreateSettingsTable(UpgradeItemValidation, UpgradeItemSelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarving-Flyout]]),
 	};
 end
 
@@ -87,16 +90,18 @@ function RuneforgeCraftingFrameMixin:ShowFlyout(button, flyoutType)
 end
 
 function RuneforgeCraftingFrameMixin:SetDynamicFlyoutSettings(flyoutType)
-	local callbacks = self.flyoutTypeToCallbacks[flyoutType];
-	local filterFunction = callbacks[1];
+	local settings = self.flyoutTypeToSettings[flyoutType];
+	local filterFunction = settings.filterFunction;
 
 	-- itemSlot is required by the API, but unused in this context.
 	local function GetRuneforgeLegendariesCallback(itemSlot, resultsTable)
 		self:GetRuneforgeFlyoutItemsCallback(filterFunction, resultsTable);
 	end
 
-	self.flyoutSettings.getItemsFunc = GetRuneforgeLegendariesCallback;
-	self.flyoutSettings.onClickFunc = callbacks[2];
+	local flyoutSettings = self.flyoutSettings;
+	flyoutSettings.getItemsFunc = GetRuneforgeLegendariesCallback;
+	flyoutSettings.onClickFunc = settings.selectionCallback;
+	flyoutSettings.customBackground = settings.customBackground;
 end
 
 function RuneforgeCraftingFrameMixin:SetUpgradeItem(item)

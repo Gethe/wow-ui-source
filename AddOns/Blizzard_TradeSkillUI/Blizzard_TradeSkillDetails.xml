@@ -468,7 +468,7 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</StatusBar>
-					<DropDownToggleButton parentKey="RecipeLevelSelector" inherits="UIMenuButtonStretchTemplate">
+					<DropDownToggleButton parentKey="RecipeLevelSelector" mixin="TradeSkillRecipeLevelSelectorMixin" inherits="UIMenuButtonStretchTemplate">
 						<Size x="110" y="22"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMRIGHT" x="-1" y="-2"/>
@@ -484,11 +484,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnMouseDown>
-								UIMenuButtonStretchMixin.OnMouseDown(self, button);
-								ToggleDropDownMenu(1, nil, self:GetParent().RecipeLevelDropDown, self, 110, 15);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnMouseDown>
+							<OnMouseDown method="OnMouseDown"/>
 						</Scripts>
 					</DropDownToggleButton>
 					<Frame name="TradeSkillRecipeLevelDropDown" parentKey="RecipeLevelDropDown" inherits="UIDropDownMenuTemplate">

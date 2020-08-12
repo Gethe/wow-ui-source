@@ -47,15 +47,23 @@ function RuneforgePowerButtonMixin:OnEnter()
 	if self.powerInfo then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", self.tooltipOffsetX or 0, self.tooltipOffsetY or 0);
 
-		local wrap = true;
-		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name, nil, wrap);
+		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name);
 	
-		local wrap = true;
-		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR, wrap);
+		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR);
 	
+		if not self.slotNames then
+			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
+		end
+
+		if #self.slotNames > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
+			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
+		end
+
 		if self.powerInfo.source then
-			local wrap = true;
-			GameTooltip_AddErrorLine(GameTooltip, self.powerInfo.source, wrap);
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddErrorLine(GameTooltip, self.powerInfo.source);
 		end
 
 		GameTooltip:Show();
@@ -93,7 +101,11 @@ function RuneforgePowerSlotMixin:OnHide()
 end
 
 function RuneforgePowerSlotMixin:OnClick(buttonName)
-	self:GetRuneforgeFrame():TogglePowerList();
+	if buttonName == "RightButton" then
+		self:Reset();
+	else
+		self:GetRuneforgeFrame():TogglePowerList();
+	end
 end
 
 function RuneforgePowerSlotMixin:Reset()

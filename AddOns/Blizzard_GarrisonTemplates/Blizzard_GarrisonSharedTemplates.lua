@@ -2220,7 +2220,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		followerInfo.unlockableEquipment = { };
 		followerInfo.combatAllySpellIDs = { };
 	end
-	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level or 1);
 	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 
 	local portraitFrame = self.CovenantFollowerPortraitFrame or self.PortraitFrame;
