@@ -416,7 +416,7 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 		self.FillBackground:Hide();
 	else
 		self.FillBackground:Show();
-		local totalHeight = self.Background:GetHeight();
+		local totalHeight = 336;
 		if value >= maxDisplayableValue then
 			self.FillBackground:SetHeight(totalHeight);
 			self.FillBackground:SetTexCoord(0, 1, 0, 1);

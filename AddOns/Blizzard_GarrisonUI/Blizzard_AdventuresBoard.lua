@@ -94,6 +94,10 @@ function AdventuresBoardMixin:EnumerateFollowers()
 	return self.followerFramePool:EnumerateActive();
 end
 
+function AdventuresBoardMixin:EnumerateFollowerSockets()
+	return self.followerSocketFramePool:EnumerateActive();
+end
+
 function AdventuresBoardMixin:RegisterFrame(boardIndex, socket, frame)
 	self.framesByBoardIndex[boardIndex] = frame;
 	self.socketsByBoardIndex[boardIndex] = socket;
@@ -187,28 +191,40 @@ function AdventuresBoardMixin:RaiseFrameByBoardIndex(boardIndex)
 	frame:SetFrameLevel(frame:GetFrameLevel() + 50);
 end
 
+function AdventuresBoardMixin:GetAnimFrameByAuraType(frame, previewType)
+	if bit.band(previewType, Enum.GarrAutoPreviewTargetType.Damage) == Enum.GarrAutoPreviewTargetType.Damage then
+		return frame.EnemyTargetingIndicatorFrame;
+	elseif bit.band(previewType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff or bit.band(previewType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
+		frame.FriendlyTargetingIndicatorFrame.SupportColorationAnimator:SetPreviewTargets(previewType, {frame.FriendlyTargetingIndicatorFrame.TargetMarker});
+		return frame.FriendlyTargetingIndicatorFrame;
+	end
 
-function AdventuresBoardMixin:TriggerEnemyTargetingReticles(targetInfos, useLoop)
+	return nil;
+end
+
+function AdventuresBoardMixin:TriggerTargetingReticles(targetInfos, useLoop)
 	for _, target in ipairs(targetInfos) do
-		local targetingIndex = target.targetIndex;
-		if  targetingIndex >= Enum.GarrAutoBoardIndex.EnemyLeftFront and targetingIndex <= Enum.GarrAutoBoardIndex.EnemyRightBack then
-			local frameToPlayAnimation = self:GetFrameByBoardIndex(targetingIndex);
+		local targetingIndex = target.targetIndex
+		local frameToPlayAnimation;
+		if targetingIndex >= Enum.GarrAutoBoardIndex.EnemyLeftFront and targetingIndex <= Enum.GarrAutoBoardIndex.EnemyRightBack then
+			local enemyFrame = self:GetFrameByBoardIndex(targetingIndex);
+			frameToPlayAnimation = enemyFrame:IsShown() and enemyFrame or self:GetSocketByBoardIndex(targetingIndex);
+		else
+			frameToPlayAnimation = self:GetSocketByBoardIndex(targetingIndex);
+		end
+		
+		local animationFrame = self:GetAnimFrameByAuraType(frameToPlayAnimation, target.previewType);
+		if animationFrame then
+			if useLoop then 
+				animationFrame:Loop();
 
-			if frameToPlayAnimation:IsShown() then
-				if not useLoop then 
-					frameToPlayAnimation.EnemyTargetingIndicatorFrame:Play();
-				else
-					frameToPlayAnimation.EnemyTargetingIndicatorFrame:Loop();
+				if bit.band(target.previewType, bit.bor(Enum.GarrAutoPreviewTargetType.Buff, Enum.GarrAutoPreviewTargetType.Heal)) ~= 0 then
+					local frameToAddTempEffect = self:GetSocketByBoardIndex(targetingIndex);
+					frameToAddTempEffect:SetTempPreviewType(target.previewType);
 				end
 			else
-				local socketToPlayEmptyAnimation = self:GetSocketByBoardIndex(targetingIndex);
-				if not useLoop then
-					socketToPlayEmptyAnimation.DesaturatedTargetingIndicatorFrame:Play();
-				else
-					socketToPlayEmptyAnimation.DesaturatedTargetingIndicatorFrame:Loop();
-				end
+				animationFrame:Play();
 			end
-			
 		end
 	end
 end
@@ -221,6 +237,20 @@ function AdventuresBoardMixin:GetHoverTargetingBoardIndex(placerFrame)
 	end
 
 	return nil;
+end
+
+function AdventuresBoardMixin:UpdateBoardState(boardTargetInfo)
+	for followerSocket in self:EnumerateFollowerSockets() do 
+		followerSocket:ClearActiveAndRefresh();
+	end
+
+	for _, target in ipairs(boardTargetInfo) do
+		local targetingIndex = target.targetIndex
+		if targetingIndex >= Enum.GarrAutoBoardIndex.AllyLeftBack and targetingIndex <= Enum.GarrAutoBoardIndex.AllyRightFront then
+			local targetFrame = self:GetSocketByBoardIndex(targetingIndex); 
+			targetFrame:AddMultipleAuras(target.spellID, target.spellIndex, target.previewType);
+		end
+	end
 end
 
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);
@@ -349,23 +379,70 @@ function AdventuresSocketMixin:OnLoad()
 end
 
 function AdventuresSocketMixin:OnShow()
+	EventRegistry:RegisterCallback("CovenantMission.CancelTargetingAnimation", self.ClearTempAndRefresh, self);
+	EventRegistry:RegisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self.ClearTempAndRefresh, self);
+end
+
+function AdventuresSocketMixin:OnHide()
 	self:ResetVisibility();
+	EventRegistry:UnregisterCallback("CovenantMission.CancelTargetingAnimation", self);
+	EventRegistry:UnregisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self);
 end
 
 function AdventuresSocketMixin:ResetVisibility()
-	self.activeBuffs = {};
-	self.activeDebuffs = {};
-	self.activeHealing = {};
+	self:ClearActiveAuras();
+	self:ClearTemporaryAuras();
 	self.AuraContainer.BuffIcon:Hide();
 	self.AuraContainer.DebuffIcon:Hide();
 	self.AuraContainer.HealingIcon:Hide();
 end
 
+function AdventuresSocketMixin:ClearActiveAuras()
+	self.activeBuffs = {};
+	self.activeDebuffs = {};
+	self.activeHealing = {};
+end
+
+function AdventuresSocketMixin:ClearActiveAndRefresh()
+	self:ClearActiveAuras();
+	self:UpdateAuraVisibility();
+end
+
+function AdventuresSocketMixin:ClearTemporaryAuras()
+	self.temporaryPreviewType = 0;
+end
+
+function AdventuresSocketMixin:ClearTempAndRefresh()
+	self:ClearTemporaryAuras();
+	self:UpdateAuraVisibility();
+end
+
+function AdventuresSocketMixin:SetTempPreviewType(auraType)	
+	self.temporaryPreviewType = CovenantMission_GetSupportColorationPreviewType(auraType);
+
+	self:UpdateAuraVisibility();
+end
+
+function AdventuresSocketMixin:AddMultipleAuras(spellID, effectIndex, auraType)
+	if bit.band(auraType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff then
+		self:AddAura(spellID, effectIndex, Enum.GarrAutoPreviewTargetType.Buff);
+	end
+
+	if bit.band(auraType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
+		self:AddAura(spellID, effectIndex, Enum.GarrAutoPreviewTargetType.Heal);
+	end
+
+	self:UpdateAuraVisibility();
+end
+
 function AdventuresSocketMixin:AddAura(spellID, effectIndex, auraType)
 	local collection = self:GetCollectionByAuraType(auraType);
-		
+	if not collection then 
+		return;
+	end
+
 	if not collection[spellID] then
-		collection[spellID] = {}
+		collection[spellID] = {};
 	end
 
 	if not collection[spellID][effectIndex] then
@@ -387,16 +464,16 @@ function AdventuresSocketMixin:RemoveAura(spellID, effectIndex, auraType)
 end
 
 function AdventuresSocketMixin:UpdateAuraVisibility()
-	self.AuraContainer.BuffIcon:SetVisibility(next(self.activeBuffs) ~= nil);
+	self.AuraContainer.BuffIcon:SetVisibility((next(self.activeBuffs) ~= nil) or (bit.band(self.temporaryPreviewType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff));
 	self.AuraContainer.DebuffIcon:SetVisibility(next(self.activeDebuffs) ~= nil);
-	self.AuraContainer.HealingIcon:SetVisibility(next(self.activeHealing) ~= nil);
+	self.AuraContainer.HealingIcon:SetVisibility((next(self.activeHealing) ~= nil) or (bit.band(self.temporaryPreviewType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal));
 	self.AuraContainer:Layout();
 end
 
 function AdventuresSocketMixin:GetCollectionByAuraType(auraType)
 	local auraCollection = {};
 	if auraType == Enum.GarrAutoPreviewTargetType.Heal then
-		auraCollection = self.activeBuffs; --During combat, show heals as buffs
+		auraCollection = self.activeHealing;
 	elseif  auraType == Enum.GarrAutoPreviewTargetType.Buff then
 		auraCollection = self.activeBuffs;
 	elseif auraType == Enum.GarrAutoPreviewTargetType.Debuff then
@@ -405,6 +482,22 @@ function AdventuresSocketMixin:GetCollectionByAuraType(auraType)
 
 	return auraCollection;
 end
+
+AdventuresCombatSocketMixin = {}
+
+function AdventuresCombatSocketMixin:GetCollectionByAuraType(auraType)
+	local auraCollection = {};
+	if auraType == Enum.GarrAutoPreviewTargetType.Heal then
+		auraCollection = self.activeBuffs;
+	elseif  auraType == Enum.GarrAutoPreviewTargetType.Buff then
+		auraCollection = self.activeBuffs;
+	elseif auraType == Enum.GarrAutoPreviewTargetType.Debuff then
+		auraCollection = self.activeDebuffs;
+	end
+
+	return auraCollection;
+end
+
 
 -------------------------------------------------------
 ---    Adventures Aura Icon Mixin					---

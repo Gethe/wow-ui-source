@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GuideCriteriaFrame.lua"/>
 
-	<Frame name="CriteriaBulletTemplate" mixin="CriteriaBulletMixin" virtual="true">
+	<Frame name="CriteriaBulletTemplate" mixin="CriteriaBulletMixin" hyperlinksEnabled="true" virtual="true">
 		<Size x="200" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -28,6 +28,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="CriteriaDisplayTemplate" mixin="CriteriaDisplayMixin" virtual="true">

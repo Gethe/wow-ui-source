@@ -25,36 +25,35 @@ local function GetConduitIconScale(conduitType)
 end
 
 function ConduitListCategoryButtonMixin:Init(conduitType)
-	local categoryName = Soulbinds.GetConduitName(conduitType);
-	self.Name:SetText(categoryName);
-	self.Name:SetWidth(self.Name:GetStringWidth());
+	local name = self.Container.Name;
+	name:SetText(Soulbinds.GetConduitName(conduitType));
+	name:SetWidth(name:GetStringWidth());
 
-	local atlas = Soulbinds.GetConduitEmblemAtlas(conduitType);
 	local useAtlasSize = false;
-	self.ConduitIcon:SetAtlas(atlas, false);
-	local scale = GetConduitIconScale(conduitType);
-	self.ConduitIcon:SetScale(scale);
+	local icon = self.Container.ConduitIcon;
+	icon:SetAtlas(Soulbinds.GetConduitEmblemAtlas(conduitType), false);
+	icon:SetScale(GetConduitIconScale(conduitType));
 end
 
 function ConduitListCategoryButtonMixin:OnEnter()
-	for index, element in ipairs(self.Hovers) do
+	for index, element in ipairs(self.Container.Hovers) do
 		element:Show();
 	end
 end
 
 function ConduitListCategoryButtonMixin:OnLeave()
-	for index, element in ipairs(self.Hovers) do
+	for index, element in ipairs(self.Container.Hovers) do
 		element:Hide();
 	end
 	GameTooltip_Hide();
 end
 
 function ConduitListCategoryButtonMixin:OnMouseDown()
-	-- TODO Category shifting
+	self.Container:AdjustPointsOffset(1, -1);
 end
 
 function ConduitListCategoryButtonMixin:OnMouseUp()
-	-- TODO Category shifting
+	self.Container:AdjustPointsOffset(-1, 1);
 end
 
 function ConduitListCategoryButtonMixin:OnClick(buttonName)
@@ -67,7 +66,7 @@ function ConduitListCategoryButtonMixin:SetExpanded(expanded)
 
 	local atlas = expanded and "Soulbinds_Collection_CategoryHeader_Collapse" or "Soulbinds_Collection_CategoryHeader_Expand";
 	local useAtlasSize = true;
-	self.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
+	self.Container.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
 end
 
 ConduitListConduitButtonMixin = {};
@@ -83,6 +82,7 @@ ConduitListConduitButtonEvents = {
 	"SOULBIND_PENDING_CONDUIT_CHANGED",
 	"SOULBIND_CONDUIT_INSTALLED",
 	"SOULBIND_CONDUIT_UNINSTALLED",
+	"CURSOR_CHANGED",
 };
 
 function ConduitListConduitButtonMixin:OnLoad()
@@ -104,7 +104,8 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	self.Icon:SetTexture(icon);
 	self.Icon2:SetTexture(icon);
 
-	local color = ITEM_QUALITY_COLORS[Enum.ItemQuality.Epic];
+	local conduitQuality = C_Soulbinds.GetConduitQuality(conduitData.conduitID, conduitData.conduitRank);
+	local color = ITEM_QUALITY_COLORS[conduitQuality];
 	local r, g, b = color.r, color.g, color.b;
 	self.IconOverlay:SetVertexColor(r, g, b);
 	self.IconOverlay2:SetVertexColor(r, g, b);
@@ -146,6 +147,10 @@ function ConduitListConduitButtonMixin:OnEvent(event, ...)
 		if conduitData.conduitID == self.conduitData.conduitID then
 			self:UpdateVisuals(ConduitListConduitButtonMixin.State.Uninstalled);
 		end
+	elseif event == "CURSOR_CHANGED" then
+		local conduitData = C_Soulbinds.GetConduitCollectionDataAtCursor();
+		local pending = conduitData and conduitData.conduitID == self.conduitData.conduitID;
+		self.PendingBackground:SetShown(pending);
 	end
 end
 
@@ -161,22 +166,8 @@ function ConduitListConduitButtonMixin:MatchesID(conduitID)
 	return self.conduitData.conduitID == conduitID;
 end
 
-local ADD_CONDUIT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(259, 2101299);
-
 function ConduitListConduitButtonMixin:PlayUpdateAnimation()
-	for index, glow in ipairs(self.Effects.Glows) do
-		glow.Anim:Play();
-	end
-
-	-- Commented out until animation work is finished.
-	--if not self.ModelScene.effect then
-	--	local forceUpdate, stopAnim = true, true;
-	--	self.ModelScene.effect = StaticModelInfo.SetupModelScene(self.ModelScene, ADD_CONDUIT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
-	--end
-	--
-	--self.ModelScene:SetDesaturation(1.0);
-	--local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay = 0.79, duration = 0.769, speed = 1 },};
-	--self.ModelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
+	SoulbindViewer.ConduitList:PlayLearnAnimation(self);
 end
 
 function ConduitListConduitButtonMixin:UpdateVisuals(state)
@@ -243,7 +234,7 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 			self.conduitOnSpellLoadCb = nil;
 		end
 
-		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 190, 0);
 		
 		local conduitID = self.conduit:GetConduitID();
 		GameTooltip:SetConduit(conduitID, self.conduit:GetConduitRank());
@@ -288,7 +279,7 @@ ConduitListSectionMixin = CreateFromMixins(CallbackRegistryMixin);
 
 ConduitListSectionMixin:GenerateCallbackEvents(
 	{
-		"OnContainerVisibilityChanged",
+		"OnCollapsibleChanged",
 	}
 );
 
@@ -297,14 +288,6 @@ function ConduitListSectionMixin:OnLoad()
 
 	self.pool = CreateFramePool("BUTTON", self.Container, "ConduitListConduitButtonTemplate");
 	self.CategoryButton:RegisterCallback(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.OnExpandedChanged, self);
-end
-
-function ConduitListSectionMixin:OnEnter()
-	-- FIXME Forward button events to section.
-end
-
-function ConduitListSectionMixin:OnLeave()
-	-- FIXME Forward button events to section.
 end
 
 function ConduitListSectionMixin:Init()
@@ -332,7 +315,7 @@ function ConduitListSectionMixin:Init()
 	return self:BuildConduits();
 end
 
-function ConduitListSectionMixin:FindConduitbutton(conduitID)
+function ConduitListSectionMixin:FindConduitButton(conduitID)
 	for conduitButton in self.pool:EnumerateActive() do
 		if conduitButton:MatchesID(conduitID) then
 			return conduitButton;
@@ -341,10 +324,10 @@ function ConduitListSectionMixin:FindConduitbutton(conduitID)
 end
 
 function ConduitListSectionMixin:AddCollectionData(collectionData)
-	local conduitButton = self:FindConduitbutton(collectionData.conduitID);
+	local conduitButton = self:FindConduitButton(collectionData.conduitID);
 	if conduitButton then
 		conduitButton:PlayUpdateAnimation();
-		return true;
+		return true, conduitButton;
 	end
 	return false;
 end
@@ -379,9 +362,10 @@ end
 
 function ConduitListSectionMixin:OnExpandedChanged(expanded)
 	self.Container:SetShown(expanded);
+	self.Spacer:SetShown(expanded);
 	self:UpdateLayout();
 
-	self:TriggerEvent(ConduitListSectionMixin.Event.OnContainerVisibilityChanged);
+	self:TriggerEvent(ConduitListSectionMixin.Event.OnCollapsibleChanged);
 end
 
 function ConduitListSectionMixin:UpdateLayout()
@@ -399,16 +383,12 @@ local ConduitListEvents =
 };
 
 function ConduitListMixin:OnLoad()
-	ScrollFrame_OnLoad(self);
-
-	self.ScrollBar:ClearAllPoints();
-	self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -14, -51);
-	self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -14, 58);
-	self.ScrollBar.doNotHide = true;
-
-	for index, list in ipairs(self.ScrollChild.Lists) do
-		list:RegisterCallback(ConduitListSectionMixin.Event.OnContainerVisibilityChanged, self.OnContainerVisibilityChanged, self);
+	for index, list in ipairs(self:GetLists()) do
+		list:RegisterCallback(ConduitListSectionMixin.Event.OnCollapsibleChanged, self.OnCollapsibleChanged, self);
 	end
+
+	self.Clip:SetPoint("TOPLEFT", -200, 0);
+	self.Clip:SetPoint("BOTTOMRIGHT", 200, 0);
 end
 
 function ConduitListMixin:OnEvent(event, ...)
@@ -430,26 +410,56 @@ function ConduitListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ConduitListEvents);
 end
 
+function ConduitListMixin:GetLists()
+	return self.ScrollBox.ScrollTarget.Lists;
+end
+
 function ConduitListMixin:Init()
-	for index, list in ipairs(self.ScrollChild.Lists) do
+	for index, list in ipairs(self:GetLists()) do
 		list.layoutIndex = index;
 		local populated = list:Init();
 		list:SetShown(populated);
 	end
-	self.ScrollChild:Layout();
+	
+	self.ScrollBox.ScrollTarget:Layout();
+
+	local scrollValue = 0;
+	local elementExtent = 41;
+	ScrollUtil.Init(self.ScrollBar, self.ScrollBox, scrollValue, elementExtent);
+end
+
+function ConduitListMixin:PlayLearnAnimation(button)
+	local effects = self.Clip.Effects;
+	effects:SetPoint("LEFT", button);
+	for index, glow in ipairs(effects.Glows) do
+		glow.Anim:Play();
+	end
+
+	local modelScene = self.Clip.ModelScene;
+	if not modelScene.effect then
+		local forceUpdate, stopAnim = true, true;
+		local ADD_CONDUIT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry(259, 2101299);
+		modelScene.effect = StaticModelInfo.SetupModelScene(modelScene, ADD_CONDUIT_MODEL_SCENE_INFO, forceUpdate, stopAnim);
+	end
+	
+	modelScene:SetPoint("CENTER", button);
+	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay=0, duration = 0.769, speed = 1 },};
+	modelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
 end
 
 function ConduitListMixin:OnCollectionDataUpdated(collectionData)
 	self:Init();
 	
 	local conduitID = collectionData.conduitID;
-	for index, list in ipairs(self.ScrollChild.Lists) do
-		if list:AddCollectionData(collectionData) then
+	for index, list in ipairs(self:GetLists()) do
+		local result, conduitButton = list:AddCollectionData(collectionData);
+		if result then
+			self.ScrollBox:ScrollTo(conduitButton);
 			break;
 		end
 	end
 end
 
-function ConduitListMixin:OnContainerVisibilityChanged()
-	self.ScrollChild:Layout();
+function ConduitListMixin:OnCollapsibleChanged()
+	self.ScrollBox.ScrollTarget:Layout();
 end

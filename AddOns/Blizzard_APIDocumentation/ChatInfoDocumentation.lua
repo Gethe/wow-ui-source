@@ -765,6 +765,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "ChatMsgChannelLeavePrevented",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_CHANNEL_LEAVE_PREVENTED",
+			Payload =
+			{
+				{ Name = "channelName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ChatMsgChannelList",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_LIST",

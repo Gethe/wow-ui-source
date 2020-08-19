@@ -70,9 +70,16 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="4">
+				<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Fx" setAllPoints="true" frameLevel="200">
+			<Frame parentKey="Fx" setAllPoints="true" frameLevel="120">
 				<Layers>
 					<Layer level="DIALOG" textureSubLevel="6">
 						<Texture parentKey="ActivateFXLensFlare1" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="Soulbinds_Tree_ActivateFX_LensFlare" useAtlasSize="false">
@@ -123,7 +130,8 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+			<Frame parentKey="Border" setAllPoints="true" frameLevel="110"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="120">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 				</Anchors>
@@ -135,15 +143,15 @@
 			</Frame>
 			<Frame parentKey="Tree" inherits="SoulbindTreeTemplate">
 				<Anchors>
-					<Anchor point="CENTER" x="-56" y="-16"/>
+					<Anchor point="CENTER" x="-56" y="4"/>
 				</Anchors>
 			</Frame>
-			<ScrollFrame parentKey="ConduitList" inherits="ConduitListTemplate">
+			<Frame parentKey="ConduitList" inherits="ConduitListTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-33" y="-33"/>
-					<Anchor point="BOTTOMRIGHT" x="-33" y="26"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Background"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
 				</Anchors>
-			</ScrollFrame>
+			</Frame>
 			<Button parentKey="ActivateSoulbindButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">
 				<Size x="152" y="22"/>
 				<Anchors>

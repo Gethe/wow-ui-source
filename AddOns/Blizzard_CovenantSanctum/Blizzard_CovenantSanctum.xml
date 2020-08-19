@@ -35,9 +35,9 @@
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
 				</Anchors>
 			</Button>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="LevelFrame" frameLevel="510">

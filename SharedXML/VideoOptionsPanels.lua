@@ -424,6 +424,11 @@ function Graphics_ValidateControlImmediate(self)
 		return;
 	end
 
+	if self.rebuildTableOnValidate and self.tablefunction then
+		self.tablerefresh = true;
+		self:tablefunction();
+	end
+
 	-- refresh tooltip, which also updates dropdown options, because of course it does
 	Graphics_PrepareTooltip(self);
 
@@ -807,6 +812,9 @@ function VideoOptionsDropDown_OnLoad(self)
 	LoadVideoData(self);
 	if self.validateOnGXRestart then
 		self:RegisterEvent("GX_RESTARTED");
+	end
+	if self.validateOnAdapterListChange then
+		self:RegisterEvent("ADAPTER_LIST_CHANGED");
 	end
 	self.tablerefresh = true;
 	if(self.onload ~= nil) then

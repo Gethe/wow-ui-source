@@ -4242,6 +4242,7 @@ function ToggleGameMenu()
 		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
 		if ( SpellStopCasting() ) then
 		elseif ( SpellStopTargeting() ) then
+		elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
 		else
 			SetGamePadCursorControl(true);
 		end

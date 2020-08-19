@@ -57,6 +57,7 @@ NPE_QuestManager.Events =
 {
 	Quest_Accepted				= "Quest_Accepted",
 	Quest_ObjectivesComplete	= "Quest_ObjectivesComplete",
+	Quest_Updated				= "Quest_Updated",
 	Quest_TurnedIn				= "Quest_TurnedIn",
 	Quest_Abandoned				= "Quest_Abandoned",
 }
@@ -126,7 +127,9 @@ function NPE_QuestManager:QUEST_LOG_UPDATE()
 					self:_DoCallback(self.Events.Quest_ObjectivesComplete, questData);
 				else
 					local onQuest = C_QuestLog.IsOnQuest(questID);
-					if onQuest == false then
+					if onQuest == true then
+						self:_DoCallback(self.Events.Quest_Updated, questData);
+					else
 						self:_DoCallback(self.Events.Quest_Abandoned, questData);
 					end
 				end

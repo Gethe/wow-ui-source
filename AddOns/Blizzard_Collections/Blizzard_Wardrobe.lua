@@ -855,7 +855,7 @@ function WardrobeCollectionFrame_SetTab(tabID)
 		WardrobeCollectionFrame.searchBox:ClearAllPoints();
 		WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
 		WardrobeCollectionFrame.searchBox:SetWidth(115);
-		local enableSearchAndFilter = WardrobeCollectionFrame.ItemsCollectionFrame.transmogCollection and WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation:IsAppearance()
+		local enableSearchAndFilter = WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation and WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation:IsAppearance()
 		WardrobeCollectionFrame.searchBox:SetEnabled(enableSearchAndFilter);
 		WardrobeCollectionFrame.FilterButton:Show();
 		WardrobeCollectionFrame.FilterButton:SetEnabled(enableSearchAndFilter);
@@ -1133,7 +1133,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
-
+print("show");
 	local needsUpdate = false;	-- we don't need to update if we call :SetActiveSlot as that will do an update
 	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory and not WardrobeFrame_IsAtTransmogrifier() ) then
 		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(self.jumpToLatestCategoryID);

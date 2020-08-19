@@ -19,7 +19,11 @@ function GetItemInfoFromHyperlink(link)
 end
 
 function GetAchievementInfoFromHyperlink(link)
-	return tonumber(link:match("|Hachievement:(%d+)"));
+	local linkType, linkData = ExtractLinkData(link);
+	if linkType:match("|Hachievement") then
+		local achievementID, _, complete = strsplit(":", linkData);
+		return tonumber(achievementID), complete == "1";
+	end
 end
 
 function GetURLIndexAndLoadURL(self, link)

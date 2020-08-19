@@ -72,7 +72,7 @@ function ItemUpgradeFrame_OnEvent(self, event, ...)
 end
 
 function ItemUpgradeFrame_Update()
-	local icon, name, quality, bound, numCurrUpgrades, numMaxUpgrades, cost, currencyType = GetItemUpgradeItemInfo();
+	local icon, name, quality, bound, numCurrUpgrades, numMaxUpgrades, cost, currencyType, failureMessage = GetItemUpgradeItemInfo();
 
 	ItemUpgradeFrameUpgradeButton:Disable();
 
@@ -89,8 +89,8 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrame.TitleTextRight:Show();
 		ItemUpgradeFrame.HorzBar:Show();
 
-		local canUpgradeItem = false;
 		if(numCurrUpgrades and numMaxUpgrades) then
+			local canUpgradeItem = false;
 			ItemUpgradeFrame.UpgradeStatus:SetText(numCurrUpgrades.."/"..numMaxUpgrades);
 			ItemUpgradeFrame.UpgradeStatus:Show();
 			if ( numCurrUpgrades < numMaxUpgrades ) then
@@ -99,15 +99,20 @@ function ItemUpgradeFrame_Update()
 			else
 				ItemUpgradeFrame.UpgradeStatus:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			end
-			ItemUpgradeFrameUpgradeButton:SetEnabled(numCurrUpgrades < numMaxUpgrades);
-		end
-		if ( canUpgradeItem ) then
-			ItemUpgradeFrame.NoMoreUpgrades:Hide();
-		else
-			ItemUpgradeFrame.NoMoreUpgrades:Show();
-		end
 
-		ItemUpgradeFrame_UpdateStats(canUpgradeItem);
+			if failureMessage then
+				ItemUpgradeFrame.FeedbackMessage:SetText(failureMessage);
+				ItemUpgradeFrame.FeedbackMessage:Show();
+				canUpgradeItem = false;
+			elseif canUpgradeItem  then
+				ItemUpgradeFrame.FeedbackMessage:Hide();
+			else
+				ItemUpgradeFrame.FeedbackMessage:SetText(ITEM_UPGRADE_NO_MORE_UPGRADES);
+				ItemUpgradeFrame.FeedbackMessage:Show();
+				ItemUpgradeFrame.UpgradeStatus:Hide();
+			end
+			ItemUpgradeFrame_UpdateStats(canUpgradeItem);
+		end
 	else	-- There is no item so hide elements
 		ItemUpgradeFrame.ItemButton.IconTexture:SetTexture("Interface\\BUTTONS\\UI-Slot-Background");
 		ItemUpgradeFrame.ItemButton.IconTexture:SetTexCoord( 0, 0.640625, 0, 0.640625);
@@ -121,7 +126,7 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrame.HorzBar:Hide();
 		ItemUpgradeFrame.LeftItemLevel:Hide();
 		ItemUpgradeFrame.RightItemLevel:Hide();
-		ItemUpgradeFrame.NoMoreUpgrades:Hide();
+		ItemUpgradeFrame.FeedbackMessage:Hide();
 		for _, item in pairs(ItemUpgradeFrame.LeftStat) do
 			item:Hide();
 		end
@@ -133,6 +138,12 @@ function ItemUpgradeFrame_Update()
 		end
 	end
 
+	if failureMessage then
+		ItemUpgradeFrameUpgradeButton:Disable();
+	else
+		ItemUpgradeFrameUpgradeButton:SetEnabled(numCurrUpgrades < numMaxUpgrades);
+	end
+
 	-- update player's currency
 	if ( cost and cost > 0 ) then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyType);
@@ -142,6 +153,7 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture(currencyTexture);
 		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(cost);
 		ItemUpgradeFrameMoneyFrame.Currency:Show();
+
 		if ( cost > amount ) then
 			ItemUpgradeFrameUpgradeButton:Disable();
 			ItemUpgradeFrameMoneyFrame.Currency.count:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);

@@ -1207,6 +1207,8 @@ VideoData["Advanced_TargetFPSCheckBox"]={
 VideoData["Advanced_AdapterDropDown"]={
 	name = GRAPHICS_CARD,
 	description = OPTION_TOOLTIP_GRAPHICS_CARD,
+	validateOnAdapterListChange = true,
+	rebuildTableOnValidate = true,
 	tablefunction =
 		function(self)
 			self.adapters = C_VideoOptions.GetGxAdapterInfo();

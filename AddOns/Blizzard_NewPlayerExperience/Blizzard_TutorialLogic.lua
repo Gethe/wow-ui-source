@@ -150,12 +150,8 @@ function Tutorials:Begin()
 	end
 
 	-- Spec Choice Quest
-	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
-	if C_QuestLog.IsQuestFlaggedCompleted(specQuestID) then 
-		-- spec quest flagged complete
-	elseif C_QuestLog.ReadyForTurnIn(specQuestID) then
-		-- spec quest ready for turn in
-	elseif C_QuestLog.GetLogIndexForQuestID(specQuestID) ~= nil then
+	if C_QuestLog.IsQuestFlaggedCompleted(tutorialData.SpecQuestTrackID) and not 
+		C_QuestLog.IsQuestFlaggedCompleted(tutorialData.SpecCompleteQuestTrackID)then 
 		self.SpecTutorial:ForceBegin();
 	end
 end
@@ -194,9 +190,6 @@ function Tutorials:Quest_Accepted(questData)
 	elseif (questID == tutorialData.LookingForGroupQuest) then
 		-- Looking For Group Quest
 		self.LFGStatusWatcher:ForceBegin();
-	elseif (questID == specQuestID) then
-		-- Spec Choice Quest
-		self.SpecTutorial:Begin();
 	elseif (questID == vendorQuestID) then
 		-- Use Vendor Quest
 		self.Vendor_Watcher:Begin();
@@ -254,6 +247,21 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 			elseif questID == tutorialData.HunterTameTutorialQuestID then
 				self.HunterTameTutorial:Complete();
 			end
+		end
+	end
+end
+
+function Tutorials:Quest_Updated(questData)
+	local questID = questData.QuestID;
+	local tutorialData = TutorialHelper:GetFactionData();
+
+	local specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+
+	-- Spec Tutorial was updated
+	if (questID == specQuestID) then
+		if C_QuestLog.IsQuestFlaggedCompleted(tutorialData.SpecQuestTrackID) and not 
+			C_QuestLog.IsQuestFlaggedCompleted(tutorialData.SpecCompleteQuestTrackID)then 
+			self.SpecTutorial:ForceBegin();
 		end
 	end
 end

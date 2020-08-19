@@ -303,15 +303,15 @@ function CovenantMission:MissionCompleteInitialize(missionList, index)
 end
 
 function CovenantMission:InitiateMissionCompletion(missionInfo)
-	self.MissionComplete:SetCurrentMission(missionInfo);
-	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_VIEW_MISSION_REPORT);
-
 	self:GetCompleteDialog():Hide();
 	self.FollowerTab:Hide();
 	self.FollowerList:Hide();
 	HelpPlate_Hide();
 	self.MissionComplete:Show();
 	self.MissionCompleteBackground:Show();
+
+	self.MissionComplete:SetCurrentMission(missionInfo);
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_VIEW_MISSION_REPORT);
 end
 
 function CovenantMission:GetPlacerFrame()
@@ -394,6 +394,7 @@ function CovenantMission:GetPlacerUpdate()
 		if hoverBoardIndex ~= self.casterBoardIndex then
 			if hoverBoardIndex == nil then
 				self.casterBoardIndex = hoverBoardIndex;
+				placerFrame:HideSupportColorationRings();
 				EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 				return;
 			end
@@ -405,7 +406,8 @@ function CovenantMission:GetPlacerUpdate()
 
 			self.casterBoardIndex = hoverBoardIndex;
 			local useLoop = true;
-			missionPage.Board:TriggerEnemyTargetingReticles(C_Garrison.GetAutoMissionTargetingInfo(missionID, covenantPlacer.info.garrFollowerID, hoverBoardIndex), useLoop);
+			missionPage.Board:TriggerTargetingReticles(C_Garrison.GetAutoMissionTargetingInfo(missionID, covenantPlacer.info.garrFollowerID, hoverBoardIndex), useLoop);
+			placerFrame:ShowSupportColorationRings();
 		end
 	end
 
@@ -531,7 +533,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 		self.casterSpellIndex = frame.boardIndex;
 		self.lastAssignedSpell = info.autoCombatSpells[1].autoCombatSpellID;
 		local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfo(missionID, info.garrFollowerID, self.casterSpellIndex);
-		missionPage.Board:TriggerEnemyTargetingReticles(abilityTargetInfos);
+		missionPage.Board:TriggerTargetingReticles(abilityTargetInfos);
 	end
 
 	frame:SetFollowerGUID(info.followerID, info);
@@ -551,9 +553,15 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 end
 
 function CovenantMission:UpdateMissionParty()
-	-- We don't need to do any further updates for covenant missions, as the pucks handle the display work.
-end
+	local missionPage = self:GetMissionPage();
+	local boardState = {};
+	
+	if missionPage.missionInfo then
+		boardState = C_Garrison.GetAutoMissionBoardState(missionPage.missionInfo.missionID);
+	end
 
+	missionPage.Board:UpdateBoardState(boardState);
+end
 function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 	local missionPage = self:GetMissionPage();
 
@@ -589,6 +597,18 @@ end
 
 function CovenantMission:GetStartMissionButtonFrame(missionPage)
 	return missionPage.StartMissionFrame.ButtonFrame;
+end
+
+function CovenantMission:GenerateHelpTipInfo()
+	return {
+		text = COVENANT_MISSIONS_MISSION_PROGRESS,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_GARRISON_LANDING,
+		targetPoint = HelpTip.Point.LeftEdgeCenter,
+		offsetX = -5,
+		checkCVars = true,
+	};
 end
 
 ---------------------------------------------------------------------------------

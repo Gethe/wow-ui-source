@@ -69,7 +69,7 @@ TutorialData.LevelAbilitiesTable = {
 		nil,	-- 318044,	Lightning Bolt Rank 2, level 6
 		318038,	-- Flametongue Weapon, level 7
 		nil,	-- 20608,-- Reincarnation, level 8
-		nil,	-- Searing Totem, level 9
+		192106,	-- Lightning Shield, level 9
 	};
 	MAGE = {
 		116,	-- Start with Frostbolt
@@ -404,6 +404,9 @@ TutorialData.Alliance = {
 		DRUID =		59350,
 	};
 
+	SpecQuestTrackID = 62548;
+	SpecCompleteQuestTrackID = 62550;
+
 	SpecQuests = {
 		WARRIOR =	59594,
 		PALADIN =	59589,
@@ -522,6 +525,9 @@ TutorialData.Horde = {
 		MONK =		59956,
 		DRUID =		59951,
 	};
+
+	SpecQuestTrackID = 62547;
+	SpecCompleteQuestTrackID = 62551;
 
 	SpecQuests = {
 		WARRIOR =	60357,

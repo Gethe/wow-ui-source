@@ -47,6 +47,8 @@
 							<Frame parentKey="ObjectivesFrame" inherits="CriteriaDisplayTemplate">
 								<KeyValues>
 									<KeyValue key="title" type="global" value="NPEV2_CHAT_GUIDE_FRAME_ELIGIBILITY_LABEL"/>
+									<KeyValue key="font" type="global" value="GameFontNormal"/>
+									<KeyValue key="verticalLineOffset" type="number" value="-4"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-40"/>

@@ -1072,4 +1072,48 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="AdventuresFriendlyTargetingIndicatorTemplate" mixin="AdventuresFriendlyTargetingIndicatorMixin" setAllPoints="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" sublayer="1">
+				<Texture parentKey="TargetMarker" hidden="false" alpha="0" atlas="Adventures-Buff-Heal-Ring">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="SupportColorationAnimator" inherits="SupportColorationAnimatorTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="FadeInAndOut" setToFinalAlpha="true">
+				<Alpha parentKey="Fade" childKey="TargetMarker" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale parentKey="Scale" childKey="TargetMarker" duration="0.2" order="1" fromScaleX="1.4" toScaleX="1.0" fromScaleY="1.4" toScaleY="1.0"/>
+				<Alpha parentKey="Fade" childKey="TargetMarker" startDelay="0.3" duration="0.2" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale parentKey="Scale" childKey="TargetMarker" startDelay="0.3" duration="0.2" order="2" fromScaleX="1.0" toScaleX="1.4" fromScaleY="1.0" toScaleY="1.4"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Alpha parentKey="Fade" childKey="TargetMarker" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale parentKey="Scale" childKey="TargetMarker" duration="0.2" order="1" fromScaleX="1.4" toScaleX="1.0" fromScaleY="1.4" toScaleY="1.0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
+				<Alpha parentKey="Fade" childKey="TargetMarker" duration="0.2" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale parentKey="Scale" childKey="TargetMarker" duration="0.2" order="2" fromScaleX="1.0" toScaleX="1.4" fromScaleY="1.0" toScaleY="1.4"/>
+			</AnimationGroup>
+			<Scripts>
+				<OnPlay>
+					local indicatorFrame = self:GetParent();
+					indicatorFrame:ResetPositions()
+				</OnPlay>
+			</Scripts>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="SupportColorationAnimatorTemplate" mixin="SupportColorationAnimatorMixin" setAllPoints="true" virtual="true"/>
 </Ui>

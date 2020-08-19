@@ -281,14 +281,6 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ArtworkBorder2" hidden="true">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ArtworkBorder"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="ArtworkBorderAdditionalGlow" alphaMode="ADD" atlas="UI-Frame-Horde-Portrait" useAtlasSize="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -303,11 +295,55 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="OVERLAY" textureSubLevel="-2">
 				<Texture parentKey="Artwork">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ArtworkBorder" x="10" y="-9"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArtworkBorder" x="-10" y="9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="ArtworkBorder2" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ArtworkBorder"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Artwork" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+					<Texture parentKey="RingGlow" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Artwork"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PointBurstLeft" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstLeft" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Artwork" relativePoint="LEFT" x="14" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PointBurstRight" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstRight" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Artwork" relativePoint="RIGHT" x="-14" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -493,7 +529,7 @@
 				<Translation childKey="ScrollingBG" duration="50" order="2" offsetX="-300" offsetY="0" smoothing="OUT"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeoutSelected">
-				<Alpha startDelay="2" order="1" duration=".5" fromAlpha="1" toAlpha="0"/>
+				<Alpha startDelay="1.25" order="1" duration=".25" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent():GetParent():TryHide();
@@ -503,9 +539,32 @@
 			<AnimationGroup parentKey="FadeoutUnselected">
 				<Alpha order="1" duration=".25" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
+			<AnimationGroup parentKey="ChoiceSelectedAnimation" setToFinalAlpha="true">
+				<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>
+				<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
+				<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RingGlow" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingGlow" startDelay="0.75" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
+					<Origin point="RIGHT">
+						<Offset x="-4" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
+					<Origin point="LEFT">
+						<Offset x="4" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
 		</Animations>
 		<Scripts>
 			<OnUpdate method="OnUpdate"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
 
@@ -524,9 +583,14 @@
 		<Animations>
 			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 				<Alpha fromAlpha="0" toAlpha="1" duration=".8" order="1"/>
+				<Scripts>
+						<OnFinished>
+							self:GetParent():OnFadeInFinished();
+						</OnFinished>
+					</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
-				<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".10" order="1">
 					<Scripts>
 						<OnFinished>
 							self:GetParent():GetParent():OnFadeOutFinished();
@@ -636,7 +700,7 @@
 					<Anchor point="TOPRIGHT" x="1" y="2" />
 				</Anchors>
 			</Button>
-			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW" enableMouse="false"/>
+			<ModelScene parentKey="HighStrataModelScene" frameStrata="HIGH" drawLayer="BORDER"  inherits="ScriptAnimatedModelSceneTemplate" hidden="true" enableMouse="false"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -656,14 +720,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<ModelScene parentKey="GlowySphereModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
-				<Size x="120" y="120"/>
-				<Anchors>
-					<Anchor point="LEFT" x="70" y="3"/>
-				</Anchors>
-			</ModelScene>
-		</Frames>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnClick method="OnClick"/>

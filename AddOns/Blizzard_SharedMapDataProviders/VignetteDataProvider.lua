@@ -220,6 +220,8 @@ function VignettePinMixin:OnMouseEnter()
 			hasValidTooltip = self:DisplayNormalTooltip();
 		elseif self:GetVignetteType() == Enum.VignetteType.PvPBounty then
 			hasValidTooltip = self:DisplayPvpBountyTooltip();
+		elseif self:GetVignetteType() == Enum.VignetteType.Torghast then 
+			hasValidTooltip = self:DisplayTorghastTooltip(); 
 		end
 
 		if hasValidTooltip and self.widgetSetID then
@@ -259,4 +261,10 @@ function VignettePinMixin:DisplayPvpBountyTooltip()
 	end
 
 	return false;
+end
+
+function VignettePinMixin:DisplayTorghastTooltip()
+	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
+	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
+	return true;
 end

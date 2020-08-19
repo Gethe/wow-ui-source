@@ -36,15 +36,19 @@ function SoulbindTreeNodeMixin:Init(node)
 	self:UpdateVisuals();
 end
 
+function SoulbindTreeNodeMixin:PlaySelectionEffect()
+	local modelScene = self:GetFxModelScene();
+	local NODE_SELECTION_FX_1 = 42;
+	local NODE_SELECTION_FX_2 = 48;
+	modelScene:AddEffect(NODE_SELECTION_FX_1, self);
+	modelScene:AddEffect(NODE_SELECTION_FX_2, self);
+end
+
 function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
 	if newState == Enum.SoulbindNodeState.Selected then
 		-- IsPathChangePending Temp. Remove once tree is no longer being reset.
 		if oldState == Enum.SoulbindNodeState.Selectable and not Soulbinds.IsPathChangePending() then
-			local NODE_SELECTION_FX_1 = 42;
-			local NODE_SELECTION_FX_2 = 48;
-			local modelScene = self:GetFxModelScene();
-			modelScene:AddEffect(NODE_SELECTION_FX_1, self);
-			modelScene:AddEffect(NODE_SELECTION_FX_2, self);
+			self:PlaySelectionEffect();
 			local LEARN_SHAKE_DELAY = 0;
 			C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
 		elseif oldState == Enum.SoulbindNodeState.Unselected then
@@ -371,7 +375,7 @@ end
 function SoulbindConduitNodeMixin:OnInstalled()
 	self:Init(C_Soulbinds.GetNode(self:GetID()));
 	
-	self:PlaySocketAnimation();
+	self:PlaySelectionEffect();
 	self:UpdatePendingAnim();
 end
 

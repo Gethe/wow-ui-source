@@ -16,6 +16,13 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	showAlert = 1,
 }
 
+local WEEKLY_REWARDS_EVENTS = {
+	"WEEKLY_REWARDS_HIDE",
+	"WEEKLY_REWARDS_UPDATE",
+	"CHALLENGE_MODE_COMPLETED",
+	"CHALLENGE_MODE_MAPS_UPDATE",
+};
+
 WeeklyRewardsMixin = { };
 
 function WeeklyRewardsMixin:OnLoad()
@@ -36,8 +43,7 @@ function WeeklyRewardsMixin:OnLoad()
 end
 
 function WeeklyRewardsMixin:OnShow()
-	self:RegisterEvent("WEEKLY_REWARDS_HIDE");
-	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
+	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 	
 	-- for preview item tooltips
 	C_MythicPlus.RequestMapInfo();
@@ -46,8 +52,7 @@ function WeeklyRewardsMixin:OnShow()
 end
 
 function WeeklyRewardsMixin:OnHide()
-	self:UnregisterEvent("WEEKLY_REWARDS_HIDE");
-	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
+	FrameUtil.UnregisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 	self.selectedActivity = nil;
 	C_WeeklyRewards.CloseInteraction();
 	StaticPopup_Hide("CONFIRM_SELECT_WEEKLY_REWARD");
@@ -58,6 +63,19 @@ function WeeklyRewardsMixin:OnEvent(event)
 		HideUIPanel(self);
 	elseif event == "WEEKLY_REWARDS_UPDATE" then
 		self:Refresh();
+	elseif event == "CHALLENGE_MODE_COMPLETED" then
+		C_MythicPlus.RequestMapInfo();
+	elseif event == "CHALLENGE_MODE_MAPS_UPDATE" then
+		local tooltipOwner = GameTooltip:GetOwner();
+		if tooltipOwner then
+			for i = 1, NUM_COLUMNS do
+				local frame = self:GetActivityFrame(Enum.WeeklyRewardChestThresholdType.MythicPlus, i);
+				if frame == tooltipOwner and frame:CanShowPreviewItemTooltip() then
+					frame:ShowPreviewItemTooltip();
+					break;
+				end
+			end
+		end
 	end
 end
 
@@ -240,8 +258,12 @@ function WeeklyRewardsActivityMixin:OnMouseDown()
 	self:GetParent():SelectActivity(self);
 end
 
+function WeeklyRewardsActivityMixin:CanShowPreviewItemTooltip()
+	return self.unlocked and not C_WeeklyRewards.CanClaimRewards();
+end
+
 function WeeklyRewardsActivityMixin:OnEnter()
-	if self.unlocked and not C_WeeklyRewards.CanClaimRewards() then
+	if self:CanShowPreviewItemTooltip() then
 		self:ShowPreviewItemTooltip();		
 	end
 end
@@ -306,22 +328,23 @@ function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, 
 			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT);
 		else
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, self.info.level + 1, self.info.threshold));
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
-
 			local runHistory = C_MythicPlus.GetRunHistory();
-			local comparison = function(entry1, entry2)
-				if ( entry1.level == entry2.level ) then
-					return entry1.mapChallengeModeID < entry2.mapChallengeModeID;
-				else
-					return entry1.level > entry2.level;
+			if #runHistory > 0 then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));			
+				local comparison = function(entry1, entry2)
+					if ( entry1.level == entry2.level ) then
+						return entry1.mapChallengeModeID < entry2.mapChallengeModeID;
+					else
+						return entry1.level > entry2.level;
+					end
 				end
-			end
-			table.sort(runHistory, comparison);
-			for i = 1, self.info.threshold do
-				local runInfo = runHistory[i];
-				local name = C_ChallengeMode.GetMapUIInfo(runInfo.mapChallengeModeID);
-				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_RUN_INFO, runInfo.level, name));
+				table.sort(runHistory, comparison);
+				for i = 1, self.info.threshold do
+					local runInfo = runHistory[i];
+					local name = C_ChallengeMode.GetMapUIInfo(runInfo.mapChallengeModeID);
+					GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_RUN_INFO, runInfo.level, name));
+				end
 			end
 		end
 	end

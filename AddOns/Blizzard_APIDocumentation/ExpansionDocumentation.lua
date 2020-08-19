@@ -42,6 +42,15 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetCurrentRegionName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "regionName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetExpansionDisplayInfo",
 			Type = "Function",
 

@@ -2395,6 +2395,11 @@ if IsGMClient() then
 	end
 end
 
+SLASH_PERFREPORT1 = "/perfreport";
+SlashCmdList["PERFREPORT"] = function(msg) 
+	C_ReportSystem.ReportServerLag();
+end
+
 SlashCmdList["TABLEINSPECT"] = function(msg)
 	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
 		return;
@@ -3067,12 +3072,14 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		self.defaultLanguage = GetDefaultLanguage();
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 
-		self.needsMentorChatExplanation = true;
-		ChatFrame_CheckShowNewcomerHelpBanner(self);
+		if self == DEFAULT_CHAT_FRAME then
+			self.needsMentorChatExplanation = true;
+			ChatFrame_CheckShowNewcomerHelpBanner(self);
 
-		local isInitialLogin, isUIReload = ...;
-		if isInitialLogin then
-			ChatFrame_CheckShowNewcomerGraduation();
+			local isInitialLogin, isUIReload = ...;
+			if isInitialLogin then
+				ChatFrame_CheckShowNewcomerGraduation();
+			end
 		end
 
 		self.chatLevelUP = {};
@@ -3089,6 +3096,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 	elseif ( event == "NEWCOMER_GRADUATION" ) then
 		local isFromEvent = true;
 		ChatFrame_CheckShowNewcomerGraduation(isFromEvent);
+		return true;
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
 		local name, fontSize, r, g, b, a, shown, locked = FCF_GetChatWindowInfo(self:GetID());
 		if ( fontSize > 0 ) then

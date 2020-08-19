@@ -341,9 +341,9 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 				end
 
 				if #combatLogEvent.targetInfo > 5 then
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE, nil, SOUNDKIT_ALLOW_DUPLICATES);
 				elseif #combatLogEvent.targetInfo > 1 then		
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM, nil, SOUNDKIT_ALLOW_DUPLICATES);
 				end
 
 				return false;
@@ -373,6 +373,16 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 		self.Board:AddCombatEventText(combatLogEvent);
 		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura then
 			self.Board:UpdateBoardAuraState(combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura, combatLogEvent);
+			if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura then
+				PlaySound(SOUNDKIT.UI_ADVENTURES_AURA_APPLY, nil, SOUNDKIT_ALLOW_DUPLICATES );
+
+				if #combatLogEvent.targetInfo > 2 then
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				end
+			else
+				PlaySound(SOUNDKIT.UI_ADVENTURES_AURA_REMOVE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			end
+
 		end
 	end
 end

@@ -105,6 +105,18 @@ function ChromieTimeExpansionButtonMixin:SetupButton(buttonInfo)
 	self.Name:SetText(buttonInfo.name);
 	self.Background:SetAtlas(buttonInfo.previewAtlas);
 	self.buttonInfo = buttonInfo; 
+	local disabled = buttonInfo.alreadyOn or buttonInfo.completed; 
+
+	self:SetEnabled(not disabled);
+	self.CompletedCheck:SetShown(buttonInfo.completed);
+	self.Background:SetDesaturated(disabled);
+	self:GetNormalTexture():SetDesaturated(disabled);
+
+	local nameColor = NORMAL_FONT_COLOR;
+	if (disabled) then 
+		nameColor = GRAY_FONT_COLOR;
+	end 
+	self.Name:SetTextColor(nameColor:GetRGB()); 
 	self:Show(); 
 end 
 
@@ -118,6 +130,21 @@ function ChromieTimeExpansionButtonMixin:OnClick()
 
 	ChromieTimeFrame:SetSelectedExpansion(self);
 	self:SetNormalAtlas("ChromieTime-Button-Selection", TextureKitConstants.UseAtlasSize); -- Would like to override the normal texture when it's selected
+end 
+
+function ChromieTimeExpansionButtonMixin:OnEnter()
+	if (self.buttonInfo.completed) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 170);
+		GameTooltip_AddNormalLine(GameTooltip, CHROMIE_TIME_CAMPAIGN_COMPLETE, true);
+	elseif (self.buttonInfo.alreadyOn) then 
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 170);
+		GameTooltip_AddNormalLine(GameTooltip, CHROMIE_TIME_CAMPAIGN_ALREADY_ON, true);
+	end 
+	GameTooltip:Show(); 
+end 
+
+function ChromieTimeExpansionButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
 end 
 
 ChromieTimeSelectButtonMixin = { }; 

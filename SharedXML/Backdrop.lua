@@ -239,7 +239,11 @@ function BackdropTemplateMixin:OnBackdropSizeChanged()
 end
 
 function BackdropTemplateMixin:GetEdgeSize()
-	return self.backdropInfo.edgeSize or defaultEdgeSize;
+	if self.backdropInfo.edgeSize and self.backdropInfo.edgeSize > 0 then
+		return self.backdropInfo.edgeSize;
+	else
+		return defaultEdgeSize;
+	end
 end
 
 local function GetBackdropCoordValue(coord, pieceSetup, repeatX, repeatY)
@@ -340,19 +344,6 @@ function BackdropTemplateMixin:ClearBackdrop()
 	end
 end
 
-local reusableNineSliceLayout = {
-	TopLeftCorner =	{  },
-	TopRightCorner =	{  },
-	BottomLeftCorner =	{  },
-	BottomRightCorner =	{  },
-	TopEdge = {  },
-	BottomEdge = {  },
-	LeftEdge = {  },
-	RightEdge = {  },
-	Center = { layer = "BACKGROUND" },
-	setupPieceVisualsFunction = BackdropTemplateMixin.SetupPieceVisuals,
-};
-
 function BackdropTemplateMixin:ApplyBackdrop()
 	local x, y, x1, y1 = 0, 0, 0, 0;
 	if self.backdropInfo.bgFile then
@@ -369,13 +360,19 @@ function BackdropTemplateMixin:ApplyBackdrop()
 			y1 = y1 + (insets.bottom or 0);
 		end
 	end
-	local centerLayout = reusableNineSliceLayout.Center;
-	centerLayout.x = x;
-	centerLayout.y = y;
-	centerLayout.x1 = x1;
-	centerLayout.y1 = y1;
-
-	NineSliceUtil.ApplyLayout(self, reusableNineSliceLayout);
+	local layout = {
+		TopLeftCorner =	{  },
+		TopRightCorner =	{  },
+		BottomLeftCorner =	{  },
+		BottomRightCorner =	{  },
+		TopEdge = {  },
+		BottomEdge = {  },
+		LeftEdge = {  },
+		RightEdge = {  },
+		Center = { layer = "BACKGROUND", x = x, y = y, x1 = x1, y1 = y1 },
+		setupPieceVisualsFunction = BackdropTemplateMixin.SetupPieceVisuals,
+	};
+	NineSliceUtil.ApplyLayout(self, layout);
 	self:SetBackdropColor(1, 1, 1, 1);
 	self:SetBackdropBorderColor(1, 1, 1, 1);
 	self:SetupTextureCoordinates();

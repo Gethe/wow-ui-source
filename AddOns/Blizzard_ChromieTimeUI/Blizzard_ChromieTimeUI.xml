@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ChromieTimeUI.lua"/>
 
-	<Button name="ChromieTimeExpansionButtonTemplate" mixin="ChromieTimeExpansionButtonMixin" virtual="true">
+	<Button name="ChromieTimeExpansionButtonTemplate" motionScriptsWhileDisabled="true" mixin="ChromieTimeExpansionButtonMixin" virtual="true">
 		<Size x="226" y="133"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -20,6 +20,11 @@
 						<Anchor point="BOTTOMLEFT" x="18" y="17"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="CompletedCheck" atlas="common-icon-checkmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<NormalTexture atlas="ChromieTime-Button-Frame"/>
@@ -30,6 +35,8 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 

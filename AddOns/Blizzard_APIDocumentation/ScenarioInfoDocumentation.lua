@@ -11,6 +11,16 @@ local ScenarioInfo =
 	Events =
 	{
 		{
+			Name = "JailersTowerLevelUpdate",
+			Type = "Event",
+			LiteralName = "JAILERS_TOWER_LEVEL_UPDATE",
+			Payload =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "type", Type = "JailersTowerType", Nilable = false },
+			},
+		},
+		{
 			Name = "ScenarioBonusObjectiveComplete",
 			Type = "Event",
 			LiteralName = "SCENARIO_BONUS_OBJECTIVE_COMPLETE",
@@ -76,6 +86,23 @@ local ScenarioInfo =
 
 	Tables =
 	{
+		{
+			Name = "JailersTowerType",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "TwistingCorridors", Type = "JailersTowerType", EnumValue = 0 },
+				{ Name = "SkoldusHalls", Type = "JailersTowerType", EnumValue = 1 },
+				{ Name = "FractureChambers", Type = "JailersTowerType", EnumValue = 2 },
+				{ Name = "Soulforges", Type = "JailersTowerType", EnumValue = 3 },
+				{ Name = "Coldheart", Type = "JailersTowerType", EnumValue = 4 },
+				{ Name = "Mortregar", Type = "JailersTowerType", EnumValue = 5 },
+				{ Name = "UpperReaches", Type = "JailersTowerType", EnumValue = 6 },
+			},
+		},
 	},
 };
 

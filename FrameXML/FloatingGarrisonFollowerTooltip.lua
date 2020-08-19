@@ -621,6 +621,8 @@ function FloatingGarrisonMission_Show(garrMissionID, garrMissionDBID)
 	local followerTypeID = C_Garrison.GetFollowerTypeByMissionID(garrMissionID);
 	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
 		FloatingGarrisonMissionTooltip.FollowerRequirement:SetFormattedText(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, C_Garrison.GetMissionMaxFollowers(garrMissionID), 1, 1, 1);
+	elseif followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+		FloatingGarrisonMissionTooltip.FollowerRequirement:SetText(COVENANT_MISSIONS_COVENANT_ADVENTURE, WHITE_FONT_COLOR);
 	else
 		FloatingGarrisonMissionTooltip.FollowerRequirement:SetFormattedText(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, C_Garrison.GetMissionMaxFollowers(garrMissionID), 1, 1, 1);
 	end
