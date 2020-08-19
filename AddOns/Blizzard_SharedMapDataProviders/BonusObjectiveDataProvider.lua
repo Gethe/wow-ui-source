@@ -96,7 +96,9 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self.numObjectives = taskInfo.numObjectives;
 	self.isQuestStart = taskInfo.isQuestStart;
 	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;
-	if taskInfo.isDaily then
+	if C_QuestLog.IsQuestCalling(self.questID) then
+		self.Texture:SetAtlas("Quest-DailyCampaign-Available", false);
+	elseif taskInfo.isDaily then
 		self.Texture:SetAtlas("QuestDaily", false);
 	elseif taskInfo.isQuestStart then
 		self.Texture:SetAtlas("QuestNormal", false);

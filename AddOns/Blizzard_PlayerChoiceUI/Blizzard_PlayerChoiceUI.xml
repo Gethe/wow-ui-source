@@ -58,7 +58,7 @@
 	</Button>
 	
 	<Button name="PlayerChoiceItemTemplate" mixin="PlayerChoiceItemButtonMixin" virtual="true">
-		<Size x="167" y="41"/>
+		<Size x="196" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon">
@@ -68,7 +68,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontBlack" justifyH="LEFT">
-					<Size x="124" y="36"/>
+					<Size x="124" y="41"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
 					</Anchors>
@@ -172,7 +172,7 @@
 		</Scripts>
 	</Frame>
 	<Frame name="PlayerChoiceRewardsTemplate" inherits="ResizeLayoutFrame" mixin="PlayerChoiceRewardsMixin" virtual="true">
-		<Size x="210" y="10" />
+		<Size x="196" y="10" />
 		<Anchors>
 			<Anchor point="TOPLEFT" />
 		</Anchors>
@@ -183,6 +183,9 @@
 	
 	<Button name="PlayerChoiceOptionTemplate" inherits="ResizeLayoutFrame" mixin="PlayerChoiceOptionFrameMixin" virtual="true">
 		<Size x="370" y="332"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="Background" atlas="UI-Frame-Horde-CardParchment">
@@ -419,7 +422,7 @@
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
 			<Frame parentKey="RewardsFrame">
-				<Size x="210" y="1" />
+				<Size x="196" y="1" />
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
@@ -432,10 +435,6 @@
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.OptionText" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
-				<Scripts>
-					<OnShow>
-					</OnShow>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="OptionButtonsContainer" mixin="PlayerChoiceOptionButtonContainerMixin" inherits="ResizeLayoutFrame">
 				<Size x="210" y="22"/>

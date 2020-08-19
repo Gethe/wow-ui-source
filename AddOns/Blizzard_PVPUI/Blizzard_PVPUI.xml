@@ -1425,7 +1425,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="CasualPanel" setAllPoints="true" hidden="true">
+							<Frame parentKey="CasualPanel" mixin="PVPWeeklyCasualPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="HKLabel" inherits="GameFontNormal" text="HONORABLE_KILLS">
@@ -1509,6 +1509,9 @@
 										</Scripts>
 									</Cooldown>
 								</Frames>
+								<Scripts>
+									<OnShow method="OnShow"/>
+								</Scripts>
 							</Frame>
 							<Frame parentKey="RatedPanel" mixin="PVPWeeklyRatedPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>

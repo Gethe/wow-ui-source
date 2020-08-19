@@ -10,12 +10,12 @@ function SoulbindConduitMixin:GetConduitID()
 	return self.conduitID;
 end
 
-function SoulbindConduitMixin:GetRank()
+function SoulbindConduitMixin:GetConduitRank()
 	return self.conduitRank;
 end
 
 function SoulbindConduitMixin:Matches(conduit)
-	return conduit and self:GetConduitID() == conduit:GetConduitID() and self:GetRank() == conduit:GetRank();
+	return conduit and self:GetConduitID() == conduit:GetConduitID() and self:GetConduitRank() == conduit:GetConduitRank();
 end
 
 function SoulbindConduitMixin_Create(conduitID, conduitRank)

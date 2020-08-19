@@ -1620,13 +1620,8 @@ function UIParent_OnEvent(self, event, ...)
 			LoadAddOn("Blizzard_Kiosk");
 		end
 
-		if IsTrialAccount() and C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
+		if IsTrialAccount() or IsVeteranTrialAccount() then
 			SubscriptionInterstitial_LoadUI();
-
-			local isInitialLogin = ...;
-			if isInitialLogin then
-				SubscriptionInterstitialFrame:EvaluateShow();
-			end
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);

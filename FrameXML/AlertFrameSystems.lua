@@ -888,7 +888,10 @@ end
 
 -- [[ GarrisonTalentAlertFrame ]] --
 function GarrisonTalentAlertFrame_SetUp(frame, garrisonType, talent)
+	local garrisonFollowerType = GetPrimaryGarrisonFollowerType(garrisonType);
     frame.Icon:SetTexture(talent.icon);
+	local toastTitle = GarrisonFollowerOptions[garrisonFollowerType].strings.TALENT_COMPLETE_TOAST_TITLE;
+	frame.Title:SetText(toastTitle);
 	frame.garrisonType = garrisonType;
 	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_TOAST);
 end

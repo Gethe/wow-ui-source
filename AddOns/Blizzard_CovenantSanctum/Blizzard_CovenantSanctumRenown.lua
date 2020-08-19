@@ -19,6 +19,60 @@ local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(g_sanctumTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
+local function GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback)
+	if rewardInfo.itemID then
+		local item = Item:CreateFromItemID(rewardInfo.itemID);
+		local icon, name;
+		if item:IsItemDataCached() then
+			icon = item:GetItemIcon();
+			name = item:GetItemName();
+		else
+			item:ContinueOnItemLoad(onItemUpdateCallback);
+		end
+		return icon, name, RENOWN_REWARD_ITEM_NAME_FORMAT, RENOWN_REWARD_ITEM_DESCRIPTION;
+	elseif rewardInfo.mountID then
+		local name, spellID, icon = C_MountJournal.GetMountInfoByID(rewardInfo.mountID);
+		return icon, name, RENOWN_REWARD_MOUNT_NAME_FORMAT, RENOWN_REWARD_MOUNT_DESCRIPTION;
+	elseif rewardInfo.spellID then
+		local name, _, icon = GetSpellInfo(rewardInfo.spellID);
+		return icon, name, RENOWN_REWARD_SPELL_NAME_FORMAT, RENOWN_REWARD_SPELL_DESCRIPTION;
+	elseif rewardInfo.titleID then
+		local name = GetTitleName(rewardInfo.titleID);
+		return nil, name, RENOWN_REWARD_TITLE_NAME_FORMAT, RENOWN_REWARD_TITLE_DESCRIPTION;
+	elseif rewardInfo.transmogID then
+		local itemID = C_Transmog.GetItemIDForSource(rewardInfo.transmogID);
+		local item = Item:CreateFromItemID(itemID);
+		local icon, name;
+		if item:IsItemDataCached() then
+			icon = item:GetItemIcon();
+			name = item:GetItemName();
+		else
+			item:ContinueOnItemLoad(onItemUpdateCallback);
+		end
+		return icon, name, RENOWN_REWARD_TRANSMOG_NAME_FORMAT, RENOWN_REWARD_TRANSMOG_DESCRIPTION;
+	elseif rewardInfo.transmogSetID then
+		local icon = TransmogUtil.GetSetIcon(rewardInfo.transmogSetID);
+		local setInfo = C_TransmogSets.GetSetInfo(rewardInfo.transmogSetID);
+		return icon, setInfo.name, RENOWN_REWARD_TRANSMOGSET_NAME_FORMAT, RENOWN_REWARD_TRANSMOGSET_DESCRIPTION;
+	elseif rewardInfo.garrFollowerID then
+		local followerInfo = C_Garrison.GetFollowerInfo(rewardInfo.garrFollowerID);
+		return followerInfo.portraitIconID, followerInfo.name, RENOWN_REWARD_FOLLOWER_NAME_FORMAT, RENOWN_REWARD_FOLLOWER_DESCRIPTION;
+	elseif rewardInfo.transmogIllusionSourceID then
+		local visualID, name, link, icon = C_TransmogCollection.GetIllusionSourceInfo(rewardInfo.transmogIllusionSourceID);
+		return icon, name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
+	end
+end
+
+local function GetRenownRewardInfo(rewardInfo, onItemUpdateCallback)
+	local icon, name, formatString, description = GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback);
+	if name and formatString then
+		name = formatString:format(name);
+	else
+		name = rewardInfo.name;
+	end
+	return icon, name, (rewardInfo.description or description);
+end
+
 CovenantSanctumRenownTabMixin = {};
 
 function CovenantSanctumRenownTabMixin:OnLoad()
@@ -113,6 +167,9 @@ end
 CovenantSanctumRenownMilestoneMixin = { }
 
 function CovenantSanctumRenownMilestoneMixin:SetMilestone(milestoneInfo)
+	self.level = milestoneInfo.level;
+	self.isCapstone = milestoneInfo.isCapstone;
+
 	local atlas;
 	if milestoneInfo.locked then
 		if milestoneInfo.isCapstone then
@@ -136,66 +193,67 @@ function CovenantSanctumRenownMilestoneMixin:SetMilestone(milestoneInfo)
 	self.LevelBorder:SetDesaturated(milestoneInfo.locked);
 end
 
+function CovenantSanctumRenownMilestoneMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
+	self:RefreshTooltip();
+end
+
+function CovenantSanctumRenownMilestoneMixin:RefreshTooltip()
+	if not GameTooltip:GetOwner() == self then
+		return;
+	end
+
+	local onItemUpdateCallback = GenerateClosure(self.RefreshTooltip, self);
+	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(self.level);
+	local addRewards = true;
+	if self.isCapstone then
+		GameTooltip_SetTitle(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_TITLE);
+		GameTooltip_AddNormalLine(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_DESC);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddHighlightLine(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_DESC2);
+	else
+		if #rewards == 1 then
+			local icon, name, description = GetRenownRewardInfo(rewards[1], onItemUpdateCallback);
+			GameTooltip_SetTitle(GameTooltip, name);
+			GameTooltip_AddNormalLine(GameTooltip, description);
+			addRewards = false;
+		else
+			GameTooltip_SetTitle(GameTooltip, string.format(RENOWN_REWARD_MILESTONE_TOOLTIP_TITLE, self.level));
+		end
+	end
+	if addRewards then
+		for i, rewardInfo in ipairs(rewards) do
+			local icon, name, description = GetRenownRewardInfo(rewardInfo, onItemUpdateCallback);
+			if name then
+				GameTooltip_AddNormalLine(GameTooltip, string.format(RENOWN_REWARD_TOOLTIP_REWARD_LINE, name));
+			end
+		end
+	end
+	GameTooltip:Show();	
+end
+
 CovenantSanctumRenownRewardMixin = { }
 
 function CovenantSanctumRenownRewardMixin:SetReward(rewardInfo)
 	SetupTextureKit(self, rewardTextureKitRegions);
-	local icon, name, formatString, description, itemID = self:GetDisplayData(rewardInfo);
-	if itemID then
-		local item = Item:CreateFromItemID(itemID);
-		self.Icon:SetTexture(rewardInfo.icon or item:GetItemIcon());
-		self.Description:SetText(rewardInfo.description or description);
-		if rewardInfo.name then
-			self.Name:SetText(rewardInfo.name);
-		else
-			-- clear name in case the data isn't ready yet
-			self.Name:SetText(nil);
-			item:ContinueOnItemLoad(function()
-				self.Name:SetText(formatString:format(item:GetItemName()));
-			end);
-		end
-	else
-		self.Icon:SetTexture(rewardInfo.icon or icon);
-		if rewardInfo.name then
-			self.Name:SetText(rewardInfo.name);
-		elseif formatString and name then
-			self.Name:SetText(formatString:format(name));
-		else
-			self.Name:SetText(nil);
-		end
-		self.Description:SetText(rewardInfo.description or description);
-	end
+	self.rewardInfo = rewardInfo;
+	self:RefreshReward();
 	self:Show();
 end
 
--- returns icon, name, nameFormat, description, [itemID]
-function CovenantSanctumRenownRewardMixin:GetDisplayData(rewardInfo)
-	if rewardInfo.itemID then
-		local icon, name;
-		return icon, name, RENOWN_REWARD_ITEM_NAME_FORMAT, RENOWN_REWARD_ITEM_DESCRIPTION, rewardInfo.itemID;
-	elseif rewardInfo.mountID then
-		local name, spellID, icon = C_MountJournal.GetMountInfoByID(rewardInfo.mountID);
-		return icon, name, RENOWN_REWARD_MOUNT_NAME_FORMAT, RENOWN_REWARD_MOUNT_DESCRIPTION;
-	elseif rewardInfo.spellID then
-		local name, _, icon = GetSpellInfo(rewardInfo.spellID);
-		return icon, name, RENOWN_REWARD_SPELL_NAME_FORMAT, RENOWN_REWARD_SPELL_DESCRIPTION;
-	elseif rewardInfo.titleID then
-		local name = GetTitleName(rewardInfo.titleID);
-		local icon = nil;	-- no default icon for titles
-		return icon, name, RENOWN_REWARD_TITLE_NAME_FORMAT, RENOWN_REWARD_TITLE_DESCRIPTION;
-	elseif rewardInfo.transmogID then
-		local icon, name;
-		local itemID = C_Transmog.GetItemIDForSource(rewardInfo.transmogID);
-		return icon, name, RENOWN_REWARD_TRANSMOG_NAME_FORMAT, RENOWN_REWARD_TRANSMOG_DESCRIPTION, itemID;	
-	elseif rewardInfo.transmogSetID then
-		local icon = TransmogUtil.GetSetIcon(rewardInfo.transmogSetID);
-		local setInfo = C_TransmogSets.GetSetInfo(rewardInfo.transmogSetID);
-		return icon, setInfo.name, RENOWN_REWARD_TRANSMOGSET_NAME_FORMAT, RENOWN_REWARD_TRANSMOGSET_DESCRIPTION;
-	elseif rewardInfo.garrFollowerID then
-		local followerInfo = C_Garrison.GetFollowerInfo(rewardInfo.garrFollowerID);
-		return followerInfo.portraitIconID, followerInfo.name, RENOWN_REWARD_FOLLOWER_NAME_FORMAT, RENOWN_REWARD_FOLLOWER_DESCRIPTION;
-	elseif rewardInfo.transmogIllusionSourceID then
-		local visualID, name, link, icon = C_TransmogCollection.GetIllusionSourceInfo(rewardInfo.transmogIllusionSourceID);
-		return icon, name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
+function CovenantSanctumRenownRewardMixin:RefreshReward()
+	local icon, name, description = GetRenownRewardInfo(self.rewardInfo, GenerateClosure(self.RefreshReward, self));
+	self.Icon:SetTexture(icon);
+	self.Name:SetText(name);
+	self.description = description;
+end
+
+function CovenantSanctumRenownRewardMixin:OnEnter()
+	local name = self.Name:GetText();
+	if name and self.description then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -14, -14);
+		GameTooltip_SetTitle(GameTooltip, name);
+		GameTooltip_AddNormalLine(GameTooltip, self.description);
+		GameTooltip:Show();
 	end
 end

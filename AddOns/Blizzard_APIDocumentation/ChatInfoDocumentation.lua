@@ -39,6 +39,34 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetChannelRulesetForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ruleset", Type = "ChatChannelRuleset", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChannelShortcutForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetClubStreamIDs",
 			Type = "Function",
 

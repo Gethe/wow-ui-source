@@ -102,6 +102,11 @@ ObjectAPI\CovenantCalling.lua
 ..\SharedXML\Backdrop.xml
 WorldFrame.xml
 UIParent.xml
+..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedModelScene.xml
+..\SharedXML\GlobalFXModelScenes.xml
 PartyUtil.lua
 QuestUtils.lua
 AchievementUtil.lua

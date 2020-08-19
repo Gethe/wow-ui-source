@@ -240,8 +240,8 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true" tile="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT"/>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" y="10"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"  y="10"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" vertTile="true" horizTile="true">
@@ -317,7 +317,7 @@
 					<KeyValue key="followerTemplate" type="string" value="AdventuresMissionPageFollowerPuckTemplate"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-80"/>
+					<Anchor point="TOP" x="0" y="-86"/>
 				</Anchors>
 			</Frame>
 		</Frames>

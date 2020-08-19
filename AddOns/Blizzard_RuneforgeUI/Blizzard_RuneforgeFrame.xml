@@ -55,14 +55,6 @@
 				</Anchors>
 			</ModelScene>
 
-			<ModelScene parentKey="BottomModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent" relativePoint="CENTER" x="-40" y="-150"/>
-					<Anchor point="LEFT" x="-40" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="40" y="-200"/>
-				</Anchors>
-			</ModelScene>
-
 			<!-- Tooltips must have a name. -->
 			<GameTooltip name="RuneforgeFrameResultTooltip" parentKey="ResultTooltip" inherits="RunforgeFrameTooltipTemplate"/>
 		</Frames>

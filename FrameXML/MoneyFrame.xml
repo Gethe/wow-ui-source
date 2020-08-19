@@ -319,9 +319,7 @@
 		</Scripts>
 	</Frame>
 	<Button name="SmallDenominationTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="13"/>
-		</Size>
+		<Size x="32" y="13"/>
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -334,56 +332,34 @@
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="Text">
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="-13" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT"/>
 			</Anchors>
 		</ButtonText>
 		<NormalTexture name="$parentTexture">
-			<Size>
-				<AbsDimension x="13" y="13"/>
-			</Size>
+			<Size x="13" y="13"/>
 			<Anchors>
-				<Anchor point="LEFT"/>
+				<Anchor point="LEFT" x="13" y="0"/>
 			</Anchors>
 		</NormalTexture>
 		<NormalFont style="NumberFontNormalRight"/>
-		<PushedTextOffset>
-			<AbsDimension x="0" y="0"/>
-		</PushedTextOffset>
+		<PushedTextOffset x="0" y="0"/>
 	</Button>
 	<Frame name="SmallAlternateCurrencyFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="13"/>
-		</Size>
+		<Size x="128" y="13"/>
 		<Frames>
 			<Button name="$parentItem1" inherits="SmallDenominationTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentItem2" inherits="SmallDenominationTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentItem1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentItem1" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentItem3" inherits="SmallDenominationTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentItem2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentItem2" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>

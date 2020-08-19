@@ -29,7 +29,7 @@
 		<Frames>
 			<ItemButton parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate" frameLevel="1000">
 				<Anchors>
-					<Anchor point="CENTER" x="7" y="-6"/>
+					<Anchor point="CENTER" x="-1" y="0"/>
 				</Anchors>
 			</ItemButton>
 
@@ -41,13 +41,13 @@
 
 			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate" frameLevel="1000">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-82" y="-10"/>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-91" y="-4"/>
 				</Anchors>
 			</Frame>
 
 			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate" frameLevel="1000">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="45" y="-9"/>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="36" y="-3"/>
 				</Anchors>
 			</Button>
 

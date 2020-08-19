@@ -1,6 +1,5 @@
 ## Title: Blizzard Covenant Toasts
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 0
-## RequiredDep: Blizzard_ScriptedAnimations
 Blizzard_CovenantToasts.lua
 Blizzard_CovenantToasts.xml

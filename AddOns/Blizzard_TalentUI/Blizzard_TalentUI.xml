@@ -539,6 +539,18 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" x="39" y="20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlayerTalentFrame_ToggleTutorial();
+					</OnClick>
+					<!-- Empty OnEnter handler to override inherited behavior. -->
+					<OnEnter/>
+				</Scripts>
+			</Button>
 			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" parentKey="learnButton">
 				<Size x="98" y="22"/>
 				<Anchors>

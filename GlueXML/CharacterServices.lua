@@ -270,6 +270,7 @@ function CharacterUpgradeFlow:IsTrialBoost()
 end
 
 function CharacterUpgradeFlow:IsUnrevoke()
+	-- This is copy-pasted below as ShouldSkipSpecSelect(), please update both functions together
 	if self:IsTrialBoost() then
 		return false;
 	end
@@ -280,6 +281,24 @@ function CharacterUpgradeFlow:IsUnrevoke()
 		return nil;
 	end
 	
+	local revokedCharacterUpgrade = select(24, GetCharacterInfo(results.charid));
+	return revokedCharacterUpgrade;
+end
+
+function CharacterUpgradeFlow:ShouldSkipSpecSelect()
+	-- This is copy-pasted above as IsUnrevoke(), please update both functions together
+	-- This was the original behavior of IsUnrevoke(), but this logic doesn't technically prove that the boost is an unrevoke
+	-- Presumably we will eventually want some clearer factoring of different upgrade types - VAS 20200805
+	if self:IsTrialBoost() then
+		return false;
+	end
+	
+	local results = self:BuildResults(self.numSteps);
+	if not results.charid then
+		-- We haven't chosen a character yet.
+		return nil;
+	end
+
 	local experienceLevel = select(7, GetCharacterInfo(results.charid));
 	return experienceLevel >= self.data.level;
 end
@@ -1250,7 +1269,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 end
 
 function CharacterUpgradeSpecSelectBlock:SkipIf(results)
-	return CharacterUpgradeFlow:IsUnrevoke();
+	return CharacterUpgradeFlow:ShouldSkipSpecSelect();
 end
 
 function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(autoSelectedSpecID)

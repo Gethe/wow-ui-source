@@ -134,7 +134,7 @@ function AdventuresBoardMixin:CreateEnemyFrames()
 	local direction = nil;
 	local stride = 4;
 	local paddingX = 50;
-	local paddingY = 20;
+	local paddingY = 28;
 	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
 
 	AnchorUtil.GridLayoutFactoryByCount(createNewEnemy, #boardIndices, initialAnchor, layout);
@@ -155,7 +155,7 @@ function AdventuresBoardMixin:CreateFollowerFrames()
 	local direction = nil;
 	local stride = 3;
 	local paddingX = 30;
-	local paddingY = 6;
+	local paddingY = 10;
 	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
 
 	AnchorUtil.GridLayoutFactoryByCount(createNewFollower, #boardIndices, initialAnchor, layout);
@@ -188,8 +188,9 @@ function AdventuresBoardMixin:RaiseFrameByBoardIndex(boardIndex)
 end
 
 
-function AdventuresBoardMixin:TriggerEnemyTargetingReticles(targetingIndices, useLoop)
-	for _, targetingIndex in ipairs(targetingIndices) do
+function AdventuresBoardMixin:TriggerEnemyTargetingReticles(targetInfos, useLoop)
+	for _, target in ipairs(targetInfos) do
+		local targetingIndex = target.targetIndex;
 		if  targetingIndex >= Enum.GarrAutoBoardIndex.EnemyLeftFront and targetingIndex <= Enum.GarrAutoBoardIndex.EnemyRightBack then
 			local frameToPlayAnimation = self:GetFrameByBoardIndex(targetingIndex);
 
@@ -248,6 +249,28 @@ function AdventuresBoardCombatMixin:UpdateCooldownsFromNewRound()
 
 	for followerFrame in self.followerFramePool:EnumerateActive() do
 		followerFrame:AdvanceCooldowns();
+	end
+end
+
+function AdventuresBoardCombatMixin:UpdateBoardAuraState(applying, combatLogEvent)
+	if applying then
+		self:AddAuraStateReferences(combatLogEvent);
+	else
+		self:RemoveAuraStateReferences(combatLogEvent);
+	end
+end
+
+function AdventuresBoardCombatMixin:AddAuraStateReferences(combatLogEvent)
+	for _, target in ipairs(combatLogEvent.targetInfo) do
+		local targetFrame = self:GetSocketByBoardIndex(target.boardIndex);
+		targetFrame:AddAura(combatLogEvent.spellID, combatLogEvent.effectIndex, combatLogEvent.auraType);
+	end
+end
+
+function AdventuresBoardCombatMixin:RemoveAuraStateReferences(combatLogEvent)
+	for _, target in ipairs(combatLogEvent.targetInfo) do
+		local targetFrame = self:GetSocketByBoardIndex(target.boardIndex);
+		targetFrame:RemoveAura(combatLogEvent.spellID, combatLogEvent.effectIndex, combatLogEvent.auraType);
 	end
 end
 
@@ -313,4 +336,98 @@ function AdventuresBoardCombatMixin:AddCombatText(text, source, target)
 
 	ScriptAnimationUtil.StartScriptAnimation(fontString, FloatingCombatTextVariationFunction, FloatingCombatTextAnimDuration, FloatingCombatTextOnFinished);
 	fontString:Show();
+end
+
+-------------------------------------------------
+--- AdventuresSocketMixin for aura management ---
+-------------------------------------------------
+
+AdventuresSocketMixin = {}
+
+function AdventuresSocketMixin:OnLoad()
+	self:ResetVisibility();
+end
+
+function AdventuresSocketMixin:OnShow()
+	self:ResetVisibility();
+end
+
+function AdventuresSocketMixin:ResetVisibility()
+	self.activeBuffs = {};
+	self.activeDebuffs = {};
+	self.activeHealing = {};
+	self.AuraContainer.BuffIcon:Hide();
+	self.AuraContainer.DebuffIcon:Hide();
+	self.AuraContainer.HealingIcon:Hide();
+end
+
+function AdventuresSocketMixin:AddAura(spellID, effectIndex, auraType)
+	local collection = self:GetCollectionByAuraType(auraType);
+		
+	if not collection[spellID] then
+		collection[spellID] = {}
+	end
+
+	if not collection[spellID][effectIndex] then
+		table.insert(collection[spellID], effectIndex);
+	end
+
+	self:UpdateAuraVisibility();
+end
+
+function AdventuresSocketMixin:RemoveAura(spellID, effectIndex, auraType)
+	local collection = self:GetCollectionByAuraType(auraType);
+
+	table.remove(collection[spellID], effectIndex);
+	if #collection[spellID] == 0 then 
+		collection[spellID] = nil;
+	end
+
+	self:UpdateAuraVisibility();
+end
+
+function AdventuresSocketMixin:UpdateAuraVisibility()
+	self.AuraContainer.BuffIcon:SetVisibility(next(self.activeBuffs) ~= nil);
+	self.AuraContainer.DebuffIcon:SetVisibility(next(self.activeDebuffs) ~= nil);
+	self.AuraContainer.HealingIcon:SetVisibility(next(self.activeHealing) ~= nil);
+	self.AuraContainer:Layout();
+end
+
+function AdventuresSocketMixin:GetCollectionByAuraType(auraType)
+	local auraCollection = {};
+	if auraType == Enum.GarrAutoPreviewTargetType.Heal then
+		auraCollection = self.activeBuffs; --During combat, show heals as buffs
+	elseif  auraType == Enum.GarrAutoPreviewTargetType.Buff then
+		auraCollection = self.activeBuffs;
+	elseif auraType == Enum.GarrAutoPreviewTargetType.Debuff then
+		auraCollection = self.activeDebuffs;
+	end
+
+	return auraCollection;
+end
+
+-------------------------------------------------------
+---    Adventures Aura Icon Mixin					---
+-------------------------------------------------------
+
+AdventuresBoardAuraIconMixin = {}
+
+function AdventuresBoardAuraIconMixin:OnLoad() 
+	local useAtlasSize = true;
+	self.IconTexture:SetAtlas(self.textureAtlas, useAtlasSize);
+end
+
+function AdventuresBoardAuraIconMixin:SetVisibility(visible)
+	if visible then
+		self.FadeOut:Stop();
+		self:Show();
+	elseif self:IsShown() then
+		self.FadeIn:Stop();
+		self.FadeOut:Play();
+	end
+end
+
+function AdventuresBoardAuraIconMixin:OnFadeOutFinished()
+	self:Hide();
+	self:GetParent():Layout();
 end

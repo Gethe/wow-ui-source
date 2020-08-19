@@ -2076,7 +2076,7 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            if ( not IsWindowsClient() ) then
+            if ( not SupportsClipCursor() ) then
             self:Hide();
             else
             self.type = CONTROLTYPE_CHECKBOX;
@@ -2200,7 +2200,7 @@
     <Frames>
       <CheckButton name="$parentMovePad" parentKey="MovePad" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="-8" />
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="0" />
         </Anchors>
         <Scripts>
           <OnLoad>
@@ -2244,7 +2244,7 @@
       </CheckButton>
 			<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="-2" y="-8" />
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -2254,13 +2254,53 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT" x="90" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MOTION_SICKNESS_DROPDOWN">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentShakeIntensityDropdown" parentKey="ShakeIntensityDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="TOPRIGHT" x="90" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ADJUST_MOTION_SICKNESS_SHAKE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
 			<CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-58"/>
-            </Offset>
-          </Anchor>
+          <Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT" x="0" y="-70" />
         </Anchors>
         <Scripts>
           <OnLoad>

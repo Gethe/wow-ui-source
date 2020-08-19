@@ -67,6 +67,8 @@ function RuneforgeFrameMixin:OnShow()
 	self.Title:SetText(self:IsRuneforgeUpgrading() and RUNEFORGE_LEGENDARY_CRAFTING_FRAME_UPGRADE_TITLE or RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE);
 
 	PlaySound(SOUNDKIT.UI_RUNECARVING_OPEN_MAIN_WINDOW);
+
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
 function RuneforgeFrameMixin:OnHide()
@@ -109,8 +111,8 @@ function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
 	if not self.centerPassiveEffect and shown then
 		self.centerPassiveEffect = self:AddEffect(RuneforgeUtil.Level.Background, RuneforgeUtil.Effect.CenterPassive, self.CraftingFrame.BaseItemSlot);
 
-		local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -204, };
-		self.bottomEffect = self.BottomModelScene:AddDynamicEffect(bottomEffectDynamicDescription, self);
+		local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -184, };
+		self.bottomEffect = self.BackgroundModelScene:AddDynamicEffect(bottomEffectDynamicDescription, self);
 
 	elseif self.centerPassiveEffect and not shown then
 		self.centerPassiveEffect:CancelEffect();
@@ -134,7 +136,7 @@ function RuneforgeFrameMixin:SetRunesShown(shown)
 		self.runeEffects = {};
 
 		for i, effect in ipairs(CircleRuneBirthEffects) do
-			local effectController = self.OverlayModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
+			local effectController = self.CraftingFrame.ModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
 			self.runeEffects[i] = effectController;
 		end
 
@@ -144,7 +146,7 @@ end
 
 function RuneforgeFrameMixin:FlashRunes()
 	for i, effect in ipairs(CircleRuneFlashEffects) do
-		self.OverlayModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
+		self.CraftingFrame.ModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
 	end
 end
 

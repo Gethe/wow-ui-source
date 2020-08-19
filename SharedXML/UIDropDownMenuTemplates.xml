@@ -3,6 +3,46 @@
 	<Include file="UIDropDownMenuTemplates.lua"/>
 	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true"/>
 
+	<Button name="ColorSwatchTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture name="$parentSwatchBg" parentKey="SwatchBg" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="InnerBorder" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Color" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow inherit="prepend">
+				PixelUtil.SetSize(self.SwatchBg, 14, 14);
+				PixelUtil.SetSize(self.InnerBorder, 12, 12);
+				PixelUtil.SetSize(self.Color, 10, 10);
+			</OnShow>
+		</Scripts>
+	</Button>
+
 	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
 		<Size x="100" y="16"/>
 		<Layers>
@@ -41,34 +81,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentColorSwatch" hidden="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+			<Button name="$parentColorSwatch" inherits="ColorSwatchTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="-6" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" x="-6" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentSwatchBg">
-							<Size>
-								<AbsDimension x="14" y="14"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Color r="1.0" g="1.0" b="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnClick>
 						CloseMenus();
@@ -82,7 +98,6 @@
 						_G[self:GetName().."SwatchBg"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					</OnLeave>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
 			<DropDownToggleButton name="$parentExpandArrow" mixin="DropDownExpandArrowMixin" hidden="true" motionScriptsWhileDisabled="true">
 				<Size>

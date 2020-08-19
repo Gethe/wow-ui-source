@@ -271,7 +271,11 @@ function TorghastLevelPickerRewardCircleMixin:OnEnter()
 
 	if (self.lockedState) then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_LOCKED, true)
+		if (UnitInParty("player")) then 
+			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_LEVEL_PICKER_PARTY_LOCK, true);
+		else 
+			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_LOCKED, true);
+		end 
 		EmbeddedItemTooltip:Show(); 
 		return; 
 	end 

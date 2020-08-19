@@ -198,10 +198,32 @@ local Expansion =
 			Type = "Event",
 			LiteralName = "MIN_EXPANSION_LEVEL_UPDATED",
 		},
+		{
+			Name = "ShowSubscriptionInterstitial",
+			Type = "Event",
+			LiteralName = "SHOW_SUBSCRIPTION_INTERSTITIAL",
+			Payload =
+			{
+				{ Name = "type", Type = "SubscriptionInterstitialType", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "SubscriptionInterstitialType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Standard", Type = "SubscriptionInterstitialType", EnumValue = 0 },
+				{ Name = "LeftNpeArea", Type = "SubscriptionInterstitialType", EnumValue = 1 },
+				{ Name = "MaxLevel", Type = "SubscriptionInterstitialType", EnumValue = 2 },
+			},
+		},
 		{
 			Name = "ExpansionDisplayInfo",
 			Type = "Structure",

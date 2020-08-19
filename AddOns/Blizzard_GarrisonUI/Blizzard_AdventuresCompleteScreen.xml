@@ -87,7 +87,7 @@
 
 			<Frame parentKey="Board" inherits="AdventuresBoardCombatTemplate" frameLevel="1000">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-80"/>
+					<Anchor point="TOP" x="0" y="-86"/>
 				</Anchors>
 			</Frame>
 
@@ -145,8 +145,8 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true" tile="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT"/>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" y="10"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"  y="10"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" tile="true">
@@ -158,6 +158,12 @@
 				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" tile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Median" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow" alpha=".6">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>

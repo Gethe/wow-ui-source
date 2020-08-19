@@ -162,6 +162,11 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 	end
 
 	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg.."\n"..stack);
+
+	-- process any exception after displaying, this ensures frame text is updated
+	if (ProcessExceptionClient) then
+		ProcessExceptionClient();
+	end
 end
 
 function ScriptErrorsFrameMixin:OnWarning(msg, warnType, keepHidden)

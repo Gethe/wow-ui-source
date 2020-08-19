@@ -3362,11 +3362,20 @@ local function GetSlashCommandForChannelOpenChat(channelIndex)
 end
 
 function ChatFrame_CheckShowNewcomerHelpBanner(self, excludeChannel)
+	if self ~= DEFAULT_CHAT_FRAME then
+		return;
+	end
+
 	if IsActivePlayerNewcomer() then
 		if not self.NewcomerHelpBanner then
 			self.NewcomerHelpBanner = CreateFrame("Frame", nil, self, "NewcomerHelpBannerTemplate");
 			self.NewcomerHelpBanner:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 			self.NewcomerHelpBanner:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0);
+
+			-- This won't work on ChatFrame1, need to add FCF_AddAttic or something like that, because the dock manager
+			-- will need to actually change the height of the chat frame and then anchor itself some additional offset above
+			-- ChatFrame1 (the height difference/offset is the height of the newcomerHelpBanner)
+			-- Bonus points to make CLOG use FCF_AddAttic as well...but it's different logic when chatFrame ~= primaryChatFrame...
 		end
 
 		local channelIndex = GetFirstChannelIndexOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor, excludeChannel);
@@ -3438,12 +3447,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 
-			local found = 0;
+			local found = false;
 			for index, value in pairs(self.channelList) do
 				if ( channelLength > strlen(value) ) then
 					-- arg9 is the channel name without the number in front...
 					if ( ((arg7 > 0) and (self.zoneChannelList[index] == arg7)) or (strupper(value) == strupper(arg9)) ) then
-						found = 1;
+						found = true;
 						infoType = "CHANNEL"..arg8;
 						info = ChatTypeInfo[infoType];
 						if ( (type == "CHANNEL_NOTICE") and (arg1 == "YOU_LEFT") ) then
@@ -3454,8 +3463,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					end
 				end
 			end
-			if ( (found == 0) or not info ) then
-				return true;
+			if not found or not info then
+				if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRulesetForChannelID(arg7) == Enum.ChatChannelRuleset.Mentor and self == DEFAULT_CHAT_FRAME then
+					ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(arg7));
+				else
+					return true;
+				end
 			end
 		end
 
@@ -3599,6 +3612,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					local channelSlashCommand = GetSlashCommandForChannelOpenChat(arg8);
 					if IsActivePlayerNewcomer() then
 						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
+						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
+						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
 					else
 						-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
 						-- then if you're not a newcomer, you must be a guide.
