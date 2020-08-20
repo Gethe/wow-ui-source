@@ -1,0 +1,47 @@
+name: Extract interface files from CDN
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2 
+
+    - name: Remove old files
+      run: |
+        shopt -s extglob
+        rm -r !(*.git*|*.sublime-*|*.md)
+
+    - name: Install Lua
+      uses: leafo/gh-actions-lua@v6
+      with:
+        luaVersion: "5.2"
+
+    - name: Checkout InterfaceExport
+      uses: actions/checkout@v2 
+      with:
+        repository: Gethe/InterfaceExport
+        path: InterfaceExport
+
+    - name: Run Export
+      env:
+        LUA_PATH: "./InterfaceExport/libs/?.lua;./InterfaceExport/libs/?/init.lua"
+      run: |
+        lua InterfaceExport/export.lua beta code
+
+    - name: Get build version
+      id: version
+      uses: andstor/file-reader-action@v1
+      with:
+        path: "version.txt"
+
+    - name: Add & Commit
+      uses: EndBug/add-and-commit@v4
+      with:
+        message: ${{ steps.version.outputs.contents }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
