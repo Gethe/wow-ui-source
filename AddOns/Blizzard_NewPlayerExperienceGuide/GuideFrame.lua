@@ -28,12 +28,6 @@ function GuideFrameMixin:OnHide()
 	C_GossipInfo.CloseGossip();
 end
 
--- TODO: Add real API
-GOOD_STANDING = true;
-function IsPlayerInGoodStanding()
-	return GOOD_STANDING;
-end
-
 do
 	local stateSetup =
 	{
@@ -61,6 +55,16 @@ do
 		},
 	};
 
+	local function MakeAchievementLink(id)
+		local link = GetAchievementLink(id);
+		local _, complete = GetAchievementInfoFromHyperlink(link);
+		if complete then
+			return link:gsub("ffffff00", "ff20ff20"), complete;
+		end
+
+		return link, complete;
+	end
+
 	-- These functions return individual criterion data:
 	-- Display Text (nil means not to show it to the user)
 	-- IsComplete
@@ -68,16 +72,38 @@ do
 	local criteria =
 	{
 		function()
-			local _, achievementName, _, achievementCompleted = GetAchievementInfo(12989);
-			return achievementName, achievementCompleted;
+			local requiredLevel = C_PlayerMentorship.GetMentorLevelRequirement() or GetMaxPlayerLevel();
+			return UNIT_LEVEL_TEMPLATE:format(requiredLevel), UnitLevel("player") >= requiredLevel;
 		end,
 
 		function()
-			return UNIT_LEVEL_TEMPLATE:format(GetMaxPlayerLevel()), UnitLevel("player") >= GetMaxPlayerLevel();
+			local link, completed = MakeAchievementLink(978);
+			return NPEV2_CHAT_GUIDE_FRAME_ACHIEVEMENT_EARNED:format(link), completed;
 		end,
 
 		function()
-			return NPEV2_CHAT_GUIDE_FRAME_GOOD_STANDING_REQUIREMENT, IsPlayerInGoodStanding(), "standing";
+			local achievements = { 7383, 13963, 14144, 14196, 14061 };
+			local achievementStrings = {};
+			local mustEarnAtLeast = 2;
+			local completedCount = 0;
+			for index, achievementID in ipairs(achievements) do
+				local link, completed = MakeAchievementLink(achievementID);
+
+				if completed or not AchievementUtil.IsFeatOfStrength(achievementID) then
+					table.insert(achievementStrings, link);
+				end
+
+				if completed  then
+					completedCount = completedCount + 1;
+				end
+			end
+
+			achievementStrings = table.concat(achievementStrings, "\n");
+			return NPEV2_CHAT_GUIDE_FRAME_ACHIEVEMENT_COUNT_EARNED:format(mustEarnAtLeast, achievementStrings), completedCount >= mustEarnAtLeast;
+		end,
+
+		function()
+			return nil, not C_PlayerMentorship.IsMentorRestricted(), "standing";
 		end,
 
 		function()

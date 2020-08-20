@@ -67,6 +67,8 @@ function CovenantSanctumMixin:SetCovenantInfo()
 		local atlas = "CovenantSanctum-Level-Border-%s";
 		local useAtlasSize = true;
 		self.LevelFrame.Background:SetAtlas(atlas:format(treeInfo.textureKit), useAtlasSize);
+
+		UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", -1, 1, treeInfo.textureKit);
 	end
 end
 

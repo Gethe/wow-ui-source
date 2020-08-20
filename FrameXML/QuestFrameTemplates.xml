@@ -7,7 +7,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
+				<Texture parentKey="Bg" name="$parentBg" file="Interface\QuestFrame\QuestBG">
 					<Size x="510" y="620"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>

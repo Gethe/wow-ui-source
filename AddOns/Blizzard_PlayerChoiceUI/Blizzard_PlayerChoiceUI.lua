@@ -26,7 +26,6 @@ local MAXIMUM_VARIED_BACKGROUND_OPTION_TEXTURES = 3;
 local RARITY_OFFSET = 1;
 
 local ANIMA_GLOW_MODEL_SCENE_ID = 342;
-local ANIMA_GLOW_FILE_ID = 3483478;
 
 local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_ENTERING_WORLD",
@@ -282,6 +281,7 @@ local choiceLayout = {
 		animateFrameInAndOut = true,
 		offsetBetweenOptions = -50,
 		highlightChoiceBeforeHide = true, 
+		useArtworkGlowOnSelection = true, 
 	},
 	["Oribos"] = {
 		atlasBackgroundWidthPadding = -2,
@@ -325,10 +325,11 @@ local choiceButtonLayout = {
 local choiceModelSceneLayout = {
 	["jailerstower"] = {
 		effectID = 89, 
-		effectOffsetY = -250, 
-		effectOffsetX = 0, 
 		modelSceneYOffest = -120, 
 		modelSceneXOffest = 0, 
+		artworkEffectID = 95, 
+		makeChoiceEffectID = 97, 
+		extraButtonEffectID = 98, 
 	},
 }
 
@@ -422,6 +423,12 @@ function PlayerChoiceFrameMixin:OnFadeOutFinished()
 	HideUIPanel(self);
 end
 
+function PlayerChoiceFrameMixin:OnFadeInFinished()
+	local modelSceneLayout = choiceModelSceneLayout[self.uiTextureKit]; 
+
+	self.HighStrataModelScene:SetShown(modelSceneLayout);
+end
+
 function PlayerChoiceFrameMixin:TryHide()
 	if(self.optionLayout.animateFrameInAndOut) then
 		self.FadeOut:Play();
@@ -433,6 +440,8 @@ end
 function PlayerChoiceFrameMixin:HideOptions(option) 
 	for i, optionToHide in ipairs(self.Options) do
 		if(option ~= optionToHide) then
+			self.HighStrataModelScene:Hide(); 
+			optionToHide:CancelEffects(); 
 			optionToHide.FadeoutUnselected:Stop(); 
 			optionToHide.FadeoutUnselected:Play(); 
 		end 
@@ -740,7 +749,7 @@ function PlayerChoiceFrameMixin:Update()
 	local modelSceneLayout = choiceModelSceneLayout[self.uiTextureKit]; 
 	local shouldShowTitle = layout.showTitle;
 	local noTitleOffset = layout.noTitleOffset;
-	self.ModelScene:ClearEffects();
+
 	for i, option in ipairs(self.Options) do
 		if i > self.numActiveOptions then
 			self:UpdateOptionWidgetRegistration(option, nil);
@@ -768,12 +777,7 @@ function PlayerChoiceFrameMixin:Update()
 			option.Background:SetDesaturated(option.showOptionDisabled);
 
 			option.uiTextureKit = optionInfo.uiTextureKit;
-
-			if (modelSceneLayout) then 
-				local effectDescription = { effectID = modelSceneLayout.effectID, offsetY = modelSceneLayout.effectOffsetY, offsetX = modelSceneLayout.effectOffsetX};
-				self.ModelScene:AddDynamicEffect(effectDescription, option);
-			end 
-
+		
 			option.maxStacks = optionInfo.maxStacks;
 			option.spellID = optionInfo.spellID; 
 
@@ -820,7 +824,19 @@ function PlayerChoiceFrameMixin:Update()
 				option.ArtworkBorderAdditionalGlow:Hide();
 			end
 
+			option:CancelEffects(); 
+
 			option:Show();
+
+			if (modelSceneLayout) then 
+				if (modelSceneLayout.artworkEffectID) then 
+					option.artworkEffectController = self.HighStrataModelScene:AddEffect(modelSceneLayout.artworkEffectID, option.Artwork);
+				end
+
+				if (modelSceneLayout.effectID) then
+					option.backgroundEffectController = GlobalFXBackgroundModelScene:AddEffect(modelSceneLayout.effectID, option.Background);
+				end
+			end 
 
 			if not hasHeaders then
 				hasHeaders = option.Header:IsShown();
@@ -839,9 +855,9 @@ function PlayerChoiceFrameMixin:Update()
 	self:SetupRewards();
 
 	if (modelSceneLayout) then 
-		self.ModelScene:ClearAllPoints(); 
-		self.ModelScene:SetPoint("TOPLEFT"); 
-		self.ModelScene:SetPoint("BOTTOMRIGHT", modelSceneLayout.modelSceneXOffest, modelSceneLayout.modelSceneYOffest)
+		self.HighStrataModelScene:ClearAllPoints(); 
+		self.HighStrataModelScene:SetPoint("TOPLEFT"); 
+		self.HighStrataModelScene:SetPoint("BOTTOMRIGHT", modelSceneLayout.modelSceneXOffest, modelSceneLayout.modelSceneYOffest)
 	end 
 
 	-- title needs to reach across
@@ -1004,6 +1020,10 @@ function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 		end
 	end
 end
+
+function PlayerChoiceOptionFrameMixin:OnHide()
+	self:CancelEffects(); 
+end 
 
 function PlayerChoiceOptionFrameMixin:OnEnterOverride()
 	self.BackgroundGlow:Show();
@@ -1305,6 +1325,18 @@ function PlayerChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasEle
 	end
 end
 
+function PlayerChoiceOptionFrameMixin:CancelEffects()
+	if (self.backgroundEffectController) then 
+		self.backgroundEffectController:CancelEffect(); 
+		self.backgroundEffectController = nil; 
+	end 
+
+	if(self.artworkEffectController) then 
+		self.artworkEffectController:CancelEffect(); 
+		self.artworkEffectController = nil; 
+	end 
+end 
+
 function PlayerChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
 	if subHeader then
 		self.SubHeader.Text:SetText(subHeader);
@@ -1325,6 +1357,7 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
+
 	if ( button.optID ) then
 		if ( IsInGroup() and (self.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or self.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
 			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = button.optID, owner = self:GetParent() });
@@ -1335,6 +1368,18 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 			local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
 			local optionLayout = self:GetParent().optionLayout;
 			local isSecondButton = button.buttonIndex == 2;
+
+			if (optionLayout.useArtworkGlowOnSelection) then 
+				self.ChoiceSelectedAnimation:Play(); 
+			end 
+
+			local textureKit = self.uiTextureKit or self:GetParent().uiTextureKit;
+			if(textureKit) then 
+				local modelSceneLayout = choiceModelSceneLayout[textureKit];
+				if (modelSceneLayout and modelSceneLayout.makeChoiceEffectID) then 
+					self.dialogEffectController = GlobalFXDialogModelScene:AddEffect(modelSceneLayout.makeChoiceEffectID, self.Artwork);
+				end 
+			end 
 
 			local shouldFadeOutOtherOptions = optionLayout.highlightChoiceBeforeHide and self:GetParent():GetNumOptions() > 1; 
 			if(shouldFadeOutOtherOptions) then 
@@ -1365,7 +1410,7 @@ function PlayerChoiceOptionFrameMixin:SetupRarityDescription(description)
 	if(not description) then 
 		return self:GetRarityDescriptionString();
 	else	
-		return (description .. self:GetRarityDescriptionString());
+		return (self:GetRarityDescriptionString() .. description);
 	end 
 end 
 
@@ -1609,14 +1654,20 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 
 	local textureKit = choiceInfo.uiTextureKit;
 	local overrideTextInfo = hideButtonOverrideInfo[textureKit];
+	local modelSceneLayout = choiceModelSceneLayout[textureKit]; 
 	local isPlayerChoiceShowing = PlayerChoiceFrame:IsShown();
 	local normalTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButton or hideButtonAtlasOptions.LargeButton;
 	local highlightTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButtonHighlight or hideButtonAtlasOptions.LargeButtonHighlight;
 
 	if(not isPlayerChoiceShowing) then
-		self:UpdateModelScene(self.GlowySphereModelScene, ANIMA_GLOW_MODEL_SCENE_ID, ANIMA_GLOW_FILE_ID, true);
+		if(modelSceneLayout and modelSceneLayout and modelSceneLayout.extraButtonEffectID) then 
+			self.dialogEffectController = GlobalFXDialogModelScene:AddEffect(modelSceneLayout.extraButtonEffectID, self);
+		end 
 	else
-		self.GlowySphereModelScene:Hide();
+		if(self.dialogEffectController) then 
+			self.dialogEffectController:CancelEffect();
+			self.dialogEffectController = nil; 
+		end 
 	end
 	local normalTextureAtlas = GetFinalNameFromTextureKit(normalTextureKitInfo, textureKit);
 	local highlightTextureAtlas = GetFinalNameFromTextureKit(highlightTextureKitInfo, textureKit);

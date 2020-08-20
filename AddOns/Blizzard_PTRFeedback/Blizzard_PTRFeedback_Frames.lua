@@ -517,12 +517,12 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
     if PTR_IssueReporter.InBarbershop then
         PTR_IssueReporter.StandaloneSurvey:SetParent(CharCustomizeFrame)
         PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(CharCustomizeFrame)
-        PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
 	else
-        PTR_IssueReporter.StandaloneSurvey:SetParent(UIParent)
-        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(UIParent)
-        PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
+        PTR_IssueReporter.StandaloneSurvey:SetParent(GetAppropriateTopLevelParent())
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(GetAppropriateTopLevelParent())
 	end     
+	PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
+	PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetFrameStrata("HIGH")
     if (followUpSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
         PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.NextText)
     else

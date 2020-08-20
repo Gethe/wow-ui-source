@@ -326,7 +326,13 @@ function GarrisonFollowerMission:OnClickStartMissionButton()
 	end
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_START);
 
-	local helpTipInfo = {
+	local helpTipInfo = self:GenerateHelpTipInfo();
+
+	HelpTip:Show(GarrisonLandingPageMinimapButton, helpTipInfo);
+end
+
+function GarrisonFollowerMission:GenerateHelpTipInfo()
+	return {
 		text = GARRISON_VIEW_MISSION_PROGRESS_HERE,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFrames",
@@ -335,7 +341,6 @@ function GarrisonFollowerMission:OnClickStartMissionButton()
 		offsetX = -5,
 		checkCVars = true,
 	};
-	HelpTip:Show(GarrisonLandingPageMinimapButton, helpTipInfo);
 end
 
 function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
@@ -1202,9 +1207,9 @@ function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 	if(missionInfo.isComplete) then
 		GameTooltip:AddLine(COMPLETE, 1, 1, 1);
 	end
-	-- success chance
+	-- success chance, automissions don't have success chance
 	local successChance = C_Garrison.GetMissionSuccessChance(missionInfo.missionID);
-	if ( successChance ) then
+	if ( successChance and missionInfo.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0) then
 		GameTooltip:AddLine(format(GARRISON_MISSION_PERCENT_CHANCE, successChance), 1, 1, 1);
 	end
 

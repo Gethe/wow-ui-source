@@ -139,6 +139,36 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetConduitItemLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+				{ Name = "rank", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConduitQuality",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+				{ Name = "rank", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "quality", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConduitSpellID",
 			Type = "Function",
 
@@ -401,6 +431,11 @@ local Soulbinds =
 				{ Name = "nodeID", Type = "number", Nilable = false },
 				{ Name = "data", Type = "SoulbindConduitData", Nilable = false },
 			},
+		},
+		{
+			Name = "SoulbindConduitsReset",
+			Type = "Event",
+			LiteralName = "SOULBIND_CONDUITS_RESET",
 		},
 		{
 			Name = "SoulbindForgeInteractionEnded",

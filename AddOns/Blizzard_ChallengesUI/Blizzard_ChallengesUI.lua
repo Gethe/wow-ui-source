@@ -8,6 +8,10 @@ local RARE_COMPLETION_LEVEL = 7;
 local UNCOMMON_COMPLETION_LEVEL = 4;
 local COMMON_COMPLETION_LEVEL = 2;
 
+local CHEST_STATE_WALL_OF_TEXT = 1;
+local CHEST_STATE_INCOMPLETE = 2;
+local CHEST_STATE_COMPLETE = 3;
+local CHEST_STATE_COLLECT = 4;
 
 local function GetRunQualityBasedOnLevel(level)
 	if (level >= LEGENDARY_COMPLETION_LEVEL) then
@@ -119,20 +123,21 @@ function ChallengesFrame_OnLoad(self)
 end
 
 function ChallengesFrame_OnEvent(self, event)
-	if (event == "CHALLENGE_MODE_MAPS_UPDATE" or event == "CHALLENGE_MODE_LEADERS_UPDATE" or event == "CHALLENGE_MODE_MEMBER_INFO_UPDATED" or event == "CHALLENGE_MODE_COMPLETED" or event == "BAG_UPDATE") then
+	if (event == "CHALLENGE_MODE_RESET") then
+		StaticPopup_Hide("RESURRECT");
+		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		StaticPopup_Hide("RESURRECT_NO_TIMER");
+	else
         if (event == "CHALLENGE_MODE_LEADERS_UPDATE") then
             self.leadersAvailable = true;
         end
         ChallengesFrame_Update(self);
-	elseif (event == "CHALLENGE_MODE_RESET") then
-		StaticPopup_Hide("RESURRECT");
-		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
-		StaticPopup_Hide("RESURRECT_NO_TIMER");
 	end
 end
 
 function ChallengesFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
 
     PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
@@ -140,7 +145,11 @@ function ChallengesFrame_OnShow(self)
 
 	C_MythicPlus.RequestCurrentAffixes();
 	C_MythicPlus.RequestMapInfo();
-    C_MythicPlus.RequestRewards();
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		C_MythicPlus.RequestRewards();
+	else
+		C_WeeklyRewards.RequestRewards();
+	end
     for i = 1, #self.maps do
         C_ChallengeMode.RequestLeaders(self.maps[i]);
     end
@@ -150,6 +159,7 @@ end
 function ChallengesFrame_OnHide(self)
     PVEFrame_ShowLeftInset();
 	self:UnregisterEvent("BAG_UPDATE");
+	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
 end
 
 function ChallengesFrame_Update(self)
@@ -221,77 +231,35 @@ function ChallengesFrame_Update(self)
 
     self.WeeklyInfo:SetUp(hasWeeklyRun, sortedMaps[1]);
 
-	local weeklyChest = self.WeeklyInfo.Child.WeeklyChest;
-
-	weeklyChest.name = nil;
-	weeklyChest.ownedKeystoneLevel, weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel = 0;
-	weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklySortedMaps[1].id);
-	weeklyChest.ownedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel();
-	weeklyChest.level, weeklyChest.rewardLevel, weeklyChest.nextRewardLevel, weeklyChest.nextBestLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
-	--Need to check if a player has any season best data, if not then we want to show them keystone intro screen.
-	if (sortedMaps[1].level > 0 or weeklyChest.ownedKeystoneLevel) then
-		if (C_MythicPlus.IsWeeklyRewardAvailable()) then
-			self.WeeklyInfo:HideAffixes();
-			self.WeeklyInfo.Child.Label:Hide();
-
-			weeklyChest.challengeMapId, weeklyChest.level = C_MythicPlus.GetLastWeeklyBestInformation();
-			weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklyChest.challengeMapId);
-			weeklyChest.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(weeklyChest.level);
-
-			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest.CollectChest.FinalKeyLevel, "TOP", 0, 50);
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_CLAIM_REWARD_MESSAGE);
-
-			weeklyChest.CollectChest.FinalKeyLevel:SetText(MYTHIC_PLUS_WEEKLY_CHEST_LEVEL:format(weeklyChest.name, weeklyChest.level));
-			weeklyChest:SetupChest(weeklyChest.CollectChest);
-		elseif (weeklyChest.level > 0) then
-			self.WeeklyInfo.Child.Label:Show();
-
-			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest, "TOP", 0, 25);
-
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_BEST_WEEKLY:format(weeklyChest.name, weeklyChest.level));
-
-			weeklyChest:SetupChest(weeklyChest.CompletedKeystoneChest);
-		elseif (weeklyChest.ownedKeystoneLevel) then
-			self.WeeklyInfo.Child.Label:Show();
-
-			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest, "TOP", 0, 25);
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_INCOMPLETE_WEEKLY_KEYSTONE);
-
-			weeklyChest.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(weeklyChest.ownedKeystoneLevel);
-			weeklyChest:SetupChest(weeklyChest.MissingKeystoneChest);
-		else 
-			self.WeeklyInfo.Child.Label:Show();
-			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("CENTER", self, "CENTER", 0, 0);
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE); 
-		end
-		weeklyChest:Show();
+	local activeChest, inactiveChest;
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		activeChest = self.WeeklyInfo.Child.LegacyWeeklyChest;
+		inactiveChest = self.WeeklyInfo.Child.WeeklyChest;
 	else
-		if (C_MythicPlus.IsWeeklyRewardAvailable()) then
+		activeChest = self.WeeklyInfo.Child.WeeklyChest;
+		inactiveChest = self.WeeklyInfo.Child.LegacyWeeklyChest;
+	end
+
+	local bestMapID = weeklySortedMaps[1].id;
+	local chestState = activeChest:Update(bestMapID);
+
+	activeChest:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT);	
+	inactiveChest:Hide();
+
+	if chestState == CHEST_STATE_COLLECT then
+		self.WeeklyInfo.Child.ThisWeekLabel:Hide();	
+		self.WeeklyInfo.Child.Description:Hide();
+	elseif chestState == CHEST_STATE_COMPLETE then
+		self.WeeklyInfo.Child.ThisWeekLabel:Show();
+		self.WeeklyInfo.Child.Description:Hide();
+	elseif chestState == CHEST_STATE_INCOMPLETE then
+		self.WeeklyInfo.Child.ThisWeekLabel:Show();
+		self.WeeklyInfo.Child.Description:Hide();
+	else
+		self.WeeklyInfo.Child.ThisWeekLabel:Hide();
+		self.WeeklyInfo.Child.Description:Show();
+		if sortedMaps[1].level == 0 and not C_MythicPlus.GetOwnedKeystoneLevel() then
 			self.WeeklyInfo:HideAffixes();
-			self.WeeklyInfo.Child.Label:Hide();
-
-			weeklyChest.challengeMapId, weeklyChest.level = C_MythicPlus.GetLastWeeklyBestInformation();
-			weeklyChest.name = C_ChallengeMode.GetMapUIInfo(weeklyChest.challengeMapId);
-			weeklyChest.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(weeklyChest.level);
-
-			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", weeklyChest.CollectChest.FinalKeyLevel, "TOP", 0, 50);
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_CLAIM_REWARD_MESSAGE);
-
-			weeklyChest.CollectChest.FinalKeyLevel:SetText(MYTHIC_PLUS_WEEKLY_CHEST_LEVEL:format(weeklyChest.name, weeklyChest.level));
-			weeklyChest:SetupChest(weeklyChest.CollectChest);
-			weeklyChest:Show();
-		else 
-			weeklyChest:Hide();
-			self.WeeklyInfo.Child.Label:Hide();
-			self.WeeklyInfo:HideAffixes();
-			self.WeeklyInfo.Child.RunStatus:ClearAllPoints();
-			self.WeeklyInfo.Child.RunStatus:SetPoint("TOP", self, "TOP", 0, -74);
-			self.WeeklyInfo.Child.RunStatus:SetText(MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE);
 		end
 	end
 
@@ -313,9 +281,146 @@ function ChallengesFrame_Update(self)
 	end
 end
 
-ChallengeModeWeeklyChestMixin = {};
+ChallengeModeWeeklyChestMixin = { };
 
-function ChallengeModeWeeklyChestMixin:SetupChest(chestFrame)
+function ChallengeModeWeeklyChestMixin:Update(bestMapID)
+	local chestState = CHEST_STATE_WALL_OF_TEXT;
+
+	if C_WeeklyRewards.HasRewards() then
+		chestState = CHEST_STATE_COLLECT;
+
+		self.Icon:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		self.RunStatus:SetText(MYTHIC_PLUS_COLLECT_GREAT_VAULT);
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	elseif self:HasUnlockedRewards() then
+		chestState = CHEST_STATE_COMPLETE;
+
+		self.Icon:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
+		self.AnimTexture:Hide();
+	elseif C_MythicPlus.GetOwnedKeystoneLevel() then
+		chestState = CHEST_STATE_INCOMPLETE;
+
+		self.Icon:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);	
+		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
+		self.AnimTexture:Hide();
+	end
+
+	self.state = chestState;
+	return chestState;
+end
+
+function ChallengeModeWeeklyChestMixin:HasUnlockedRewards()
+	local activities = C_WeeklyRewards.GetActivities();
+	for i, activityInfo in ipairs(activities) do
+		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.MythicPlus and activityInfo.progress >= activityInfo.threshold then
+			return true;
+		end
+	end
+	return false;
+end	
+
+local function GetLowestLevelInTopRuns(numRuns)
+	local runHistory = C_MythicPlus.GetRunHistory();
+	table.sort(runHistory, function(left, right) return left.level > right.level; end);
+	local lowestLevel;
+	local lowestCount = 0;
+	for i = math.min(numRuns, #runHistory), 1, -1 do
+		local run = runHistory[i];
+		if not lowestLevel then
+			lowestLevel = run.level;
+		end
+		if lowestLevel == run.level then
+			lowestCount = lowestCount + 1;
+		else
+			break;
+		end
+	end
+	return lowestLevel, lowestCount;
+end
+
+function ChallengeModeWeeklyChestMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
+
+	-- always direct players to great vault if there are rewards to be claimed
+	if self.state == CHEST_STATE_COLLECT then
+		GameTooltip_AddColoredLine(GameTooltip, GREAT_VAULT_REWARDS_WAITING, GREEN_FONT_COLOR);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	end
+
+	-- now determine progress for this week
+	local activities = C_WeeklyRewards.GetActivities(Enum.WeeklyRewardChestThresholdType.MythicPlus);
+	table.sort(activities, function(left, right) return left.index < right.index; end);
+	local lastCompletedIndex = 0;
+	for i, activityInfo in ipairs(activities) do
+		if activityInfo.progress >= activityInfo.threshold then
+			lastCompletedIndex = i;
+		end
+	end
+	if lastCompletedIndex == 0 then
+		GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_INCOMPLETE);
+	else
+		if lastCompletedIndex == #activities then
+			GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_THIRD);
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddColoredLine(GameTooltip, GREAT_VAULT_IMPROVE_REWARD, GREEN_FONT_COLOR);
+			local info = activities[lastCompletedIndex];
+			local level, count = GetLowestLevelInTopRuns(info.threshold);
+			GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_IMPROVE:format(count, level + 1));
+		else
+			local nextInfo = activities[lastCompletedIndex + 1];
+			local textString = (lastCompletedIndex == 1) and GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST or GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND;
+			local level, count = GetLowestLevelInTopRuns(nextInfo.threshold);
+			GameTooltip_AddNormalLine(GameTooltip, textString:format(nextInfo.threshold - nextInfo.progress, nextInfo.threshold, level));
+		end
+	end
+
+	GameTooltip:Show();
+end
+
+ChallengeModeLegacyWeeklyChestMixin = {};
+
+function ChallengeModeLegacyWeeklyChestMixin:Update(bestMapID)
+	self.name = C_ChallengeMode.GetMapUIInfo(bestMapID);
+	self.ownedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel();
+	self.level, self.rewardLevel, self.nextRewardLevel, self.nextBestLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
+
+	local chestState = CHEST_STATE_WALL_OF_TEXT;
+
+	if C_MythicPlus.IsWeeklyRewardAvailable() then
+		chestState = CHEST_STATE_COLLECT;
+
+		self.challengeMapId, self.level = C_MythicPlus.GetLastWeeklyBestInformation();
+		self.name = C_ChallengeMode.GetMapUIInfo(self.challengeMapId);
+		self.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(self.level);
+		self.CollectChest.FinalKeyLevel:SetText(MYTHIC_PLUS_WEEKLY_CHEST_LEVEL:format(self.name, self.level));
+		self:SetupChest(self.CollectChest);
+
+		self.RunStatus:SetPoint("TOP", 0, 87);
+		self.RunStatus:SetText(MYTHIC_PLUS_CLAIM_REWARD_MESSAGE);
+	elseif self.level > 0 then
+		chestState = CHEST_STATE_COMPLETE;
+
+		self:SetupChest(self.CompletedKeystoneChest);
+
+		self.RunStatus:SetPoint("TOP", 0, 25);
+		self.RunStatus:SetText(MYTHIC_PLUS_BEST_WEEKLY:format(self.name, self.level));
+	elseif self.ownedKeystoneLevel then
+		chestState = CHEST_STATE_INCOMPLETE;
+
+		self.rewardLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel(self.ownedKeystoneLevel);
+		self:SetupChest(self.MissingKeystoneChest);
+
+		self.RunStatus:SetPoint("TOP", 0, 25);
+		self.RunStatus:SetText(MYTHIC_PLUS_INCOMPLETE_WEEKLY_KEYSTONE);
+	end
+
+	return chestState;
+end
+
+function ChallengeModeLegacyWeeklyChestMixin:SetupChest(chestFrame)
 	if (chestFrame == self.CollectChest) then
 		self.MissingKeystoneChest:Hide();
 		self.CompletedKeystoneChest:Hide();
@@ -365,7 +470,7 @@ function ChallengeModeWeeklyChestMixin:SetupChest(chestFrame)
 	end
 end
 
-function ChallengeModeWeeklyChestMixin:OnEnter()
+function ChallengeModeLegacyWeeklyChestMixin:OnEnter()
 	GameTooltip:SetText(" ");
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -15);
 	if (self.level > 0) then

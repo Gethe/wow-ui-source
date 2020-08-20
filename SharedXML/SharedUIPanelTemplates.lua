@@ -1555,12 +1555,20 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 	local numColumns, stride = getNumColumnsAndStride(#self.selections, self:GetMaxPopoutStride());
 	local buttons = {};
 
+	local hasIneligibleChoice = false;
+	for _, selectionData in ipairs(self.selections) do
+		if selectionData.ineligibleChoice then
+			hasIneligibleChoice = true;
+			break;
+		end
+	end
+
 	for index, selectionData in ipairs(self.selections) do
 		local button = self.buttonPool:Acquire();
 		local selectionInfo = self.selections[index];
 
 		local isSelected = (index == self.selectedIndex);
-		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1);
+		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice);
 		button:Show();
 
 		table.insert(buttons, button);
@@ -1682,7 +1690,28 @@ function SelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
 	self:SetWidth(Round(width));
 end
 
-function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected)
+local function GetNormalSelectionTextFontColor(selectionData, isSelected)
+	if isSelected then
+		return NORMAL_FONT_COLOR;
+	else
+		return DISABLED_FONT_COLOR;
+	end
+end
+
+local eligibleChoiceColor = CreateColor(.808, 0.808, 0.808);
+local ineligibleChoiceColor = CreateColor(.337, 0.337, 0.337);
+
+local function GetFailedReqSelectionTextFontColor(selectionData, isSelected)
+	if isSelected then
+		return NORMAL_FONT_COLOR;
+	elseif selectionData.ineligibleChoice then
+		return ineligibleChoiceColor;
+	else
+		return eligibleChoiceColor;
+	end
+end
+
+function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
 	self.name = selectionData.name;
 	self.index = index;
 
@@ -1730,7 +1759,8 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 	end
 
 	if isSelected ~= nil then
-		local fontColor = isSelected and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
+		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
+		local fontColor = fontColorFunction(selectionData, isSelected);
 		self.SelectionNumber:SetTextColor(fontColor:GetRGB());
 		self.SelectionName:SetTextColor(fontColor:GetRGB());
 		self.ColorSelected:SetShown(color1 and isSelected);
@@ -1770,11 +1800,12 @@ function SelectionPopoutEntryMixin:HandlesGlobalMouseEvent(buttonID, event)
 	return event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton";
 end
 
-function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns)
+function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq)
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
+	self.popoutHasAFailedReq = hasAFailedReq;
 
-	self.SelectionDetails:SetupDetails(selectionData, index, isSelected);
+	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq);
 	self.SelectionDetails:AdjustWidth(multipleColumns, 116);
 	self:Layout();
 end
@@ -1796,8 +1827,11 @@ end
 function SelectionPopoutEntryMixin:OnLeave()
 	if not self.isSelected then
 		self.HighlightBGTex:SetAlpha(0);
-		self.SelectionDetails.SelectionNumber:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		self.SelectionDetails.SelectionName:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+
+		local fontColorFunction = self.popoutHasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
+		local fontColor = fontColorFunction(self.selectionData, self.isSelected);
+		self.SelectionDetails.SelectionNumber:SetTextColor(fontColor:GetRGB());
+		self.SelectionDetails.SelectionName:SetTextColor(fontColor:GetRGB());
 	end
 
 	self.parentButton:OnEntryMouseLeave(self);

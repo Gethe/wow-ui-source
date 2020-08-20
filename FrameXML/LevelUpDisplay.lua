@@ -185,6 +185,16 @@ GARRISON_ABILITY_HACKS = {
 	},
 }
 
+local JAILERS_TOWER_LEVEL_TYPE_STRINGS = {
+	[Enum.JailersTowerType.TwistingCorridors] = JAILERS_TOWER_LEVEL_TOAST_TWISTING_CORRIDORS,
+	[Enum.JailersTowerType.SkoldusHalls] = JAILERS_TOWER_LEVEL_TOAST_SKOLDUS_HALLS, 
+	[Enum.JailersTowerType.FractureChambers] = JAILERS_TOWER_LEVEL_TOAST_FRACTURE_CHAMBERS,
+	[Enum.JailersTowerType.Soulforges] = JAILERS_TOWER_LEVEL_TOAST_SOULFORGES,
+	[Enum.JailersTowerType.Coldheart] = JAILERS_TOWER_LEVEL_TOAST_COLDHEART,
+	[Enum.JailersTowerType.Mortregar] = JAILERS_TOWER_LEVEL_TOAST_MORTREGAR,
+	[Enum.JailersTowerType.UpperReaches] = JAILERS_TOWER_LEVEL_TOAST_UPPER_REACHES,
+}
+
 LEVEL_UP_TRAP_LEVELS = {427, 77, 135}
 
 function LevelUpDisplay_OnLoad(self)
@@ -206,6 +216,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("QUEST_TURNED_IN");
 	self:RegisterEvent("UNIT_PET");
+	self:RegisterEvent("JAILERS_TOWER_LEVEL_UPDATE");
 	self.currSpell = 0;
 
 	self.PlayBanner = function(self, data)
@@ -303,6 +314,11 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			self.type = TOAST_WORLD_QUESTS_UNLOCKED;
 			LevelUpDisplay_Show(self);
 		end
+	elseif (event == "JAILERS_TOWER_LEVEL_UPDATE") then 
+		self.type = LEVEL_UP_TYPE_SCENARIO;
+		local level, type, textureKit = ...; 
+		self.jailersTowerLevelUpdateInfo = { level = level, type = type, textureKit = textureKit };
+		LevelUpDisplay_Show(self);
 	end
 end
 
@@ -319,6 +335,7 @@ end
 
 function LevelUpDisplay_PlayScenario()
 	LevelUpDisplay.type = LEVEL_UP_TYPE_SCENARIO;
+	LevelUpDisplay.jailersTowerLevelUpdateInfo = nil;
 	LevelUpDisplay_Show(LevelUpDisplay);
 end
 
@@ -692,7 +709,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			self.queuedType = nil;
 			self.queuedItems = nil;
 		end
-		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
+		if ( self.type == LEVEL_UP_TYPE_SCENARIO and not self.jailersTowerLevelUpdateInfo) then
 			local name, currentStage, numStages, flags, textureKit, _;
 			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType, _, textureKit = C_Scenario.GetInfo();
 			if (not IsBoostTutorialScenario()) then
@@ -738,6 +755,22 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;
+		elseif ( self.type == LEVEL_UP_TYPE_SCENARIO and self.jailersTowerLevelUpdateInfo) then
+			self.scenarioFrame.level:ClearAllPoints();
+			self.scenarioFrame.level:SetPoint("TOP", self.scenarioFrame, "TOP", 0, -14);
+			local typeString = JAILERS_TOWER_LEVEL_TYPE_STRINGS[self.jailersTowerLevelUpdateInfo.type];
+			if(typeString) then	
+				self.scenarioFrame.level:SetText(typeString); 
+			end 
+
+			self.scenarioFrame.name:SetText(JAILERS_TOWER_SCENARIO_FLOOR:format(self.jailersTowerLevelUpdateInfo.level));
+			self.scenarioFrame.description:SetText("");
+			playAnim = self.scenarioFrame.TextureKitNewStage;
+			local textureKit = select(12, C_Scenario.GetInfo());
+			if (textureKit) then 
+				SetupTextureKitOnRegions(textureKit, self.scenarioFrame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+			end 
+			LevelUpDisplay:SetPoint("TOP", 0, -250);
 		else
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.levelFrame.levelUp;

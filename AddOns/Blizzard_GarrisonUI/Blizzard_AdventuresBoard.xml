@@ -42,11 +42,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DesaturatedTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
+			<Frame parentKey="EnemyTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
 				<KeyValues>
 					<KeyValue key="targetingTextureAtlas" type="string" value="Adventures-Target-Indicator-desat"/>
 				</KeyValues>
 			</Frame>
+			
+			<Frame parentKey="FriendlyTargetingIndicatorFrame" inherits="AdventuresFriendlyTargetingIndicatorTemplate" hidden="false"/>
+				
 			<Frame parentKey="AuraContainer" inherits="HorizontalLayoutFrame">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP"/>
@@ -82,7 +85,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnHide method="OnShow"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

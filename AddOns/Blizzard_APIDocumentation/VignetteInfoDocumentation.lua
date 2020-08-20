@@ -84,13 +84,14 @@ local VignetteInfo =
 		{
 			Name = "VignetteType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Normal", Type = "VignetteType", EnumValue = 0 },
 				{ Name = "PvPBounty", Type = "VignetteType", EnumValue = 1 },
+				{ Name = "Torghast", Type = "VignetteType", EnumValue = 2 },
 			},
 		},
 		{

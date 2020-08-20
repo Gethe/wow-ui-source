@@ -712,6 +712,7 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Name:SetText(missionInfo.name);
 	frame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
+	frame.Title:SetText(GarrisonFollowerOptions[missionInfo.followerTypeID].strings.ALERT_FRAME_TITLE);
 	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0) then
 		frame.MissionType:SetShown(false);
 		frame.EncounterIcon:SetShown(true);

@@ -20,6 +20,11 @@ local Video =
 	Events =
 	{
 		{
+			Name = "AdapterListChanged",
+			Type = "Event",
+			LiteralName = "ADAPTER_LIST_CHANGED",
+		},
+		{
 			Name = "DisplaySizeChanged",
 			Type = "Event",
 			LiteralName = "DISPLAY_SIZE_CHANGED",

@@ -54,6 +54,10 @@
 ..\SharedXML\GlobalCallbackRegistry.lua
 ..\SharedXML\SelectableButton.xml
 ..\SharedXML\ButtonGroup.lua
+..\SharedXML\ScrollController.xml
+..\SharedXML\ScrollBox.xml
+..\SharedXML\ScrollBar.xml
+..\SharedXML\ScrollUtil.lua
 MixinUtil.lua
 
 ## intrinsics

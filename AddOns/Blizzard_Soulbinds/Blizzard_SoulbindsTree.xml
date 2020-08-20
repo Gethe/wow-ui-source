@@ -4,10 +4,8 @@
 
 	<Frame name="SoulbindTreeTemplate" mixin="SoulbindTreeMixin" virtual="true">
 		<Size x="244" y="510"/>
-		<Anchors>
-			<Anchor point="CENTER" x="-115" y="20"/>
-		</Anchors>
 		<Frames>
+			<Frame parentKey="Fx" setAllPoints="true" frameStrata="HIGH"/>
 			<Frame parentKey="LinkContainer" setAllPoints="true" frameLevel="1" frameStrata="MEDIUM"/>
 			<Frame parentKey="NodeContainer" setAllPoints="true" frameLevel="2" frameStrata="MEDIUM"/>
 		</Frames>

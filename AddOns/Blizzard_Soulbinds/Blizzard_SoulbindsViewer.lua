@@ -10,7 +10,8 @@ local SoulbindViewerEvents =
 	"SOULBIND_FORGE_INTERACTION_ENDED",
 	"SOULBIND_ACTIVATED",
 	"SOULBIND_PENDING_CONDUIT_CHANGED",
-	"SOULBIND_CONDUIT_INSTALLED"
+	"SOULBIND_CONDUIT_INSTALLED",
+	"SOULBIND_CONDUITS_RESET"
 };
 
 SoulbindViewerMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -38,7 +39,7 @@ function SoulbindViewerMixin:OnLoad()
 	self.Tree:RegisterCallback(SoulbindTreeMixin.Event.OnNodeChanged, self.OnNodeChanged, self);
 	self.SelectGroup:RegisterCallback(SoulbindSelectGroupMixin.Event.OnSoulbindSelected, self.OnSoulbindSelected, self);
 	
-	NineSliceUtil.ApplyUniqueCornersLayout(self, "Oribos");
+	NineSliceUtil.ApplyUniqueCornersLayout(self.Border, "Oribos");
 	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-Oribos-ExitButtonBorder", -1, 1);
 
 	self.ShadowTop:SetTexCoord(1, 0, 1, 0);
@@ -69,6 +70,8 @@ function SoulbindViewerMixin:OnEvent(event, ...)
 		self:OnConduitChanged();
 	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
 		self:UpdateButtons();
+	elseif event == "SOULBIND_CONDUITS_RESET" then
+		self:UpdateResetConduitsButton();
 	end
 end
 
@@ -88,24 +91,27 @@ function SoulbindViewerMixin:OnResetConduitsButtonEnter()
 	GameTooltip:SetOwner(self.ResetConduitsButton, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, CONDUIT_RESET_BUTTON_HEADER);
 
-	if self.ResetConduitsButton:IsEnabled() then
+	local soulbindID = self.soulbindData.ID;
+	local hideNoConduitWarning = false;
+	if C_Soulbinds.CanResetConduitsInSoulbind(soulbindID) then
 		GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_AVAILABLE);
-	else
+	else 
 		local seconds = C_DateAndTime.GetSecondsUntilWeeklyReset();
 		local time = ResetConduitsFormatter:Format(C_DateAndTime.GetSecondsUntilWeeklyReset())
 		GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_AVAILABLE_IN:format(time));
+
+		hideNoConduitWarning = true;
 	end
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_INSTRUCTION);
 	
-	if not C_Soulbinds.HasAnyInstalledConduitInSoulbind(self.soulbindData.ID) then
-		GameTooltip_AddErrorLine(GameTooltip, CONDUIT_RESET_INELIGIBLE);
+	-- No Socketed Conduits Warning
+	if not hideNoConduitWarning then
+		if not C_Soulbinds.HasAnyInstalledConduitInSoulbind(self.soulbindData.ID) then
+			GameTooltip_AddErrorLine(GameTooltip, CONDUIT_RESET_INELIGIBLE);
+		end
 	end
-
-	-- Temp
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, SOULBIND_RESET_BUTTON_TEMP);
 
 	GameTooltip:Show();
 end
@@ -224,15 +230,16 @@ function SoulbindViewerMixin:UpdateActivateSoulbindButton()
 
 	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
 		local showTutorial = enabled and self.Tree:HasSelectedNodes() and not GetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex);
-		ButtonPulseGlow:SetShown(self.ActivateSoulbindButton, showTutorial);
+		GlowEmitterFactory:SetShown(self.ActivateSoulbindButton, showTutorial, GlowEmitterMixin.Anims.FadeAnim);
 	else
-		ButtonPulseGlow:Hide(self.ActivateSoulbindButton);
+		GlowEmitterFactory:Hide(self.ActivateSoulbindButton);
 	end
 end
 
 function SoulbindViewerMixin:UpdateCommitConduitsButton()
 	local pending = C_Soulbinds.HasAnyPendingConduits();
 	self.CommitConduitsButton:SetShown(pending);
+	GlowEmitterFactory:SetShown(self.CommitConduitsButton, pending, GlowEmitterMixin.Anims.FaintFadeAnim);
 end
 
 function SoulbindViewerMixin:IsActiveSoulbindOpen()
@@ -249,7 +256,7 @@ function SoulbindViewerMixin:OnActivateSoulbindClicked()
 	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
 
 	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
-		ButtonPulseGlow:Hide(self.ActivateSoulbindButton);
+		GlowEmitterFactory:Hide(self.ActivateSoulbindButton);
 		SetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex, true);
 	end
 end

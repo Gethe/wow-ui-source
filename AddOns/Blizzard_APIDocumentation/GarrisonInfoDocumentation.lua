@@ -32,6 +32,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetAutoMissionBoardState",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAutoMissionTargetingInfo",
 			Type = "Function",
 
@@ -874,6 +888,7 @@ local GarrisonInfo =
 				{ Name = "cooldown", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "schoolMask", Type = "number", Nilable = false },
+				{ Name = "previewMask", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 			},
 		},
@@ -917,6 +932,8 @@ local GarrisonInfo =
 			{
 				{ Name = "targetIndex", Type = "number", Nilable = false },
 				{ Name = "previewType", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "effectIndex", Type = "number", Nilable = false },
 			},
 		},
 		{

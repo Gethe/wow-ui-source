@@ -436,11 +436,11 @@ local function AddSpellToBucket(spellBuckets, type, rewardSpellIndex)
 	table.insert(spellBuckets[type], rewardSpellIndex);
 end
 
-local function QuestInfo_ShowRewardAsItem(questItem, index)
+local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryFunction)
 	local name, texture, numItems, quality, isUsable, itemID;
-	
+
 	if ( QuestInfoFrame.questLog ) then
-		name, texture, numItems, quality, isUsable, itemID = GetQuestLogChoiceInfo(index);
+		name, texture, numItems, quality, isUsable, itemID = questLogQueryFunction(index);
 		SetItemButtonQuality(questItem, quality, itemID);
 	else
 		name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, index);
@@ -448,8 +448,9 @@ local function QuestInfo_ShowRewardAsItem(questItem, index)
 	end
 
 	questItem.objectType = "item";
-	questItem:SetID(index)
+	questItem:SetID(index);
 	questItem:Show();
+
 	-- For the tooltip
 	questItem.Name:SetText(name);
 	SetItemButtonCount(questItem, numItems);
@@ -461,6 +462,14 @@ local function QuestInfo_ShowRewardAsItem(questItem, index)
 		SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
 		SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
 	end
+end
+
+local function QuestInfo_ShowRewardAsItem(questItem, index)
+	QuestInfo_ShowRewardAsItemCommon(questItem, index, GetQuestLogChoiceInfo);
+end
+
+local function QuestInfo_ShowFixedRewardAsItem(questItem, index)
+	QuestInfo_ShowRewardAsItemCommon(questItem, index, GetQuestLogRewardInfo);
 end
 
 local function QuestInfo_ShowRewardAsCurrency(questItem, index, isChoice)
@@ -649,7 +658,7 @@ function QuestInfo_ShowRewards()
 			else
 				lootType = GetQuestItemInfoLootType(questItem.type, i);
 			end
-			
+
 			if (lootType == 0) then -- LOOT_LIST_ITEM
 				QuestInfo_ShowRewardAsItem(questItem, i);
 			elseif (lootType == 1) then -- LOOT_LIST_CURRENCY
@@ -718,7 +727,7 @@ function QuestInfo_ShowRewards()
 						local followerFrame = rewardsFrame.followerRewardPool:Acquire();
 						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
 						followerFrame.Name:SetText(followerInfo.name);
-						
+
 						if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
 							followerFrame.AdventuresFollowerPortraitFrame:SetupPortrait(followerInfo)
 							followerFrame.AdventuresFollowerPortraitFrame:Show()
@@ -831,7 +840,7 @@ function QuestInfo_ShowRewards()
 			questItem.type = "reward";
 			questItem.objectType = "item";
 
-			QuestInfo_ShowRewardAsItem(questItem, i);
+			QuestInfo_ShowFixedRewardAsItem(questItem, i);
 
 			AddRewardElement(questItem);
 			rewardsCount = rewardsCount + 1;

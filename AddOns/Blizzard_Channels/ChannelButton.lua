@@ -81,6 +81,10 @@ function ChannelButtonBaseMixin:GetChannelRuleset()
 	return self.ruleset, self.activePlayerRole;
 end
 
+function ChannelButtonBaseMixin:AllowedToLeave()
+	return not ChannelFrame_IsCategoryGroup(self:GetCategory()) and self:IsActive() and self:GetChannelRuleset() ~= Enum.ChatChannelRuleset.Mentor;
+end
+
 function ChannelButtonBaseMixin:SetVoiceChannel(voiceChannel)
 	self.linkedVoiceChannel = voiceChannel;
 

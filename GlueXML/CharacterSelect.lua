@@ -174,10 +174,6 @@ function CharacterSelect_OnLoad(self)
     SetCharSelectModelFrame("CharacterSelectModel");
 
     CHARACTER_LIST_OFFSET = 0;
-
-	LoadAddOn("Blizzard_CharacterCustomize");
-    LoadAddOn("Blizzard_CharacterCreate");
-	LoadAddOn("Blizzard_PTRFeedbackGlue");
 end
 
 function CharacterSelect_OnShow(self)
@@ -2581,7 +2577,7 @@ function CharacterServicesTokenBoost_OnEnter(self)
 		GlueTooltip:AddLine(self.data.popupInfo.title, 1.0, 1.0, 1.0);
 		GlueTooltip:AddLine(self.data.popupInfo.description, nil, nil, nil, true);
 	else
-		GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
+		GlueTooltip:AddLine(self.data.flowTitle, 1.0, 1.0, 1.0);
 		GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, true);
 	end
     GlueTooltip:Show();

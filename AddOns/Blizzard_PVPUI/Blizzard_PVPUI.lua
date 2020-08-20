@@ -1662,9 +1662,25 @@ function PVPUIHonorLevelDisplayMixin:OnMouseUp(button)
 	end
 end
 
-function PVPUIHonorLevelDisplayMixin:OnEnter()
+function PVPUIHonorLevelDisplayMixin:LegacyOnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -20);
 	GameTooltip:SetText(HONOR);
+	local currentHonor = UnitHonor("player");
+	local maxHonor = UnitHonorMax("player");
+	GameTooltip_AddColoredLine(GameTooltip, string.format(GENERIC_FRACTION_STRING_WITH_SPACING, currentHonor, maxHonor), HIGHLIGHT_FONT_COLOR);
+	GameTooltip:Show();
+end
+
+function PVPUIHonorLevelDisplayMixin:OnEnter()
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		self:LegacyOnEnter();
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -20);
+	GameTooltip_SetTitle(GameTooltip, LIFETIME_HONOR);
+	GameTooltip_AddColoredLine(GameTooltip, LIFETIME_HONOR_DESC, NORMAL_FONT_COLOR);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	local currentHonor = UnitHonor("player");
 	local maxHonor = UnitHonorMax("player");
 	GameTooltip_AddColoredLine(GameTooltip, string.format(GENERIC_FRACTION_STRING_WITH_SPACING, currentHonor, maxHonor), HIGHLIGHT_FONT_COLOR);
@@ -1786,7 +1802,7 @@ end
 function PVPConquestBarMixin:OnShow()
 	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
 		self:RegisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
-		C_WeeklyRewards.RequestWeeklyProgress();
+		self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
 	else
 		self:RegisterEvent("QUEST_LOG_UPDATE");
 	end
@@ -1796,6 +1812,7 @@ end
 function PVPConquestBarMixin:OnHide()
 	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
 		self:UnregisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
+		self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
 	else
 		self:UnregisterEvent("QUEST_LOG_UPDATE");
 	end
@@ -1803,7 +1820,7 @@ end
 
 function PVPConquestBarMixin:OnEvent(event, ...)
 	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		if event == "WEEKLY_REWARDS_ITEM_CHANGED" then
+		if event == "WEEKLY_REWARDS_ITEM_CHANGED" or event == "WEEKLY_REWARDS_UPDATE" then
 			self:Update();
 		end
 	else
@@ -1928,8 +1945,8 @@ function PVPWeeklyChestMixin:GetState()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local unlocksCompleted = weeklyProgress.unlocksCompleted;
 
-	local canClaimRewards = C_WeeklyRewards.CanClaimPVPRewards();
-	if canClaimRewards then
+	local hasRewards = C_WeeklyRewards.HasRewards();
+	if hasRewards then
 		return "collect";
 	elseif unlocksCompleted > 0 then
 		return "complete";
@@ -2005,9 +2022,9 @@ function PVPWeeklyChestMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 
-	local canClaimRewards = C_WeeklyRewards.CanClaimPVPRewards();
-	if canClaimRewards then
-		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_VAULT_COLLECT_TOOLTIP, GREEN_FONT_COLOR);
+	local hasRewards = C_WeeklyRewards.HasRewards();
+	if hasRewards then
+		GameTooltip_AddColoredLine(GameTooltip, GREAT_VAULT_REWARDS_WAITING, GREEN_FONT_COLOR);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	end
 	GameTooltip_AddNormalLine(GameTooltip, description);

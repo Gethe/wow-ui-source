@@ -2275,6 +2275,7 @@
 
 		<Scripts>
 			<OnShow method="OnShow"/>
+			<OnMouseWheel function="nop"/>
 		</Scripts>
 	</Frame>
 	

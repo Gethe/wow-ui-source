@@ -70,6 +70,8 @@ local ChromieTimeUI =
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "mapAtlas", Type = "string", Nilable = false },
 				{ Name = "previewAtlas", Type = "string", Nilable = false },
+				{ Name = "completed", Type = "bool", Nilable = false },
+				{ Name = "alreadyOn", Type = "bool", Nilable = false },
 			},
 		},
 	},

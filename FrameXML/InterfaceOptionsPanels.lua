@@ -2136,8 +2136,8 @@ local shakeStrengthCamera = "ShakeStrengthCamera";
 local shakeStrengthUI = "ShakeStrengthUI";
 local shakeIntensityOptions = {
 	{ text= SHAKE_INTENSITY_NONE, [shakeStrengthCamera] = "0", [shakeStrengthUI] = "0" },
-	{ text = SHAKE_INTENSITY_REDUCED, [shakeStrengthCamera] = ".25", shakeStrengthUI = ".25" },
-	{ text = SHAKE_INTENSITY_FULL, [shakeStrengthCamera] = "1", shakeStrengthUI = "1" },
+	{ text = SHAKE_INTENSITY_REDUCED, [shakeStrengthCamera] = ".25", [shakeStrengthUI] = ".25" },
+	{ text = SHAKE_INTENSITY_FULL, [shakeStrengthCamera] = "1", [shakeStrengthUI] = "1" },
 }
 
 function GetShakeIntensitySelected()

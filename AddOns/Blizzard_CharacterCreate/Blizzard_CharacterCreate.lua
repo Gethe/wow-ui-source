@@ -34,7 +34,9 @@ GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
 	button1 = OKAY,
 	button2 = nil,
     OnAccept = function ()
-        CharacterCreateFrame:SetMode(CHAR_CREATE_MODE_CUSTOMIZE);
+		if CharacterCreateFrame:IsShown() then
+			CharacterCreateFrame:SetMode(CHAR_CREATE_MODE_CUSTOMIZE);
+		end
     end,
 }
 
@@ -84,11 +86,10 @@ function CharacterCreateMixin:OnDisplaySizeChanged()
 
 	local MAX_ASPECT = 16 / 9;
 	local currentAspect = width / height;
+	local isSuperWideScreen = (currentAspect - MAX_ASPECT) > 0.001;
 
-	local atlasName = (currentAspect - MAX_ASPECT > 0.001) and "charactercreate-vignette-sides-widescreen" or "charactercreate-vignette-sides";
-
-	self.LeftBackgroundOverlay:SetAtlas(atlasName);
-	self.RightBackgroundOverlay:SetAtlas(atlasName);
+	self.LeftBackgroundWidescreenOverlay:SetShown(isSuperWideScreen);
+	self.RightBackgroundWidescreenOverlay:SetShown(isSuperWideScreen);
 end
 
 function CharacterCreateMixin:OnEvent(event, ...)
@@ -184,6 +185,7 @@ end
 function CharacterCreateMixin:OnHide()
 	C_CharacterCreation.SetInCharacterCreate(false);
 	self:ClearPaidServiceInfo();
+	self.creatingCharacter = false;
 	self.currentMode = 0;
 end
 
@@ -413,6 +415,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
 
 	self.currentMode = mode;
+	self.creatingCharacter = false;
 	self:UpdateForwardButton();
 end
 
@@ -476,7 +479,7 @@ function CharacterCreateMixin:RefreshCurrentNavBlocker()
 end
 
 function CharacterCreateMixin:CanNavForward()
-	return not self.currentNavBlocker;
+	return not self.currentNavBlocker and not self.creatingCharacter;
 end
 
 function CharacterCreateMixin:GetSelectedName()
@@ -494,6 +497,9 @@ function CharacterCreateMixin:CreateCharacter()
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);
 		end
+
+		self.creatingCharacter = true;
+		self:UpdateForwardButton();
 
 		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), ZoneChoiceFrame.useNPE, RaceAndClassFrame:GetCreateCharacterFaction());
 	end

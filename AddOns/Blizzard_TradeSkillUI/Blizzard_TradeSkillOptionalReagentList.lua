@@ -32,8 +32,10 @@ function OptionalReagentListLineMixin:OnClick()
 		end
 	end
 
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	TemplatedListElementMixin.OnClick(self);
+	if self:ShouldAllowSelection() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		TemplatedListElementMixin.OnClick(self);
+	end
 end
 
 function OptionalReagentListLineMixin:OnEnter()
@@ -77,21 +79,32 @@ function OptionalReagentListLineMixin:GetOption()
 	return self:GetOptionalReagentList():GetOption(self:GetListIndex());
 end
 
+function OptionalReagentListLineMixin:ShouldAllowSelection()
+	return self:GetState() ~= OptionalReagentListLineState.Disabled;
+end
+
 function OptionalReagentListLineMixin:SetState(state)
-	local enabled = state ~= OptionalReagentListLineState.Disabled;
-	local alpha = enabled and 1.0 or 0.3;
+	self.state = state;
+
+	local shouldAllowSelection = self:ShouldAllowSelection();
+	local alpha = shouldAllowSelection and 1.0 or 0.3;
 	self.Icon:SetAlpha(alpha);
 	self.NameFrame:SetAlpha(alpha);
 	self.Name:SetAlpha(alpha);
 	self.IconBorder:SetAlpha(alpha);
 	self.IconOverlay:SetAlpha(alpha);
 
-	self.SelectedTexture:SetShown(state == OptionalReagentListLineState.Selected);
+	-- "Hide" the highlight texture with a 0 alpha while selection is disallowed. We can't disable the button since we need linking to work.
+	self:GetHighlightTexture():SetAlpha(shouldAllowSelection and 1 or 0);
 
-	self:SetEnabled(enabled);
+	self.SelectedTexture:SetShown(state == OptionalReagentListLineState.Selected);
 end
 
-function OptionalReagentListLineMixin:GetState(itemID, itemCount)
+function OptionalReagentListLineMixin:GetState()
+	return self.state;
+end
+
+function OptionalReagentListLineMixin:CalculateState(itemID, itemCount)
 	itemID = itemID or self:GetItemID();
 	itemCount = itemCount or ItemUtil.GetOptionalReagentCount(itemID);
 
@@ -115,7 +128,7 @@ function OptionalReagentListLineMixin:RefreshState(itemID, itemCount)
 	itemID = itemID or self:GetItemID();
 	itemCount = itemCount or ItemUtil.GetOptionalReagentCount(itemID);
 
-	self:SetState(self:GetState(itemID, itemCount));
+	self:SetState(self:CalculateState(itemID, itemCount));
 end
 
 function OptionalReagentListLineMixin:UpdateDisplay()

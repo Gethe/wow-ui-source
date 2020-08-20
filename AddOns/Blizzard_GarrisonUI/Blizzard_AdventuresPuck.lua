@@ -1,17 +1,17 @@
 
-AventuresPuckAbilityMixin = {};
+AdventuresPuckAbilityMixin = {};
 
-function AventuresPuckAbilityMixin:OnEnter()
+function AdventuresPuckAbilityMixin:OnEnter()
 	GameTooltip:SetOwner(self);
 	AddAutoCombatSpellToTooltip(GameTooltip, self.abilityInfo);
 	GameTooltip:Show();
 end
 
-function AventuresPuckAbilityMixin:OnLeave()
+function AdventuresPuckAbilityMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-function AventuresPuckAbilityMixin:SetAbilityInfo(abilityInfo)
+function AdventuresPuckAbilityMixin:SetAbilityInfo(abilityInfo)
 	self.abilityInfo = abilityInfo;
 
 	self.Icon:SetTexture(abilityInfo.icon);
@@ -20,18 +20,18 @@ function AventuresPuckAbilityMixin:SetAbilityInfo(abilityInfo)
 	self:RefreshCooldown();
 end
 
-function AventuresPuckAbilityMixin:GetAutoCombatSpellID()
+function AdventuresPuckAbilityMixin:GetAutoCombatSpellID()
 	return self.abilityInfo and self.abilityInfo.autoCombatSpellID or nil;
 end
 
-function AventuresPuckAbilityMixin:StartCooldown()
+function AdventuresPuckAbilityMixin:StartCooldown()
 	local cooldown = self.abilityInfo.cooldown;
 	self.currentCooldown = (cooldown > 0) and cooldown or nil;
 	self:RefreshCooldown();
 	self.cooldownStartedThisRound = true;
 end
 
-function AventuresPuckAbilityMixin:AdvanceCooldown()
+function AdventuresPuckAbilityMixin:AdvanceCooldown()
 	if self.cooldownStartedThisRound then
 		self.cooldownStartedThisRound = false;
 		return;
@@ -48,7 +48,7 @@ function AventuresPuckAbilityMixin:AdvanceCooldown()
 	self:RefreshCooldown();
 end
 
-function AventuresPuckAbilityMixin:RefreshCooldown()
+function AdventuresPuckAbilityMixin:RefreshCooldown()
 	local cooldown = self.currentCooldown or 0;
 	local onCooldown = cooldown > 0;
 	self.DisabledTexture:SetShown(onCooldown);
@@ -56,7 +56,7 @@ function AventuresPuckAbilityMixin:RefreshCooldown()
 	self.CooldownText:SetText(cooldown);
 end
 
-function AventuresPuckAbilityMixin:SetPuckDesaturation(desaturation)
+function AdventuresPuckAbilityMixin:SetPuckDesaturation(desaturation)
 	self.Icon:SetDesaturation(desaturation);
 	self.Border:SetDesaturation(desaturation);
 end
@@ -141,8 +141,8 @@ end
 function AdventuresPuckMixin:PlayDeathAnimation()
 	self.DeathAnimationFrame.DeathAnimation:Play();
 	
-	if self.deathSound then
-		PlaySound(self.deathSound);
+	if self.deathSound then	
+		PlaySound(self.deathSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 
@@ -175,6 +175,14 @@ end
 -- Overwrite in your derived Mixin
 function AdventuresPuckMixin:GetName()
 	return "";
+end
+
+-- Overwrite in your derived Mixin
+function AdventuresPuckMixin:ShowSupportColorationRings()
+end
+
+--Overwrite in your derived Mixin
+function AdventuresPuckMixin:HideSupportColorationRings()
 end
 
 
@@ -229,6 +237,28 @@ function AdventuresFollowerPuckMixin:GetName()
 	return self.name;
 end
 
+function AdventuresFollowerPuckMixin:ShowSupportColorationRings()
+	self.SupportColorationAnimator:SetPreviewTargets(self:GetSupportPreviewTypeForPuck(), {self.SupportColorationBurst, self.SupportColorationRing});
+end
+
+function AdventuresFollowerPuckMixin:HideSupportColorationRings()
+	self.SupportColorationAnimator:CancelPreviewTargets();
+end
+
+function AdventuresFollowerPuckMixin:GetSupportPreviewTypeForPuck()
+	local previewType = 0;
+	for _, spell in ipairs(self.autoCombatSpells) do
+		if bit.band(spell.previewMask, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff then
+			previewType = bit.bor(previewType ,Enum.GarrAutoPreviewTargetType.Buff);
+		end
+
+		if bit.band(spell.previewMask, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
+			previewType = bit.bor(previewType, Enum.GarrAutoPreviewTargetType.Heal);
+		end
+	end
+
+	return previewType;
+end
 
 AdventuresEnemyPuckMixin = {};
 

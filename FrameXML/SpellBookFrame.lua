@@ -177,14 +177,14 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame_Update();
 		end
 	elseif ( event == "USE_GLYPH" ) then
-		local slot = ...;
-		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_PENDING_GLYPH);
+		local spellID = ...;
+		SpellBookFrame_OpenToPageForGlyph(spellID, OPEN_REASON_PENDING_GLYPH);
 	elseif ( event == "CANCEL_GLYPH_CAST" ) then
 		SpellBookFrame_ClearAbilityHighlights();
 		SpellFlyout:Hide();
 	elseif ( event == "ACTIVATE_GLYPH" ) then
-		local slot = ...;
-		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_ACTIVATED_GLYPH);
+		local spellID = ...;
+		SpellBookFrame_OpenToPageForGlyph(spellID, OPEN_REASON_ACTIVATED_GLYPH);
 	end
 end
 
@@ -368,7 +368,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 -- returns the spell button, if it can find it, for the spellID passed in
 local buttonOrder = {1,3,5,7,9,11,2,4,6,8,10,12};
-function SpellBookFrame_OpenToSpell(spellID, toggleFlyout)
+function SpellBookFrame_OpenToSpell(spellID, toggleFlyout, reason)
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	ShowUIPanel(SpellBookFrame);
 	local numTabs = GetNumSpellTabs();
@@ -408,7 +408,7 @@ function SpellBookFrame_OpenToSpell(spellID, toggleFlyout)
 						if spellID == flyoutSpellID then -- we found it
 							--open the flyout
 							if toggleFlyout then
-								SpellFlyout:Toggle(actionID, flyoutButton, "RIGHT", 1, false, flyoutButton.offSpecID, true);
+								SpellFlyout:Toggle(actionID, flyoutButton, "RIGHT", 1, false, flyoutButton.offSpecID, true, reason);
 							end
 							local returnButton = _G["SpellFlyoutButton"..i];
 							return returnButton, flyoutButton;
@@ -1144,44 +1144,14 @@ function SpellBook_GetButtonForID(id)
 	end
 end
 
-function SpellBookFrame_OpenToPageForSlot(slot, reason)
-	local alreadyOpen = SpellBookFrame:IsShown();
+function SpellBookFrame_OpenToPageForGlyph(spellID, reason)
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
-	ShowUIPanel(SpellBookFrame);
-	if (SpellBookFrame.selectedSkillLine ~= 2) then
-		SpellBookFrame.selectedSkillLine = 2;
-		SpellBookFrame_Update();
-	end
+	local toggleFlyout = true;
+	local button, flyoutButton = SpellBookFrame_OpenToSpell(spellID, toggleFlyout, reason);
 
-	if (alreadyOpen and reason == OPEN_REASON_PENDING_GLYPH) then
-		local page = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
-		for i = 1, 12 do
-			local slot = (i + ( SPELLS_PER_PAGE * (page - 1))) + SpellBookFrame.selectedSkillLineOffset;
-			local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
-			if (slotType == "SPELL") then
-				if (IsSpellValidForPendingGlyph(spellID)) then
-					SpellBookFrame_Update();
-					return;
-				end
-			end
-		end
-	end
-
-	local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
-	local relativeSlot = slot - SpellBookFrame.selectedSkillLineOffset;
-	local page = math.floor((relativeSlot - 1)/ SPELLS_PER_PAGE) + 1;
-	SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = page;
-	SpellBookFrame_Update();
-	local id = relativeSlot - ( SPELLS_PER_PAGE * (page - 1) );
-	local button = SpellBook_GetButtonForID(id);
-	if (slotType == "FLYOUT") then
-		if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == button) then
-			SpellFlyout:Hide();
-		end
-
-		SpellFlyout:Toggle(spellID, button, "RIGHT", 1, false, button.offSpecID, true, reason);
+	if flyoutButton then
 		SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
-	else
+	elseif button then
 		if (reason == OPEN_REASON_PENDING_GLYPH) then
 			button.AbilityHighlight:Show();
 			button.AbilityHighlightAnim:Play();

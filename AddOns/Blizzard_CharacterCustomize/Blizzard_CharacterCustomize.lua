@@ -421,8 +421,9 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	self.categoryID = categoryData.id;
 	self.layoutIndex = categoryData.orderIndex;
 
+	self:ClearTooltipLines();
+
 	if showDebugTooltipInfo then
-		self:AddBlankTooltipLine();
 		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
 	end
 
@@ -454,6 +455,11 @@ function CharCustomizeShapeshiftFormButtonMixin:SetCategory(categoryData, select
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(categoryData.name);
+
+	if showDebugTooltipInfo then
+		self:AddBlankTooltipLine();
+		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
+	end
 end
 
 CharCustomizeSexButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);

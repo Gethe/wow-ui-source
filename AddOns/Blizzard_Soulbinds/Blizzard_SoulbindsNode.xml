@@ -19,7 +19,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate">
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate">
 				<Size x="300" y="300"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>

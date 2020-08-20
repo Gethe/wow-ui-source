@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventuresPuck.lua"/>
 
-	<Button name="AdventuresPuckAbilityTemplate" mixin="AventuresPuckAbilityMixin" enableMouse="true" virtual="true">
+	<Button name="AdventuresPuckAbilityTemplate" mixin="AdventuresPuckAbilityMixin" enableMouse="true" virtual="true">
 		<Size x="28" y="29"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -46,13 +46,23 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Portrait">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-10"/>
-						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+						<Anchor point="TOPLEFT" x="8" y="-9"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
+				<Texture parentKey="SupportColorationBurst"  atlas="Adventures-Buff-Heal-Burst" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-15" y="15"/>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="PuckBorder" atlas="Adventurers-Followers-Frame"/>
+				<Texture parentKey="SupportColorationRing" atlas="Adventures-Buff-Heal-Ring" hidden="true" >
+					<Anchor point="TOPLEFT" relativeKey="$parent.PuckBorder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PuckBorder"/>
+				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
@@ -61,6 +71,7 @@
 					<MaskedTextures>
 						<MaskedTexture childKey="Portrait"/>
 						<MaskedTexture childKey="PuckBorder"/>
+						<MaskedTexture childKey="SupportColorationRing"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -87,9 +98,24 @@
 					<Anchor point="BOTTOM" x="0" y="-2"/>
 				</Anchors>
 			</Frame>
-		</Frames>
-	</Frame>
 
+			<Frame parentKey="SupportColorationAnimator" inherits="SupportColorationAnimatorTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RotateBursts" looping="REPEAT">
+				<Rotation childKey="SupportColorationBurst" order="1" duration="45" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.RotateBursts:Play();
+			</OnShow>
+			<OnHide>
+				self.RotateBursts:Stop();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
 	<Button name="AdventuresPuckAnimatedTemplate" inherits="AdventuresPuckTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="EnemyTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">

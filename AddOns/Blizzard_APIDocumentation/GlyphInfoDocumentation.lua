@@ -16,7 +16,7 @@ local GlyphInfo =
 			LiteralName = "ACTIVATE_GLYPH",
 			Payload =
 			{
-				{ Name = "spellSlot", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -30,7 +30,7 @@ local GlyphInfo =
 			LiteralName = "USE_GLYPH",
 			Payload =
 			{
-				{ Name = "spellSlot", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 	},

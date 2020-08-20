@@ -1,4 +1,6 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard Frame Effects
 
-ButtonPulseGlow.xml
+EffectFactory.lua
+GlowEmitter.xml
+PowerSwirl.xml

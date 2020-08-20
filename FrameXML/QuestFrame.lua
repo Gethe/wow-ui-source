@@ -176,13 +176,27 @@ function QuestRewardItem_OnClick(self)
 	end
 end
 
-function QuestFrameProgressPanel_OnShow()
+local function QuestFrameProgressPanel_SetupBG(self)
+	local material, isDefaultMaterial = QuestFrame_GetMaterial();
+	if isDefaultMaterial then
+		local theme = C_QuestLog.GetQuestDetailsTheme(GetQuestID());
+		if theme and theme.background then
+			self.Bg:SetAtlas(theme.background, true);
+			return material;
+		end
+	end
+
+	self.Bg:SetTexture("Interface/QuestFrame/QuestBG");
+	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
+	return material;
+end
+
+function QuestFrameProgressPanel_OnShow(self)
 	QuestFrameRewardPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
 	QuestFrame_HideQuestPortrait();
-	local material = QuestFrame_GetMaterial();
-	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
+	QuestFrameProgressPanel_SetupBG(self);
 	QuestProgressTitleText:SetText(GetTitleText());
 	QuestFrame_SetTitleTextColor(QuestProgressTitleText, material);
 	QuestProgressText:SetText(GetProgressText());
@@ -532,16 +546,13 @@ function QuestDetailDeclineButton_OnClick()
 end
 
 function QuestFrame_SetMaterial(frame, material)
-	if ( material == "Parchment" ) then
-		_G[frame:GetName().."MaterialTopLeft"]:Hide();
-		_G[frame:GetName().."MaterialTopRight"]:Hide();
-		_G[frame:GetName().."MaterialBotLeft"]:Hide();
-		_G[frame:GetName().."MaterialBotRight"]:Hide();
-	else
-		_G[frame:GetName().."MaterialTopLeft"]:Show();
-		_G[frame:GetName().."MaterialTopRight"]:Show();
-		_G[frame:GetName().."MaterialBotLeft"]:Show();
-		_G[frame:GetName().."MaterialBotRight"]:Show();
+	local hasMaterial = material ~= "Parchment";
+	_G[frame:GetName().."MaterialTopLeft"]:SetShown(hasMaterial);
+	_G[frame:GetName().."MaterialTopRight"]:SetShown(hasMaterial);
+	_G[frame:GetName().."MaterialBotLeft"]:SetShown(hasMaterial);
+	_G[frame:GetName().."MaterialBotRight"]:SetShown(hasMaterial);
+
+	if hasMaterial then
 		_G[frame:GetName().."MaterialTopLeft"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopLeft");
 		_G[frame:GetName().."MaterialTopRight"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopRight");
 		_G[frame:GetName().."MaterialBotLeft"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
@@ -551,10 +562,11 @@ end
 
 function QuestFrame_GetMaterial()
 	local material = GetQuestBackgroundMaterial();
-	if ( not material ) then
-		material = "Parchment";
+	if not material then
+		return "Parchment", true;
 	end
-	return material;
+
+	return material, false;
 end
 
 function QuestFrame_SetTitleTextColor(fontString, material)

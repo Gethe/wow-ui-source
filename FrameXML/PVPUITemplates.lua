@@ -167,7 +167,7 @@ PVPHonorRewardMixin = {};
 function PVPHonorRewardMixin:OnEnter()
 	local honorLevel = UnitHonorLevel("player");
 	local nextHonorLevelForReward = C_PvP.GetNextHonorLevelForReward(honorLevel);
-	local rewardInfo = C_PvP.GetHonorRewardInfo(nextHonorLevelForReward);
+	local rewardInfo = nextHonorLevelForReward and C_PvP.GetHonorRewardInfo(nextHonorLevelForReward);
 	if rewardInfo then
 		local rewardText = select(11, GetAchievementInfo(rewardInfo.achievementRewardedID));
 		if rewardText and rewardText ~= "" then

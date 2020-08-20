@@ -1,6 +1,7 @@
 local CONDUIT_TEMPLATE = "SoulbindConduitNodeTemplate";
 local TRAIT_TEMPLATE = "SoulbindTraitNodeTemplate";
 local LINK_TEMPLATE = "SoulbindTreeNodeLinkTemplate";
+local SELECT_ANIM_TEMPLATE = "PowerSwirlTemplate";
 
 local SoulbindTreeEvents =
 {
@@ -30,12 +31,16 @@ function SoulbindTreeMixin:OnLoad()
 	self.pools:CreatePool("BUTTON", self.NodeContainer, TRAIT_TEMPLATE, resetterCb);
 	self.pools:CreatePool("BUTTON", self.NodeContainer, CONDUIT_TEMPLATE, resetterCb);
 	self.pools:CreatePool("FRAME", self.LinkContainer, LINK_TEMPLATE, resetterCb);
+	self.pools:CreatePool("FRAME", self.Fx, SELECT_ANIM_TEMPLATE);
 end
 
 function SoulbindTreeMixin:OnEvent(event, ...)
-	if event == "SOULBIND_NODE_LEARNED" or event == "SOULBIND_NODE_UNLEARNED" then
+	if event == "SOULBIND_NODE_LEARNED" then
 		local nodeID = ...;
-		self:OnNodeChanged(nodeID);
+		self:OnNodeLearned(nodeID);
+	elseif event == "SOULBIND_NODE_UNLEARNED" then
+		local nodeID = ...;
+		self:OnNodeUnlearned(nodeID);
 	elseif event == "SOULBIND_PATH_CHANGED" then
 		self:OnPathChanged();
 	elseif event == "CURSOR_CHANGED" then
@@ -67,15 +72,19 @@ end
 
 function SoulbindTreeMixin:HasSelectedNodes()
 	return ContainsIf(self.nodeFrames, function(nodeFrame)
-		nodeFrame:IsSelected();
+		return nodeFrame:IsSelected();
 	end);
 end
 
-function SoulbindTreeMixin:OnNodeChanged(nodeID)
+function SoulbindTreeMixin:OnNodeLearned(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-
 	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
+end
+
+function SoulbindTreeMixin:OnNodeUnlearned(nodeID)
+	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
+	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
 end
 
 function SoulbindTreeMixin:OnPathChanged()
@@ -88,11 +97,26 @@ function SoulbindTreeMixin:OnPathChanged()
 end
 
 function SoulbindTreeMixin:SelectNode(button, buttonName)
-	if buttonName == "LeftButton" then
-		if button:IsUnselected() or button:IsSelectable() then
-			C_Soulbinds.SelectNode(button:GetID());
+	if buttonName == "LeftButton" and (button:IsUnselected() or button:IsSelectable()) then
+		if button:IsSelectable() then
+			self:PlayNodeSelectionAnim(button);
 		end
+
+		C_Soulbinds.SelectNode(button:GetID());
 	end
+end
+
+function SoulbindTreeMixin:PlayNodeSelectionAnim(button)
+	local frame = self.pools:Acquire(SELECT_ANIM_TEMPLATE);
+	frame:SetAllPoints(button.FxModelScene);
+	frame:Show();
+	frame.Anim:SetScript("OnFinished", GenerateClosure(self.OnSelectAnimFinished, self, swirlFrame));
+	frame.Anim:Play();
+end
+
+function SoulbindTreeMixin:OnSelectAnimFinished(frame, anim)
+	local pool = self.pools:GetPool(SELECT_ANIM_TEMPLATE);
+	pool:Release(frame);
 end
 
 function SoulbindTreeMixin:OnNodeClicked(button, buttonName)
@@ -153,6 +177,10 @@ local function GetConduitMismatchString(conduitType)
 end
 
 function SoulbindTreeMixin:TryInstallConduitAtCursor(button)
+	if C_Soulbinds.IsConduitInstalled(button:GetID()) then
+		return;
+	end
+
 	local conduitData = C_Soulbinds.GetConduitCollectionDataAtCursor();
 	if conduitData then
 		if button:IsConduitType(conduitData.conduitType) then
@@ -199,15 +227,33 @@ function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
 end
 
 function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
-	if not Soulbinds.HasConduitAtCursor() then
-		self:StopNodeAnimations();
-		self:ApplyConduitEnterAnim(conduitType);
+	local oldTimer = self.mouseOverTimer;
+	if oldTimer then
+		self.mouseOverTimer:Cancel();
+		self.mouseOverTimer = nil;
 	end
+
+	if not Soulbinds.HasConduitAtCursor() then
+		if self.mouseOverConduit ~= conduitType or not oldTimer then
+			self:StopNodeAnimations();
+			self:ApplyConduitEnterAnim(conduitType);
+		end
+	end
+
+	self.mouseOverConduit = conduitType;
 end
 
 function SoulbindTreeMixin:OnCollectionConduitLeave()
+	local elapsed = 0;
 	if not Soulbinds.HasConduitAtCursor() then
-		self:StopThenApplyAttentionAnims();
+		if self.mouseOverTimer then
+			self.mouseOverTimer:Cancel();
+		end
+
+		self.mouseOverTimer = C_Timer.NewTicker(.1, function()
+			self:StopThenApplyAttentionAnims();
+			self.mouseOverTimer = nil;
+		end, 1);
 	end
 end
 
@@ -249,23 +295,19 @@ function SoulbindTreeMixin:StopThenApplyAttentionAnims()
 end
 
 function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, conduitID)
-	-- Slot already has an conduit installed.
 	if C_Soulbinds.IsConduitInstalled(nodeID) then
 		return;
 	end
 
-	-- Conduuit already installed in the tree.
 	if C_Soulbinds.IsConduitInstalledInSoulbind(self.soulbindID, conduitID) then
 		return;
 	end
 
-	-- Already pending.
 	local pendingConduitID = C_Soulbinds.GetPendingConduitID(nodeID);
 	if pendingConduitID and pendingConduitID == conduitID then
 		return;
 	end
 
-	-- Already pending in a different slot.
 	local pendingNodeID = C_Soulbinds.GetPendingNodeIDInSoulbind(self.soulbindID, conduitID);
 	if pendingNodeID > 0 then
 		C_Soulbinds.RemovePendingConduit(pendingNodeID);

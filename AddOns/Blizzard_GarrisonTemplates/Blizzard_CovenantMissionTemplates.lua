@@ -497,6 +497,139 @@ function AdventuresTargetingIndicatorMixin:Loop()
 	end
 end
 
+AdventuresFriendlyTargetingIndicatorMixin = {};
+
+function AdventuresFriendlyTargetingIndicatorMixin:OnShow()
+	self:SetDefault();
+	EventRegistry:RegisterCallback("CovenantMission.CancelTargetingAnimation", self.Stop, self);
+	EventRegistry:RegisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self.Stop, self);
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:OnHide()
+	self.FadeIn:Stop();
+	self.FadeOut:Stop();
+	self:SetDefault();
+	EventRegistry:UnregisterCallback("CovenantMission.CancelTargetingAnimation", self);
+	EventRegistry:UnregisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self);
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:SetDefault()
+	self.TargetMarker:SetAlpha(0);
+	self.TargetMarker:SetScale(1.4);
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:SetHealingColor()
+	self.TargetMarker:SetVertexColor(ADVENTURES_HEALING_GREEN:GetRGB());
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:SetBuffColor()
+	self.TargetMarker:SetVertexColor(ADVENTURES_BUFF_BLUE:GetRGB());
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:Play()
+	self.FadeInAndOut:Play()
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:Loop()
+	self.FadeOut:Stop();
+	self.FadeIn:Play();
+end
+
+function AdventuresFriendlyTargetingIndicatorMixin:Stop()
+	self.FadeIn:Stop();
+	self.FadeInAndOut:Stop();
+	if self.TargetMarker:GetAlpha() > 0 then
+		self.FadeOut:Play();
+	end
+end
+
+---------------------------------------------------------------------------------
+---- SupportColorationAnimatorMixin
+--------------------------------------------------------------------------------
+
+SupportColorationAnimatorMixin = {}
+
+function CovenantMission_GetSupportColorationPreviewType(previewType)
+	return bit.band(previewType, bit.bor(Enum.GarrAutoPreviewTargetType.Buff, Enum.GarrAutoPreviewTargetType.Heal));
+end
+
+function SupportColorationAnimatorMixin:SetPreviewTargets(previewType, previewObjects)
+	self.previewObjects = previewObjects;
+	
+	--PreviewType can be loaded with numerous elements but this only wants to show buffs and heals. 
+	self.previewType = CovenantMission_GetSupportColorationPreviewType(previewType) ;
+
+	for _, texture in ipairs(self.previewObjects) do
+		texture:Show();
+	end
+	
+	self:SetScript("OnUpdate", self.UpdateSupportColor);
+
+	self.colorHoldTime = 0;
+	self.colorSwapTime = 0;
+	self.targetColor = nil;
+	self:SetTargetColor();
+end
+
+function SupportColorationAnimatorMixin:CancelPreviewTargets()
+	for _, texture in ipairs(self.previewObjects) do
+		texture:Hide();
+	end
+	self:SetScript("OnUpdate", nil);
+end
+
+local ColorSwapDuration = .8;
+local ColorHoldDuration = .8;
+
+function SupportColorationAnimatorMixin:UpdateSupportColor(elapsed)
+	self.colorHoldTime = self.colorHoldTime + elapsed;
+	if self.colorHoldTime > ColorHoldDuration then
+		self.colorSwapTime = self.colorSwapTime + elapsed;
+		if self.colorSwapTime > ColorHoldDuration then
+			self.colorSwapTime = 0;
+			self.colorHoldTime = 0;
+			self:SetSupportColorationColor(self.targetColor:GetRGB());
+			self:SetTargetColor();
+		else
+			local percentComplete = self.colorSwapTime / ColorSwapDuration;
+			local lerpR = Lerp(self.previousColor.r, self.targetColor.r, percentComplete);
+			local lerpG = Lerp(self.previousColor.g, self.targetColor.g, percentComplete);
+			local lerpB = Lerp(self.previousColor.b, self.targetColor.b, percentComplete);
+			self:SetSupportColorationColor(lerpR, lerpG, lerpB);
+		end
+	end
+end
+
+function SupportColorationAnimatorMixin:SetTargetColor()
+	if self.previewType == Enum.GarrAutoPreviewTargetType.Heal then
+		self:SetSupportColorationColor(ADVENTURES_HEALING_GREEN:GetRGB());	
+		self:SetScript("OnUpdate", nil);
+	elseif self.previewType == Enum.GarrAutoPreviewTargetType.Buff then
+		self:SetSupportColorationColor(ADVENTURES_BUFF_BLUE:GetRGB());	
+		self:SetScript("OnUpdate", nil);
+	elseif self.previewType == (Enum.GarrAutoPreviewTargetType.Buff + Enum.GarrAutoPreviewTargetType.Heal) then
+		if self.targetColor == nil then
+			self.targetColor = ADVENTURES_BUFF_BLUE;
+			self.previousColor = ADVENTURES_HEALING_GREEN;
+			self:SetSupportColorationColor(ADVENTURES_HEALING_GREEN:GetRGB());
+		else
+			self.previousColor = self.targetColor;
+			if self.targetColor == ADVENTURES_BUFF_BLUE then
+				self.targetColor = ADVENTURES_HEALING_GREEN;	
+			else
+				self.targetColor = ADVENTURES_BUFF_BLUE;
+			end
+		end
+	else 
+		self:CancelPreviewTargets();
+	end
+end
+
+function SupportColorationAnimatorMixin:SetSupportColorationColor(r, g, b)
+	for _, texture in ipairs(self.previewObjects) do
+		texture:SetVertexColor(r, g, b);
+	end
+end
 
 ---------------------------------------------------------------------------------
 --- Covenant Portrait Mixin													  ---

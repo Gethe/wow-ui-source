@@ -54,6 +54,7 @@ do
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
+		self:RegisterEvent("CHAT_MSG_CHANNEL_LEAVE_PREVENTED");
 
 		local promptSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatPromptActivateChannel);
 		ChatAlertFrame:SetSubSystemAnchorPriority(promptSubSystem, 10);
@@ -157,6 +158,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:UpdateVoiceChannelIfSelected(select(2,...));
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED" then
 		self:UpdateVoiceChannelIfSelected(select(2,...));
+	elseif event == "CHAT_MSG_CHANNEL_LEAVE_PREVENTED" then
+		self:OnChannelLeavePrevented(...)
 	end
 end
 
@@ -533,7 +536,7 @@ end
 
 function ChannelFrameMixin:OnCountUpdate(id, count)
 	local name, header, collapsed, channelNumber, count, active, category, channelType = GetChannelDisplayInfo(id);
-	if self:IsCategoryGroup(category) and count then
+	if ChannelFrame_IsCategoryGroup(category) and count then
 		local channelButton = self:GetList():GetButtonForTextChannelID(id);
 		if channelButton then
 			channelButton:SetMemberCount(count);
@@ -620,16 +623,8 @@ function ChannelFrameMixin:OnUserSelectedChannel()
 	self:MarkDirty("UpdateRoster");
 end
 
-function ChannelFrameMixin:IsCategoryGlobal(category)
-	return category == "CHANNEL_CATEGORY_WORLD";
-end
-
-function ChannelFrameMixin:IsCategoryGroup(category)
-	return category == "CHANNEL_CATEGORY_GROUP";
-end
-
-function ChannelFrameMixin:IsCategoryCustom(category)
-	return category == "CHANNEL_CATEGORY_CUSTOM";
+function ChannelFrameMixin:OnChannelLeavePrevented(channelName)
+	ChatFrame_DisplaySystemMessageInPrimary(CHAT_LEAVE_CHANNEL_PREVENTED:format(channelName));
 end
 
 --[ Utility Functions ]--
@@ -652,4 +647,16 @@ function ChannelFrame_GetIdealChannelName(channel)
 	end
 
 	return channel.name or "";
+end
+
+function ChannelFrame_IsCategoryGlobal(category)
+	return category == "CHANNEL_CATEGORY_WORLD";
+end
+
+function ChannelFrame_IsCategoryGroup(category)
+	return category == "CHANNEL_CATEGORY_GROUP";
+end
+
+function ChannelFrame_IsCategoryCustom(category)
+	return category == "CHANNEL_CATEGORY_CUSTOM";
 end
