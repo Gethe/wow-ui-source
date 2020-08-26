@@ -776,6 +776,10 @@ function UpdateCharacterList(skipSelect)
 		return;
 	end
 
+	if ShouldShowLevelSquishDialog() then
+		GlueAnnouncementDialog:Display(CHAR_LEVELS_SQUISHED_TITLE, CHAR_LEVELS_SQUISHED_DESCRIPTION, "seenLevelSquishPopup");
+	end
+
     local numChars = GetNumCharacters();
     local coords;
 
@@ -1631,7 +1635,7 @@ function AccountUpgradePanel_GetBannerInfo()
 		end
 
 		local shouldShowBanner = true;
-		return nil, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+		return nil, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_SUBSCRIBE, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
 	elseif IsVeteranTrialAccount() then
 		local features = {
 			{ icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
@@ -1646,7 +1650,7 @@ function AccountUpgradePanel_GetBannerInfo()
 		end
 
 		local shouldShowBanner = true;
-		return currentExpansionLevel, shouldShowBanner, REACTIVATE_ACCOUNT_NOW, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+		return currentExpansionLevel, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_RESUBSCRIBE, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
 	else
 		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
 		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();

@@ -63,8 +63,8 @@ end
 ---------------------------------------------------------------------------------
 
 function CovenantMissionHealFollowerButton_OnClick(buttonFrame)
-	local mainFrame = buttonFrame:GetParent();
-	C_Garrison.RushHealFollower(mainFrame.followerID);
+	local mainFrame = buttonFrame:GetParent():GetParent();
+	mainFrame:ShowHealConfirmation();
 end
 
 function CovenantMissionHealFollowerButton_OnEnter(buttonFrame)
@@ -79,6 +79,10 @@ end
 ---------------------------------------------------------------------------------
 
 CovenantFollowerTabMixin = {};
+
+function CovenantFollowerTabMixin:OnHide()
+	StaticPopup_Hide("COVENANT_MISSIONS_HEAL_CONFIRMATION");
+end
 
 function CovenantFollowerTabMixin:OnUpdate()
 	local SECONDS_BETWEEN_UPDATE = 1;
@@ -96,31 +100,40 @@ end
 function CovenantFollowerTabMixin:UpdateValidSpellHighlightOnAbilityFrame()
 end
 
-function CovenantFollowerTabMixin:UpdateHealCost()	
+function CovenantFollowerTabMixin:CalculateHealCost()
 	local followerStats = self.followerInfo.autoCombatantStats;
-	self.HealFollowerButton.tooltip = nil;
+	return math.ceil(((followerStats.maxHealth - followerStats.currentHealth) / followerStats.maxHealth) * Constants.GarrisonConstsExposed.GARRISON_AUTO_COMBATANT_FULL_HEAL_COST);
+end
 
-	if not followerStats then
-		self.HealFollowerButton:SetEnabled(false);
+function CovenantFollowerTabMixin:UpdateHealCost()	
+	self.HealFollowerFrame.HealFollowerButton.tooltip = nil;
+
+	if not self.followerInfo.autoCombatantStats then
+		self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 		return;
 	end
 
-	local buttonCost = ((followerStats.maxHealth - followerStats.currentHealth) / followerStats.maxHealth) * Constants.GarrisonConstsExposed.GARRISON_AUTO_COMBATANT_FULL_HEAL_COST;
-	self.CostFrame.Cost:SetText(math.ceil(buttonCost));
+	local buttonCost = self:CalculateHealCost();
+	self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
 	
 	if (buttonCost == 0) then
-		self.HealFollowerButton:SetEnabled(false);
-		self.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_FULL_HEALTH;
+		self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
+		self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_FULL_HEALTH;
+		StaticPopup_Hide("COVENANT_MISSIONS_HEAL_CONFIRMATION");
 	else 
 		local _, secondaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency);
 		if (buttonCost > currencyInfo.quantity) then 
-			self.HealFollowerButton:SetEnabled(false);
-			self.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
+			self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
+			self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
 		else
-			self.HealFollowerButton:SetEnabled(true);
+			self.HealFollowerFrame.HealFollowerButton:SetEnabled(true);
 		end
 	end
+end
+
+function CovenantFollowerTabMixin:ShowHealConfirmation()
+	StaticPopup_Show("COVENANT_MISSIONS_HEAL_CONFIRMATION", nil, nil, {followerID = self.followerID});
 end
 
 function CovenantFollowerTabMixin:GetStatsAnchorFrame()
@@ -175,6 +188,7 @@ function CovenantFollowerTabMixin:ShowFollower(followerID, followerList)
 
 	--Set cost of the heal, enable/disable the button accordingly. 
 	self:UpdateHealCost();
+	StaticPopup_Hide("COVENANT_MISSIONS_HEAL_CONFIRMATION");
 
 	self.lastUpdate = GetTime();
 end
@@ -686,7 +700,9 @@ function AventuresPuckHealthBarMixin:SetRole(role)
 		self.RoleIcon:SetAtlas("Adventures-Healer", useAtlasSize);
 	elseif role == Enum.GarrAutoCombatantRole.Tank then
 		self.RoleIcon:SetAtlas("Adventures-Tank", useAtlasSize);
-	else
+	elseif role == Enum.GarrAutoCombatantRole.Melee then
 		self.RoleIcon:SetAtlas("Adventures-DPS", useAtlasSize);
+	else
+		self.RoleIcon:SetAtlas("Adventures-DPS-Ranged", useAtlasSize);
 	end
 end

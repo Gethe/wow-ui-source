@@ -12,8 +12,15 @@ function SubscriptionInterstitialSubscribeButtonMixin:OnLoad()
 	self.Background:SetAtlas(self.backgroundAtlas, useAtlasSize);
 end
 
+function SubscriptionInterstitialSubscribeButtonMixin:OnShow()
+	self:ClearClickState();
+end
+
 function SubscriptionInterstitialSubscribeButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Clicked);
+
 	if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
 		StoreFrame_SelectGameTimeProduct();
 		ToggleStoreUI();
@@ -21,7 +28,17 @@ function SubscriptionInterstitialSubscribeButtonMixin:OnClick()
 		LoadURLIndex(2);
 	end
 
+	self.wasClicked = true;
+
 	HideUIPanel(self:GetParent());
+end
+
+function SubscriptionInterstitialSubscribeButtonMixin:WasClicked()
+	return self.wasClicked;
+end
+
+function SubscriptionInterstitialSubscribeButtonMixin:ClearClickState()
+	self.wasClicked = false;
 end
 
 
@@ -67,6 +84,15 @@ function SubscriptionInterstitialFrameMixin:OnLoad()
 	self:RegisterEvent("SHOW_SUBSCRIPTION_INTERSTITIAL");
 
 	self.Inset.Bg:Hide();
+end
+
+function SubscriptionInterstitialFrameMixin:OnHide()
+	if not self.SubscribeButton:WasClicked() and not self.UpgradeButton:WasClicked() then
+		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Closed);
+
+		self.SubscribeButton:ClearClickState();
+		self.UpgradeButton:ClearClickState();
+	end
 end
 
 function SubscriptionInterstitialFrameMixin:OnEvent(event, ...)

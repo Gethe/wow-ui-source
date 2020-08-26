@@ -57,14 +57,8 @@ local LFGInfo =
 			},
 		},
 		{
-			Name = "CanPlayerUseScenarioFinder",
+			Name = "ConfirmLfgExpandSearch",
 			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canUse", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "string", Nilable = false },
-			},
 		},
 		{
 			Name = "GetAllEntriesForCategory",
@@ -78,6 +72,15 @@ local LFGInfo =
 			Returns =
 			{
 				{ Name = "lfgDungeonIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLFDLockStates",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "lockInfo", Type = "table", InnerType = "LFGLockInfo", Nilable = false },
 			},
 		},
 		{
@@ -283,6 +286,11 @@ local LFGInfo =
 			LiteralName = "LFG_UPDATE_RANDOM_INFO",
 		},
 		{
+			Name = "ShowLfgExpandSearchPrompt",
+			Type = "Event",
+			LiteralName = "SHOW_LFG_EXPAND_SEARCH_PROMPT",
+		},
+		{
 			Name = "UpdateLfgList",
 			Type = "Event",
 			LiteralName = "UPDATE_LFG_LIST",
@@ -301,6 +309,16 @@ local LFGInfo =
 
 	Tables =
 	{
+		{
+			Name = "LFGLockInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "lfgID", Type = "number", Nilable = false },
+				{ Name = "reason", Type = "number", Nilable = false },
+				{ Name = "hideEntry", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

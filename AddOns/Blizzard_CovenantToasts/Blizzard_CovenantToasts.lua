@@ -55,7 +55,7 @@ function CovenantChoiceToastMixin:PlayBanner(data)
 
 	local textureKitRegions = {
 		[self.GlowLineTop] = "CovenantChoice-Celebration-%sCloudyLine",
-		[self.GlowLineTopAdditive] = "CovenantChoice-Celebration-%sCloudyLine",
+		[self.GlowLineTopAdditive] = "CovenantChoice-Celebration-%s-DetailLine",
 		[self.Icon.Tex] = "CovenantChoice-Celebration-%sSigil",
 	}
 

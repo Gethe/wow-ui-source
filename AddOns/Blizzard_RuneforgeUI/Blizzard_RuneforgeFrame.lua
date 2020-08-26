@@ -49,6 +49,12 @@ local RuneforgeFrameEvents = {
 	"ITEM_CHANGED",
 };
 
+local RuneforgeFramePlayerEvents = {
+	"UNIT_SPELLCAST_START",
+	"UNIT_SPELLCAST_STOP",
+	"UNIT_SPELLCAST_SUCCEEDED",
+};
+
 function RuneforgeFrameMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
@@ -60,6 +66,9 @@ end
 
 function RuneforgeFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RuneforgeFrameEvents);
+	FrameUtil.RegisterFrameForUnitEvents(self, RuneforgeFramePlayerEvents, "player");
+	EventRegistry:RegisterCallback("CinematicFrame.CinematicStarting", self.OnCinematicStarting, self);
+	EventRegistry:RegisterCallback("CinematicFrame.CinematicStopped", self.OnCinematicStopped, self);
 
 	self:RefreshCurrencyDisplay();
 	self:SetStaticEffectsShown(true);
@@ -72,11 +81,25 @@ function RuneforgeFrameMixin:OnShow()
 end
 
 function RuneforgeFrameMixin:OnHide()
+	if self.cinematicShowing then
+		-- Defer this OnHide until after the cinematic is finished to avoid problems moving the camera.
+		return;
+	end
+
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFrameEvents);
+	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFramePlayerEvents, "player");
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStarting", self);
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStopped", self);
 
 	C_LegendaryCrafting.CloseRuneforgeInteraction();
 
 	self:SetStaticEffectsShown(false);
+
+	if not self.skipCloseSound then
+		PlaySound(SOUNDKIT.UI_RUNECARVING_CLOSE_MAIN_WINDOW);
+	end
+	
+	self.skipCloseSound = nil;
 
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
@@ -101,17 +124,53 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 			if previousItemLink == C_Item.GetItemLink(item) then
 				LegendaryItemAlertSystem:AddAlert(newItemLink);
 				PlaySound(SOUNDKIT.UI_RUNECARVING_CREATE_COMPLETE);
-				self:Close();
 			end
 		end
+
+		if self:IsRuneforgeUpgrading() then
+			HideUIPanel(self);
+		end
+	elseif event == "UNIT_SPELLCAST_START" then
+		local unitTag, lineID, spellID = ...;
+		if spellID == C_LegendaryCrafting.GetRuneforgeLegendaryCraftSpellID() then
+			self:SetCastEffectShown(true);
+		end
+	elseif event == "UNIT_SPELLCAST_STOP" then
+		local unitTag, lineID, spellID = ...;
+		if spellID == C_LegendaryCrafting.GetRuneforgeLegendaryCraftSpellID() then
+			if self.spellSucceeded then
+				self.spellSucceeded = nil;
+			else
+				self:SetCastEffectShown(false);
+			end
+		end
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local unitTag, lineID, spellID = ...;
+		if spellID == C_LegendaryCrafting.GetRuneforgeLegendaryCraftSpellID() then
+			AlertFrame:SetAlertsEnabled(false, "runeforgeLegendaryCraft");
+			self.spellSucceeded = true;
+		end
 	end
+end
+
+function RuneforgeFrameMixin:OnCinematicStarting()
+	self.cinematicShowing = true;
+	self:SetCastEffectShown(false);
+end
+
+function RuneforgeFrameMixin:OnCinematicStopped()
+	self:SetCastEffectShown(false);
+	AlertFrame:SetAlertsEnabled(true, "runeforgeLegendaryCraft");
+	self.cinematicShowing = nil;
+	self.skipCloseSound = true;
+	self:OnHide();
 end
 
 function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
 	if not self.centerPassiveEffect and shown then
 		self.centerPassiveEffect = self:AddEffect(RuneforgeUtil.Level.Background, RuneforgeUtil.Effect.CenterPassive, self.CraftingFrame.BaseItemSlot);
 
-		local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -184, };
+		local bottomEffectDynamicDescription = { effectID = RuneforgeUtil.Effect.BottomPassive, offsetY = -214, };
 		self.bottomEffect = self.BackgroundModelScene:AddDynamicEffect(bottomEffectDynamicDescription, self);
 
 	elseif self.centerPassiveEffect and not shown then
@@ -120,6 +179,15 @@ function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
 
 		self.bottomEffect:CancelEffect();
 		self.bottomEffect = nil;
+	end
+end
+
+function RuneforgeFrameMixin:SetCastEffectShown(shown)
+	if shown and not self.castEffect then
+		self.castEffect = self:AddEffect(RuneforgeUtil.Level.Frame, RuneforgeUtil.Effect.CraftCast, self.CraftingFrame.BaseItemSlot);
+	elseif not shown and self.castEffect then
+		self.castEffect:CancelEffect();
+		self.castEffect = nil;
 	end
 end
 
@@ -132,6 +200,8 @@ function RuneforgeFrameMixin:SetRunesShown(shown)
 		end
 
 		self.runeEffects = nil;
+
+		self:ClearRuneFlashes();
 	elseif not self.runeEffects and shown then
 		self.runeEffects = {};
 
@@ -144,9 +214,38 @@ function RuneforgeFrameMixin:SetRunesShown(shown)
 	end
 end
 
+function RuneforgeFrameMixin:ClearRuneFlashes()
+	if self.runeFlashes then
+		self.runeFlashesCanceled = true;
+
+		for index, runeFlash in pairs(self.runeFlashes) do
+			runeFlash:CancelEffect();
+		end
+
+		self.runeFlashes = nil;
+		self.runeFlashesCanceled = nil;
+	end
+end
+
 function RuneforgeFrameMixin:FlashRunes()
+	self:ClearRuneFlashes();
+
+	self.runeFlashes = {};
+
 	for i, effect in ipairs(CircleRuneFlashEffects) do
-		self.CraftingFrame.ModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot);
+		local function OnRuneforgeRuneFlashEffectResolution()
+			if not self.runeFlashesCanceled then
+				self.runeFlashes[i] = nil;
+			end
+
+			if not next(self.runeFlashes) then
+				self.runeFlashes = nil;
+			end
+		end
+
+		local target = nil;
+		local onEffectFinish = nil;
+		self.runeFlashes[i] = self.CraftingFrame.ModelScene:AddDynamicEffect(effect, self.CraftingFrame.BaseItemSlot, target, onEffectFinish, OnRuneforgeRuneFlashEffectResolution);
 	end
 end
 
@@ -178,11 +277,11 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 		resultTooltip:SetOwner(self, "ANCHOR_NONE");
 		resultTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -162);
 
-		local itemID = C_Item.GetItemID(baseItem);
+		local itemPreviewInfo = C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
 		local upgradeItem = self:GetUpgradeItem();
 		local hasUpgradeItem = upgradeItem ~= nil;
-		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or C_Item.GetCurrentItemLevel(baseItem);
-		resultTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
+		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or itemPreviewInfo.itemLevel;
+		resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemLevel, powerID, modifiers);
 	end
 	
 	resultTooltip:SetShown(hasItem);
@@ -201,12 +300,14 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 		return;
 	end
 
+	local itemPreviewInfo = C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
+
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, -6);
 
 	local itemID = C_Item.GetItemID(baseItem);
 	local itemLevel = C_Item.GetCurrentItemLevel(baseItem);
-	GameTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
+	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemPreviewInfo.itemLevel, powerID, modifiers);
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip:Show();
 
@@ -214,7 +315,7 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 	resultTooltip:SetOwner(self, "ANCHOR_NONE");
 	resultTooltip:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 4, 0);
 	local upgradeItemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
-	resultTooltip:SetRuneforgeResultItem(itemID, upgradeItemLevel, powerID, modifiers);
+	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, upgradeItemLevel, powerID, modifiers);
 	resultTooltip:Show();
 
 	SetUIPanelAttribute(self, "width", self:GetWidth());
@@ -455,6 +556,6 @@ function RuneforgeFrameMixin:GetRuneforgeComponentInfo()
 	return C_LegendaryCrafting.GetRuneforgeLegendaryComponentInfo(baseItem);
 end
 
-function RuneforgeFrameMixin:Close()
-	HideUIPanel(self);
+function RuneforgeFrameMixin:CraftItem()
+	self.CreateFrame:CraftItem();
 end

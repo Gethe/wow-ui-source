@@ -226,16 +226,37 @@ StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
 		ShowUIPanel(MacOptionsFrame);
 	end,
 	OnShow = function(self)
-		if (MacOptions_HasNewStyleUniversalAccess() and MAC_OPEN_UNIVERSAL_ACCESS1090 ~= nil) then
-			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());
+		self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 0,
+	hideOnEscape = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["MAC_OPEN_INPUT_MONITORING"] = {
+	text = MAC_OPEN_UNIVERSAL_ACCESS,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function ()
+		MacOptions_OpenInputMonitoring();
+		ShowUIPanel(MacOptionsFrame);
+	end,
+	OnCancel = function()
+		ShowUIPanel(MacOptionsFrame);
+	end,
+	OnShow = function(self)
+		if (MacOptions_HasNewStyleInputMonitoring()) then
+			self.text:SetFormattedText(MAC_INPUT_MONITORING1015, MacOptions_GetGameBundleName());
 		else
-			self.text:SetText(MAC_OPEN_UNIVERSAL_ACCESS);
+			self.text:SetFormattedText(MAC_INPUT_MONITORING1014, MacOptions_GetGameBundleName());
 		end
 	end,
 	showAlert = 1,
 	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
+	exclusive = 0,
+	hideOnEscape = 0,
 	whileDead = 1,
 }
 
@@ -4537,7 +4558,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
-		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM")) then 
+		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
+		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT")) then 
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -4635,10 +4657,18 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	if ( info.hasItemFrame ) then
 		dialog.ItemFrame:Show();
 		if ( data and type(data) == "table" ) then
-			if ( data.useLinkForItemInfo ) then
-				StaticPopupItemFrame_RetrieveInfo(dialog.ItemFrame, data);
+			dialog.ItemFrame:SetCustomOnEnter(data.itemFrameOnEnter);
+
+			local itemFrameCallback = data.itemFrameCallback;
+			if ( itemFrameCallback ) then
+				itemFrameCallback(dialog.ItemFrame);
+			else
+				if ( data.useLinkForItemInfo ) then
+					dialog.ItemFrame:RetrieveInfo(data);
+				end
+				dialog.ItemFrame:DisplayInfo(data.link, data.name, data.color, data.texture, data.count);
 			end
-			StaticPopupItemFrame_DisplayInfo(dialog.ItemFrame, data.link, data.name, data.color, data.texture, data.count);
+
 			dialog.ItemFrame:SetPoint("BOTTOM", -60, bottomSpace + 29);
 		end
 	else
@@ -5273,18 +5303,43 @@ function StaticPopup_HideExclusive()
 	end
 end
 
-function StaticPopupItemFrame_OnEvent(self, event, ...)
+
+StaticPopupItemFrameMixin = {};
+
+function StaticPopupItemFrameMixin:OnLoad()
+	self:GetParent().itemFrame = self;
+	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+end
+
+function StaticPopupItemFrameMixin:OnEvent(event, ...)
 	if ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		local itemID = ...;
 		if ( itemID == self.itemID ) then
 			local data = self:GetParent().data;
-			StaticPopupItemFrame_RetrieveInfo(self, data);
-			StaticPopupItemFrame_DisplayInfo(self, data.link, data.name, data.color, data.texture, data.count);
+			self:RetrieveInfo(data);
+			self:DisplayInfo(data.link, data.name, data.color, data.texture, data.count);
 		end
 	end
 end
 
-function StaticPopupItemFrame_RetrieveInfo(self, data)
+function StaticPopupItemFrameMixin:OnEnter()
+	if ( self.customOnEnter ) then
+		self.customOnEnter(self);
+	elseif ( self.link ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetHyperlink(self.link);
+	end
+end
+
+function StaticPopupItemFrameMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function StaticPopupItemFrameMixin:SetCustomOnEnter(customOnEnter)
+	self.customOnEnter = customOnEnter;
+end
+
+function StaticPopupItemFrameMixin:RetrieveInfo(data)
 	local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(data.link);
 	if ( itemName ) then
 		data.name = itemName;
@@ -5301,7 +5356,7 @@ function StaticPopupItemFrame_RetrieveInfo(self, data)
 	end
 end
 
-function StaticPopupItemFrame_DisplayInfo(self, link, name, color, texture, count)
+function StaticPopupItemFrameMixin:DisplayInfo(link, name, color, texture, count)
 	self.link = link;
 	_G[self:GetName().."IconTexture"]:SetTexture(texture);
 	local nameText = _G[self:GetName().."Text"];

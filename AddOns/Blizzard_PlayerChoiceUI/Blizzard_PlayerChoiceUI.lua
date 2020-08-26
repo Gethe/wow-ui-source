@@ -33,7 +33,6 @@ local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_CHOICE_CLOSE",
 };
 
-
 StaticPopupDialogs["CONFIRM_GORGROND_GARRISON_CHOICE"] = {
 	text = CONFIRM_GORGROND_GARRISON_CHOICE,
 	button1 = OKAY,
@@ -281,7 +280,21 @@ local choiceLayout = {
 		animateFrameInAndOut = true,
 		offsetBetweenOptions = -50,
 		highlightChoiceBeforeHide = true, 
-		useArtworkGlowOnSelection = true, 
+		useArtworkGlowOnSelection = true,
+		artworkAboveBorder = true;
+		optionFixedHeight = 90,
+		optionYOffset = -35,
+		optionsButtonContainerYOffset = 10,
+		headerYOffset = -50;
+		artworkBorderYOffset = 25;
+		tooltipOnlyOnArtwork = true,
+		setupTooltip = function(frame, tooltip, choiceInfo)
+			tooltip:SetOwner(frame, "ANCHOR_RIGHT");
+			GameTooltip_AddColoredLine(tooltip, choiceInfo.header, choiceInfo.rarityColor, true);
+			GameTooltip_AddHighlightLine(tooltip, MAW_POWER);
+			GameTooltip_AddNormalLine(tooltip, choiceInfo.description, true);
+			tooltip:Show();
+		end;
 	},
 	["Oribos"] = {
 		atlasBackgroundWidthPadding = -2,
@@ -320,6 +333,14 @@ local choiceButtonLayout = {
 		hideOptionButtonsUntilMouseOver = true,
 		forceSideBySideLayout = true,
 	},
+	["jailerstower"] = {
+		firstButtonOffsetX = 0,
+		firstButtonOffsetY = -30,
+		secondButtonOffsetX = 0,
+		secondButtonOffsetY = 0,
+		firstButtonTemplate="PlayerChoiceOptionButtonTemplate",
+		secondButtonTemplate="PlayerChoiceOptionButtonTemplate",
+	}
 }
 
 local choiceModelSceneLayout = {
@@ -334,7 +355,14 @@ local choiceModelSceneLayout = {
 }
 
 local hideButtonOverrideInfo = {
-	["jailerstower"] = { playerChoiceShowingText = HIDE, playerChoiceHiddenText = JAILERS_TOWER_PENDING_POWER_SELECTION},
+	["jailerstower"] = { 
+		playerChoiceShowingText = HIDE, 
+		playerChoiceHiddenText = JAILERS_TOWER_PENDING_POWER_SELECTION, 
+		playerChoiceShowingTextXOffset = 3,
+		playerChoiceHiddenTextXOffset = 8,
+		playerChoiceShowingTextYOffset = -3,
+		playerChoiceHiddenTextYOffset = -3,
+	},
 }
 
 local function SetupBorder(self, layout, textureKit)
@@ -391,6 +419,7 @@ function PlayerChoiceFrameMixin:OnShow()
 	if JailersTowerBuffsContainerActive() then
 		ScenarioBlocksFrame.MawBuffsBlock.Container:UpdateListState(true);
 	end
+	self:EnableMouse(true);
 end
 
 function PlayerChoiceFrameMixin:OnHide()
@@ -431,19 +460,26 @@ end
 
 function PlayerChoiceFrameMixin:TryHide()
 	if(self.optionLayout.animateFrameInAndOut) then
+		for i, option in ipairs(self.Options) do
+			if (i > self.numActiveOptions) then
+				break;
+			end
+			option:CancelEffects();
+		end
 		self.FadeOut:Play();
 	else
 		HideUIPanel(self);
 	end
 end
 
-function PlayerChoiceFrameMixin:HideOptions(option) 
+function PlayerChoiceFrameMixin:HideOptions(option)
 	for i, optionToHide in ipairs(self.Options) do
+		optionToHide.OptionButtonsContainer:DisableButtons();
 		if(option ~= optionToHide) then
 			self.HighStrataModelScene:Hide(); 
 			optionToHide:CancelEffects(); 
-			optionToHide.FadeoutUnselected:Stop(); 
-			optionToHide.FadeoutUnselected:Play(); 
+			optionToHide.MouseOverOverride:Hide();
+			optionToHide.FadeoutUnselected:Restart(); 
 		end 
 	end
 end 
@@ -492,6 +528,12 @@ function PlayerChoiceFrameMixin:TryShow()
 	for _, option in pairs(self.Options) do
 		option.Header.Text:SetFontObject(self.optionTitleFont)
 		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA());
+		if (self.optionLayout.optionFixedHeight) then
+			option.OptionText:SetUseHTML(false);
+			option.OptionText:SetStringHeight(self.optionLayout.optionFixedHeight);
+		else
+			option.OptionText:SetUseHTML(true);
+		end
 		option.OptionText:SetFontObject(self.optionDescriptionFont);
 		option.OptionText:SetTextColor(self.optionDescriptionColor:GetRGBA());
 
@@ -500,6 +542,17 @@ function PlayerChoiceFrameMixin:TryShow()
 		end 
 		option.FadeoutUnselected:Stop();
 		option:SetAlpha(1);
+
+		if (self.optionLayout.artworkAboveBorder) then
+			option.Artwork:SetDrawLayer("ARTWORK", 2);
+		else
+			option.Artwork:SetDrawLayer("ARTWORK", -2);
+		end
+
+		option.SpinningGlows2:SetAlpha(0);
+		option.RingGlow:SetAlpha(0);
+		option.PointBurstLeft:SetAlpha(0);
+		option.PointBurstRight:SetAlpha(0);
 	end
 
 	if (not self:IsShown()) then
@@ -802,8 +855,6 @@ function PlayerChoiceFrameMixin:Update()
 			option.soundKitID = optionInfo.soundKitID;
 			option.hasRewards = optionInfo.hasRewards;
 			self:UpdateOptionWidgetRegistration(option, optionInfo.widgetSetID);
-			option.OptionButtonsContainer:ClearAllPoints();
-			option.OptionButtonsContainer:SetPoint("TOP", option:GetPaddingFrame(), "BOTTOM", 0, -5);
 			option.OptionButtonsContainer:ConfigureButtons(optionInfo, self.uiTextureKit);
 
 			-- We want to override the texture text color if this is jailers tower.
@@ -828,15 +879,7 @@ function PlayerChoiceFrameMixin:Update()
 
 			option:Show();
 
-			if (modelSceneLayout) then 
-				if (modelSceneLayout.artworkEffectID) then 
-					option.artworkEffectController = self.HighStrataModelScene:AddEffect(modelSceneLayout.artworkEffectID, option.Artwork);
-				end
-
-				if (modelSceneLayout.effectID) then
-					option.backgroundEffectController = GlobalFXBackgroundModelScene:AddEffect(modelSceneLayout.effectID, option.Background);
-				end
-			end 
+			option:BeginEffects(modelSceneLayout, self.HighStrataModelScene, GlobalFXBackgroundModelScene);
 
 			if not hasHeaders then
 				hasHeaders = option.Header:IsShown();
@@ -858,6 +901,9 @@ function PlayerChoiceFrameMixin:Update()
 		self.HighStrataModelScene:ClearAllPoints(); 
 		self.HighStrataModelScene:SetPoint("TOPLEFT"); 
 		self.HighStrataModelScene:SetPoint("BOTTOMRIGHT", modelSceneLayout.modelSceneXOffest, modelSceneLayout.modelSceneYOffest)
+		self.HighStrataModelScene:Show();
+	else
+		self.HighStrataModelScene:Hide();
 	end 
 
 	-- title needs to reach across
@@ -993,6 +1039,7 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	local layoutInfo = self:GetOptionLayoutInfo();
 	local optionButtonLayout = choiceButtonLayout[self:GetParent().uiTextureKit] or choiceButtonLayout["default"];
 	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver);
+	self.MouseOverOverride:Show();
 	self:UpdatePadding(1);
 end
 
@@ -1007,17 +1054,23 @@ function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 		return;
 	end
 
-	if(not GameTooltip:IsShown()) then 
-		if JailersTowerBuffsContainerActive() then
-			if(self.maxStacks and self.spellID) then 
-				if(self.maxStacks ~= 1) then -- 1 is the only case we care about because that's the only case where it is not stackable. 
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, -50);
-					GameTooltip_AddNormalLine(GameTooltip, PLAYER_CHOICE_STACKABLE_CHOICE); 
-					GameTooltip:Show(); 
-				end
-				ScenarioBlocksFrame.MawBuffsBlock.Container:HighlightBuffAndShow(self.spellID, self.maxStacks);
-			end
+	local tooltipShown = false;
+	local layoutInfo = self:GetOptionLayoutInfo();
+	if (layoutInfo.setupTooltip) then
+		local choiceInfo = C_PlayerChoice.GetPlayerChoiceOptionInfo(self.layoutIndex);
+		local mouseOverFrame = self.MouseOverOverride;
+		if (layoutInfo.tooltipOnlyOnArtwork) then
+			mouseOverFrame = self.Artwork;
+		elseif (layoutInfo.tooltipOnlyOnOptionText) then
+			mouseOverFrame = self.OptionText;
 		end
+		if (MouseIsOver(mouseOverFrame)) then
+			layoutInfo.setupTooltip(mouseOverFrame, GameTooltip, choiceInfo);
+			tooltipShown = true;
+		end
+	end
+	if (not tooltipShown) then
+		GameTooltip:Hide();
 	end
 end
 
@@ -1152,20 +1205,13 @@ end
 
 function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
 	local optionLayout = self:GetOptionLayoutInfo();
-	local artworkBorder;
 
 	local extraPaddingOnArtworkBorder = optionLayout.extraPaddingOnArtworkBorder;
-	local width, height = self.ArtworkBorder:GetSize();
-	height = height - (extraPaddingOnArtworkBorder);
-	width = width - (extraPaddingOnArtworkBorder);
+	local width = self.ArtworkBorder:GetWidth() - extraPaddingOnArtworkBorder;
+	local height = self.ArtworkBorder:GetHeight() - extraPaddingOnArtworkBorder;
 
-	if(self.ArtworkBorder:IsShown()) then
-		artworkBorder = self.ArtworkBorder;
-	elseif(self.ArtworkBorderDisabled:IsShown()) then
-		artworkBorder = self.ArtworkBorderDisabled;
-	end
-
-	if(not artworkBorder) then
+	local artworkBorder = self.ArtworkBorder;
+	if (not self.ArtworkBorder:IsShown() and not self.ArtworkBorderDisabled:IsShown()) then
 		return;
 	end
 
@@ -1174,10 +1220,11 @@ function PlayerChoiceOptionFrameMixin:SetupArtworkForOption()
 	self.ArtworkBorderAdditionalGlow:ClearAllPoints();
 
 	if (optionLayout.combineHeaderWithOption) then
+		local y = -(height + (optionLayout.artworkBorderYOffset or 15));
 		if(self.hasHeader) then
-			artworkBorder:SetPoint("BOTTOM", self.Header, 0, -(height + 15));
+			artworkBorder:SetPoint("BOTTOM", self.Header, 0, y);
 		else
-			artworkBorder:SetPoint("TOP", 0, -(height + 15));
+			artworkBorder:SetPoint("TOP", 0, y);
 		end
 
 		self.Artwork:SetPoint("TOPLEFT", artworkBorder, "TOPLEFT", (width), -(height));
@@ -1310,7 +1357,7 @@ function PlayerChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasEle
 		self.Header:ClearAllPoints();
 		if (optionLayout and optionLayout.combineHeaderWithOption) then
 			self.Header.ignoreInLayout = false;
-			self.Header:SetPoint("TOP", self, "TOP", 0, -60);
+			self.Header:SetPoint("TOP", self, "TOP", 0, optionLayout.headerYOffset or -60);
 		else
 			self.Header.ignoreInLayout = true;
 			self.Header:SetPoint("BOTTOM", self, "TOP", 0, 15);
@@ -1323,6 +1370,18 @@ function PlayerChoiceOptionFrameMixin:ConfigureHeader(header, headerIconAtlasEle
 		self.Header:Hide();
 		self.hasHeader = false;
 	end
+end
+
+function PlayerChoiceOptionFrameMixin:BeginEffects(modelSceneLayout, highStrataModelScene, backgroundModelScene)
+	if (modelSceneLayout) then 
+		if (modelSceneLayout.artworkEffectID and not self.artworkEffectController) then 
+			self.artworkEffectController = highStrataModelScene:AddEffect(modelSceneLayout.artworkEffectID, self.Artwork);
+		end
+
+		if (modelSceneLayout.effectID and not self.backgroundEffectController) then
+			self.backgroundEffectController = backgroundModelScene:AddEffect(modelSceneLayout.effectID, self.Background);
+		end
+	end 
 end
 
 function PlayerChoiceOptionFrameMixin:CancelEffects()
@@ -1345,7 +1404,7 @@ function PlayerChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
 	else
 		self.SubHeader:Hide();
 		local optionLayout = self:GetOptionLayoutInfo();
-		local paddingY = -20 + optionLayout.extraPaddingOnArtworkBorder;
+		local paddingY = (optionLayout.optionYOffset or -20) + optionLayout.extraPaddingOnArtworkBorder;
 		self.OptionText:SetPoint("TOP", self.ArtworkBorder, "BOTTOM", 0, paddingY);
 	end
 end
@@ -1382,11 +1441,12 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 			end 
 
 			local shouldFadeOutOtherOptions = optionLayout.highlightChoiceBeforeHide and self:GetParent():GetNumOptions() > 1; 
-			if(shouldFadeOutOtherOptions) then 
+			if(shouldFadeOutOtherOptions) then
+				self:GetParent():EnableMouse(false);
 				self:GetParent():HideOptions(self);
 				PlayerChoiceToggleButton:Hide(); 
-				self.FadeoutSelected:Stop(); 
-				self.FadeoutSelected:Play(); 
+				C_Timer.After(1.25, function() self:CancelEffects() end);
+				self.FadeoutSelected:Restart(); 
 			elseif (not choiceInfo.keepOpenAfterChoice and (not isSecondButton or not optionLayout.secondButtonClickDoesntCloseUI)) then
 				self:GetParent():TryHide();
 			end
@@ -1443,7 +1503,7 @@ function PlayerChoiceOptionButtonContainerMixin:ConfigureButtons(optionInfo, tex
 	self.button1:SetPoint("TOPLEFT", self, optionButtonLayout.firstButtonOffsetX, optionButtonLayout.firstButtonOffsetY);
 	self.button1:Show();
 
-	local buttonContainerOffset = 5;
+	local buttonContainerOffset = optionInfo.optionsButtonContainerYOffset or 5;
 	if optionInfo.secondOptionInfo then
 		 self.button2 = self.buttonPool:Acquire(optionButtonLayout.secondButtonTemplate);
 		 self.button2.buttonIndex = 2;
@@ -1465,10 +1525,17 @@ function PlayerChoiceOptionButtonContainerMixin:ConfigureButtons(optionInfo, tex
 	else
 		if parent:GetParent().anOptionHasMultipleButtons and not optionButtonLayout.forceSideBySideLayout then
 			-- If another option has multiple Buttons and we don't, offset the container more
-			buttonContainerOffset = 35;
+			buttonContainerOffset = buttonContainerOffset + 30;
 		end
 	end
+	self:ClearAllPoints();
 	self:SetPoint("TOP", parent:GetPaddingFrame(), "BOTTOM", 0, -buttonContainerOffset);
+end
+
+function PlayerChoiceOptionButtonContainerMixin:DisableButtons()
+	for button in self.buttonPool:EnumerateActive() do
+		button:Disable();
+	end
 end
 
 PlayerChoiceOptionButtonMixin = {};
@@ -1641,12 +1708,12 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	end
 
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
-	if(not choiceInfo or not choiceInfo.uiTextureKit) then
+	if (not choiceInfo or not choiceInfo.uiTextureKit) then
 		return;
 	end
 
 	self:ClearAllPoints();
-	if(self.isPlayerChoiceFrameSetup) then
+	if (self.isPlayerChoiceFrameSetup) then
 		self:SetPoint("TOP", PlayerChoiceFrame, "BOTTOM", 0, -70);
 	else
 		self:SetPoint("CENTER", self:GetParent(), 0, -300);
@@ -1659,7 +1726,7 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	local normalTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButton or hideButtonAtlasOptions.LargeButton;
 	local highlightTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButtonHighlight or hideButtonAtlasOptions.LargeButtonHighlight;
 
-	if(not isPlayerChoiceShowing) then
+	if (not isPlayerChoiceShowing) then
 		if(modelSceneLayout and modelSceneLayout and modelSceneLayout.extraButtonEffectID) then 
 			self.dialogEffectController = GlobalFXDialogModelScene:AddEffect(modelSceneLayout.extraButtonEffectID, self);
 		end 
@@ -1675,7 +1742,22 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	self:SetNormalAtlas(normalTextureAtlas);
 	self:SetHighlightAtlas(highlightTextureAtlas);
 
-	if(overrideTextInfo) then
+	if (overrideTextInfo) then
+		local xOffset = 0;
+		if (isPlayerChoiceShowing and overrideTextInfo.playerChoiceShowingTextXOffset) then
+			xOffset = overrideTextInfo.playerChoiceShowingTextXOffset;
+		elseif (not isPlayerChoiceShowing and overrideTextInfo.playerChoiceHiddenTextXOffset) then
+			xOffset = overrideTextInfo.playerChoiceHiddenTextXOffset;
+		end
+		local yOffset = 0;
+		if (isPlayerChoiceShowing and overrideTextInfo.playerChoiceShowingTextYOffset) then
+			yOffset = overrideTextInfo.playerChoiceShowingTextYOffset;
+		elseif (not isPlayerChoiceShowing and overrideTextInfo.playerChoiceHiddenTextYOffset) then
+			yOffset = overrideTextInfo.playerChoiceHiddenTextYOffset;
+		end
+
+		self.Text:ClearAllPoints();
+		self.Text:SetPoint("CENTER", self, "CENTER", xOffset, yOffset); 
 		self.Text:SetText(isPlayerChoiceShowing and overrideTextInfo.playerChoiceShowingText or overrideTextInfo.playerChoiceHiddenText);
 		self.Text:Show();
 	else
@@ -1683,17 +1765,62 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	end
 
 	local normalAtlasInfo = C_Texture.GetAtlasInfo(normalTextureAtlas);
-	if(normalAtlasInfo) then
+	if (normalAtlasInfo) then
 		self:SetSize(normalAtlasInfo.width, normalAtlasInfo.height);
 	end
 end
 
 function PlayerChoiceToggleButtonMixin:OnClick()
-	if(not PlayerChoiceFrame:IsShown()) then
-		PlayerChoiceFrame:TryShow();
-	else
+	if (PlayerChoiceFrame:IsShown()) then
 		PlayerChoiceFrame:TryHide();
-		self.FadeOutAndIn:Stop();
-		self.FadeOutAndIn:Play();
+	else
+		PlayerChoiceFrame:TryShow();
 	end
+	self.FadeIn:Restart();
+end
+
+PlayerChoiceOptionTextWrapperMixin = { }
+
+function PlayerChoiceOptionTextWrapperMixin:OnLoad()
+	local setWidth = self.SetWidth;
+	self.SetWidth = function(self, ...)
+		if self.useHTML then
+			self.HTML:SetWidth(...);
+		else
+			self.String:SetWidth(...);
+		end
+		setWidth(self, ...);
+	end
+	self:SetUseHTML(true);
+end
+
+function PlayerChoiceOptionTextWrapperMixin:SetUseHTML(useHTML)
+	self.useHTML = useHTML;
+	self.HTML:SetShown(useHTML);
+	self.String:SetShown(not useHTML);
+
+	self.textObject = useHTML and self.HTML or self.String;
+end
+
+function PlayerChoiceOptionTextWrapperMixin:SetText(...)
+	self.textObject:SetText(...);
+	if self.useHTML then
+		self:SetHeight(self.HTML:GetHeight());
+	end
+end
+
+function PlayerChoiceOptionTextWrapperMixin:SetFontObject(...)
+	self.textObject:SetFontObject(...);
+end
+
+function PlayerChoiceOptionTextWrapperMixin:SetTextColor(...)
+	self.textObject:SetTextColor(...);
+end
+
+function PlayerChoiceOptionTextWrapperMixin:SetJustifyH(...)
+	self.textObject:SetJustifyH(...);
+end
+
+function PlayerChoiceOptionTextWrapperMixin:SetStringHeight(height)
+	self.String:SetHeight(height);
 end

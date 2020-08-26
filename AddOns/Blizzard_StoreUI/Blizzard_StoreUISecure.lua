@@ -1463,7 +1463,10 @@ local vasErrorData = {
 	},
 	[Enum.VasError.NewLeaderInvalid] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
-	}
+	},
+	[Enum.VasError.NeedsLevelSquish] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
+	},
 };
 
 local factionColors = {

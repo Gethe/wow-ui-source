@@ -11,7 +11,8 @@ function AzeriteBarMixin:ShouldBeVisible()
 	if isMaxLevel then
 		return false;
 	end
-	return C_AzeriteItem.HasActiveAzeriteItem();
+	local azeriteItem = C_AzeriteItem.FindActiveAzeriteItem();
+	return azeriteItem and C_AzeriteItem.IsAzeriteItemEnabled(azeriteItem) and azeriteItem:IsEquipmentSlot();
 end
 
 function AzeriteBarMixin:Update()

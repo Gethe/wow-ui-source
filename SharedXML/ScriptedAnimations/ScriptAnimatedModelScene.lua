@@ -20,16 +20,31 @@ function ScriptAnimatedModelSceneMixin:OnLoad()
 	self.effectControllers = {};
 	self.pixelsPerSceneUnit = math.huge;
 	self.delayedActions = {};
+end
 
+function ScriptAnimatedModelSceneMixin:OnShow()
 	self:RefreshModelScene();
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+end
+
+function ScriptAnimatedModelSceneMixin:OnHide()
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UnregisterEvent("UI_SCALE_CHANGED");
 end
 
 function ScriptAnimatedModelSceneMixin:OnSizeChanged()
 	self:RefreshModelScene();
 end
 
+function ScriptAnimatedModelSceneMixin:OnEvent(event)
+	if event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
+		self:RefreshModelScene();
+	end
+end
+
 function ScriptAnimatedModelSceneMixin:RefreshModelScene()
-	if not self:IsRectValid() then
+	if not self:GetRect() then
 		return;
 	end
 

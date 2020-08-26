@@ -19,28 +19,61 @@
 			</AnimationGroup>
 		</Animations>
 		<Frames>
-			<Frame name="MicroButtonAndBagsBar">
+			<Frame name="MicroButtonAndBagsBar" parentKey="MicroButtonAndBagsBar">
 				<Size x="298" y="88"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" x="0"/>
 				</Anchors>
-				<Layers> 
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="QuickKeybindsMicroBagBarGlow" atlas="QuickKeybind_BagMicro_Glow" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.MicroBagBar" x="-30" y="30"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="MicroBagBar" atlas="hud-MicroBagBar" useAtlasSize="true"/>
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="MainMenuBarArtFrame">
+			<Frame name="MainMenuBarArtFrame" parentKey="ArtFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MainMenuBar" y="10"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar" y="10"/>
 				</Anchors>
 				<Frames>
-					<Frame name="MainMenuBarArtFrameBackground" frameStrata="LOW">
+					<Frame name="MainMenuBarArtFrameBackground" parentKey="Background" frameStrata="LOW">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="BOTTOM"/>
 						</Anchors>
 						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="-2">
+								<Texture parentKey="QuickKeybindBottomShadow" atlas="_QuickKeybind_Bottom_Shadow" useAtlasSize="true" horizTile="true" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="QuickKeybindRightShadow" atlas="!QuickKeybind_Side_Shadow" useAtlasSize="true" vertTile="true" hidden="true">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="-1">
+								<Texture parentKey="QuickKeybindGlowLarge" atlas="QuickKeybind_BottomBarExtended_Glow" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundLarge" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="QuickKeybindGlowSmall" atlas="QuickKeybind_BottomBar_Glow" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundSmall" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="BackgroundLarge" atlas="hud-MainMenuBar-large" useAtlasSize="true" hidden="true"/>
 								<Texture parentKey="BackgroundSmall" atlas="hud-MainMenuBar-small" useAtlasSize="true" hidden="true"/>
@@ -69,7 +102,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="MainMenuBarVehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
+			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>

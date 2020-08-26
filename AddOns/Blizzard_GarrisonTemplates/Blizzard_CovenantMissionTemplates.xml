@@ -401,61 +401,67 @@
 					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="4">
-				<Texture parentKey="BaseFrameTopEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" y="3"/>
-						<Anchor point="TOPRIGHT" y="3"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BaseFrameBottomEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" y="-3"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-				<Texture parentKey="BaseFrameLeftEdge" atlas="!AdventuresFrame-Left" vertTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3"/>
-						<Anchor point="BOTTOMLEFT" x="-3"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="BaseFrameRightEdge" atlas="!AdventuresFrame-Right" vertTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="3"/>
-						<Anchor point="BOTTOMRIGHT" x="3"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="5">
-				<Texture parentKey="BaseFrameTopLeftCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BaseFrameTopRightCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="BaseFrameBottomLeftCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-				<Texture parentKey="BaseFrameBottomRightCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-				</Texture>
-			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="RaisedFrameEdges" setAllPoints="true" frameLevel="50">
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="4">
+						<Texture parentKey="BaseFrameTopEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="3"/>
+								<Anchor point="TOPRIGHT" y="3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BaseFrameBottomEdge" atlas="_AdventuresFrame-Small-Top" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+						</Texture>
+						<Texture parentKey="BaseFrameLeftEdge" atlas="!AdventuresFrame-Left" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3"/>
+								<Anchor point="BOTTOMLEFT" x="-3"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture parentKey="BaseFrameRightEdge" atlas="!AdventuresFrame-Right" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="3"/>
+								<Anchor point="BOTTOMRIGHT" x="3"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="5">
+						<Texture parentKey="BaseFrameTopLeftCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BaseFrameTopRightCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture parentKey="BaseFrameBottomLeftCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+						</Texture>
+						<Texture parentKey="BaseFrameBottomRightCorner" atlas="AdventuresFrame-Corner-Small-TopLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name ="CovenantStatLineTemplate" parentArray="Abilities" virtual="true">
@@ -521,13 +527,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ButtonFrame" atlas="Adventures_MissionCostStartButtonBg" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-22"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="QuestFont_Enormous" justifyH="LEFT">
 					<Size x="0" y="18"/>
 					<Color r="1.0" g="1.0" b="1.0"/>
@@ -544,22 +543,35 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="HealFollowerButtonTemplate" parentKey="HealFollowerButton" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_HEAL_BUTTON" motionScriptsWhileDisabled="true" virtual="true">
-				<Size x="130" y="20"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="CovenantMissionHealFollowerButton_OnClick"/>
-					<OnEnter function="CovenantMissionHealFollowerButton_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
-				</Anchors>
+			<Frame parentKey="HealFollowerFrame" framelevel="100" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ButtonFrame" atlas="Adventures_MissionCostStartButtonBg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-22"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="HealFollowerButtonTemplate" parentKey="HealFollowerButton" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_HEAL_BUTTON" motionScriptsWhileDisabled="true" frameLevel="101">
+						<Size x="130" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="CovenantMissionHealFollowerButton_OnClick"/>
+							<OnEnter function="CovenantMissionHealFollowerButton_OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+							<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+						</Anchors>
+					</Frame>
+				</Frames>
 			</Frame>
 			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
 			<Frame parentKey="StatsFrame" inherits="VerticalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">

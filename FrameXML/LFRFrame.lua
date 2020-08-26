@@ -1,11 +1,3 @@
---Extra lines added because looking upward was too much work.
-
-
-
-
-
-
-
 NUM_LFR_CHOICE_BUTTONS = 16;
 
 NUM_LFR_LIST_BUTTONS = 21;
@@ -295,6 +287,19 @@ function LFRQueueFrame_Join()
 end
 
 LFRHiddenByCollapseList = {};
+
+local function UpdateLFRRaidList()
+	LFRRaidList = {};
+
+	-- Get the list of raids, then pull out raids that are hidden (due to current Timewalking Campaign, etc) and add the rest to LFRRaidList
+	local raidList = GetLFRChoiceOrder();
+	for _, raidID in ipairs(raidList) do
+		if not LFGLockList[raidID] or not LFGLockList[raidID].hideEntry then
+			table.insert(LFRRaidList, raidID);
+		end
+	end
+end
+
 function LFRQueueFrame_Update()
 	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFR);
 
@@ -305,7 +310,7 @@ function LFRQueueFrame_Update()
 		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFR];
 	end
 
-	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
+	UpdateLFRRaidList();
 
 	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFR_CURRENT_FILTER);
 

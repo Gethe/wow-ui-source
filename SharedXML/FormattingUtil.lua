@@ -156,3 +156,45 @@ function FormatUnreadMailTooltip(tooltip, headerText, senders)
 
 	tooltip:SetText(headerText);
 end
+
+function GetCurrencyString(currencyID, overrideAmount, colorCode, abbreviate)
+	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
+
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	if currencyInfo then
+		local currencyTexture = currencyInfo.iconFileID;
+		local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
+		local amountString;
+		if abbreviate then
+			amountString = AbbreviateNumbers(overrideAmount or currencyInfo.quantity);
+		else
+			amountString = BreakUpLargeNumbers(overrideAmount or currencyInfo.quantity);
+		end
+		return ("%s%s %s|r"):format(colorCode, amountString, markup);
+	end
+
+	return "";
+end
+
+function GetCurrenciesString(currencies)
+	local text = nil;
+	for i, currency in ipairs(currencies) do
+		if text then
+			text = text.." ";
+		else
+			text = "";
+		end
+
+		if type(currency) == "table" then
+			if currency.currencyID and currency.amount then
+				text = text..GetCurrencyString(currency.currencyID, currency.amount);
+			else
+				text = text..GetCurrencyString(unpack(currency));
+			end
+		else
+			text = text..GetCurrencyString(currency);
+		end
+	end
+
+	return text;
+end

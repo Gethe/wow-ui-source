@@ -337,6 +337,9 @@ local ScriptAnimationTableExtension = {
 	[89] = {
 		animation = 215, 
 	},
+	[98] = {
+		animation = 158,
+	},
 };
 
 -- Split into chunks of 10. These effects were created with old-style particle scaling,
@@ -349,7 +352,7 @@ local LegacyParticleScaleEffects = {
 	65, 77, 67, 68, 70, 72, 73, 74, 75, 76,
 	77, 78, 79, 80, 81, 82, 83, 84, 85, 86,
 	87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-	97
+	97, 101,
 };
 
 for i, effectID in ipairs(LegacyParticleScaleEffects) do

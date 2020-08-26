@@ -248,7 +248,7 @@ function CommentatorMixin:SetDefaultCVars()
 end
 
 function CommentatorMixin:ModifyCameraSpeed(speed)
-	self.cameraMoveSpeed = math.clamp(self.cameraMoveSpeed + speed, 1, 40);
+	self.cameraMoveSpeed = Clamp(self.cameraMoveSpeed + speed, 1, 40);
 	C_Commentator.SetMoveSpeed(self.cameraMoveSpeed);
 end
 

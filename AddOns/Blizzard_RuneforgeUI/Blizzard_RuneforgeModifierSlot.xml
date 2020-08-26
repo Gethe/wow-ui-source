@@ -33,8 +33,6 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
-			<OnDisable method="OnDisable"/>
-			<OnEnable method="OnEnable"/>
 		</Scripts>
 	</ItemButton>
 

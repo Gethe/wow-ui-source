@@ -48,7 +48,11 @@ function QuestMixin:IsCampaign()
 end
 
 function QuestMixin:GetCampaignID()
-	return self.campaignID or 0;
+	if self.campaignID == nil then
+		self.campaignID = C_CampaignInfo.GetCampaignID(self:GetID());
+	end
+
+	return self.campaignID;
 end
 
 function QuestMixin:IsCalling()

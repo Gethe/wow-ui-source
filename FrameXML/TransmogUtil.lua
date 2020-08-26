@@ -1,7 +1,7 @@
 TransmogUtil = {};
 
 function TransmogUtil.GetInfoForEquippedSlot(transmogLocation)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(transmogLocation);
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(transmogLocation);
 	if ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
 		appliedSourceID = baseSourceID;
 		appliedVisualID = baseVisualID;
@@ -188,21 +188,21 @@ do
 		TRANSMOG_SLOTS[lookupKey] = { location = location, armorCategoryID = armorCategoryID };
 	end
 
-	Add("HEADSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_HEAD);
-	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_SHOULDER);
-	Add("BACKSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_BACK);
-	Add("CHESTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_CHEST);
-	Add("TABARDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_TABARD);
-	Add("SHIRTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_SHIRT);
-	Add("WRISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_WRIST);
-	Add("HANDSSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_HANDS);
-	Add("WAISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_WAIST);
-	Add("LEGSSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_LEGS);
-	Add("FEETSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, LE_TRANSMOG_COLLECTION_TYPE_FEET);
+	Add("HEADSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Head + 1);
+	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Shoulder + 1);
+	Add("BACKSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Back + 1);
+	Add("CHESTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Chest + 1);
+	Add("TABARDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Tabard + 1);
+	Add("SHIRTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Shirt + 1);
+	Add("WRISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Wrist + 1);
+	Add("HANDSSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Hands + 1);
+	Add("WAISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Waist + 1);
+	Add("LEGSSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Legs + 1);
+	Add("FEETSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Feet + 1);
 	Add("MAINHANDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, nil);
 	Add("SECONDARYHANDSLOT",	Enum.TransmogType.Appearance,	Enum.TransmogModification.None, nil);
 	Add("MAINHANDSLOT",			Enum.TransmogType.Illusion,		Enum.TransmogModification.None, nil);
 	Add("SECONDARYHANDSLOT",	Enum.TransmogType.Illusion,		Enum.TransmogModification.None, nil);
 	-- independent right shoulder
-	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.RightShoulder, LE_TRANSMOG_COLLECTION_TYPE_SHOULDER);
+	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.RightShoulder, Enum.TransmogCollectionType.Shoulder + 1);
 end

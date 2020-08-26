@@ -134,6 +134,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

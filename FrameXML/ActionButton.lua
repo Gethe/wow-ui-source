@@ -770,7 +770,9 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "ACTIONBAR_SHOWGRID" ) then
 		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
-		self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+		if ( not KeybindFrames_InQuickKeybindMode() ) then
+			self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+		end
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self:UpdateHotkeys(self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
@@ -854,7 +856,8 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 end
 
 function ActionBarActionButtonMixin:SetTooltip()
-	if ( GetCVar("UberTooltips") == "1" ) then
+	local inQuickKeybind = KeybindFrames_InQuickKeybindMode();
+	if ( GetCVar("UberTooltips") == "1" or inQuickKeybind ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
 		local parent = self:GetParent();
@@ -1037,11 +1040,19 @@ function ActionButton_UpdateFlyout(self)
 end
 
 function ActionBarActionButtonMixin:OnClick(button, down)
-	if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
-		C_ActionBar.ToggleAutoCastPetAction(self.action);
-	elseif (not self.zoneAbilityDisabled) then
-  		SecureActionButton_OnClick(self, button);
-  	end
+	if ( KeybindFrames_InQuickKeybindMode() ) then
+		local cursorType = GetCursorInfo();
+		if ( cursorType ) then
+			local slotID = self:CalculateAction(button);
+			C_ActionBar.PutActionInSlot(slotID);
+		end
+	else
+		if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
+			C_ActionBar.ToggleAutoCastPetAction(self.action);
+		elseif (not self.zoneAbilityDisabled) then
+			SecureActionButton_OnClick(self, button);
+		end
+	end
 end
 
 function ActionBarActionButtonMixin:OnDragStart()

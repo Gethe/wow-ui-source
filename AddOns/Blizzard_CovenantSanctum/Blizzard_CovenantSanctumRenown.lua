@@ -70,7 +70,7 @@ local function GetRenownRewardInfo(rewardInfo, onItemUpdateCallback)
 	else
 		name = rewardInfo.name;
 	end
-	return icon, name, (rewardInfo.description or description);
+	return (rewardInfo.icon or icon), name, (rewardInfo.description or description);
 end
 
 CovenantSanctumRenownTabMixin = {};

@@ -10,6 +10,10 @@ function PagedListMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 end
 
+function PagedListMixin:OnMouseWheel(delta)
+	self:ChangePage((delta > 0) and -1 or 1);
+end
+
 function PagedListMixin:SetLayout(layout, numElements)
 	if self.layout ~= nil then
 		return;
@@ -67,6 +71,15 @@ function PagedListMixin:GetLastPage()
 	return math.ceil(self.getNumResultsFunction() / self:GetNumElementFrames());
 end
 
+function PagedListMixin:ChangePage(pageAdjustment)
+	local currentPage = self:GetPage();
+	local lastPage = self:GetLastPage();
+	local newPage = Clamp(currentPage + pageAdjustment, 1, lastPage);
+	if newPage ~= currentPage then
+		self:SetPage(newPage);
+	end
+end
+
 function PagedListMixin:CanDisplay()
 	if (self.layout == nil) or (self.numElements == nil) then
 		return false, "Templated list layout not set. Use PagedListMixin:SetLayout.";
@@ -88,6 +101,10 @@ function PagedListControlButtonMixin:OnClick()
 	self:GetParent():ChangePage(self.pageAdjustment);
 end
 
+function PagedListControlButtonMixin:OnMouseWheel(...)
+	self:GetParent():OnMouseWheel(...);
+end
+
 
 PagedListControlMixin = {};
 
@@ -98,6 +115,10 @@ end
 
 function PagedListControlMixin:OnHide()
 	self.pagedList:UnregisterCallback(PagedListMixin.Event.ListRefreshed, self);
+end
+
+function PagedListControlMixin:OnMouseWheel(...)
+	self:GetPagedList():OnMouseWheel(...);
 end
 
 function PagedListControlMixin:SetPagedList(pagedList)
@@ -137,11 +158,5 @@ function PagedListControlMixin:RefreshPaging()
 end
 
 function PagedListControlMixin:ChangePage(pageAdjustment)
-	local pagedList = self:GetPagedList();
-	local currentPage = pagedList:GetPage();
-	local lastPage = pagedList:GetLastPage();
-	local newPage = math.clamp(currentPage + pageAdjustment, 1, lastPage);
-	if newPage ~= currentPage then
-		pagedList:SetPage(newPage);
-	end
+	self:GetPagedList():ChangePage(pageAdjustment);
 end

@@ -38,6 +38,7 @@ end
 
 function CovenantPreviewFrameMixin:OnShow()
 	self:RegisterEvent("COVENANT_PREVIEW_CLOSE");
+	self:RegisterEvent("PLAYER_CHOICE_CLOSE");
 end
 
 function CovenantPreviewFrameMixin:OnHide()
@@ -47,11 +48,12 @@ function CovenantPreviewFrameMixin:OnHide()
 
 	self:Reset(); 
 	self:UnregisterEvent("COVENANT_PREVIEW_CLOSE");
+	self:UnregisterEvent("PLAYER_CHOICE_CLOSE");
 	C_CovenantPreview.CloseFromUI(); 
 end 
 
 function CovenantPreviewFrameMixin:OnEvent(event, ...) 
-	if (event == "COVENANT_PREVIEW_CLOSE") then
+	if (event == "COVENANT_PREVIEW_CLOSE" or event =="PLAYER_CHOICE_CLOSE") then
 		HideUIPanel(self);
 	end 
 end 
@@ -81,6 +83,8 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 	self.SelectButton:SetShown(self.showingFromPlayerChoice);
 	self:SetupTextureKits(self.InfoPanel, infoPanelTextureKitRegions);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, self.uiTextureKit);
+
+	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", 0, 0, self.uiTextureKit);
 
 	if(self.showingFromPlayerChoice) then 
 		self:SetupTextureKits(self.Title, titleTextureKitRegions, PLAYER_CHOICE_TEXTURE_KIT);
@@ -120,7 +124,7 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 
 	self:SetupAbilityButtons(covenantInfo.covenantAbilities);
 	self:SetupCovenantInfoPanel(covenantInfo); 
-	self:Show(); 
+	ShowUIPanel(self); 
 end 
 
 function CovenantPreviewFrameMixin:SetupAbilityButtons(covenantAbilities)

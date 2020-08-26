@@ -1,8 +1,6 @@
 BarberShopMixin = CreateFromMixins(CharCustomizeParentFrameBaseMixin);
 
 function BarberShopMixin:OnLoad()
-	DefaultScaleFrameMixin.OnLoad(self);
-
 	self:RegisterEvent("BARBER_SHOP_RESULT");
 	self:RegisterEvent("BARBER_SHOP_COST_UPDATE");
 	self:RegisterEvent("BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE");
@@ -15,20 +13,17 @@ function BarberShopMixin:OnLoad()
 end
 
 function BarberShopMixin:OnEvent(event, ...)
-	DefaultScaleFrameMixin.OnEvent(self, event, ...);
-
 	if event == "BARBER_SHOP_RESULT" then
 		local success = ...;
 		if success then
 			PlaySound(SOUNDKIT.BARBERSHOP_HAIRCUT);
 		end
-		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_COST_UPDATE" then
 		self:UpdatePrice();
 	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
-		C_BarberShop.Cancel();
+		self:Cancel();
 	end
 end
 
@@ -79,6 +74,11 @@ function BarberShopMixin:OnKeyDown(key)
 	elseif key == "PRINTSCREEN" then
 		Screenshot();
 	end
+end
+
+function BarberShopMixin:Cancel()
+	HideUIPanel(self);
+	C_BarberShop.Cancel();
 end
 
 function BarberShopMixin:Reset()

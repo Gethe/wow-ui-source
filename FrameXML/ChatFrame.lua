@@ -2396,7 +2396,7 @@ if IsGMClient() then
 end
 
 SLASH_PERFREPORT1 = "/perfreport";
-SlashCmdList["PERFREPORT"] = function(msg) 
+SlashCmdList["PERFREPORT"] = function(msg)
 	C_ReportSystem.ReportServerLag();
 end
 
@@ -3316,11 +3316,11 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	return false;
 end
 
-local function IsActivePlayerMentor()
+function IsActivePlayerMentor()
 	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor;
 end
 
-local function IsActivePlayerNewcomer()
+function IsActivePlayerNewcomer()
 	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Newcomer;
 end
 
@@ -3397,18 +3397,18 @@ function ChatFrame_CheckShowNewcomerHelpBanner(self, excludeChannel)
 	end
 end
 
-function ChatFrame_ShowNewcomerGraduation()
+function ChatFrame_ShowNewcomerGraduation(s)
 	local slashCmd = GetSlashCommandForChannelOpenChat(1); -- The 1 is a lie, but there's no current way to find the general channel index here...
-	ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_NEWCOMER_GRADUATION:format(slashCmd));
+	ChatFrame_DisplaySystemMessageInPrimary(s:format(slashCmd));
 end
 
 function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
 	local hasShownGraduation = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION);
 	if not hasShownGraduation and isFromGraduationEvent then
-		ChatFrame_ShowNewcomerGraduation();
+		ChatFrame_ShowNewcomerGraduation(NPEV2_CHAT_NEWCOMER_GRADUATION);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION, true);
 	elseif hasShownGraduation and not isFromGraduationEvent and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION_REMINDER) then
-		ChatFrame_ShowNewcomerGraduation();
+		ChatFrame_ShowNewcomerGraduation(NPEV2_CHAT_NEWCOMER_GRADUATION_REMINDER);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION_REMINDER, true);
 	end
 end

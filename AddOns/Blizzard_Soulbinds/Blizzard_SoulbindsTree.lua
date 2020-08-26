@@ -54,6 +54,9 @@ function SoulbindTreeMixin:Reset()
 	self.soulbindID = nil;
 	self.nodeFrames = nil;
 	self.linkToFrames = nil;
+	if self.mouseOverTimer then
+		self.mouseOverTimer:Cancel();
+	end
 end
 
 function SoulbindTreeMixin:OnShow()

@@ -20,6 +20,13 @@ function ScriptAnimatedEffectControllerMixin:GetEffect()
 end
 
 function ScriptAnimatedEffectControllerMixin:StartEffect()
+	if self.cancelDelayedStart then
+		self.cancelDelayedStart = nil;
+		return;
+	end
+
+	self.effectStarted = true;
+
 	self.effectCount = self.effectCount + 1;
 
 	self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self);
@@ -150,7 +157,11 @@ function ScriptAnimatedEffectControllerMixin:UpdateActorDynamicOffsets()
 end
 
 function ScriptAnimatedEffectControllerMixin:CancelEffect()
-	self:InternalCancelEffect();
+	if not self.effectStarted then
+		self.cancelDelayedStart = true;
+	else
+		self:InternalCancelEffect();
+	end
 end
 
 function ScriptAnimatedEffectControllerMixin:InternalCancelEffect(skipRemovingController)

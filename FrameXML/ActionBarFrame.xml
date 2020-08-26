@@ -1,18 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ActionButton.lua"/>
-	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
+	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnAttributeChanged method="UpdateAction"/>
 			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick"/>
+			<OnClick method="OnClick" inherit="append"/>
 			<PostClick method="UpdateState"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnReceiveDrag method="OnReceiveDrag"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter" inherit="append"/>
+			<OnLeave method="OnLeave" inherit="append"/>
+			<OnUpdate method="OnUpdate" inherit="append"/>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="ActionBarButtonTemplate" inherits="ActionBarButtonCodeTemplate, ActionButtonTemplate" virtual="true"/>
@@ -109,91 +109,143 @@
 		</Scripts>
 	</Frame>
 	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON1" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBarArtFrameBackground" x="8" y="4"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton2" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="2">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON2" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton3" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="3">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON3" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton4" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="4">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON4" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton5" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="5">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON5" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton6" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="6">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON6" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton7" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="7">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON7" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton8" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="8">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON8" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton9" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="9">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON9" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton10" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="10">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON10" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton11" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="11">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON11" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton12" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="12">
+		<KeyValues>
+			<KeyValue key="commandName" value="ACTIONBUTTON12" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<Button name="ActionBarUpButton" parent="MainMenuBarArtFrame">
+	<Button name="ActionBarUpButton" inherits="QuickKeybindButtonTemplate" parent="MainMenuBarArtFrame">
+		<KeyValues>
+			<KeyValue key="commandName" value="NEXTACTIONPAGE" type="string"/>
+		</KeyValues>
 		<Size x="21" y="19"/>
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="ActionButton12" x="25" y="9"/>
 		</Anchors>
 		<Scripts>
-			<OnClick>
-				ActionBar_PageUp(self);
-				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+			<OnClick inherit="append">
+				if ( not KeybindFrames_InQuickKeybindMode() ) then
+					ActionBar_PageUp(self);
+					PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+				end
 			</OnClick>
+			<OnLeave inherit="append">
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture atlas="hud-MainMenuBar-arrowup-up"/>
 		<PushedTexture atlas="hud-MainMenuBar-arrowup-down"/>
 		<DisabledTexture atlas="hud-MainMenuBar-arrowup-disabled"/>
 		<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowup-highlight"/>
 	</Button>
-	<Button name="ActionBarDownButton" parent="MainMenuBarArtFrame">
+	<Button name="ActionBarDownButton" inherits="QuickKeybindButtonTemplate" parent="MainMenuBarArtFrame">
+		<KeyValues>
+			<KeyValue key="commandName" value="PREVIOUSACTIONPAGE" type="string"/>
+		</KeyValues>
 		<Size x="21" y="19"/>
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="ActionBarUpButton" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
 		</Anchors>
 		<Scripts>
-			<OnClick>
-				ActionBar_PageDown(self);
-				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+			<OnClick inherit="append">
+				if ( not KeybindFrames_InQuickKeybindMode() ) then
+					ActionBar_PageDown(self);
+					PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+				end
 			</OnClick>
+			<OnLeave inherit="append">
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture atlas="hud-MainMenuBar-arrowdown-up"/>
 		<PushedTexture atlas="hud-MainMenuBar-arrowdown-down"/>

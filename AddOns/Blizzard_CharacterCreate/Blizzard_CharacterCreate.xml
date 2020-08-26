@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Button name="CharacterCreateNavButtonTemplate" inherits="GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
-		<NormalFont style="GameFontNormalOutlineHuge2"/>
-		<HighlightFont style="GameFontHighlightOutlineHuge2"/>
-		<DisabledFont style="GameFontDisableOutlineHuge2"/>
+		<NormalFont style="GameFontNormalOutline22"/>
+		<HighlightFont style="GameFontHighlightOutline22"/>
+		<DisabledFont style="GameFontDisableOutline22"/>
 		<Size x="250" y="66"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
@@ -225,7 +225,7 @@
 
 	<Texture name="CharacterCreateBackgroundOverlayTexture" parentArray="BGTex" virtual="true"/>
 
-	<ModelFFX name="CharacterCreateFrame" mixin="DefaultScaleFrameMixin, CharacterCreateMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+	<ModelFFX name="CharacterCreateFrame" inherits="DefaultScaleFrame" mixin="CharacterCreateMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
 		</KeyValues>
@@ -563,8 +563,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad" />
-			<OnEvent method="OnEvent"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 			<OnMouseDown method="OnMouseDown" />

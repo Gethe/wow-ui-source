@@ -44,12 +44,19 @@ function RuneforgeCraftingFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RuneforgeCraftingFrameEvents);
 
 	self:RegisterRefreshMethod(self.Refresh);
+
+	self:Refresh();
 end
 
 function RuneforgeCraftingFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeCraftingFrameEvents);
 
 	self.PowerFrame:Hide();
+
+	self.AnimWrapper.CrossFadeToBackground:Stop();
+	self.AnimWrapper.CrossFadeToRuneLitBackground:Stop();
+	self.AnimWrapper.Background:SetAlpha(1);
+	self.AnimWrapper.RuneLitBackground:SetAlpha(0);
 	
 	self:UnregisterRefreshMethod();
 end
@@ -160,18 +167,24 @@ end
 
 function RuneforgeCraftingFrameMixin:Refresh()
 	local hasItem = self:GetItem() ~= nil;
-	if self.RunesGlow:IsShown() == hasItem then
-		return;
+	local isUpgrading = self:IsRuneforgeUpgrading();
+	local backgroundAtlas = isUpgrading and "runecarving-frame-upgrade-center-lit" or "runecarving-frame-center-lit";
+	self.AnimWrapper.Background:SetAtlas(backgroundAtlas, TextureKitConstants.UseAtlasSize);
+
+	if hasItem and (self.AnimWrapper.RuneLitBackground:GetAlpha() ~= 1.0) then
+		self.AnimWrapper.CrossFadeToBackground:Stop();
+		self.AnimWrapper.CrossFadeToRuneLitBackground:Play();
+	elseif not hasItem and (self.AnimWrapper.Background:GetAlpha() ~= 1.0) then
+		self.AnimWrapper.CrossFadeToRuneLitBackground:Stop();
+		self.AnimWrapper.CrossFadeToBackground:Play();
 	end
 
 	self:GetRuneforgeFrame():SetRunesShown(hasItem);
-	self.RunesGlow:SetShown(hasItem);
+	self.UpgradeItemSlot:SetShown(hasItem and isUpgrading);
 
-	if hasItem then
-		self.RunesGlow.FadeIn:Play();
-	end
-
-	self.UpgradeItemSlot:SetShown(hasItem and self:IsRuneforgeUpgrading());
+	-- Stop any in-progress action on any refresh.
+	StaticPopup_Hide("CONFIRM_RUNEFORGE_LEGENDARY_CRAFT");
+	SpellStopCasting();
 end
 
 function RuneforgeCraftingFrameMixin:GetRuneforgeFlyoutItemsCallback(filterFunction, resultsTable)

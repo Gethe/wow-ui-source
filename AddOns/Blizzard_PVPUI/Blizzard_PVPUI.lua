@@ -242,13 +242,14 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 				local texture = currencyInfo.iconFileID;
 				local quality = currencyInfo.quality;
 				if quality == Enum.ItemQuality.Artifact then
-					name, texture, _, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
-					currencyID = reward.id;
-					rewardTexture = texture;
-					rewardQuantity = reward.quantity;
+					local quantity;
+					name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
 				elseif reward.id == CONQUEST_CURRENCY_ID then
 					rewardFrame.conquestAmount = reward.quantity;
 				end
+				currencyID = reward.id;
+				rewardTexture = texture;
+				rewardQuantity = reward.quantity;
 			end
 		end
 	end
@@ -436,6 +437,20 @@ function PVPQueueFrameButton_OnClick(self)
 	local frameName = pvpFrames[self:GetID()];
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	PVPQueueFrame_ShowFrame(_G[frameName]);
+end
+
+function PVPQueueFrameButton_OnEnter(self)
+	if ( self.tooltip ) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOP");
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltip);
+		GameTooltip:Show();
+	end
+end
+
+function PVPQueueFrameButton_OnLeave(self)
+	if ( GameTooltip:GetOwner() == self ) then
+		GameTooltip:Hide();
+	end
 end
 
 local function InitializeHonorXPBarDropDown(self, level)
@@ -1451,7 +1466,7 @@ function PVPStandardRewardTemplate_OnEnter(self)
 	if self.itemID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID);
-	elseif self.currencyID then
+	elseif self.currencyID and self.currencyID ~= CONQUEST_CURRENCY_ID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetCurrencyByID(EmbeddedItemTooltip.ItemTooltip, self.currencyID, self.quantity);
 	end
@@ -1980,6 +1995,8 @@ function PVPWeeklyChestMixin:OnShow()
 		self:LegacyOnShow();
 		return;
 	end
+
+	C_WeeklyRewards.RequestRewards();
 
 	local state = self:GetState();
 	local atlas = "pvpqueue-chest-greatvault-"..state;

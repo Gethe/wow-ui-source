@@ -9,23 +9,46 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Tex
 
 UIWidgetTemplateTextWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-local textFontSizes =
+local normalFonts =
 {
-	[Enum.UIWidgetTextSizeType.Small]	= "GameTooltipText",
-	[Enum.UIWidgetTextSizeType.Medium]	= "Game16Font",
-	[Enum.UIWidgetTextSizeType.Large]	= "Game24Font",
-	[Enum.UIWidgetTextSizeType.Huge]	= "Game27Font",
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Med1",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Large",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Huge4",
 }
 
-local function GetTextSizeFont(textSizeType)
-	return textFontSizes[textSizeType] and textFontSizes[textSizeType] or textFontSizes[Enum.UIWidgetTextSizeType.Small];
+local shadowFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4",
+}
+
+local outlineFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1_Outline",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large_Outline",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2_Outline",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4_Outline",
+}
+
+local fontTypes = 
+{
+	[Enum.UIWidgetFontType.Normal]	= normalFonts,
+	[Enum.UIWidgetFontType.Shadow]	= shadowFonts,
+	[Enum.UIWidgetFontType.Outline]	= outlineFonts,
+}
+
+local function GetTextFont(textSizeType, fontType)
+	return fontTypes[fontType][textSizeType];
 end
 
 function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
 
-	self.Text:SetFontObject(GetTextSizeFont(widgetInfo.textSizeType));
+	self.Text:SetFontObject(GetTextFont(widgetInfo.textSizeType, widgetInfo.fontType));
 
 	self.Text:SetText(widgetInfo.text);
 	self.Text:SetEnabledState(widgetInfo.enabledState);
@@ -37,7 +60,10 @@ function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
 	local width = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or self.Text:GetStringWidth();
 
 	self:SetWidth(width);
-	self:SetHeight(self.Text:GetStringHeight());
+
+	local textHeight = self.Text:GetStringHeight();
+	local bottomPadding = Clamp(widgetInfo.bottomPadding, 0, textHeight - 1);	-- don't allow bottomPadding to be less than 0 or greater than or equal to the height of the text (could just add a blank line in that case)
+	self:SetHeight(textHeight + bottomPadding);
 end
 
 function UIWidgetTemplateTextWithStateMixin:OnReset()

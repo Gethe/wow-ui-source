@@ -14,15 +14,18 @@ function CommentatorModelSceneMixin:OnLoad()
 end
 
 function CommentatorModelSceneMixin:OnShow()
+	ScriptAnimatedModelSceneMixin.OnShow(self);
 	FrameUtil.RegisterFrameForEvents(self, CommentatorModelSceneEvents);
 end
 
 function CommentatorModelSceneMixin:OnHide()
+	ScriptAnimatedModelSceneMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents(self, CommentatorModelSceneEvents);
 	
 end
 
 function CommentatorModelSceneMixin:OnEvent(event, ...)
+	ScriptAnimatedModelSceneMixin.OnEvent(self, event, ...);
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		self:OnUnfilteredCombatLogEvent(CombatLogGetCurrentEventInfo());
 	end

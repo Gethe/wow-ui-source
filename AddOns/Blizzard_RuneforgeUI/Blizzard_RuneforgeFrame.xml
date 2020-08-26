@@ -31,7 +31,7 @@
 
 			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate" frameLevel="1000">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="90"/>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="98"/>
 				</Anchors>
 			</Frame>
 
@@ -57,6 +57,22 @@
 
 			<!-- Tooltips must have a name. -->
 			<GameTooltip name="RuneforgeFrameResultTooltip" parentKey="ResultTooltip" inherits="RunforgeFrameTooltipTemplate"/>
+
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" text="LEGENDARY_CRAFTING_EXIT">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CurrencyDisplay" relativePoint="TOP"/>
+					<Anchor point="RIGHT" x="-55" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="CustomBorder" atlas="runecarving-exitborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

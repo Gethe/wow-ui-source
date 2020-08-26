@@ -234,7 +234,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="LOGIN">
+					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="LOG_IN">
 						<Size x="200" y="30"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="185"/>

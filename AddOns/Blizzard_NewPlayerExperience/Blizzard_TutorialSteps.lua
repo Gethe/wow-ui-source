@@ -400,20 +400,19 @@ function Class_Intro_CombatTactics:OnBegin()
 end
 
 function Class_Intro_CombatTactics:Reset()
-	self.pointerID = nil;
-
 	self:HidePointerTutorials();
 	self:HideResourceCallout();
+	self:HideAbilityPointer();
+	self.firstTime = true;
 
 	local unitGUID = UnitGUID("target");
 	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		local playerClass = TutorialHelper:GetClass();
-		if playerClass == "WARRIOR" or playerClass == "ROGUE" then
+		if playerClass == "WARRIOR" then
 			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 		else
-			local firstTime = true;
-			self:ShowAbilityPrompt(firstTime);
-			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);		end
+			self:ShowAbilityPrompt();
+		end
 	else
 		Dispatcher:RegisterEvent("UNIT_TARGET", self);
 	end
@@ -428,15 +427,7 @@ function Class_Intro_CombatTactics:UNIT_TARGET()
 end
 
 function Class_Intro_CombatTactics:ACTIONBAR_SLOT_CHANGED()
-	--C_Timer.After(0.1, function() self:Reset(); end);
 	self:Reset();
-end
-
-function Class_Intro_CombatTactics:HideResourceCallout()
-	if self.pointerID then
-		self:HidePointerTutorial(self.pointerID);
-		self.pointerID = nil;
-	end
 end
 
 function Class_Intro_CombatTactics:ResourceCallout()
@@ -445,16 +436,16 @@ function Class_Intro_CombatTactics:ResourceCallout()
 		return;
 	end
 
-	local playerClass = TutorialHelper:GetClass();
-	local resourceString;
-	if playerClass == "WARRIOR" then
-		resourceString = NPEV2_RESOURCE_CALLOUT_WARRIOR;
-	elseif playerClass == "ROGUE" or playerClass == "MONK" then
-		resourceString = NPEV2_RESOURCE_CALLOUT_ENERGY;
-	else
-		return;
-	end
 	if not self.pointerID then
+		local playerClass = TutorialHelper:GetClass();
+		local resourceString;
+		if playerClass == "WARRIOR" then
+			resourceString = NPEV2_RESOURCE_CALLOUT_WARRIOR;
+		elseif playerClass == "ROGUE" or playerClass == "MONK" then
+			resourceString = NPEV2_RESOURCE_CALLOUT_ENERGY;
+		else
+			return;
+		end
 		resourceString = TutorialHelper:FormatString(resourceString:format(self.keyBindString, self.spellIDString));
 		self.pointerID = self:AddPointerTutorial(resourceString, "LEFT", namePlatePlayer, 0, 0, nil, "RIGHT");
 	end
@@ -470,10 +461,12 @@ function Class_Intro_CombatTactics:PLAYER_LEAVE_COMBAT()
 	end
 end
 
-function Class_Intro_CombatTactics:ShowAbilityPrompt(firstTime)
+function Class_Intro_CombatTactics:ShowAbilityPrompt()
+	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 	local combatString;
-	if firstTime == true then
+
+	if self.firstTime == true then
 		combatString = TutorialHelper:FormatString(classData.initialString:format(self.keyBindString, self.spellIDString));
 	else
 		combatString = TutorialHelper:FormatString(classData.reminderString:format(self.keyBindString, self.spellIDString));
@@ -481,37 +474,33 @@ function Class_Intro_CombatTactics:ShowAbilityPrompt(firstTime)
 
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
 	if button then
-		self:ShowPointerTutorial(combatString, "DOWN", button, 0, 10, nil, "UP");
-	else
-		self:HidePointerTutorials();
+		self.abilityPointerID = self:AddPointerTutorial(combatString, "DOWN", button, 0, 10, nil, "UP");
 	end
 end
 
 function Class_Intro_CombatTactics:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	if spellID == self.spellID then
-		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+		self:HideAbilityPointer();
 
-		local playerClass = TutorialHelper:GetClass();
-		if playerClass == "WARRIOR" or playerClass == "ROGUE" then
-			self:HidePointerTutorials();
-			self.pointerID = nil;
-			self:ResourceCallout();
+		self.firstTime = false;
+		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
+		local isUsable, _ = IsUsableAction(button.action);
+		if isUsable then
+			self:ShowAbilityPrompt();
 		else
-			local firstTime = false;
-			self:ShowAbilityPrompt(firstTime);
+			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 		end
 	end
 end
 
 function Class_Intro_CombatTactics:UNIT_POWER_FREQUENT(unit, resource)
+	self:ResourceCallout();
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
 	if button then
 		local isUsable, notEnoughMana = IsUsableAction(button.action);
 		if isUsable then
 			Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
-			local firstTime = true;
-			self:ShowAbilityPrompt(firstTime);
-			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+			self:ShowAbilityPrompt();
 		end
 	end
 end
@@ -523,11 +512,26 @@ function Class_Intro_CombatTactics:QUEST_REMOVED(questIDRemoved)
 	end
 end
 
-function Class_Intro_CombatTactics:OnComplete()
-	self:HideResourceCallout();
-	self:HidePointerTutorials();
+function Class_Intro_CombatTactics:HideResourceCallout()
+	if self.pointerID then
+		self:HidePointerTutorial(self.pointerID);
+		self.pointerID = nil;
+	end
 end
 
+function Class_Intro_CombatTactics:HideAbilityPointer()
+	if self.abilityPointerID then
+		self:HidePointerTutorial(self.abilityPointerID);
+		self.abilityPointerID = nil;
+	end
+end
+
+function Class_Intro_CombatTactics:OnComplete()
+	self:HideResourceCallout();
+	self:HideAbilityPointer();
+	self:HidePointerTutorials();
+	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+end
 
 
 -- ------------------------------------------------------------------------------------------------------------

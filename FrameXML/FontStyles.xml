@@ -390,7 +390,7 @@
     <Font name="MissionCombatTextFontOutline" inherits="SystemFont_Outline_WTF2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="MovieSubtitleFont" inherits="GameFontNormalHugeOutline2" virtual="true">
+	<Font name="MovieSubtitleFont" inherits="GameFontNormalShadowOutline22" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 

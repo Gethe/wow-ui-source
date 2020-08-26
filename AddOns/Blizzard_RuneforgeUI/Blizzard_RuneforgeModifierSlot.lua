@@ -41,20 +41,19 @@ function RuneforgeModifierSlotMixin:OnClick(buttonName)
 		modifierFrame:SetModifierSlot(self:GetID(), nil);
 		modifierFrame:CloseSelector();
 		GameTooltip:Hide();
-	else
+	elseif self:IsSelectable() then
 		modifierFrame:OnSlotSelected(self);
 	end
 end
 
-function RuneforgeModifierSlotMixin:OnEnable()
-	local alpha = (self:GetItem() == nil) and 1 or 0;
-	self:GetNormalTexture():SetAlpha(alpha);
-	self:GetPushedTexture():SetAlpha(alpha);
+function RuneforgeModifierSlotMixin:SetSelectable(selectable)
+	self.selectable = selectable;
+
+	self:UpdateButtonState();
 end
 
-function RuneforgeModifierSlotMixin:OnDisable()
-	self:GetNormalTexture():SetAlpha(0);
-	self:GetPushedTexture():SetAlpha(0);
+function RuneforgeModifierSlotMixin:IsSelectable()
+	return self.selectable;
 end
 
 function RuneforgeModifierSlotMixin:SetItem(item)
@@ -62,10 +61,6 @@ function RuneforgeModifierSlotMixin:SetItem(item)
 	self.SelectedTexture:SetShown(hasItem);
 
 	local isUpgrading = self:GetModifierFrame():IsRuneforgeUpgrading();
-	local alpha = (self:IsEnabled() and not hasItem and not isUpgrading) and 1 or 0;
-	self:GetNormalTexture():SetAlpha(alpha);
-	self:GetPushedTexture():SetAlpha(alpha);
-
 	local slotAlpha = isUpgrading and 0.35 or 1.0;
 	self.SelectedTexture:SetAlpha(slotAlpha);
 	self:SetAlpha(slotAlpha);
@@ -75,6 +70,20 @@ function RuneforgeModifierSlotMixin:SetItem(item)
 	self:SetEffectShown("chains", showEffects);
 
 	ItemButtonMixin.SetItem(self, item);
+
+	self:UpdateButtonState();
+end
+
+function RuneforgeModifierSlotMixin:UpdateButtonState()
+	local isSelectable = self:IsSelectable();
+	self:GetHighlightTexture():SetAlpha(isSelectable and 1 or 0);
+
+	local hasItem = self:GetItem() ~= nil;
+	local isUpgrading = self:GetModifierFrame():IsRuneforgeUpgrading();
+	local buttonAlpha = (isSelectable and not hasItem and not isUpgrading) and 1 or 0;
+	self:GetNormalTexture():SetAlpha(buttonAlpha);
+	self:GetPushedTexture():SetAlpha(buttonAlpha);
+
 end
 
 function RuneforgeModifierSlotMixin:SetArrowShown(shown)
@@ -323,11 +332,11 @@ end
 
 function RuneforgeModifierFrameMixin:UpdateEnabledState()
 	local isUpgrading = self:IsRuneforgeUpgrading();
-	local enabled = self:GetRuneforgeFrame():GetPowerID() ~= nil;
-	self.FirstSlot:SetEnabled(not isUpgrading and enabled);
+	local enabled = (self:GetRuneforgeFrame():GetItem() ~= nil) and (self:GetRuneforgeFrame():GetPowerID() ~= nil);
+	self.FirstSlot:SetSelectable(not isUpgrading and enabled);
 
 	local secondSlotEnabled = (self.SecondSlot:GetItem() ~= nil) or (self.FirstSlot:GetItem() ~= nil);
-	self.SecondSlot:SetEnabled(not isUpgrading and enabled and secondSlotEnabled);
+	self.SecondSlot:SetSelectable(not isUpgrading and enabled and secondSlotEnabled);
 end
 
 function RuneforgeModifierFrameMixin:SetModifierSlot(slot, itemID)

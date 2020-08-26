@@ -1,4 +1,22 @@
 
+StaticPopupDialogs["CONFIRM_RUNEFORGE_LEGENDARY_CRAFT"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+
+	OnShow = function(self, data)
+		self.text:SetText(data.title);
+	end,
+
+	OnAccept = function()
+		RuneforgeFrame:CraftItem();
+	end,
+
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+};
+
+
 RuneforgeCreateFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
 local RuneforgeCreateFrameEvents = {
@@ -31,6 +49,50 @@ function RuneforgeCreateFrameMixin:OnEvent(event)
 	end
 end
 
+function RuneforgeCreateFrameMixin:GetStaticPopupInfo()
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	local quality = Enum.ItemQuality.Legendary;
+	local baseItem, powerID, modifiers = runeforgeFrame:GetLegendaryCraftInfo();
+	local itemPreviewInfo = C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
+	if self:IsRuneforgeUpgrading() then
+		local upgradeItem = runeforgeFrame:GetUpgradeItem();
+		local itemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
+		return RUNEFORGE_LEGENDARY_UPGRADING_CONFIRMATION, itemPreviewInfo.itemID, upgradeItem, quality, itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
+	else
+		return RUNEFORGE_LEGENDARY_CRAFTING_CONFIRMATION, itemPreviewInfo.itemID, baseItem, quality, itemPreviewInfo.itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
+	end
+end
+
+function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
+	local popupTitleFormat, itemID, itemLocation, quality, itemLevel, itemName, powerID, modifiers = self:GetStaticPopupInfo();
+
+	local function StaticPopupItemFrameCallback(itemFrame)
+		itemFrame:SetItemLocation(itemLocation);
+		SetItemButtonQuality(itemFrame, quality);
+		itemFrame.Text:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
+		itemFrame.Text:SetText(itemName);
+		itemFrame.Count:Hide();
+	end
+
+	local function StaticPopupItemFrameOnEnterCallback(itemFrame)
+		GameTooltip:SetOwner(itemFrame, "ANCHOR_RIGHT");
+		GameTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
+		SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
+		GameTooltip:Show();
+	end
+
+	local currenciesCost = self:GetRuneforgeFrame():GetCost();
+	local popupTitle = popupTitleFormat:format(GetCurrenciesString(currenciesCost));
+
+	local data = {
+		title = popupTitle,
+		itemFrameCallback = StaticPopupItemFrameCallback,
+		itemFrameOnEnter = StaticPopupItemFrameOnEnterCallback,
+	};
+
+	StaticPopup_Show("CONFIRM_RUNEFORGE_LEGENDARY_CRAFT", nil, nil, data);
+end
+
 function RuneforgeCreateFrameMixin:CraftItem()
 	local runeforgeFrame = self:GetRuneforgeFrame();
 	if self:IsRuneforgeUpgrading() then
@@ -43,10 +105,6 @@ function RuneforgeCreateFrameMixin:CraftItem()
 		C_LegendaryCrafting.CraftRuneforgeLegendary(craftDescription);
 		PlaySound(SOUNDKIT.UI_RUNECARVING_CREATE_START);
 	end
-end
-
-function RuneforgeCreateFrameMixin:Close()
-	self:GetRuneforgeFrame():Close();
 end
 
 function RuneforgeCreateFrameMixin:Refresh()
@@ -80,7 +138,8 @@ function RuneforgeCraftItemButtonMixin:OnShow()
 end
 
 function RuneforgeCraftItemButtonMixin:OnClick()
-	self:GetParent():CraftItem();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:GetParent():ShowCraftConfirmation();
 end
 
 function RuneforgeCraftItemButtonMixin:OnEnter()
@@ -98,11 +157,4 @@ end
 function RuneforgeCraftItemButtonMixin:SetCraftState(canCraft, errorString)
 	self:SetEnabled(canCraft);
 	self.errorString = errorString;
-end
-
-
-RuneforgeCloseButtonMixin = {};
-
-function RuneforgeCloseButtonMixin:OnClick()
-	self:GetParent():Close();
 end

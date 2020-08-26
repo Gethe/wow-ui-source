@@ -5,6 +5,7 @@
 	<Frame name="PagedListTemplate" mixin="PagedListMixin" inherits="TemplatedListTemplate" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 
@@ -12,6 +13,7 @@
 		<Size x="32" y="32" />
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Button>
 
@@ -60,6 +62,7 @@
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

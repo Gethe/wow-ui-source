@@ -248,7 +248,7 @@ function AdventuresBoardMixin:UpdateBoardState(boardTargetInfo)
 		local targetingIndex = target.targetIndex
 		if targetingIndex >= Enum.GarrAutoBoardIndex.AllyLeftBack and targetingIndex <= Enum.GarrAutoBoardIndex.AllyRightFront then
 			local targetFrame = self:GetSocketByBoardIndex(targetingIndex); 
-			targetFrame:AddMultipleAuras(target.spellID, target.spellIndex, target.previewType);
+			targetFrame:SetBoardPreviewState(target.previewType);
 		end
 	end
 end
@@ -423,13 +423,13 @@ function AdventuresSocketMixin:SetTempPreviewType(auraType)
 	self:UpdateAuraVisibility();
 end
 
-function AdventuresSocketMixin:AddMultipleAuras(spellID, effectIndex, auraType)
+function AdventuresSocketMixin:SetBoardPreviewState(auraType)
 	if bit.band(auraType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff then
-		self:AddAura(spellID, effectIndex, Enum.GarrAutoPreviewTargetType.Buff);
+		self.activeBuffs[auraType] = true;
 	end
 
 	if bit.band(auraType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
-		self:AddAura(spellID, effectIndex, Enum.GarrAutoPreviewTargetType.Heal);
+		self.activeHealing[auraType] = true;
 	end
 
 	self:UpdateAuraVisibility();
@@ -445,9 +445,7 @@ function AdventuresSocketMixin:AddAura(spellID, effectIndex, auraType)
 		collection[spellID] = {};
 	end
 
-	if not collection[spellID][effectIndex] then
-		table.insert(collection[spellID], effectIndex);
-	end
+	collection[spellID][effectIndex] = effectIndex;
 
 	self:UpdateAuraVisibility();
 end
@@ -455,8 +453,8 @@ end
 function AdventuresSocketMixin:RemoveAura(spellID, effectIndex, auraType)
 	local collection = self:GetCollectionByAuraType(auraType);
 
-	table.remove(collection[spellID], effectIndex);
-	if #collection[spellID] == 0 then 
+	collection[spellID][effectIndex] = nil;
+	if next(collection[spellID]) == nil then 
 		collection[spellID] = nil;
 	end
 
@@ -473,7 +471,7 @@ end
 function AdventuresSocketMixin:GetCollectionByAuraType(auraType)
 	local auraCollection = {};
 	if auraType == Enum.GarrAutoPreviewTargetType.Heal then
-		auraCollection = self.activeHealing;
+		auraCollection = self.activeBuffs;
 	elseif  auraType == Enum.GarrAutoPreviewTargetType.Buff then
 		auraCollection = self.activeBuffs;
 	elseif auraType == Enum.GarrAutoPreviewTargetType.Debuff then

@@ -7,7 +7,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="BarberShopFrame" mixin="DefaultScaleFrameMixin, BarberShopMixin" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
+	<Frame name="BarberShopFrame" inherits="DefaultScaleFrame" mixin="BarberShopMixin" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
 		</KeyValues>
@@ -51,7 +51,7 @@
 					<Anchor point="BOTTOMLEFT" x="30" y="15"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="barberShopFunction" value="Cancel" type="string"/>
+					<KeyValue key="barberShopOnClickMethod" value="Cancel" type="string"/>
 				</KeyValues>
 			</Button>
 
@@ -85,8 +85,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad" />
-			<OnEvent method="OnEvent" />
+			<OnLoad method="OnLoad" inherit="prepend" />
+			<OnEvent method="OnEvent" inherit="prepend" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 			<OnKeyDown method="OnKeyDown"/>

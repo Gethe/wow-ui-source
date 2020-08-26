@@ -7,6 +7,7 @@ end
 
 function ChromieTimeFrameMixin:OnEvent(event, ...) 
 	if (event == "CHROMIE_TIME_CLOSE") then
+		self.selectedNewExpansion = true;
 		HideUIPanel(self);
 	end 
 end 
@@ -19,20 +20,25 @@ end
 function ChromieTimeFrameMixin:OnHide()
 	self:UnregisterEvent("CHROMIE_TIME_CLOSE");
 
-	if(self.currentExpansionSelection) then 
+	if (self.currentExpansionSelection) then 
 		self.currentExpansionSelection:ClearSelection(); 
 	end 
+
+	if (not self.selectedNewExpansion) then
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+	end
 
 	self.CurrentlySelectedExpansionInfoFrame:ResetSelection(); 
 	self.currentExpansionSelection = nil;
 	self.previousRowOption = nil; 
 	self.lastOption = nil; 
+	self.selectedNewExpansion = nil;
 
 	C_ChromieTime.CloseUI();
 end 
 
 function ChromieTimeFrameMixin:SelectExpansionOption()
-	if(self.currentExpansionSelection) then 
+	if (self.currentExpansionSelection) then 
 		C_ChromieTime.SelectChromieTimeOption(self.currentExpansionSelection.buttonInfo.id); 
 	end
 end 
@@ -49,7 +55,7 @@ end
 function ChromieTimeFrameMixin:GetExpansionOptionButton(index, optionInfo)
 	local expansionOptionButton = self.ExpansionOptionsPool:Acquire(); 
 
-	if(not self.lastOption) then 
+	if (not self.lastOption) then 
 		expansionOptionButton:SetPoint("TOPLEFT", self.OptionsFrame); 
 		self.previousRowOption = expansionOptionButton; 
 	elseif (mod(index - 1, MAX_EXPANSIONS_IN_ROW) == 0) then -- If we are one past our max per row that means we want to hold onto that to anchor for later. 
@@ -64,17 +70,17 @@ function ChromieTimeFrameMixin:GetExpansionOptionButton(index, optionInfo)
 end 
 
 function ChromieTimeFrameMixin:SetSelectedExpansion(expansionSelection)
-	if(expansionSelection == self.currentExpansionSelection) then -- can't select the same option
+	if (expansionSelection == self.currentExpansionSelection) then -- can't select the same option
 		return;
 	end 
 
-	if(self.currentExpansionSelection) then 
+	if (self.currentExpansionSelection) then 
 		self.currentExpansionSelection:ClearSelection(); 
 	end 
 
 	self.currentExpansionSelection = expansionSelection; 
 	self.SelectButton:UpdateButtonState(self.currentExpansionSelection); 
-	self.CurrentlySelectedExpansionInfoFrame:SetCurrentlySelectedExpansion(self.currentExpansionSelection); 
+	self.CurrentlySelectedExpansionInfoFrame:SetCurrentlySelectedExpansion(self.currentExpansionSelection);
 end 
 
 function ChromieTimeFrameMixin:GetSelectedExpansion(expansionSelection)
@@ -128,6 +134,10 @@ function ChromieTimeExpansionButtonMixin:OnClick()
 	local ChromieTimeFrame = self:GetParent():GetParent();
 	local selectedExpansion = ChromieTimeFrame:GetSelectedExpansion();
 
+	if (selectedExpansion ~= self) then
+		PlaySound(SOUNDKIT.UI_CHROMIE_TIME_SELECT_EXPANSION);
+	end
+
 	ChromieTimeFrame:SetSelectedExpansion(self);
 	self:SetNormalAtlas("ChromieTime-Button-Selection", TextureKitConstants.UseAtlasSize); -- Would like to override the normal texture when it's selected
 end 
@@ -153,7 +163,7 @@ function ChromieTimeSelectButtonMixin:OnShow()
 	self:UpdateButtonState(false); 
 end 
 
-function ChromieTimeSelectButtonMixin:OnClick() 
+function ChromieTimeSelectButtonMixin:OnClick()
 	self:GetParent():SelectExpansionOption(); 
 end 
 

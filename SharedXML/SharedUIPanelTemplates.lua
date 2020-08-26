@@ -1591,7 +1591,7 @@ end
 function SelectionPopoutButtonMixin:UpdateButtonDetails()
 	local currentSelectedData = self:GetCurrentSelectedData();
 	self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
-	local maxNameWidth = 125 - self.SelectionDetails.SelectionNumber:GetWidth() - 5;
+	local maxNameWidth = 125;
 	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
 		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
 	end
@@ -1843,12 +1843,12 @@ end
 
 DefaultScaleFrameMixin = {};
 
-function DefaultScaleFrameMixin:OnLoad()
+function DefaultScaleFrameMixin:OnDefaultScaleFrameLoad()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UpdateScale();
 end
 
-function DefaultScaleFrameMixin:OnEvent(event, ...)
+function DefaultScaleFrameMixin:OnDefaultScaleFrameEvent(event, ...)
 	if event == "DISPLAY_SIZE_CHANGED" then
 		self:UpdateScale();
 	end

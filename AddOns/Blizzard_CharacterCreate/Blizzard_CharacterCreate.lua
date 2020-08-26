@@ -9,6 +9,7 @@ local BACKWARD_ARROW = false;
 local PENDING_RANDOM_NAME = "...";
 
 local ZONE_CHOICE_ZOOM_AMOUNT = 100;
+local ZONE_CHOICE_ZOOM_TIME = 0.6;
 local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
 local CLASS_ANIM_WAIT_TIME_SECONDS = 5;
@@ -43,8 +44,6 @@ GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
 CharacterCreateMixin = CreateFromMixins(CharCustomizeParentFrameBaseMixin);
 
 function CharacterCreateMixin:OnLoad()
-	DefaultScaleFrameMixin.OnLoad(self);
-
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("CHARACTER_CREATION_RESULT");
 	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
@@ -93,8 +92,6 @@ function CharacterCreateMixin:OnDisplaySizeChanged()
 end
 
 function CharacterCreateMixin:OnEvent(event, ...)
-	DefaultScaleFrameMixin.OnEvent(self, event, ...);
-
 	local showError;
 	if event == "CHARACTER_CREATION_RESULT" then
 		local success, errorCode, guid = ...;
@@ -311,7 +308,7 @@ function CharacterCreateMixin:EnableZoneChoiceMode(enable)
 	end
 
 	local force = true;
-	self:ZoomCamera(enable and zoomAmount or -zoomAmount, ZOOM_TIME_SECONDS, force);
+	self:ZoomCamera(enable and zoomAmount or -zoomAmount, ZONE_CHOICE_ZOOM_TIME, force);
 
 	if enable then
 		self:AlphaCharacterToTarget(0);
@@ -360,6 +357,8 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	self:ResetCharacterRotation(mode, instantRotate);
 
 	if self.currentMode == mode then
+		self.creatingCharacter = false;
+		self:UpdateForwardButton();
 		return;
 	end
 

@@ -3,17 +3,43 @@
 ---------------------------------------------------------------------------------
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerSortFunc =  nil;
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerInitSortFunc = nil;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerSortFunc =  GarrisonFollowerList_DefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
+
+StaticPopupDialogs["COVENANT_MISSIONS_CONFIRM_ADVENTURE"] = {
+	text = COVENANT_MISSIONS_START_MISSION_QUESTION,
+	button1 = COVENANT_MISSIONS_CONFIRM_START_MISSION,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		GarrisonFollowerMission.OnClickStartMissionButton(self.data);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["COVENANT_MISSIONS_HEAL_CONFIRMATION"] = {
+	text = COVENANT_MISSION_CONFIRM_HEAL_FOLLOWER,
+	button1 = COVENANT_MISSIONS_CONFIRM_START_MISSION,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_Garrison.RushHealFollower(data.followerID);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+
 
 local covenantGarrisonStyleData =
 {
 	--Might do 4x for covenants, setting it up for this to be the possible way to express it, but also just because this'll be an easy way to replace the assets 1 to 1
-	closeButtonBorder = "AllianceFrame_ExitBorder",
+	closeButtonBorder = "UI-Frame-Oribos-ExitButtonBorder",
 	closeButtonBorderX = 0,
-	closeButtonBorderY = -1,
+	closeButtonBorderY = 1,
 	closeButtonX = 4,
-	closeButtonY = 4,
+	closeButtonY = 5,
 
 	nineSliceLayout = "CovenantMissionFrame",
 
@@ -80,7 +106,7 @@ function CovenantMission:OnLoadMainFrame()
 	PanelTemplates_SetNumTabs(self, 3);
 	self:SelectTab(self:DefaultTab());
 
-	self.FollowerList:SetSortFuncs(nil);
+	self.FollowerList:SetSortFuncs(GarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 
 	self:GetMissionPage().Board:Reset();
 
@@ -104,6 +130,11 @@ local COVENANT_MISSION_EVENTS = {
 	"CURRENT_SPELL_CAST_CHANGED",
 	"GARRISON_FOLLOWER_XP_CHANGED",
 	"ADVENTURE_MAP_CLOSE",
+};
+
+local COVENANT_MISSION_STATIC_POPUPS = {
+	"COVENANT_MISSIONS_CONFIRM_ADVENTURE",
+	"COVENANT_MISSIONS_HEAL_CONFIRMATION",
 };
 
 function CovenantMission:OnEventMainFrame(event, ...)
@@ -145,6 +176,7 @@ function CovenantMission:OnHideMainFrame()
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameDragStop, self);
 	self:UnregisterCallback(CovenantMission.Event.OnFollowerFrameReceiveDrag, self);
 
+	self:HideStaticPopups();
 	C_AdventureMap.Close(); --Opening the table implicitly opens an Adventure Map, this clears the npc on it.
 end
 
@@ -152,9 +184,21 @@ function CovenantMission:ShouldShowMissionsAndFollowersTabs()
 	return C_Garrison.IsAtGarrisonMissionNPC();
 end
 
+function CovenantMission:HideStaticPopups() 
+	for _, popup in ipairs(COVENANT_MISSION_STATIC_POPUPS) do
+		StaticPopup_Hide(popup);
+	end
+end
+
 function CovenantMission:SelectTab(id)
 	GarrisonFollowerMission.SelectTab(self, id);
 	self.BackgroundTile:SetShown(id ~= 3);
+	self:HideStaticPopups();
+end
+
+function CovenantMission:CloseMission()
+	GarrisonMission.CloseMission(self);
+	self:HideStaticPopups();
 end
 
 function CovenantMission:SetupTabs()
@@ -454,9 +498,9 @@ function CovenantMission:UpdateCurrencyInfo()
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
 	self.MissionTab.MissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.MissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
 
-	self.FollowerTab.CostFrame.CostIcon:SetTexture(currencyTexture);
-	self.FollowerTab.CostFrame.CostIcon:SetSize(18, 18);
-	self.FollowerTab.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.CostFrame.CostIcon, "LEFT", -8, -1);
+	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetTexture(currencyTexture);
+	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetSize(18, 18);
+	self.FollowerTab.HealFollowerFrame.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon, "LEFT", -8, -1);
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
@@ -523,7 +567,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 		frame:SetEmpty();
 	end
 	
-	if C_Garrison.GetFollowerStatus(info.followerID) ~= GARRISON_FOLLOWER_IN_PARTY then
+	if info.isAutoTroop or C_Garrison.GetFollowerStatus(info.followerID) ~= GARRISON_FOLLOWER_IN_PARTY then
 		if not C_Garrison.AddFollowerToMission(missionID, info.followerID, frame.boardIndex) then
 			return false;
 		end
@@ -587,7 +631,7 @@ end
 function CovenantMission:GetNumMissionFollowers()
 	local numFollowers = 0;
 	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
-		if followerFrame:GetFollowerGUID()  and not followerFrame.info.isTroop then
+		if followerFrame:GetFollowerGUID()  and not (followerFrame.info.isTroop or followerFrame.info.isAutoTroop) then
 			numFollowers = numFollowers + 1;
 		end
 	end
@@ -609,6 +653,10 @@ function CovenantMission:GenerateHelpTipInfo()
 		offsetX = -5,
 		checkCVars = true,
 	};
+end
+
+function CovenantMission:OnClickStartMissionButton()
+	StaticPopup_Show("COVENANT_MISSIONS_CONFIRM_ADVENTURE", nil, nil, self);
 end
 
 ---------------------------------------------------------------------------------

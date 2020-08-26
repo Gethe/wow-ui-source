@@ -25,7 +25,6 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
 				{ Name = "transmogID", Type = "number", Nilable = false },
 			},
 
@@ -127,8 +126,10 @@ local Transmog =
 				{ Name = "baseVisualID", Type = "number", Nilable = false },
 				{ Name = "appliedSourceID", Type = "number", Nilable = false },
 				{ Name = "appliedVisualID", Type = "number", Nilable = false },
+				{ Name = "appliedCategoryID", Type = "number", Nilable = false },
 				{ Name = "pendingSourceID", Type = "number", Nilable = false },
 				{ Name = "pendingVisualID", Type = "number", Nilable = false },
+				{ Name = "pendingCategoryID", Type = "number", Nilable = false },
 				{ Name = "hasUndo", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
 				{ Name = "itemSubclass", Type = "number", Nilable = false },
@@ -142,6 +143,7 @@ local Transmog =
 			{
 				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
 				{ Name = "transmogID", Type = "number", Nilable = false },
+				{ Name = "categoryID", Type = "number", Nilable = true },
 			},
 		},
 	},
@@ -251,6 +253,45 @@ local Transmog =
 
 	Tables =
 	{
+		{
+			Name = "TransmogCollectionType",
+			Type = "Enumeration",
+			NumValues = 29,
+			MinValue = 0,
+			MaxValue = 28,
+			Fields =
+			{
+				{ Name = "Head", Type = "TransmogCollectionType", EnumValue = 0 },
+				{ Name = "Shoulder", Type = "TransmogCollectionType", EnumValue = 1 },
+				{ Name = "Back", Type = "TransmogCollectionType", EnumValue = 2 },
+				{ Name = "Chest", Type = "TransmogCollectionType", EnumValue = 3 },
+				{ Name = "Shirt", Type = "TransmogCollectionType", EnumValue = 4 },
+				{ Name = "Tabard", Type = "TransmogCollectionType", EnumValue = 5 },
+				{ Name = "Wrist", Type = "TransmogCollectionType", EnumValue = 6 },
+				{ Name = "Hands", Type = "TransmogCollectionType", EnumValue = 7 },
+				{ Name = "Waist", Type = "TransmogCollectionType", EnumValue = 8 },
+				{ Name = "Legs", Type = "TransmogCollectionType", EnumValue = 9 },
+				{ Name = "Feet", Type = "TransmogCollectionType", EnumValue = 10 },
+				{ Name = "Wand", Type = "TransmogCollectionType", EnumValue = 11 },
+				{ Name = "OneHAxe", Type = "TransmogCollectionType", EnumValue = 12 },
+				{ Name = "OneHSword", Type = "TransmogCollectionType", EnumValue = 13 },
+				{ Name = "OneHMace", Type = "TransmogCollectionType", EnumValue = 14 },
+				{ Name = "Dagger", Type = "TransmogCollectionType", EnumValue = 15 },
+				{ Name = "Fist", Type = "TransmogCollectionType", EnumValue = 16 },
+				{ Name = "Shield", Type = "TransmogCollectionType", EnumValue = 17 },
+				{ Name = "Holdable", Type = "TransmogCollectionType", EnumValue = 18 },
+				{ Name = "TwoHAxe", Type = "TransmogCollectionType", EnumValue = 19 },
+				{ Name = "TwoHSword", Type = "TransmogCollectionType", EnumValue = 20 },
+				{ Name = "TwoHMace", Type = "TransmogCollectionType", EnumValue = 21 },
+				{ Name = "Staff", Type = "TransmogCollectionType", EnumValue = 22 },
+				{ Name = "Polearm", Type = "TransmogCollectionType", EnumValue = 23 },
+				{ Name = "Bow", Type = "TransmogCollectionType", EnumValue = 24 },
+				{ Name = "Gun", Type = "TransmogCollectionType", EnumValue = 25 },
+				{ Name = "Crossbow", Type = "TransmogCollectionType", EnumValue = 26 },
+				{ Name = "Warglaives", Type = "TransmogCollectionType", EnumValue = 27 },
+				{ Name = "Paired", Type = "TransmogCollectionType", EnumValue = 28 },
+			},
+		},
 		{
 			Name = "TransmogModification",
 			Type = "Enumeration",
