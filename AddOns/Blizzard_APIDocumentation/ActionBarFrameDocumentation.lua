@@ -205,6 +205,15 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "PutActionInSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldOverrideBarShowHealthBar",
 			Type = "Function",
 

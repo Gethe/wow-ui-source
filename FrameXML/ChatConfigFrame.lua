@@ -2001,6 +2001,7 @@ end
 
 function ChatConfigChannelSettings_UpdateCheckboxes()
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	ChatConfigChannelSettingsLeft:UpdateStates();
 end
 
 function ChatConfigChannelSettings_OnShow()
@@ -2255,6 +2256,27 @@ end
 
 function ChatConfigWideCheckBoxMixin:SetState(state)
 	self.ArtOverlay.GrayedOut:SetShown(state == ChatConfigWideCheckBoxState.GrayedOut);
+
+	-- Allow certain rulesets to modify state behavior
+	local isEnabled = self:GetChannelRuleset() == Enum.ChatChannelRuleset.None;
+	self.CloseChannel:SetEnabled(isEnabled);
+	local desaturation = 0;
+	if not isEnabled then
+		desaturation = 1;
+	end
+
+	self.CloseChannel:DesaturateHierarchy(desaturation);
+end
+
+function ChatConfigWideCheckBoxMixin:GetChannelIndex()
+	local channelIndex = self:GetID();
+	local channelData = CHAT_CONFIG_CHANNEL_LIST[channelIndex];
+	return channelData and channelData.channelID or nil;
+end
+
+function ChatConfigWideCheckBoxMixin:GetChannelRuleset()
+	local channelIndex = self:GetChannelIndex();
+	return channelIndex and C_ChatInfo.GetChannelRuleset(channelIndex) or Enum.ChatChannelRuleset.None;
 end
 
 function ChatConfigWideCheckBoxMixin:OnDragStart()

@@ -361,7 +361,7 @@ function WardrobeTransmogFrame_UpdateWeaponModel(slot)
 end
 
 function WardrobeTransmogFrame_GetDisplayedSource(slotButton)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, hideVisual = C_Transmog.GetSlotVisualInfo(slotButton.transmogLocation);
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo, hideVisual = C_Transmog.GetSlotVisualInfo(slotButton.transmogLocation);
 	if ( hideVisual ) then
 		return 0;
 	elseif ( pendingSourceID ~= REMOVE_TRANSMOG_ID ) then
@@ -583,7 +583,7 @@ function WardrobeTransmogButton_OnEnter(self)
 	if ( self.transmogLocation:IsIllusion() ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 		GameTooltip:SetText(WEAPON_ENCHANTMENT);
-		local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(self.transmogLocation);
+		local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(self.transmogLocation);
 		if ( self.invalidWeapon ) then
 			GameTooltip:AddLine(TRANSMOGRIFY_ILLUSION_INVALID_ITEM, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b, true);
 		elseif ( hasPending or hasUndo or canTransmogrify ) then
@@ -1364,11 +1364,11 @@ function WardrobeItemsCollectionMixin:OnUnitModelChangedEvent()
 end
 
 function WardrobeUtils_IsCategoryRanged(category)
-	return (category == LE_TRANSMOG_COLLECTION_TYPE_BOW) or (category == LE_TRANSMOG_COLLECTION_TYPE_GUN) or (category == LE_TRANSMOG_COLLECTION_TYPE_CROSSBOW);
+	return (category == Enum.TransmogCollectionType.Bow + 1) or (category == Enum.TransmogCollectionType.Gun + 1) or (category == Enum.TransmogCollectionType.Crossbow + 1);
 end
 
 function WardrobeUtils_IsCategoryLegionArtifact(category)
-	return (category == LE_TRANSMOG_COLLECTION_TYPE_PAIRED);
+	return (category == Enum.TransmogCollectionType.Paired + 1);
 end
 
 function WardrobeUtils_GetValidIndexForNumSources(index, numSources)
@@ -1703,10 +1703,10 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 	local checkTutorialFrame = self.transmogLocation:IsAppearance() and not WardrobeFrame_IsAtTransmogrifier()
 								and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK);
 
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo;
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo;
 	local showUndoIcon;
 	if ( isAtTransmogrifier ) then
-		baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(self.transmogLocation);
+		baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(self.transmogLocation);
 		if ( appliedVisualID ~= NO_TRANSMOG_VISUAL_ID ) then
 			if ( hasPendingUndo ) then
 				pendingVisualID = baseVisualID;
@@ -1757,11 +1757,11 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 
 			-- state at the transmogrifier
 			local transmogStateAtlas;
-			if ( visualInfo.visualID == appliedVisualID ) then
+			if ( visualInfo.visualID == appliedVisualID and appliedCategoryID == self.activeCategory) then
 				transmogStateAtlas = "transmog-wardrobe-border-current-transmogged";
 			elseif ( visualInfo.visualID == baseVisualID ) then
 				transmogStateAtlas = "transmog-wardrobe-border-current";
-			elseif ( visualInfo.visualID == pendingVisualID ) then
+			elseif ( visualInfo.visualID == pendingVisualID and pendingCategoryID == self.activeCategory) then
 				transmogStateAtlas = "transmog-wardrobe-border-selected";
 				pendingTransmogModelFrame = model;
 			end
@@ -1976,7 +1976,7 @@ function WardrobeItemsCollectionMixin:SelectVisual(visualID)
 			end
 		end
 	end
-	C_Transmog.SetPending(self.transmogLocation, sourceID);
+	C_Transmog.SetPending(self.transmogLocation, sourceID, self.activeCategory);
 	PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 end
 
@@ -2005,13 +2005,7 @@ end
 function WardrobeItemsCollectionMixin:GoToSourceID(sourceID, transmogLocation, forceGo, forTransmog)
 	local categoryID, visualID;
 	if ( transmogLocation:IsAppearance() ) then
-		categoryID, visualID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
-		if ( forTransmog ) then
-			local baseCategoryID = C_Transmog.GetBaseCategory(transmogLocation.slotID, sourceID);
-			if baseCategoryID then
-				categoryID = baseCategoryID;
-			end
-		end
+		categoryID, visualID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID, transmogLocation.slotID);
 	elseif ( transmogLocation:IsIllusion() ) then
 		visualID = C_TransmogCollection.GetIllusionSourceInfo(sourceID);
 	end

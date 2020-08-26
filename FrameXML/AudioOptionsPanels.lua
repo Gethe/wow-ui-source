@@ -349,8 +349,8 @@ function DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys)
 			end
 		end
 		if hasNonMetaKey then
-			if not MacOptions_IsUniversalAccessEnabled() then
-				StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
+			if not MacOptions_IsInputMonitoringEnabled() then
+				StaticPopup_Show("MAC_OPEN_INPUT_MONITORING");
 			end
 		end
 	end

@@ -564,6 +564,19 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetFontType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Normal", Type = "UIWidgetFontType", EnumValue = 0 },
+				{ Name = "Shadow", Type = "UIWidgetFontType", EnumValue = 1 },
+				{ Name = "Outline", Type = "UIWidgetFontType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -1070,6 +1083,8 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "fontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "bottomPadding", Type = "number", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },

@@ -199,24 +199,20 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
-local groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "LFGListPVEStub" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
 	self.groupButton1.name:SetText(LOOKING_FOR_DUNGEON_PVEFRAME);
-	SetPortraitToTexture(self.groupButton2.icon, "Interface\\Icons\\Icon_Scenarios");
-	self.groupButton2.name:SetText(SCENARIOS_PVEFRAME);
-	SetPortraitToTexture(self.groupButton3.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
-	self.groupButton3.name:SetText(RAID_FINDER_PVEFRAME);
-	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Achievement_General_StayClassy");
-	self.groupButton4.name:SetText(LFGLIST_NAME);
+	SetPortraitToTexture(self.groupButton2.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self.groupButton2.name:SetText(RAID_FINDER_PVEFRAME);
+	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.groupButton3.name:SetText(LFGLIST_NAME);
 
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
-
-	GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
 
 	-- set up accessors
 	self.getSelection = GroupFinderFrame_GetSelection;
@@ -224,22 +220,7 @@ function GroupFinderFrame_OnLoad(self)
 end
 
 function GroupFinderFrame_EvaluateButtonVisibility(self)
-	local canUse, failureReason = C_LFGInfo.CanPlayerUseScenarioFinder();
-	if not canUse then
-		if ( GroupFinderFrame_GetSelectedIndex(self) == self.groupButton2:GetID() ) then
-			-- Deselect this now hidden tab if it happened to be selected
-			self.selection = nil
-			GroupFinderFrame_ShowGroupFrame(nil)
-		end
-
-		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
-		self.groupButton2.tooltip = self.groupButton2.tooltip or failureReason;
-	else
-		self.groupButton2.tooltip = nil;
-		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
-	end
-
-	canUse, failureReason = C_LFGInfo.CanPlayerUseLFD();
+	local canUse, failureReason = C_LFGInfo.CanPlayerUseLFD();
 	if not canUse then
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, false);
 		self.groupButton1.tooltip = self.groupButton1.tooltip or failureReason;
@@ -250,32 +231,21 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 
 	canUse, failureReason = C_LFGInfo.CanPlayerUseLFR();
 	if not canUse then
+		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
+		self.groupButton2.tooltip = self.groupButton2.tooltip or failureReason;
+	else
+		self.groupButton2.tooltip = nil;
+		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
+	end
+
+	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
+	if not canUse then
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
 		self.groupButton3.tooltip = self.groupButton3.tooltip or failureReason;
 	else
 		self.groupButton3.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
 	end
-
-	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
-	if not canUse then
-		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
-		self.groupButton4.tooltip = self.groupButton4.tooltip or failureReason;
-	else
-		self.groupButton4.tooltip = nil;
-		GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
-	end
-
-	GroupFinderFrame_UpdateButtonAnchors(self);
-end
-
-function GroupFinderFrame_UpdateButtonAnchors(self)
-	local moveDown = not self.groupButton2:IsShown();
-	local spacing =  moveDown and -30 or -23
-	local button3RelativeTo = moveDown and self.groupButton1 or self.groupButton2
-	self.groupButton3:SetPoint("TOP", button3RelativeTo, "BOTTOM", 0, spacing);
-	self.groupButton4:SetPoint("TOP", self.groupButton3, "BOTTOM", 0, spacing);
-	self.groupButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, moveDown and -101 or -70);
 end
 
 function GroupFinderFrameButton_SetEnabled(button, enabled)
@@ -312,7 +282,7 @@ function GroupFinderFrame_Update(self, frame)
 end
 
 function GroupFinderFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 then
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and C_LFGInfo.CanPlayerUsePremadeGroup() then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
@@ -320,7 +290,7 @@ function GroupFinderFrame_EvaluateHelpTips(self)
 			bitfieldFlag = LE_FRAME_TUTORIAL_LFG_LIST,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 		};
-		HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton4);
+		HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton3);
 	end
 end
 

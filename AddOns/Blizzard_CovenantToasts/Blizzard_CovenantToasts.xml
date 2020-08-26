@@ -7,7 +7,8 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ToastBG" atlas="CovenantChoice-Celebration-Background" useAtlasSize="true">
+				<Texture parentKey="ToastBG" atlas="CovenantChoice-Celebration-Background">
+					<Size x="500" y="260"/>
 					<Anchors>
 						<Anchor point="TOP" y="35"/>
 					</Anchors>
@@ -19,7 +20,7 @@
 						<Anchor point="TOP" y="-30"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GlowLineTopAdditive" alphaMode="ADD">
+				<Texture parentKey="GlowLineTopAdditive">
 					<Anchors>
 						<Anchor point="TOP" y="-30"/>
 					</Anchors>
@@ -87,10 +88,8 @@
 				<Alpha childKey="IconSwirlModelScene" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconSwirlModelScene" startDelay="4" smoothing="OUT" duration="0.2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Icon" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="GlowLineTop" startDelay="0.25" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="GlowLineTop" startDelay="0.25" smoothing="OUT" duration="0.25" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="GlowLineTopAdditive" startDelay="0.25" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="GlowLineTopAdditive" startDelay="0.25" smoothing="OUT" duration="0.25" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="GlowLineTop" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowLineTopAdditive" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Stars1" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="Stars1" duration="0.5" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
 				<Alpha childKey="Stars1" startDelay="0.75" duration="0.5" fromAlpha="1" toAlpha="0"/>
@@ -99,9 +98,9 @@
 				<Scale childKey="Stars2" duration="0.5" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
 				<Alpha childKey="Stars2" startDelay="0.75" duration="0.5" fromAlpha="1" toAlpha="0"/>
 				<Translation childKey="Stars2" smoothing="IN_OUT" duration="1.5" offsetX="0" offsetY="45"/>
-				<Alpha childKey="ToastBG" startDelay="0.6" duration="0.35" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="CovenantName" startDelay="0.75" smoothing="OUT" duration="0.5" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="HeaderText" startDelay="0.85" smoothing="OUT" duration="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ToastBG" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CovenantName" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="HeaderText" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha startDelay="4" duration="0.75" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
 					<OnFinished>

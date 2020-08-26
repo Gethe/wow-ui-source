@@ -588,7 +588,7 @@ function GarrisonMission:UpdateStartButton(missionPage)
 			for followerIndex = 1, #followers do
 				local followerFrame = followers[followerIndex];
 				if ( followerFrame.info ) then
-					if (not followerFrame.info.isTroop) then
+					if (not followerFrame.info.isTroop and not followerFrame.info.isAutoTroop) then
 						numChampions = numChampions + 1;
 					end
 				end

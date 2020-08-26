@@ -156,4 +156,6 @@
 			<OnKeyDown function="GlueDialog_OnKeyDown"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="GlueAnnouncementDialog" parent="GlueParent" inherits="BaseNineSliceDialog"/>
 </Ui>

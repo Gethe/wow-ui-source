@@ -304,26 +304,16 @@ function LFDQueueFrameSpecificList_Update()
 		return;	--Setup will update the list.
 	end
 
-	local dungeonList = {};
 	if C_PlayerInfo.IsPlayerNPERestricted() then
-		-- if the player is NPE restricted, we need to filter out locked dungeons for
-		-- a cleaner presentation to New Players
-		for i, dungeonID in ipairs(LFDDungeonList) do
-			if not LFGLockList[dungeonID] then
-				table.insert(dungeonList, dungeonID);
-			end
-		end
-		if #dungeonList == 0 then
+		if #LFDDungeonList == 0 then
 			-- no eligible dungeons
 			EventRegistry:TriggerEvent("LFDQueueFrameSpecificList_Update.EmptyDungeonList");
 		else
 			EventRegistry:TriggerEvent("LFDQueueFrameSpecificList_Update.DungeonListReady");
 		end
-	else
-		dungeonList = LFDDungeonList;
 	end
 
-	FauxScrollFrame_Update(LFDQueueFrameSpecificListScrollFrame, #dungeonList, NUM_LFD_CHOICE_BUTTONS, 16);
+	FauxScrollFrame_Update(LFDQueueFrameSpecificListScrollFrame, #LFDDungeonList, NUM_LFD_CHOICE_BUTTONS, 16);
 
 	local offset = FauxScrollFrame_GetOffset(LFDQueueFrameSpecificListScrollFrame);
 
@@ -340,7 +330,7 @@ function LFDQueueFrameSpecificList_Update()
 
 	for i = 1, NUM_LFD_CHOICE_BUTTONS do
 		local button = _G["LFDQueueFrameSpecificListButton"..i];
-		local dungeonID = dungeonList[i+offset];
+		local dungeonID = LFDDungeonList[i+offset];
 
 		if ( dungeonID ) then
 			button:Show();
@@ -646,6 +636,19 @@ function LFDQueueFrameFindGroupButton_Update()
 end
 
 LFDHiddenByCollapseList = {};
+
+local function UpdateLFDDungeonList()
+	LFDDungeonList = {};
+
+	-- Get the list of dungeons, then pull out dungeons that are hidden (due to current Timewalking Campaign, etc) and add the rest to LFDDungeonList
+	local dungeonList = GetLFDChoiceOrder();
+	for _, dungeonID in ipairs(dungeonList) do
+		if not LFGLockList[dungeonID] or not LFGLockList[dungeonID].hideEntry then
+			table.insert(LFDDungeonList, dungeonID);
+		end
+	end
+end
+
 function LFDQueueFrame_Update()
 	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFD);
 
@@ -656,8 +659,8 @@ function LFDQueueFrame_Update()
 		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFD];
 	end
 
-	LFDDungeonList = GetLFDChoiceOrder(LFDDungeonList);
-
+	UpdateLFDDungeonList();
+	
 	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, checkedList, LFD_CURRENT_FILTER);
 
 	LFDQueueFrameSpecificList_Update();

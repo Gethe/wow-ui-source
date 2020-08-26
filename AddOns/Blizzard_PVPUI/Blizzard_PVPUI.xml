@@ -571,17 +571,8 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick function="PVPQueueFrameButton_OnClick"/>
-			<OnEnter>
-				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self, "ANCHOR_TOP");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-				end
-			</OnEnter>
-			<OnLeave>
-				if ( GameTooltip:GetOwner() == self ) then
-					GameTooltip:Hide();
-				end
-			</OnLeave>
+			<OnEnter function="PVPQueueFrameButton_OnEnter"/>
+			<OnLeave function="PVPQueueFrameButton_OnLeave"/>
 		</Scripts>
 	</Button>
 

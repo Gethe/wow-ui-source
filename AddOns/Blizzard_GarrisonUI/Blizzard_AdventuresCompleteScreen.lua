@@ -283,6 +283,8 @@ local AdventuresEffects = {
 	},
 
 	Heal = 3,
+	ApplyAura = 100,
+	RemoveAura = 99,
 };
 
 local function GetEffectForEvent(combatLogEvent)
@@ -294,6 +296,10 @@ local function GetEffectForEvent(combatLogEvent)
 		return AdventuresEffects.Ranged[spellClass];
 	elseif eventType == Enum.GarrAutoMissionEventType.Heal or eventType == Enum.GarrAutoMissionEventType.PeriodicHeal then
 		return AdventuresEffects.Heal;
+	elseif eventType == Enum.GarrAutoMissionEventType.ApplyAura then
+		return AdventuresEffects.ApplyAura;
+	elseif eventType == Enum.GarrAutoMissionEventType.RemoveAura then
+		return AdventuresEffects.RemoveAura;
 	-- elseif eventType == Enum.GarrAutoMissionEventType.PeriodicDamage then
 	end
 
@@ -322,6 +328,16 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 		local function AddCombatText(effectSequenceIndex)
 			self.Board:AddCombatEventText(combatLogEvent);
 			return false;
+		end
+
+		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura then
+			self.Board:UpdateBoardAuraState(combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura, combatLogEvent);
+		end
+
+		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or eventType == Enum.GarrAutoMissionEventType.RemoveAura or eventType == combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
+			if #combatLogEvent.targetInfo > 2 then
+				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			end
 		end
 
 		-- If there's a secondary effect, then play the primary effect on the primary target, and 
@@ -371,19 +387,6 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 		end
 	else
 		self.Board:AddCombatEventText(combatLogEvent);
-		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura then
-			self.Board:UpdateBoardAuraState(combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura, combatLogEvent);
-			if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura then
-				PlaySound(SOUNDKIT.UI_ADVENTURES_AURA_APPLY, nil, SOUNDKIT_ALLOW_DUPLICATES );
-
-				if #combatLogEvent.targetInfo > 2 then
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
-				end
-			else
-				PlaySound(SOUNDKIT.UI_ADVENTURES_AURA_REMOVE, nil, SOUNDKIT_ALLOW_DUPLICATES);
-			end
-
-		end
 	end
 end
 

@@ -201,6 +201,10 @@ end
 local function CompareQuestWatchInfos(info1, info2)
 	local quest1, quest2 = info1.quest, info2.quest;
 
+	if quest1:IsCalling() ~= quest2:IsCalling() then
+		return quest1:IsCalling();
+	end
+
 	if quest1.overridesSortOrder ~= quest2.overridesSortOrder then
 		return quest1.overridesSortOrder;
 	end

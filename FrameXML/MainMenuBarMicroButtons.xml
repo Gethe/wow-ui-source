@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarMicroButtons.lua"/>
-	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="MainMenuBarMicroButton" inherits="QuickKeybindButtonTemplate" mixin="MainMenuBarMicroButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="28" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -13,21 +13,22 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				MicroButton_OnEnter(self);
-			</OnEnter>
+			<OnEnter method="OnEnter" inherit="append"/>
 			<OnEnable>
 				self:SetAlpha(1);
 			</OnEnable>
 			<OnDisable>
 				self:SetAlpha(0.5);
 			</OnDisable>
-			<OnLeave>
+			<OnLeave inherit="append">
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" mixin="CharacterMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLECHARACTER0" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="MicroButtonPortrait">
@@ -40,76 +41,69 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="CharacterMicroButton_OnLoad" />
-			<OnMouseDown function="CharacterMicroButton_OnMouseDown"/>
-			<OnMouseUp function ="CharacterMicroButton_OnMouseUp"/>
-			<OnEnter function="CharacterMicroButton_OnEnter"/>
-			<OnEvent function="CharacterMicroButton_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method ="OnMouseUp"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
-	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" mixin="SpellbookMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLESPELLBOOK" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Spellbook");
-			</OnLoad>
-			<OnClick>
-				ToggleSpellBook(BOOKTYPE_SPELL);
-			</OnClick>
-			<OnEnter>
-				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip_SetTitle(GameTooltip, self.tooltipText);
-			</OnEnter>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick" inherit="append"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLETALENTS" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
+			<OnClick method="OnClick" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
-	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" mixin="AchievementMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEACHIEVEMENT" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Achievement");
-				self:RegisterEvent("RECEIVED_ACHIEVEMENT_LIST");
-				self:RegisterEvent("ACHIEVEMENT_EARNED");
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
-				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
-				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
-				if (Kiosk.IsEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="AchievementMicroButton_OnEvent"/>
-			<OnClick>
-				ToggleAchievementFrame();
-			</OnClick>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" mixin="QuestLogMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEQUESTLOG" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick"/>
+			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
@@ -154,46 +148,43 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnClick function="ToggleGuildFrame"/>
+			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" mixin="LFDMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEGROUPFINDER" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="LFDMicroButton_OnLoad" />
+			<OnLoad method="OnLoad" />
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent>
-				if (Kiosk.IsEnabled()) then
-					return;
-				end
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-				UpdateMicroButtons();
-			</OnEvent>
-			<OnClick>
-				PVEFrame_ToggleFrame();
-			</OnClick>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin" parent="UIParent">
 		<KeyValues>
 			<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
 			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
+			<KeyValue key="commandName" value="TOGGLECOLLECTIONS" type="string"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="CollectionsMicroButton_OnLoad"/>
-			<OnEnter function="CollectionsMicroButton_OnEnter"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnClick function="CollectionsMicroButton_OnClick"/>
-			<OnEvent function="CollectionsMicroButton_OnEvent"/>
+			<OnClick method="OnClick" inherit="append"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
 	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEENCOUNTERJOURNAL" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
@@ -211,10 +202,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="EJMicroButton_OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="EJMicroButton_OnEvent"/>
-			<OnClick function="ToggleEncounterJournal"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" mixin="StoreMicroButtonMixin" parent="UIParent">
@@ -222,13 +213,16 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="StoreMicroButton_OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent function="StoreMicroButton_OnEvent"/>
+			<OnEvent method="OnEvent"/>
 			<OnClick function="ToggleStoreUI"/>
 		</Scripts>
 	</Button>
-	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" mixin="MainMenuMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEGAMEMENU" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
 		</Anchors>
@@ -249,127 +243,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "MainMenu");
-				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
-				self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
-
-				PERFORMANCEBAR_LOW_LATENCY = 300;
-				PERFORMANCEBAR_MEDIUM_LATENCY = 600;
-				self.hover = nil;
-				self.updateInterval = 0;
-				self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnUpdate>
-				if (self.updateInterval > 0) then
-					self.updateInterval = self.updateInterval - elapsed;
-				else
-					self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
-					local status = GetFileStreamingStatus();
-					if(status==0) then
-						status = (GetBackgroundLoadingStatus()~=0) and 1 or 0;
-					end
-					if(status == 0) then
-						MainMenuBarDownload:Hide();
-						self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true);
-						self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true);
-						self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true);
-					else
-						self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-						self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
-						self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-						if (status == 1) then
-							MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green");
-						elseif (status == 2) then
-							MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow");
-						elseif (status == 3) then
-							MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
-						end
-						MainMenuBarDownload:Show();
-					end
-					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
-					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
-					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
-					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
-					else
-						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
-					end
-					if (self.hover) then
-						MainMenuBarPerformanceBarFrame_OnEnter(self);
-					end
-				end
-			</OnUpdate>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
-			</OnEvent>
-			<OnMouseDown>
-				if ( self.down ) then
-					self.down = nil; -- I'm pretty sure none of this should ever get run.
-					if ( not GameMenuFrame:IsShown() ) then
-						if ( VideoOptionsFrame:IsShown() ) then
-							VideoOptionsFrameCancel:Click();
-						elseif ( AudioOptionsFrame:IsShown() ) then
-							AudioOptionsFrameCancel:Click();
-						elseif ( InterfaceOptionsFrame:IsShown() ) then
-							InterfaceOptionsFrameCancel:Click();
-						end
-						CloseMenus();
-						CloseAllWindows()
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-						ShowUIPanel(GameMenuFrame);
-					else
-						PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-						HideUIPanel(GameMenuFrame);
-						MainMenuMicroButton_SetNormal();
-					end
-					return;
-				end
-				MainMenuMicroButton_SetPushed();
-				self.down = 1;
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self.down ) then
-					self.down = nil;
-					if ( self:IsMouseOver() ) then
-						if ( not GameMenuFrame:IsShown() ) then
-							if ( VideoOptionsFrame:IsShown() ) then
-								VideoOptionsFrameCancel:Click();
-							elseif ( AudioOptionsFrame:IsShown() ) then
-								AudioOptionsFrameCancel:Click();
-							elseif ( InterfaceOptionsFrame:IsShown() ) then
-								InterfaceOptionsFrameCancel:Click();
-							end
-							CloseMenus();
-							CloseAllWindows()
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-							ShowUIPanel(GameMenuFrame);
-						else
-							PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-							HideUIPanel(GameMenuFrame);
-							MainMenuMicroButton_SetNormal();
-						end
-					end
-					UpdateMicroButtons();
-					return;
-				end
-				if ( self:GetButtonState() == "NORMAL" ) then
-					MainMenuMicroButton_SetPushed();
-					self.down = 1;
-				else
-					MainMenuMicroButton_SetNormal();
-					self.down = 1;
-				end
-			</OnMouseUp>
-			<OnEnter>
-				self.hover = 1;
-				self.updateInterval = 0;
-			</OnEnter>
-			<OnLeave>
-				self.hover = nil;
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" hidden="true">

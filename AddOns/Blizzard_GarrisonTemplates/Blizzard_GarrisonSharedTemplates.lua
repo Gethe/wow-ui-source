@@ -351,6 +351,10 @@ function GarrisonFollowerList:UpdateFollowers()
 
 	if ( self.dirtyList ) then
 		self.followers = C_Garrison.GetFollowers(self.followerType) or {};
+		local autoCombatTroops = C_Garrison.GetAutoTroops(self.followerType);
+		for i = 1, #autoCombatTroops do
+			table.insert(self.followers, autoCombatTroops[i]);
+		end
 		self.dirtyList = nil;
 	end
 
@@ -360,8 +364,8 @@ function GarrisonFollowerList:UpdateFollowers()
 
 	--TODO: Tagify GetFollowers and condense this into it
 	for i = 1, #self.followers do
-		if (self.followers[i].garrFollowerID) then
-			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].garrFollowerID, self.followers[i].level);
+		if self.followers[i].followerID then
+			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].followerID, self.followers[i].level);
 			self.followers[i].autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(self.followers[i].followerID);
 		end
 	end
@@ -383,7 +387,7 @@ function GarrisonFollowerList:UpdateFollowers()
 			tinsert(self.followersList, i);
 			if (not self.followers[i].isCollected) then
 				numUncollected = numUncollected + 1;
-			elseif (self.followers[i].isTroop) then
+			elseif (self.followers[i].isTroop or self.followers[i].isAutoTroop) then
 				numTroops = numTroops + 1;
 			elseif (self.followers[i].status == GARRISON_FOLLOWER_INACTIVE) then
 				numInactive = numInactive + 1;
@@ -422,11 +426,11 @@ function GarrisonFollowerList:UpdateFollowers()
 
 		additionalOffset = additionalOffset + 1;
 		tinsert(self.followersList, 0 + additionalOffset, 0);
-		self.followersLabels[0 + additionalOffset] = FOLLOWERLIST_LABEL_CHAMPIONS;
+		self.followersLabels[0 + additionalOffset] = GarrisonFollowerOptions[self.followerType].strings.FOLLOWERLIST_LABEL_FOLLOWERS;
 
 		additionalOffset = additionalOffset + 1;
 		tinsert(self.followersList, numActive + additionalOffset, 0);
-		self.followersLabels[numActive + additionalOffset] = FOLLOWERLIST_LABEL_TROOPS;
+		self.followersLabels[numActive + additionalOffset] = GarrisonFollowerOptions[self.followerType].strings.FOLLOWERLIST_LABEL_TROOPS;
 
 	    if ( numInactive > 0 ) then
 		    additionalOffset = additionalOffset + 1;
@@ -1125,8 +1129,8 @@ function GarrisonFollowerList_InitializeDefaultMissionSort(self, followers)
 				follower.sortStatus = nil;
 			end
 			local relevantForMission = not follower.sortStatus and follower.isCollected;
-			follower.sortNumCounters = relevantForMission and mainFrame.followerCounters[follower.followerID] and #mainFrame.followerCounters[follower.followerID] or 0;
-			follower.sortNumTraits = relevantForMission and mainFrame.followerTraits[follower.followerID] and #mainFrame.followerTraits[follower.followerID] or 0;
+			follower.sortNumCounters = relevantForMission and mainFrame.followerCounters and mainFrame.followerCounters[follower.followerID] and #mainFrame.followerCounters[follower.followerID] or 0;
+			follower.sortNumTraits = relevantForMission and mainFrame.followerTrait and mainFrame.followerTraits[follower.followerID] and #mainFrame.followerTraits[follower.followerID] or 0;
 			follower.sortLevel = max(follower.level, mentorLevel);
 			follower.sortILevel = follower.isMaxLevel and max(follower.iLevel, mentorItemLevel) or 0;	-- item level is only relevant at max level for this sort
 		end
@@ -1245,6 +1249,9 @@ function GarrisonFollowerList_SortFollowers(self)
 		end
 		if ( follower1.isTroop ~= follower2.isTroop ) then
 			return follower2.isTroop;
+		end
+		if ( follower1.isAutoTroop ~= follower2.isAutoTroop ) then
+			return follower2.isAutoTroop;
 		end
 
 		-- run use-specific sort function
@@ -1654,7 +1661,7 @@ end
 function GarrisonFollowerTabMixin:SetupXPBar(followerInfo)
 	if ( followerInfo.isCollected ) then
 		local unupgradable = followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY[followerInfo.followerTypeID];
-		if (GarrisonFollowerOptions[followerInfo.followerTypeID].followerPaneHideXP or followerInfo.isTroop or unupgradable) then
+		if (GarrisonFollowerOptions[followerInfo.followerTypeID].followerPaneHideXP or followerInfo.isTroop or followerInfo.isAutoTroop or unupgradable) then
 			-- Follower cannot be upgraded anymore
 			self.XPLabel:Hide();
 			self.XPBar:Hide();

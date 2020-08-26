@@ -65,6 +65,8 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.InvasionBadge:Hide();
 	end
 
+	self.Report.SubTitle:Hide(); -- May be shown later.
+
 	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
 		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
 		self.Report.Background:ClearAllPoints();
@@ -80,6 +82,7 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
 		self.Report.Background:SetAtlas(("BfAMissionsLandingPage-Background-%s"):format(UnitFactionGroup("player")));
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
+		self:SetupCovenantRenownLevel();
 		self:SetupCovenantCallings();
 		self:SetupSoulbind();
 		self.FollowerTabButton:SetText(COVENANT_MISSIONS_FOLLOWERS);
@@ -109,7 +112,11 @@ function GarrisonLandingPageMixin:OnShow()
 	self:UpdateUIToGarrisonType();
 	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
 
-	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE")
+	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
+
+	if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+		self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	end
 end
 
 function GarrisonLandingPageMixin:OnHide()
@@ -120,7 +127,11 @@ function GarrisonLandingPageMixin:OnHide()
 	GarrisonBonusAreaTooltip:Hide();
 	self.abilityCountersForMechanicTypes = nil;
 
-	self:UnregisterEvent("GARRISON_HIDE_LANDING_PAGE")
+	self:UnregisterEvent("GARRISON_HIDE_LANDING_PAGE");
+
+	if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	end
 end
 
 function GarrisonLandingPageMixin:GetFollowerList()
@@ -129,6 +140,16 @@ end
 
 function GarrisonLandingPageMixin:GetShipFollowerList()
 	return self.ShipFollowerList;
+end
+
+function GarrisonLandingPageMixin:SetupCovenantRenownLevel()
+	local activeCovenantID = C_Covenants.GetActiveCovenantID();
+	local displayRenownLevel = (self.garrTypeID == Enum.GarrisonType.Type_9_0) and (activeCovenantID ~= 0);
+	self.Report.SubTitle:SetShown(displayRenownLevel);
+	if displayRenownLevel then
+		self.Report.SubTitle:SetText(GARRISON_TYPE_9_0_LANDING_PAGE_RENOWN_LEVEL:format(C_CovenantSanctumUI.GetRenownLevel()));
+		self.Report.SubTitle:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
 end
 
 function GarrisonLandingPageMixin:SetupCovenantCallings()
@@ -167,6 +188,8 @@ end
 function GarrisonLandingPageMixin:OnEvent(event)
 	if (event == "GARRISON_HIDE_LANDING_PAGE") then
 		HideUIPanel(self);
+	elseif (event == "CURRENCY_DISPLAY_UPDATE") then
+		self:SetupCovenantRenownLevel();
 	end
 end
 

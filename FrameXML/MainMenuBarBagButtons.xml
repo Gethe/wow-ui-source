@@ -34,7 +34,7 @@
 			<OnEvent function="ItemAnim_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<ItemButton name="BagSlotButtonTemplate" mixin="BagSlotMixin" inherits="ItemAnimTemplate" virtual="true">
+	<ItemButton name="BagSlotButtonTemplate" mixin="BagSlotMixin" inherits="QuickKeybindButtonTemplate, ItemAnimTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="showMatchHighlight" value="false" type="boolean"/>
 		</KeyValues>
@@ -46,20 +46,23 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-                BagSlotButton_OnLoad(self);
-            </OnLoad>
-			<OnEvent function="BagSlotButton_OnEvent" />
+        BagSlotButton_OnLoad(self);
+				self:RegisterForClicks("AnyUp");
+      </OnLoad>
+			<OnEvent function="BagSlotButton_OnEvent"/>
 			<OnShow>
 				PaperDollItemSlotButton_OnShow(self, true);
 			</OnShow>
 			<OnHide>
 				PaperDollItemSlotButton_OnHide(self);
 			</OnHide>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					BagSlotButton_OnModifiedClick(self, button);
-				else
-					BagSlotButton_OnClick(self, button);
+			<OnClick inherit="append">
+				if ( not KeybindFrames_InQuickKeybindMode() ) then
+					if ( IsModifiedClick() ) then
+						BagSlotButton_OnModifiedClick(self, button);
+					else
+						BagSlotButton_OnClick(self, button);
+					end
 				end
 			</OnClick>
 			<OnDragStart>
@@ -68,18 +71,16 @@
 			<OnReceiveDrag>
 				BagSlotButton_OnClick(self);
 			</OnReceiveDrag>
-			<OnEnter>
+			<OnEnter inherit="append">
 				BagSlotButton_OnEnter(self, motion);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnLeave function="BagSlotButton_OnLeave" inherit="append"/>
 		</Scripts>
 	</ItemButton>
-	<ItemButton name="MainMenuBarBackpackButton" mixin="BagSlotMixin" inherits="ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
+	<ItemButton name="MainMenuBarBackpackButton" mixin="BagSlotMixin" inherits="QuickKeybindButtonTemplate, ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
 		<KeyValues>
 			<KeyValue key="showMatchHighlight" value="false" type="boolean"/>
+			<KeyValue key="commandName" value="TOGGLEBACKPACK" type="string"/>
 		</KeyValues>
 		<Size x="40" y="40"/>
 		<Anchors>
@@ -92,10 +93,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad function="MainMenuBarBackpackButton_OnLoad" />
-			<OnClick function="MainMenuBarBackpackButton_OnClick" />
+			<OnClick function="MainMenuBarBackpackButton_OnClick" inherit="append"/>
 			<OnReceiveDrag function="BackpackButton_OnClick" />
-			<OnEnter function="MainMenuBarBackpackButton_OnEnter" />
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnEnter function="MainMenuBarBackpackButton_OnEnter" inherit="append"/>
+			<OnLeave function="MainMenuBarBackpackButton_OnLeave" inherit="append"/>
 			<OnEvent>
 				ItemAnim_OnEvent(self, event, ...);
 				MainMenuBarBackpackButton_OnEvent(self, event, ...);
@@ -103,6 +104,9 @@
 		</Scripts>
 	</ItemButton>
 	<ItemButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEBAG4" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
 				<Offset>
@@ -112,6 +116,9 @@
 		</Anchors>
 	</ItemButton>
 	<ItemButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEBAG3" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
@@ -121,6 +128,9 @@
 		</Anchors>
 	</ItemButton>
 	<ItemButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEBAG2" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
@@ -130,6 +140,9 @@
 		</Anchors>
 	</ItemButton>
 	<ItemButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEBAG1" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>

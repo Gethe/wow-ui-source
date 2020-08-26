@@ -3,6 +3,7 @@ RuneforgePowerButtonMixin = {};
 
 function RuneforgePowerButtonMixin:SetPowerID(powerID)
 	self.powerID = powerID;
+	self.slotNames = nil;
 
 	local hasPowerID = powerID ~= nil;
 	self.powerInfo = hasPowerID and C_LegendaryCrafting.GetRuneforgePowerInfo(powerID) or nil;
@@ -246,6 +247,10 @@ RuneforgePowerFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
 function RuneforgePowerFrameMixin:OnLoad()
 	self.PageControl:SetPagedList(self.PowerList);
+end
+
+function RuneforgePowerFrameMixin:OnMouseWheel(...)
+	self.PowerList:OnMouseWheel(...);
 end
 
 function RuneforgePowerFrameMixin:OpenPowerList(powers)

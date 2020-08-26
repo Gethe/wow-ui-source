@@ -93,6 +93,7 @@ local EJ_TIER_DATA =
 	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
 	[7] = { backgroundAtlas = "UI-EJ-Legion", r = 0.0, g = 0.6, b = 0.2 },
 	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
+	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.788, g = 0.439, b = 1 },
 }
 
 EJButtonMixin = {}
@@ -143,6 +144,7 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = 6,
 	[LE_EXPANSION_LEGION] = 7,
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 8,
+	[LE_EXPANSION_SHADOWLANDS] = 9,
 }
 
 function GetEJTierDataTableID(expansion)
@@ -2798,7 +2800,7 @@ function EJSuggestFrame_OnEvent(self, event, ...)
 		EJSuggestFrame_RefreshDisplay();
 		local newAdventureNotice = ...;
 		if ( newAdventureNotice ) then
-			EJMicroButton_UpdateNewAdventureNotice();
+			EJMicroButton:UpdateNewAdventureNotice();
 		end
 	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()
@@ -2806,7 +2808,7 @@ function EJSuggestFrame_OnEvent(self, event, ...)
 end
 
 function EJSuggestFrame_OnShow(self)
-	EJMicroButton_ClearNewAdventureNotice();
+	EJMicroButton:ClearNewAdventureNotice();
 
 	C_AdventureJournal.UpdateSuggestions();
 	EJSuggestFrame_RefreshDisplay();

@@ -73,6 +73,16 @@ LFG_ROLE_SHORTAGE_UNCOMMON = 2;
 LFG_ROLE_SHORTAGE_PLENTIFUL = 3;
 LFG_ROLE_NUM_SHORTAGE_TYPES = 3;
 
+StaticPopupDialogs["LFG_QUEUE_EXPAND"] = {
+	text = LFG_QUEUE_EXPAND_DESCRIPTION,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = C_LFGInfo.ConfirmLfgExpandSearch,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
 --Variables to store dungeon info in Lua
 --local LFDDungeonList, LFRRaidList, LFGCollapseList, LFGEnabledList, LFDHiddenByCollapseList, LFGLockList;
 
@@ -107,12 +117,24 @@ function LFGEventFrame_OnLoad(self)
 	--Used for disabling buttons when active in LFGList
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+
+	self:RegisterEvent("SHOW_LFG_EXPAND_SEARCH_PROMPT");
 end
 
 LFGQueuedForList = {};
 for i=1, NUM_LE_LFG_CATEGORYS do
 	LFGQueuedForList[i] = {};
 end
+
+local function GetLFGLockList()
+	local lockInfo = C_LFGInfo.GetLFDLockStates();
+	local lockMap = {};
+	for _, lock in ipairs(lockInfo) do
+		lockMap[lock.lfgID] = lock;
+	end
+	return lockMap;
+end
+
 function LFGEventFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE" ) then
 		LFG_UpdateAllRoleCheckboxes();
@@ -132,7 +154,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFG_DisplayGroupLeaderWarning(self);
 		LFGDungeonReadyPopup_Update();
 	elseif ( event == "LFG_LOCK_INFO_RECEIVED" ) then
-		LFGLockList = GetLFDChoiceLockedState();
+		LFGLockList = GetLFGLockList();
 		LFG_UpdateFramesIfShown();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		LFG_UpdateQueuedList();
@@ -224,6 +246,8 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		local reason, reasonArg1, reasonArg2 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(format(_G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reason] or "OTHER")], "",reasonArg1, reasonArg2), info.r, info.g, info.b, info.id);
+	elseif event == "SHOW_LFG_EXPAND_SEARCH_PROMPT" then
+		StaticPopup_Show("LFG_QUEUE_EXPAND");
 	end
 
 	LFG_UpdateRolesChangeable();
@@ -231,7 +255,6 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFG_UpdateLockedOutPanels();
 	LFGBackfillCover_Update(LFDQueueFrame.PartyBackfill);
 	LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill);
-	LFGBackfillCover_Update(ScenarioQueueFrame.PartyBackfill);
 end
 
 function LFG_IsHeroicScenario(dungeonID)
@@ -320,7 +343,6 @@ function LFG_UpdateFindGroupButtons()
 	LFDQueueFrameFindGroupButton_Update();
 	LFRQueueFrameFindGroupButton_Update();
 	RaidFinderFrameFindRaidButton_Update();
-	ScenarioQueueFrameFindGroupButton_Update();
 end
 
 function LFG_UpdateQueuedList()
@@ -337,9 +359,6 @@ function LFG_UpdateFramesIfShown()
 	end
 	if ( LFRParentFrame:IsVisible() ) then
 		LFRQueueFrame_Update();
-	end
-	if ( ScenarioQueueFrame:IsVisible() ) then
-		ScenarioQueueFrame_Update();
 	end
 end
 
@@ -1092,10 +1111,6 @@ function LFRGetNumDungeons()
 	return #LFRRaidList;
 end
 
-function ScenariosGetNumDungeons()
-	return #ScenariosList;
-end
-
 function LFGIsIDHeader(id)
 	return id < 0;
 end
@@ -1107,11 +1122,10 @@ function LFGDungeonList_Setup()
 		hasSetUp = true;
 		LFGCollapseList = GetLFDChoiceCollapseState(LFGCollapseList);	--We maintain this list in Lua
 		LFGEnabledList = GetLFDChoiceEnabledState(LFGEnabledList);	--We maintain this list in Lua
-		LFGLockList = GetLFDChoiceLockedState(LFGLockList);
+		LFGLockList = GetLFGLockList();
 
 		LFDQueueFrame_Update();
 		LFRQueueFrame_Update();
-		ScenarioQueueFrame_Update();
 		return true;
 	end
 	return false;
@@ -1178,10 +1192,10 @@ function LFGListUpdateHeaderEnabledAndLockedStates(dungeonList, enabledList, hid
 		local id = dungeonList[i];
 		if ( LFGIsIDHeader(id) ) then
 			enabledList[id] = false;
-			LFGLockList[id] = true;
+			LFGLockList[id] = {lfgID = id, reason = 0};
 		elseif ( not LFGLockList[id] ) then
 			local groupID = select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(id));
-			LFGLockList[groupID] = false;
+			LFGLockList[groupID] = nil;
 			local idState = enabledList[id];
 			local groupState = enabledList[groupID];
 			if ( idState ) then
@@ -1203,10 +1217,10 @@ function LFGListUpdateHeaderEnabledAndLockedStates(dungeonList, enabledList, hid
 		local id = hiddenByCollapseList[i];
 		if ( LFGIsIDHeader(id) ) then
 			enabledList[id] = false;
-			LFGLockList[id] = true;
+			LFGLockList[id] = {lfgID = id, reason = 0};
 		elseif ( not LFGLockList[id] ) then
 			local groupID = select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(id));
-			LFGLockList[groupID] = false;
+			LFGLockList[groupID] = nil;
 			local idState = enabledList[id];
 			local groupState = enabledList[groupID];
 			if ( idState ) then
@@ -1801,7 +1815,7 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	end
 
 	--If we're the wrong faction, we won't display it.
-	if ( LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_WRONG_FACTION ) then
+	if ( LFGLockList[dungeonID].reason == LFG_INSTANCE_INVALID_WRONG_FACTION ) then
 		return false;
 	end
 

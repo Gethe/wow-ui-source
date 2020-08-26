@@ -6,9 +6,12 @@ local metaKeys =
 	RCTRL = 4,
 	LSHIFT = 5,
 	RSHIFT = 6,
-	ALT = 7,
-	CTRL = 8,
-	SHIFT = 9,
+	LMETA = 7,
+	RMETA = 8,
+	ALT = 9,
+	CTRL = 10,
+	SHIFT = 11,
+	META = 12,
 };
 
 local ignoredKeys =
@@ -16,7 +19,6 @@ local ignoredKeys =
 	UNKNOWN = true,
 	BUTTON1 = true,
 	BUTTON2 = true,
-	-- And metakeys
 };
 
 local mouseButtonNameConversion =
@@ -120,6 +122,10 @@ function CreateKeyChordStringUsingMetaKeyState(key)
 	if IsShiftKeyDown() then
 		table.insert(chord, "SHIFT");
 	end
+ 
+	 if IsMetaKeyDown() then
+		 table.insert(chord, "META");
+	 end
 
 	if not IsMetaKey(key) then
 		table.insert(chord, key);
@@ -151,6 +157,10 @@ function GetBindingKeyForAction(action, useNotBound, useParentheses)
 	end
 
 	return key;
+end
+
+function KeybindFrames_InQuickKeybindMode()
+	return QuickKeybindFrame and QuickKeybindFrame:IsShown();
 end
 
 -- Gets the key string for the action and formats it into keyStringFormat, then formats

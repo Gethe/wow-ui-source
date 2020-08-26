@@ -43,7 +43,7 @@ function RuneforgeItemSlotMixin:OnClick(buttonName)
 end
 
 function RuneforgeItemSlotMixin:OnMouseDown()
-	self:SetEffectShown("primary", false);
+	self:UpdateEffectVisibility();
 end
 
 function RuneforgeItemSlotMixin:OnMouseUp()
@@ -138,6 +138,7 @@ function RuneforgeItemSlotMixin:SetTextureAndEffects()
 	pushedTexture:SetAtlas("runecarving-upgrade-icon-center-empty", true);
 
 	self:AddEffectData("primary", RuneforgeUtil.Effect.CenterRune, RuneforgeUtil.EffectTarget.None, RuneforgeUtil.Level.Overlay);
+	self:AddEffectData("primary-upgrade", RuneforgeUtil.Effect.UpgradeCenterRune, RuneforgeUtil.EffectTarget.None, RuneforgeUtil.Level.Overlay);
 end
 
 function RuneforgeItemSlotMixin:Refresh()
@@ -202,9 +203,26 @@ function RuneforgeItemSlotMixin:SetSelectingItem(isSelectingItem)
 	self:UpdateEffectVisibility();
 end
 
-function RuneforgeItemSlotMixin:UpdateEffectVisibility(forceHide)
+function RuneforgeItemSlotMixin:ShouldShowPrimaryEffect()
 	local hasItem = self:GetItem() ~= nil;
-	self:SetEffectShown("primary", self:IsShown() and not hasItem and not self.SelectingTexture:IsShown());
+	return self:IsShown() and not hasItem and not self.SelectingTexture:IsShown();
+end
+
+function RuneforgeItemSlotMixin:GetEffectKeys()
+	if self:GetRuneforgeFrame():IsRuneforgeUpgrading() then
+		return "primary-upgrade", "primary";
+	else
+		return "primary", "primary-upgrade";
+	end
+end
+
+function RuneforgeItemSlotMixin:UpdateEffectVisibility()
+	local effectKey, alternateEffectKey = self:GetEffectKeys();
+	self:SetEffectShown(effectKey, self:ShouldShowPrimaryEffect());
+
+	if alternateEffectKey then
+		self:SetEffectShown(alternateEffectKey, false);
+	end
 end
 
 
@@ -270,4 +288,8 @@ end
 
 function RuneforgeUpgradeItemSlotMixin:Refresh()
 	self:SetEnabled(self:GetRuneforgeFrame():HasValidUpgradeItem());
+end
+
+function RuneforgeUpgradeItemSlotMixin:GetEffectKeys()
+	return "primary", nil;
 end

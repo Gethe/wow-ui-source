@@ -31,11 +31,11 @@ TutorialData.LevelAbilitiesTable = {
 		56641,	-- Start with Steady Shot
 		185358,	-- Arcane Shot, level 2
 		195645,	-- Wing Clip, level 3
-		1513,	-- Scare Beast, level 4
+		781,	-- Disengage, level 4
 		186257,	-- Aspect of the Cheetah, level 5
 		5384,	-- Feign Death, level 6
 		257284,	-- Hunter's Mark, level 7
-		781,	-- Disengage, level 8
+		186265,	-- Aspect of the Turtle, level 8
 		109304,	-- Exhilaration, level 9
 	};
 	ROGUE = {
@@ -519,7 +519,7 @@ TutorialData.Horde = {
 		HUNTER =	59952,
 		ROGUE =		59967,
 		PRIEST =	59961,
-		SHAMAN =	59969,
+		SHAMAN =	59002,
 		MAGE =		59954,
 		WARLOCK =	59970,
 		MONK =		59956,

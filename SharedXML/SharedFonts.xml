@@ -825,6 +825,59 @@
 
 	<FontFamily name="SystemFont_Shadow_Huge2" virtual="true">
 		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="24">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.TTF" height="24">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="24">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF"  height="24">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="24">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Huge2_Outline" virtual="true">
+		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="24" outline="NORMAL">
 				<Shadow>
 					<Offset>
@@ -982,6 +1035,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="SystemFont_Huge4" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="27"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="27"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="27"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="27"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="27"/>
+		</Member>
+	</FontFamily>
+	
 	<FontFamily name="SystemFont_Shadow_Huge4" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="27">
@@ -1035,7 +1106,7 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="SystemFont_Shadow_Outline_Huge4" virtual="true">
+	<FontFamily name="SystemFont_Shadow_Huge4_Outline" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="27" outline="NORMAL">
 				<Shadow>
@@ -1194,7 +1265,7 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="SystemFont_Outline_Huge2" virtual="true">
+	<FontFamily name="SystemFont22_Outline" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL"/>
 		</Member>
@@ -1212,7 +1283,7 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="SystemFont_Shadow_Outline_Huge2" virtual="true">
+	<FontFamily name="SystemFont22_Shadow_Outline" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL">
 				<Shadow>
@@ -1604,6 +1675,24 @@
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="10"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="System15Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="15"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="15"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="15"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bKAI00M.TTF" height="15"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="15"/>
 		</Member>
 	</FontFamily>
 

@@ -350,3 +350,15 @@ function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
 	local isLargeSize = rightMultiBarShowing;
 	StatusTrackingBarManager:SetBarSize(isLargeSize);
 end
+
+function MainMenuBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
+	local artFrameBG = self.ArtFrame.Background;
+	local microBar = self.MicroButtonAndBagsBar;
+	artFrameBG.QuickKeybindBottomShadow:SetShown(showEffects);
+	local useLargeBackground = artFrameBG.BackgroundLarge:IsShown();
+	artFrameBG.QuickKeybindGlowSmall:SetShown(not useLargeBackground and showEffects);
+	artFrameBG.QuickKeybindGlowLarge:SetShown(useLargeBackground and showEffects);
+	microBar.QuickKeybindsMicroBagBarGlow:SetShown(showEffects);
+	local useRightShadow = MultiBarRight:IsShown();
+	artFrameBG.QuickKeybindRightShadow:SetShown(useRightShadow and showEffects);
+end

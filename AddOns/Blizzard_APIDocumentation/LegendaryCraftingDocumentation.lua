@@ -20,6 +20,22 @@ local LegendaryCrafting =
 			},
 		},
 		{
+			Name = "GetRuneforgeItemPreviewInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgePowerID", Type = "number", Nilable = true },
+				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "RuneforgeItemPreviewInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRuneforgeLegendaryComponentInfo",
 			Type = "Function",
 

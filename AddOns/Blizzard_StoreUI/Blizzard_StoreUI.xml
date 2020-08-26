@@ -1458,12 +1458,12 @@
 									<Anchor point="TOP" x="0" y="-170" />
 								</Anchors>
 							</Texture>
-							<FontString parentKey="SelectedCharacterName" inherits="GameFontNormalHugeOutline2">
+							<FontString parentKey="SelectedCharacterName" inherits="GameFontNormalShadowOutline22">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72" y="-16"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="SelectedGuildName" inherits="GameFontNormalHugeOutline2" justifyH="LEFT">
+							<FontString parentKey="SelectedGuildName" inherits="GameFontNormalShadowOutline22" justifyH="LEFT">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT"/>

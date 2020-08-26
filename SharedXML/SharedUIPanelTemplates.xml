@@ -1980,7 +1980,8 @@
 		<DisabledFont style="GameFontDisableMed3"/>
 	</Button>
 
-	<Button name="SharedButtonSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+	
+<Button name="SharedButtonSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
 		<Size x="138" y="28"/>
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
@@ -2357,5 +2358,21 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
+	</Frame>
+
+	<!--The DefaultScaleFrame template is used to allow a frame to appear to be "unscaled"
+		That means that all the textures/fonts used should appear as the same size they do in Photoshop when authored.
+		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.
+		But it can also be used in game in order to attain a consistent look on a panel.
+		If you choose to use it in-game, remember that when you use it, the player will no longer be able to scale that panel up for accessibility reasons.-->
+		
+	<!--IMPORTANT:
+		If you are inheriting from more than 1 frame, inherit this frame LAST (the right-most in the list).
+		If you have your own mixin, use inherit="prepend" for OnLoad & OnEvent if you define them-->
+	<Frame name="DefaultScaleFrame" mixin="DefaultScaleFrameMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnDefaultScaleFrameLoad" inherit="prepend"/>
+			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
+		</Scripts>
 	</Frame>
 </Ui>

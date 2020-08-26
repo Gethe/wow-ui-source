@@ -1,0 +1,23 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="QuickKeybind.lua"/>
+	<Button name="QuickKeybindButtonTemplate" mixin="QuickKeybindButtonTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="QuickKeybindHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="QuickKeybindButtonOnClick"/>
+			<OnEnter method="QuickKeybindButtonOnEnter"/>
+			<OnLeave method="QuickKeybindButtonOnLeave"/>
+			<OnMouseWheel method="QuickKeybindButtonOnMouseWheel"/>
+		</Scripts>
+	</Button>
+	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" inherits="SharedTooltipTemplate"/>
+</Ui>

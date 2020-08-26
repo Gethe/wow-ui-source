@@ -124,6 +124,7 @@ CommunitiesUtil.lua
 ItemUtil.lua
 PVPUtil.lua
 TransmogUtil.lua
+ActionButtonUtil.lua
 ItemDisplay.xml
 HelpTip.xml
 ExtraAbilityContainer.xml
@@ -145,6 +146,7 @@ AdventuresFollowerTooltip.xml
 FloatingGarrisonFollowerTooltip.xml
 GarrisonFollowerTooltip.xml
 GameTooltip.xml
+QuickKeybind.xml
 UIMenu.xml
 ..\SharedXML\UIDropDownMenu.xml
 UIPanelTemplates.lua
@@ -282,7 +284,6 @@ LFGFrame.xml
 LFDFrame.xml
 LFRFrame.xml
 RaidFinder.xml
-ScenarioFinder.xml
 LFGList.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua

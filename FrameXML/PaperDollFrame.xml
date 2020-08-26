@@ -699,7 +699,7 @@
 				</Scripts>
 			</PlayerModel>
 
-			<Frame name="PaperDollItemsFrame" mixin="PaperDollItemsMixin" setAllPoints="true">
+			<Frame name="PaperDollItemsFrame" setAllPoints="true">
 				<Frames>
 					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
@@ -810,13 +810,6 @@
 						</Layers>
 					</ItemButton>
 				</Frames>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnUpdate method="OnUpdate"/>
-					<OnShow method="OnShow"/>
-					<OnHide method="OnHide"/>
-					<OnEvent method="OnEvent"/>
-				</Scripts>
 			</Frame>
 		</Frames>
         <Scripts>

@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SubscriptionInterstitialUI.lua"/>
 
-	<Frame name="SubscriptionInterstitialBulletPointTemplate" mixin="SubscriptionInterstitialSubscribeButtonMixin" virtual="true">
+	<Frame name="SubscriptionInterstitialBulletPointTemplate" virtual="true">
 		<Size x="320" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -38,6 +38,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -145,6 +146,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

@@ -30,6 +30,20 @@ local WarCampaign =
 			},
 		},
 		{
+			Name = "GetCampaignID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "campaignID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCampaignInfo",
 			Type = "Function",
 

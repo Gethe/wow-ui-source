@@ -12,6 +12,9 @@
 local tostring = tostring;
 local GetFrameHandleFrame = GetFrameHandleFrame;
 
+local IsGamePadEnabled = C_GamePad.IsEnabled;
+local GetGamePadState = C_GamePad.GetDeviceMappedState;
+
 -- The bare minimum functions that should exist in order to be
 -- useful without being ridiculously restrictive.
 
@@ -178,6 +181,14 @@ end
 
 function ENV.GetActionInfo(...)
     return scrubActionInfo(GetActionInfo(...));
+end
+
+function ENV.IsGamePadEnabled()
+	return IsGamePadEnabled();
+end
+
+function ENV.GetGamePadState()
+	return GetGamePadState();
 end
 
 ENV = nil;

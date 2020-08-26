@@ -2,20 +2,23 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StanceBar.lua"/>
 	
-	<CheckButton name="StanceButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
+	<CheckButton name="StanceButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, ActionButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Scripts>
 			<OnLoad>
 				self.cooldown:SetSwipeColor(0, 0, 0);
+				self:RegisterForClicks("AnyUp");
 			</OnLoad>
-			<OnClick>
-				self:SetChecked(not self:GetChecked());
-				StanceBar_Select(self:GetID());
+			<OnClick inherit="append">
+				if ( not KeybindFrames_InQuickKeybindMode() ) then
+					self:SetChecked(not self:GetChecked());
+					StanceBar_Select(self:GetID());
+				end
 			</OnClick>
-			<OnEnter function="StanceButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnEnter function="StanceButton_OnEnter" inherit="append"/>
+			<OnLeave function="GameTooltip_Hide" inherit="append"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
 			<Size>
@@ -71,6 +74,9 @@
 		</Layers>
 		<Frames>
 			<CheckButton name="StanceButton1" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="1">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON1" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -80,6 +86,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton2" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="2">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON2" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton1" relativePoint="RIGHT">
 						<Offset>
@@ -89,6 +98,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton3" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="3">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON3" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton2" relativePoint="RIGHT">
 						<Offset>
@@ -98,6 +110,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton4" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="4">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON4" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton3" relativePoint="RIGHT">
 						<Offset>
@@ -107,6 +122,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton5" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="5">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON5" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton4" relativePoint="RIGHT">
 						<Offset>
@@ -116,6 +134,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton6" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="6">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON6" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton5" relativePoint="RIGHT">
 						<Offset>
@@ -125,6 +146,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton7" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="7">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON7" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton6" relativePoint="RIGHT">
 						<Offset>
@@ -134,6 +158,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton8" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="8">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON8" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton7" relativePoint="RIGHT">
 						<Offset>
@@ -143,6 +170,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton9" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="9">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON9" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton8" relativePoint="RIGHT">
 						<Offset>
@@ -152,6 +182,9 @@
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="StanceButton10" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="10">
+				<KeyValues>
+					<KeyValue key="commandName" value="SHAPESHIFTBUTTON10" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton9" relativePoint="RIGHT">
 						<Offset>

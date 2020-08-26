@@ -1,13 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<GameTooltip name="CharCustomizeTooltipTemplate" inherits="SharedTooltipTemplate" mixin="DefaultScaleFrameMixin" ignoreParentScale="true" virtual="true">
+	<GameTooltip name="CharCustomizeTooltipTemplate" inherits="SharedTooltipTemplate, DefaultScaleFrame" ignoreParentScale="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</GameTooltip>
 
 	<GameTooltip name="CharCustomizeTooltip" inherits="CharCustomizeTooltipTemplate">
@@ -132,11 +128,21 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="Ring2" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="BOUNCE">
-						<Alpha fromAlpha="0" toAlpha="1" duration="1" />
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0" toAlpha="0.6" />
+						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0.6" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="0" toAlpha="1" />
+						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="1" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Ring2" duration="0.8" fromAlpha="1" toAlpha="0" />
+						<Scale order="1" childKey="Ring2" duration="0.8" fromScaleX="1.3" toScaleX="1" fromScaleY="1.3" toScaleY="1" smoothing="NONE" />
 					</AnimationGroup>
 				</Animations>
 			</Frame>

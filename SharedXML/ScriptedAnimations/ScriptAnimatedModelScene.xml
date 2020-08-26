@@ -10,6 +10,9 @@
 			<OnLoad method="OnLoad"/>
 			<OnSizeChanged method="OnSizeChanged"/>
 			<OnUpdate method="OnUpdate"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</ModelScene>
 </Ui>

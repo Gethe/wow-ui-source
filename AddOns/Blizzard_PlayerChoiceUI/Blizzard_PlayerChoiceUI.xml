@@ -266,11 +266,11 @@
 					</KeyValues>
 				</MaskTexture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="0">
 				<Texture parentKey="Type">
 					<Size x="40" y="42"/>
 					<Anchors>
-						<Anchor point="TOP" x="5" y="-13"/>
+						<Anchor point="TOP" x="0" y="-3"/>
 					</Anchors>
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -281,6 +281,8 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="ArtworkBorderAdditionalGlow" alphaMode="ADD" atlas="UI-Frame-Horde-Portrait" useAtlasSize="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -295,7 +297,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-2">
+			<Layer level="ARTWORK" textureSubLevel="-2">
 				<Texture parentKey="Artwork">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ArtworkBorder" x="10" y="-9"/>
@@ -312,6 +314,8 @@
 						<Anchor point="CENTER" relativeKey="$parent.ArtworkBorder"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -321,7 +325,9 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork" x="10" y="-10"/>
 					</Anchors>
 				</Texture>
-					<Texture parentKey="RingGlow" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing">
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="RingGlow" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -330,6 +336,8 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
 				<Texture parentKey="PointBurstLeft" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstLeft" useAtlasSize="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -338,6 +346,8 @@
 						<Anchor point="RIGHT" relativeKey="$parent.Artwork" relativePoint="LEFT" x="14" y="0"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="PointBurstRight" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstRight" useAtlasSize="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -450,13 +460,34 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate" resizeToFitContents="true">
+			<Frame parentKey="OptionText" mixin="PlayerChoiceOptionTextWrapperMixin">
 				<Size x="196" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ArtworkBorder" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
-				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
-			</SimpleHTML>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="String" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<SimpleHTML parentKey="HTML" inherits="InlineHyperlinkFrameTemplate" resizeToFitContents="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
+					</SimpleHTML>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="RewardsFrame">
 				<Size x="196" y="1" />
 				<Anchors>
@@ -488,8 +519,8 @@
 				<Rotation childKey="ArtworkBorderAdditionalGlow" duration="30" order="1" degrees="-360"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="ArtworkBorderGlowAnimation" looping="REPEAT">
-				<Alpha childKey="ArtworkBorder" smoothing="OUT" duration="2" order="1" fromAlpha="0.70" toAlpha="1"/>
-				<Alpha childKey="ArtworkBorder" smoothing="OUT" startDelay="1" duration="2" order="2" fromAlpha="1" toAlpha="0.70"/>
+				<Alpha childKey="ArtworkBorder" smoothing="OUT" duration="2" order="1" fromAlpha="0.40" toAlpha="0.6"/>
+				<Alpha childKey="ArtworkBorder" smoothing="OUT" startDelay="1" duration="2" order="2" fromAlpha="0.6" toAlpha="0.40"/>
 				<Alpha childKey="ArtworkBorderAdditionalGlow" smoothing="OUT" duration="1" order="1" fromAlpha="0.70" toAlpha="1"/>
 				<Alpha childKey="ArtworkBorderAdditionalGlow" smoothing="OUT" startDelay="1" duration="1" order="2" fromAlpha="1" toAlpha="0.70"/>
 			</AnimationGroup>
@@ -582,7 +613,7 @@
 		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
-				<Alpha fromAlpha="0" toAlpha="1" duration=".8" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration=".25" order="1"/>
 				<Scripts>
 						<OnFinished>
 							self:GetParent():OnFadeInFinished();
@@ -700,7 +731,7 @@
 					<Anchor point="TOPRIGHT" x="1" y="2" />
 				</Anchors>
 			</Button>
-			<ModelScene parentKey="HighStrataModelScene" frameStrata="HIGH" drawLayer="BORDER"  inherits="ScriptAnimatedModelSceneTemplate" hidden="true" enableMouse="false"/>
+			<ModelScene parentKey="HighStrataModelScene" frameStrata="HIGH" drawLayer="BORDER"  inherits="ScriptAnimatedModelSceneTemplate" hidden="true" alpha="0.5" enableMouse="false"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -715,7 +746,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" x="5" y="-3"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
 			</Layer>

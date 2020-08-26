@@ -290,9 +290,12 @@ function CharCustomizeMaskedButtonMixin:OnLoad()
 		self.Ring:SetSize(self.ringWidth, self.ringHeight);
 		self.Flash.Ring:SetAtlas(self.ringAtlas);
 		self.Flash.Ring:SetSize(self.ringWidth, self.ringHeight);
+		self.Flash.Ring2:SetAtlas(self.ringAtlas);
+		self.Flash.Ring2:SetSize(self.ringWidth, self.ringHeight);
 	else
 		self.Ring:SetAtlas(self.ringAtlas, true);
 		self.Flash.Ring:SetAtlas(self.ringAtlas, true);
+		self.Flash.Ring2:SetAtlas(self.ringAtlas, true);
 	end
 
 	self.NormalTexture:AddMaskTexture(self.CircleMask);
@@ -638,6 +641,7 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.layoutIndex = optionData.orderIndex;
 
+	self:SetPoint("TOPLEFT");
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
 
 	self:ClearTooltipLines();

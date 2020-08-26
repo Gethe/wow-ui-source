@@ -193,6 +193,15 @@ local Expansion =
 				{ Name = "isVeteranTrialAccount", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SendSubscriptionInterstitialResponse",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "response", Type = "SubscriptionInterstitialResponseType", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -220,6 +229,18 @@ local Expansion =
 
 	Tables =
 	{
+		{
+			Name = "SubscriptionInterstitialResponseType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Clicked", Type = "SubscriptionInterstitialResponseType", EnumValue = 0 },
+				{ Name = "Closed", Type = "SubscriptionInterstitialResponseType", EnumValue = 1 },
+			},
+		},
 		{
 			Name = "SubscriptionInterstitialType",
 			Type = "Enumeration",

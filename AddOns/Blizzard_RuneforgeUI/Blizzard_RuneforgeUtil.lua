@@ -89,6 +89,7 @@ RuneforgeUtil.Effect = {
 	SecondModifierChainsEffect = 57,
 	UpgradeCenterRune = 69,
 	UpgradeSubRune = 70,
+	CraftCast = 101,
 };
 
 RuneforgeUtil.Level = {

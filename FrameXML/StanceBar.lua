@@ -16,7 +16,7 @@ function StanceBar_OnEvent(self, event)
 	end
 end
 
-function StanceBar_Update ()
+function StanceBar_Update()
 	local numForms = GetNumShapeshiftForms();
 	local needFrameMgrUpdate = false;
 	if ( numForms > 0 and not IsPossessBarVisible()) then
@@ -97,13 +97,13 @@ function StanceBar_UpdateState ()
 	end
 end
 
-function StanceBar_Select (id)
+function StanceBar_Select(id)
 	StanceBarFrame.lastSelected = id;
 	CastShapeshiftForm(id);
 end
 
 function StanceButton_OnEnter(self)
-	if ( GetCVarBool("UberTooltips") ) then
+	if ( GetCVarBool("UberTooltips") or KeybindFrames_InQuickKeybindMode() ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

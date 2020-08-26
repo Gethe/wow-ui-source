@@ -292,9 +292,6 @@ end
 function AzeriteEssenceUIMixin:TryShow()
 	if C_AzeriteEssence.CanOpenUI() then
 		ShowUIPanel(AzeriteEssenceUI);
-		if not C_AzeriteEssence.IsAtForge() then
-			AzeriteEssenceUtil.TryAcknowledgeEssenceSwapTutorial();
-		end
 		return true;
 	end
 	return false;

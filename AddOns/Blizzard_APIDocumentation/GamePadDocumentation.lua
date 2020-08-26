@@ -131,7 +131,7 @@ local GamePad =
 
 			Arguments =
 			{
-				{ Name = "deviceID", Type = "number", Nilable = false },
+				{ Name = "deviceID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -231,6 +231,7 @@ local GamePad =
 				{ Name = "comment", Type = "string", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "configID", Type = "GamePadConfigID", Nilable = false },
+				{ Name = "labelStyle", Type = "string", Nilable = true },
 				{ Name = "rawButtonMappings", Type = "table", InnerType = "GamePadRawButtonMapping", Nilable = false },
 				{ Name = "rawAxisMappings", Type = "table", InnerType = "GamePadRawAxisMapping", Nilable = false },
 				{ Name = "axisConfigs", Type = "table", InnerType = "GamePadAxisConfig", Nilable = false },
@@ -252,6 +253,7 @@ local GamePad =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "labelStyle", Type = "string", Nilable = false },
 				{ Name = "buttonCount", Type = "number", Nilable = false },
 				{ Name = "axisCount", Type = "number", Nilable = false },
 				{ Name = "stickCount", Type = "number", Nilable = false },

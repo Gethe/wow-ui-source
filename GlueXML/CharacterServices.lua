@@ -121,6 +121,12 @@ GlueDialogTypes["BOOST_FACTION_CHANGE_IN_PROGRESS"] = {
 	escapeHides = true,
 };
 
+GlueDialogTypes["MUST_LOG_IN_FIRST"] = {
+	text = MUST_LOG_IN_FIRST,
+	button1 = OKAY,
+	escapeHides = true,
+};
+
 local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" };
 local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL, Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" };
 local CharacterUpgradeFactionSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
@@ -540,10 +546,6 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 		return false;
 	end
 
-	if class == "DEMONHUNTER" and flowData.level <= 100 then
-		return false;
-	end
-
 	if isExpansionTrialCharacter and CanUpgradeExpansion()  then
 		return false;
 	elseif isTrialBoost then
@@ -554,10 +556,8 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 		if level > flowData.level then
 			return false;
 		end
-	else
-		if level >= flowData.level then
-			return false;
-		end
+	elseif level >= flowData.level then
+		return false;
 	end
 
 	return true;
@@ -825,7 +825,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, characterServiceRequiresLogin = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
 		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
@@ -835,6 +835,11 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			self.frame.ControlsFrame.BonusIcons[i]:SetShown(IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade));
 
 			button:SetScript("OnClick", function(button)
+				if characterServiceRequiresLogin then
+					GlueDialog_Show("MUST_LOG_IN_FIRST");
+					CharSelectServicesFlowFrame:Hide();
+					return;
+				end
 				self:SaveResultInfo(button, playerguid);
 
 				-- The user entered a normal boost flow and selected a trial boost character, at this point

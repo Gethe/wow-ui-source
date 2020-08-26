@@ -9,6 +9,7 @@ function QuickJoinToastMixin:OnLoad()
 	self:RegisterEvent("SOCIAL_QUEUE_CONFIG_UPDATED");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
+	self:RegisterForClicks("AnyUp");
 	self.groups = {};
 	self.groupsAwaitingDisplay = {};
 	self.queuedUpdates = {}; --Updates queued until we get config
@@ -301,7 +302,9 @@ function QuickJoinToastMixin:HideToast()
 end
 
 function QuickJoinToastMixin:OnClick(button)
-	if ( self.displayedToast ) then
+	if ( KeybindFrames_InQuickKeybindMode() ) then
+		self:QuickKeybindButtonOnClick(button);
+	elseif ( self.displayedToast ) then
 		ToggleQuickJoinPanel();
 		QuickJoinFrame:SelectGroup(self.displayedToast.guid);
 		QuickJoinFrame:ScrollToGroup(self.displayedToast.guid);
@@ -345,20 +348,22 @@ function QuickJoinToastMixin:UpdateQueueIcon()
 end
 
 function QuickJoinToastMixin:OnEnter()
-	if ( self.displayedToast ) then
-		local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
-		if ( queues ) then
-			local knowsLeader = SocialQueueUtil_HasRelationshipWithLeader(self.displayedToast.guid);
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		if ( self.displayedToast ) then
+			local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
+			if ( queues ) then
+				local knowsLeader = SocialQueueUtil_HasRelationshipWithLeader(self.displayedToast.guid);
 
-			GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
-			SocialQueueUtil_SetTooltip(GameTooltip, SocialQueueUtil_GetHeaderName(self.displayedToast.guid), queues, true, knowsLeader);
-			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			GameTooltip:Show();
+				GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
+				SocialQueueUtil_SetTooltip(GameTooltip, SocialQueueUtil_GetHeaderName(self.displayedToast.guid), queues, true, knowsLeader);
+				GameTooltip:AddLine(" ");
+				GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				GameTooltip:Show();
+			end
+		else
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip_SetTitle(GameTooltip, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"));
 		end
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"));
 	end
 end
 

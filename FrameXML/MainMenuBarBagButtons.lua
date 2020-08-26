@@ -75,25 +75,33 @@ function BagSlotButton_OnEvent(self, event, ...)
 end
 
 function BagSlotButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	if ( GameTooltip:SetInventoryItem("player", self:GetID()) ) then
-		local bindingKey = GetBindingKey("TOGGLEBAG"..(3 - self:GetBagID()));
-		if ( bindingKey ) then
-			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
-		end
-		local bagID = self:GetBagID();
-		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
-			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-				if ( GetBagSlotFlag(bagID, i) ) then
-					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
-					break;
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		if ( GameTooltip:SetInventoryItem("player", self:GetID()) ) then
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+			local bindingKey = GetBindingKey("TOGGLEBAG"..(3 - self:GetBagID()));
+			if ( bindingKey ) then
+				GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
+			end
+			local bagID = self:GetBagID();
+			if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
+				for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+					if ( GetBagSlotFlag(bagID, i) ) then
+						GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+						break;
+					end
 				end
 			end
+			GameTooltip:Show();
+		else
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+			GameTooltip:SetText(EQUIP_CONTAINER, 1.0, 1.0, 1.0);
 		end
-		GameTooltip:Show();
-	else
-		GameTooltip:SetText(EQUIP_CONTAINER, 1.0, 1.0, 1.0);
 	end
+end
+
+function BagSlotButton_OnLeave(self)
+	GameTooltip:Hide();
+	ResetCursor();
 end
 
 function ItemAnim_OnLoad(self)
@@ -133,7 +141,7 @@ function MainMenuBarBackpackButton_OnLoad(self)
 	table.insert(allBagButtons, self);
 
 	ItemAnim_OnLoad(self)
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForClicks("AnyUp");
 	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
@@ -147,10 +155,12 @@ function MainMenuBarBackpackButton_OnLoad(self)
 end
 
 function MainMenuBarBackpackButton_OnClick(self, button)
-	if ( IsModifiedClick() ) then
-		BackpackButton_OnModifiedClick(self, button);
-	else
-		BackpackButton_OnClick(self, button);
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		if ( IsModifiedClick() ) then
+			BackpackButton_OnModifiedClick(self, button);
+		else
+			BackpackButton_OnClick(self, button);
+		end
 	end
 end
 
@@ -217,14 +227,20 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 end
 
 function MainMenuBarBackpackButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
-	local keyBinding = GetBindingKey("TOGGLEBACKPACK");
-	if ( keyBinding ) then
-		GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
+		local keyBinding = GetBindingKey("TOGGLEBACKPACK");
+		if ( keyBinding ) then
+			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
+		end
+		GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
+		GameTooltip:Show();
 	end
-	GameTooltip:AddLine(string.format(NUM_FREE_SLOTS, (self.freeSlots or 0)));
-	GameTooltip:Show();
+end
+
+function MainMenuBarBackpackButton_OnLeave(self)
+	GameTooltip:Hide();
 end
 
 local BACKPACK_FREESLOTS_FORMAT = "(%s)";
