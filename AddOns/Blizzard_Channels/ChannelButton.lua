@@ -141,6 +141,11 @@ function ChannelButtonBaseMixin:SetActive(active)
 end
 
 function ChannelButtonBaseMixin:IsActive()
+	if self.active then
+		if self.ruleset == Enum.ChatChannelRuleset.Mentor then
+			return C_ChatInfo.IsRegionalServiceAvailable();
+		end
+	end
 	return self.active;
 end
 

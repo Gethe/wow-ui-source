@@ -392,7 +392,7 @@ end
 
 function GlueParent_CheckCinematic()
 	local cinematicIndex = tonumber(GetCVar("playIntroMovie"));
-	local displayExpansionLevel = GetClientDisplayExpansionLevel();
+	local displayExpansionLevel = LE_EXPANSION_LEVEL_CURRENT;
 	if ( not cinematicIndex or cinematicIndex <= displayExpansionLevel ) then
 		SetCVar("playIntroMovie", displayExpansionLevel + 1);
 		MovieFrame.version = C_Login.IsNewPlayer() and 1 or tonumber(GetCVar("playIntroMovie"));

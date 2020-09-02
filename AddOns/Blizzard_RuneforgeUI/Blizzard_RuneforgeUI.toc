@@ -1,7 +1,6 @@
 ## Title: Blizzard Runeforge UI
 ## LoadOnDemand: 1
 
-Blizzard_RuneforgeUtil.lua
 Blizzard_RuneforgePowerList.xml
 Blizzard_RuneforgeModifierSlot.xml
 Blizzard_RuneforgeItemSlot.xml

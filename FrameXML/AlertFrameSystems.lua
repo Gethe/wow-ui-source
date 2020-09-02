@@ -18,6 +18,7 @@ function AlertFrameSystems_Register()
 	NewPetAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
 	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
+	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -465,6 +466,7 @@ LOOTWONALERTFRAME_VALUES={
 	RatedHorde = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-horde", glowAtlas="loottoast-glow"},
 	RatedAlliance = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-alliance", glowAtlas="loottoast-glow"},
 	Azerite = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=AZERITE_EMPOWERED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Azerite", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_AZERITE_EMPOWERED_ITEM_LOOT_TOAST},
+	Conduit = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=CONDUIT_ITEM_LOOT_LABEL, bgAtlas="loottoast-oribos", noIconBorder=true, glowAtlas="loottoast-glow"},
 	Corrupted = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=CORRUPTED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Nzoth", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_CORRUPTED_ITEM_LOOT_TOAST},
 }
 
@@ -474,7 +476,6 @@ function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, rol
 
 	self.isCurrency = isCurrency;
 
-	local isAzeriteEmpowered = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink);
 	local windowInfo = wonRoll and LOOTWONALERTFRAME_VALUES.WonRoll or LOOTWONALERTFRAME_VALUES.Default;
 	if( showFactionBG ) then
 		local factionGroup = UnitFactionGroup("player");
@@ -503,8 +504,10 @@ function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, rol
 			windowInfo = LOOTWONALERTFRAME_VALUES["LessAwesome"];
 		elseif ( isUpgraded ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["Upgraded"];
-		elseif ( isAzeriteEmpowered ) then
+		elseif ( C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink) ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["Azerite"];
+		elseif ( C_Soulbinds.IsItemConduitByItemInfo(itemLink) ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["Conduit"];
 		end
 		if ( windowInfo.bgAtlas ) then
 			self.Background:Hide();
@@ -1077,8 +1080,10 @@ function NewPetAlertFrameMixin:SetUp(petID)
 
 	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
 	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
-	local itemQuality = rarity - 1;
-	self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+	if speciesID ~= nil and health ~= nil then
+		local itemQuality = rarity - 1;
+		self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+	end
 end
 
 function NewPetAlertFrameMixin:OnClick(button, down)
@@ -1136,4 +1141,78 @@ function NewToyAlertFrameMixin:OnClick(button, down)
 	end
 
 	ToggleToyCollection(self.toyID);
+end
+
+-- [[ NewRuneforgePowerAlertSystem ]] --
+
+function NewRuneforgePowerAlertSystem_SetUp(frame, powerID)
+	frame:SetUp(powerID);
+end
+
+NewRuneforgePowerAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewRuneforgePowerAlertFrameMixin:SetUp(powerID)
+	self.powerID = powerID;
+
+	local powerInfo = C_LegendaryCrafting.GetRuneforgePowerInfo(powerID);
+	self.powerInfo = powerInfo;
+	self:SetUpDisplay(powerInfo.iconFileID, Enum.ItemQuality.Legendary, powerInfo.name, YOU_EARNED_LABEL);
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnShow(event, ...)
+	self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnHide(event, ...)
+	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnEvent(event, ...)
+	if event == "RUNEFORGE_POWER_INFO_UPDATED" then
+		local powerID = ...;
+		if powerID == self.powerID then
+			self:SetUp(powerID);
+			if self:IsMouseOver() then
+				self:OnEnter();
+			end
+		end
+	end
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnEnter()
+	if self.powerInfo then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name);
+	
+		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR);
+	
+		if not self.slotNames then
+			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
+		end
+
+		if #self.slotNames > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
+			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
+		end
+
+		GameTooltip:Show();
+	end
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	-- No left-click behavior.
+end
+
+function NewRuneforgePowerAlertFrameMixin:GetPowerID()
+	return self.powerID;
 end

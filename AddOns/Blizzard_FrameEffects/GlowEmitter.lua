@@ -4,6 +4,7 @@ GlowEmitterMixin.Anims =
 {
 	FadeAnim = 1,
 	FaintFadeAnim = 2,
+	NPE_RedButton_GreenGlow = 3,
 };
 
 function GlowEmitterMixin:Play(animType)
@@ -11,6 +12,10 @@ function GlowEmitterMixin:Play(animType)
 		self.FadeAnim:Play();
 	elseif animType == GlowEmitterMixin.Anims.FaintFadeAnim then
 		self.FaintFadeAnim:Play();
+	elseif animType == GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow then
+		self.NPE_RedButton_GreenGlow:Play();
+	else
+		error("Provide a play type")
 	end
 end
 

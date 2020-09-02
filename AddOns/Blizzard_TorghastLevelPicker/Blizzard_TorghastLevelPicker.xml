@@ -46,7 +46,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Button name="TorghastLevelPickerRewardCircleTemplate" motionScriptsWhileDisabled="true" mixin="TorghastLevelPickerRewardCircleMixin" virtual="true">
+	<Button name="TorghastLevelPickerRewardCircleTemplate" frameStrata="HIGH" motionScriptsWhileDisabled="true" mixin="TorghastLevelPickerRewardCircleMixin" virtual="true">
 		<Size x="32" y="33"/>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="2">
@@ -89,7 +89,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Frame name="TorghastLevelPickerRewardBannerTemplate" virtual="true">
+	<Frame name="TorghastLevelPickerRewardBannerTemplate" frameStrata="HIGH" virtual="true">
 		<Size x="146" y="69"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -132,7 +132,11 @@
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="SelectedBorder" atlas="jailerstower-wayfinder-tierbackground-selected" hidden="true" useAtlasSize="true"/>
+				<Texture parentKey="SelectedBorder" atlas="jailerstower-wayfinder-tierbackground-selected" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -142,7 +146,11 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-		<HighlightTexture parentKey="HighlightBorder" atlas="jailerstower-wayfinder-tierbackground-mouseover" useAtlasSize="false"/>
+		<HighlightTexture parentKey="HighlightBorder" atlas="jailerstower-wayfinder-tierbackground-mouseover" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="4"/>
+			</Anchors>
+		</HighlightTexture>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
@@ -177,30 +185,33 @@
 					<Anchor point="TOP" relativeKey="$parent.GridLayoutContainer" relativePoint="BOTTOM" x="-70" y="0"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="OpenPortalButton" inherits="UIPanelButtonTemplate" frameLevel="510" text="TORGHAST_WAYFINDER_OPEN_PORTAL">
+			<Button parentKey="OpenPortalButton" inherits="UIPanelButtonTemplate" mixin="TorghastLevelPickerOpenPortalButtonMixin" motionScriptsWhileDisabled="true" frameLevel="510" text="TORGHAST_WAYFINDER_OPEN_PORTAL">
 				<Size x="185" y="25"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Pager" relativePoint="BOTTOM" x="30" y="-10"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						self:GetParent():OpenPortalOnClick();
-					</OnClick>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-60" y="-60" />
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_CLOSE_UI);
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
 			</Button>
-			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameStrata="LOW" enableMouse="false">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="-30"/>
-				</Anchors>
-			</ModelScene>
 		</Frames>
 		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>

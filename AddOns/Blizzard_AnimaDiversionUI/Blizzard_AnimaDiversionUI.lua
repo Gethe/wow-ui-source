@@ -4,7 +4,7 @@ local MAX_ANIMA_GEM_COUNT = 10;
 
 AnimaDiversionFrameMixin = { }; 
 
-local bolsterGemTextureKitAnimationEffectId = {
+local fullGemsTextureKitAnimationEffectId = {
 	["Kyrian"] = 24,
 	["NightFae"] = 30,
 	["Venthyr"] = 27,
@@ -23,6 +23,42 @@ local ANIMA_DIVERSION_FRAME_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 };
 
+StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
+	text = ANIMA_DIVERSION_CONFIRM_CHANNEL,
+	button1 = YES,
+	button2 = CANCEL,
+	OnAccept =	function(self, selectedNode)
+					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
+					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
+				end,
+	OnShow = function(self, selectedNode)
+		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
+	end,
+	OnHide = function(self, selectedNode)
+		AnimaDiversionFrame.SelectPinInfoFrame:ClearSelectedNode();
+		AnimaDiversionFrame:ClearExclusiveSelectionNode();
+	end,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_REINFORCE"] = {
+	text = ANIMA_DIVERSION_CONFIRM_REINFORCE,
+	button1 = YES,
+	button2 = CANCEL,
+	OnAccept =	function(self, selectedNode)
+					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, false);
+					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION_PERMANENT);
+				end,
+	OnShow = function(self, selectedNode)
+		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
+	end,
+	OnHide = function(self, selectedNode)
+		AnimaDiversionFrame.ReinforceInfoFrame:ClearSelectedNode();
+		AnimaDiversionFrame:ClearExclusiveSelectionNode();
+	end,
+	hideOnEscape = 1,
+};
+
 function AnimaDiversionFrameMixin:OnLoad() 
 	MapCanvasMixin.OnLoad(self);	
 	self:SetShouldZoomInOnClick(false);
@@ -31,9 +67,13 @@ function AnimaDiversionFrameMixin:OnLoad()
 	self:AddStandardDataProviders();
 	self.bolsterProgressGemPool = CreateFramePool("FRAME", self.ReinforceProgressFrame, "AnimaDiversionBolsterProgressGemTemplate");
 	self.SelectPinInfoFrame.currencyPool = CreateFramePool("FRAME", self.SelectPinInfoFrame, "AnimaDiversionCurrencyCostFrameTemplate");
+
+	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-Oribos-ExitButtonBorder", -1, 1);
 end 
 
 function AnimaDiversionFrameMixin:OnShow()
+	self:UpdateTutorialTips();
+
 	self:SetMapID(self.mapID);
 	MapCanvasMixin.OnShow(self);
 
@@ -45,6 +85,8 @@ end
 function AnimaDiversionFrameMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
+	self.SelectPinInfoFrame:Hide();
+	self.ReinforceInfoFrame:Hide();
 end 
 
 function AnimaDiversionFrameMixin:OnEvent(event, ...) 
@@ -60,34 +102,171 @@ function AnimaDiversionFrameMixin:OnEvent(event, ...)
 	MapCanvasMixin.OnEvent(self, event, ...);
 end 
 
+function AnimaDiversionFrameMixin:HasAvailableNode()
+	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes(); 
+	if animaNodes then
+		for _, nodeData in ipairs(animaNodes) do
+			if nodeData.state == Enum.AnimaDiversionNodeState.Available then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
+function AnimaDiversionFrameMixin:UpdateTutorialTips()
+	self.hasIntroTutorialShowing = false;
+
+	local updateTutorialTipsClosure = GenerateClosure(self.UpdateTutorialTips, self);
+
+	local spendAnimaHelpTipInfo = {
+		text = ANIMA_DIVERSION_TUTORIAL_SPEND_ANIMA,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ANIMA_DIVERSION_SPEND_ANIMA,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = -50,
+		checkCVars = true,
+		autoEdgeFlipping = true,
+		useParentStrata = true,
+		onAcknowledgeCallback = updateTutorialTipsClosure,
+	};
+
+	if HelpTip:Show(self.AnimaDiversionCurrencyFrame, spendAnimaHelpTipInfo) then
+		self.hasIntroTutorialShowing = true;
+		return;
+	end
+
+	local fillBarHelpTipInfo = {
+		text = ANIMA_DIVERSION_TUTORIAL_FILL_BAR,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ANIMA_DIVERSION_FILL_BAR,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = -17,
+		checkCVars = true,
+		autoEdgeFlipping = true,
+		useParentStrata = true,
+		onAcknowledgeCallback = function() self:UpdateTutorialTips(); self:RefreshAllDataProviders(); end,
+	};
+
+	if HelpTip:Show(self.ReinforceProgressFrame, fillBarHelpTipInfo) then
+		self.hasIntroTutorialShowing = true;
+		return;
+	end
+
+	if self:CanReinforceNode() then
+		local reinforceLocationHelpTipInfo = {
+			text = ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION_PERMANENT,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ANIMA_DIVERSION_REINFORCE_LOCATION,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 120,
+			offsetY = 30,
+			checkCVars = true,
+			useParentStrata = true,
+			onAcknowledgeCallback = updateTutorialTipsClosure,
+		};
+
+		if HelpTip:Show(self, reinforceLocationHelpTipInfo) then
+			return;
+		end
+	end
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ANIMA_DIVERSION_ACTIVATE_LOCATION) and self:HasAvailableNode() then
+		local selectLocationHelpTipInfo = {
+			text = ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ANIMA_DIVERSION_ACTIVATE_LOCATION,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 120,
+			offsetY = 30,
+			checkCVars = true,
+			useParentStrata = true,
+			onAcknowledgeCallback = updateTutorialTipsClosure,
+		};
+
+		 HelpTip:Show(self, selectLocationHelpTipInfo)
+	end
+end
+
+function AnimaDiversionFrameMixin:SetExclusiveSelectionNode(node)
+	for pin in self:EnumeratePinsByTemplate("AnimaDiversionPinTemplate") do
+		if pin ~= node and pin.visualState == Enum.AnimaDiversionNodeState.Available then
+			if pin.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary then
+				pin:SetVisualState(Enum.AnimaDiversionNodeState.SelectedTemporary);
+			else
+				pin:SetVisualState(Enum.AnimaDiversionNodeState.Cooldown);
+			end
+		end
+	end
+	self.disallowSelection = true;
+end
+
+function AnimaDiversionFrameMixin:ClearExclusiveSelectionNode()
+	self:RefreshAllDataProviders();
+	self.disallowSelection = false;
+end
+
+function AnimaDiversionFrameMixin:HasIntroTutorialShowing()
+	return self.hasIntroTutorialShowing;
+end
+
 function AnimaDiversionFrameMixin:CanReinforceNode() 
 	return self.bolsterProgress >= 10;
 end 
 
+function AnimaDiversionFrameMixin:AddBolsterEffectToGem(gem, effectID, overlay)
+	local modelScene = overlay and self.ReinforceProgressFrame.OverlayModelScene or self.ReinforceProgressFrame.ModelScene;
+	modelScene:AddEffect(effectID, gem, gem);
+end
+
 function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 	self.bolsterProgressGemPool:ReleaseAll(); 
-	self.bolsterProgress = C_AnimaDiversion.GetReinforceProgress(); 
-	local effectID = nil; 
-	local isReinforceReady = self:CanReinforceNode(); 
-
 	self.ReinforceProgressFrame.ModelScene:ClearEffects();
+	self.ReinforceProgressFrame.OverlayModelScene:ClearEffects();
 
-	if(isReinforceReady) then 
-		self.ReinforceProgressFrame.ModelScene:SetFrameLevel(OVERRIDE_MODEL_SCENE_FRAME_LEVEL);
-		effectID = bolsterGemTextureKitAnimationEffectId[self.uiTextureKit]; 
-	end 
-	self.ReinforceProgressFrame.ModelScene:SetShown(isReinforceReady);
-	for i=1, math.min(MAX_ANIMA_GEM_COUNT, self.bolsterProgress) do 
-		self.lastGem = self:SetupBolsterGem(i); 
-		if(isReinforceReady and effectID) then 
-			self.ReinforceProgressFrame.ModelScene:AddEffect(effectID, self.lastGem, self.lastGem);
+	local gemsFullEffectID = fullGemsTextureKitAnimationEffectId[self.uiTextureKit];
+	local newGemEffectID = newGemTextureKitAnimationEffectId[self.uiTextureKit];
+	
+	local newBolsterProgress =  math.min(MAX_ANIMA_GEM_COUNT, C_AnimaDiversion.GetReinforceProgress());
+	local numNewGems =  0;
+	if self.bolsterProgress and newBolsterProgress > self.bolsterProgress then
+		numNewGems = newBolsterProgress - self.bolsterProgress;
+	end
+	self.bolsterProgress = newBolsterProgress; 
+
+	local isReinforceReady = self:CanReinforceNode(); 
+	local firstNewGem = (newBolsterProgress - numNewGems) + 1;
+
+	for i=1, newBolsterProgress do
+		local isNewGem = i >= firstNewGem;
+
+		self.lastGem = self:SetupBolsterGem(i, isNewGem);
+
+		if isNewGem then
+			self:AddBolsterEffectToGem(self.lastGem, newGemEffectID, true);
+		end
+
+		if isReinforceReady then
+			if numNewGems > 0 then
+				C_Timer.After(0.5, GenerateClosure(self.AddBolsterEffectToGem, self, self.lastGem, gemsFullEffectID));
+			else
+				self:AddBolsterEffectToGem(self.lastGem, gemsFullEffectID);
+			end
 		end 
 	end
+
 	self.ReinforceInfoFrame:Init(); 
-	self.ReinforceInfoFrame:SetShown(self:CanReinforceNode()); 
+	self.ReinforceInfoFrame:SetShown(isReinforceReady);
+
+	self:UpdateTutorialTips();
 end 
 
-function AnimaDiversionFrameMixin:SetupBolsterGem(index)
+function AnimaDiversionFrameMixin:SetupBolsterGem(index, isNew)
 	local gem = self.bolsterProgressGemPool:Acquire(); 
 	if(index == 1) then 
 		gem:SetPoint("LEFT", self.ReinforceProgressFrame, 27, -5);
@@ -98,7 +277,13 @@ function AnimaDiversionFrameMixin:SetupBolsterGem(index)
 	end
 	local atlas = GetFinalNameFromTextureKit(ANIMA_GEM_TEXTURE_INFO, self.uiTextureKit);
 	gem.Gem:SetAtlas(atlas, true);
-	gem:Show();
+
+	if isNew then
+		C_Timer.After(0.25, GenerateClosure(gem.Show, gem));
+	else
+		gem:Show();
+	end
+
 	return gem;
 end 
 
@@ -123,7 +308,7 @@ function AnimaDiversionFrameMixin:TryShow(frameInfo)
 	self.mapID = frameInfo.mapID; 
 	self:SetupBolsterProgressBar();
 	self:SetupCurrencyFrame(); 
-	self:Show(); 
+	ShowUIPanel(self);
 end 
 
 function AnimaDiversionFrameMixin:SetupCurrencyFrame() 
@@ -159,11 +344,21 @@ function AnimaDiversionSelectionInfoMixin:CurrencyUpdate()
 	end		
 end 
 
-function AnimaDiversionSelectionInfoMixin:OnHide()
+function AnimaDiversionSelectionInfoMixin:ClearSelectedNode()
+	if self.currentlySelectedNode then
+		self:GetParent():RefreshAllDataProviders();
+	end
+
 	self.currentlySelectedNode = nil;
 end 
 
 function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
+	if self.currentlySelectedNode then
+		self.currentlySelectedNode:SetSelectedState(false);
+	end
+
+	node:SetSelectedState(true);
+
 	self.currentlySelectedNode = node; 
 	self:ClearAllPoints(); 
 	self:SetPoint("LEFT", node, "RIGHT", 20, 0);
@@ -192,12 +387,8 @@ function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
 	self:Show();
 end 
 
-function AnimaDiversionSelectionInfoMixin:GetNodeData()
-	if(not self.currentlySelectedNode) then
-		return nil;
-	else 
-		return self.currentlySelectedNode.nodeData; 
-	end 
+function AnimaDiversionSelectionInfoMixin:GetSelectedNode()
+	return self.currentlySelectedNode;
 end 
 
 function AnimaDiversionSelectionInfoMixin:SetupCosts(CurrencyCosts)
@@ -239,9 +430,9 @@ end
 AnimaDiversionSelectButtonMixin = { }; 
 
 function AnimaDiversionSelectButtonMixin:OnClick() 
-	local selectedNodeData = self:GetParent():GetNodeData();
-	if (selectedNodeData) then 
-		C_AnimaDiversion.SelectAnimaNode(selectedNodeData.talentID, true);
+	local selectedNode = self:GetParent():GetSelectedNode();
+	if selectedNode then 
+		StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", selectedNode.nodeData.name, nil, selectedNode);
 		self:GetParent():Hide(); 
 	end		
 end
@@ -274,6 +465,10 @@ end
 
 ReinforceInfoFrameMixin = { };
 
+function ReinforceInfoFrameMixin:OnHide()
+	self.selectedNode = nil; 
+end
+
 function ReinforceInfoFrameMixin:CanReinforceAnything()
 	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes(); 
 	if (not animaNodes) then 
@@ -295,44 +490,39 @@ function ReinforceInfoFrameMixin:Init()
 	self.AnimaNodeReinforceButton:Disable(); 
 end 
 
-function ReinforceInfoFrameMixin:GetNodeData()
-	if(not self.selectedNode) then
-		return nil;
-	else 
-		return self.selectedNode.nodeData; 
-	end 
+function ReinforceInfoFrameMixin:GetSelectedNode()
+	return self.selectedNode;
+end 
+
+function ReinforceInfoFrameMixin:ClearSelectedNode()
+	if self.selectedNode then
+		self:Init();
+	end
+
+	self.selectedNode = nil;
 end 
 
 function ReinforceInfoFrameMixin:SelectNodeToReinforce(node) 
-	if( not self.canReinforce) then 
+	if not self.canReinforce or self.selectedNode == node or node.UnavailableState then 
 		return; 
 	end 
 
-	if(self.selectedNode) then 
-		self.selectedNode:SetReinforceState(false); 
-		if(node == self.selectedNode) then 
-			self:Init();
-			self.selectedNode = nil; 
-			return; 
-		end 
+	if self.selectedNode then 
+		self.selectedNode:SetSelectedState(false); 
 	end
 
-	if(node.UnavailableState) then 
-		return;
-	end
-
-	self.selectedNode = node; 
-	node:SetReinforceState(true); 
+	self.selectedNode = node;
+	node:SetReinforceState(true);
+	node:SetSelectedState(true);
 	self.Title:SetText(self.selectedNode.nodeData.name);
 	self.AnimaNodeReinforceButton:Enable(); 
-	
 end 
 
 AnimaNodeReinforceButtonMixin = { };
 function AnimaNodeReinforceButtonMixin:OnClick()
-	local selectedNodeData = self:GetParent():GetNodeData();
-	if (selectedNodeData) then 
-		C_AnimaDiversion.SelectAnimaNode(selectedNodeData.talentID, false);
+	local selectedNode = self:GetParent():GetSelectedNode();
+	if selectedNode then
+		StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_REINFORCE", selectedNode.nodeData.name, nil, selectedNode);
 	end
 end
 

@@ -2,11 +2,12 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CovenantMissionTemplates.lua"/>
 
-	<Frame name="AdventuresPuckHealthBarTemplate" mixin="AventuresPuckHealthBarMixin" virtual="true">
+	<Frame name="AdventuresPuckHealthBarTemplate" mixin="AdventuresPuckHealthBarMixin" virtual="true">
 		<Size x="89" y="36"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background">
+					<Size x="56" y="15"/>
 					<Anchors>
 						<Anchor point="LEFT" x="27" y="0"/>
 						<Anchor point="RIGHT" x="-6" y="0"/>
@@ -40,6 +41,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="CovenantPortraitTemplate" mixin="CovenantPortraitMixin" virtual="true">
@@ -567,7 +571,7 @@
 					</Button>
 					<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+							<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="60"/>
 							<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
 						</Anchors>
 					</Frame>
@@ -620,19 +624,77 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CovenantListTemplate" inherits="CovenantMissionBaseFrameTemplate" virtual="true">
+	<Button name="OribosScrollUpButtonTemplate" virtual="true">
+		<Size x="10" y="10"/>
+		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
+		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
+		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
+		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" alphaMode="ADD"/>
+	</Button>
+	<Button name="OribosScrollDownButtonTemplate" virtual="true">
+		<Size x="10" y="10"/>
+		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" />
+		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true"/>
+		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true"/>
+		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" alphaMode="ADD"/>
+	</Button>
+
+	<Slider name="OribosScrollBarTemplate" parentKey="scrollBar" virtual="true">
+		<Size x="10" y="0"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG" atlas="Soulbinds_Collection_Scrollbar_Background" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7" y="30"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-30"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentScrollUpButton" parentKey="UpButton" inherits="OribosScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="HybridScrollFrameScrollUp_OnLoad"/>
+					<OnClick  function="HybridScrollFrameScrollButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" parentKey="DownButton" inherits="OribosScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="HybridScrollFrameScrollDown_OnLoad"/>
+					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Thumb" parentKey="thumbTexture">
+			<Size x="10" y="24"/>
+		</ThumbTexture>
+	</Slider>
+
+	<Frame name="CovenantListWideFrameTemplate" inherits="CovenantMissionBaseFrameTemplate" virtual="true">
 		<Size x="300" y="575"/>
 		<Frames>
 			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="6"/>
 				</Anchors>
 				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+					<Slider name="$parentScrollBar" inherits="OribosScrollBarTemplate" parentKey="scrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-28" y="-22"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-28" y="22"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-30"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-22" y="30"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -647,7 +709,55 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="CovenantMissionListTemplate" inherits="CovenantListTemplate" virtual="true" mixin="GarrisonMissionListMixin, CovenantMissionListMixin">
+	<Frame name="CovenantFollowerListTemplate" virtual="true">
+		<Size x="300" y="575"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="adventures-followers-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="6"/>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="OribosScrollBarTemplate" parentKey="scrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-14" y="-30"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-14" y="30"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.trackBG:Show();
+								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+								self.doNotHide = true;
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Frame parentKey="ElevatedFrame" framelevel="50" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLayer="5">
+						<Texture atlas="adventures-followers-frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CovenantMissionListTemplate" inherits="CovenantListWideFrameTemplate" virtual="true" mixin="GarrisonMissionListMixin, CovenantMissionListMixin">
 		<Size x="890" y="525"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="35" y="-65"/>
@@ -1003,30 +1113,6 @@
 					<Anchor point="TOPLEFT" x="68" y="-14"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="CompleteHighlight" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="LeftEdge" atlas="Adventures-Mission-Highlight-Left" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" y="0"/>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="RightEdge" atlas="Adventures-Mission-Highlight-Right" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CenterHighlight" atlas="_Adventures-Mission-Highlight-Mid">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.LeftEdge" relativePoint="TOPRIGHT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightEdge" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame parentKey="Overlay" setAllPoints="true" hidden="true" framelevel="500">
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1046,7 +1132,7 @@
 
 	<Frame name="AdventuresTargetingIndicatorTemplate" frameLevel="500" setAllPoints="true" mixin="AdventuresTargetingIndicatorMixin" virtual="true">
 		<Layers>
-			<Layer level="OVERLAY" sublayer="1">
+			<Layer level="OVERLAY">
 				<Texture parentKey="TargetMarker" hidden="false" alpha="0" atlas="Adventures-Target-Indicator" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOP" y="30"/>
@@ -1087,7 +1173,7 @@
 
 	<Frame name="AdventuresFriendlyTargetingIndicatorTemplate" mixin="AdventuresFriendlyTargetingIndicatorMixin" setAllPoints="true" virtual="true">
 		<Layers>
-			<Layer level="BACKGROUND" sublayer="1">
+			<Layer level="BACKGROUND">
 				<Texture parentKey="TargetMarker" hidden="false" alpha="0" atlas="Adventures-Buff-Heal-Ring">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>

@@ -269,7 +269,36 @@ function EventTraceFrame_Update ()
 	EventTraceFrame_UpdateKeyboardStatus();
 end
 
-function EventTraceFrame_StartEventCapture ()
+function EventTraceFrame_SetEventSet (cmd, eventSet)
+	-- Always unregister old events if we had any
+	if _EventTraceFrame.eventSet then
+		for k, v in ipairs(_EventTraceFrame.eventSet) do
+			_EventTraceFrame:UnregisterEvent(v);
+		end
+	end
+
+	if cmd == "start" then
+		-- When starting capture, either register specific events, or register all
+		_EventTraceFrame.eventSet = eventSet;
+
+		if eventSet then
+			for k, v in ipairs(_EventTraceFrame.eventSet) do
+				_EventTraceFrame:RegisterEvent(v);
+			end
+		else
+			_EventTraceFrame:RegisterAllEvents();
+		end
+	else
+		-- When stopping, only unregister all if there was no previous set, the previous set was already unregistered.
+		if not _EventTraceFrame.eventSet then
+			_EventTraceFrame:UnregisterAllEvents();
+		end
+
+		_EventTraceFrame.eventSet = nil;
+	end
+end
+
+function EventTraceFrame_StartEventCapture (eventSet)
 	if ( _EventTraceFrame.started ) then -- Nothing to do?
 		return;
 	end
@@ -277,42 +306,67 @@ function EventTraceFrame_StartEventCapture ()
 	_EventTraceFrame.started = true;
 	_framesSinceLast = 0;
 	_timeSinceLast = 0;
-	_EventTraceFrame:RegisterAllEvents();
+	EventTraceFrame_SetEventSet("start", eventSet);
 	EventTraceFrame_OnEvent(_EventTraceFrame, "Begin Capture");
 end
 
 function EventTraceFrame_StopEventCapture ()
 	if ( not _EventTraceFrame.started ) then -- Nothing to do!
+		EventTraceFrame_SetEventSet(nil); -- well, nothing except ensuring that custom events aren't registered
 		return;
 	end
 
 	_EventTraceFrame.started = false;
 	_framesSinceLast = 0;
 	_timeSinceLast = 0;
-	_EventTraceFrame:UnregisterAllEvents();
+
+	EventTraceFrame_SetEventSet("stop");
 	EventTraceFrame_OnEvent(_EventTraceFrame, "End Capture");
+end
+
+function EventTraceFrame_ParseArgsForEvents (msg, ...)
+	msg = strlower(msg);
+	if select("#", ...) > 0 then
+		return msg, { select(1, ...) };
+	end
+
+	return msg;
+end
+
+function EventTraceFrame_ParseArgs (msg)
+	if not msg or msg == "" then
+		return "";
+	elseif #msg >= 4 then
+		local isMark = string.lower(string.sub(msg, 1, 4)) == "mark";
+		if isMark then
+			return "mark";
+		end
+	end
+
+	return EventTraceFrame_ParseArgsForEvents(strsplit(" ", msg));
 end
 
 function EventTraceFrame_HandleSlashCmd (msg)
 	local originalMsg = msg;
-	msg = strlower(msg);
+	msg, eventSet = EventTraceFrame_ParseArgs(msg);
+	local fixedEventCount = tonumber(msg) or 0; -- This may not be set, that's fine.
 
-	if ( msg == "start" ) then
-		EventTraceFrame_StartEventCapture();
-	elseif ( msg == "stop" ) then
+	if msg == "start" then
+		EventTraceFrame_StartEventCapture(eventSet);
+	elseif msg == "stop" then
 		EventTraceFrame_StopEventCapture();
-	elseif ( tonumber(msg) and tonumber(msg) > 0 ) then
-		if ( not _EventTraceFrame.started ) then
-			_EventTraceFrame.eventsToCapture = tonumber(msg);
+	elseif fixedEventCount > 0 then
+		if not _EventTraceFrame.started then
+			_EventTraceFrame.eventsToCapture = fixedEventCount;
 			EventTraceFrame_StartEventCapture();
 		end
-	elseif ( msg:find("mark", 1, true) ) then
+	elseif msg == "mark" then
 		EventTraceFrame_AddMark(originalMsg:sub(5));
-	elseif ( msg == "" ) then
-		if ( not _EventTraceFrame:IsShown() ) then
+	else
+		if not _EventTraceFrame:IsShown() then
 			_EventTraceFrame:Show();
-			if ( _EventTraceFrame.started == nil ) then
-				EventTraceFrame_StartEventCapture(); -- If this is the first time we're showing the window, start capturing events immediately.
+			if _EventTraceFrame.started == nil then
+				EventTraceFrame_StartEventCapture(eventSet); -- If this is the first time we're showing the window, start capturing events immediately.
 			end
 		else
 			_EventTraceFrame:Hide();

@@ -693,7 +693,7 @@ ICON_LIST = {
 --Links tags from Global Strings to indicies for entries in ICON_LIST. This way addons can easily replace icons
 ICON_TAG_LIST =
 {
-	 	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
  	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
 	[strlower(ICON_TAG_RAID_TARGET_STAR3)] = 1,
  	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
@@ -1113,10 +1113,6 @@ local function ExecuteCastRandom(actions)
 	end
 	entry.pending = true;
 	return entry.value;
-end
-
-function GetRandomArgument(...)
-	return (select(random(select("#", ...)), ...));
 end
 
 -- Slash commands that are protected from tampering
@@ -2777,6 +2773,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
 	self:RegisterEvent("NEWCOMER_GRADUATION");
+	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
+	self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -3051,7 +3049,44 @@ function ChatFrame_UpdateColorByID(self, chatTypeID, r, g, b)
 	self:AdjustMessageColors(TransformColorByID);
 end
 
+-- NOTE: The leave channel event happens before the channel info is removed from the client, so excludeChannels that you're leaving if you don't
+-- want to count them.
+local function GetFirstChannelIDOfChannelMatchingRuleset(ruleset, excludeChannel)
+	for i = 1, GetNumDisplayChannels() do
+		local localID = select(4, GetChannelDisplayInfo(i));
+		if localID and localID > 0 and localID ~= excludeChannel then
+			if C_ChatInfo.GetChannelRuleset(localID) == ruleset then
+				return localID;
+			end
+		end
+	end
+
+	return nil;
+end
+
+local function GetSlashCommandForChannelOpenChat(channelIndex)
+  	return "/" .. channelIndex;
+end
+
+local function HasNewcomerChannelEnabled(chatFrame)
+	for i, channelID in ipairs(chatFrame.zoneChannelList) do
+		if C_ChatInfo.GetChannelRulesetForChannelID(channelID) == Enum.ChatChannelRuleset.Mentor then
+			return true;
+		end
+	end
+	return false;
+end
+
 function ChatFrame_GetDefaultChatTarget(chatFrame)
+	if IsActivePlayerNewcomer() then
+		if HasNewcomerChannelEnabled(chatFrame) then
+			local localID = GetFirstChannelIDOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor);
+			if localID then
+				return "CHANNEL", localID;
+			end
+		end
+	end
+
 	if #chatFrame.messageTypeList == 1 and #chatFrame.channelList == 0 then
 		return chatFrame.messageTypeList[1], nil;
 	elseif #chatFrame.messageTypeList == 0 and #chatFrame.channelList == 1 then
@@ -3067,6 +3102,17 @@ function ChatFrame_GetDefaultChatTarget(chatFrame)
 	return nil;
 end
 
+function ChatFrame_UpdateDefaultChatTarget(self)
+	local defaultChatType, defaultChannelTarget = ChatFrame_GetDefaultChatTarget(self);
+	if defaultChatType then
+		local editBox = self.editBox;
+		editBox:SetAttribute("chatType", defaultChatType);
+		editBox:SetAttribute("stickyType", defaultChatType);
+		editBox:SetAttribute("channelTarget", defaultChannelTarget);
+		ChatEdit_UpdateHeader(editBox);
+	end
+end
+
 function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3074,7 +3120,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 
 		if self == DEFAULT_CHAT_FRAME then
 			self.needsMentorChatExplanation = true;
-			ChatFrame_CheckShowNewcomerHelpBanner(self);
+			ChatEdit_UpdateNewcomerEditBoxHint(self.editBox);
 
 			local isInitialLogin, isUIReload = ...;
 			if isInitialLogin then
@@ -3110,14 +3156,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		ChatFrame_RegisterForMessages(self, GetChatWindowMessages(self:GetID()));
 		ChatFrame_RegisterForChannels(self, GetChatWindowChannels(self:GetID()));
 
-		local defaultChatType, defaultChannelTarget = ChatFrame_GetDefaultChatTarget(self);
-		if defaultChatType then
-			local editBox = self.editBox;
-			editBox:SetAttribute("chatType", defaultChatType);
-			editBox:SetAttribute("stickyType", defaultChatType);
-			editBox:SetAttribute("channelTarget", defaultChannelTarget);
-			ChatEdit_UpdateHeader(editBox);
-		end
+		ChatFrame_UpdateDefaultChatTarget(self);
 
 		-- GMOTD may have arrived before this frame registered for the event
 		if ( not self.checkedGMOTD and self:IsEventRegistered("GUILD_MOTD") ) then
@@ -3176,10 +3215,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		return true;
 	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
 		local oldLevel, newLevel = ...;
-		if newLevel > oldLevel then
-			LevelUpDisplay_ChatPrint(self, newLevel, LEVEL_UP_TYPE_CHARACTER)
-		elseif newLevel < oldLevel then
-			LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+		if oldLevel ~= 0 and newLevel ~= 0 then
+			if newLevel > oldLevel then
+				LevelUpDisplay_ChatPrint(self, newLevel, LEVEL_UP_TYPE_CHARACTER)
+			elseif newLevel < oldLevel then
+				LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+			end
 		end
 		return true;
 	elseif ( event == "QUEST_TURNED_IN" ) then
@@ -3231,6 +3272,19 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		if not suppressNotification then
 			self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
 		end
+	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
+		local isServiceAvailable = ...;
+		local info = ChatTypeInfo["SYSTEM"];
+		if isServiceAvailable then
+			self:AddMessage(NPEV2_CHAT_AVAILABLE, info.r, info.g, info.b, info.id);
+		else
+			self:AddMessage(NPEV2_CHAT_UNAVAILABLE, info.r, info.g, info.b, info.id);
+		end
+		return true;
+	elseif event == "CHAT_REGIONAL_SEND_FAILED" then
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(NPEV2_CHAT_UNAVAILABLE, info.r, info.g, info.b, info.id);
+		return true;
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
@@ -3348,53 +3402,6 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 	end
 
 	return "";
-end
-
--- NOTE: The leave channel event happens before the channel info is removed from the client, so excludeChannels that you're leaving if you don't
--- want to count them.
-local function GetFirstChannelIndexOfChannelMatchingRuleset(ruleset, excludeChannel)
-	for i = 1, GetNumDisplayChannels() do
-		local index = select(4, GetChannelDisplayInfo(i));
-		if index and index > 0 and index ~= excludeChannel then
-			if C_ChatInfo.GetChannelRuleset(index) == ruleset then
-				return index;
-			end
-		end
-	end
-
-	return false;
-end
-
-local function GetSlashCommandForChannelOpenChat(channelIndex)
-  	return "/" .. channelIndex; -- This must match OPENCHATSLASH binding text.
-end
-
-function ChatFrame_CheckShowNewcomerHelpBanner(self, excludeChannel)
-	if self ~= DEFAULT_CHAT_FRAME then
-		return;
-	end
-
-	if IsActivePlayerNewcomer() then
-		if not self.NewcomerHelpBanner then
-			self.NewcomerHelpBanner = CreateFrame("Frame", nil, self, "NewcomerHelpBannerTemplate");
-			self.NewcomerHelpBanner:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-			self.NewcomerHelpBanner:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0);
-
-			-- This won't work on ChatFrame1, need to add FCF_AddAttic or something like that, because the dock manager
-			-- will need to actually change the height of the chat frame and then anchor itself some additional offset above
-			-- ChatFrame1 (the height difference/offset is the height of the newcomerHelpBanner)
-			-- Bonus points to make CLOG use FCF_AddAttic as well...but it's different logic when chatFrame ~= primaryChatFrame...
-		end
-
-		local channelIndex = GetFirstChannelIndexOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor, excludeChannel);
-		self.NewcomerHelpBanner:SetShown(channelIndex);
-		if channelIndex then
-			self.NewcomerHelpBanner.Text:SetText(NPEV2_CHAT_HELP_BANNER:format(GetSlashCommandForChannelOpenChat(channelIndex)));
-			self.NewcomerHelpBanner:SetHeight(self.NewcomerHelpBanner.Text:GetStringHeight() + 6);
-		end
-	elseif self.NewcomerHelpBanner then
-		self.NewcomerHelpBanner:Hide();
-	end
 end
 
 function ChatFrame_ShowNewcomerGraduation(s)
@@ -3612,7 +3619,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
 
 			if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
-				ChatFrame_CheckShowNewcomerHelpBanner(self);
+				ChatFrame_UpdateDefaultChatTarget(self);
+				ChatEdit_UpdateNewcomerEditBoxHint(self.editBox);
 
 				if self.needsMentorChatExplanation then
 					self.needsMentorChatExplanation = nil;
@@ -3628,9 +3636,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
 					end
 				end
-			elseif arg1 == "YOU_LEFT" then
-				ChatFrame_CheckShowNewcomerHelpBanner(self, arg8);
 			else
+				if arg1 == "YOU_LEFT" then
+					ChatEdit_UpdateNewcomerEditBoxHint(self.editBox, arg8);
+				end
+
 				local globalstring;
 				if ( arg1 == "TRIAL_RESTRICTED" ) then
 					globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
@@ -4203,10 +4213,15 @@ function ChatEdit_OnLoad(self)
 		self:Show();
 	end
 
-	local function ChatEditAutoComplete(editBox, fullText, nameInfo)
-		if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
-			editBox:SetAttribute("tellTarget", nameInfo.name);
-			editBox:SetAttribute("chatType", "BN_WHISPER");
+	local function ChatEditAutoComplete(editBox, fullText, nameInfo, ambiguatedName)
+		if hash_ChatTypeInfoList[string.upper(editBox.command)] == "SMART_WHISPER" then
+			if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
+				editBox:SetAttribute("tellTarget", nameInfo.name);
+				editBox:SetAttribute("chatType", "BN_WHISPER");
+			else
+				editBox:SetAttribute("tellTarget", ambiguatedName);
+				editBox:SetAttribute("chatType", "WHISPER");
+			end
 			editBox:SetText("");
 			ChatEdit_UpdateHeader(editBox);
 			return true;
@@ -4310,6 +4325,7 @@ function ChatEdit_ActivateChat(editBox)
 	editBox:Raise();
 
 	editBox.header:Show();
+	ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 	editBox.focusLeft:Show();
 	editBox.focusRight:Show();
 	editBox.focusMid:Show();
@@ -4332,6 +4348,7 @@ local function ChatEdit_SetDeactivated(editBox)
 		if ( not editBox.isGM ) then
 			editBox:SetAlpha(0.35);
 		end
+		ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 		editBox:ClearFocus();
 
 		editBox.focusLeft:Hide();
@@ -4644,6 +4661,34 @@ function ChatEdit_UpdateHeader(editBox)
 	editBox.focusLeft:SetVertexColor(info.r, info.g, info.b);
 	editBox.focusRight:SetVertexColor(info.r, info.g, info.b);
 	editBox.focusMid:SetVertexColor(info.r, info.g, info.b);
+end
+
+function ChatEdit_DoesCurrentChannelTargetMatch(editBox, localID)
+	local type = editBox:GetAttribute("chatType");
+	if type == "CHANNEL" then
+		return ChatEdit_GetChannelTarget(editBox) == localID;
+	end
+
+	return false;
+end
+
+function ChatEdit_UpdateNewcomerEditBoxHint(editBox, excludeChannel)
+	local shouldBeShown = not editBox.isGM and not editBox.header:IsShown() and IsActivePlayerNewcomer();
+	if shouldBeShown then
+		local localID = GetFirstChannelIDOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor, excludeChannel);
+		editBox.NewcomerHint:SetShown(localID);
+
+		if localID then
+			editBox:SetAlpha(1.0);
+			if ChatEdit_DoesCurrentChannelTargetMatch(editBox, localID) then
+				editBox.NewcomerHint:SetText(NPEV2_CHAT_HELP_HINT_HERE);
+			else
+				editBox.NewcomerHint:SetFormattedText(NPEV2_CHAT_HELP_HINT_DIFFERENT, GetSlashCommandForChannelOpenChat(localID));
+			end
+		end
+	else
+		editBox.NewcomerHint:Hide();
+	end
 end
 
 function ChatEdit_AddHistory(editBox)

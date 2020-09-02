@@ -10,6 +10,10 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 		desaturate = true;
 	end
 
+	self.IconOverlay:SetVertexColor(1, 1, 1);
+	self.IconOverlay:SetScale(1);
+	self.IconOverlay2:SetScale(1);
+
 	self:SetIconBorderAtlas(atlas);
 	self:SetIconBorderDesaturated(desaturate);
 	self:SetTexture(itemTexture);
@@ -18,8 +22,18 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	self:SetIconBorderDropShadowShown(isIconBorderDropShadowShown or false);
 	self:SetIconQuantity(quantity or 1);
 
-	local showAzeriteBorder = isIconBorderShown and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink);
-	self:SetIconOverlayAtlas(showAzeriteBorder and "LootToast-Azerite-Border" or nil);
+	if C_Soulbinds.IsItemConduitByItemInfo(itemLink) then
+		self:SetIconOverlayAtlas("ConduitIconFrame");
+		self:SetIconOverlay2Atlas("ConduitIconFrame-Corners");
+		local color = BAG_ITEM_QUALITY_COLORS[itemRarity];
+		self.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		local scale = .8;
+		self.IconOverlay:SetScale(scale);
+		self.IconOverlay2:SetScale(scale);
+	else
+		local showAzeriteBorder = isIconBorderShown and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink);
+		self:SetIconOverlayAtlas(showAzeriteBorder and "LootToast-Azerite-Border" or nil);
+	end
 
 	local showSpecID = specID and specID > 0 and not isCurrency;
 	local texture = showSpecID and select(4, GetSpecializationInfoByID(specID));
@@ -68,13 +82,19 @@ end
 function LootItemExtendedMixin:SetIconOverlayShown(shown)
 	self.IconOverlay:SetShown(shown);
 end
-function LootItemExtendedMixin:SetIconOverlayAtlas(atlas)
+function LootItemExtendedMixin:SetIconOverlay_Internal(overlay, atlas)
 	local isValid = atlas ~= nil;
 	if isValid then
 		local useAtlasSize = true;
-		self.IconOverlay:SetAtlas(atlas, useAtlasSize);
+		overlay:SetAtlas(atlas, useAtlasSize);
 	end
-	self.IconOverlay:SetShown(isValid);
+	overlay:SetShown(isValid);
+end
+function LootItemExtendedMixin:SetIconOverlayAtlas(atlas)
+	self:SetIconOverlay_Internal(self.IconOverlay, atlas);
+end
+function LootItemExtendedMixin:SetIconOverlay2Atlas(atlas)
+	self:SetIconOverlay_Internal(self.IconOverlay2, atlas);
 end
 function LootItemExtendedMixin:SetSpecIconShown(shown)
 	self.SpecIcon:SetShown(shown);

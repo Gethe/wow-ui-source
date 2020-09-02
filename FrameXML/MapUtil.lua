@@ -86,3 +86,14 @@ function MapUtil.GetBountySetMaps(bountySetID)
 	end
 	return bountySetMaps;
 end
+
+function MapUtil.GetMapCenterOnMap(mapID, topMapID)
+	local left, right, top, bottom = C_Map.GetMapRectOnMap(mapID, topMapID);
+	if left == nil then
+		return nil, nil;
+	end
+
+	local centerX = left + (right - left) * .5;
+	local centerY = top + (bottom - top) * .5;
+	return centerX, centerY;
+end

@@ -192,7 +192,7 @@ function Class_Hide_Minimap:ShowTutorial()
 	MinimapCluster:Show();
 
 	C_Timer.After(1, function()
-		self:ShowPointerTutorial(NPEV2_TURN_MINIMAP_ON, "RIGHT", Minimap, 0, 10, nil, "RIGHT");
+		self:ShowPointerTutorial(NPEV2_TURN_MINIMAP_ON, "RIGHT", Minimap, 0, 0, nil, "RIGHT");
 	end);
 
 	C_Timer.After(12, function()
@@ -224,7 +224,7 @@ end
 
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
 	self:ShowMouseKeyboardTutorial();
-	self.Timer = C_Timer.NewTimer(10, function() GlowEmitterFactory:Show(KeyboardMouseConfirmButton) end);
+	self.Timer = C_Timer.NewTimer(10, function() GlowEmitterFactory:Show(KeyboardMouseConfirmButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) end);
 end
 
 function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
@@ -608,7 +608,7 @@ function Class_AcceptQuest:OnBegin()
 		self:Complete();
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function() GlowEmitterFactory:Show(QuestFrameAcceptButton) end);
+	self.Timer = C_Timer.NewTimer(4, function() GlowEmitterFactory:Show(QuestFrameAcceptButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) end);
 end
 
 function Class_AcceptQuest:QUEST_ACCEPTED()
@@ -670,7 +670,7 @@ function Class_TurnInQuest:OnBegin()
 		self:Complete()
 		end, true);
 
-	self.Timer = C_Timer.NewTimer(4, function() GlowEmitterFactory:Show(QuestFrameCompleteQuestButton) end);
+	self.Timer = C_Timer.NewTimer(4, function() GlowEmitterFactory:Show(QuestFrameCompleteQuestButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) end);
 end
 
 function Class_TurnInQuest:OnComplete()
@@ -721,7 +721,7 @@ function Class_QuestCompleteHelp:OnBegin()
 	Tutorials.Intro_CombatTactics:Complete();
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
 	Dispatcher:RegisterEvent("QUEST_COMPLETE", self);
-	self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerBlocksFrameHeader, 0, 10, nil, "RIGHT");
+	self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerBlocksFrameHeader, -40, 0, nil, "RIGHT");
 end
 
 function Class_QuestCompleteHelp:QUEST_COMPLETE()
@@ -943,7 +943,7 @@ function Class_XPBarTutorial:QUEST_TURNED_IN(completedQuestID)
 
 	local questID = TutorialHelper:GetFactionData().StartingQuest;
 	if completedQuestID == questID then
-		self:ShowPointerTutorial(NPEV2_XP_BAR_TUTORIAL, "DOWN", StatusTrackingBarManager, 0, 10, nil, "DOWN");
+		self:ShowPointerTutorial(NPEV2_XP_BAR_TUTORIAL, "DOWN", StatusTrackingBarManager, 0, -5, nil, "DOWN");
 	end
 end
 
@@ -988,7 +988,7 @@ function Class_AddSpellToActionBar:OnBegin(spellID, warningString, spellMicroBut
 		self:SpellBookFrameShow()
 	else
 		if self.spellIDString then
-			self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", SpellbookMicroButton, 0, 10, nil, "DOWN");
+			self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", SpellbookMicroButton, 0, 0, nil, "DOWN");
 		end
 		EventRegistry:RegisterCallback("SpellBookFrame.Show", self.SpellBookFrameShow, self);
 	end
@@ -1464,7 +1464,7 @@ function Class_LootPointer:LOOT_OPENED()
 	alreadyLootedQuestItem = false;
 	local btn = LootButton1;
 	if (btn) then
-		self:ShowPointerTutorial(TutorialHelper:FormatString(NPE_CLICKLOOT), "RIGHT", btn);
+		self:ShowPointerTutorial(TutorialHelper:FormatString(NPE_CLICKLOOT), "RIGHT", btn, "-80", "0");
 	end
 end
 
@@ -1951,8 +1951,12 @@ function Class_EnhancedCombatTactics:OnBegin()
 		Tutorials.EnhancedCombatTactics_Warrior:Begin();
 		self.redirected = true;
 		self:Complete();
-	elseif self.playerClass == "MONK" then
-		-- currently there is not monk special MONK training
+	elseif playerClass == "ROGUE" then
+		Tutorials.EnhancedCombatTactics_Rogue:Begin();
+		self.redirected = true;
+		self:Complete();
+	elseif playerClass == "MONK" then
+		-- currently there is not special monk training
 	elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
 		Tutorials.EnhancedCombatTactics_UseDoTs:Begin();
 		self.redirected = true;
@@ -1998,11 +2002,10 @@ function Class_EnhancedCombatTactics:UNIT_TARGET()
 		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	else
-		self:HidePointerTutorials();
 		self:HideScreenTutorial();
-
-		self.builderPointerID = nil;
-		self.spenderPointerID = nil;
+		self:HideSpenderPrompt();
+		self:HideBuilderPrompt();
+		self:HidePointerTutorials();
 
 		Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
 		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
@@ -2017,43 +2020,62 @@ end
 
 function Class_EnhancedCombatTactics:ShowBuilderPrompt()
 	Tutorials.EnhancedCombatTactics.callback = GenerateClosure(self.ShowBuilderPrompt, self);
+	if self.builderPointerID then
+		return;
+	end
+	self:HideSpenderPrompt();
 
-	self.spenderPointerID = nil;
 	Tutorials.EnhancedCombatTactics.spellID = self.combatData.resourceBuilderSpellID;
 	local button = TutorialHelper:GetActionButtonBySpellID(Tutorials.EnhancedCombatTactics.spellID);
 	local keyBindString = "{KB|"..self.combatData.resourceBuilderSpellID.."}";
 	local builderSpellString = "{$"..self.combatData.resourceBuilderSpellID.."}";
 	local tutorialString = self.combatData.builderString:format(keyBindString, builderSpellString);
 	if button then
-		self.builderPointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN");
+		self.builderPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN");
 	else
+		self:HideBuilderPrompt();
+	end
+end
+
+function Class_EnhancedCombatTactics:HideBuilderPrompt()
+	if self.builderPointerID then
 		self:HidePointerTutorial(self.builderPointerID);
+		self.builderPointerID = nil;
 	end
 end
 
 function Class_EnhancedCombatTactics:ShowSpenderPrompt()
 	Tutorials.EnhancedCombatTactics.callback = GenerateClosure(self.ShowSpenderPrompt, self);
+	if self.spenderPointerID then
+		return;
+	end
+	self:HideBuilderPrompt();
 
-	self.builderPointerID = nil;
 	Tutorials.EnhancedCombatTactics.spellID = self.combatData.resourceSpenderSpellID;
 	local button = TutorialHelper:GetActionButtonBySpellID(Tutorials.EnhancedCombatTactics.spellID);
 	local keyBindString = "{KB|"..self.combatData.resourceSpenderSpellID.."}";
 	local spenderSpellIDString = "{$"..self.combatData.resourceSpenderSpellID.."}";
 	local tutorialString = self.combatData.spenderString:format(keyBindString, spenderSpellIDString);
 	if button then
-		self.spenderPointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN");
+		self.spenderPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN");
 	else
+		self:HideSpenderPrompt();
+	end
+end
+
+function Class_EnhancedCombatTactics:HideSpenderPrompt()
+	if self.spenderPointerID then
 		self:HidePointerTutorial(self.spenderPointerID);
+		self.spenderPointerID = nil;
 	end
 end
 
 function Class_EnhancedCombatTactics:UNIT_POWER_FREQUENT(unit, resource)
 	local resourceGateAmount = self.combatData.resourceGateAmount;
 	local resource = UnitPower("player", self.combatData.resource);
-
-	if resource < resourceGateAmount and (self.builderPointerID == nil) then
+	if resource < resourceGateAmount then
 		self:ShowBuilderPrompt();
-	elseif resource >= resourceGateAmount and (self.spenderPointerID == nil) then
+	elseif resource >= resourceGateAmount then
 		self:ShowSpenderPrompt();
 	end
 end
@@ -2061,11 +2083,9 @@ end
 function Class_EnhancedCombatTactics:UNIT_SPELLCAST_SUCCEEDED(unitID, _, spellID)
 	if unitID == "player" then
 		if spellID == self.combatData.resourceSpenderSpellID then
-			self:HidePointerTutorial(self.spenderPointerID);
-			self.spenderPointerID = nil;
+			self:HideSpenderPrompt();
 		elseif spellID == self.combatData.resourceBuilderSpellID then
-			self:HidePointerTutorial(self.builderPointerID);
-			self.builderPointerID = nil;
+			self:HideBuilderPrompt();
 		end
 
 		self:HideScreenTutorial();
@@ -2133,17 +2153,17 @@ function Class_EnhancedCombatTactics_Warrior:UNIT_POWER_FREQUENT(unit, resource)
 	local resourceGateAmount = self.combatData.resourceGateAmount;
 	local resource = UnitPower("player", self.combatData.resource);
 
-	if resource >= resourceGateAmount and not self.spenderPointerID then
+	if resource >= resourceGateAmount then
 		self:ShowSpenderPrompt();
 	end
 end
 
 function Class_EnhancedCombatTactics_Warrior:UNIT_SPELLCAST_SUCCEEDED(unitID, _, spellID)
 	if unitID == "player" then
-		self:HidePointerTutorials();
 		self:HideScreenTutorial();
-		self.builderPointerID = nil;
-		self.spenderPointerID = nil;
+		self:HideBuilderPrompt();
+		self:HideSpenderPrompt();
+		self:HidePointerTutorials();
 
 		if self.combatData.resourceBuilderSpellID == spellID then
 			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);-- now register so we can use RAGE
@@ -2157,6 +2177,119 @@ function Class_EnhancedCombatTactics_Warrior:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+
+	Tutorials.LowHealthWatcher:Begin();
+
+	self:HidePointerTutorials();
+	self:HideScreenTutorial();
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Enhanced Combat Tactics For Rogue
+-- ------------------------------------------------------------------------------------------------------------
+Class_EnhancedCombatTactics_Rogue = class("EnhancedCombatTactics_Rogue", Class_EnhancedCombatTactics);
+function Class_EnhancedCombatTactics_Rogue:OnBegin()
+	self.combatData = TutorialHelper:FilterByClass(TutorialData.ClassData);
+	Dispatcher:RegisterEvent("UNIT_TARGET", self);
+	Dispatcher:RegisterEvent("UPDATE_SHAPESHIFT_FORM", self);
+
+	self.resourceGateAmount = self.combatData.resourceGateAmount;
+end
+
+function Class_EnhancedCombatTactics_Rogue:UNIT_TARGET()
+	if self.IsStealthed() then
+		return;
+	end
+	Class_EnhancedCombatTactics.UNIT_TARGET(self);
+	--[[
+	local unitGUID = UnitGUID("target");
+	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().EnhancedCombatTacticsCreatureID) then
+		--check for the builder spell on the action bar
+		if not self:IsSpellOnActionBar(self.combatData.resourceBuilderSpellID, self.combatData.warningBuilderString, NPEV2_SPELLBOOK_ADD_SPELL) then
+			return;
+		end;
+
+		--check for the spender spell on the action bar
+		if not self:IsSpellOnActionBar(self.combatData.resourceSpenderSpellID, self.combatData.warningSpenderString, NPEV2_SPELLBOOK_ADD_SPELL) then
+			return;
+		end;
+
+		if (self.builderPointerID == nil) and (self.spenderPointerID == nil) then
+			self:ShowBuilderPrompt();
+		end
+		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
+		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	else
+		self:HideScreenTutorial();
+		self:HideBuilderPrompt();
+		self:HideSpenderPrompt();
+		self:HidePointerTutorials();
+
+		Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
+		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	end
+	]]
+end
+
+function Class_EnhancedCombatTactics:UPDATE_SHAPESHIFT_FORM()
+	local form = GetShapeshiftFormID();
+	if form == ROGUE_STEALTH then
+		self:PlayerStealthed();
+		return;
+	end
+	self:PlayerUnstealthed();
+end
+
+function Class_EnhancedCombatTactics_Rogue:PlayerStealthed()
+	self:HideBuilderPrompt();
+	self:HideSpenderPrompt();
+	self:HidePointerTutorials();
+end
+
+function Class_EnhancedCombatTactics_Rogue:PlayerUnstealthed()
+	C_Timer.After(0.1, function()
+		self:UNIT_TARGET();
+	end);
+end
+
+function Class_EnhancedCombatTactics_Rogue:IsStealthed()
+	local form = GetShapeshiftFormID();
+	if form == ROGUE_STEALTH then
+		return true;
+	end
+	return false;
+end
+
+function Class_EnhancedCombatTactics_Rogue:UNIT_POWER_FREQUENT(unit, resource)
+	local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints);
+
+	if comboPoints >= self.resourceGateAmount then
+		self:ShowSpenderPrompt();
+	else
+		self:ShowBuilderPrompt();
+	end
+end
+
+function Class_EnhancedCombatTactics_Rogue:UNIT_SPELLCAST_SUCCEEDED(unitID, _, spellID)
+	if unitID == "player" then
+		if spellID == self.combatData.resourceSpenderSpellID then
+			print("success spender");
+			self:HideSpenderPrompt();
+			-- the rogue tutorial teaches 3, then 4, then 5 point eviscerates, in that order
+			self.resourceGateAmount = min(self.resourceGateAmount + 1, 5);
+		elseif spellID == self.combatData.resourceBuilderSpellID then
+			print("success builder");
+			self:HideBuilderPrompt();
+		end
+		self:HideScreenTutorial();
+	end
+end
+
+function Class_EnhancedCombatTactics_Rogue:OnComplete()
+	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
+	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
+	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	Dispatcher:UnregisterEvent("UPDATE_SHAPESHIFT_FORM", self);
 
 	Tutorials.LowHealthWatcher:Begin();
 
@@ -2213,10 +2346,10 @@ function Class_EnhancedCombatTactics_UseDoTs:UNIT_TARGET()
 
 		self:ShowSpenderPrompt();
 	else
-		self:HidePointerTutorials();
+		self:HideSpenderPrompt();
+		self:HideBuilderPrompt();
 		self:HideScreenTutorial();
-		self.builderPointerID = nil;
-		self.spenderPointerID = nil;
+		self:HidePointerTutorials();
 	end
 end
 
@@ -2243,8 +2376,6 @@ end
 function Class_EnhancedCombatTactics_Ranged:AtCloseRange()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	self:HideScreenTutorial();
-	self:HidePointerTutorials();
 	self:ShowSpenderPrompt();
 end
 
@@ -2272,15 +2403,13 @@ function Class_EnhancedCombatTactics_Ranged:UNIT_TARGET()
 		self:StartRangedWatcher();
 	else
 		self:HideScreenTutorial();
+		self:HideSpenderPrompt();
+		self:HideBuilderPrompt();
 		self:HidePointerTutorials();
-		self.builderPointerID = nil;
-		self.spenderPointerID = nil;
 	end
 end
 
 function Class_EnhancedCombatTactics_Ranged:UNIT_TARGETABLE_CHANGED()
-	self:HidePointerTutorials();
-	self:HideScreenTutorial();
 	Dispatcher:UnregisterEvent("UNIT_TARGETABLE_CHANGED", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	Dispatcher:RegisterEvent("UNIT_TARGET", self);
@@ -2288,10 +2417,9 @@ end
 
 function Class_EnhancedCombatTactics_Ranged:UNIT_SPELLCAST_SUCCEEDED(unitID, _, spellID)
 	if unitID == "player" then
-		self.builderPointerID = nil;
-		self.spenderPointerID = nil;
-
 		if self.combatData.resourceSpenderSpellID == spellID then
+			self:HideBuilderPrompt();
+			self:HideSpenderPrompt();
 			Dispatcher:RegisterEvent("UNIT_TARGETABLE_CHANGED", self);
 		end
 	end
@@ -2395,7 +2523,7 @@ function Class_EatFood:BackpackOpened(inCombat)
 	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
 	if container and slot then
 		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
-		self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_BEGIN), "RIGHT", itemFrame, 0, 10, nil, "RIGHT");
+		self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_BEGIN), "RIGHT", itemFrame, 0, 0, nil, "RIGHT");
 	else
 		self:Complete();
 	end
@@ -2534,7 +2662,7 @@ function Class_Vendor_Watcher:MerchantTabHelp()
 
 	if not self.buyTutorialComplete then
 		Dispatcher:RegisterEvent("BAG_NEW_ITEMS_UPDATED", self);
-		self.buyPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 15);
+		self.buyPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 0);
 	end
 
 	if not self.sellTutorialComplete then
@@ -2673,7 +2801,7 @@ end
 
 function Class_LookingForGroup:DungeonEnabled(dungeonID)
 	if LFDQueueFrameFindGroupButton:IsEnabled() then
-		GlowEmitterFactory:Show(LFDQueueFrameFindGroupButton);
+		GlowEmitterFactory:Show(LFDQueueFrameFindGroupButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 		self:HidePointerTutorials();
 	end
 end
@@ -2708,7 +2836,7 @@ function Class_LookingForGroup:UpdateDungeonPointer()
 			end
 		end
 		if message then
-			self.pointerID = self:AddPointerTutorial(message, "LEFT", LFDQueueFrameSpecific, 0, 10, nil, "LEFT");
+			self.pointerID = self:AddPointerTutorial(message, "LEFT", LFDQueueFrameSpecific, 0, 34, nil, "LEFT");
 		end
 	end
 end
@@ -2736,7 +2864,7 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 	self:HidePointerTutorials();
 
 	if QueueStatusMinimapButton:IsVisible() then
-		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 0, 10, nil, "RIGHT"); 
+		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 20, 0, nil, "RIGHT"); 
 	end
 
 	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
@@ -2832,7 +2960,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_ResurrectPrompt = class("Death_ResurrectPrompt", Class_TutorialBase);
 function Class_Death_ResurrectPrompt:OnBegin()
-	self.Timer = C_Timer.NewTimer(2, function() GlowEmitterFactory:Show(StaticPopup1Button1) end);
+	self.Timer = C_Timer.NewTimer(2, function() GlowEmitterFactory:Show(StaticPopup1Button1, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) end);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
 
@@ -2894,7 +3022,7 @@ function Class_ChatFrame:OnBegin(editBox)
 		self.ShowCount = self.ShowCount + 1;
 
 		if (self.ShowCount == 1) then
-			self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_CHATFRAME), "LEFT", editBox);
+			self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_CHATFRAME2), "LEFT", editBox);
 		end
 
 		self.Elapsed = 0;
@@ -3387,7 +3515,7 @@ end
 
 function Class_SpecTutorial:ShowTalentChoiceHelp()
 	ActionButton_HideOverlayGlow(TalentMicroButton);
-	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_TOGGLE_TALENT_FRAME, "DOWN", PlayerTalentFrameSpecializationSpecButton1, 30, 0, nil, "DOWN");
+	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_TOGGLE_TALENT_FRAME, "DOWN", PlayerTalentFrameSpecializationSpecButton1, 10, 0, nil, "DOWN");
 
 	Dispatcher:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
 

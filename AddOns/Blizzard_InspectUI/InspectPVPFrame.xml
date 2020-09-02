@@ -112,14 +112,9 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button parentKey="TrinketSlot" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.BG" x="-36" y="-60"/>
-				</Anchors>
-			</Button>
 			<Button parentKey="TalentSlot1" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BG" x="-36" y="-60"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="TalentSlot2" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">

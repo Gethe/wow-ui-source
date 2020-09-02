@@ -68,7 +68,7 @@
 	<Frame name="CovenantSanctumUpgradeReservoirTemplate" mixin="CovenantSanctumUpgradeReservoirMixin" virtual="true">
 		<Size x="224" y="224"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -97,20 +97,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="RankBorder" useAtlasSize="true">
+				<Texture parentKey="Glow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOM" y="-21"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<FontString parentKey="Tier" inherits="GameFontNormalMed3">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RankBorder"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" drawLayer="BACKGROUND" useParentLevel="true">
+				<Size x="500" y="500"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
 	</Frame>
 	
 	<Frame name="CovenantSanctumUpgradeTalentTemplate" mixin="CovenantSanctumUpgradeTalentMixin" virtual="true">
@@ -133,7 +134,6 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="54" y="-7"/>
 					</Anchors>
-					<Color color="GREEN_FONT_COLOR"/>
 				</FontString>
 				<FontString parentKey="InfoText" inherits="GameFontHighlight" justifyH="LEFT">
 					<Size x="190" y="0"/>
@@ -144,14 +144,14 @@
 				<Texture parentKey="Icon">
 					<Size x="39" y="39"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-4"/>
+						<Anchor point="LEFT" x="5" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="UpgradeArrow" atlas="CovenantSanctum-Upgrade-Icon-Available" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="3" y="3"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="-3" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -183,8 +183,32 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CurrencyBackground" atlas="CovenantSanctum-Currency-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-311" y="54"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
+			<!-- This will be reparented -->
+			<Frame parentKey="BagsGlowFrame">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="12" y="11"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.5"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
 			<Frame parentKey="TalentsList" mixin="CovenantSanctumUpgradeTalentListMixin">
 				<Size x="296" y="585"/>
 				<Anchors>
@@ -274,7 +298,7 @@
 			</Button>
 			<Frame parentKey="CurrencyDisplayGroup" inherits="CurrencyDisplayGroupTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="412" y="56"/>
+					<Anchor point="BOTTOMRIGHT" x="-338" y="56"/>
 				</Anchors>
 			</Frame>
 		</Frames>

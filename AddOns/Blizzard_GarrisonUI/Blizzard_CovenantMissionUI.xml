@@ -256,6 +256,8 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow" alpha=".6">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
@@ -271,9 +273,19 @@
 				</KeyValues>
 			</Frame>
 			<Button parentKey="CloseButton" frameLevel="1500" inherits="GarrisonMissionPageCloseButtonTemplate">
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="4" y="6"/>
+					<Anchor point="TOPRIGHT" x="2" y="3"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder" atlas="UI-Frame-Oribos-ExitButtonBorder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Button>
 			<Frame parentKey="EncounterIcon" inherits="SmallCovenantMissionEncounterIconTemplate" frameLevel="900">
 				<Anchors>
@@ -307,8 +319,11 @@
 				</Anchors>
 			</Button>
 			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate" frameLevel="1600">
+				<KeyValues>
+					<KeyValue key="leftAnchor" value="60" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.StartMissionFrame" x="50"/>
+					<Anchor point="LEFT" relativeKey="$parent.StartMissionFrame" x="55"/>
 					<Anchor point="RIGHT" relativeKey="$parent.StartMissionFrame" relativePoint="CENTER" />
 				</Anchors>
 			</Frame>
@@ -362,7 +377,7 @@
 			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="COVENANT_MISSIONS_TITLE"/>
 			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="COVENANT_MISSIONS_FOLLOWERS"/>
 			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE"/>
-			<Frame parentKey="FollowerList" inherits="GarrisonListTemplate" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
+			<Frame parentKey="FollowerList" inherits="CovenantFollowerListTemplate" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
 				<Size x="305" y="505"/>
 				<KeyValues>
 					<KeyValue key ="followerTemplate" value="CovenantMissionFollowerOrCategoryListButtonTemplate" type="string"/>
@@ -419,20 +434,10 @@
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
 								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="1">
+									<Layer level="BACKGROUND" textureSubLevel="-8">
 										<Texture parentKey="TiledBackground" atlas="AdventureMap_TileBg" horizTile="true" vertTile="true">
 											<Anchors>
 												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="BACKGROUND" textureSubLevel="2">
-										For debugging
-										<Texture parentKey="ZoneArea" hidden="true">
-											<Size x="0" y="0"/>
-											<Color a="0.25" r="0" g="0" b="1"/>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -482,27 +487,8 @@
 					<Anchor point="TOPRIGHT" x="-38" y="-61"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
-				<Size x="956" y="637"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="2" y="-22"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-1" y="20"/>
-								<Anchor point="BOTTOMRIGHT" x="4" y="-3"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0.8"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-
-
-
-			<Frame parentKey="MissionComplete" inherits="AdventuresCompleteScreenTemplate" frameStrata="HIGH" hidden="true">
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" hidden="true"/>
+			<Frame parentKey="MissionComplete" inherits="AdventuresCompleteScreenTemplate"  hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="170" y="0"/>
 				</Anchors>

@@ -137,6 +137,7 @@ function OptionalReagentListLineMixin:UpdateDisplay()
 	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemID);
 	if not itemName then
 		self:SetReagentText(RETRIEVING_ITEM_INFO);
+		self:SetReagentQuality(Enum.ItemQuality.Common);
 		self.Icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
 		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 		self:SetState(OptionalReagentListLineState.Disabled);
@@ -145,7 +146,8 @@ function OptionalReagentListLineMixin:UpdateDisplay()
 
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 
-	self:SetReagentText(itemName, itemQuality);
+	self:SetReagentText(itemName);
+	self:SetReagentQuality(itemQuality);
 	self.Icon:SetTexture(itemIcon);
 	
 	local itemCount = ItemUtil.GetOptionalReagentCount(itemID);

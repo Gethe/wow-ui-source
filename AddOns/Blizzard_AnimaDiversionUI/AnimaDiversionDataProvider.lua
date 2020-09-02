@@ -1,8 +1,9 @@
 local animaPinTextureKitRegions = {
-	["Icon"] = "AnimaChannel-Icon-%s-Normal",
-	["IconSelect"] = "AnimaChannel-Icon-%s-Select",
-	["IconReinforce"] = "AnimaChannel-Icon-%s-Reinforce",
-	["IconReady"] = "AnimaChannel-Icon-%s-Ready",
+	[Enum.AnimaDiversionNodeState.Unavailable] = "AnimaChannel-Icon-%s-Normal",
+	[Enum.AnimaDiversionNodeState.Available] = "AnimaChannel-Icon-%s-Select",
+	[Enum.AnimaDiversionNodeState.SelectedTemporary] = "AnimaChannel-Icon-%s-Ready",
+	[Enum.AnimaDiversionNodeState.SelectedPermanent] = "AnimaChannel-Icon-%s-Ready",
+	[Enum.AnimaDiversionNodeState.Cooldown] = "AnimaChannel-Icon-%s-Normal",
 };
 
 local reinforceNodeTextureKitAnimationEffectId = {
@@ -12,20 +13,22 @@ local reinforceNodeTextureKitAnimationEffectId = {
 	["Necrolord"] = 31, 
 }; 
 
-local animaConnectionLineColors = { 
-	["Kyrian"] = CreateColor(0.55, 0.81, 0.90), 
-	["NightFae"] = CreateColor(0, 0.33, 0.97),
-	["Venthyr"] = CreateColor(0.81, 0.06, 0.06),
-	["Necrolord"] = CreateColor(0.1, 0.82, 0.30), 
+local animaConnectionShowBlackLink = { 
+	["Venthyr"] = true,
+	["Necrolord"] = true, 
 }; 
 
 local ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS = {
 	"ANIMA_DIVERSION_TALENT_UPDATED",
 	"CURRENCY_DISPLAY_UPDATE",
+	"GARRISON_TALENT_COMPLETE",
+	"GARRISON_TALENT_EVENT_UPDATE",
 };
 
 local ANIMA_DIVERSION_ORIGIN_PIN_BORDER = "AnimaChannel-Icon-Device-%s-Border";
-local ANIMA_REINFORCE_MODEL_EFFECT_ID = 35;
+local ANIMA_DIVERSION_LINK_TEXTURE = "animachannel-link-anima-%s";
+local ANIMA_DIVERSION_LINE_TEXTURE = "_AnimaChannel-Channel-Line-horizontal-%s";
+local ANIMA_SELECTION_MODEL_EFFECT_ID = 35;
 
 AnimaDiversionDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
@@ -35,28 +38,68 @@ end
 
 function AnimaDiversionDataProviderMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS);
+	self:ResetModelScene();
 end 
 
 function AnimaDiversionDataProviderMixin:OnEvent(event, ...)
-	if event == "ANIMA_DIVERSION_TALENT_UPDATED" or event == "CURRENCY_DISPLAY_UPDATE" then
-		self:RefreshAllData(); 
-	end
+	self:RefreshAllData(); 
 end 
 
 function AnimaDiversionDataProviderMixin:SetupConnectionOnPin(pin)
-	if(not self.origin or not animaConnectionLineColors[self.textureKit]) then 
-		return; 
-	end 
+	local connection = self.connectionPool:Acquire();
+	connection:Setup(self.textureKit, self.origin, pin);
+	connection:Show();
 
-	pin.lineContainer = self.backgroundLinePool:Acquire();
-	pin.lineContainer.Fill:SetVertexColor(animaConnectionLineColors[self.textureKit]:GetRGB());
-	pin.lineContainer.Fill:SetThickness(self.lineThickness);
-	pin.lineContainer.Fill:SetStartPoint("CENTER", self.origin);
-	pin.lineContainer.Fill:SetEndPoint("CENTER", pin);
+	self.origin.IconBorder:Show();
+end
+
+function AnimaDiversionDataProviderMixin:ResetModelScene()
+	if self.modelScenePin then
+		self.modelScenePin.ModelScene:ClearEffects();
+		self.modelScenePin = nil;
+	end
+
+	self.pinEffects = {};
+end
+
+function AnimaDiversionDataProviderMixin:AddEffectOnPin(effectID, pin, permanent)
+	if self.modelScenePin then
+		if not self.pinEffects[pin] then
+			self.pinEffects[pin] = {};
+		end
+
+		if not self.pinEffects[pin][effectID] then
+			local pinEffect = self.modelScenePin.ModelScene:AddEffect(effectID, pin, pin);
+			self.pinEffects[pin][effectID] = {effect = pinEffect, temporary =  not permanent};
+		end
+	end
+end
+
+function AnimaDiversionDataProviderMixin:ClearEffectOnPin(effectID, pin, onlyTemporaryEffects)
+	if self.modelScenePin then
+		if self.pinEffects[pin] and self.pinEffects[pin][effectID] then
+			if not onlyTemporaryEffects or self.pinEffects[pin][effectID].temporary then
+				self.pinEffects[pin][effectID].effect:CancelEffect();
+				self.pinEffects[pin][effectID] = nil;
+			end
+		end
+	end
+end
+
+function AnimaDiversionDataProviderMixin:ClearEffectOnAllPins(effectID, onlyTemporaryEffects, exemptPin)
+	if self.modelScenePin then
+		for pin, _ in pairs(self.pinEffects) do
+			if pin ~= exemptPin then
+				self:ClearEffectOnPin(effectID, pin, onlyTemporaryEffects);
+			end
+		end
+	end
 end
 
 function AnimaDiversionDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("AnimaDiversionPinTemplate");
+
+	self:ResetModelScene();
 	self:GetMap():RemoveAllPinsByTemplate("AnimaDiversionModelScenePinTemplate");
 end
 
@@ -68,37 +111,36 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	self.bolsterProgress = C_AnimaDiversion.GetReinforceProgress();
 
-	if not self.backgroundLinePool then
-		self.backgroundLinePool = CreateFramePool("FRAME", self:GetMap():GetCanvas(), "AnimaDiversionConnectionTemplate", OnRelease);
+	if not self.connectionPool then
+		self.connectionPool = CreateFramePool("FRAME", self:GetMap():GetCanvas(), "AnimaDiversionConnectionTemplate");
+	else
+		self.connectionPool:ReleaseAll(); 
 	end
-	self.backgroundLinePool:ReleaseAll(); 
+
 	self.textureKit = C_AnimaDiversion.GetTextureKit();
 
-	self.forceReinforceState = self:CanReinforceNode();
-	if (self.forceReinforceState) then 
-		self:AddModelScene(); 
-	end 
-
-	if(self.modelScenePin) then 
-		self.modelScenePin.ModelScene:ClearEffects(); 
-	end 
+	self:AddModelScene();
 
 	local originPosition = C_AnimaDiversion.GetOriginPosition();
-	if(originPosition) then 
-		self:AddOrigin(originPosition, self.textureKit);
+	if not originPosition then
+		return;
 	end
 
-	self.lineThickness = Lerp(1, 2, Saturate(1 - self:GetMap():GetCanvasZoomPercent())) * 85;
 	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes(); 
-	if (not animaNodes) then 
+	if not animaNodes then 
 		return;
 	end 
 
-	for _, nodeData in ipairs(animaNodes) do
-		nodeData.textureKit = self.textureKit
-		self:AddNode(nodeData);
-	end 
+	self:AddOrigin(originPosition);
 
+	for _, nodeData in ipairs(animaNodes) do
+		if AnimaDiversionFrame:HasIntroTutorialShowing() then
+			-- if one of the 2 intro tutorials is showing, we want to pretend that all nodes are unavailable.
+			nodeData.state = Enum.AnimaDiversionNodeState.Unavailable;
+		end
+
+		self:AddNode(nodeData);
+	end
 end
 
 function AnimaDiversionDataProviderMixin:AddNode(nodeData)
@@ -107,23 +149,25 @@ function AnimaDiversionDataProviderMixin:AddNode(nodeData)
 	pin:SetPosition(nodeData.normalizedPosition.x, nodeData.normalizedPosition.y);
 	pin.nodeData = nodeData;
 	pin.owner = self;
-	pin.forceReinforceState = self.forceReinforceState; 
+	pin.textureKit = self.textureKit;
 	pin:SetSize(150,175);
+	pin:SetupNode();
 
-	self:SetupConnectionOnPin(pin);
-	pin:Setup(); 
+	if pin:IsConnected() then
+		self:SetupConnectionOnPin(pin);
+	end
 end
 
-function AnimaDiversionDataProviderMixin:AddOrigin(position, textureKit)
+function AnimaDiversionDataProviderMixin:AddOrigin(position)
 	local pin = self:GetMap():AcquirePin("AnimaDiversionPinTemplate");
 
 	pin:SetPosition(position.x, position.y);
-	pin.owner = self; 
 	pin.nodeData = nil;
-	pin.textureKit = textureKit;
-	pin:Setup();
+	pin.owner = self; 
+	pin.textureKit = self.textureKit;
 	pin:SetSize(175,175); 
-	pin:Show(); 
+	pin:SetupOrigin();
+
 	self.origin = pin; 
 end 
 
@@ -136,6 +180,7 @@ function AnimaDiversionDataProviderMixin:AddModelScene()
 	pin:SetSize(width, height);
 	pin.ModelScene:SetSize(width, height);
 	pin.ModelScene:SetFrameLevel(1000);
+	pin.ModelScene:RefreshModelScene();
 end 
 
 AnimaDiversionModelScenePinMixin = CreateFromMixins(MapCanvasPinMixin); 
@@ -148,101 +193,97 @@ function AnimaDiversionPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
 end 
 
-function AnimaDiversionPinMixin:SetupPinStatus()
-	if(not self.nodeData) then
-		return; 
-	end 
-
-	self.ReadyState = self.nodeData.state == Enum.AnimaDiversionNodeState.Available;
-	self.ReinforceState = self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent;
-	self.SelectState = self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary;
-	self.UnavailableState = self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable;
-end 
-
 function AnimaDiversionPinMixin:SetupOrigin()
-	self.IconReady:Hide();
-	self.IconReinforce:Hide();
+	self.visualState = nil;
 	self.Icon:SetAtlas("AnimaChannel-Icon-Device", TextureKitConstants.UseAtlasSize);
-	self.Icon:Show(); 
-
-	local borderAtlas = GetFinalNameFromTextureKit(ANIMA_DIVERSION_ORIGIN_PIN_BORDER, self.textureKit);
-	self.IconSelect:SetAtlas(borderAtlas, TextureKitConstants.UseAtlasSize)
-	self.IconSelect:Show();
-
-	if(self.reinforceEffect) then 
-		self.reinforceEffect:CancelEffect(); 
-		self.reinforceEffect = nil; 
-	end 
-end 
-
-function AnimaDiversionPinMixin:SetState(enabled)
-	self.IconReady:SetDesaturated(not enabled);
-	self.IconReinforce:SetDesaturated(not enabled);
-	self.IconSelect:SetDesaturated(not enabled);
-	self.Icon:SetDesaturated(not enabled);
-end
-
-function AnimaDiversionPinMixin:SetEffects()
-	if(self.owner.modelScenePin) then 
-		if(self.nodeData and self.ReadyState) then 
-			local effectID = reinforceNodeTextureKitAnimationEffectId[self.nodeData.textureKit];
-			if (effectID) then 
-				self.owner.modelScenePin.ModelScene:AddEffect(effectID, self, self);
-			end 
-		end
-	end 
-end
-function AnimaDiversionPinMixin:Setup() 
+	self.Icon:SetDesaturated(false);
+	SetupTextureKitOnFrame(self.textureKit, self.IconBorder, ANIMA_DIVERSION_ORIGIN_PIN_BORDER, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	self.IconBorder:Hide();
+	self.IconDisabledOverlay:Hide();
 	self:Show();
-
-	if(not self.nodeData) then
-		self:SetupOrigin();
-		return; 
-	end 
-
-	self:SetupPinStatus(); 
-	SetupTextureKitOnRegions(self.nodeData.textureKit, self, animaPinTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-	self.IconReady:SetShown(self.ReadyState);
-	self.IconReinforce:SetShown(self.ReinforceState);
-	self.IconSelect:SetShown(self.SelectState);
-	self.Icon:SetShown(self.UnavailableState);
-
-	self:SetEffects(); 
-	if (self.lineContainer) then 
-		self.lineContainer:SetShown(self.ReinforceState or self.SelectState);
-	end
-	self:SetState(not self.UnavailableState);
 end 
 
-function AnimaDiversionPinMixin:SetReinforceState(reinforce) 
-	self.IconSelect:SetShown(self.SelectState or reinforce);
-	self.IconReinforce:SetShown(self.ReinforceState);
-	self.IconReady:SetShown(not reinforce and self.ReadyState);
-	self.Icon:SetShown(self.UnavailableState and not reinforce);
+function AnimaDiversionPinMixin:IsConnected() 
+	return (self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary) or (self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent);
+end 
 
-	if(reinforce and self.nodeData and self.ReinforceState) then 
-		if(not self.sparkleEffect or not self.sparkleEffect:IsActive()) then
-			self.sparkleEffect = self.owner.modelScenePin.ModelScene:AddEffect(ANIMA_REINFORCE_MODEL_EFFECT_ID, self, self);
+function AnimaDiversionPinMixin:SetupNode()
+	local useState = self.nodeData.state;
+	
+	if self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then
+		local permanent = true;
+		self:SetReinforceState(true, permanent);
+	elseif self.owner:CanReinforceNode() then
+		if self.nodeData.state ~= Enum.AnimaDiversionNodeState.Unavailable then
+			useState = Enum.AnimaDiversionNodeState.Available;
+			self:SetReinforceState(true);
 		end
+	elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then
+		self:SetSelectedState(true, true);
+	end
+
+	self:SetVisualState(useState);
+	self.IconBorder:Hide();
+
+	self:Show();
+end 
+
+function AnimaDiversionPinMixin:SetVisualState(state)
+	self.visualState = state;
+	SetupTextureKitOnFrame(self.textureKit, self.Icon, animaPinTextureKitRegions[state], TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(self.textureKit, self.IconDisabledOverlay, animaPinTextureKitRegions[state], TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	if state == Enum.AnimaDiversionNodeState.Unavailable then
+		self.IconDisabledOverlay:SetVertexColor(0, 0, 0, 0.4);
+		self.IconDisabledOverlay:Show();
+		self.Icon:SetDesaturated(true);
+	else
+		self.IconDisabledOverlay:Hide();
+		self.Icon:SetDesaturated(false);
+	end
+end
+
+function AnimaDiversionPinMixin:SetReinforceState(reinforce, permanent) 
+	if reinforce then
+		self.owner:AddEffectOnPin(reinforceNodeTextureKitAnimationEffectId[self.textureKit], self, permanent);
+	else
+		self.owner:ClearEffectOnPin(reinforceNodeTextureKitAnimationEffectId[self.textureKit], self);
+	end
+end 
+
+function AnimaDiversionPinMixin:SetSelectedState(selected, leaveOtherSelections)
+	if selected then
+		local onlyTemporaryEffects = true;
+		self.owner:ClearEffectOnAllPins(reinforceNodeTextureKitAnimationEffectId[self.textureKit], onlyTemporaryEffects, self);
+
+		if not leaveOtherSelections then
+			self.owner:ClearEffectOnAllPins(ANIMA_SELECTION_MODEL_EFFECT_ID, onlyTemporaryEffects, self);
+		end
+
+		self.owner:AddEffectOnPin(ANIMA_SELECTION_MODEL_EFFECT_ID, self);
+	else
+		self.owner:ClearEffectOnPin(ANIMA_SELECTION_MODEL_EFFECT_ID, self);
 	end
 end 
 
 function AnimaDiversionPinMixin:OnMouseEnter() 
-	if(AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self)) then 
+	if AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self) then 
 		return;
 	end 
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	if(not self.nodeData) then -- If we are the origin pin we want to show a special tooltip. 
+	if not self.nodeData then -- If we are the origin pin we want to show a special tooltip. 
 		GameTooltip_AddHighlightLine(GameTooltip, ANIMA_DIVERSION_ORIGIN_TOOLTIP);
 	else 
 		GameTooltip_AddNormalLine(GameTooltip, self.nodeData.name);
 		GameTooltip_AddHighlightLine(GameTooltip, self.nodeData.description);
-		if(self.UnavailableState) then 
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable then 
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddErrorLine(GameTooltip, ANIMA_DIVERSION_NODE_UNAVAILABLE);
-		elseif (self.ReinforceState) then 
+		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Cooldown and not self.owner:CanReinforceNode() then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddErrorLine(GameTooltip, ANIMA_DIVERSION_NODE_COOLDOWN);
+		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then 
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_POI_REINFORCED, GREEN_FONT_COLOR);
 		end
@@ -256,26 +297,61 @@ function AnimaDiversionPinMixin:OnMouseLeave()
 end
 
 function AnimaDiversionPinMixin:OnClick(button) 
-	if(not self.nodeData) then -- If we are the origin pin, don't do anything.
+	if not self.nodeData then -- If we are the origin pin, don't do anything.
 		return;
 	end 
 
-	if(self.UnavailableState or self.ReinforceState) then 
-		return; 
-	end 
-
-	local reinforceNodeSelection = self.owner:CanReinforceNode(); 
-
-	if(AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self)) then 
-		GameTooltip:Hide();
+	if AnimaDiversionFrame.disallowSelection or button ~= "LeftButton" then	-- if selection is disabled or they didn't use left button, don't do anything.
+		return;
 	end
 
-	if(reinforceNodeSelection) then 
+	if self.owner:CanReinforceNode() then 
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable or self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then 
+			return;
+		end
+
 		AnimaDiversionFrame.ReinforceInfoFrame:SelectNodeToReinforce(self);
-	else 
+	else
+		if self.nodeData.state ~= Enum.AnimaDiversionNodeState.Available then 
+			return;
+		end
+
 		AnimaDiversionFrame.SelectPinInfoFrame:SetupAndShow(self);
-		if(AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self)) then 
+		if AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self) then 
 			GameTooltip:Hide();
 		end
 	end
-end 
+end
+
+AnimaDiversionConnectionMixin = {}
+
+function AnimaDiversionConnectionMixin:Setup(textureKit, origin, pin)
+		-- Anchor straight up from the origin
+	self:SetPoint("BOTTOM", origin, "CENTER");
+
+	-- Then adjust the height to be the length from origin to pin
+	local length = RegionUtil.CalculateDistanceBetween(origin, pin) * origin:GetEffectiveScale();
+	self:SetHeight(length);
+
+	-- And finally rotate all the textures around the origin so they line up
+	local quarter = (math.pi / 2);
+	local angle = RegionUtil.CalculateAngleBetween(origin, pin) - quarter;
+	self:RotateTextures(angle, 0.5, 0);
+
+	self.Line:SetStartPoint("CENTER", origin);
+	self.Line:SetEndPoint("CENTER", pin);
+
+	local lineThickness = (pin.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary) and 20 or 40;
+	self.Line:SetThickness(lineThickness);
+
+	SetupTextureKitOnFrame(textureKit, self.Line, ANIMA_DIVERSION_LINE_TEXTURE, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.AnimaLink1, ANIMA_DIVERSION_LINK_TEXTURE, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.AnimaLink2, ANIMA_DIVERSION_LINK_TEXTURE, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	self.AnimaLinkBlack:SetShown(animaConnectionShowBlackLink[textureKit]);
+
+	self.Mask:SetShown(pin.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary);
+
+	for _, animationGroup in ipairs(self.animationGroups) do
+		animationGroup:Play();
+	end
+end

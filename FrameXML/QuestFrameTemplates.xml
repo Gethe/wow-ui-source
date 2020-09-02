@@ -7,8 +7,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Bg" name="$parentBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="510" y="620"/>
+				<Texture parentKey="Bg" name="$parentBg" atlas="QuestBG-Parchment" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>

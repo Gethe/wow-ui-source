@@ -17,9 +17,9 @@ local AuctionHouseEnums =
 		{
 			Name = "AuctionHouseFilter",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "UncollectedOnly", Type = "AuctionHouseFilter", EnumValue = 0 },
@@ -33,6 +33,7 @@ local AuctionHouseEnums =
 				{ Name = "EpicQuality", Type = "AuctionHouseFilter", EnumValue = 8 },
 				{ Name = "LegendaryQuality", Type = "AuctionHouseFilter", EnumValue = 9 },
 				{ Name = "ArtifactQuality", Type = "AuctionHouseFilter", EnumValue = 10 },
+				{ Name = "LegendaryCraftedItemOnly", Type = "AuctionHouseFilter", EnumValue = 11 },
 			},
 		},
 		{

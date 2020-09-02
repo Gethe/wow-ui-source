@@ -131,15 +131,15 @@ function ScriptAnimatedEffectControllerMixin:CheckResolution()
 	end
 end
 
-function ScriptAnimatedEffectControllerMixin:RunEffectResolution()
+function ScriptAnimatedEffectControllerMixin:RunEffectResolution(cancelled)
 	if self.onEffectResolution then
-		self.onEffectResolution(self.effectCount);
+		self.onEffectResolution(self.effectCount, not not cancelled);
 	end
 end
 
-function ScriptAnimatedEffectControllerMixin:RunEffectFinish()
+function ScriptAnimatedEffectControllerMixin:RunEffectFinish(cancelled)
 	if self.onEffectFinish then
-		if not self.onEffectFinish(self.effectCount) then
+		if not self.onEffectFinish(self.effectCount, not not cancelled) then
 			self.onEffectFinish = nil;
 		end
 	end
@@ -178,8 +178,9 @@ function ScriptAnimatedEffectControllerMixin:InternalCancelEffect(skipRemovingCo
 	self.activeBehaviors = {};
 
 	self:CancelLoopingSound();
-	self:RunEffectFinish();
-	self:RunEffectResolution();
+	local cancelled = true;
+	self:RunEffectFinish(cancelled);
+	self:RunEffectResolution(cancelled);
 end
 
 function ScriptAnimatedEffectControllerMixin:BeginBehavior(behavior)

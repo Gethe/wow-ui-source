@@ -153,6 +153,12 @@ function CovenantCallingQuestMixin:OnLeave()
 	self.Highlight:Hide();
 end
 
+function CovenantCallingQuestMixin:OnMouseUp(button, upInside)
+	if button == "LeftButton" and upInside and self.calling:GetState() == Enum.CallingStates.QuestActive then
+		QuestMapFrame_OpenToQuestDetails(self.calling.questID);
+	end
+end
+
 CovenantCallingsMixin = {};
 
 function CovenantCallingsMixin:OnLoad()
@@ -162,8 +168,8 @@ end
 
 local CovenantCallingsEvents = {
 	"COVENANT_CALLINGS_UPDATED",
-	"QUEST_LOG_UPDATE",
-	"QUEST_LOG_CRITERIA_UPDATE",
+	"QUEST_TURNED_IN",
+	"QUEST_ACCEPTED",
 }
 
 function CovenantCallingsMixin:OnShow()
@@ -177,9 +183,25 @@ end
 function CovenantCallingsMixin:OnEvent(event, ...)
 	if event == "COVENANT_CALLINGS_UPDATED" then
 		self:OnCovenantCallingsUpdated(...);
-	else
+	elseif event == "QUEST_TURNED_IN" then
+		self:OnQuestTurnedIn(...);
+	elseif event == "QUEST_ACCEPTED" then
+		self:OnQuestAccepted(...);
+	end
+end
+
+function CovenantCallingsMixin:CheckUpdateForQuestID(questID)
+	if C_QuestLog.IsQuestCalling(questID) then
 		self:Update();
 	end
+end
+
+function CovenantCallingsMixin:OnQuestTurnedIn(questID)
+	self:CheckUpdateForQuestID(questID);
+end
+
+function CovenantCallingsMixin:OnQuestAccepted(questID)
+	self:CheckUpdateForQuestID(questID);
 end
 
 function CovenantCallingsMixin:Update()

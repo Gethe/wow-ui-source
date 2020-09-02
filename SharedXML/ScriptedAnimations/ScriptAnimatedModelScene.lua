@@ -205,6 +205,10 @@ function ScriptAnimatedModelSceneMixin:ClearEffects()
 	self.effectControllers = {};
 end
 
+function ScriptAnimatedModelSceneMixin:HasActiveEffects()
+	return #self.effectControllers > 0;
+end
+
 function ScriptAnimatedModelSceneMixin:RemoveEffectController(effectControllerToRemove)
 	for i, effectController in ipairs(self.effectControllers) do
 		if effectController == effectControllerToRemove then

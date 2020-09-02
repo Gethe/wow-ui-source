@@ -1,4 +1,4 @@
- <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GossipFrame.lua"/>
 	<Frame name="GossipFramePanelTemplate" virtual="true">
@@ -65,23 +65,22 @@
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="ARTWORK">
-                <Texture name="GossipFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
+				<Texture name="GossipFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="GossipFrameBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="510" y="620"/>
+				<Texture name="GossipFrameBg" atlas="QuestBG-Parchment" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
- 		<Frames>
+		<Frames>
 			<Frame name="GossipNpcNameFrame">
 				<Size x="0" y="14"/>
 				<Anchors>
@@ -101,10 +100,10 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad function="RaiseFrameLevelByTwo"/>
-                </Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
 			</Frame>
- 			<Frame name="GossipFrameGreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+			<Frame name="GossipFrameGreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
 				<Frames>
 					<Button name="GossipFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
 						<Size x="78" y="22"/>
@@ -173,8 +172,8 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
- 			</Frame>
- 		</Frames>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad function="GossipFrame_OnLoad"/>
 			<OnShow>
@@ -190,8 +189,7 @@
 			</OnHide>
 			<OnMouseWheel function=""/>
 		</Scripts>
- 	</Frame>
-
+	</Frame>
 	<StatusBar name="NPCFriendshipStatusBar" parent="GossipFrame" hidden="true">
 		<Size x="230" y="14"/>
 		<Anchors>
@@ -264,4 +262,4 @@
 			</OnLeave>
 		</Scripts>
 	</StatusBar>
- </Ui>
+</Ui>

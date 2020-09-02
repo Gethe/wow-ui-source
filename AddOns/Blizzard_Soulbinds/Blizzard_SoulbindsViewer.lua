@@ -37,7 +37,6 @@ function SoulbindViewerMixin:OnLoad()
 	self.CloseButton:SetScript("OnClick", GenerateClosure(self.OnCloseButtonClicked, self));
 
 	self.Tree:RegisterCallback(SoulbindTreeMixin.Event.OnNodeChanged, self.OnNodeChanged, self);
-	self.SelectGroup:RegisterCallback(SoulbindSelectGroupMixin.Event.OnSoulbindSelected, self.OnSoulbindSelected, self);
 	
 	NineSliceUtil.ApplyUniqueCornersLayout(self.Border, "Oribos");
 	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-Oribos-ExitButtonBorder", -1, 1);
@@ -79,6 +78,8 @@ function SoulbindViewerMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SoulbindViewerEvents);
 
 	self.ResetConduitsButton:SetShown(C_Soulbinds.CanModifySoulbind());
+
+	self:UpdateButtons();
 
 	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
 end
@@ -129,6 +130,12 @@ function SoulbindViewerMixin:UpdateButtons()
 	self:UpdateCommitConduitsButton();
 end
 
+function SoulbindViewerMixin:UpdateBackgrounds()
+	local open = self:IsActiveSoulbindOpen();
+	self.Background:SetDesaturated(not open);
+	self.Background2:SetDesaturated(not open);
+end
+
 function SoulbindViewerMixin:OnConduitChanged()
 	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
 	self:UpdateButtons();
@@ -150,10 +157,17 @@ function SoulbindViewerMixin:UpdateResetConduitsButton()
 end
 
 function SoulbindViewerMixin:Open()
-	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
-	local soulbindData = C_Soulbinds.GetSoulbindData(C_Soulbinds.GetActiveSoulbindID());
-	self:Init(covenantData, soulbindData);
-	ShowUIPanel(self);
+	local covenantID = C_Covenants.GetActiveCovenantID();
+	if covenantID == 0 then
+		error("You are not in a required covenant.");
+	end
+
+	local soulbindID = C_Soulbinds.GetActiveSoulbindID();
+	if soulbindID == 0 then
+		soulbindID = Soulbinds.GetDefaultSoulbindID(covenantID);
+	end
+
+	self:OpenSoulbind(soulbindID);
 end
 
 function SoulbindViewerMixin:OpenSoulbind(soulbindID)
@@ -164,18 +178,19 @@ function SoulbindViewerMixin:OpenSoulbind(soulbindID)
 end
 
 function SoulbindViewerMixin:Init(covenantData, soulbindData)
-	if not covenantData then
-		error("You are not in a required covenant.");
-	end
-
 	self.soulbindData = soulbindData;
 	self.covenantData = covenantData;
 
 	local background = "Soulbinds_Background";
 	self.Background:SetAtlas(background, true);
 	self.Background2:SetAtlas(background, true);
+	self:UpdateBackgrounds();
+
+	self.Tree:Init(soulbindData);
+	self.ConduitList:Init();
 
 	self.SelectGroup:Init(covenantData, soulbindData.ID);
+	self.SelectGroup:RegisterCallback(SoulbindSelectGroupMixin.Event.OnSoulbindSelected, self.OnSoulbindSelected, self);
 end
 
 function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex)
@@ -187,15 +202,14 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	self.soulbindData = soulbindData;
 
 	self.Tree:Init(soulbindData);
-	self.ConduitList:Init();
+	self.ConduitList:Update();
 
-	local open = self:IsActiveSoulbindOpen();
-	self.Background:SetDesaturated(not open);
-	self.Background2:SetDesaturated(not open);
-
+	self:UpdateBackgrounds();
 	self:UpdateButtons();
-
+	
 	self:TriggerEvent(SoulbindViewerMixin.Event.OnSoulbindChanged, self.covenantData, soulbindData);
+
+	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED);
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
@@ -237,7 +251,7 @@ function SoulbindViewerMixin:UpdateActivateSoulbindButton()
 end
 
 function SoulbindViewerMixin:UpdateCommitConduitsButton()
-	local pending = C_Soulbinds.HasAnyPendingConduits();
+	local pending = C_Soulbinds.HasPendingConduitsInSoulbind(self:GetOpenSoulbindID());
 	self.CommitConduitsButton:SetShown(pending);
 	GlowEmitterFactory:SetShown(self.CommitConduitsButton, pending, GlowEmitterMixin.Anims.FaintFadeAnim);
 end
@@ -276,7 +290,7 @@ end
 
 function SoulbindViewerMixin:OnCommitConduitsClicked()
 	local onConfirm = function()
-		C_Soulbinds.CommitPendingConduits();
+		C_Soulbinds.CommitPendingConduitsInSoulbind(self:GetOpenSoulbindID());
 		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
 	end
 	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", nil, nil, onConfirm);

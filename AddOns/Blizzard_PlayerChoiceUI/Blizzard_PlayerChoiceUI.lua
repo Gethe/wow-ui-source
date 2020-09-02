@@ -288,9 +288,14 @@ local choiceLayout = {
 		headerYOffset = -50;
 		artworkBorderYOffset = 25;
 		tooltipOnlyOnArtwork = true,
+		fadeOutSoundKitID = SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_FADEOUT_POWERS_NOT_PICKED,
 		setupTooltip = function(frame, tooltip, choiceInfo)
 			tooltip:SetOwner(frame, "ANCHOR_RIGHT");
-			GameTooltip_AddColoredLine(tooltip, choiceInfo.header, choiceInfo.rarityColor, true);
+			if(choiceInfo.rarityColor) then 
+				GameTooltip_AddColoredLine(tooltip, choiceInfo.header, choiceInfo.rarityColor);
+			else 
+				GameTooltip_AddHighlightLine(tooltip, choiceInfo.header);
+			end 
 			GameTooltip_AddHighlightLine(tooltip, MAW_POWER);
 			GameTooltip_AddNormalLine(tooltip, choiceInfo.description, true);
 			tooltip:Show();
@@ -362,6 +367,8 @@ local hideButtonOverrideInfo = {
 		playerChoiceHiddenTextXOffset = 8,
 		playerChoiceShowingTextYOffset = -3,
 		playerChoiceHiddenTextYOffset = -3,
+		playerChoiceShowingSoundKit = SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_HIDE_POWERS,
+		playerChoiceHiddenSoundKit = SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_SHOW_POWERS,
 	},
 }
 
@@ -486,7 +493,9 @@ end
 
 function PlayerChoiceFrameMixin:TryShow()
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
-
+	if(not choiceInfo) then 
+		return; 
+	end 
 	self.uiTextureKit = choiceInfo.uiTextureKit or DEFAULT_TEXTURE_KIT;
 	local layout = borderLayout[self.uiTextureKit] or borderLayout["neutral"];
 	self.optionLayout = choiceLayout[self.uiTextureKit] or choiceLayout["default"];
@@ -811,7 +820,6 @@ function PlayerChoiceFrameMixin:Update()
 			option:ResetOption();
 
 			local optionInfo = self.optionData[i];
-
 			option.rarity = optionInfo.rarity;
 			if(optionInfo.rarityColor) then
 				option.rarityColor = optionInfo.rarityColor;
@@ -1020,8 +1028,13 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.Background:SetAlpha(1);
 	self.Background:Show();
 
+	self:CancelEffects()
+
+	self.ChoiceSelectedAnimation:Stop(); 
 	self.ArtworkBorder:SetRotation(0);
 	self.ArtworkBorder:SetAlpha(1);
+	self:UpdateCircleGlowVisibility(false); 
+
 	self.ArtworkBorder:SetAtlas("UI-Frame-Horde-Portrait", true);
 	self.ArtworkBorder:ClearAllPoints();
 	self.ArtworkBorder:SetPoint("TOP");
@@ -1041,6 +1054,7 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver);
 	self.MouseOverOverride:Show();
 	self:UpdatePadding(1);
+	self:SetAlpha(1);
 end
 
 function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
@@ -1056,8 +1070,9 @@ function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 
 	local tooltipShown = false;
 	local layoutInfo = self:GetOptionLayoutInfo();
-	if (layoutInfo.setupTooltip) then
-		local choiceInfo = C_PlayerChoice.GetPlayerChoiceOptionInfo(self.layoutIndex);
+	local choiceInfo = C_PlayerChoice.GetPlayerChoiceOptionInfo(self.layoutIndex);
+
+	if (layoutInfo.setupTooltip and choiceInfo) then
 		local mouseOverFrame = self.MouseOverOverride;
 		if (layoutInfo.tooltipOnlyOnArtwork) then
 			mouseOverFrame = self.Artwork;
@@ -1394,6 +1409,18 @@ function PlayerChoiceOptionFrameMixin:CancelEffects()
 		self.artworkEffectController:CancelEffect(); 
 		self.artworkEffectController = nil; 
 	end 
+
+	if (self.dialogEffectController) then 
+		self.dialogEffectController:CancelEffect(); 
+		self.dialogEffectController = nil;
+	end 
+end 
+
+function PlayerChoiceOptionFrameMixin:UpdateCircleGlowVisibility(shouldShow)
+	self.SpinningGlows2:SetShown(shouldShow);
+	self.RingGlow:SetShown(shouldShow);
+	self.PointBurstLeft:SetShown(shouldShow);
+	self.PointBurstRight:SetShown(shouldShow);
 end 
 
 function PlayerChoiceOptionFrameMixin:ConfigureSubHeader(subHeader)
@@ -1429,7 +1456,8 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 			local isSecondButton = button.buttonIndex == 2;
 
 			if (optionLayout.useArtworkGlowOnSelection) then 
-				self.ChoiceSelectedAnimation:Play(); 
+				self:UpdateCircleGlowVisibility(true); 
+				self.ChoiceSelectedAnimation:Restart(); 
 			end 
 
 			local textureKit = self.uiTextureKit or self:GetParent().uiTextureKit;
@@ -1440,13 +1468,16 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 				end 
 			end 
 
-			local shouldFadeOutOtherOptions = optionLayout.highlightChoiceBeforeHide and self:GetParent():GetNumOptions() > 1; 
+			local shouldFadeOutOtherOptions = optionLayout.highlightChoiceBeforeHide; 
 			if(shouldFadeOutOtherOptions) then
 				self:GetParent():EnableMouse(false);
 				self:GetParent():HideOptions(self);
 				PlayerChoiceToggleButton:Hide(); 
 				C_Timer.After(1.25, function() self:CancelEffects() end);
-				self.FadeoutSelected:Restart(); 
+				self.FadeoutSelected:Restart();
+				if (optionLayout.fadeOutSoundKitID) then 
+					PlaySound(optionLayout.fadeOutSoundKitID)
+				end
 			elseif (not choiceInfo.keepOpenAfterChoice and (not isSecondButton or not optionLayout.secondButtonClickDoesntCloseUI)) then
 				self:GetParent():TryHide();
 			end
@@ -1681,26 +1712,19 @@ end
 
 PlayerChoiceToggleButtonMixin = { };
 function PlayerChoiceToggleButtonMixin:TryShow()
-	PlayerChoiceToggleButton:SetShown(IsInJailersTower());
+	PlayerChoiceToggleButton:SetShown(IsInJailersTower() and C_PlayerChoice.IsWaitingForPlayerChoiceResponse());
 end
 
 function PlayerChoiceToggleButtonMixin:OnShow()
 	self:UpdateButtonState();
 end
 
-function PlayerChoiceToggleButtonMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdate)
-	if (not scene) then
-		return;
-	end
-
-	scene:Show();
-	scene:SetFromModelSceneID(sceneID, forceUpdate);
-	local effect = scene:GetActorByTag("effect");
-	if (effect) then
-		effect:SetModelByFileID(fileID);
-	end
+function PlayerChoiceToggleButtonMixin:OnHide()
+	if (self.dialogEffectController) then 
+		self.dialogEffectController:CancelEffect();
+		self.dialogEffectController = nil; 
+	end 
 end
-
 
 function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	if (not C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
@@ -1719,25 +1743,23 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 		self:SetPoint("CENTER", self:GetParent(), 0, -300);
 	end
 
-	local textureKit = choiceInfo.uiTextureKit;
-	local overrideTextInfo = hideButtonOverrideInfo[textureKit];
-	local modelSceneLayout = choiceModelSceneLayout[textureKit]; 
+	self.textureKit = choiceInfo.uiTextureKit;
+	local overrideTextInfo = hideButtonOverrideInfo[self.textureKit];
+	local modelSceneLayout = choiceModelSceneLayout[self.textureKit]; 
 	local isPlayerChoiceShowing = PlayerChoiceFrame:IsShown();
 	local normalTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButton or hideButtonAtlasOptions.LargeButton;
 	local highlightTextureKitInfo = isPlayerChoiceShowing and hideButtonAtlasOptions.SmallButtonHighlight or hideButtonAtlasOptions.LargeButtonHighlight;
 
-	if (not isPlayerChoiceShowing) then
-		if(modelSceneLayout and modelSceneLayout and modelSceneLayout.extraButtonEffectID) then 
-			self.dialogEffectController = GlobalFXDialogModelScene:AddEffect(modelSceneLayout.extraButtonEffectID, self);
-		end 
-	else
-		if(self.dialogEffectController) then 
-			self.dialogEffectController:CancelEffect();
-			self.dialogEffectController = nil; 
-		end 
-	end
-	local normalTextureAtlas = GetFinalNameFromTextureKit(normalTextureKitInfo, textureKit);
-	local highlightTextureAtlas = GetFinalNameFromTextureKit(highlightTextureKitInfo, textureKit);
+	if(self.dialogEffectController) then 
+		self.dialogEffectController:CancelEffect();
+		self.dialogEffectController = nil; 
+	end 
+
+	if(not isPlayerChoiceShowing and modelSceneLayout and modelSceneLayout.extraButtonEffectID) then 
+		self.dialogEffectController = GlobalFXDialogModelScene:AddEffect(modelSceneLayout.extraButtonEffectID, self);
+	end 
+	local normalTextureAtlas = GetFinalNameFromTextureKit(normalTextureKitInfo, self.textureKit);
+	local highlightTextureAtlas = GetFinalNameFromTextureKit(highlightTextureKitInfo, self.textureKit);
 
 	self:SetNormalAtlas(normalTextureAtlas);
 	self:SetHighlightAtlas(highlightTextureAtlas);
@@ -1771,9 +1793,16 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 end
 
 function PlayerChoiceToggleButtonMixin:OnClick()
+	local overrideButtonInfo = hideButtonOverrideInfo[self.textureKit];
 	if (PlayerChoiceFrame:IsShown()) then
+		if(overrideButtonInfo and overrideButtonInfo.playerChoiceShowingSoundKit) then 
+			PlaySound(overrideButtonInfo.playerChoiceShowingSoundKit);
+		end 
 		PlayerChoiceFrame:TryHide();
 	else
+		if(overrideButtonInfo and overrideButtonInfo.playerChoiceHiddenSoundKit) then 
+			PlaySound(overrideButtonInfo.playerChoiceHiddenSoundKit);
+		end 
 		PlayerChoiceFrame:TryShow();
 	end
 	self.FadeIn:Restart();

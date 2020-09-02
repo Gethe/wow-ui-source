@@ -30,8 +30,6 @@ UI_WIDGET_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("UI_WIDGET_TRACKE
 UI_WIDGET_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS;
 UI_WIDGET_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader, GetRealZoneText(), OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS);
 UI_WIDGET_TRACKER_MODULE.blockTemplate = "ObjectiveTrackerUIWidgetBlock";
-UI_WIDGET_TRACKER_MODULE.usedBlocks = {};
-UI_WIDGET_TRACKER_MODULE.freeBlocks = {};
 
 function UI_WIDGET_TRACKER_MODULE:Update()
 	self:BeginLayout();

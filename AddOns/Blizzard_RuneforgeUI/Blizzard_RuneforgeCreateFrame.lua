@@ -53,7 +53,7 @@ function RuneforgeCreateFrameMixin:GetStaticPopupInfo()
 	local runeforgeFrame = self:GetRuneforgeFrame();
 	local quality = Enum.ItemQuality.Legendary;
 	local baseItem, powerID, modifiers = runeforgeFrame:GetLegendaryCraftInfo();
-	local itemPreviewInfo = C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
+	local itemPreviewInfo = runeforgeFrame:GetItemPreviewInfo(baseItem, powerID, modifiers);
 	if self:IsRuneforgeUpgrading() then
 		local upgradeItem = runeforgeFrame:GetUpgradeItem();
 		local itemLevel = C_Item.GetCurrentItemLevel(upgradeItem);

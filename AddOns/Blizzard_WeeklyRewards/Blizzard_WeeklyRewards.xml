@@ -13,6 +13,18 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Glow" atlas="services-ring-large-glow" alpha="1" ignoreParentAlpha="true" useAtlasSize="true" scale="0.2">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowSpin" atlas="services-ring-large-glowspin" alpha="1" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.3">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture atlas="weeklyrewards-frame-item-epic" useAtlasSize="true">
 					<Anchors>
@@ -35,6 +47,11 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowSpinAnim" looping="REPEAT">
+				<Rotation childKey="GlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -69,13 +86,6 @@
 	<Frame name="WeeklyRewardActivityTemplate" parentArray="Activities" mixin="WeeklyRewardsActivityMixin" virtual="true">
 		<Size x="219" y="126"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Border"/>
 				<Texture parentKey="Orb">
@@ -137,6 +147,7 @@
 			<OnMouseDown method="OnMouseDown"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -161,7 +172,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WeeklyRewardConfirmSelectionFrame" mixin="WeeklyRewardConfirmSelectionMixin">
+	<Frame name="WeeklyRewardConfirmSelectionTemplate" mixin="WeeklyRewardConfirmSelectionMixin" virtual="true">
 		<Size x="200" y="98"/>
 		<Frames>
 			<Frame parentKey="CurrencyFrame" inherits="CurrencyHorizontalLayoutFrameTemplate">
@@ -297,6 +308,7 @@
 					<Anchor point="TOPLEFT" x="56" y="-462"/>
 				</Anchors>
 			</Frame>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" drawLayer="BACKGROUND"/>
 			<Frame parentKey="ConcessionFrame" parentArray="Activities" mixin="WeeklyRewardsConcessionMixin">
 				<Size x="440" y="45"/>
 				<KeyValues>
@@ -342,13 +354,31 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="RewardsFrame" inherits="CurrencyHorizontalLayoutFrameTemplate" frameLevel="10">
+					<Frame parentKey="RewardsFrame" inherits="HorizontalLayoutFrame" frameLevel="10">
 						<KeyValues>
 							<KeyValue key="fixedHeight" value="24" type="number"/>
+							<KeyValue key="spacing" value="4" type="number"/>
+							<KeyValue key="expand" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="CENTER"/>
 						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="WEEKLY_REWARDS_GET_CONCESSION">
+									<Size y="24"/>
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="1" type="number"/>
+									</KeyValues>
+								</FontString>
+								<FontString parentKey="Text" inherits="GameFontHighlight">
+									<Size y="24"/>
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="2" type="number"/>
+									</KeyValues>
+								</FontString>
+							</Layer>
+						</Layers>
 					</Frame>
 					<Frame parentKey="UnselectedFrame" setAllPoints="true" frameLevel="11">
 						<Layers>
@@ -363,8 +393,9 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad method="OnLoad"/>
 					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
 			<Button parentKey="SelectRewardButton" inherits="UIPanelButtonTemplate" text="WEEKLY_REWARDS_SELECT_REWARD" frameLevel="600" hidden="true">

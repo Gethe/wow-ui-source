@@ -656,9 +656,11 @@ function MountJournal_SetSelected(selectedMountID, selectedSpellID)
 	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
 	
-	local numDisplayedMounts = C_MountJournal.GetNumDisplayedMounts();
-	local mountIndex = GetMountDisplayIndexByMountID(selectedMountID);
-	HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
+	local inView = MountJournal_GetMountButtonByMountID(selectedMountID) ~= nil;
+	if not inView then
+		local mountIndex = GetMountDisplayIndexByMountID(selectedMountID);
+		HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
+	end
 end
 
 function MountJournalMountButton_UseMount(mountID)

@@ -136,9 +136,9 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			ItemTextMaterialBotLeft:Hide();
 			ItemTextMaterialBotRight:Hide();
 			ItemTextFramePageBg:Show();
-			ItemTextFramePageBg:SetTexture("Interface\\QuestFrame\\QuestBG");
-			ItemTextFramePageBg:SetWidth(512);
-			ItemTextFramePageBg:SetHeight(543);
+			ItemTextFramePageBg:SetAtlas("QuestBG-Parchment");
+			ItemTextFramePageBg:SetWidth(299);
+			ItemTextFramePageBg:SetHeight(357);
 		elseif ( material == "ParchmentLarge" ) then
 			ItemTextMaterialTopLeft:Hide();
 			ItemTextMaterialTopRight:Hide();

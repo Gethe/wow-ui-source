@@ -81,17 +81,22 @@ local WeeklyRewards =
 			},
 		},
 		{
-			Name = "HasRewards",
+			Name = "HasAvailableRewards",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "hasRewards", Type = "bool", Nilable = false },
+				{ Name = "hasAvailableRewards", Type = "bool", Nilable = false },
 			},
 		},
 		{
-			Name = "RequestRewards",
+			Name = "HasGeneratedRewards",
 			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasGeneratedRewards", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

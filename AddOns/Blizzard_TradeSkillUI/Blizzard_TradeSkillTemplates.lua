@@ -21,10 +21,32 @@ function OptionalReagentButtonMixin:SetGlowing(isGlowing, progress)
 	end
 end
 
-function OptionalReagentButtonMixin:SetReagentText(name, quality)
-	local itemQualityColor = ITEM_QUALITY_COLORS[quality or Enum.ItemQuality.Common];
+function OptionalReagentButtonMixin:SetReagentQuality(quality)
+	local itemQualityColor = ITEM_QUALITY_COLORS[quality];
 	self.Name:SetTextColor(itemQualityColor.r, itemQualityColor.g, itemQualityColor.b);
-	self.Name:SetText(name);
-	
+	self.IconBorder:Show();
 	SetItemButtonQuality(self, quality);
+end
+
+function OptionalReagentButtonMixin:SetReagentColor(color)
+	self.Name:SetTextColor(color:GetRGB());
+	self.IconBorder:Hide();
+end
+
+function OptionalReagentButtonMixin:SetReagentText(name)
+	self.Name:SetText(name);
+end
+
+function OptionalReagentButtonMixin:SetLocked(locked, lockedSkillRank)
+	self.locked = locked;
+	self.lockedSkillRank = lockedSkillRank;
+	self:SetEnabled(not locked);
+end
+
+function OptionalReagentButtonMixin:IsLocked()
+	return self.locked;
+end
+
+function OptionalReagentButtonMixin:GetLockedSkillRank()
+	return self.lockedSkillRank;
 end

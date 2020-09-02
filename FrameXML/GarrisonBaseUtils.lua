@@ -356,15 +356,21 @@ function ShowGarrisonLandingPage(garrTypeID)
 	if (not garrTypeID) then
 		garrTypeID = C_Garrison.GetLandingPageGarrisonType();
 	end
+
 	if (garrTypeID == 0) then
 		return;
 	end
+
 	if (GarrisonLandingPage and GarrisonLandingPage:IsShown() and GarrisonLandingPage.garrTypeID == garrTypeID) then
 		return;
 	end
+
 	if (not GarrisonMissionFrame) then
 		Garrison_LoadUI();
 	end
+
+GarrisonLandingPage.Report.Title:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
+
 	if (garrTypeID == Enum.GarrisonType.Type_6_0) then
 		GarrisonLandingPage.Report.Title:SetText(GARRISON_LANDING_PAGE_TITLE);
 		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0);
@@ -385,6 +391,7 @@ function ShowGarrisonLandingPage(garrTypeID)
 			end
 		end
 
+		GarrisonLandingPage.Report.Title:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
 		GarrisonLandingPage.Report.Title:SetText(pageTitle);
 		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_9_0);
 	else

@@ -73,6 +73,12 @@
 						<Anchor point="LEFT" relativeTo="$parentHeader" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentNewcomerHint" inherits="ChatFontNormal" parentKey="NewcomerHint">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHeader"/>
+					</Anchors>
+					<Color color="DISABLED_FONT_COLOR"/>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>

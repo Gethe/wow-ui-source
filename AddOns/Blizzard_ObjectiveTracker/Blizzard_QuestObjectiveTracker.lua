@@ -1,24 +1,32 @@
-
 QUEST_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("QUEST_TRACKER_MODULE");
-QUEST_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST;
-QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED + OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED;
-QUEST_TRACKER_MODULE.usedBlocks = { };
+QUEST_TRACKER_MODULE.updateReasonModule = 	OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST +
+											OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP;
 
-QUEST_TRACKER_MODULE.buttonOffsets = {
+QUEST_TRACKER_MODULE.updateReasonEvents = 	OBJECTIVE_TRACKER_UPDATE_QUEST +
+											OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED +
+											OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED;
+
+local QUEST_TRACKER_MODULE_BLOCK_TEMPLATE = "ObjectiveTrackerBlockTemplate";
+
+QUEST_TRACKER_MODULE:AddButtonOffsets(QUEST_TRACKER_MODULE_BLOCK_TEMPLATE, {
 	groupFinder = { 7, 4 },
 	useItem = { 3, 1 },
-};
+});
 
-QUEST_TRACKER_MODULE.paddingBetweenButtons = 2;
+QUEST_TRACKER_MODULE:AddPaddingBetweenButtons(QUEST_TRACKER_MODULE_BLOCK_TEMPLATE, 2);
 
 -- because this header is shared, on finishing its anim it has to update all the modules that use it
 QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, TRACKER_HEADER_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED);
 
 function QUEST_TRACKER_MODULE:OnFreeBlock(block)
-	QuestObjectiveReleaseBlockButton_Item(block);
-	QuestObjectiveReleaseBlockButton_FindGroup(block);
+	if block.blockTemplate == QUEST_TRACKER_MODULE_BLOCK_TEMPLATE then
+		QuestObjectiveReleaseBlockButton_Item(block);
+		QuestObjectiveReleaseBlockButton_FindGroup(block);
 
-	block.timerLine	= nil;
+		block.timerLine	= nil;
+	else
+		AutoQuestPopupTracker_OnFreeBlock(block);
+	end
 end
 
 function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
@@ -447,6 +455,8 @@ end
 
 function QUEST_TRACKER_MODULE:Update()
 	self:BeginLayout();
+
+	AutoQuestPopupTracker_Update(self);
 
 	local _, instanceType = IsInInstance();
 	if ( instanceType == "arena" ) then

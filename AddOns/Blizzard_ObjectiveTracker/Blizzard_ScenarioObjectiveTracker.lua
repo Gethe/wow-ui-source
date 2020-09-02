@@ -3,7 +3,6 @@ SCENARIO_CONTENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("SCENARIO_
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO;
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS;
 SCENARIO_CONTENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader, TRACKER_HEADER_SCENARIO, nil);	-- never anim-in the header
-SCENARIO_CONTENT_TRACKER_MODULE.blockOffsetX = -20;
 SCENARIO_CONTENT_TRACKER_MODULE.fromHeaderOffsetY = -2;
 SCENARIO_CONTENT_TRACKER_MODULE.ShowCriteria = C_Scenario.ShouldShowCriteria();
 
@@ -11,11 +10,10 @@ SCENARIO_CONTENT_TRACKER_MODULE.ShowCriteria = C_Scenario.ShouldShowCriteria();
 
 SCENARIO_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("SCENARIO_TRACKER_MODULE");
 SCENARIO_TRACKER_MODULE:SetSharedHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader);	-- The module still needs a header
-SCENARIO_TRACKER_MODULE.usedBlocks = { };
 SCENARIO_TRACKER_MODULE.freeLines = { };
 SCENARIO_TRACKER_MODULE.lineTemplate = "ObjectiveTrackerCheckLineTemplate";
 SCENARIO_TRACKER_MODULE.lineSpacing = 12;
-SCENARIO_TRACKER_MODULE.blockOffsetY = -1;
+SCENARIO_TRACKER_MODULE:AddBlockOffset(SCENARIO_TRACKER_MODULE.blockTemplate, 0, -1);
 SCENARIO_TRACKER_MODULE.fromHeaderOffsetY = -1;
 SCENARIO_TRACKER_MODULE.usedProgressBars = { };
 SCENARIO_TRACKER_MODULE.freeProgressBars = { };
@@ -23,6 +21,7 @@ SCENARIO_TRACKER_MODULE.freeProgressBars = { };
 function SCENARIO_TRACKER_MODULE:GetBlock()
 	-- just 1 block for scenario objectives
 	local block = ScenarioObjectiveBlock;
+	block.blockTemplate = self.blockTemplate;
 	block.used = true;
 	block.height = 0;
 	block.currentLine = nil;

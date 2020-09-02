@@ -1,222 +1,78 @@
-function CreditsFrame_OnLoad(self)
-	self.creditsType = 1;
-	self.maxCreditsType = 2;
-end
+CreditsFrameMixin = {};
 
-function CreditsFrame_OnShow(self)
+function CreditsFrameMixin:OnShow()
 	StopGlueAmbience();
-	CreditsFrame.creditsType = GetClientDisplayExpansionLevel();
-	CreditsFrame.maxCreditsType = CreditsFrame.creditsType;
-	CreditsFrame_Update(self);
+	self.expansion = GetClientDisplayExpansionLevel();
+	self.maxExpansion = LE_EXPANSION_LEVEL_CURRENT;
+	self:Update();
 end
 
-function CreditsFrame_OnHide(self)
+function CreditsFrameMixin:OnHide()
+	self.ExpansionList:Hide();
 	ShowCursor();
 end
 
-function CreditsFrame_Update(self)
-	PlayGlueMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, CreditsFrame.creditsType));
-	local expansionInfo = GetExpansionDisplayInfo(CreditsFrame.creditsType);
+function CreditsFrameMixin:Update()
+	PlayGlueMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, self.expansion));
+	local expansionInfo = GetExpansionDisplayInfo(self.expansion);
 	if expansionInfo then
-		CreditsLogo:SetTexture(expansionInfo.logo);
+		self.Logo:SetTexture(expansionInfo.logo);
 	end
 
-	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
-	CreditsScrollFrame:SetVerticalScroll(0);
-	CreditsScrollFrame.scroll = 0;
-	CreditsScrollFrame.scrollMax = CreditsScrollFrame:GetVerticalScrollRange() + 768;
-	local artInfo = SafeGetExpansionData(CREDITS_ART_INFO, CreditsFrame.creditsType);
-	self.artCount = #artInfo;
-	self.currentArt = 0;
-	self.fadingIn = nil;
-	self.fadingOut = nil;
-	self.cacheArt = 0;
-	self.cacheIndex = 1;
-	self.cacheElapsed = 0;
-	self.alphaIn = 0;
-	self.alphaOut = 0;
+	self:SetSpeed(CREDITS_SCROLL_RATE_PLAY);
+	self.ScrollFrame:SetVerticalScroll(0);
+	self.ScrollFrame.scroll = 0;
+	self.ScrollFrame:UpdateMax();
 
-	for i=1, NUM_CREDITS_ART_TEXTURES_HIGH, 1 do
-		for j=1, NUM_CREDITS_ART_TEXTURES_WIDE, 1 do
-			_G["CreditsArtAlt"..(((i - 1) * NUM_CREDITS_ART_TEXTURES_WIDE) + j)]:Hide();
-			_G["CreditsArtCache"..(((i - 1) * NUM_CREDITS_ART_TEXTURES_WIDE) + j)]:SetAlpha(0.005);
-		end
-	end
-
-	CreditsFrame_CacheTextures(self, 1);
+	self:UpdateArt();
 
 	-- Set Credits Text
-	CreditsText:SetText(GetCreditsText(CreditsFrame.creditsType));
-
-	-- Set Switch Button Text
-	local creditsType = CreditsFrame.creditsType;
-	if ( creditsType < CreditsFrame.maxCreditsType ) then
-		CreditsFrameSwitchButton1:Show();
-		CreditsFrameSwitchButton1:SetText(CREDITS_TITLES[creditsType + 1]);
-		CreditsFrameSwitchButton1:SetID(creditsType + 1);
-	else
-		CreditsFrameSwitchButton1:Hide();
-	end
-
-	if ( creditsType > 0 ) then
-		CreditsFrameSwitchButton2:Show();
-		CreditsFrameSwitchButton2:SetText(CREDITS_TITLES[creditsType - 1]);
-		CreditsFrameSwitchButton2:SetID(creditsType - 1);
-	else
-		CreditsFrameSwitchButton2:Hide();
-	end
+	self.ScrollFrame.Text:SetText(GetCreditsText(self.expansion));
 end
 
-function CreditsFrame_Switch(self, buttonID)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-	CreditsFrame.creditsType = buttonID;
-	CreditsFrame_Update(CreditsFrame);
+function CreditsFrameMixin:Switch(expansion)
+	self.expansion = expansion;
+	self:Update();
 end
 
-local function IsValidTextureIndex(info, index)
-	return info.maxTexIndex == nil or index <= info.maxTexIndex;
+function CreditsFrameMixin:UpdateArt()
+
+	self.KeyArt:ClearAllPoints();
+	local keyArt = ("CreditsScreen-Keyart-%d"):format(self.expansion);
+	local info = C_Texture.GetAtlasInfo(keyArt);
+	if (info) then
+		local x = -(self:GetRight() - self.ScrollFrame:GetLeft() + 100) / 2;
+		self.KeyArt:SetPoint("TOP", self, "TOP", x, -50);
+		self.KeyArt:SetAtlas(keyArt, true);
+		self.KeyArt:SetScale((GetScreenHeight() - 120) / info.height);
+	end
+
+	-- The following anchors the background textures to the entire screen regardless of GlueParent
+	local topParent = GlueParent:GetParent();
+	local backgroundTile = ("CreditsScreen-Background-%d"):format(self.expansion);
+	self.Background:SetAtlas(backgroundTile, true);
+	self.Background:ClearAllPoints();
+	self.Background:SetAllPoints(topParent);
+
+	self.UpperGradient:ClearAllPoints();
+	self.UpperGradient:SetPoint("TOP", topParent, "TOP");
+	self.UpperGradient:SetPoint("LEFT", topParent, "LEFT");
+	self.UpperGradient:SetPoint("RIGHT", topParent, "RIGHT");
+
+	self.LowerGradient:ClearAllPoints();
+	self.LowerGradient:SetPoint("BOTTOM", topParent, "BOTTOM");
+	self.LowerGradient:SetPoint("LEFT", topParent, "LEFT");
+	self.LowerGradient:SetPoint("RIGHT", topParent, "RIGHT");
+
 end
 
-local function CreateCreditsTextureTilePath(self, info, textureIndex)
-	local path = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType).path;
-	if path then
-		return string.format("Interface\\Glues\\Credits\\%s\\%s%d", path, info.file, textureIndex);
-	else
-		return string.format("Interface\\Glues\\Credits\\%s%d", info.file, textureIndex);
-	end
-end
-
-function CreditsFrame_SetArtTextures(self, textureName, index, alpha)
-	local info = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[index];
-	if ( not info ) then
-		return;
-	end
-
-	local texture;
-	local texIndex = 1;
-	local width, height;
-	_G[textureName..1]:SetPoint("TOPLEFT", "CreditsFrame", "TOPLEFT", info.offsetx, info.offsety - 128);
-	for i=1, NUM_CREDITS_ART_TEXTURES_HIGH, 1 do
-		height = info.h - ((i - 1) * 256);
-		if ( height > 256 ) then
-			height = 256;
-		end
-		for j=1, NUM_CREDITS_ART_TEXTURES_WIDE, 1 do
-			texture = _G[textureName..(((i - 1) * NUM_CREDITS_ART_TEXTURES_WIDE) + j)];
-			width = info.w - ((j - 1) * 256);
-			if ( width > 256 ) then
-				width = 256;
-			end
-			if ( (width <= 0) or (height <= 0) ) then
-				texture:Hide();
-			else
-				if (IsValidTextureIndex(info, texIndex)) then
-					local tilePath = CreateCreditsTextureTilePath(self, info, texIndex);
-					texture:SetTexture(tilePath);
-					texture:SetWidth(width);
-					texture:SetHeight(height);
-					texture:SetAlpha(alpha);
-					texture:Show();
-				end
-
-				texIndex = texIndex + 1;
-			end
-		end
-	end
-end
-
-function CreditsFrame_CacheTextures(self, index)
-	self.cacheArt = index;
-	self.cacheIndex = 1;
-	self.cacheElapsed = 0;
-
-	local info = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[index];
-	if ( not info ) then
-		return;
-	end
-
-	local tilePath = CreateCreditsTextureTilePath(self, info, 1);
-	CreditsArtCache1:SetTexture(tilePath);
-end
-
-function CreditsFrame_UpdateCache(self)
-	if ( self.cacheIndex >= (NUM_CREDITS_ART_TEXTURES_WIDE * NUM_CREDITS_ART_TEXTURES_HIGH) ) then
-		return;
-	end
-	if ( self.cacheElapsed < CACHE_WAIT_TIME ) then
-		return;
-	end
-
-	self.cacheElapsed = self.cacheElapsed - CACHE_WAIT_TIME;
-	self.cacheIndex = self.cacheIndex + 1;
-
-	local info = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[self.cacheArt];
-	if ( not info ) then
-		return;
-	end
-
-	if (IsValidTextureIndex(info, self.cacheIndex)) then
-		local tilePath = CreateCreditsTextureTilePath(self, info, self.cacheIndex);
-		_G["CreditsArtCache"..self.cacheIndex]:SetTexture(tilePath);
-	end
-end
-
-function CreditsFrame_UpdateArt(self, index, elapsed)
-	if ( index > self.artCount ) then
-		return;
-	end
-
-	if ( index == self.currentArt ) then
-		if ( self.fadingOut ) then
-			self.alphaOut = max(self.alphaOut - (CREDITS_FADE_RATE * elapsed), 0);
-
-			for i=1, NUM_CREDITS_ART_TEXTURES_HIGH, 1 do
-				for j=1, NUM_CREDITS_ART_TEXTURES_WIDE, 1 do
-					_G["CreditsArtAlt"..(((i - 1) * NUM_CREDITS_ART_TEXTURES_WIDE) + j)]:SetAlpha(self.alphaOut);
-				end
-			end
-
-			if ( self.alphaOut <= 0 ) then
-				self.fadingOut = nil;
-				CreditsFrame_CacheTextures(self, self.currentArt + 1);
-			end
-		end
-
-		if ( self.fadingIn ) then
-			local maxAlpha = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[self.currentArt].maxAlpha;
-			self.alphaIn = min(self.alphaIn + (CREDITS_FADE_RATE * elapsed), maxAlpha);
-			for i=1, NUM_CREDITS_ART_TEXTURES_HIGH, 1 do
-				for j=1, NUM_CREDITS_ART_TEXTURES_WIDE, 1 do
-					_G["CreditsArt"..(((i - 1) * NUM_CREDITS_ART_TEXTURES_WIDE) + j)]:SetAlpha(self.alphaIn);
-				end
-			end
-
-			if ( self.alphaIn >= maxAlpha ) then
-				self.fadingIn = nil;
-			end
-		end
-		return;
-	end
-
-	if ( self.currentArt > 0 ) then
-		self.fadingOut = 1;
-		self.alphaOut = SafeGetExpansionData(CREDITS_ART_INFO, self.creditsType)[self.currentArt].maxAlpha;
-		CreditsFrame_SetArtTextures(self, "CreditsArtAlt", self.currentArt, self.alphaOut);
-	end
-
-	self.fadingIn = 1;
-	self.alphaIn = 0;
-	self.currentArt = index;
-	CreditsFrame_SetArtTextures(self, "CreditsArt", index, self.alphaIn);
-end
-
-function CreditsFrame_SetSpeed(speed)
+function CreditsFrameMixin:SetSpeed(speed)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	CREDITS_SCROLL_RATE = speed;
-	CreditsFrame_UpdateSpeedButtons();
+	self:UpdateSpeedButtons();
 end
 
-function CreditsFrame_SetSpeedButtonActive(button, active)
+function CreditsFrameMixin:SetSpeedButtonActive(button, active)
 	if ( active ) then
 		button:LockHighlight();
 		button:GetHighlightTexture():SetAlpha(0.5);
@@ -226,7 +82,7 @@ function CreditsFrame_SetSpeedButtonActive(button, active)
 	end
 end
 
-function CreditsFrame_UpdateSpeedButtons()
+function CreditsFrameMixin:UpdateSpeedButtons()
 	local activeButton;
 	if ( CREDITS_SCROLL_RATE == CREDITS_SCROLL_RATE_REWIND ) then
 		activeButton = CreditsFrameRewindButton;
@@ -238,40 +94,121 @@ function CreditsFrame_UpdateSpeedButtons()
 		activeButton = CreditsFrameFastForwardButton;
 	end
 
-	CreditsFrame_SetSpeedButtonActive(CreditsFrameRewindButton, activeButton == CreditsFrameRewindButton);
-	CreditsFrame_SetSpeedButtonActive(CreditsFramePauseButton, activeButton ==  CreditsFramePauseButton);
-	CreditsFrame_SetSpeedButtonActive(CreditsFramePlayButton, activeButton == CreditsFramePlayButton);
-	CreditsFrame_SetSpeedButtonActive(CreditsFrameFastForwardButton, activeButton == CreditsFrameFastForwardButton);
+	self:SetSpeedButtonActive(CreditsFrameRewindButton, activeButton == CreditsFrameRewindButton);
+	self:SetSpeedButtonActive(CreditsFramePauseButton, activeButton ==  CreditsFramePauseButton);
+	self:SetSpeedButtonActive(CreditsFramePlayButton, activeButton == CreditsFramePlayButton);
+	self:SetSpeedButtonActive(CreditsFrameFastForwardButton, activeButton == CreditsFrameFastForwardButton);
 end
 
-function CreditsFrame_OnUpdate(self, elapsed)
-	if ( not CreditsScrollFrame:IsShown() ) then
+function CreditsFrameMixin:OnUpdate(elapsed)
+	if ( not self.ScrollFrame:IsShown() ) then
 		return;
 	end
 
-	CreditsScrollFrame.scroll = CreditsScrollFrame.scroll + (CREDITS_SCROLL_RATE * elapsed);
-	CreditsScrollFrame.scroll = max(CreditsScrollFrame.scroll, 1);
+	self.ScrollFrame.scroll = self.ScrollFrame.scroll + (CREDITS_SCROLL_RATE * elapsed);
+	self.ScrollFrame.scroll = max(self.ScrollFrame.scroll, 1);
 
-	if ( CreditsScrollFrame.scroll >= CreditsScrollFrame.scrollMax ) then
+	if ( self.ScrollFrame.scroll >= self.ScrollFrame.scrollMax ) then
 		GlueParent_CloseSecondaryScreen();
 		return;
 	end
 
-	self.cacheElapsed = self.cacheElapsed + elapsed;
-	CreditsFrame_UpdateCache(self);
-
-	CreditsScrollFrame:SetVerticalScroll(CreditsScrollFrame.scroll);
-	CreditsFrame_UpdateArt(self, ceil(self.artCount * (CreditsScrollFrame.scroll / CreditsScrollFrame.scrollMax)), elapsed);
+	self.ScrollFrame:SetVerticalScroll(self.ScrollFrame.scroll);
 end
 
-function CreditsFrame_OnScrollRangeChanged()
-	CreditsScrollFrame.scrollMax = CreditsScrollFrame:GetVerticalScrollRange() + 768;
-end
-
-function CreditsFrame_OnKeyDown(self, key)
+function CreditsFrameMixin:OnKeyDown(key)
 	if ( key == "ESCAPE" ) then
-		GlueParent_CloseSecondaryScreen();
+		if self.ExpansionList:IsShown() then
+			self.ExpansionList:Hide();
+		else
+			GlueParent_CloseSecondaryScreen();
+		end
 	elseif ( key == "PRINTSCREEN" ) then
 		Screenshot();
 	end
+end
+
+function CreditsFrameMixin:ToggleExpansionList()
+	if not self.ExpansionList:IsShown() then
+		self.ExpansionList:OpenExpansionList(self.expansion, self.maxExpansion);
+	else
+		self.ExpansionList:Hide();
+	end
+end
+
+CreditsScrollFrameMixin = {}
+
+function CreditsScrollFrameMixin:OnScrollRangeChanged()
+	self:UpdateMax();
+end
+
+function CreditsScrollFrameMixin:UpdateMax()
+	self.scrollMax = self:GetVerticalScrollRange() + 768;
+end
+
+CreditsExpansionListMixin = {}
+
+function CreditsExpansionListMixin:OnOKClicked()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	CreditsFrame:Switch(self.expansion);
+	self:Hide();
+end
+
+function CreditsExpansionListMixin:OnCancelClicked()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	self:Hide();
+end
+
+function CreditsExpansionListMixin:SetSelectedExpansion(expansion)
+	for button in self.buttonPool:EnumerateActive() do
+		button.Selection:SetShown(expansion == button:GetID());
+	end
+	self.expansion = expansion;
+end
+
+function CreditsExpansionListMixin:OpenExpansionList(selectedExpansion, maxExpansion)
+	self.expansion = selectedExpansion;
+	if not self.buttonPool then
+		self.buttonPool = CreateFramePool("BUTTON", self, "CreditsFrameExpansionsButtonTemplate");
+	end
+
+	self.buttonPool:ReleaseAll();
+
+	local prevButton = nil;
+	local minWidth = 200;
+	local maxWidth = minWidth;
+	local buttonSpacing = 5;
+	for i=0,maxExpansion do
+		local button = self.buttonPool:Acquire();
+		button:SetID(i);
+		if i == 0 then
+			button:SetPoint("TOP", self, "TOP", 0, -35);
+			button:SetText(WORLD_OF_WARCRAFT);
+		else
+			button:SetPoint("TOP", prevButton, "BOTTOM", 0, -buttonSpacing);
+			button:SetText(_G["EXPANSION_NAME" .. i]);
+		end
+		local width = button:GetTextWidth();
+		maxWidth = math.max(width, maxWidth);
+		button:SetWidth(width);
+		button:Show();
+		prevButton = button;
+	end
+	for button in self.buttonPool:EnumerateActive() do
+		button:SetWidth(maxWidth);
+	end
+
+	local minOKCancelButtonWidth = 80;
+	local buttonBorderWidth = 10;
+	local buttonTextWidth = math.max(minOKCancelButtonWidth, math.max(self.OKButton:GetTextWidth(), self.CancelButton:GetTextWidth())) + buttonBorderWidth * 2;
+	self.OKButton:SetWidth(buttonTextWidth);
+	self.CancelButton:SetWidth(buttonTextWidth);
+
+	local frameWidth = math.max(maxWidth, 2 * buttonTextWidth) + 60;
+
+	self:SetWidth(frameWidth);
+	self:SetHeight((maxExpansion + 1) * (prevButton:GetHeight() + buttonSpacing) + 100);
+
+	self:SetSelectedExpansion(self.expansion);
+	self:Show();
 end

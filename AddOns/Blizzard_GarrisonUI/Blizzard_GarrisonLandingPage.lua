@@ -97,7 +97,7 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		if textureKit then
 			self.Report.Background:ClearAllPoints();
 			self.Report.Background:SetPoint("BOTTOM", GarrisonLandingPageReport, "BOTTOMLEFT", 190, 110);
-			self.Report.Background:SetAtlas(("ShadowlandsMissionsLandingPage-Background-%s"):format(textureKit));
+			self.Report.Background:SetAtlas(("ShadowlandsMissionsLandingPage-Background-%s"):format(textureKit), true);
 		end
 	end
 

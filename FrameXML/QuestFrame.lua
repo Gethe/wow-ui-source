@@ -178,14 +178,17 @@ end
 
 local function QuestFrameProgressPanel_SetupBG(self)
 	local material, isDefaultMaterial = QuestFrame_GetMaterial();
-	if isDefaultMaterial then
+	if ( isDefaultMaterial ) then
 		local theme = C_QuestLog.GetQuestDetailsTheme(GetQuestID());
-		if theme and theme.background then
+		if ( theme and theme.background ) then
 			self.Bg:SetAtlas(theme.background, true);
 			return material;
 		end
 	end
 
+	local defaultXSize = 510;
+	local defaultYSize = 620;
+	self.Bg:SetSize(defaultXSize, defaultYSize);
 	self.Bg:SetTexture("Interface/QuestFrame/QuestBG");
 	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	return material;
@@ -401,6 +404,7 @@ function QuestFrame_OnHide()
 		QuestFrame.dialog = nil;
 	end
 	if ( QuestFrame.autoQuest ) then
+		AutoQuestPopupTracker_RemovePopUp(GetQuestID());
 		QuestFrameDeclineButton:Show();
 		QuestFrameCloseButton:Enable();
 		PlayAutoAcceptQuestSound();

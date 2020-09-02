@@ -86,7 +86,7 @@ TutorialData.LevelAbilitiesTable = {
 		686,	-- Start with Shadow Bolt
 		172,	-- Corruption, level 2
 		688,	-- Summon Imp, level 3
-		317138,	-- Unending Resolve, level 4
+		104773,	-- Unending Resolve, level 4
 		5782,	-- Fear, level 5
 		702,	-- Curse of Weakness, level 6
 		6201,	-- Create Healthstone, level 7
@@ -191,7 +191,7 @@ TutorialData.ClassData = {
 		resourceBuilderSpellID = 1752,		-- Sinister Strike
 		resourceSpenderSpellID = 196819,	-- Eviscerate
 		resource = Enum.PowerType.ComboPoints;
-		resourceGateAmount = 45,
+		resourceGateAmount = 3,
 		warningBuilderString = NPEV2_ENHANCED_COMBAT_TACTICS_WARNING;
 		warningSpenderString = NPEV2_ENHANCED_COMBAT_TACTICS_WARNING;
 

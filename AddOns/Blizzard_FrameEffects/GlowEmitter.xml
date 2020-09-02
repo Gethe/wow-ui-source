@@ -33,6 +33,11 @@
 				<Alpha fromAlpha=".7" toAlpha="1" duration="1" order="1" smoothing="IN"/>
 				<Alpha fromAlpha="1" toAlpha=".7" duration="1" order="2" smoothing="IN"/>
 			</AnimationGroup>
+
+			<AnimationGroup parentKey="NPE_RedButton_GreenGlow" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
+				<Alpha fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
 		</Animations>
 	</Frame>
 </Ui>

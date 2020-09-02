@@ -3,13 +3,14 @@
 	<Script file="AnimaDiversionDataProvider.lua"/>
 	<Frame name="AnimaDiversionPinTemplate" mixin="AnimaDiversionPinMixin" enableMouse="true" virtual="true">
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="0">
+			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon"/>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="IconSelect"/>
-				<Texture parentKey="IconReady"/>
-				<Texture parentKey="IconReinforce"/>
+				<Texture parentKey="IconBorder"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconDisabledOverlay" hidden="true"/>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -25,20 +26,70 @@
 			</ModelScene>
 		</Frames>
 	</Frame>
-	<Frame name="AnimaDiversionConnectionTemplate" virtual="true">
+
+	<Frame name="AnimaDiversionConnectionTemplate" mixin="AnimaDiversionConnectionMixin" ignoreParentScale="true" virtual="true">
+		<Size x="64" y="64"/>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Line parentKey="Fill" atlas="_AnimaChannel-Channel-Line-horizontal" alpha="1" />
+			<Layer level="BACKGROUND">
+				<Line parentKey="Line" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="AnimaLink1" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AnimaLink2" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AnimaLinkBlack" atlas="animachannel-link-anima-black" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="AnimaChannel-Line-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="AnimaLink1" />
+						<MaskedTexture childKey="AnimaLink2" />
+						<MaskedTexture childKey="AnimaLinkBlack" />
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
-				<Alpha parentKey="Alpha" childKey="Fill" duration=".15" fromAlpha="0" toAlpha=".85" order="1"/>
-				<LineScale parentKey="Scale" childKey="Fill" smoothing="IN" duration=".15" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="1" y="0"/>
-					</Origin>
-				</LineScale>
+			<AnimationGroup parentKey="AlphaAnim" parentArray="animationGroups" looping="REPEAT">
+				<Alpha childkey="AnimaLink1" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="AnimaLink1" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TranslateAnim1" parentArray="animationGroups" looping="REPEAT">
+				<TextureCoordTranslation childKey="AnimaLink1" duration="4" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TranslateAnim2" parentArray="animationGroups" looping="REPEAT">
+				<TextureCoordTranslation childKey="AnimaLink2" duration="2" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TranslateAnim3" parentArray="animationGroups" looping="REPEAT">
+				<TextureCoordTranslation childKey="AnimaLinkBlack" duration="3" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RotateAnim1" parentArray="animationGroups" looping="REPEAT">
+				<Rotation childKey="AnimaLink1" duration="32" order="1" degrees="2" />
+				<Rotation childKey="AnimaLink1" duration="32" order="2" degrees="-2" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RotateAnim2" parentArray="animationGroups" looping="REPEAT">
+				<Rotation childKey="AnimaLink2" duration="16" order="1" degrees="-2" />
+				<Rotation childKey="AnimaLink2" duration="16" order="2" degrees="2" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RotateAnim3" parentArray="animationGroups" looping="REPEAT">
+				<Rotation childKey="AnimaLinkBlack" duration="24" order="1" degrees="2" />
+				<Rotation childKey="AnimaLinkBlack" duration="24" order="2" degrees="-2" />
 			</AnimationGroup>
 		</Animations>
 	</Frame>

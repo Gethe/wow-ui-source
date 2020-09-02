@@ -1560,6 +1560,7 @@ function PvpTalentFrameMixin:SelectSlot(slot)
 	self.selectedSlotIndex = slot.slotIndex;
 	slot.Arrow:Show();
 	HybridScrollFrame_SetOffset(self.TalentList.ScrollFrame, 0);
+	self.TalentList.ScrollFrame.ScrollBar:SetValue(0);
 	self.TalentList:Update();
 	self.TalentList:Show();
 end

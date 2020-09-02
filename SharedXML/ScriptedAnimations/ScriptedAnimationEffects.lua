@@ -300,7 +300,18 @@ local RunecarvingRuneBirthExtension = {
 	},
 };
 
+local AnimaDiversionHoldAnimation = {
+	animation = 158,
+};
+
 local ScriptAnimationTableExtension = {
+	[22] = AnimaDiversionHoldAnimation,
+	[24] = AnimaDiversionHoldAnimation,
+	[27] = AnimaDiversionHoldAnimation,
+	[28] = AnimaDiversionHoldAnimation,
+	[31] = AnimaDiversionHoldAnimation,
+	[33] = AnimaDiversionHoldAnimation,
+
 	[52] = {
 		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_MAIN_WINDOW_OPEN_LOOP,
 	},

@@ -1,6 +1,6 @@
 
 local function GetCurrentTier(talents)
-	local currentTier = 1;
+	local currentTier = 0;
 	for i, talentInfo in ipairs(talents) do
 		if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave then
 			currentTier = currentTier + 1;
@@ -22,17 +22,36 @@ local featureBorderTextureKitRegions = {
 	["Border"] = "CovenantSanctum-Icon-Border-%s",
 }
 local reservoirTextureKitRegions = {
-	["RankBorder"] = "CovenantSanctum-Resevoir-RankBorder-%s",
+	["Glow"] = "CovenantSanctum-Resevoir-Glow-%s",
 	["Background"] = "CovenantSanctum-Resevoir-Empty-%s",
 	["FillBackground"] = "CovenantSanctum-Resevoir-Full-%s",
 }
 local upgradeTextureKitRegions = {
 	["Border"] = "CovenantSanctum-Upgrade-Border-%s",
 }
+local bagsGlowTextureKitRegions = {
+	["Glow"] = "CovenantSanctum-Bag-Glow-%s",
+}
 
 local g_sanctumTextureKit;
 local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(g_sanctumTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+end
+
+local EFFECT_MISSILE = 1;
+local EFFECT_IMPACT = 2;
+local EFFECT_ANIMA_FULL = 3;
+
+local covenantSanctumEffectList = {
+	["Venthyr"] = { 103, 107, 111 },
+	["Kyrian"] = { 104, 108, 112 },
+	["NightFae"] = { 105, 109, 113 },
+	["Necrolord"] = { 106, 110, 114 },
+}
+
+local function GetEffectID(index)
+	local effectList = covenantSanctumEffectList[g_sanctumTextureKit];
+	return effectList and effectList[index];
 end
 
 CovenantSanctumUpgradesTabMixin = {};
@@ -45,6 +64,11 @@ local CovenantSanctumUpgradesEvents = {
 };
 
 function CovenantSanctumUpgradesTabMixin:OnLoad()
+	-- attach bags glow
+	self.BagsGlowFrame:SetParent(MicroButtonAndBagsBar);
+	self.BagsGlowFrame:SetAllPoints(MicroButtonAndBagsBar);
+	self.BagsGlowFrame:SetFrameLevel(MainMenuBarBackpackButton:GetFrameLevel() + 1);
+
 	self:SetUpCurrencies();
 end
 
@@ -67,15 +91,60 @@ end
 function CovenantSanctumUpgradesTabMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CovenantSanctumUpgradesEvents);
 	self.selectedTreeID = nil;
+	if self.animaGainEffect then
+		self.animaGainEffect:CancelEffect();
+	end
 end
 
 function CovenantSanctumUpgradesTabMixin:OnEvent(event, ...)
 	if event == "GARRISON_TALENT_UPDATE" then
 		self:Refresh();
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
-		self.ReservoirUpgrade:UpdateAnima();
-		self:UpdateCurrencies();
+		local currencyID, total = ...;
+		local animaCurrencyID = C_CovenantSanctumUI.GetAnimaInfo();
+		if currencyID == animaCurrencyID and total > self.ReservoirUpgrade:GetAnimaAmount() then
+			self:OnAnimaGained();
+		else
+			self:OnCurrencyUpdate();
+		end
 	end
+end
+
+function CovenantSanctumUpgradesTabMixin:OnAnimaGained()
+	local playMissile = MainMenuBarBackpackButton:IsVisible();
+	local effectID = playMissile and GetEffectID(EFFECT_MISSILE) or GetEffectID(EFFECT_IMPACT);
+	if not effectID then
+		self:OnCurrencyUpdate();
+		return;
+	end
+	local onEffectFinish = playMissile and GenerateClosure(self.OnAnimaGainEffectMissileFinished, self) or nil;
+	local onEffectResolution = GenerateClosure(self.OnAnimaGainEffectImpactFinished, self);
+	self.animaGainEffect = GlobalFXDialogModelScene:AddEffect(effectID, self.BagsGlowFrame, self.ReservoirUpgrade, onEffectFinish, onEffectResolution);
+	if playMissile then
+		self.BagsGlowFrame.Glow:SetAlpha(1);
+	else
+		self:OnCurrencyUpdate();
+	end
+end
+
+function CovenantSanctumUpgradesTabMixin:OnAnimaGainEffectMissileFinished(effectCount, cancelled)
+	if cancelled then
+		self.BagsGlowFrame.Anim:Stop();
+		self.BagsGlowFrame.Glow:SetAlpha(0);
+	else
+		self:OnCurrencyUpdate();
+		self.BagsGlowFrame.Anim:Play();
+	end
+end
+
+function CovenantSanctumUpgradesTabMixin:OnAnimaGainEffectImpactFinished(...)
+	self.animaGainEffect = nil;
+end
+
+function CovenantSanctumUpgradesTabMixin:OnCurrencyUpdate()
+	self.ReservoirUpgrade:UpdateAnima();
+	self:UpdateCurrencies();
+	self.TalentsList:Refresh();
 end
 
 function CovenantSanctumUpgradesTabMixin:Refresh()
@@ -114,7 +183,7 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 	tinsert(currencies, 1, animaCurrencyID);
 
 	local stride = #currencies;
-	local paddingX = 10;
+	local paddingX = 7;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
 	local initAnchor = nil;
 	local abbreviateCost = true;
@@ -148,6 +217,7 @@ function CovenantSanctumUpgradesTabMixin:SetUpTextureKits()
 
 		SetupTextureKit(self, mainTextureKitRegions);
 		SetupTextureKit(self.TalentsList, listTextureKitRegions);
+		SetupTextureKit(self.BagsGlowFrame, bagsGlowTextureKitRegions);
 
 		for i, frame in ipairs(self.Upgrades) do
 			frame:SetUpTextureKit();
@@ -214,7 +284,11 @@ function CovenantSanctumUpgradeTalentListMixin:Refresh()
 
 	self.Title:SetText(treeInfo.title);
 	local currentTier = GetCurrentTier(treeInfo.talents);
-	self.Tier:SetText("Tier "..currentTier);
+	if currentTier == 0 then
+		self.Tier:SetText(COVENANT_SANCTUM_TIER_INACTIVE);
+	else
+		self.Tier:SetFormattedText(COVENANT_SANCTUM_TIER, currentTier);
+	end
 	self.UpgradeButton:SetEnabled(self.upgradeTalentID ~= nil);
 end
 
@@ -244,12 +318,15 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 	local disabled = false;
 	local abbreviateCost = true;
 
+	local textColor = HIGHLIGHT_FONT_COLOR;
 	if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave then
 		self.UpgradeArrow:Hide();
-		self.InfoText:SetText(NORMAL_FONT_COLOR_CODE.."Known".."|r");
+		self.InfoText:SetText(COVENANT_SANCTUM_UPGRADE_ACTIVE);
+		textColor = NORMAL_FONT_COLOR;
 	elseif talentInfo.isBeingResearched then
 		self.UpgradeArrow:Hide();
-		self.InfoText:SetText(RED_FONT_COLOR_CODE.."Researching".."|r");
+		self.InfoText:SetText(COVENANT_SANCTUM_UPGRADE_ACTIVATING);
+		textColor = RED_FONT_COLOR;
 	elseif talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.Available then
 		self.UpgradeArrow:Show();
 		local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
@@ -265,12 +342,15 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 			self.InfoText:SetText(failureString or "");
 		end
 	end
+	self.InfoText:SetTextColor(textColor:GetRGB());
 
 	if disabled then
 		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, g_sanctumTextureKit);
 		self.Border:SetAtlas(atlas);
+		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	else
 		self.Border:SetAtlas("CovenantSanctum-Upgrade-Border-Available");
+		self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 	end
 	self.Icon:SetDesaturated(disabled);
 
@@ -397,21 +477,17 @@ function CovenantSanctumUpgradeReservoirMixin:SetUpTextureKit()
 end
 
 function CovenantSanctumUpgradeReservoirMixin:Refresh()
-	local treeInfo = C_Garrison.GetTalentTreeInfo(self.treeID);
-	if treeInfo then
-		local currentTier = GetCurrentTier(treeInfo.talents);
-		self.Tier:SetText(currentTier);
-		self.SelectedTexture:SetShown(self:IsSelected());
-		
-		self:UpdateAnima();
-	end
+	self.SelectedTexture:SetShown(self:IsSelected());
+	self:UpdateAnima();
 end
 
 function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo();
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(animaCurrencyID);
 	local value = currencyInfo and currencyInfo.quantity or 0;
+	self.value = value;
 
+	local isFull = false;
 	if value == 0 then
 		self.FillBackground:Hide();
 	else
@@ -420,6 +496,7 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 		if value >= maxDisplayableValue then
 			self.FillBackground:SetHeight(totalHeight);
 			self.FillBackground:SetTexCoord(0, 1, 0, 1);
+			isFull = true;
 		else
 			local usableHeight = 164;  -- orb portion of the artwork
 			local base = (totalHeight - usableHeight) / 2;
@@ -430,4 +507,15 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 			self.FillBackground:SetTexCoord(0, 1, coordTop, 1);
 		end
 	end
+
+	self.Glow:SetShown(isFull);
+	self.ModelScene:SetShown(isFull);
+	if isFull and not self.ModelScene:HasActiveEffects() then
+		local effectID = GetEffectID(EFFECT_ANIMA_FULL);
+		self.ModelScene:AddEffect(effectID, self);
+	end
+end
+
+function CovenantSanctumUpgradeReservoirMixin:GetAnimaAmount()
+	return self.value;
 end

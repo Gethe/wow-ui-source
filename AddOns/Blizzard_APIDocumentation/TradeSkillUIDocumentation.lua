@@ -197,8 +197,9 @@ local TradeSkillUI =
 			LiteralName = "NEW_RECIPE_LEARNED",
 			Payload =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "baseRecipeID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -285,6 +286,7 @@ local TradeSkillUI =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "requiredSkillRank", Type = "number", Nilable = false },
 				{ Name = "slotText", Type = "string", Nilable = true },
 				{ Name = "options", Type = "table", InnerType = "number", Nilable = false },
 			},

@@ -46,6 +46,15 @@ end
 function CharCustomizeParentFrameBaseMixin:SetCharacterSex(sexID)
 end
 
+function CharCustomizeParentFrameBaseMixin:OnButtonClick()
+end
+
+CharCustomizeBaseButtonMixin = {};
+
+function CharCustomizeBaseButtonMixin:OnBaseButtonClick()
+	CharCustomizeFrame:OnButtonClick();
+end
+
 CharCustomizeFrameWithTooltipMixin = {};
 
 function CharCustomizeFrameWithTooltipMixin:OnLoad()
@@ -708,6 +717,10 @@ end
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
 	self.parentFrame = parentFrame;
 	self:SetParent(parentFrame);
+end
+
+function CharCustomizeMixin:OnButtonClick()
+	self.parentFrame:OnButtonClick();
 end
 
 function CharCustomizeMixin:SetCustomizationChoice(optionID, choiceID)

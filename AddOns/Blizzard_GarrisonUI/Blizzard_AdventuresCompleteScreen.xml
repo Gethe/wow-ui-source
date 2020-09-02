@@ -15,7 +15,7 @@
 			
 			<Frame name="CombatLog" parentKey="AdventuresCombatLog" inherits="CombatLogTemplate" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-340" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-14" y="-4"/>
 				</Anchors>
 			</Frame>
 
@@ -123,7 +123,7 @@
 					<Button parentKey="SpeedButton" mixin="AdventuresCompleteScreenSpeedButtonMixin" inherits="UIPanelButtonTemplate" text="|A:Adventures-FFW:0:0:0:0|a">
 						<Size x="22" y="22"/>
 						<Anchors>
-							<Anchor point="LEFT" x="48" y="1"/>
+							<Anchor point="LEFT" x="60" y="1"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -161,7 +161,9 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow" alpha=".6">
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="BoardDropShadow" atlas="Adventures-Missions-Shadow" alpha=".6" >
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>

@@ -26,7 +26,6 @@
 ..\SharedXML\TabGroup.lua
 ..\SharedXML\SmoothStatusBar.lua
 ..\SharedXML\PredictedSetting.lua
-..\SharedXML\LayoutIndexManager.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\NineSlice.lua

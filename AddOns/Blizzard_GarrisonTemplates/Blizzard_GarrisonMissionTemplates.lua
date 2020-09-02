@@ -498,8 +498,9 @@ function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned)
 	end
 
 	local buttonFrame = self:GetStartMissionButtonFrame(missionPage);
-
-	missionPage.CostFrame:SetPoint("LEFT", buttonFrame, "LEFT", 50, 0);
+	
+	local leftAnchor = missionPage.CostFrame.leftAnchor or 50;
+	missionPage.CostFrame:SetPoint("LEFT", buttonFrame, "LEFT", leftAnchor, 0);
 	missionPage.CostFrame:SetPoint("RIGHT", buttonFrame, "CENTER");
 
 	if (baseCost > 0) then

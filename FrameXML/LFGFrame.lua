@@ -421,7 +421,7 @@ function LFG_EnableRoleButton(button)
 	end
 end
 
-function LFG_UpdateAvailableRoleButton( button, canBeRole )
+function LFG_UpdateAvailableRoleButton(button, canBeRole)
 	if (canBeRole) then
 		LFG_EnableRoleButton(button);
 	else
@@ -446,15 +446,15 @@ end
 
 function LFG_UpdateAllRoleCheckboxes()
 	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDQueueFrameRoleButtonTank, LFDQueueFrameRoleButtonHealer, LFDQueueFrameRoleButtonDPS, LFDQueueFrameRoleButtonLeader);
-
+	
 	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
 	if ( isBGRoleCheck ) then
 		local tank, healer, dps = GetPVPRoles();
 		LFDRoleCheckPopupRoleButtonTank.checkButton:SetChecked(tank);
 		LFDRoleCheckPopupRoleButtonHealer.checkButton:SetChecked(healer);
 		LFDRoleCheckPopupRoleButtonDPS.checkButton:SetChecked(dps);
-	else
-		LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS, nil);
+	elseif ( not LFDRoleCheckPopup:IsShown() ) then
+			LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS);
 	end
 
 	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFR, nil, LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);

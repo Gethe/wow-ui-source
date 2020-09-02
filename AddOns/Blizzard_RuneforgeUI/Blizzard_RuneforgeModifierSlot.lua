@@ -36,6 +36,10 @@ function RuneforgeModifierSlotMixin:OnLeave()
 end
 
 function RuneforgeModifierSlotMixin:OnClick(buttonName)
+	if self:GetRuneforgeFrame():IsRuneforgeUpgrading() then
+		return;
+	end
+	
 	local modifierFrame = self:GetModifierFrame();
 	if buttonName == "RightButton" then
 		modifierFrame:SetModifierSlot(self:GetID(), nil);

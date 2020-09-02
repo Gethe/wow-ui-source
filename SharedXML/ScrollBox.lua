@@ -14,9 +14,10 @@ function ScrollBoxMixin:OnLoad()
 	self.ScrollTarget:SetScript("OnSizeChanged", GenerateClosure(self.OnScrollTargetSizeChanged, self));
 end
 
-function ScrollBoxMixin:Init(elementExtent)
+function ScrollBoxMixin:Init(scrollValue, elementExtent)
 	self.elementExtent = elementExtent;
 	self:SetStepExtent(self:CalculateStepExtent());
+	self:SetScrollValue(scrollValue);
 end
 
 function ScrollBoxMixin:ScrollTo(element)

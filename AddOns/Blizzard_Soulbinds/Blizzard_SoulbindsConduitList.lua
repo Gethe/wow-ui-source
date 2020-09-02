@@ -58,7 +58,6 @@ end
 
 function ConduitListCategoryButtonMixin:OnClick(buttonName)
 	self:SetExpanded(not self.expanded);
-	self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
 end
 
 function ConduitListCategoryButtonMixin:SetExpanded(expanded)
@@ -67,6 +66,12 @@ function ConduitListCategoryButtonMixin:SetExpanded(expanded)
 	local atlas = expanded and "Soulbinds_Collection_CategoryHeader_Collapse" or "Soulbinds_Collection_CategoryHeader_Expand";
 	local useAtlasSize = true;
 	self.Container.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
+
+	self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
+end
+
+function ConduitListCategoryButtonMixin:IsExpanded()
+	return self.expanded;
 end
 
 ConduitListConduitButtonMixin = {};
@@ -124,7 +129,7 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 		self.SpecName:SetText("");
 	end
 
-	self:SanitizeAvailability();
+	self:Update();
 end
 
 function ConduitListConduitButtonMixin:OnEvent(event, ...)
@@ -182,12 +187,12 @@ function ConduitListConduitButtonMixin:UpdateVisuals(state)
 	self.Pending:SetShown(pending);
 end
 
-function ConduitListConduitButtonMixin:SanitizeAvailability()
+function ConduitListConduitButtonMixin:Update()
 	self:UpdateVisuals(self:GetState());
 end
 
 function ConduitListConduitButtonMixin:GetState()
-	local soulbindID = Soulbinds.GetOpenSoulbind();
+	local soulbindID = Soulbinds.GetOpenSoulbindID();
 	local conduitID = self.conduitData.conduitID;
 	local installed = C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID);
 	if installed then
@@ -205,7 +210,7 @@ function ConduitListConduitButtonMixin:OnClick(buttonName)
 	if buttonName == "LeftButton" then
 		self:CreateCursor();
 	elseif buttonName == "RightButton" then
-		local soulbindID = Soulbinds.GetOpenSoulbind();
+		local soulbindID = Soulbinds.GetOpenSoulbindID();
 		local conduitID = self.conduitData.conduitID;
 		if C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID) then
 			local nodeID = C_Soulbinds.GetPendingNodeIDInSoulbind(soulbindID, conduitID);
@@ -221,7 +226,7 @@ function ConduitListConduitButtonMixin:OnDragStart()
 end
 
 function ConduitListConduitButtonMixin:CreateCursor()
-	if C_Soulbinds.IsConduitInstalledInSoulbind(Soulbinds.GetOpenSoulbind(), self.conduitData.conduitID) then
+	if C_Soulbinds.IsConduitInstalledInSoulbind(Soulbinds.GetOpenSoulbindID(), self.conduitData.conduitID) then
 		return;
 	end
 
@@ -239,7 +244,7 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 		local conduitID = self.conduit:GetConduitID();
 		GameTooltip:SetConduit(conduitID, self.conduit:GetConduitRank());
 
-		local soulbindID = Soulbinds.GetOpenSoulbind();
+		local soulbindID = Soulbinds.GetOpenSoulbindID();
 		if C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID) then
 			GameTooltip_AddErrorLine(GameTooltip, CONDUIT_COLLECTION_ITEM_SOCKETED);
 		elseif C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID) then
@@ -315,6 +320,12 @@ function ConduitListSectionMixin:Init()
 	return self:BuildConduits();
 end
 
+function ConduitListSectionMixin:Update()
+	for conduitButton in self.pool:EnumerateActive() do
+		conduitButton:Update();
+	end
+end
+
 function ConduitListSectionMixin:FindConduitButton(conduitID)
 	for conduitButton in self.pool:EnumerateActive() do
 		if conduitButton:MatchesID(conduitID) then
@@ -373,6 +384,14 @@ function ConduitListSectionMixin:UpdateLayout()
 	self:Layout();
 end
 
+function ConduitListSectionMixin:IsExpanded()
+	return self.CategoryButton:IsExpanded();
+end
+
+function ConduitListSectionMixin:SetExpanded(expanded)
+	self.CategoryButton:SetExpanded(expanded);
+end
+
 ConduitListMixin = {};
 
 local ConduitListEvents =
@@ -428,6 +447,12 @@ function ConduitListMixin:Init()
 	ScrollUtil.Init(self.ScrollBar, self.ScrollBox, scrollValue, elementExtent);
 end
 
+function ConduitListMixin:Update()
+	for index, list in ipairs(self:GetLists()) do
+		list:Update();
+	end
+end
+
 function ConduitListMixin:PlayLearnAnimation(button)
 	local effects = self.Clip.Effects;
 	effects:SetPoint("LEFT", button);
@@ -445,6 +470,8 @@ function ConduitListMixin:PlayLearnAnimation(button)
 	modelScene:SetPoint("CENTER", button);
 	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay=0, duration = 0.769, speed = 1 },};
 	modelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
+
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_LEARNED);
 end
 
 function ConduitListMixin:OnCollectionDataUpdated(collectionData)
@@ -454,6 +481,10 @@ function ConduitListMixin:OnCollectionDataUpdated(collectionData)
 	for index, list in ipairs(self:GetLists()) do
 		local result, conduitButton = list:AddCollectionData(collectionData);
 		if result then
+			if not list:IsExpanded() then
+				list:SetExpanded(true);
+			end
+
 			self.ScrollBox:ScrollTo(conduitButton);
 			break;
 		end

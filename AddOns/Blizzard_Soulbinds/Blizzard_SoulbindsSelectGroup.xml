@@ -5,6 +5,7 @@
 	<Frame name="SoulbindSelectGroupTemplate" inherits="ResizeLayoutFrame" mixin="SoulbindSelectGroupMixin" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

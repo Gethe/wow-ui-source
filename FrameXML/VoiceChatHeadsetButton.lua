@@ -189,6 +189,7 @@ function VoiceChatHeadsetButtonMixin:SetCommunityInfo(clubId, streamInfo)
 	self:SetChannelType(Enum.ChatChannelType.Communities);
 	self:SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
 	self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(Enum.ChatChannelType.Communities, self.clubId, self.streamId));
+	self:SetEnabled(not C_VoiceChat.GetJoinClubVoiceChannelError(self.clubId));
 end
 
 function VoiceChatHeadsetButtonMixin:IsCommunityChannel()
@@ -226,7 +227,17 @@ function VoiceChatHeadsetButtonMixin:ShowTooltip()
 
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(tooltip, message);
+	
+	local errorReason = C_VoiceChat.GetJoinClubVoiceChannelError(self.clubId);
+	if errorReason then
+		if errorReason == Enum.VoiceChannelErrorReason.IsBattleNetChannel then
+			GameTooltip_AddErrorLine(tooltip, ERR_GROUPS_VOICE_CHAT_DISABLED);
+		else
+			GameTooltip_AddErrorLine(tooltip, VOICECHAT_DISABLED);
+		end
+	else
+		GameTooltip_SetTitle(tooltip, message);
+	end
 	tooltip:Show();
 end
 

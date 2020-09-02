@@ -2639,4 +2639,23 @@
     </Layers>
   </ContainedAlertFrame>
   
+	<ContainedAlertFrame name="NewRuneforgePowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewRuneforgePowerAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="LootToast-MoreAwesome" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</ContainedAlertFrame>
+  
 </Ui>

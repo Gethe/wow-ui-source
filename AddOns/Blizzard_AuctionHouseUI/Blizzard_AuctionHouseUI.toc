@@ -4,8 +4,8 @@
 ## LoadOnDemand: 1
 ## SavedVariables: g_auctionHouseSortsBySearchContext
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
-Blizzard_AuctionData.lua
 Blizzard_AuctionHouseUtil.lua
+Blizzard_AuctionData.lua
 Blizzard_AuctionHouseTableBuilder.xml
 Blizzard_AuctionHouseSharedTemplates.xml
 Blizzard_AuctionHouseTab.xml

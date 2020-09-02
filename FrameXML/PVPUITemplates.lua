@@ -1,5 +1,5 @@
 PVPConquestRewardMixin = { };
-function PVPConquestRewardMixin:SetupForBfA(questID, seasonState, tooltipAnchor)
+function PVPConquestRewardMixin:LegacySetup(questID, seasonState, tooltipAnchor)
 	self.questID = questID;
 	self.seasonState = seasonState;
 	self.tooltipAnchor = tooltipAnchor;
@@ -25,7 +25,7 @@ function PVPConquestRewardMixin:SetupForBfA(questID, seasonState, tooltipAnchor)
 	end
 end
 
-function PVPConquestRewardMixin:SetupForShadowlands(seasonState, tooltipAnchor)
+function PVPConquestRewardMixin:Setup(seasonState, tooltipAnchor)
 	self.seasonState = seasonState;
 	self.tooltipAnchor = tooltipAnchor;
 

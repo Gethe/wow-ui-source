@@ -232,9 +232,11 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 				local playerClass = TutorialHelper:GetClass();
 				if playerClass == "WARRIOR" then
 					self.EnhancedCombatTactics_Warrior:Complete();
+				elseif playerClass == "ROGUE" then
+					self.EnhancedCombatTactics_Rogue:Complete();
 				elseif playerClass == "MONK" then
-					--we need a special case for monk once class design has fixed some things
-					--print("HERE IS WHERE WOULD COMPLETE MONK TRAINING.");
+					-- Monk Training
+					--
 				elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
 					self.EnhancedCombatTactics_UseDoTs:Complete();
 				elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
@@ -276,9 +278,10 @@ function Tutorials:Quest_Abandoned(questData)
 		local playerClass = TutorialHelper:GetClass();
 		if playerClass == "WARRIOR" then
 			self.EnhancedCombatTactics_Warrior:Complete();
+		elseif playerClass == "ROGUE" then
+			self.EnhancedCombatTactics_Rogue:Complete();
 		elseif playerClass == "MONK" then
-			--we need a special case for monk once class design has fixed some things
-			--print("HERE IS WHERE WOULD COMPLETE MONK TRAINING.");
+			-- Monk Training
 		elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
 			self.EnhancedCombatTactics_UseDoTs:Complete();
 		elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
@@ -378,6 +381,7 @@ Tutorials.EquipTutorial					= Class_EquipTutorial:new();
 -- Enhanced Combat Tactics
 Tutorials.EnhancedCombatTactics			= Class_EnhancedCombatTactics:new();
 Tutorials.EnhancedCombatTactics_Warrior	= Class_EnhancedCombatTactics_Warrior:new();
+Tutorials.EnhancedCombatTactics_Rogue	= Class_EnhancedCombatTactics_Rogue:new();
 Tutorials.EnhancedCombatTactics_UseDoTs	= Class_EnhancedCombatTactics_UseDoTs:new();
 Tutorials.EnhancedCombatTactics_Ranged	= Class_EnhancedCombatTactics_Ranged:new();
 
