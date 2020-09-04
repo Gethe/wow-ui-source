@@ -176,6 +176,27 @@ LEVEL_UP_TYPES = {
 ------ END HACKS
 }
 
+local LevelUpSpellsCache = {
+	spells = { },
+	spec = nil,
+	Store = function(self, level)
+		if not self.spells[level] then
+			self.spells[level] = {GetCurrentLevelSpells(level)};
+		end
+	end,
+	Get = function(self, level)
+		return self.spells[level] or {GetCurrentLevelSpells(level)};
+	end,
+	CheckSpec = function(self)
+		local spec = GetSpecialization();
+		if spec ~= self.spec then
+			self.spec = spec;
+			self.spells = { };
+			local level = UnitLevel("player") + 1;
+			self:Store(level);
+		end
+	end,
+};
 
 GARRISON_ABILITY_HACKS = {
 	[26] = {
@@ -217,6 +238,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("QUEST_TURNED_IN");
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("JAILERS_TOWER_LEVEL_UPDATE");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self.currSpell = 0;
 
 	self.PlayBanner = function(self, data)
@@ -241,6 +263,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		LevelUpDisplay_InitPlayerStates(self);
 		LevelUpDisplay_InitPlayerStates(LevelUpDisplaySide);
+		LevelUpSpellsCache:CheckSpec();
 	elseif event == "PLAYER_LEVEL_UP" then
 		-- NOTE: PLAYER_LEVEL_UP happens BEFORE the client player's level is actually updated.
 		-- Since LevelUpDisplaySide is not shown every time the player levels up, we need to initialize the player states here
@@ -248,14 +271,17 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		LevelUpDisplay_InitPlayerStates(LevelUpDisplaySide);	
 	elseif event == "PLAYER_LEVEL_CHANGED" then
 		local oldLevel, newLevel = ...;
-		if newLevel > oldLevel then
-			self.level = newLevel;
-			self.type = LEVEL_UP_TYPE_CHARACTER;
-			LevelUpDisplay_Show(self);
-			LevelUpDisplaySide:Hide();
-		elseif newLevel < oldLevel then
-			LevelUpDisplay_InitPlayerStates(self)
-			LevelUpDisplay_InitPlayerStates(LevelUpDisplaySide);
+		if oldLevel ~= 0 and newLevel ~= 0 then
+			LevelUpSpellsCache:Store(newLevel + 1);
+			if newLevel > oldLevel then
+				self.level = newLevel;
+				self.type = LEVEL_UP_TYPE_CHARACTER;
+				LevelUpDisplay_Show(self);
+				LevelUpDisplaySide:Hide();
+			elseif newLevel < oldLevel then
+				LevelUpDisplay_InitPlayerStates(self)
+				LevelUpDisplay_InitPlayerStates(LevelUpDisplaySide);
+			end
 		end
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
 		self.type = TOAST_PET_BATTLE_WINNER;
@@ -319,6 +345,8 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		local level, type, textureKit = ...; 
 		self.jailersTowerLevelUpdateInfo = { level = level, type = type, textureKit = textureKit };
 		LevelUpDisplay_Show(self);
+	elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
+		LevelUpSpellsCache:CheckSpec();
 	end
 end
 
@@ -369,7 +397,7 @@ function LevelUpDisplay_BuildCharacterList(self)
 		return;
 	end
 
-	local spells = {GetCurrentLevelSpells(self.level)};
+	local spells = LevelUpSpellsCache:Get(self.level);
 	for _,spell in pairs(spells) do
 		name, _, icon = GetSpellInfo(spell);
 		spellLink = GetSpellLink(spell);

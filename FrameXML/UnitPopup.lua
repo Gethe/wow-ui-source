@@ -500,9 +500,9 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 						-- Yay, legacy hacks!
 						if ( IsLegacyDifficulty(instanceDifficultyID) ) then
 							-- 3 and 4 are normal, 5 and 6 are heroic
-							if ((instanceDifficultyID == DIFFICULTY_RAID10_NORMAL or instanceDifficultyID == DIFFICULTY_RAID25_NORMAL) and UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_NORMAL) then
+							if ((instanceDifficultyID == DifficultyUtil.ID.Raid10Normal or instanceDifficultyID == DifficultyUtil.ID.Raid25Normal) and UnitPopupButtons[value].difficultyID == DifficultyUtil.ID.PrimaryRaidNormal) then
 								info.checked = true;
-							elseif ((instanceDifficultyID == DIFFICULTY_RAID10_HEROIC or instanceDifficultyID == DIFFICULTY_RAID25_HEROIC) and UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_HEROIC) then
+							elseif ((instanceDifficultyID == DifficultyUtil.ID.Raid10Heroic or instanceDifficultyID == DifficultyUtil.ID.Raid25Heroic) and UnitPopupButtons[value].difficultyID == DifficultyUtil.ID.PrimaryRaidHeroic) then
 								info.checked = true;
 							end
 						elseif ( instanceDifficultyID == UnitPopupButtons[value].difficultyID ) then
@@ -532,10 +532,10 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 							info.checked = true;
 						end
 					end
-					if ( ( inParty and not isLeader ) or inPublicParty or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
+					if ( ( inParty and not isLeader ) or inPublicParty or inInstance or GetRaidDifficultyID() == DifficultyUtil.ID.PrimaryRaidMythic ) then
 						info.disabled = true;
 					end
-					if ( toggleDifficultyID and not GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC and CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID) ) then
+					if ( toggleDifficultyID and not GetRaidDifficultyID() == DifficultyUtil.ID.PrimaryRaidMythic and CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID) ) then
 						info.disabled = nil;
 					end
 				elseif ( value == "PVP_ENABLE" ) then
@@ -1074,7 +1074,11 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "REPORT_SPAM" ) then
-			if not isValidPlayerLocation or not (playerLocation:IsChatLineID() or playerLocation:IsCommunityInvitation()) then
+			if not isValidPlayerLocation or not (playerLocation:IsChatLineID() or playerLocation:IsCommunityInvitation()) or not C_ReportSystem.CanReportPlayerForLanguage(playerLocation) then
+				shown = false;
+			end
+		elseif ( value == "REPORT_BAD_LANGUAGE") then
+			if not isValidPlayerLocation or not C_ReportSystem.CanReportPlayerForLanguage(playerLocation) then
 				shown = false;
 			end
 		elseif ( value == "REPORT_CHEATING" ) then
@@ -1609,7 +1613,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID);
 						end
 					elseif ( ( strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" ) and ( strlen(value) > 22 ) ) then
-						if ( ( inParty and not isLeader ) or inPublicParty or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
+						if ( ( inParty and not isLeader ) or inPublicParty or inInstance or GetRaidDifficultyID() == DifficultyUtil.ID.PrimaryRaidMythic ) then
 							enable = false;
 						end
 						if (toggleDifficultyID) then
@@ -2065,22 +2069,10 @@ function UnitPopup_OnClick (self)
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
-RAID_DIFFICULTY_MAP = {
-	[DIFFICULTY_PRIMARYRAID_NORMAL] = { [10] = DIFFICULTY_RAID10_NORMAL, [25] = DIFFICULTY_RAID25_NORMAL }, -- Normal -> 10-man normal, 25-man normal
-	[DIFFICULTY_PRIMARYRAID_HEROIC] = { [10] = DIFFICULTY_RAID10_HEROIC, [25] = DIFFICULTY_RAID25_HEROIC }, -- Heroic -> 10-man heroic, 25-man heroic
-};
-
-RAID_DIFFICULTY_SIZES = {
-	[DIFFICULTY_RAID10_NORMAL] = 10,
-	[DIFFICULTY_RAID25_NORMAL] = 25,
-	[DIFFICULTY_RAID10_HEROIC] = 10,
-	[DIFFICULTY_RAID25_HEROIC] = 25,
-}
-
 RAID_TOGGLE_MAP = {
-	[DIFFICULTY_PRIMARYRAID_NORMAL] = { DIFFICULTY_RAID10_NORMAL, DIFFICULTY_RAID25_NORMAL },
-	[DIFFICULTY_PRIMARYRAID_HEROIC] = { DIFFICULTY_RAID10_HEROIC, DIFFICULTY_RAID25_HEROIC },
-	[DIFFICULTY_PRIMARYRAID_MYTHIC] = {},
+	[DifficultyUtil.ID.PrimaryRaidNormal] = { DifficultyUtil.ID.Raid10Normal, DifficultyUtil.ID.Raid25Normal },
+	[DifficultyUtil.ID.PrimaryRaidHeroic] = { DifficultyUtil.ID.Raid10Heroic, DifficultyUtil.ID.Raid25Heroic },
+	[DifficultyUtil.ID.PrimaryRaidMythic] = {},
 }
 
 function NormalizeLegacyDifficultyID(difficultyID)
@@ -2096,6 +2088,15 @@ function NormalizeLegacyDifficultyID(difficultyID)
 	return difficultyID;
 end
 
+local function GetMappedLegacyDifficultyID(difficultyID, size)
+	for i, mappedDifficultyID in ipairs(RAID_TOGGLE_MAP[difficultyID]) do
+		if DifficultyUtil.GetMaxPlayers(mappedDifficultyID) == size then
+			return mappedDifficultyID;
+		end
+	end
+	return nil;
+end
+
 function SetRaidDifficulties(primaryRaid, difficultyID)
 	if primaryRaid then
 		local toggleDifficultyID, force;
@@ -2107,7 +2108,7 @@ function SetRaidDifficulties(primaryRaid, difficultyID)
 			force = true;
 		end
 		SetRaidDifficultyID(difficultyID, force);
-		if difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC then
+		if difficultyID == DifficultyUtil.ID.PrimaryRaidMythic then
 			return;
 		end
 		force = nil;
@@ -2115,13 +2116,13 @@ function SetRaidDifficulties(primaryRaid, difficultyID)
 			force = true;
 		end
 		local otherDifficulty = GetLegacyRaidDifficultyID();
-		local size = RAID_DIFFICULTY_SIZES[otherDifficulty];
-		local newDifficulty = RAID_DIFFICULTY_MAP[difficultyID][size];
+		local size = DifficultyUtil.GetMaxPlayers(otherDifficulty);
+		local newDifficulty = GetMappedLegacyDifficultyID(difficultyID, size);
 		SetLegacyRaidDifficultyID(newDifficulty, force);
 	else
 		local otherDifficulty = GetRaidDifficultyID();
-		local size = RAID_DIFFICULTY_SIZES[difficultyID];
-		local newDifficulty = RAID_DIFFICULTY_MAP[otherDifficulty][size];
+		local size = DifficultyUtil.GetMaxPlayers(difficultyID);
+		local newDifficulty = GetMappedLegacyDifficultyID(otherDifficulty, size)
 		SetLegacyRaidDifficultyID(newDifficulty);
 	end
 end

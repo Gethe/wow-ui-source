@@ -526,16 +526,42 @@ local Map =
 			},
 		},
 		{
+			Name = "UIMapFlag",
+			Type = "Enumeration",
+			NumValues = 15,
+			MinValue = 1,
+			MaxValue = 16384,
+			Fields =
+			{
+				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
+				{ Name = "ShowOverlays", Type = "UIMapFlag", EnumValue = 2 },
+				{ Name = "ShowTaxiNodes", Type = "UIMapFlag", EnumValue = 4 },
+				{ Name = "GarrisonMap", Type = "UIMapFlag", EnumValue = 8 },
+				{ Name = "FallbackToParentMap", Type = "UIMapFlag", EnumValue = 16 },
+				{ Name = "NoHighlightTexture", Type = "UIMapFlag", EnumValue = 32 },
+				{ Name = "ShowTaskObjectives", Type = "UIMapFlag", EnumValue = 64 },
+				{ Name = "NoWorldPositions", Type = "UIMapFlag", EnumValue = 128 },
+				{ Name = "HideArchaeologyDigs", Type = "UIMapFlag", EnumValue = 256 },
+				{ Name = "Deprecated", Type = "UIMapFlag", EnumValue = 512 },
+				{ Name = "HideIcons", Type = "UIMapFlag", EnumValue = 1024 },
+				{ Name = "HideVignettes", Type = "UIMapFlag", EnumValue = 2048 },
+				{ Name = "ForceAllOverlayExplored", Type = "UIMapFlag", EnumValue = 4096 },
+				{ Name = "FlightMapShowZoomOut", Type = "UIMapFlag", EnumValue = 8192 },
+				{ Name = "FlightMapAutoZoom", Type = "UIMapFlag", EnumValue = 16384 },
+			},
+		},
+		{
 			Name = "UIMapSystem",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "World", Type = "UIMapSystem", EnumValue = 0 },
 				{ Name = "Taxi", Type = "UIMapSystem", EnumValue = 1 },
 				{ Name = "Adventure", Type = "UIMapSystem", EnumValue = 2 },
+				{ Name = "Minimap", Type = "UIMapSystem", EnumValue = 3 },
 			},
 		},
 		{
@@ -587,6 +613,7 @@ local Map =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "mapType", Type = "UIMapType", Nilable = false },
 				{ Name = "parentMapID", Type = "number", Nilable = false },
+				{ Name = "flags", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -66,3 +66,57 @@ end
 function CovenantCalling_Create(bounty)
 	return CreateAndInitFromMixin(CovenantCallingMixin, bounty);
 end
+
+local CallingsUpdater = CreateFrame("Frame");
+CallingsUpdater:SetScript("OnEvent", function(self, event, ...)
+	if event == "COVENANT_CALLINGS_UPDATED" then
+		self:OnCallingsUpdated(...)
+	elseif event == "QUEST_TURNED_IN" then
+		local questID = ...;
+		if C_QuestLog.IsQuestCalling(questID) then
+			self:Request();
+		end
+	end
+end);
+
+CallingsUpdater:RegisterEvent("COVENANT_CALLINGS_UPDATED");
+CallingsUpdater:RegisterEvent("QUEST_TURNED_IN");
+
+function CallingsUpdater:OnCallingsUpdated(callings)
+	self.completedCount = 0;
+	self.availableCount = 0;
+	self.callings = callings;
+
+	for index = 1, Constants.Callings.MaxCallings do
+		local calling = callings[index];
+		if calling then
+			if not C_QuestLog.IsOnQuest(calling.questID) then
+				self.availableCount = self.availableCount + 1;
+			end
+		else
+			self.completedCount = self.completedCount + 1;
+		end
+	end
+
+	EventRegistry:TriggerEvent("CovenantCallings.CallingsUpdated", self.callings, self.completedCount, self.availableCount);
+end
+
+function CallingsUpdater:Request()
+	local now = GetTime();
+	if not self.lastRequestTime or now - self.lastRequestTime > 1 then
+		self.lastRequestTime = now;
+		C_CovenantCallings.RequestCallings();
+	end
+end
+
+function CovenantCalling_CheckCallings()
+	CallingsUpdater:Request();
+end
+
+function CovenantCalling_GetCompletedCount()
+	return CallingsUpdater.completedCount or 0;
+end
+
+function CovenantCalling_GetAvailableCount()
+	return CallingsUpdater.availableCount or 0;
+end

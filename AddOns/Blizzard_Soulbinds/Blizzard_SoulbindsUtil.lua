@@ -1,5 +1,18 @@
 Soulbinds = {};
 
+SOULBINDS_RENOWN_CURRENCY_ID = 1822;
+
+local SOULBINDS_COVENANT_KYRIAN = 1;
+local SOULBINDS_COVENANT_VENTHYR = 2;
+local SOULBINDS_COVENANT_NIGHT_FAE = 3;
+local SOULBINDS_COVENANT_NECROLORD = 4;
+local soulbindDefaultIDs = {
+	[SOULBINDS_COVENANT_KYRIAN] = 7,
+	[SOULBINDS_COVENANT_VENTHYR] = 8,
+	[SOULBINDS_COVENANT_NIGHT_FAE] = 1,
+	[SOULBINDS_COVENANT_NECROLORD] = 4,
+};
+
 function Soulbinds.HasConduitAtCursor()
 	return C_Soulbinds.GetConduitCollectionDataAtCursor() ~= nil;
 end
@@ -13,13 +26,21 @@ function Soulbinds.GetPreviewConduitType()
 	return previewConduitType;
 end
 
-function Soulbinds.GetOpenSoulbind()
-	return SoulbindViewer.Tree.soulbindID;
+function Soulbinds.GetOpenSoulbindID()
+	return SoulbindViewer:GetOpenSoulbindID();
 end
 
 function Soulbinds.HasNewSoulbindTutorial(soulbindID)
-	local noTutorialIDs = {1, 4, 7, 8};
-	return not tContains(noTutorialIDs, soulbindID);
+	for k, v in pairs(soulbindDefaultIDs) do
+		if v == soulbindID then
+			return false;
+		end
+	end
+	return true;
+end
+
+function Soulbinds.GetDefaultSoulbindID(covenantID)
+	return soulbindDefaultIDs[covenantID];
 end
 
 local isPathChangePending = false;

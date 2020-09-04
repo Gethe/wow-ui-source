@@ -74,8 +74,13 @@ local Soulbinds =
 			Type = "Function",
 		},
 		{
-			Name = "CommitPendingConduits",
+			Name = "CommitPendingConduitsInSoulbind",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "GetActiveSoulbindID",
@@ -285,6 +290,20 @@ local Soulbinds =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
 				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasPendingConduitsInSoulbind",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
 			},
 
 			Returns =

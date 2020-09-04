@@ -178,6 +178,8 @@ function RuneforgeItemSlotMixin:SetItem(itemLocation)
 	end
 
 	if hasItem then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_RUNEFORGE_LEGENDARY_CRAFT, true);
+		HelpTip:HideAll(self);
 		PlaySound(SOUNDKIT.UI_RUNECARVING_SELECT_ITEM);
 	end
 end

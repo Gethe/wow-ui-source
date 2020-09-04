@@ -148,7 +148,6 @@
 	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin" virtual="true">
 		<KeyValues>
 			<!-- NOTE: topPadding will be assigned programatically -->
-			<KeyValue key="layoutIndex" value="QUEST_LOG_CAMPAIGN_LAYOUT_INDEX" type="global"/>
 			<KeyValue key="fixedWidth" value="260" type="number"/>
 		</KeyValues>
 		<Layers>
@@ -205,6 +204,7 @@
 		</Frames>
 		<Scripts>
 			<OnEnter method="OnEnter"/> <!-- OnLeave logic handled by run-time OnUpdate handler -->
+			<OnHide method="OnLeave"/> <!-- Necessary because OnUpdate will stop when hidden -->
 			<OnMouseUp method="OnMouseUp"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>

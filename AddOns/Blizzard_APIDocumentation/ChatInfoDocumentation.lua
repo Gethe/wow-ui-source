@@ -127,6 +127,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsRegionalServiceAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "available", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidChatLine",
 			Type = "Function",
 
@@ -1946,6 +1955,20 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
 				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatRegionalSendFailed",
+			Type = "Event",
+			LiteralName = "CHAT_REGIONAL_SEND_FAILED",
+		},
+		{
+			Name = "ChatRegionalStatusChanged",
+			Type = "Event",
+			LiteralName = "CHAT_REGIONAL_STATUS_CHANGED",
+			Payload =
+			{
+				{ Name = "isServiceAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{

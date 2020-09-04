@@ -296,7 +296,7 @@ function PVPQueueFrame_OnLoad(self)
 	-- disable unusable side buttons
 	if not C_PvP.CanPlayerUseRatedPVPUI() then
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, false);
-		self.CategoryButton2.tooltip = format(PVP_CONQUEST_LOWLEVEL, PVP_TAB_CONQUEST);
+		self.CategoryButton2.tooltip = format(PVP_CONQUEST_LOWLEVEL, PVP_TAB_CONQUEST, GetMaxLevelForLatestExpansion());
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	end
@@ -1868,9 +1868,15 @@ function PVPConquestBarMixin:LegacyUpdate()
 	if self.locked or inactiveSeason or not questID then
 		self.Reward:Clear();
 	else
-		self.Reward:SetupForBfA(questID, ConquestFrame.seasonState);
+		self.Reward:LegacySetup(questID, ConquestFrame.seasonState);
 	end
 	self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
+end
+
+function PVPConquestLockTooltipShow(self)
+	GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+	GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, GetMaxLevelForLatestExpansion()));
+	GameTooltip:Show();
 end
 
 function PVPConquestBarMixin:Update()
@@ -1911,7 +1917,7 @@ function PVPConquestBarMixin:Update()
 	if self.locked or inactiveSeason then
 		self.Reward:Clear();
 	else
-		self.Reward:SetupForShadowlands(ConquestFrame.seasonState);
+		self.Reward:Setup(ConquestFrame.seasonState);
 	end
 end
 
@@ -1960,7 +1966,7 @@ function PVPWeeklyChestMixin:GetState()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local unlocksCompleted = weeklyProgress.unlocksCompleted;
 
-	local hasRewards = C_WeeklyRewards.HasRewards();
+	local hasRewards = C_WeeklyRewards.HasAvailableRewards();
 	if hasRewards then
 		return "collect";
 	elseif unlocksCompleted > 0 then
@@ -1995,8 +2001,6 @@ function PVPWeeklyChestMixin:OnShow()
 		self:LegacyOnShow();
 		return;
 	end
-
-	C_WeeklyRewards.RequestRewards();
 
 	local state = self:GetState();
 	local atlas = "pvpqueue-chest-greatvault-"..state;
@@ -2039,7 +2043,7 @@ function PVPWeeklyChestMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 
-	local hasRewards = C_WeeklyRewards.HasRewards();
+	local hasRewards = C_WeeklyRewards.HasAvailableRewards();
 	if hasRewards then
 		GameTooltip_AddColoredLine(GameTooltip, GREAT_VAULT_REWARDS_WAITING, GREEN_FONT_COLOR);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);

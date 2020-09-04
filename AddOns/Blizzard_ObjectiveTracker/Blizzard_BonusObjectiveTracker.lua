@@ -5,22 +5,19 @@ function CreateBonusObjectiveTrackerModule(friendlyName)
 
 	module.blockTemplate = "BonusObjectiveTrackerBlockTemplate";
 	module.blockType = "ScrollFrame";
-	module.freeBlocks = { };
-	module.usedBlocks = { };
 	module.freeLines = { };
 	module.lineTemplate = "BonusObjectiveTrackerLineTemplate";
-	module.blockOffsetX = -20;
-	module.blockOffsetY = -6;
 	module.usedProgressBars = { };
 	module.freeProgressBars = { };
 	module.fromHeaderOffsetY = -8;
 	module.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
-	module.paddingBetweenButtons = 2;
 
-	module.buttonOffsets = {
+	module:AddPaddingBetweenButtons("BonusObjectiveTrackerBlockTemplate", 2);
+	module:AddBlockOffset("BonusObjectiveTrackerBlockTemplate", -20, -6);
+	module:AddButtonOffsets("BonusObjectiveTrackerBlockTemplate", {
 		groupFinder = { 11, 4 },
 		useItem = { 7, 1 },
-	};
+	});
 
 	return module;
 end
@@ -150,7 +147,8 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 end
 
 function BonusObjectiveTracker_UpdatePOIs(self, numPOINumeric)
-	for questID, block in pairs(self.usedBlocks) do
+	local usedBlocks = self:GetActiveBlocks();
+	for questID, block in pairs(usedBlocks) do
 		if block.isThreatQuest then
 			local poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "threat", nil);
 			if poiButton then

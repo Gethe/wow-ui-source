@@ -13,23 +13,48 @@ function TorghastLevelPickerFrameMixin:OnLoad()
 	self.gossipOptionsPool = CreateFramePool("CHECKBUTTON", self.GridLayoutContainer, "TorghastLevelPickerOptionButtonTemplate");
 end
 
-function TorghastLevelPickerFrameMixin:OnEvent()
+function TorghastLevelPickerFrameMixin:OnEvent(event, ...)
+	if (event == "PARTY_LEADER_CHANGED") then 
+		self:UpdatePortalButtonState();
+	end 
 end 
 
 function TorghastLevelPickerFrameMixin:OnShow()
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_UI); 
+end 
+
+function TorghastLevelPickerFrameMixin:OnHide()
+	self:UnregisterEvent("PARTY_LEADER_CHANGED");
+end 
+
+function TorghastLevelPickerFrameMixin:CancelEffects()
+	if(self.backgroundEffectController) then 
+		self.backgroundEffectController:CancelEffect(); 
+		self.backgroundEffectController = nil; 
+	end 
+end 
+
+function TorghastLevelPickerFrameMixin:UpdatePortalButtonState()
+	local inParty = UnitInParty("player"); 
+	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
+
+	self.OpenPortalButton:SetEnabled(self.isPartyLeader and self.currentSelectedButton)
 end 
 
 function TorghastLevelPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
 
+	self:CancelEffects(); 
+
 	local smokeEffectDescription = { effectID = TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_ID, offsetY = TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_OFFSET, };
-	self.ModelScene:AddDynamicEffect(smokeEffectDescription, self);
+	self.backgroundEffectController = GlobalFXBackgroundModelScene:AddDynamicEffect(smokeEffectDescription, self);
 
 	self:BuildOptionList();
 	self:SetupGrid();
 	self:SetupLevelButtons(); 
-	self:Show(); 
+	ShowUIPanel(self); 
 end 
 
 function TorghastLevelPickerFrameMixin:OnHide()
@@ -39,6 +64,7 @@ function TorghastLevelPickerFrameMixin:OnHide()
 	self.currentSelectedButton = nil; 
 	self.textureKit = nil; 
 	EmbeddedItemTooltip:Hide(); 
+	self:CancelEffects(); 
 	C_GossipInfo.CloseGossip(); 
 end		
 
@@ -53,7 +79,7 @@ function TorghastLevelPickerFrameMixin:SetupLevelButtons()
 	local overridePaddingX = 45; 
 	local overridePaddingY = 45; 
 	self:LayoutGridInit(anchor, overridePaddingX, overridePaddingY, GridLayoutMixin.Direction.TopLeftToBottomRight); 
-	self.OpenPortalButton:SetEnabled(self.currentSelectedButton);
+	self:UpdatePortalButtonState(); 
 end 
 
 function TorghastLevelPickerFrameMixin:SetStartingPage(page)
@@ -65,20 +91,15 @@ function TorghastLevelPickerFrameMixin:GetCurrentPage()
 end
 
 function TorghastLevelPickerFrameMixin:SelectLevel(selectedLevelButton)
-	if(self.currentSelectedButton) then 
+	if(self.currentSelectedButton == selectedLevelButton) then 
 		self.currentSelectedButton:ClearSelection(); 
-	end 
-
-	self.currentSelectedButton = selectedLevelButton; 
-	self.OpenPortalButton:SetEnabled(self.currentSelectedButton);
-end		
-
-function TorghastLevelPickerFrameMixin:OpenPortalOnClick()
-	if(not self.currentSelectedButton) then 
-		return; 
+		self.currentSelectedButton = nil;
+	else 
+		self.currentSelectedButton = selectedLevelButton; 
 	end
-	C_GossipInfo.SelectOption(self.currentSelectedButton.index); 
-end 
+	self:UpdatePortalButtonState(); 
+	
+end		
 
 function TorghastLevelPickerFrameMixin:SetupBackground()
 	SetupTextureKitOnRegions(self.textureKit, self, gossipBackgroundTextureKitRegion, true, TextureKitConstants.UseAtlasSize);
@@ -132,13 +153,13 @@ end
 
 function TorghastLevelPickerOptionButtonMixin:ClearSelection()
 	self:SetChecked(false)
-	self.SelectedBorder:Hide(); 
 end 
 
 function TorghastLevelPickerOptionButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_SELECT_DIFFICULTY); 
 	self:SetChecked(true);
 	self:GetParent():GetParent():SelectLevel(self);
-	self.SelectedBorder:Show(); 
+	self.SelectedBorder:SetShown(self:GetChecked()); 
 end 
 
 TorghastPagingContainerMixin = {}; 
@@ -169,6 +190,7 @@ function TorghastPagingContainerMixin:PagePrevious()
 	local startingIndex = ((self.currentPage - 1) * self.maxOptionsPerPage) + 1;
 	self:GetParent():SetupOptionsByStartingIndex(startingIndex);
 	self:Setup(); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_PAGING_CLICK);
 end 
 
 function TorghastPagingContainerMixin:PageNext()
@@ -176,6 +198,7 @@ function TorghastPagingContainerMixin:PageNext()
 	local startingIndex = ((self.currentPage - 1) * self.maxOptionsPerPage) + 1;
 	self:GetParent():SetupOptionsByStartingIndex(startingIndex);
 	self:Setup(); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_PAGING_CLICK);
 end 
 
 TorghastLevelPickerRewardCircleMixin = {}; 
@@ -227,12 +250,10 @@ function TorghastLevelPickerRewardCircleMixin:AddCurrencyToTooltip(currency, too
 end 
 
 function TorghastLevelPickerRewardCircleMixin:SetRewardIcon()
-	if(self.itemRewards and self.itemRewards[1]) then 
-		if (self.itemRewards and self.itemRewards[1]) then 
-			local texture = select(10, GetItemInfo(self.itemRewards[1].id));
-			self.Icon:SetTexture(texture);
-			return; 
-		end 
+	if (self.itemRewards and self.itemRewards[1]) then 
+		local texture = select(5, GetItemInfoInstant(self.itemRewards[1].id));
+		self.Icon:SetTexture(texture);
+		return; 
 	end 
 
 	if(self.currencyRewards and self.currencyRewards[1]) then 
@@ -268,7 +289,6 @@ function TorghastLevelPickerRewardCircleMixin:Init()
 end 
 
 function TorghastLevelPickerRewardCircleMixin:OnEnter()
-
 	if (self.lockedState) then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		if (UnitInParty("player")) then 
@@ -314,4 +334,27 @@ end
 
 function TorghastLevelPickerRewardCircleMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
+end 
+
+TorghastLevelPickerOpenPortalButtonMixin = { };
+
+function TorghastLevelPickerOpenPortalButtonMixin:OnEnter()
+	if (not self:GetParent().isPartyLeader) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
+		GameTooltip_AddNormalLine(GameTooltip, TORGHAST_LEVEL_PICKER_LEADER_ERROR); 
+		GameTooltip:Show(); 
+	end 
+end 
+
+function TorghastLevelPickerOpenPortalButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 
+
+function TorghastLevelPickerOpenPortalButtonMixin:OnClick()
+	local selectedPortal = self:GetParent().currentSelectedButton; 
+	if(not selectedPortal) then 
+		return; 
+	end
+	C_GossipInfo.SelectOption(selectedPortal.index); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL); 
 end 

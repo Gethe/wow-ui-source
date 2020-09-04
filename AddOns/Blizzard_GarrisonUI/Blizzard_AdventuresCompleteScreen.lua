@@ -42,6 +42,8 @@ end
 
 function AdventuresCompleteScreenMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, AdventuresCompleteScreenEvents);
+
+	self:GetCovenantMissionFrame().MissionTab:Show();
 end
 
 function AdventuresCompleteScreenMixin:OnLoad()

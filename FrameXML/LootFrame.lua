@@ -821,7 +821,7 @@ function EncounterJournalLinkButtonMixin:IsLinkDataAvailable()
         local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
         -- Mythic+ doesn't yet have all the itemContext info available 
         --that we need to properly show item tooltips
-        if ( difficultyID ~= nil and difficultyID ~= DIFFICULTY_DUNGEON_CHALLENGE) then
+        if ( difficultyID ~= nil and difficultyID ~= DifficultyUtil.ID.DungeonChallenge) then
             return true;
         end
     end

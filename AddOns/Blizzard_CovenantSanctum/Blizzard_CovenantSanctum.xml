@@ -14,7 +14,7 @@
 	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true">
 		<Size x="980" y="637"/>
 		<Anchors>
-			<Anchor point="CENTER" y="100"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">

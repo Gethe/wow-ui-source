@@ -446,11 +446,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
-						GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, GetMaxLevelForLatestExpansion()));
-						GameTooltip:Show();
-					</OnEnter>
+					<OnEnter function="PVPConquestLockTooltipShow"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			 </Frame>

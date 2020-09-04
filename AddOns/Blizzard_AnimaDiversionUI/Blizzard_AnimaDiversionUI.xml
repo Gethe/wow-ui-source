@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AnimaDiversionUI.lua"/>
+	
 	<Frame name="AnimaDiversionBolsterProgressGemTemplate" frameLevel="512" virtual="true">
 		<Size x="24" y="24"/>
 		<Layers>
@@ -14,26 +15,26 @@
 		</Layers>
 	</Frame>
 
-  <Frame name="AnimaDiversionCurrencyCostFrameTemplate" virtual="true">
-    <Size x="200" y="20"/>
-    <Layers>
-      <Layer level="ARTWORK">
-        <FontString parentKey="Quantity" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontHighlight">
-          <Anchors>
-            <Anchor point="LEFT" x="0" y="-15"/>
-          </Anchors>
-        </FontString>
-        <Texture parentKey="CurrencyIcon">
-          <Size x="18" y="18"/>
-          <Anchors>
-            <Anchor point="LEFT" relativeKey="$parent.Quantity" relativePoint="RIGHT" x="5"/>
-          </Anchors>
-        </Texture>
-      </Layer>
-    </Layers>
-  </Frame>
-  
-	<Frame name="AnimaDiversionFrame" inherits="MapCanvasFrameTemplate" toplevel="true" mixin="AnimaDiversionFrameMixin" enableMouse="true" parent="UIParent" frameStrata="DIALOG" hidden="true">
+	<Frame name="AnimaDiversionCurrencyCostFrameTemplate" virtual="true">
+		<Size x="200" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Quantity" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CurrencyIcon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Quantity" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AnimaDiversionFrame" inherits="MapCanvasFrameTemplate" toplevel="true" mixin="AnimaDiversionFrameMixin" enableMouse="true" parent="UIParent" hidden="true">
 		<Size x="925" y="635"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
@@ -58,7 +59,7 @@
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate"/>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-5" y="-5" />
+					<Anchor point="TOPRIGHT" x="3" y="3" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -67,85 +68,89 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-      <Button parentKey="AnimaDiversionCurrencyFrame" mixin="AnimaDiversionCurrencyFrameMixin" enableMouse="true" frameLevel="512">
-        <Size x="189" y="37"/>
-        <Anchors>
-          <Anchor point="TOP" x="0" y="8"/> 
-        </Anchors>
-        <Layers>
-          <Layer level="BACKGROUND">
-            <Texture parentKey="Background" atlas="AnimaChannel-CurrencyBorder" useAtlasSize="true"/>
-          </Layer>
-        </Layers>
-        <Frames>
+			<Button parentKey="AnimaDiversionCurrencyFrame" mixin="AnimaDiversionCurrencyFrameMixin" enableMouse="true" frameLevel="512">
+				<Size x="189" y="37"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="8"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="AnimaChannel-CurrencyBorder" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
 					<Frame parentKey="CurrencyFrame" inherits="AnimaDiversionCurrencyCostFrameTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.Background" x="85" y="15"/>
 						</Anchors>
 					</Frame>
-        </Frames>
-        <Scripts>
-          <OnEnter method="OnEnter"/>
-          <OnLeave method="OnLeave"/>
-        </Scripts>
-      </Button>
-      <Button parentKey="ReinforceProgressFrame" mixin="ReinforceProgressFrameMixin" frameLevel="510">
-        <Size x="272" y="38"/>
-        <Anchors>
-          <Anchor point="BOTTOM" x="0" y="0"/>
-        </Anchors>
-        <Layers>
-          <Layer level="BACKGROUND">
-            <Texture parentKey="Background" atlas="AnimaChannel-Bar-Background" useAtlasSize="true"/>
-          </Layer>
-        </Layers>
-        <Scripts>
-          <OnEnter method="OnEnter"/>
-          <OnLeave method="OnLeave"/>
-        </Scripts>
+				</Frames>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ReinforceProgressFrame" mixin="ReinforceProgressFrameMixin" frameLevel="510">
+				<Size x="272" y="38"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="AnimaChannel-Bar-Background" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
 				<Frames>
 					<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false"/>
+					<ModelScene parentKey="OverlayModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false" frameLevel="550"/>
 				</Frames>
-      </Button>
-      <Frame parentKey="ReinforceInfoFrame" mixin="ReinforceInfoFrameMixin" frameLevel="512">
-        <Size x="312" y="50"/>
-        <Anchors>
-          <Anchor point="BOTTOM" relativeKey="$parent.ReinforceProgressFrame" relativePoint="TOP" x="0" y="10"/> 
-        </Anchors>
-        <Layers>
-          <Layer level="BORDER">
-            <Texture parentKey="TitleShadow" atlas="AnimaChannel-Reinforce-TextShadow" useAtlasSize="true">
-              <Anchors>
-                <Anchor point="TOP"/>
-              </Anchors>
-            </Texture>
-          </Layer>
-          <Layer level="ARTWORK">
-            <FontString parentKey="Title" inherits="GameFontHighlightMedium" text="ANIMA_DIVERSION_REINFORCE_READY">
-              <Anchors>
-                <Anchor point="CENTER" relativeKey="$parent.TitleShadow"/>
-              </Anchors>
-            </FontString>
-          </Layer>
-        </Layers>
-        <Frames>
-          <Button parentKey="AnimaNodeReinforceButton" inherits="UIPanelButtonTemplate" mixin="AnimaNodeReinforceButtonMixin" motionScriptsWhileDisabled="true" text="ANIMA_DIVERSION_REINFORCE">
-            <Size x="100" y="25"/>
-            <Anchors>
-              <Anchor point="TOP" relativeKey="$parent.TitleShadow" relativePoint="BOTTOM" x="0" y="5"/>
-            </Anchors>
-            <Scripts>
-              <OnClick method="OnClick"/>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ReinforceInfoFrame" mixin="ReinforceInfoFrameMixin" frameLevel="512">
+				<Size x="312" y="50"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ReinforceProgressFrame" relativePoint="TOP" x="0" y="10"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="TitleShadow" atlas="AnimaChannel-Reinforce-TextShadow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontHighlightMedium" text="ANIMA_DIVERSION_REINFORCE_READY">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.TitleShadow"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="AnimaNodeReinforceButton" inherits="UIPanelButtonTemplate" mixin="AnimaNodeReinforceButtonMixin" motionScriptsWhileDisabled="true" text="ANIMA_DIVERSION_REINFORCE">
+						<Size x="100" y="25"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.TitleShadow" relativePoint="BOTTOM" x="0" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
 							<OnEnter method="OnEnter"/>
 							<OnLeave method="OnLeave"/>
-            </Scripts>
-          </Button>
-        </Frames>
-      </Frame>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="SelectPinInfoFrame" inherits="ResizeLayoutFrame" mixin="AnimaDiversionSelectionInfoMixin" frameLevel="515">
 				<KeyValues>
 					<KeyValue key="spacing" value="5" type="number"/>
-          <KeyValue key="fixedWidth" value="250" type="number"/>
+					<KeyValue key="fixedWidth" value="250" type="number"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -176,32 +181,35 @@
 					</Layer>
 				</Layers>
 				<Frames>
-          <Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="550">
-            <KeyValues>
+					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="550">
+						<KeyValues>
 							<KeyValue key="layoutType" value="IdenticalCornersLayout" type="string"/>
 							<KeyValue key="layoutTextureKit" value="AnimaChannel" type="string"/>
-              <KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-            </KeyValues>
-            <Anchors>
-              <Anchor point="TOPLEFT" x="-8" y="8"/>
-              <Anchor point="BOTTOMRIGHT" x="8" y="-8" />
-            </Anchors>
-          </Frame>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-8" y="8"/>
+							<Anchor point="BOTTOMRIGHT" x="8" y="-8" />
+						</Anchors>
+					</Frame>
 					<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" mixin="AnimaDiversionSelectButtonMixin" text="ANIMA_DIVERSION_DIVERT_ANIMA">
 						<Size x="100" y="25"/>
 						<Scripts>
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
-          <Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="555">
-          <Anchors>
-            <Anchor point="TOPRIGHT" x="5" y="5" />
-          </Anchors>
-        </Button>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="555">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="5" y="5" />
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():ClearSelectedNode();
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
 				</Frames>
-				<Scripts>
-					<OnHide method="OnHide"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

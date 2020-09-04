@@ -2313,7 +2313,7 @@
 		<Size x="223" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" font="GameFontHighlightMedium">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
 					</Anchors>

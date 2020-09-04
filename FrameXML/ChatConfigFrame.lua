@@ -689,6 +689,7 @@ COMBAT_CONFIG_UNIT_COLORS = {
 function ChatConfigFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHANNEL_UI_UPDATE");
+	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
 	ChatConfigCombatSettingsFilters.selectedFilter = 1;
 end
 
@@ -720,6 +721,10 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 	elseif ( event == "CHANNEL_UI_UPDATE" ) then
 		ChatConfigCategory_UpdateEnabled();
 		ChatConfig_UpdateChatSettings();
+	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
+		if ChatConfigChannelSettings:IsVisible() then
+			ChatConfigChannelSettings_OnShow();
+		end
 	end
 end
 
@@ -1538,17 +1543,17 @@ function CreateChatChannelList(self, ...)
 	end
 	local channelList = FCF_GetCurrentChatFrame().channelList;
 	local zoneChannelList = FCF_GetCurrentChatFrame().zoneChannelList;
-	local channel, channelID, tag;
-	local checked;
-	local disabled;
 	local count = 1;
 	CHAT_CONFIG_CHANNEL_LIST = {};
 	for i=1, select("#", ...), 3 do
-		channelID = select(i, ...);
-		tag = "CHANNEL"..channelID;
-		channel = select(i+1, ...);
-		disabled = select(i+2, ...);
-		checked = nil;
+		local channelID = select(i, ...);
+		local tag = "CHANNEL"..channelID;
+		local channel = select(i+1, ...);
+		local disabled = select(i+2, ...);
+		if C_ChatInfo.GetChannelRuleset(channelID) == Enum.ChatChannelRuleset.Mentor then
+			disabled = disabled or not C_ChatInfo.IsRegionalServiceAvailable();
+		end
+		local checked = nil;
 		if ( channelList ) then
 			for index, value in pairs(channelList) do
 				if ( value == channel ) then

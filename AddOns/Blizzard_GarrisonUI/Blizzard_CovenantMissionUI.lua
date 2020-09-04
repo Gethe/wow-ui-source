@@ -23,7 +23,8 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_CONFIRMATION"] = {
 	button1 = COVENANT_MISSIONS_CONFIRM_START_MISSION,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		C_Garrison.RushHealFollower(data.followerID);
+		C_Garrison.RushHealFollower(self.data.followerID);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -42,7 +43,7 @@ local covenantGarrisonStyleData =
 	closeButtonY = 5,
 
 	nineSliceLayout = "CovenantMissionFrame",
-
+	materialFrameBG = "adventures_mission_materialframe",
 	BackgroundTile = "Adventures-Missions-BG-02",
 };
 
@@ -75,6 +76,7 @@ end
 
 local function SetupMaterialFrame(materialFrame, currency, currencyTexture)
 	materialFrame.currencyType = currency;
+	materialFrame.BG:SetAtlas(covenantGarrisonStyleData.materialFrameBG);
 	materialFrame.Icon:SetTexture(currencyTexture);
 	materialFrame.Icon:SetSize(18, 18);
 	materialFrame.Icon:SetPoint("RIGHT", materialFrame, "RIGHT", -14, 0);
@@ -252,7 +254,7 @@ function CovenantMission:SetupTabs()
    -- If the selected tab is not a valid one, switch to the default. Additionally, if the missions tab is newly available, then select it.
    local selectedTab = PanelTemplates_GetSelectedTab(self);
    if (not validTabs[selectedTab] or lastShowMissionsAndFollowersTabs ~= self.lastShowMissionsAndFollowersTabs) then
-   	self:SelectTab(defaultTab);
+		self:SelectTab(defaultTab);
    end
 end
 
@@ -350,9 +352,9 @@ function CovenantMission:InitiateMissionCompletion(missionInfo)
 	self:GetCompleteDialog():Hide();
 	self.FollowerTab:Hide();
 	self.FollowerList:Hide();
+	self.MissionTab:Hide();
 	HelpPlate_Hide();
 	self.MissionComplete:Show();
-	self.MissionCompleteBackground:Show();
 
 	self.MissionComplete:SetCurrentMission(missionInfo);
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_VIEW_MISSION_REPORT);
@@ -374,7 +376,7 @@ function CovenantMission:OnClickFollowerPlacerFrame(button, info)
 	end
 	
 	if soundKitToPlay then
-		PlaySound(soundKitToPlay);
+		PlaySound(soundKitToPlay, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 	self:ClearMouse();
 end
@@ -384,9 +386,9 @@ function CovenantMission:SetPlacerFrame(placer, info, yOffset, soundKit)
 	self:LockPlacerToMouse(placer);
 
 	if soundKit then
-		PlaySound(soundKit)
+		PlaySound(soundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	else
-		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 
@@ -591,7 +593,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
 
-	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED);
+	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 
 	return true;
 end
@@ -624,7 +626,7 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 	self:UpdateMissionData(missionPage);
 
 	if updateValues then
-		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 

@@ -166,6 +166,21 @@ local LegendaryCrafting =
 			},
 		},
 		{
+			Name = "GetRuneforgePowersByClassAndSpec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = true },
+				{ Name = "specID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "runeforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRuneforgeLegendary",
 			Type = "Function",
 
@@ -238,6 +253,15 @@ local LegendaryCrafting =
 
 	Events =
 	{
+		{
+			Name = "NewRuneforgePowerAdded",
+			Type = "Event",
+			LiteralName = "NEW_RUNEFORGE_POWER_ADDED",
+			Payload =
+			{
+				{ Name = "powerID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "RuneforgeLegendaryCraftingClosed",
 			Type = "Event",

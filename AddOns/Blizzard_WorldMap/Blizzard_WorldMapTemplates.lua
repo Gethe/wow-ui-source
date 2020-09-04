@@ -235,7 +235,7 @@ end
 function WorldMapTrackingPinButtonMixin:OnClick()
 	local mapID = self:GetParent():GetMapID();
 	self:SetActive(not self.isActive);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_BUTTON_CLICK);
 end
 
 function WorldMapTrackingPinButtonMixin:OnEnter()

@@ -45,6 +45,7 @@ function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(ClickToZoomDataProviderMixin));	-- no pins
 	self:AddDataProvider(CreateFromMixins(ZoneLabelDataProviderMixin));	-- no pins
 	self:AddDataProvider(CreateFromMixins(FlightMap_AreaPOIProviderMixin));
+	self:AddDataProvider(CreateFromMixins(FlightMap_VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 
 	local groupMembersDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
@@ -59,6 +60,7 @@ function FlightMapMixin:AddStandardDataProviders()
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST");
@@ -74,7 +76,15 @@ function FlightMapMixin:OnShow()
 
 	MapCanvasMixin.OnShow(self);
 
-	self:ResetZoom();
+	local playerPosition = C_Map.GetPlayerMapPosition(mapID, "player");
+	local subMapInfo = C_Map.GetMapInfoAtPosition(mapID, playerPosition:GetXY());
+	if subMapInfo and (subMapInfo.mapID ~= mapID) and FlagsUtil.IsSet(subMapInfo.flags, Enum.UIMapFlag.FlightMapAutoZoom) then
+		local centerX, centerY = MapUtil.GetMapCenterOnMap(subMapInfo.mapID, mapID);
+		local ignoreScaleRatio = true;
+		self:InstantPanAndZoom(self:GetScaleForMaxZoom(), centerX, centerY, ignoreScaleRatio);
+	else
+		self:ResetZoom();
+	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end

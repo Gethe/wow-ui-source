@@ -58,12 +58,12 @@ end
 local function GetCombatLogTextColor(combatLogEvent)
 	if IsAllyBoardIndex(combatLogEvent.casterBoardIndex) then
 		if IsEventOffensive(combatLogEvent.type) then 
-			return WHITE_FONT_COLOR;
+			return ADVENTURES_COMBAT_LOG_GREY;
 		else
-			return GREEN_FONT_COLOR;
+			return ADVENTURES_COMBAT_LOG_BLUE;
 		end
 	else
-		return RED_FONT_COLOR;
+		return ADVENTURES_COMBAT_LOG_ORANGE;
 	end
 end
 
@@ -104,7 +104,7 @@ end
 
 function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex, totalRounds) 
 	self.CombatLogMessageFrame:AddMessage(" ");
-	self.CombatLogMessageFrame:AddMessage(COVENANT_MISSIONS_COMBAT_LOG_ROUND:format(roundIndex, totalRounds), YELLOW_FONT_COLOR:GetRGB());
+	self.CombatLogMessageFrame:AddMessage(COVENANT_MISSIONS_COMBAT_LOG_ROUND:format(roundIndex, totalRounds), ADVENTURES_COMBAT_LOG_YELLOW:GetRGB());
 	self.CombatLogMessageFrame:AddMessage(" ");
 	self:UpdateScrollbar();
 end
@@ -129,7 +129,7 @@ end
 
 function AdventuresCombatLogMixin:AddVictoryState(winState)
 	local winStateText = winState and COVENANT_MISSIONS_COMBAT_LOG_VICTORY or COVENANT_MISSIONS_COMBAT_LOG_LOSS;
-	self.CombatLogMessageFrame:AddMessage(winStateText, YELLOW_FONT_COLOR:GetRGB());
+	self.CombatLogMessageFrame:AddMessage(winStateText, ADVENTURES_COMBAT_LOG_YELLOW:GetRGB());
 	self:UpdateScrollbar();
 end
 

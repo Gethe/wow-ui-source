@@ -396,13 +396,16 @@ function PVPMatchResultsMixin:InitConquestFrame(currency)
 	local deltaString = FormatValueWithSign(currency.quantityChanged / 100);
 	self.conquestText:SetText(PVP_CONQUEST_CHANGE:format(deltaString));
 
-	local questID = select(3, PVPGetConquestLevelInfo());
-	if questID and IsPlayerAtEffectiveMaxLevel() then
-		self.conquestButton:Setup(questID, nil);
+	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		local questID = select(3, PVPGetConquestLevelInfo());
+		if questID and IsPlayerAtEffectiveMaxLevel() then
+			self.conquestButton:LegacySetup(questID, nil);
+		else
+			self.conquestButton:Clear();
+		end
 	else
-		self.conquestButton:Clear();
+		--
 	end
-
 	self.conquestFrame:Show();
 end
 function PVPMatchResultsMixin:InitRatingFrame()

@@ -3,11 +3,6 @@ local MIN_STORY_TOOLTIP_WIDTH = 240;
 
 local tooltipButton;
 
-QUEST_LOG_CAMPAIGN_LAYOUT_INDEX = 2;
-QUEST_LOG_CAMPAIGN_NEXT_OBJECTIVE_LAYOUT_INDEX = 12;
-QUEST_LOG_SEPARATOR_LAYOUT_INDEX = 24;
-QUEST_LOG_STORY_LAYOUT_INDEX = 25;
-
 QuestLogMixin = { };
 
 function QuestLogMixin:GetCurrentMapID()
@@ -48,18 +43,13 @@ function QuestLogMixin:UpdatePOIs()
 	end
 end
 
-function QuestLogMixin:InitLayoutIndexManager()
-	self.layoutIndexManager = CreateLayoutIndexManager();
-	self.layoutIndexManager:AddManagedLayoutIndex("Campaign", QUEST_LOG_CAMPAIGN_LAYOUT_INDEX + 1);
-	self.layoutIndexManager:AddManagedLayoutIndex("Other", QUEST_LOG_STORY_LAYOUT_INDEX + 1);
+function QuestLogMixin:SetFrameLayoutIndex(frame)
+	frame.layoutIndex = self.layoutIndex or 1;
+	self.layoutIndex = frame.layoutIndex + 1;
 end
 
-function QuestLogMixin:GetManagedLayoutIndex(key)
-	return self.layoutIndexManager:GetManagedLayoutIndex(key);
-end
-
-function QuestLogMixin:ResetLayoutIndexManager()
-	self.layoutIndexManager:Reset();
+function QuestLogMixin:ResetLayoutIndex()
+	self.layoutIndex = 1;
 end
 
 function QuestLogMixin:ShowCampaignOverview(campaignID)
@@ -71,6 +61,45 @@ end
 function QuestLogMixin:HideCampaignOverview(campaignID)
 	self.CampaignOverview:Hide();
 	QuestScrollFrame:Show();
+end
+
+QuestLogHeaderCodeMixin = {};
+
+function QuestLogHeaderCodeMixin:OnClick(button)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	if button == "LeftButton" then
+		local info = C_QuestLog.GetInfo(self.questLogIndex);
+		if info then
+			if info.isCollapsed then
+				ExpandQuestHeader(self.questLogIndex);
+			else
+				CollapseQuestHeader(self.questLogIndex);
+			end
+		end
+	end
+end
+
+function QuestLogHeaderCodeMixin:OnEnter()
+	local text = self.ButtonText or self.Text;
+	text:SetTextColor(1, 1, 1);
+	if text:IsTruncated() then
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 239, 0);
+		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+		GameTooltip:SetText(text:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, 1);
+	end
+end
+
+function QuestLogHeaderCodeMixin:OnLeave()
+	local text = self.ButtonText or self.Text;
+	text:SetTextColor(0.7, 0.7, 0.7);
+	GameTooltip:Hide();
+end
+
+QuestLogHeaderMixin = {};
+
+function QuestLogHeaderMixin:OnLoad()
+	self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
 end
 
 function QuestMapFrame_OnLoad(self)
@@ -88,8 +117,6 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
-
-	self:InitLayoutIndexManager();
 
 	self.completedCriteria = {};
 	QuestPOI_Initialize(QuestScrollFrame.Contents);
@@ -688,6 +715,8 @@ function QuestsFrame_OnLoad(self)
 	self.objectiveFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
 	self.headerFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogHeaderTemplate");
 	self.campaignHeaderFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderTemplate");
+	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CovenantCallingsHeaderTemplate");
+	self.CampaignTooltip = CreateFrame("Frame", nil, UIParent, "CampaignTooltipTemplate");
 end
 
 -- *****************************************************************************************************
@@ -844,7 +873,7 @@ local function QuestLogQuests_ShouldShowHeaderButton(info)
 	return info.isHeader and info.shouldDisplay;
 end
 
-local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoContainer)
+local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoContainer, lastHeader)
 	local info = C_QuestLog.GetInfo(questLogIndex);
 	if not info then return end
 
@@ -860,13 +889,22 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign; -- Always display campaign headers, the rest start as hidden
 	else
-		if lastHeader and not lastHeader.shouldDisplay and QuestLogQuests_ShouldShowQuestButton(info) then
-			lastHeader.shouldDisplay = true;
+		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);  -- TOOD: Do this in QuestLog? Either way, cached for later use
+
+		if lastHeader and not lastHeader.shouldDisplay then
+			lastHeader.shouldDisplay = info.isCalling or QuestLogQuests_ShouldShowQuestButton(info);
 		end
 
 		-- Make it easy for a quest to look up its header
 		info.header = lastHeader;
+
+		-- Might as well just keep this in Lua
+		if info.isCalling and info.header then
+			info.header.isCalling = true;
+		end
 	end
+
+	return lastHeader;
 end
 
 local function QuestLogQuests_BuildQuestInfoContainer()
@@ -875,7 +913,7 @@ local function QuestLogQuests_BuildQuestInfoContainer()
 	local lastHeader;
 
 	for questLogIndex = 1, numEntries do
-		QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoContainer);
+		lastHeader = QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoContainer, lastHeader);
 	end
 
 	return questInfoContainer;
@@ -896,11 +934,23 @@ local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 	return infos;
 end
 
+local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
+	local infos = {};
+
+	for index, info in ipairs(questInfoContainer) do
+		if info.isCalling then
+			table.insert(infos, info);
+		end
+	end
+
+	return infos;
+end
+
 local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if not info.campaignID then
+		if not info.campaignID and not info.isCalling then
 			table.insert(infos, info);
 		end
 	end
@@ -926,6 +976,52 @@ local function QuestLogQuests_GetPOIButton(displayState, info, isDisabledQuest, 
 	end
 end
 
+local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
+	if isComplete then
+		return "COMPLETED";
+	end
+
+	-- At this point, we know the quest is not complete, no need to check it any more.
+	if C_QuestLog.IsFailed(questID) then
+		return "FAILED";
+	end
+
+	if info.isCalling then
+		local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+		if secondsRemaining < 3600 then -- 1 hour
+			return "EXPIRING_SOON";
+		elseif secondsRemaining < 18000 then -- 5 hours
+			return "EXPIRING";
+		end
+	end
+
+	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
+	local questTagID = tagInfo and tagInfo.tagID;
+
+	if questTagID == Enum.QuestTag.Account then
+		local factionGroup = GetQuestFactionGroup(questID);
+		if factionGroup then
+			return factionGroup == LE_QUEST_FACTION_HORDE and "HORDE" or "ALLIANCE";
+		else
+			return Enum.QuestTag.Account;
+		end
+	end
+
+	if info.frequency == Enum.QuestFrequency.Daily then
+		return "DAILY";
+	end
+
+	if info.frequency == Enum.QuestFrequency.Weekly then
+		return "WEEKLY";
+	end
+
+	if questTagID then
+		return questTagID;
+	end
+
+	return nil;
+end
+
 local function QuestLogQuests_AddQuestButton(displayState, info)
 	local button = QuestScrollFrame.titleFramePool:Acquire();
 	local questID = info.questID;
@@ -935,8 +1031,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	button.questID = questID;
 	button.questLogIndex = questLogIndex;
 
-	local layoutKey = info.campaignID and "Campaign" or "Other";
-	button.layoutIndex = QuestMapFrame:GetManagedLayoutIndex(layoutKey);
+	QuestMapFrame:SetFrameLayoutIndex(button);
 
 	local title = QuestLogQuests_GetTitle(displayState, info);
 
@@ -956,31 +1051,8 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	end
 
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
-	local tagID;
-	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
-	local questTagID = tagInfo and tagInfo.tagID;
-
 	local isComplete = C_QuestLog.IsComplete(questID);
-
-	if not isComplete and C_QuestLog.IsFailed(questID) then
-		tagID = "FAILED";
-	elseif isComplete then
-		tagID = "COMPLETED";
-	elseif questTagID == Enum.QuestTag.Account then
-		local factionGroup = GetQuestFactionGroup(questID);
-		if factionGroup then
-			tagID = factionGroup == LE_QUEST_FACTION_HORDE and "HORDE" or "ALLIANCE";
-		else
-			tagID = Enum.QuestTag.Account;
-		end
-	elseif info.frequency == Enum.QuestFrequency.Daily and (not isComplete or isComplete == 0) then
-		tagID = "DAILY";
-	elseif info.frequency == Enum.QuestFrequency.Weekly and (not isComplete or isComplete == 0) then
-		tagID = "WEEKLY";
-	elseif questTagID then
-		tagID = questTagID;
-	end
-
+	local tagID = QuestLogQuests_GetBestTagID(questID, info, isComplete);
 	local tagCoords = tagID and QUEST_TAG_TCOORDS[tagID];
 	button.TagTexture:SetShown(tagCoords ~= nil);
 
@@ -1083,11 +1155,11 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 end
 
 local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
-	button = QuestScrollFrame.campaignHeaderFramePool:Acquire();
+	local button = QuestScrollFrame.campaignHeaderFramePool:Acquire();
 	button:SetCampaignFromQuestHeader(info);
 
 	button.questLogIndex = info.questLogIndex;
-	button.layoutIndex = QuestMapFrame:GetManagedLayoutIndex("Campaign");
+	QuestMapFrame:SetFrameLayoutIndex(button);
 
 	-- Only set campaignShown to true, once it's true it should remain true for this display
 	-- NOTE: The topPadding hack is due to the container being a vertical layout frame, we don't want spacing
@@ -1108,25 +1180,52 @@ local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
 	return button;
 end
 
-local function QuestLogQuests_AddStandardHeaderButton(displayState, info)
-	button = QuestScrollFrame.headerFramePool:Acquire();
-	local texture = info.isCollapsed and "Interface\\Buttons\\UI-PlusButton-Up" or "Interface\\Buttons\\UI-MinusButton-Up";
-	button:SetNormalTexture(texture);
+local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, info)
+	button:SetNormalAtlas(info.isCollapsed and "Campaign_HeaderIcon_Closed" or "Campaign_HeaderIcon_Open" );
+	button:SetPushedAtlas(info.isCollapsed and "Campaign_HeaderIcon_ClosedPressed" or "Campaign_HeaderIcon_OpenPressed");
 	button:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
-	button:SetText(info.title);
 	button:SetHitRectInsets(0, -button.ButtonText:GetWidth(), 0, 0);
 
 	button.questLogIndex = info.questLogIndex;
-	button.layoutIndex = QuestMapFrame:GetManagedLayoutIndex("Other");
+	QuestMapFrame:SetFrameLayoutIndex(button);
 
+	return button;
+end
+
+CovenantCallingsHeaderMixin = {};
+
+function CovenantCallingsHeaderMixin:OnLoadCovenantCallings()
+	EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", self.UpdateText, self);
+end
+
+function CovenantCallingsHeaderMixin:UpdateText()
+	CovenantCalling_CheckCallings();
+	self:SetText(QUEST_LOG_COVENANT_CALLINGS_HEADER:format(CovenantCalling_GetCompletedCount(), Constants.Callings.MaxCallings));
+end
+
+local function QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info)
+	local button = QuestScrollFrame.covenantCallingsHeaderFramePool:Acquire();
+	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
+	button.SelectedTexture:SetShown(not info.isCollapsed);
+	button:UpdateText();
+	return button;
+end
+
+local function QuestLogQuests_AddStandardHeaderButton(displayState, info)
+	local button = QuestScrollFrame.headerFramePool:Acquire();
+	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
+	button:SetText(info.title);
 	return button;
 end
 
 local function QuestLogQuests_AddHeaderButton(displayState, info)
 	displayState.hasShownAnyHeader = true;
 
+	local button;
 	if info.campaignID then
 		button = QuestLogQuests_AddCampaignHeaderButton(displayState, info);
+	elseif info.isCalling then
+		button = QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info);
 	else
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);
 	end
@@ -1186,17 +1285,20 @@ function QuestLogQuests_Update(poiTable)
 	QuestScrollFrame.objectiveFramePool:ReleaseAll();
 	QuestScrollFrame.headerFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderFramePool:ReleaseAll();
+	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();
 	QuestPOI_ResetUsage(QuestScrollFrame.Contents);
-	QuestMapFrame:ResetLayoutIndexManager();
+	QuestMapFrame:ResetLayoutIndex();
 
 	-- Build the info table, to determine what needs to be displayed
 	local questInfoContainer = QuestLogQuests_BuildQuestInfoContainer();
 	local campaignInfos = QuestLogQuests_GetCampaignInfos(questInfoContainer);
+	local covenantCallingsInfos = QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer);
 	local questInfos = QuestLogQuests_GetQuestInfos(questInfoContainer);
 	local displayState = QuestLogQuests_BuildInitialDisplayState(poiTable, questInfoContainer);
 
 	-- Display all campaigns
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, campaignInfos);
+	QuestLogQuests_DisplayQuestsFromIndices(displayState, covenantCallingsInfos);
 
 	-- Display the zone story stuff if appropriate, updating separators as necessary...TODO: Refactor this out as well
 	local mapID = QuestMapFrame:GetParent():GetMapID();
@@ -1205,6 +1307,7 @@ function QuestLogQuests_Update(poiTable)
 	local separator = QuestScrollFrame.Contents.Separator;
 	separator:SetShown(displayState.campaignShown);
 	if displayState.campaignShown then
+		QuestMapFrame:SetFrameLayoutIndex(separator);
 		if storyAchievementID then
 			separator.Divider:SetAtlas("ZoneStory_Divider", true);
 		else
@@ -1220,6 +1323,7 @@ function QuestLogQuests_Update(poiTable)
 		end
 
 		QuestScrollFrame.Contents.StoryHeader:Show();
+		QuestMapFrame:SetFrameLayoutIndex(QuestScrollFrame.Contents.StoryHeader);
 		local mapInfo = C_Map.GetMapInfo(storyMapID);
 		QuestScrollFrame.Contents.StoryHeader.Text:SetText(mapInfo and mapInfo.name or nil);
 		local numCriteria = GetAchievementNumCriteria(storyAchievementID);
@@ -1260,20 +1364,6 @@ function OpenQuestLog(mapID)
 
 	if mapID then
 		QuestMapFrame:GetParent():SetMapID(mapID);
-	end
-end
-
-function QuestMapLogHeaderButton_OnClick(self, button)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if ( button == "LeftButton" ) then
-		local info = C_QuestLog.GetInfo(self.questLogIndex);
-		if info then
-			if info.isCollapsed then
-				ExpandQuestHeader(self.questLogIndex);
-			else
-				CollapseQuestHeader(self.questLogIndex);
-			end
-		end
 	end
 end
 
@@ -1345,6 +1435,10 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, tagName, overrideQuestTag, tagInfo.worldQuestType, NORMAL_FONT_COLOR);
+	end
+
+	if C_QuestLog.IsQuestCalling(questID) then
+		WorldMap_AddQuestTimeToTooltip(questID);
 	end
 
 	if ( info.frequency == Enum.QuestFrequency.Daily ) then

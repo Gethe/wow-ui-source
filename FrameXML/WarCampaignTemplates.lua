@@ -224,6 +224,11 @@ function CampaignHeaderMixin:OnEnter()
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
+function CampaignHeaderMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+	QuestMapLog_GetCampaignTooltip():Hide();
+end
+
 function CampaignHeaderMixin:OnMouseUp(button, upInside)
 	if upInside and button == "LeftButton" then
 		self.CollapseButton:OnClick(button);
@@ -271,8 +276,7 @@ function CampaignHeaderMixin:UpdateLoreButtonVisibility()
 
 	-- OnLeave logic
 	if not mouseOver then
-		self:SetScript("OnUpdate", nil);
-		QuestMapLog_GetCampaignTooltip():Hide();
+		self:OnLeave();
 	end
 end
 

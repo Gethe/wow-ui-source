@@ -357,7 +357,6 @@ function SoulbindConduitNodeMixin:ClearPendingConduit()
 
 		self:DisplayConduit();
 		self:UpdatePendingAnim();
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_REMOVE_PENDING);
 	end
 end
 

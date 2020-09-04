@@ -8,6 +8,7 @@ local SoulbindTreeEvents =
 	"SOULBIND_NODE_LEARNED",
 	"SOULBIND_NODE_UNLEARNED",
 	"SOULBIND_PATH_CHANGED",
+	"CURRENCY_DISPLAY_UPDATE",
 	"CURSOR_CHANGED",
 };
 
@@ -46,6 +47,11 @@ function SoulbindTreeMixin:OnEvent(event, ...)
 	elseif event == "CURSOR_CHANGED" then
 		local isDefault, newCursorType, oldCursorType = ...;
 		self:OnCursorChanged(isDefault, oldCursorType);
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+		local currencyID = ...;
+		if currencyID == SOULBINDS_RENOWN_CURRENCY_ID then
+			self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
+		end
 	end
 end
 
@@ -247,7 +253,6 @@ function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
 end
 
 function SoulbindTreeMixin:OnCollectionConduitLeave()
-	local elapsed = 0;
 	if not Soulbinds.HasConduitAtCursor() then
 		if self.mouseOverTimer then
 			self.mouseOverTimer:Cancel();

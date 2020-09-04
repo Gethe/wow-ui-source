@@ -268,6 +268,14 @@ function RuneforgeFrameMixin:GetLegendaryCraftInfo()
 	return nil;
 end
 
+function RuneforgeFrameMixin:GetItemPreviewInfo(baseItem, powerID, modifiers)
+	if not baseItem then
+		baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
+	end
+	
+	return self:IsRuneforgeUpgrading() and C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem) or C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
+end
+
 function RuneforgeFrameMixin:RefreshResultTooltip()
 	local resultTooltip = self.ResultTooltip;
 	local tooltipWasShown = resultTooltip:IsShown();
@@ -277,7 +285,7 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 		resultTooltip:SetOwner(self, "ANCHOR_NONE");
 		resultTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -162);
 
-		local itemPreviewInfo = C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
+		local itemPreviewInfo = self:GetItemPreviewInfo(baseItem, powerID, modifiers);
 		local upgradeItem = self:GetUpgradeItem();
 		local hasUpgradeItem = upgradeItem ~= nil;
 		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or itemPreviewInfo.itemLevel;
@@ -300,13 +308,12 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 		return;
 	end
 
-	local itemPreviewInfo = C_LegendaryCrafting.GetRuneforgeItemPreviewInfo(baseItem, powerID, modifiers);
+	local itemPreviewInfo = self:GetItemPreviewInfo(baseItem, powerID, modifiers);
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, -6);
 
 	local itemID = C_Item.GetItemID(baseItem);
-	local itemLevel = C_Item.GetCurrentItemLevel(baseItem);
 	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemPreviewInfo.itemLevel, powerID, modifiers);
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip:Show();
@@ -320,9 +327,6 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 
 	SetUIPanelAttribute(self, "width", self:GetWidth());
 	UpdateUIPanelPositions(self);
-end
-
-function RuneforgeFrameMixin:ShowUpgradeTooltip()
 end
 
 function RuneforgeFrameMixin:SetItem(itemLocation, autoSelectSlot)

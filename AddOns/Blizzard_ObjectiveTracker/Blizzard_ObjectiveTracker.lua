@@ -71,12 +71,13 @@ blockTemplate:		template for the blocks - a quest would be a single block
 blockType:			type of object
 lineTemplate:		template for the lines - a quest objective would be a single line (even if it wordwraps); only FRAME supported
 lineSpacing:		spacing between lines; for the first line it'll be the distance from the top of its block
-blockOffsetX:		offset from the left edge of the blocksframe
-blockOffsetY:		offset from the block above
+blockOffsetX:		offset from the left edge of the blocksframe 	\__These are both added to a table indexed by blockTemplate.
+blockOffsetY:		offset from the block above 					/
 fromHeaderOffsetY:	offset from the header for the first block, if there's a header; used instead of blockOffsetY
 fromModuleOffsetY:	offset from the previous module
-freeBlocks:			table of free blocks; a module needs it own if not using default block template
-usedBlocks:			table of used blocks; a module should always have its own
+poolCollection:		pool of (potentially) multiple frame types for use in a module
+usedBlocks:			table of used blocks; a module should always have its own, this table uses template type so that GetBlock(id) ALWAYS returns
+					the correct frame that already exists (for animation purposes)
 freelines:			table of free lines; a module needs it own if not using default line template
 					there's no table of used lines, that's per block
 updateReasonModule:	the update for this module alone
@@ -100,11 +101,9 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName)
 	self.lineTemplate = "ObjectiveTrackerLineTemplate";
 	self.lineSpacing = 2;
 	self.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH;
-	self.freeBlocks = { };
+	self.poolCollection = CreateFramePoolCollection();
 	self.usedBlocks = { };
 	self.freeLines = { };
-	self.blockOffsetX = 0;
-	self.blockOffsetY = -6;
 	self.fromHeaderOffsetY = -10;
 	self.fromModuleOffsetY = -10;
 	self.contentsHeight = 0;
@@ -119,6 +118,8 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName)
 	self.updateReasonEvents = 0;
 
 	self.BlocksFrame = ObjectiveTrackerFrame.BlocksFrame;
+
+	DEFAULT_OBJECTIVE_TRACKER_MODULE.AddBlockOffset(self, self.blockTemplate, 0, -6);
 end
 
 function ObjectiveTracker_GetModuleInfoTable(friendlyName, baseModule)
@@ -171,29 +172,39 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:UsesSharedHeader()
 	return self.usesSharedHeader;
 end
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id)
-	-- first try to return existing block
-	local block = self.usedBlocks[id];
-	if ( not block ) then
-		local numFreeBlocks = #self.freeBlocks;
-		if ( numFreeBlocks > 0 ) then
-			-- get a free block
-			block = self.freeBlocks[numFreeBlocks];
-			tremove(self.freeBlocks, numFreeBlocks);
-		else
-			-- create a new block
-			block = CreateFrame(self.blockType, nil, self.BlocksFrame or ObjectiveTrackerFrame.BlocksFrame, self.blockTemplate);
-			block.lines = { };
-		end
-		self.usedBlocks[id] = block;
-		block.module = self;
-		block.id = id;
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id, overrideType, overrideTemplate)
+	local blockType = overrideType or self.blockType;
+	local blockTemplate = overrideTemplate or self.blockTemplate;
+
+	if not self.usedBlocks[blockTemplate] then
+		self.usedBlocks[blockTemplate] = {};
 	end
+
+	-- first try to return existing block
+	local block = self.usedBlocks[blockTemplate][id];
+
+	if not block then
+		local pool = self.poolCollection:GetOrCreatePool(blockType, self.BlocksFrame or ObjectiveTrackerFrame.BlocksFrame, blockTemplate);
+
+		local isNewBlock = nil;
+		block, isNewBlock = pool:Acquire(blockTemplate);
+
+		if isNewBlock then
+			block.blockTemplate = blockTemplate; -- stored so we can use it to free from the lookup later
+			block.lines = {};
+		end
+
+		self.usedBlocks[blockTemplate][id] = block;
+		block.id = id;
+		block.module = self;
+	end
+
 	block.used = true;
 	block.height = 0;
 	block.currentLine = nil;
+
 	-- prep lines
-	if ( block.lines ) then
+	if block.lines then
 		for objectiveKey, line in pairs(block.lines) do
 			line.used = nil;
 		end
@@ -202,13 +213,24 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id)
 	return block;
 end
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id)
-	return self.usedBlocks[id];
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id, overrideTemplate)
+	local template = overrideTemplate or self.blockTemplate;
+	assert(template);
+	assert(self.usedBlocks)
+
+	local blocks = self.usedBlocks[template];
+	if blocks then
+		return blocks[id];
+	end
+
+	return nil;
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:MarkBlocksUnused()
-	for _, block in pairs(self.usedBlocks) do
-		block.used = nil;
+	for blockTemplate, blockTable in pairs(self.usedBlocks) do
+		for blockID, block in pairs(blockTable) do
+			block.used = nil;
+		end
 	end
 end
 
@@ -218,10 +240,11 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeBlock(block)
 		self:FreeLine(block, line);
 	end
 	block.lines = { };
+
 	-- free the block
-	tinsert(self.freeBlocks, block);
-	self.usedBlocks[block.id] = nil;
-	block:Hide();
+	self.usedBlocks[block.blockTemplate][block.id] = nil;
+	self.poolCollection:Release(block);
+
 	-- callback
 	if ( self.OnFreeBlock ) then
 		self:OnFreeBlock(block);
@@ -229,9 +252,11 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeBlock(block)
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeUnusedBlocks()
-	for questID, block in pairs(self.usedBlocks) do
-		if ( not block.used ) then
-			self:FreeBlock(block);
+	for blockTemplate, blockTable in pairs(self.usedBlocks) do
+		for blockID, block in pairs(blockTable) do
+			if not block.used then
+				self:FreeBlock(block);
+			end
 		end
 	end
 end
@@ -244,6 +269,16 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlockCount()
 	end
 
 	return count;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetActiveBlocks(blockTemplate)
+	-- By default use the module's preferred block type.
+	blockTemplate = blockTemplate or self.blockTemplate;
+	if not self.usedBlocks[blockTemplate] then
+		self.usedBlocks[blockTemplate] = {};
+	end
+
+	return self.usedBlocks[blockTemplate];
 end
 
 -- ***** LINES
@@ -583,6 +618,61 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:IsCollapsed()
 end
 
 -- *****************************************************************************************************
+-- ***** MODULE/BLOCK CUSTOMIZATION
+-- *****************************************************************************************************
+
+local function ObjectiveTracker_AddCustomizationData(module, customizationKey, template, data)
+	if not module[customizationKey] then
+		module[customizationKey] = {};
+	end
+
+	module[customizationKey][template] = data;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddButtonOffsets(template, offsets)
+	ObjectiveTracker_AddCustomizationData(self, "buttonOffsets", template, offsets);
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddBlockOffset(template, x, y)
+	ObjectiveTracker_AddCustomizationData(self, "blockOffset", template, { x or 0, y or 0 });
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddPaddingBetweenButtons(template, padding)
+	ObjectiveTracker_AddCustomizationData(self, "paddingBetweenButtons", template, padding);
+end
+
+local function GetBlockTemplate(block)
+	return block.blockTemplate or block.module.blockTemplate;
+end
+
+function ObjectiveTracker_GetButtonOffsets(block, offsetTag)
+	local offsets = block.module.buttonOffsets;
+	if offsets then
+		return unpack(offsets[GetBlockTemplate(block)][offsetTag]);
+	end
+
+	return 0, 0;
+end
+
+function ObjectiveTracker_GetBlockOffset(block)
+	local offset = block.module.blockOffset;
+	if offset then
+		return unpack(offset[GetBlockTemplate(block)]);
+	end
+
+	return 0, 0;
+end
+
+function ObjectiveTracker_GetPaddingBetweenButtons(block)
+	local padding = block.module.paddingBetweenButtons;
+	if padding then
+		return padding[GetBlockTemplate(block)];
+	end
+
+	return 0;
+end
+
+-- *****************************************************************************************************
 -- ***** BLOCK HEADER HANDLERS
 -- *****************************************************************************************************
 
@@ -669,7 +759,7 @@ end
 -- *****************************************************************************************************
 
 function ObjectiveTracker_OnLoad(self)
-	DEFAULT_OBJECTIVE_TRACKER_MODULE.OnLoad(self);
+	DEFAULT_OBJECTIVE_TRACKER_MODULE.OnLoad(self, "DEFAULT_OBJECTIVE_TRACKER_MODULE");
 
 	-- create a line so we can get some measurements
 	local line = CreateFrame("Frame", nil, self, self.lineTemplate);
@@ -698,13 +788,11 @@ function ObjectiveTracker_Initialize(self)
 						WORLD_QUEST_TRACKER_MODULE,
 						CAMPAIGN_QUEST_TRACKER_MODULE,
 						QUEST_TRACKER_MODULE,
-						AUTO_QUEST_POPUP_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
 								CAMPAIGN_QUEST_TRACKER_MODULE,
-								AUTO_QUEST_POPUP_TRACKER_MODULE,
 								QUEST_TRACKER_MODULE,
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
@@ -959,7 +1047,7 @@ end
 local function AnchorBlock(block, anchorBlock, checkFit)
 	local module = block.module;
 	local blocksFrame = module.BlocksFrame;
-	local offsetY = module.blockOffsetY;
+	local offsetX, offsetY = ObjectiveTracker_GetBlockOffset(block);
 	block:ClearAllPoints();
 	if ( anchorBlock ) then
 		if ( anchorBlock.isHeader ) then
@@ -973,7 +1061,7 @@ local function AnchorBlock(block, anchorBlock, checkFit)
 			offsetY = offsetY + anchorBlock.module.fromModuleOffsetY;
 			block:SetPoint("LEFT", OBJECTIVE_TRACKER_HEADER_OFFSET_X, 0);
 		else
-			block:SetPoint("LEFT", module.blockOffsetX, 0);
+			block:SetPoint("LEFT", offsetX, 0);
 		end
 		block:SetPoint("TOP", anchorBlock, "BOTTOM", 0, offsetY);
 	else
@@ -986,7 +1074,7 @@ local function AnchorBlock(block, anchorBlock, checkFit)
 		if ( block.isHeader ) then
 			block:SetPoint("TOPLEFT", blocksFrame.ScrollContents or blocksFrame, "TOPLEFT", OBJECTIVE_TRACKER_HEADER_OFFSET_X, offsetY);
 		else
-			block:SetPoint("TOPLEFT", blocksFrame.ScrollContents or blocksFrame, "TOPLEFT", module.blockOffsetX, offsetY);
+			block:SetPoint("TOPLEFT", blocksFrame.ScrollContents or blocksFrame, "TOPLEFT", offsetX, offsetY);
 		end
 	end
 	return offsetY;
@@ -1070,7 +1158,7 @@ function ObjectiveTracker_CanFitBlock(block, header)
 	elseif ( blocksFrame.currentBlock.isHeader ) then
 		offsetY = module.fromHeaderOffsetY;
 	else
-		offsetY = block.module.blockOffsetY;
+		offsetY = select(2, ObjectiveTracker_GetBlockOffset(block));
 	end
 
 	local totalHeight;

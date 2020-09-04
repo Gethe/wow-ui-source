@@ -780,6 +780,16 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GarrisonTalentEventUpdate",
+			Type = "Event",
+			LiteralName = "GARRISON_TALENT_EVENT_UPDATE",
+			Payload =
+			{
+				{ Name = "eventType", Type = "number", Nilable = false },
+				{ Name = "eventID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GarrisonTalentNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_NPC_CLOSED",
@@ -949,6 +959,7 @@ local GarrisonInfo =
 				{ Name = "boardIndex", Type = "number", Nilable = false },
 				{ Name = "oldHealth", Type = "number", Nilable = false },
 				{ Name = "newHealth", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "points", Type = "number", Nilable = true },
 			},
 		},

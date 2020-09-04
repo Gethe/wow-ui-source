@@ -337,7 +337,6 @@ function CovenantMissionListMixin:Update()
 			button:Enable();
 			button.Overlay:Hide();
 			button.CompleteCheck:SetShown(mission.canBeCompleted);
-			button.CompleteHighlight:SetShown(mission.canBeCompleted);
 
 			if (mission.canBeCompleted) then
 				button.Summary:SetShown(false);
@@ -668,33 +667,45 @@ end
 --- Health Bar Mixin													  ---
 ---------------------------------------------------------------------------------
 
-AventuresPuckHealthBarMixin = {};
+AdventuresPuckHealthBarMixin = {};
 
 local HealthBarBorderSize = 2;
 local TotalHealthBarBorderSize = HealthBarBorderSize * 2;
-function AventuresPuckHealthBarMixin:SetHealth(health)
-	self.health = health;
-
-	local healthPercent = math.min(health / self.maxHealth, 1);
-	local healthBarWidth = self.Background:GetWidth();
-	self.Health:SetPoint("RIGHT", self.Background, "LEFT", healthBarWidth * healthPercent, 0);
+function AdventuresPuckHealthBarMixin:OnShow()
+	self:UpdateHealthBar();
 end
 
-function AventuresPuckHealthBarMixin:GetHealth()
+function AdventuresPuckHealthBarMixin:SetHealth(health)
+	self.health = health;
+
+	self:UpdateHealthBar();
+end
+
+function AdventuresPuckHealthBarMixin:UpdateHealthBar()
+	if self.health and self.maxHealth and self.maxHealth ~= 0 then
+		local healthPercent = math.min(self.health / self.maxHealth, 1);
+		local healthBarWidth = self.Background:GetWidth();
+		self.Health:SetPoint("RIGHT", self.Background, "LEFT", healthBarWidth * healthPercent, 0);
+	end
+end
+
+function AdventuresPuckHealthBarMixin:GetHealth()
 	return self.health;
 end
 
-function AventuresPuckHealthBarMixin:SetMaxHealth(maxHealth)
-	self.maxHealth = maxHealth;
+function AdventuresPuckHealthBarMixin:SetMaxHealth(maxHealth)
+	if maxHealth ~= 0 then
+		self.maxHealth = maxHealth;
+	end
 end
 
-function AventuresPuckHealthBarMixin:SetPuckDesaturation(desaturation)
+function AdventuresPuckHealthBarMixin:SetPuckDesaturation(desaturation)
 	self.Background:SetDesaturation(desaturation);
 	self.Health:SetDesaturation(desaturation);
 	self.RoleIcon:SetDesaturation(desaturation);
 end
 
-function AventuresPuckHealthBarMixin:SetRole(role)
+function AdventuresPuckHealthBarMixin:SetRole(role)
 	local useAtlasSize = true;
 	if role == Enum.GarrAutoCombatantRole.HealSupport then
 		self.RoleIcon:SetAtlas("Adventures-Healer", useAtlasSize);

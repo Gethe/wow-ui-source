@@ -49,14 +49,15 @@ function SelectableButtonMixin:IsSelected()
 	return self.selected;
 end
 
-function SelectableButtonMixin:SetSelected(newSelected, isInitializing)
+function SelectableButtonMixin:SetSelected(newSelected)
 	if self:CanChangeSelection(newSelected) then
 		self.selected = newSelected;
+
 		self:TriggerEvent(SelectableButtonMixin.Event.SelectionChanged, self, newSelected);
-		self:OnSelected(newSelected, isInitializing);
+		self:OnSelected(newSelected);
 	end
 end
 
-function SelectableButtonMixin:OnSelected(newSelected, isInitializing)
+function SelectableButtonMixin:OnSelected(newSelected)
 -- Derive
 end

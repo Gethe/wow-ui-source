@@ -436,7 +436,7 @@ function AutoCompleteButton_OnClick(self)
 	
 	autoComplete:Hide();
 	
-	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo) ) then
+	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo, name) ) then
 		return;
 	end
 	

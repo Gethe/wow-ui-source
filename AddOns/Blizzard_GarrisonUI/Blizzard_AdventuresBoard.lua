@@ -333,6 +333,7 @@ function AdventuresBoardCombatMixin:AddCombatEventText(combatLogEvent)
 		if text then
 			local targetFrame = self:GetFrameByBoardIndex(target.boardIndex);
 			self:AddCombatText(text, sourceFrame, targetFrame);
+			targetFrame:SetMaxHealth(target.maxHealth);
 			targetFrame:SetHealth(target.newHealth);
 		end
 	end

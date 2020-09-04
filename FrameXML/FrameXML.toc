@@ -25,7 +25,6 @@
 ..\SharedXML\TabGroup.lua
 ..\SharedXML\SmoothStatusBar.lua
 ..\SharedXML\PredictedSetting.lua
-..\SharedXML\LayoutIndexManager.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\NineSlice.lua
@@ -121,10 +120,12 @@ AzeriteEssenceUtil.lua
 AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
+RuneforgeUtil.lua
 ItemUtil.lua
 PVPUtil.lua
 TransmogUtil.lua
 ActionButtonUtil.lua
+DifficultyUtil.lua
 ItemDisplay.xml
 HelpTip.xml
 ExtraAbilityContainer.xml
@@ -171,6 +172,7 @@ NavigationBar.xml
 ..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml
 ..\SharedXML\PagedList.xml
+..\SharedXML\GridList.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
 TextStatusBar.lua

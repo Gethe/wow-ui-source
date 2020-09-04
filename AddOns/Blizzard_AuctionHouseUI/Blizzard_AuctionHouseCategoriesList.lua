@@ -196,7 +196,7 @@ function AuctionFrameFilter_OnClick(self, button)
 		if ( selectedSubSubCategoryIndex == self.subSubCategoryIndex ) then
 			selectedSubSubCategoryIndex = nil;
 		else
-			selectedSubSubCategoryIndex = self.subSubCategoryIndex
+			selectedSubSubCategoryIndex = self.subSubCategoryIndex;
 		end
 	end
 
@@ -237,16 +237,22 @@ function AuctionHouseCategoriesListMixin:GetSelectedCategory()
 	return self.selectedCategoryIndex, self.selectedSubCategoryIndex, self.selectedSubSubCategoryIndex;
 end
 
-function AuctionHouseCategoriesListMixin:GetCategoryFilterData()
-	local filterData;
+function AuctionHouseCategoriesListMixin:GetCategoryData()
 	local selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex = self:GetSelectedCategory();
 	if selectedCategoryIndex and selectedSubCategoryIndex and selectedSubSubCategoryIndex then
-		filterData = AuctionCategories[selectedCategoryIndex].subCategories[selectedSubCategoryIndex].subCategories[selectedSubSubCategoryIndex].filters;
+		return AuctionCategories[selectedCategoryIndex].subCategories[selectedSubCategoryIndex].subCategories[selectedSubSubCategoryIndex];
 	elseif selectedCategoryIndex and selectedSubCategoryIndex then
-		filterData = AuctionCategories[selectedCategoryIndex].subCategories[selectedSubCategoryIndex].filters;
+		return AuctionCategories[selectedCategoryIndex].subCategories[selectedSubCategoryIndex];
 	elseif selectedCategoryIndex then
-		filterData = AuctionCategories[selectedCategoryIndex].filters;
+		return AuctionCategories[selectedCategoryIndex];
+	end
+end
+
+function AuctionHouseCategoriesListMixin:GetCategoryFilterData()
+	local categoryData = self:GetCategoryData();
+	if categoryData == nil then
+		return nil, nil;
 	end
 
-	return filterData;
+	return categoryData.filters, categoryData.implicitFilter;
 end

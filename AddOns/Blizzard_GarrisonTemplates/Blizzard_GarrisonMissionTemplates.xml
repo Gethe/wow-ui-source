@@ -935,27 +935,27 @@
 					<Frame frameLevel="10" parentKey="Shadows">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model1"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model2"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model3"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model4"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model5"/>
 									</Anchors>

@@ -1297,6 +1297,15 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnClick>
@@ -1439,6 +1448,16 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
+
+	<Slider name="EncounterJournalScrollBarTemplate" mixin="EncounterJournalScrollBarMixin" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar" virtual="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="0" y="-17"/>
+			<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Slider>
 
 	<Frame name="EncounterJournal" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
 		<Size x="800" y="496"/>
@@ -1911,6 +1930,17 @@
 							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
+					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT_JOURNAL_POWERS" parentKey="LootJournalTab">	 	 
+						<KeyValues>
+							<KeyValue key="id" value="4" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentRaidTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="EJ_ContentTab_OnClick"/>
+						</Scripts>
+					</Button>
 					<Frame name="$parentTierDropDown" parentKey="tierDropDown" inherits="UIDropDownMenuTemplate">
 						<Size x="156" y="32"/>
 						<Anchors>
@@ -1930,17 +1960,7 @@
 							<Anchor point="TOPLEFT" x="5" y="-49"/>
 						</Anchors>
 						<Frames>
-							<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="0" y="-17"/>
-									<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
-									</OnLoad>
-								</Scripts>
-							</Slider>
+							<Slider inherits="EncounterJournalScrollBarTemplate"/>
 						</Frames>
 						<ScrollChild>
 							<Frame name="$parentScrollChild" parentKey="child">
@@ -2056,17 +2076,7 @@
 									<Anchor point="BOTTOM" x="0" y="5"/>
 								</Anchors>
 								<Frames>
-									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="17"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
-											</OnLoad>
-										</Scripts>
-									</Slider>
+									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplate"/>
 								</Frames>
 								<ScrollChild>
 									<Frame name="$parentScrollChild" parentKey="child">
@@ -2280,17 +2290,7 @@
 									<Anchor point="BOTTOMLEFT" x="25" y="1"/>
 								</Anchors>
 								<Frames>
-									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-										<Anchors>
-											<Anchor point="TOPRIGHT" x="0" y="-17"/>
-											<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
-											</OnLoad>
-										</Scripts>
-									</Slider>
+									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplate"/>
 								</Frames>
 								<ScrollChild>
 									<Frame name="$parentScrollChild" parentKey="child">
@@ -2372,17 +2372,7 @@
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
 								<Frames>
-									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-										<Anchors>
-											<Anchor point="TOPRIGHT" x="0" y="-17"/>
-											<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
-											</OnLoad>
-										</Scripts>
-									</Slider>
+									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplate"/>
 								</Frames>
 								<ScrollChild>
 									<Frame name="$parentScrollChild" parentKey="child">
@@ -2424,17 +2414,7 @@
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
 								<Frames>
-									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-										<Anchors>
-											<Anchor point="TOPRIGHT" x="0" y="-17"/>
-											<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
-											</OnLoad>
-										</Scripts>
-									</Slider>
+									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplate"/>
 								</Frames>
 								<ScrollChild>
 									<Frame name="$parentScrollChild" parentKey="child">
@@ -2589,15 +2569,13 @@
 									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" parentKey="lootFilter" hidden="true"/>
 									<Frame name="$parentLootSlotFilter" inherits="UIDropDownMenuTemplate" parentKey="lootSlotFilter" hidden="true"/>
 
-									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
+									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" mixin="EncounterJournalScrollBarMixin" parentKey="scrollBar">
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="0" y="-18"/>
 											<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
 										</Anchors>
 										<Scripts>
-											<OnLoad>
-												self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
-											</OnLoad>
+											<OnLoad method="OnLoad"/>
 										</Scripts>
 									</Slider>
 								</Frames>
@@ -2970,6 +2948,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="IconOverlay2" hidden="true">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Frames>
 					<GameTooltip name="$parentTooltip" parentKey="tooltip" inherits="GameTooltipTemplate">
@@ -3026,6 +3012,14 @@
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="IconOverlay" hidden="true">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="IconOverlay2" hidden="true">
 							<Size x="28" y="28"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.icon"/>

@@ -160,6 +160,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:UpdateVoiceChannelIfSelected(select(2,...));
 	elseif event == "CHAT_MSG_CHANNEL_LEAVE_PREVENTED" then
 		self:OnChannelLeavePrevented(...)
+	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
+		self:MarkDirty("UpdateChannelList");
 	end
 end
 

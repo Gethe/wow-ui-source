@@ -16,8 +16,14 @@ function ScrollUtil.Init(scrollBar, scrollBox, scrollValue, elementExtent)
 	end;
 	scrollBar:RegisterCallback("OnScroll", onScrollBarScroll, scrollBox);
 
-	scrollBox:Init(elementExtent);
-	scrollBar:Init(scrollValue or 0, scrollBox:GetExtentVisibleRatio(), scrollBox:CalculateStepExtent());
+	if scrollValue then
+		scrollValue = Clamp(scrollValue, 0, 1);
+	else
+		scrollValue = 0;
+	end
+
+	scrollBox:Init(scrollValue, elementExtent);
+	scrollBar:Init(scrollValue, scrollBox:GetExtentVisibleRatio(), scrollBox:CalculateStepExtent());
 end
 
 ScrollBarButtonScriptsMixin = {};

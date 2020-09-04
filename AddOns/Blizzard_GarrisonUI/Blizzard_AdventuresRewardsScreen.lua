@@ -22,21 +22,24 @@ end
 
 function AdventuresRewardsScreenMixin:ShowAdventureVictoryStateScreen(combatWon)
 	local adventuresEmblemFormat = "Adventures-EndCombat-%s";
+	local successFrame = self.CombatCompleteSuccessFrame;
 
 	if combatWon then
 		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		local kit = covenantData and covenantData.textureKit or "Kyrian";
-		self.CombatCompleteSuccessFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format(kit), true);
+		successFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format(kit), true);
+		successFrame.CovenantCrest:ClearAllPoints();
+		successFrame.CovenantCrest:SetPoint("BOTTOM", successFrame.CombatCompleteLineTop, "TOP", 0, -71);
 		PlaySound(CovenantVictorySoundKits[kit]);
 		self:ShowCombatCompleteSuccessPanel();
 	else
-		self.CombatCompleteSuccessFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format("Fail"), true);
+		successFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format("Fail"), true);
+		successFrame.CovenantCrest:ClearAllPoints();
+		successFrame.CovenantCrest:SetPoint("BOTTOM", successFrame.CombatCompleteLineTop, "TOP", 0, -5);
 		PlaySound(self:HasExperienceRewards() and SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_PARTIAL or SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_COMPLETE);
 		self:ShowCombatCompleteSuccessPanel();
 	end
 
-	self.CombatCompleteSuccessFrame.CombatCompleteBurstCW:SetShown(combatWon);
-	self.CombatCompleteSuccessFrame.CombatCompleteBurstCCW:SetShown(combatWon);
 	self:Show();
 end
 
@@ -70,7 +73,7 @@ end
 function AdventuresRewardsScreenMixin:SetRewards(rewards, victoryState)
 	self.rewardsPool:ReleaseAll();
 	self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame:SetShown(victoryState);
-	self.FinalRewardsPanel.RewardsEarnedLabel:SetShown(VictoryState);
+	self.FinalRewardsPanel.RewardsEarnedLabel:SetShown(victoryState);
 	if victoryState then 
 		for i, reward in ipairs(rewards) do 
 			local rewardFrame = self.rewardsPool:Acquire();

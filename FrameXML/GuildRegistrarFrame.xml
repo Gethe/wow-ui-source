@@ -4,19 +4,19 @@
 	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="GuildRegistrarFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
-				<Texture name="GuildRegistrarFrameBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+				<Texture name="GuildRegistrarFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GuildRegistrarFrameBg" atlas="QuestBG-Parchment">
+					<Size x="299" y="334"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
-            </Layer>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="GuildRegistrarText" inherits="QuestFont" justifyH="LEFT">
 					<Size x="270" y="0"/>
@@ -47,8 +47,8 @@
 					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
 				</Texture>
 			</Layer>
-		</Layers> 
- 		<Frames>
+		</Layers>
+		<Frames>
 			<Frame name="GuildRegistrarNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>
@@ -60,8 +60,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad function="RaiseFrameLevelByTwo"/>
-                </Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
 			</Frame>
 			<Frame name="GuildRegistrarGreetingFrame" setAllPoints="true" hidden="true">
 				<Layers>

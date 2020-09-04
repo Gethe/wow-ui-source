@@ -90,15 +90,16 @@ local AnimaDiversionUI =
 		{
 			Name = "AnimaDiversionNodeState",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Unavailable", Type = "AnimaDiversionNodeState", EnumValue = 0 },
 				{ Name = "Available", Type = "AnimaDiversionNodeState", EnumValue = 1 },
 				{ Name = "SelectedTemporary", Type = "AnimaDiversionNodeState", EnumValue = 2 },
 				{ Name = "SelectedPermanent", Type = "AnimaDiversionNodeState", EnumValue = 3 },
+				{ Name = "Cooldown", Type = "AnimaDiversionNodeState", EnumValue = 4 },
 			},
 		},
 		{

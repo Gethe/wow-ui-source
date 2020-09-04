@@ -10,7 +10,7 @@ function CovenantSanctumMixin:OnLoad()
 	{
 		area = "center",
 		pushable = 0,
-		allowOtherPanels = 1,
+		allowOtherPanels = 0,
 	};
 	RegisterUIPanel(CovenantSanctumFrame, attributes);
 end

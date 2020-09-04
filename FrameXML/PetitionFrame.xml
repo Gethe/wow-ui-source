@@ -4,21 +4,21 @@
 	<Frame name="PetitionFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
-                <Texture name="PetitionFramePortrait" file="Interface\PetitionFrame\GuildCharter-Icon">
-                    <Size x="58" y="58"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="-5" y="5"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
+				<Texture name="PetitionFramePortrait" file="Interface\PetitionFrame\GuildCharter-Icon">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
-                <Texture name="PetitionFrameBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+				<Texture parentKey="Bg" atlas="QuestBG-Parchment">
+					<Size x="299" y="334"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
-            </Layer>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Size x="31" y="102"/>
@@ -145,8 +145,8 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-		</Layers> 
- 		<Frames>
+		</Layers>
+		<Frames>
 			<Frame name="PetitionNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>
@@ -160,8 +160,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad function="RaiseFrameLevelByTwo"/>
-                </Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
 			</Frame>
 			<Button name="PetitionFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="75" y="22"/>
@@ -200,7 +200,6 @@
 					<OnClick>
 						if ( PetitionFrame.petitionType == "guild" ) then
 							StaticPopup_Show("RENAME_GUILD");
-
 						end
 					</OnClick>
 				</Scripts>

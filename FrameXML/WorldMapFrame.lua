@@ -115,12 +115,19 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 	return true;
 end
 
-function WorldMap_AddQuestTimeToTooltip(questID)
+function WorldMap_GetQuestTimeForTooltip(questID)
 	local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
-	if (secondsRemaining) then
+	if secondsRemaining then
 		local color = QuestUtils_GetQuestTimeColor(secondsRemaining);
 		local formatterOutput = WorldQuestsSecondsFormatter:Format(secondsRemaining);
 		local formattedTime = BONUS_OBJECTIVE_TIME_LEFT:format(formatterOutput);
+		return formattedTime, color, secondsRemaining;
+	end
+end
+
+function WorldMap_AddQuestTimeToTooltip(questID)
+	local formattedTime, color, secondsRemaining = WorldMap_GetQuestTimeForTooltip(questID);
+	if formattedTime and color then
 		GameTooltip_AddColoredLine(GameTooltip, formattedTime, color);
 	end
 end

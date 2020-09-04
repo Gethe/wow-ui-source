@@ -65,10 +65,7 @@ function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 
 		local mapInfo = C_Map.GetMapInfoAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
 		if mapInfo and mapInfo.mapID ~= self.mapID then
-			local left, right, top, bottom = C_Map.GetMapRectOnMap(mapInfo.mapID, self.mapID);
-			local centerX = left + (right - left) * .5;
-			local centerY = top + (bottom - top) * .5;
-
+			local centerX, centerY = MapUtil.GetMapCenterOnMap(mapInfo.mapID, self.mapID);
 			normalizedCursorX = centerX;
 			normalizedCursorY = centerY;
 		end
@@ -620,10 +617,12 @@ function MapCanvasScrollControllerMixin:ResetZoom()
 	self:InstantPanAndZoom(self.zoomLevels[1].scale, 0.5, 0.5);
 end
 
-function MapCanvasScrollControllerMixin:InstantPanAndZoom(scale, panX, panY)
-	local scaleRatio = self:GetCanvasScale() / scale;
-	panX = Lerp(panX, self:GetCurrentScrollX() or .5, scaleRatio);
-	panY = Lerp(panY, self:GetCurrentScrollY() or .5, scaleRatio);
+function MapCanvasScrollControllerMixin:InstantPanAndZoom(scale, panX, panY, ignoreScaleRatio)
+	if not ignoreScaleRatio then
+		local scaleRatio = self:GetCanvasScale() / scale;
+		panX = Lerp(panX, self:GetCurrentScrollX() or .5, scaleRatio);
+		panY = Lerp(panY, self:GetCurrentScrollY() or .5, scaleRatio);
+	end
 
 	self.currentScale = scale;
 	self.targetScale = self.currentScale;

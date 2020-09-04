@@ -10,17 +10,17 @@
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
 			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
-			<KeyValue key="textLeft2Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textRight2Font" value="GameFontNormalMed3" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
 		</KeyValues>
 	</GameTooltip>
 
 	<GameTooltip name="CharCustomizeNoHeaderTooltip" inherits="CharCustomizeTooltipTemplate">
 		<KeyValues>
-			<KeyValue key="textLeft1Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textRight1Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textLeft2Font" value="GameFontNormalMed3" type="string"/>
-			<KeyValue key="textRight2Font" value="GameFontNormalMed3" type="string"/>
+			<KeyValue key="textLeft1Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
 		</KeyValues>
 	</GameTooltip>
 	
@@ -39,7 +39,13 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="CharCustomizeSmallButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="CharCustomizeBaseButtonTemplate" mixin="CharCustomizeBaseButtonMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnBaseButtonClick"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="CharCustomizeSmallButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="48" y="48"/>
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
@@ -70,7 +76,7 @@
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick"/>
+			<OnClick method="OnClick" inherit="prepend"/>
 		</Scripts>
 	</Button>
 
@@ -83,7 +89,7 @@
 		</Scripts>
 	</Button>
 	
-	<CheckButton name="CharCustomizeMaskedButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeMaskedButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+	<CheckButton name="CharCustomizeMaskedButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeMaskedButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
 			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
@@ -151,7 +157,7 @@
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick"/>
+			<OnClick method="OnClick" inherit="prepend"/>
 		</Scripts>
 	</CheckButton>
 

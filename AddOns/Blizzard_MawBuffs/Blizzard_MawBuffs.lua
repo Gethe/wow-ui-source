@@ -63,6 +63,7 @@ end
 
 function MawBuffsContainerMixin:OnClick()
 	self.List:SetShown(not self.List:IsShown());
+	PlaySound(SOUNDKIT.UI_MAW_BUFFS_ANIMA_POWERS_BUTTON);
 end
 
 function MawBuffsContainerMixin:HighlightBuffAndShow(spellID, maxStacks)

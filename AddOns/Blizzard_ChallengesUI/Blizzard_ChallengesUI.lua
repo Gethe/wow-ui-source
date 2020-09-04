@@ -147,8 +147,6 @@ function ChallengesFrame_OnShow(self)
 	C_MythicPlus.RequestMapInfo();
 	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
 		C_MythicPlus.RequestRewards();
-	else
-		C_WeeklyRewards.RequestRewards();
 	end
     for i = 1, #self.maps do
         C_ChallengeMode.RequestLeaders(self.maps[i]);
@@ -286,7 +284,7 @@ ChallengeModeWeeklyChestMixin = { };
 function ChallengeModeWeeklyChestMixin:Update(bestMapID)
 	local chestState = CHEST_STATE_WALL_OF_TEXT;
 
-	if C_WeeklyRewards.HasRewards() then
+	if C_WeeklyRewards.HasAvailableRewards() then
 		chestState = CHEST_STATE_COLLECT;
 
 		self.Icon:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);

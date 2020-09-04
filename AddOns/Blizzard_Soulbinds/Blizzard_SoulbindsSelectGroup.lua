@@ -19,6 +19,10 @@ function SoulbindSelectGroupMixin:OnLoad()
 	self.buttonGroup = CreateRadioButtonGroup();
 end
 
+function SoulbindSelectGroupMixin:OnHide()
+	self.buttonGroup:Reset();
+end
+
 function SoulbindSelectGroupMixin:Init(covenantData, initialSelectSoulbindID)
 	self.pool:ReleaseAll();
 
@@ -47,9 +51,8 @@ function SoulbindSelectGroupMixin:Init(covenantData, initialSelectSoulbindID)
 
 	self.buttonGroup:Reset();
 	self.buttonGroup:AddButtons(buttons);
-	self.buttonGroup:RegisterSelectedCallback(self.OnSoulbindSelected, self, soulbindIDs);
-	local isInitializing = true;
-	self.buttonGroup:SelectAtIndex(tIndexOf(soulbindIDs, initialSelectSoulbindID) or 1, isInitializing);
+	self.buttonGroup:SelectAtIndex(tIndexOf(soulbindIDs, initialSelectSoulbindID) or 1);
+	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.OnSoulbindSelected, self, soulbindIDs);
 
 	self:UpdateActivations();
 end

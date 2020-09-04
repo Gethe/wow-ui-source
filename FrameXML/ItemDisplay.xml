@@ -72,6 +72,11 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="SpecIcon">
 					<Size x="24" y="24"/>
 					<Anchors>

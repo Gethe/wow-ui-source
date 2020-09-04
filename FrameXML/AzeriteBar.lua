@@ -12,7 +12,7 @@ function AzeriteBarMixin:ShouldBeVisible()
 		return false;
 	end
 	local azeriteItem = C_AzeriteItem.FindActiveAzeriteItem();
-	return azeriteItem and C_AzeriteItem.IsAzeriteItemEnabled(azeriteItem) and azeriteItem:IsEquipmentSlot();
+	return azeriteItem and azeriteItem:IsEquipmentSlot() and C_AzeriteItem.IsAzeriteItemEnabled(azeriteItem);
 end
 
 function AzeriteBarMixin:Update()

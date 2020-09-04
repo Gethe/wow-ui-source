@@ -3,11 +3,11 @@
 
 	<Frame name="NPE_TutorialMainFrame_Frame" mixin="NPE_TutorialMainFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
-			<KeyValue key="widthPadding" value="150" type="number"/>
-			<KeyValue key="heightPadding" value="50" type="number"/>
+			<KeyValue key="widthPadding" value="180" type="number"/>
+			<KeyValue key="heightPadding" value="64" type="number"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOM" y="100" />
+			<Anchor point="BOTTOM" y="232" />
 		</Anchors>
 		<Frames>
 			<Frame parentKey="ContainerFrame" inherits="ResizeLayoutFrame" frameStrata="MEDIUM">
@@ -23,7 +23,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalHuge">
+						<FontString parentKey="Text" inherits="GameFontNormalHuge2">
 							<Color color="TUTORIAL_FONT_COLOR"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="0" y="0"/>
@@ -63,7 +63,7 @@
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="KeyBind" text="F" inherits="NumberFont_Normal_Med">
+				<FontString parentKey="KeyBind" text="F" inherits="Number16Font">
 					<Color color="BLACK_FONT_COLOR"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.KeyIcon" />
@@ -75,11 +75,11 @@
 
 	<Frame name="NPE_TutorialSingleKey_Frame" mixin="NPE_TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
-			<KeyValue key="widthPadding" value="150" type="number"/>
-			<KeyValue key="heightPadding" value="50" type="number"/>
+			<KeyValue key="widthPadding" value="180" type="number"/>
+			<KeyValue key="heightPadding" value="64" type="number"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOM" y="100" />
+			<Anchor point="BOTTOM" y="232" />
 		</Anchors>
 		<Frames>
 			<Frame parentKey="ContainerFrame" inherits="ResizeLayoutFrame" frameStrata="MEDIUM">
@@ -95,7 +95,7 @@
 				</Frames>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" text="" inherits="GameFontNormalHuge">
+						<FontString parentKey="Text" text="" inherits="GameFontNormalHuge2">
 							<Color color="TUTORIAL_FONT_COLOR"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.KEYBIND" relativePoint="RIGHT" x="20" y="0"/>
@@ -113,11 +113,11 @@
 	
 	<Frame name="NPE_TutorialWalk_Frame" mixin="NPE_TutorialWalkMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
-			<KeyValue key="widthPadding" value="150" type="number"/>
-			<KeyValue key="heightPadding" value="50" type="number"/>
+			<KeyValue key="widthPadding" value="180" type="number"/>
+			<KeyValue key="heightPadding" value="64" type="number"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOM" y="100" />
+			<Anchor point="BOTTOM" y="232" />
 		</Anchors>
 		<Frames>
 			<Frame parentKey="ContainerFrame" inherits="ResizeLayoutFrame" frameStrata="MEDIUM">
@@ -148,7 +148,7 @@
 					</Frames>
 					<Layers>
 						<Layer level="OVERLAY">
-							<FontString parentKey="Text" text="NPEV2_INTRO_MOVE_ALLIANCE" inherits="GameFontNormalHuge">
+							<FontString parentKey="Text" text="NPEV2_INTRO_MOVE_ALLIANCE" inherits="GameFontNormalHuge2">
 								<Color color="TUTORIAL_FONT_COLOR"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.TURNRIGHT" relativePoint="RIGHT" x="20" y="15"/>

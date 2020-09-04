@@ -22,6 +22,8 @@ local EJ_MAX_SECTION_MOVE = 320;
 local EJ_NUM_SEARCH_PREVIEWS = 5;
 local EJ_SHOW_ALL_SEARCH_RESULTS_INDEX = EJ_NUM_SEARCH_PREVIEWS + 1;
 
+local EJ_TIER_INDEX_SHADOWLANDS = 9;
+
 AJ_MAX_NUM_SUGGESTIONS = 3;
 
 -- Priority list for *not my spec*
@@ -55,32 +57,42 @@ local EJ_LINK_INSTANCE 		= 0;
 local EJ_LINK_ENCOUNTER		= 1;
 local EJ_LINK_SECTION 		= 3;
 
-local EJ_DIFFICULTIES =
-{
-	{ size = "5", prefix = PLAYER_DIFFICULTY1, difficultyID = 1 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY2, difficultyID = 2 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY6, difficultyID = 23 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 24 },
-	{ size = "25", prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
-	{ size = "10", prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
-	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
-	{ size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
-	{ size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
-	{ prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
-	{ prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
-	{ prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
-	{ prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
-	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
-}
+local EJ_DIFFICULTIES = {
+	DifficultyUtil.ID.DungeonNormal,
+	DifficultyUtil.ID.DungeonHeroic,
+	DifficultyUtil.ID.DungeonMythic,
+	DifficultyUtil.ID.DungeonTimewalker,
+	DifficultyUtil.ID.RaidLFR,
+	DifficultyUtil.ID.Raid10Normal,
+	DifficultyUtil.ID.Raid10Heroic,
+	DifficultyUtil.ID.Raid25Normal,
+	DifficultyUtil.ID.Raid25Heroic,
+	DifficultyUtil.ID.PrimaryRaidLFR,
+	DifficultyUtil.ID.PrimaryRaidNormal,
+	DifficultyUtil.ID.PrimaryRaidHeroic,
+	DifficultyUtil.ID.PrimaryRaidMythic,
+	DifficultyUtil.ID.RaidTimewalker,
+};
 
-local function GetEJDifficultyByDifficultyID(difficultyID)
-	for i, difficultyData in ipairs(EJ_DIFFICULTIES) do
-		if difficultyData.difficultyID == difficultyID then
-			return difficultyData;
-		end
+local function IsEJDifficulty(difficultyID)
+	return tContains(EJ_DIFFICULTIES, difficultyID);
+end
+
+local function GetEJDifficultySize(difficultyID)
+	if difficultyID ~= DifficultyUtil.ID.RaidTimewalker and not DifficultyUtil.IsPrimaryRaid(difficultyID) then
+		return DifficultyUtil.GetMaxPlayers(difficultyID);
 	end
-	
 	return nil;
+end
+
+local function GetEJDifficultyString(difficultyID)
+	local name = DifficultyUtil.GetDifficultyName(difficultyID);
+	local size = GetEJDifficultySize(difficultyID);
+	if size then
+		return string.format(ENCOUNTER_JOURNAL_DIFF_TEXT, size, name);
+	else
+		return name;
+	end
 end
 
 local EJ_TIER_DATA =
@@ -346,8 +358,19 @@ function EncounterJournal_OnShow(self)
 		EJ_ContentTab_Select(self.selectedTab);
 	end
 
+	EncounterJournal_CheckAndDisplayLootTab();
+
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
+end
+
+function EncounterJournal_CheckAndDisplayLootTab()
+	local instanceSelect = EncounterJournal.instanceSelect;
+	if EJ_GetCurrentTier() == EJ_TIER_INDEX_SHADOWLANDS then
+		PanelTemplates_ShowTab(instanceSelect, instanceSelect.LootJournalTab.id);
+	else
+		PanelTemplates_HideTab(instanceSelect, instanceSelect.LootJournalTab.id);
+	end
 end
 
 function EncounterJournal_OnHide(self)
@@ -472,16 +495,10 @@ function EncounterJournal_OnEvent(self, event, ...)
 end
 
 function EncounterJournal_UpdateDifficulty(newDifficultyID)
-	for _, entry in pairs(EJ_DIFFICULTIES) do
-		if entry.difficultyID == newDifficultyID then
-			if (entry.size) then
-				EncounterJournal.encounter.info.difficulty:SetFormattedText(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
-			else
-				EncounterJournal.encounter.info.difficulty:SetText(entry.prefix);
-			end
-			EncounterJournal_Refresh();
-			break;
-		end
+	if IsEJDifficulty(newDifficultyID) then
+		local difficultyStr = GetEJDifficultyString(newDifficultyID);
+		EncounterJournal.encounter.info.difficulty:SetText(difficultyStr);
+		EncounterJournal_Refresh();
 	end
 end
 
@@ -2427,17 +2444,12 @@ end
 function EncounterJournal_DifficultyInit(self, level)
 	local currDifficulty = EJ_GetDifficulty();
 	local info = UIDropDownMenu_CreateInfo();
-	for i=1,#EJ_DIFFICULTIES do
-		local entry = EJ_DIFFICULTIES[i];
-		if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
+	for i, difficultyID in ipairs(EJ_DIFFICULTIES) do
+		if EJ_IsValidInstanceDifficulty(difficultyID) then
 			info.func = EncounterJournal_SelectDifficulty;
-			if (entry.size) then
-				info.text = string.format(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
-			else
-				info.text = entry.prefix;
-			end
-			info.arg1 = entry.difficultyID;
-			info.checked = currDifficulty == entry.difficultyID;
+			info.text = GetEJDifficultyString(difficultyID);
+			info.arg1 = difficultyID;
+			info.checked = currDifficulty == difficultyID;
 			UIDropDownMenu_AddButton(info);
 		end
 	end
@@ -2500,6 +2512,7 @@ function EJ_ContentTab_Select(id)
 
 	if ( id == instanceSelect.suggestTab.id ) then
 		EJ_HideInstances();
+		EJ_HideLootJournalPanel();
 		instanceSelect.scroll:Hide();
 		EncounterJournal.suggestFrame:Show();
 		if ( not instanceSelect.dungeonsTab.grayBox:IsShown() or not instanceSelect.raidsTab.grayBox:IsShown() ) then
@@ -2507,6 +2520,12 @@ function EJ_ContentTab_Select(id)
 		else
 			EncounterJournal_EnableTierDropDown();
 		end
+	elseif ( id == instanceSelect.LootJournalTab.id ) then
+		EJ_HideInstances();
+		EJ_HideSuggestPanel();
+		instanceSelect.scroll:Hide();
+		EncounterJournal_DisableTierDropDown(true);
+		EncounterJournal.LootJournal:Show();
 	elseif ( id == instanceSelect.dungeonsTab.id or id == instanceSelect.raidsTab.id ) then
 		EJ_HideNonInstancePanels();
 		instanceSelect.scroll:Show();
@@ -2537,8 +2556,15 @@ function EJ_HideSuggestPanel()
 	end
 end
 
+function EJ_HideLootJournalPanel()
+	if ( EncounterJournal.LootJournal ) then
+		EncounterJournal.LootJournal:Hide();
+	end
+end
+
 function EJ_HideNonInstancePanels()
 	EJ_HideSuggestPanel();
+	EJ_HideLootJournalPanel();
 end
 
 function EJTierDropDown_OnLoad(self)
@@ -2568,6 +2594,8 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+
+	EncounterJournal_CheckAndDisplayLootTab();
 
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
 
@@ -3105,15 +3133,8 @@ function AdventureJournal_Reward_OnEnter(self)
 		if ( rewardData.rewardDesc ) then
 			rewardHeaderText = rewardData.rewardDesc;
 		elseif ( rewardData.isRewardTable ) then
-			local difficultyStr = "";
 			if ( not suggestion.hideDifficulty and suggestion.difficultyID and suggestion.difficultyID > 1 ) then
-				for i=1, #EJ_DIFFICULTIES do
-					local entry = EJ_DIFFICULTIES[i];
-					if ( EJ_DIFFICULTIES[i].difficultyID == suggestion.difficultyID ) then
-						difficultyStr = EJ_DIFFICULTIES[i].prefix;
-						break;
-					end
-				end
+				local difficultyStr = DifficultyUtil.GetDifficultyName(suggestion.difficultyID);
 				if( rewardData.itemLevel ) then
 					rewardHeaderText = format(AJ_LFG_REWARD_DIFFICULTY_TEXT, suggestion.title, difficultyStr, rewardData.itemLevel);
 				elseif ( rewardData.minItemLevel ) then
@@ -3304,12 +3325,12 @@ function EncounterJournalBossButton_UpdateDifficultyOverlay(self)
 	if self.encounterID then
 		local name, description, bossID, rootSectionID, link, journalInstanceID, dungeonEncounterID, mapID = EJ_GetEncounterInfo(self.encounterID);
 		local difficultyID = EJ_GetDifficulty();
-		local difficultyData = GetEJDifficultyByDifficultyID(difficultyID);
 		local defeatedOnCurrentDifficulty = mapID and dungeonEncounterID and C_RaidLocks.IsEncounterComplete(mapID, dungeonEncounterID, difficultyID);
-		local hasDefeatedBoss = difficultyData and defeatedOnCurrentDifficulty;
+		local hasDefeatedBoss = defeatedOnCurrentDifficulty and IsEJDifficulty(difficultyID);
 		self.DefeatedOverlay:SetShown(hasDefeatedBoss);
 		if hasDefeatedBoss then
-			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(difficultyData.prefix);
+			local name = DifficultyUtil.GetDifficultyName(difficultyID);
+			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(name);
 		end
 	end
 end
@@ -3351,4 +3372,10 @@ function EncounterJournalBossButtonDefeatedOverlay_OnEnter(self)
 		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
 		GameTooltip:Show();
 	end
+end
+
+EncounterJournalScrollBarMixin = {};
+
+function EncounterJournalScrollBarMixin:OnLoad()
+	self.trackBG:SetVertexColor(ENCOUNTER_JOURNAL_SCROLL_BAR_BACKGROUND_COLOR:GetRGBA());
 end

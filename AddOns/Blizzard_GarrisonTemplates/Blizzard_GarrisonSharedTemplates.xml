@@ -568,7 +568,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="Garr_Mission_MaterialFrame" useAtlasSize="true" setAllPoints="true"/>
+				<Texture parentKey="BG" atlas="Garr_Mission_MaterialFrame" useAtlasSize="true" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontNormal" justifyH="LEFT" text="GARRISON_YOUR_MATERIAL">

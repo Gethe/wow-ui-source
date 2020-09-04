@@ -38,12 +38,11 @@ end
 function SoulbindsSelectButtonMixin:OnEnter()
 	self.ModelScene.Highlight:Show();
 
-	local x, y = -14, -14;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -14, -14);
+
 	if not self.soulbindData.unlocked then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", x, y);
 		GameTooltip_AddNormalLine(GameTooltip, SOULBIND_TUTORIAL_SOULBIND_UNLOCK:format(self.soulbindData.name));
 	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", x, y);
 		GameTooltip_AddNormalLine(GameTooltip, self.soulbindData.name);
 	end
 	GameTooltip:Show();
@@ -129,7 +128,7 @@ function SoulbindsSelectButtonMixin:SetHighlightUnselected()
 	self.ModelScene.Highlight:SetBlendMode("ADD");
 end
 
-function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
+function SoulbindsSelectButtonMixin:OnSelected(newSelected)
 	self.ModelScene.NewAlert:Hide();
 	self.ModelScene.Highlight2.Pulse:Stop();
 	self.ModelScene.Highlight3.Pulse:Stop();
@@ -144,10 +143,6 @@ function SoulbindsSelectButtonMixin:OnSelected(newSelected, isInitializing)
 
 	self.ModelScene.Selected:SetShown(newSelected);
 	self.ModelScene:SetPaused(not newSelected);
-
-	if not isInitializing then
-		PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED);
-	end
 end
 
 function SoulbindsSelectButtonMixin:SetActivated(activated)

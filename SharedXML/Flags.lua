@@ -16,6 +16,12 @@ function Flags_CreateMaskFromTable(flagsTable)
 	return mask;
 end
 
+FlagsUtil = {};
+
+function FlagsUtil.IsSet(bitMask, flagOrMask)
+	return bit.band(bitMask, flagOrMask) == flagOrMask;
+end
+
 FlagsMixin = {};
 
 function FlagsMixin:OnLoad()
@@ -57,7 +63,7 @@ function FlagsMixin:IsAnySet()
 end
 
 function FlagsMixin:IsSet(flagOrMask)
-	return bit.band(self.flags, flagOrMask) == flagOrMask;
+	return FlagsUtil.IsSet(self.flags, flagOrMask);
 end
 
 function FlagsMixin:GetFlags()

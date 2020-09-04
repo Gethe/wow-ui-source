@@ -77,7 +77,7 @@ function ItemUpgradeFrame_Update()
 	ItemUpgradeFrameUpgradeButton:Disable();
 
 	local ItemUpgradeFrame = ItemUpgradeFrame;
-	if icon then
+	if ( icon ) then
 		ItemUpgradeFrame.ItemButton.IconTexture:SetTexture(icon);
 		ItemUpgradeFrame.ItemButton.IconTexture:SetTexCoord( 0, 1, 0, 1);
 		local _, _, _, hex = GetItemQualityColor(quality);
@@ -89,22 +89,25 @@ function ItemUpgradeFrame_Update()
 		ItemUpgradeFrame.TitleTextRight:Show();
 		ItemUpgradeFrame.HorzBar:Show();
 
-		if(numCurrUpgrades and numMaxUpgrades) then
+		if ( numCurrUpgrades and numMaxUpgrades ) then
 			local canUpgradeItem = false;
 			ItemUpgradeFrame.UpgradeStatus:SetText(numCurrUpgrades.."/"..numMaxUpgrades);
 			ItemUpgradeFrame.UpgradeStatus:Show();
 			if ( numCurrUpgrades < numMaxUpgrades ) then
 				ItemUpgradeFrame.UpgradeStatus:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				canUpgradeItem = true;
+				if ( not failureMessage ) then
+					ItemUpgradeFrameUpgradeButton:Enable();
+				end
 			else
 				ItemUpgradeFrame.UpgradeStatus:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			end
 
-			if failureMessage then
+			if ( failureMessage ) then
 				ItemUpgradeFrame.FeedbackMessage:SetText(failureMessage);
 				ItemUpgradeFrame.FeedbackMessage:Show();
 				canUpgradeItem = false;
-			elseif canUpgradeItem  then
+			elseif ( canUpgradeItem )  then
 				ItemUpgradeFrame.FeedbackMessage:Hide();
 			else
 				ItemUpgradeFrame.FeedbackMessage:SetText(ITEM_UPGRADE_NO_MORE_UPGRADES);
@@ -136,12 +139,6 @@ function ItemUpgradeFrame_Update()
 		for _, item in pairs(ItemUpgradeFrame.EffectRow) do
 			item:Hide();
 		end
-	end
-
-	if failureMessage then
-		ItemUpgradeFrameUpgradeButton:Disable();
-	else
-		ItemUpgradeFrameUpgradeButton:SetEnabled(numCurrUpgrades < numMaxUpgrades);
 	end
 
 	-- update player's currency

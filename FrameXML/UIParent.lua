@@ -90,6 +90,7 @@ UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
+UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
 	frame:SetAttribute("UIPanelLayout-defined", true);
@@ -2134,9 +2135,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_CHOICE_UPDATE" ) then
 		PlayerChoice_LoadUI();
 		PlayerChoiceFrame:TryShow();
-		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then 
-			PlayerChoiceToggleButton:TryShow();
-		end 
+		PlayerChoiceToggleButton:TryShow();
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then

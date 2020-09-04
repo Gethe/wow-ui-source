@@ -74,6 +74,8 @@ function NPE_TutorialKeyboardMouseFrameMixin:_AnimateOut()
 	end
 end
 
+local fadeInTime = 0.25;
+local fadeOutTime = 0.25;
 function NPE_TutorialKeyboardMouseFrameMixin:UpdateAnimation(elapsed)
 	local currentAlpha = self:GetAlpha();
 
@@ -83,26 +85,24 @@ function NPE_TutorialKeyboardMouseFrameMixin:UpdateAnimation(elapsed)
 		self.State = NPE_TutorialMainFrameMixin.States.AnimatingOut;
 	end
 
-	local newAlpha;
+	self.elapsedTime = self.elapsedTime and self.elapsedTime + elapsed or 0;
 
 	if (self.State == NPE_TutorialMainFrameMixin.States.AnimatingOut) then
-		newAlpha = math.max(0, self.Alpha - elapsed);
-
-		if (newAlpha == 0) then
+		self.Alpha = 1 - math.min(1, (self.elapsedTime / fadeOutTime));
+		if (self.Alpha == 0) then
+			self.elapsedTime = nil;
 			self.State = NPE_TutorialMainFrameMixin.States.Hidden;
 		end
 	elseif (self.State == NPE_TutorialMainFrameMixin.States.AnimatingIn) then
-		newAlpha = math.min(1, self.Alpha + elapsed);
-
-		if (newAlpha == 1) then
+		self.Alpha = math.min(1, (self.elapsedTime / fadeInTime));
+		if (self.Alpha == 1) then
+			self.elapsedTime = nil;
 			self.State = NPE_TutorialMainFrameMixin.States.Visible;
 		end
 	else
-		error("ERROR - NPE_TutorialKeyboardMouseFrame_Frame updating but not animating");
+		error("ERROR - NPE Tutorial Main Frame updating but not animating");
 	end
-
-	self.Alpha = newAlpha;
-	self:SetAlpha(newAlpha);
+	self:SetAlpha(self.Alpha);
 
 	-- When an animation is complete
 	if (self.State == NPE_TutorialMainFrameMixin.States.Hidden) then

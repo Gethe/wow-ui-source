@@ -343,6 +343,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemKeystoneByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isKeystone", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLocked",
 			Type = "Function",
 

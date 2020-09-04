@@ -24,7 +24,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="VoiceChatHeadsetButtonTemplate" mixin="VoiceChatHeadsetButtonMixin" registerForClicks="LeftButtonUp" hidden="true" virtual="true">
+	<Button name="VoiceChatHeadsetButtonTemplate" mixin="VoiceChatHeadsetButtonMixin" registerForClicks="LeftButtonUp" motionScriptsWhileDisabled="true" hidden="true" virtual="true">
 		<NormalTexture parentKey="NormalTexture"/>
 		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.3"/>
 		<Scripts>

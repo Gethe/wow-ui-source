@@ -42,35 +42,19 @@
 		</Scripts>
 	</Button>
 
-	<Button name="QuestLogHeaderTemplate" virtual="true">
-		<Size x="16" y="16"/>
+	<Button name="QuestLogHeaderCodeTemplate" mixin="QuestLogHeaderCodeMixin" registerForClicks="LeftButtonUp" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" mixin="QuestLogHeaderMixin" virtual="true">
+		<Size x="20" y="20"/>
 		<KeyValues>
 			<KeyValue key="leftPadding" value="4" type="number"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				--QuestLogTitleButton_OnLoad(self);
-				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnEvent>
-				--QuestLogTitleButton_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnClick function="QuestMapLogHeaderButton_OnClick"/>
-			<OnEnter>
-				self.ButtonText:SetTextColor(1, 1, 1);
-				if ( self.ButtonText:IsTruncated() ) then
-					GameTooltip:ClearAllPoints();
-					GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 239, 0);
-					GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-					GameTooltip:SetText(self.ButtonText:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, 1);
-				end
-			</OnEnter>
-			<OnLeave>
-				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
 		<ButtonText nonspacewrap="true" parentKey="ButtonText" justifyH="LEFT">
 			<Size x="234" y="10"/>
 			<Anchors>
@@ -79,7 +63,58 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalMed3"/>
 		<HighlightFont style="GameFontHighlightMedium"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Button>
+
+	<Button name="CovenantCallingsHeaderTemplate" inherits="QuestLogHeaderTemplate" mixin="CovenantCallingsHeaderMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="leftPadding" value="18" type="number"/>
+			<KeyValue key="bottomPadding" value="10" type="number"/>
+			<KeyValue key="topPadding" value="8" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="1" y="1"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="StoryHeader-BG">
+					<Size x="260" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-19" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="SelectedTexture" atlas="CampaignHeader_SelectedGlow" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Divider" atlas="ZoneStory_Divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-16" y="29"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Background" atlas="StoryHeader-BG" alphaMode="ADD" alpha=".5">
+					<Size x="260" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-19" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoadCovenantCallings" inherit="prepend"/>
+		</Scripts>
+	</Button>
+
 	<Button name="QuestLogTitleTemplate" virtual="true">
 		<Size x="255" y="16"/>
 		<Layers>
@@ -342,9 +377,6 @@
 						</Anchors>
 						<Frames>
 							<Frame parentKey="Separator" hidden="true">
-								<KeyValues>
-									<KeyValue key="layoutIndex" value="QUEST_LOG_SEPARATOR_LAYOUT_INDEX" type="global"/>
-								</KeyValues>
 								<Size x="260" y="20"/>
 								<Layers>
 									<Layer level="OVERLAY">
@@ -358,7 +390,6 @@
 							</Frame>
 							<Frame parentKey="StoryHeader" hidden="true">
 								<KeyValues>
-									<KeyValue key="layoutIndex" value="QUEST_LOG_STORY_LAYOUT_INDEX" type="global"/>
 									<KeyValue key="bottomPadding" value="7" type="number"/>
 								</KeyValues>
 								<Size x="260" y="62"/>
@@ -488,7 +519,6 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="CampaignTooltip" inherits="CampaignTooltipTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad function="QuestsFrame_OnLoad"/>

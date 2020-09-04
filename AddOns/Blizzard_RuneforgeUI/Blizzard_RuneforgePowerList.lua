@@ -62,7 +62,7 @@ function RuneforgePowerButtonMixin:OnEnter()
 			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
 		end
 
-		if self.powerInfo.source then
+		if (self.powerInfo.state == Enum.RuneforgePowerState.Unavailable) and self.powerInfo.source then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddErrorLine(GameTooltip, self.powerInfo.source);
 		end

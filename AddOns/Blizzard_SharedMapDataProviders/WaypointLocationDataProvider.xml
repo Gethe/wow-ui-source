@@ -3,11 +3,11 @@
 	<Script file="WaypointLocationDataProvider.lua"/>
 
 	<Frame name="WaypointLocationPinTemplate" enableMouse="true" enableMouseClicks="true" mixin="WaypointLocationPinMixin" virtual="true">
-		<Size x="35" y="35"/>
+		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" atlas="Waypoint-MapPin-Untracked">
-					<Size x="35" y="35"/>
+					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -15,7 +15,7 @@
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" atlas="Waypoint-MapPin-Highlight">
-					<Size x="35" y="35"/>
+					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>

@@ -365,15 +365,11 @@ function PaperDollFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" or
 		event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
 		CharacterModelFrame:SetUnit("player", false);
-		PaperDollFrame_UpdateInventoryFixupComplete(self);
 		return;
 	elseif ( event == "KNOWN_TITLES_UPDATE" or (event == "UNIT_NAME_UPDATE" and unit == "player")) then
 		if (PaperDollTitlesPane:IsShown()) then
 			PaperDollTitlesPane_Update();
 		end
-	elseif ( event == "CHARACTER_ITEM_FIXUP_NOTIFICATION" ) then
-		local fixupVersion = ...
-		PaperDollFrame_UpdateInventoryFixupComplete(self, fixupVersion);
 	end
 
 	if ( not self:IsVisible() ) then
@@ -1404,7 +1400,6 @@ function PaperDollFrame_OnShow(self)
 	SetPaperDollBackground(CharacterModelFrame, "player");
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
-	PaperDollFrame_UpdateInventoryFixupComplete(self);
 end
 
 function PaperDollFrame_OnHide(self)
@@ -2818,28 +2813,6 @@ local function CheckFixupStates(fixupVersion)
 		local seenTutorial = GetCVarBitfield("closedInfoFrames", tutorialIndices.seenIndex);
 		if doCheck and not seenTutorial then
 			return tutorialIndices.seenIndex;
-		end
-	end
-end
-
-function PaperDollFrame_UpdateInventoryFixupComplete(self, fixupVersion)
-	local tutorialIndexToShow = CheckFixupStates(fixupVersion);
-
-	if tutorialIndexToShow then
-		if self:IsVisible() then
-			local helpTipInfo = {
-				text = PAPERDOLL_INVENTORY_FIXUP_COMPLETE,
-				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = tutorialIndexToShow,
-				targetPoint = HelpTip.Point.TopEdgeRight,
-				offsetX = 2,
-				offsetY = 10,
-			};
-			HelpTip:Show(self, helpTipInfo, CharacterMainHandSlot);
-			SetCVarBitfield("closedInfoFrames", tutorialIndexToShow, true);
-		else
-			MicroButtonPulse(CharacterMicroButton, 60);
 		end
 	end
 end

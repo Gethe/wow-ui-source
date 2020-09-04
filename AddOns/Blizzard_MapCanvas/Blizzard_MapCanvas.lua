@@ -608,6 +608,10 @@ function MapCanvasMixin:ResetZoom()
 	self.ScrollContainer:ResetZoom();
 end
 
+function MapCanvasMixin:InstantPanAndZoom(scale, x, y, ignoreScaleRatio)
+	self.ScrollContainer:InstantPanAndZoom(scale, x, y, ignoreScaleRatio);
+end
+
 function MapCanvasMixin:IsAtMaxZoom()
 	return self.ScrollContainer:IsAtMaxZoom();
 end

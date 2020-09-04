@@ -18,6 +18,7 @@ local RaceAndClassFrame;
 local NameChoiceFrame;
 local ClassTrialSpecs;
 local ZoneChoiceFrame;
+local NewPlayerTutorial;
 
 NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
 	TopLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopLeft-8x", },
@@ -63,6 +64,7 @@ function CharacterCreateMixin:OnLoad()
 	NameChoiceFrame = self.NameChoiceFrame;
 	ClassTrialSpecs = self.ClassTrialSpecs;
 	ZoneChoiceFrame = self.ZoneChoiceFrame;
+	NewPlayerTutorial = self.NewPlayerTutorial;
 
 	CharCustomizeFrame:AttachToParentFrame(self);
 
@@ -184,6 +186,10 @@ function CharacterCreateMixin:OnHide()
 	self:ClearPaidServiceInfo();
 	self.creatingCharacter = false;
 	self.currentMode = 0;
+end
+
+function CharacterCreateMixin:OnButtonClick()
+	C_CharacterCreation.OnPlayerInteraction();
 end
 
 function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
@@ -412,6 +418,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
 	NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
+	NewPlayerTutorial:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and C_CharacterCreation.IsNewPlayerRestricted());
 
 	self.currentMode = mode;
 	self.creatingCharacter = false;
@@ -758,7 +765,7 @@ end
 
 function CharacterCreateClassButtonMixin:SetEnabledState(enabled)
 	CharCustomizeMaskedButtonMixin.SetEnabledState(self, enabled);
-	self.ClassName:SetFontObject(enabled and "GameFontNormalMed3" or "GameFontDisableMed3");
+	self.ClassName:SetFontObject(enabled and "GameFontNormalMed2" or "GameFontDisableMed2");
 end
 
 function CharacterCreateClassButtonMixin:IsDisabledByRace()
@@ -919,7 +926,7 @@ end
 
 function CharacterCreateSpecButtonMixin:SetEnabledState(enabled)
 	CharCustomizeMaskedButtonMixin.SetEnabledState(self, enabled);
-	self.SpecName:SetFontObject(enabled and "GameFontNormalMed3" or "GameFontDisableMed3");
+	self.SpecName:SetFontObject(enabled and "GameFontNormalMed2" or "GameFontDisableMed2");
 	self.RoleName:SetFontObject(enabled and "GameFontHighlight" or "GameFontDisable");
 end
 

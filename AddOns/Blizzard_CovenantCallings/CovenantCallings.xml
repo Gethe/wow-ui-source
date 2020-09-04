@@ -43,6 +43,7 @@
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
 

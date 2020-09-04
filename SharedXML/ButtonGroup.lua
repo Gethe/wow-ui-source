@@ -67,14 +67,6 @@ function ButtonGroupBaseMixin:Reset()
 	self.callbacks = {};
 end
 
-function ButtonGroupBaseMixin:RegisterSelectedCallback(func, owner, ...)
-	self:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, func, owner, ...);
-end
-
-function ButtonGroupBaseMixin:RegisterUnselectedCallback(func, owner, ...)
-	self:RegisterCallback(ButtonGroupBaseMixin.Event.Unselected, func, owner, ...);
-end
-
 function ButtonGroupBaseMixin:FindButtonByPredicate(pred)
 	for buttonIndex, button in ipairs(self.buttons) do
 		if pred(button) then

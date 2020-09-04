@@ -76,11 +76,16 @@ function WaypointLocationDataProviderMixin:OnPinMouseActionHandler(mouseAction, 
 end
 
 function WaypointLocationDataProviderMixin:HandleClick()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if self.pin and self.pin:IsMouseOver() then
 		C_Map.ClearUserWaypoint();
 		C_SuperTrack.SetSuperTrackedUserWaypoint(false);
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE);
 	else
+		if self.toggleActive then
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE);
+		else
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK);
+		end
 		local scrollContainer = self:GetMap().ScrollContainer;
 		local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
 		local uiMapPoint = UiMapPoint.CreateFromCoordinates(self:GetMap():GetMapID(), cursorX, cursorY);
@@ -123,8 +128,10 @@ end
 function WaypointLocationPinMixin:OnMouseClickAction(mouseButton)
 	if IsModifiedClick("CHATLINK") then
 		ChatEdit_InsertLink(C_Map.GetUserWaypointHyperlink());
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
 	elseif mouseButton == "LeftButton" then
 		C_SuperTrack.SetSuperTrackedUserWaypoint(not C_SuperTrack.IsSuperTrackingUserWaypoint());
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK);
 	end
 end
 
@@ -132,6 +139,7 @@ function WaypointLocationPinMixin:OnMouseEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -16, -4);
 	GameTooltip_SetTitle(GameTooltip, MAP_PIN_SHARING);
 	GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_SHARING_TOOLTIP);
+	GameTooltip_AddColoredLine(GameTooltip, MAP_PIN_REMOVE, GREEN_FONT_COLOR);
 	GameTooltip:Show();
 end
 

@@ -127,7 +127,7 @@
 			<!-- Draw over the other subframes -->
 			<Frame parentKey="DeathAnimationFrame" frameLevel="1500" enableMouse="false" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY" sublayer="1">
+					<Layer level="OVERLAY">
 						<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>

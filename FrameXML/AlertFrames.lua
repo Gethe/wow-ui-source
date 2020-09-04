@@ -442,6 +442,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -635,6 +636,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_TOY_ADDED") then
 		local toyID = ...;
 		NewToyAlertSystem:AddAlert(toyID);
+	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
+		local powerID = ...;
+		NewRuneforgePowerAlertSystem:AddAlert(powerID);
 	end
 end
 
