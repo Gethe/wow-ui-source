@@ -933,6 +933,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCtrOptions",
+			Type = "Event",
+			LiteralName = "UNIT_CTR_OPTIONS",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitDamage",
 			Type = "Event",
 			LiteralName = "UNIT_DAMAGE",

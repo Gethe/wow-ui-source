@@ -1,3 +1,4 @@
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	return securecall(next, elements, key);

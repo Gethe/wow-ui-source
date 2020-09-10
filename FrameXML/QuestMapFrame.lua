@@ -541,7 +541,16 @@ function QuestDetailsFrame_OnHide(self)
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(false);
 end
 
+function QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID)
+	-- Callings never display a POI icon, so super-track it now, yep, this steals the current super-track.
+	if C_QuestLog.IsQuestCalling(questID) then
+		C_SuperTrack.SetSuperTrackedQuestID(questID);
+	end
+end
+
 function QuestMapFrame_ShowQuestDetails(questID)
+	QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID);
+
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	C_QuestLog.SetSelectedQuest(questID);
 	QuestMapFrame.DetailsFrame.questID = questID;
@@ -988,10 +997,12 @@ local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
 
 	if info.isCalling then
 		local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
-		if secondsRemaining < 3600 then -- 1 hour
-			return "EXPIRING_SOON";
-		elseif secondsRemaining < 18000 then -- 5 hours
-			return "EXPIRING";
+		if secondsRemaining then
+			if secondsRemaining < 3600 then -- 1 hour
+				return "EXPIRING_SOON";
+			elseif secondsRemaining < 18000 then -- 5 hours
+				return "EXPIRING";
+			end
 		end
 	end
 
@@ -1152,6 +1163,16 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 
 	button:Show();
 	displayState.prevButton = button;
+	displayState.prevButtonInfo = info;
+end
+
+local function QuestLogQuests_IsPreviousButtonCollapsed(displayState)
+	local info = displayState.prevButtonInfo;
+	if info then
+		return info.isHeader and info.isCollapsed;
+	end
+
+	return false;
 end
 
 local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
@@ -1168,14 +1189,12 @@ local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
 		displayState.campaignShown = true;
 		button.topPadding = 0;
 	else
-		if displayState.lastHeaderCollapsed then
+		if QuestLogQuests_IsPreviousButtonCollapsed(displayState) then
 			button.topPadding = 0;
 		else
 			button.topPadding = 12;
 		end
 	end
-
-	displayState.lastHeaderCollapsed = button:IsCollapsed();
 
 	return button;
 end
@@ -1198,6 +1217,16 @@ function CovenantCallingsHeaderMixin:OnLoadCovenantCallings()
 	EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", self.UpdateText, self);
 end
 
+function CovenantCallingsHeaderMixin:UpdateBG()
+	local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+
+	if covenantData then
+		local bgAtlas = GetFinalNameFromTextureKit("Callings-Header-%s", covenantData.textureKit);
+		self.HighlightBackground:SetAtlas(bgAtlas, TextureKitConstants.UseAtlasSize);
+		self.Background:SetAtlas(bgAtlas, TextureKitConstants.UseAtlasSize);
+	end
+end
+
 function CovenantCallingsHeaderMixin:UpdateText()
 	CovenantCalling_CheckCallings();
 	self:SetText(QUEST_LOG_COVENANT_CALLINGS_HEADER:format(CovenantCalling_GetCompletedCount(), Constants.Callings.MaxCallings));
@@ -1208,6 +1237,13 @@ local function QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
 	button.SelectedTexture:SetShown(not info.isCollapsed);
 	button:UpdateText();
+	button:UpdateBG();
+
+	button.topPadding = 20; -- Set the default
+	if QuestLogQuests_IsPreviousButtonCollapsed(displayState) then
+		button.topPadding = 0;
+	end
+
 	return button;
 end
 
@@ -1238,6 +1274,7 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 	end
 
 	displayState.prevButton = button;
+	displayState.prevButtonInfo = info;
 	button:Show();
 end
 

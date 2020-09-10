@@ -72,7 +72,7 @@
 		<KeyValues>
 			<KeyValue key="leftPadding" value="18" type="number"/>
 			<KeyValue key="bottomPadding" value="10" type="number"/>
-			<KeyValue key="topPadding" value="8" type="number"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="1" y="1"/>
@@ -90,7 +90,7 @@
 				<Texture parentKey="SelectedTexture" atlas="CampaignHeader_SelectedGlow" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="0" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -102,7 +102,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Background" atlas="StoryHeader-BG" alphaMode="ADD" alpha=".5">
+				<Texture parentKey="HighlightBackground" atlas="StoryHeader-BG" alphaMode="ADD" alpha=".5">
 					<Size x="260" y="36"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-19" y="7"/>
@@ -110,6 +110,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
 		<Scripts>
 			<OnLoad method="OnLoadCovenantCallings" inherit="prepend"/>
 		</Scripts>

@@ -149,13 +149,13 @@
 						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"  y="10"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" tile="true">
+				<Texture parentKey="EnemyBackground" atlas="Adventures-Missions-BG-01" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Median" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" tile="true">
+				<Texture parentKey="FollowerBackground" atlas="Adventures-Missions-BG-01" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Median" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>

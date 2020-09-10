@@ -58,6 +58,7 @@ function SoulbindsSelectButtonMixin:Reset()
 	self:SetSoulbind(nil);
 	self.ModelScene.Active:Hide();
 	self.ModelScene.Selected:Hide();
+	self.inTutorial = false;
 	self:SetHighlightUnselected();
 	self:GetFxModelScene():ClearEffects();
 	self.deferredFx = nil;
@@ -139,6 +140,13 @@ function SoulbindsSelectButtonMixin:OnSelected(newSelected)
 		self:SetHighlightSelected();
 	else
 		self:SetHighlightUnselected();
+		
+		if self.inTutorial then
+			self.ModelScene.Dark:SetAlpha(.5);
+			self.ModelScene.Dark.Pulse:Stop();
+			self.ModelScene:SetDesaturation(.8);
+			self.inTutorial = false;
+		end
 	end
 
 	self.ModelScene.Selected:SetShown(newSelected);
@@ -162,6 +170,7 @@ function SoulbindsSelectButtonMixin:SetActivated(activated)
 		end
 
 		if self:ShouldShowTutorial() then
+			self.inTutorial = true;
 			self.ModelScene.Dark:SetAlpha(0);
 			self.ModelScene.Dark.Pulse:Play();
 			self.ModelScene:SetDesaturation(0);

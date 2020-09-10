@@ -103,6 +103,11 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="3" y="2" />
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="UI-Frame-Neutral-ExitButtonBorder" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
 			</Button>
 			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" mixin="ChromieTimeSelectButtonMixin" text="CHROMIE_TIME_SELECT_EXAPANSION_BUTTON">
 				<Size x="150" y="25"/>

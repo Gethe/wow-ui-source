@@ -221,19 +221,27 @@ function VoiceChatHeadsetButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+function VoiceChatHeadsetButtonMixin:GetClubErrorReason()
+	if self.clubId then
+		return C_VoiceChat.GetJoinClubVoiceChannelError(self.clubId);
+	end
+
+	return nil;
+end
+
 function VoiceChatHeadsetButtonMixin:ShowTooltip()
 	local isActive = self:IsVoiceActive();
 	local message = isActive and VOICE_CHAT_LEAVE or VOICE_CHAT_JOIN;
 
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT");
-	
-	local errorReason = C_VoiceChat.GetJoinClubVoiceChannelError(self.clubId);
+
+	local errorReason = self:GetClubErrorReason();
 	if errorReason then
 		if errorReason == Enum.VoiceChannelErrorReason.IsBattleNetChannel then
-			GameTooltip_AddErrorLine(tooltip, ERR_GROUPS_VOICE_CHAT_DISABLED);
+			GameTooltip_SetTitle(tooltip, ERR_GROUPS_VOICE_CHAT_DISABLED, RED_FONT_COLOR);
 		else
-			GameTooltip_AddErrorLine(tooltip, VOICECHAT_DISABLED);
+			GameTooltip_SetTitle(tooltip, VOICECHAT_DISABLED, RED_FONT_COLOR);
 		end
 	else
 		GameTooltip_SetTitle(tooltip, message);

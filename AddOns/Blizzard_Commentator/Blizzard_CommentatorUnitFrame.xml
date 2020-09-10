@@ -9,7 +9,7 @@
 		<BarTexture atlas="_Bar-mid"/>
 	</StatusBar>
 
-	<Cooldown name="CommentatorRadialCooldownTemplate" hidden="true" virtual="true" >
+	<Cooldown name="CommentatorRadialCooldownTemplate" virtual="true" >
 		<SwipeTexture file="Interface\PVPFrame\PVP-Separation-Circle-Cooldown-overlay"/>
 	</Cooldown>
 	
@@ -141,8 +141,8 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown parentKey="Cooldown" useParentLevel="true" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
-						<Size x="32" y="32"/>
+					<Cooldown parentKey="Cooldown" useParentLevel="false" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
+						<Size x="50" y="50"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
 						</Anchors>
@@ -212,7 +212,7 @@
 			</Frame>
 			<Frame parentKey="DebuffSpellTray" inherits="CommentatorDebuffTrayTemplate" parentArray="spellTrays">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.DefensiveSpellTray" relativePoint="RIGHT" x="5" y="0" />
+					<Anchor point="LEFT" relativeKey="$parent.DefensiveSpellTray" relativePoint="RIGHT" y="0" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="OffensiveSpellTray" inherits="CommentatorOffensiveTrayTemplate" parentArray="spellTrays">

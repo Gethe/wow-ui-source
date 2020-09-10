@@ -114,6 +114,7 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("UNIT_PHASE");
+	self:RegisterEvent("UNIT_CTR_OPTIONS");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
@@ -433,7 +434,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateArt(self);
-	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_FLAGS") then
+	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS") then
 		if ( event ~= "UNIT_PHASE" or arg1 == unit ) then
 			PartyMemberFrame_UpdateNotPresentIcon(self);
 		end

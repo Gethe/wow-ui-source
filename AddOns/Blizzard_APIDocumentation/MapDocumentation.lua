@@ -7,6 +7,20 @@ local Map =
 	Functions =
 	{
 		{
+			Name = "CanSetUserWaypointOnMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canSet", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearUserWaypoint",
 			Type = "Function",
 		},

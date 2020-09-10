@@ -35,6 +35,8 @@ function BarberShopMixin:OnShow()
 	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint("TOP", self.Sexes, "BOTTOM", 0, 0);
 
+	ActionStatus:SetParent(self);
+
 	self:UpdateSex();
 
 	local reset = true;
@@ -59,6 +61,7 @@ function BarberShopMixin:UpdateSex()
 	end
 
 	self.Sexes:MarkDirty();
+	self.Sexes:Show();
 end
 
 function BarberShopMixin:OnHide()
@@ -66,13 +69,16 @@ function BarberShopMixin:OnHide()
 	UIErrorsFrame:SetFrameStrata("DIALOG");
 	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint(unpack(self.oldErrorFramePointInfo));
+
+	ActionStatus:SetParent(UIParent);
 end
 
 function BarberShopMixin:OnKeyDown(key)
+	local keybind = GetBindingFromClick(key);
 	if key == "ESCAPE" then
 		C_BarberShop.Cancel();
-	elseif key == "PRINTSCREEN" then
-		Screenshot();
+	elseif keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" or keybind == "SCREENSHOT" then
+		RunBinding(keybind);
 	end
 end
 
@@ -94,6 +100,10 @@ end
 
 function BarberShopMixin:UpdatePrice()
 	self.PriceFrame:SetAmount(C_BarberShop.GetCurrentCost());
+
+	local hasAnyChanges = C_BarberShop.HasAnyChanges();
+	self.AcceptButton:SetEnabled(hasAnyChanges);
+	self.ResetButton:SetEnabled(hasAnyChanges);
 end
 
 function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
@@ -156,6 +166,7 @@ end
 
 function BarberShopMixin:SetViewingShapeshiftForm(formID)
 	C_BarberShop.SetViewingShapeshiftForm(formID);
+	self.Sexes:SetShown(formID == nil);
 end
 
 function BarberShopMixin:SetModelDressState(dressedState)

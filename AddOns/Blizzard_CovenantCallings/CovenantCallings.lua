@@ -235,6 +235,7 @@ function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
 
 		AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -42, 0), self.layout);
 		self:Layout();
+		self:CheckDisplayHelpTip();
 	end
 end
 
@@ -279,6 +280,42 @@ function CovenantCallingsMixin:ProcessCallings(callings)
 
 		-- Then nuke the remaining time after the sort, must be updated anyway.
 		calling.tempTimeRemaining = nil;
+	end
+end
+
+function CovenantCallingsMixin:GetHelptipTargetFrame()
+	-- Find right-most frame
+	local maxX = 0;
+	local targetFrame;
+	for frame in self.pool:EnumerateActive() do
+		if frame.calling:GetState() == Enum.CallingStates.QuestOffer then
+			if not targetFrame or maxX < frame:GetLeft() then
+				targetFrame = frame;
+				maxX = frame:GetLeft();
+			end
+		end
+	end
+
+	return targetFrame;
+end
+
+function CovenantCallingsMixin:CheckDisplayHelpTip()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_CALLINGS) then
+		local target = self:GetHelptipTargetFrame();
+
+		-- It's ok to wait to show this until there's a valid target.
+		if target then
+			HelpTip:Show(target, {
+				text = FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_CALLINGS,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_CALLINGS,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = 14,
+				offsetY = 1,
+				useParentStrata = true,
+			});
+		end
 	end
 end
 

@@ -1494,6 +1494,7 @@ end
 
 function GuildMemberListDropDownMenuMixin:OnCommunitiesClubSelected(clubId)
 	if clubId and self:IsVisible() then
+		local communitiesFrame = self:GetCommunitiesFrame();
 		local clubInfo = communitiesFrame:GetSelectedClubInfo();
 		if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
 			self:Hide();
@@ -1583,6 +1584,7 @@ end
 
 function CommunityMemberListDropDownMenuMixin:OnCommunitiesClubSelected(clubId)
 	if clubId and self:IsVisible() then
+		local communitiesFrame = self:GetCommunitiesFrame();
 		local clubInfo = communitiesFrame:GetSelectedClubInfo();
 		if clubInfo and clubInfo.clubType ~= Enum.ClubType.Character then
 			self:Hide();

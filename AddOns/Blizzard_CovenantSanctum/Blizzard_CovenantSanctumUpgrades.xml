@@ -57,7 +57,19 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Glow" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.5"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnEnter method="OnEnter"/>
@@ -115,11 +127,11 @@
 	</Frame>
 	
 	<Frame name="CovenantSanctumUpgradeTalentTemplate" mixin="CovenantSanctumUpgradeTalentMixin" virtual="true">
-		<Size x="251" y="52"/>
+		<Size x="257" y="56"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="CovenantSanctum-Upgrade-Background">
-					<Size x="249" y="50"/>
+					<Size x="257" y="56"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-1"/>
 					</Anchors>
@@ -129,20 +141,20 @@
 				<Texture parentKey="Border"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="SystemFont_Shadow_Med2" justifyH="LEFT">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Med2" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="2" justifyH="LEFT">
 					<Size x="190" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="54" y="-7"/>
+						<Anchor point="TOPLEFT" x="58" y="-6"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="InfoText" inherits="GameFontHighlight" justifyH="LEFT">
+				<FontString parentKey="InfoText" inherits="GameFontHighlight" maxLines="1" justifyH="LEFT">
 					<Size x="190" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="54" y="-28"/>
+						<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="58" y="14"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Icon">
-					<Size x="39" y="39"/>
+					<Size x="43" y="43"/>
 					<Anchors>
 						<Anchor point="LEFT" x="5" y="0"/>
 					</Anchors>
@@ -169,6 +181,7 @@
 			</Cooldown>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>

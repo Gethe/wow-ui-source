@@ -200,6 +200,9 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 	self.info = info;
 	self.name = info.name;
 
+	local puckBorderAtlas = info.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
+	self.PuckBorder:SetAtlas(puckBorderAtlas);
+
 	local autoCombatSpells = info.autoCombatSpells or C_Garrison.GetFollowerAutoCombatSpells(followerGUID, info.level);
 	self.autoCombatSpells = autoCombatSpells;
 	
@@ -269,6 +272,8 @@ function AdventuresEnemyPuckMixin:OnLoad()
 	self.AbilityOne:SetPoint("LEFT", -5, -5);
 	self.AbilityTwo:SetScale(0.7);
 	self.AbilityTwo:SetPoint("LEFT", 0, 25);
+	self.PuckShadow:SetPoint("TOPLEFT", 0, 0);
+	self.PuckShadow:SetPoint("BOTTOMRIGHT", 0, 0);
 	self.HealthBar:SetScale(0.7);
 
 	self.PuckBorder:SetAtlas("Adventures-Enemy-Frame");
@@ -335,6 +340,7 @@ function AdventuresMissionPageFollowerPuckMixin:SetEmpty()
 	self.followerGUID = nil;
 	self.Portrait:Hide();
 	self.PuckBorder:Hide();
+	self.PuckShadow:Hide();
 	self.EmptyPortrait:Hide();
 	self.HealthBar:Hide();
 	self.AbilityOne:Hide();
@@ -346,6 +352,7 @@ function AdventuresMissionPageFollowerPuckMixin:SetFollowerGUID(...)
 
 	self.Portrait:Show();
 	self.PuckBorder:Show();
+	self.PuckShadow:Show();
 	self.EmptyPortrait:Hide();
 	self.HealthBar:Show();
 end

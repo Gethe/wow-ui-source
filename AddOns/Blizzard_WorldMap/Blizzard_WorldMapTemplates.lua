@@ -223,8 +223,10 @@ function WorldMapTrackingPinButtonMixin:OnEvent()
 end
 
 function WorldMapTrackingPinButtonMixin:OnMouseDown(button)
-	self.Icon:SetPoint("TOPLEFT", 8, -8);
-	self.IconOverlay:Show();
+	if self:IsEnabled() then
+		self.Icon:SetPoint("TOPLEFT", 8, -8);
+		self.IconOverlay:Show();
+	end
 end
 
 function WorldMapTrackingPinButtonMixin:OnMouseUp()
@@ -241,9 +243,14 @@ end
 function WorldMapTrackingPinButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, MAP_PIN);
-	GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_TOOLTIP);
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddInstructionLine(GameTooltip, MAP_PIN_TOOLTIP_INSTRUCTIONS);
+	local mapID = self:GetParent():GetMapID();
+	if C_Map.CanSetUserWaypointOnMap(mapID) then
+		GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_TOOLTIP);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddInstructionLine(GameTooltip, MAP_PIN_TOOLTIP_INSTRUCTIONS);
+	else
+		GameTooltip_AddErrorLine(GameTooltip, ERR_CLIENT_LOCKED_OUT);
+	end
 	GameTooltip:Show();
 end
 
@@ -252,7 +259,14 @@ function WorldMapTrackingPinButtonMixin:OnHide()
 end
 
 function WorldMapTrackingPinButtonMixin:Refresh()
-	-- nothing to do here
+	local mapID = self:GetParent():GetMapID();
+	if C_Map.CanSetUserWaypointOnMap(mapID) then
+		self:Enable();
+		self:DesaturateHierarchy(0);
+	else
+		self:Disable();
+		self:DesaturateHierarchy(1);
+	end
 end
 
 function WorldMapTrackingPinButtonMixin:SetActive(isActive)

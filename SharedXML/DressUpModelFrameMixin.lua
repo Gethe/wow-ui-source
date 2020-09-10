@@ -129,7 +129,21 @@ end
 function TransmogAndMountDressupFrameMixin:OnHide()
 	self.mountID = nil; 
 	self.transmogSetID = nil; 
+	self.removeWeapons = nil; 
 	self.ShowMountCheckButton:SetChecked(false);
+end 
+
+function TransmogAndMountDressupFrameMixin:RemoveWeapons()
+	local playerActor = self.ModelScene:GetPlayerActor();
+
+	if (not playerActor) then
+		return true;
+	end
+
+	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+	local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+	playerActor:UndressSlot(mainHandSlotID);
+	playerActor:UndressSlot(offHandSlotID);
 end 
 
 function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
@@ -138,6 +152,10 @@ function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
 	else
 		local sources = C_TransmogSets.GetAllSourceIDs(self.transmogSetID);
 		DressUpTransmogSet(sources);
+	
+		if(self.removeWeapons) then 
+			self:RemoveWeapons(); 
+		end 
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end

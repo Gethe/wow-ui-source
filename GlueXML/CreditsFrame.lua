@@ -13,7 +13,7 @@ function CreditsFrameMixin:OnHide()
 end
 
 function CreditsFrameMixin:Update()
-	PlayGlueMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, self.expansion));
+	PlayCreditsMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, self.expansion));
 	local expansionInfo = GetExpansionDisplayInfo(self.expansion);
 	if expansionInfo then
 		self.Logo:SetTexture(expansionInfo.logo);
@@ -28,6 +28,7 @@ function CreditsFrameMixin:Update()
 
 	-- Set Credits Text
 	self.ScrollFrame.Text:SetText(GetCreditsText(self.expansion));
+	self.Slider:SetValue(0);
 end
 
 function CreditsFrameMixin:Switch(expansion)
@@ -114,6 +115,7 @@ function CreditsFrameMixin:OnUpdate(elapsed)
 	end
 
 	self.ScrollFrame:SetVerticalScroll(self.ScrollFrame.scroll);
+	self.Slider:SetValue(self.ScrollFrame.scroll);
 end
 
 function CreditsFrameMixin:OnKeyDown(key)
@@ -144,6 +146,7 @@ end
 
 function CreditsScrollFrameMixin:UpdateMax()
 	self.scrollMax = self:GetVerticalScrollRange() + 768;
+	self:GetParent().Slider:SetMinMaxValues(0, self.scrollMax);
 end
 
 CreditsExpansionListMixin = {}

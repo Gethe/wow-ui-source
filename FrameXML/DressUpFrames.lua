@@ -323,13 +323,15 @@ function CloseSideDressUpFrame(parentFrame)
 	end
 end
 
-function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID,  width, height, point, relativePoint, offsetX, offsetY)
+function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID,  width, height, point, relativePoint, offsetX, offsetY, removeWeapons)
 	local self = TransmogAndMountDressupFrame;
 	self.parentFrame = parentFrame;
-	TransmogAndMountDressupFrame.transmogSetID = transmogSetID;
-	TransmogAndMountDressupFrame.mountID = mountID; 
-	TransmogAndMountDressupFrame:SetSize(width, height); 
+	self.transmogSetID = transmogSetID;
+	self.mountID = mountID; 
+	self:SetSize(width, height); 
+	TransmogAndMountDressupFrame.removeWeapons = removeWeapons;
 	relativePoint = relativePoint or point;
+
 	self:SetParent(parentFrame);
 	self:SetPoint(point, parentFrame, relativePoint, offsetX, offsetY);
 end

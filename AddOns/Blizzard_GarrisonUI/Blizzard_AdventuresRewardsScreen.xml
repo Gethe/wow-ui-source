@@ -220,6 +220,24 @@
 						</HighlightFont>
 						<DisabledFont style="GameFontHighlightMedium"/>
 						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD">
+									<Size x="192" y="60"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-14" y="7"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
+								<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+						<Scripts>
+							<OnShow method="OnShow"/>
+						</Scripts>
 					</Button>
 					<Frame parentKey="SpoilsFrame" inherits="HorizontalLayoutFrame">
 						<Anchors>

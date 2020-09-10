@@ -20,6 +20,7 @@ local listTextureKitRegions = {
 };
 local featureBorderTextureKitRegions = {
 	["Border"] = "CovenantSanctum-Icon-Border-%s",
+	["Glow"] = "CovenantSanctum-Icon-Glow-%s",
 }
 local reservoirTextureKitRegions = {
 	["Glow"] = "CovenantSanctum-Resevoir-Glow-%s",
@@ -41,12 +42,13 @@ end
 local EFFECT_MISSILE = 1;
 local EFFECT_IMPACT = 2;
 local EFFECT_ANIMA_FULL = 3;
+local EFFECT_RESEARCH = 4;
 
 local covenantSanctumEffectList = {
-	["Venthyr"] = { 103, 107, 111 },
-	["Kyrian"] = { 104, 108, 112 },
-	["NightFae"] = { 105, 109, 113 },
-	["Necrolord"] = { 106, 110, 114 },
+	["Venthyr"] = { 103, 107, 111, 115 },
+	["Kyrian"] = { 104, 108, 112, 116 },
+	["NightFae"] = { 105, 109, 113, 117 },
+	["Necrolord"] = { 106, 110, 114, 118 },
 }
 
 local function GetEffectID(index)
@@ -61,6 +63,7 @@ local CovenantSanctumUpgradesEvents = {
 	"GARRISON_TALENT_UPDATE",
     "GARRISON_TALENT_COMPLETE",
 	"SPELL_TEXT_UPDATE",
+	"GARRISON_TALENT_RESEARCH_STARTED",
 };
 
 function CovenantSanctumUpgradesTabMixin:OnLoad()
@@ -94,12 +97,17 @@ function CovenantSanctumUpgradesTabMixin:OnHide()
 	if self.animaGainEffect then
 		self.animaGainEffect:CancelEffect();
 	end
+	for i, frame in ipairs(self.Upgrades) do
+		if frame.researchEffect then
+			frame.researchEffect:CancelEffect();
+			frame.GlowAnim:Stop();
+			frame.Glow:SetAlpha(0);
+		end
+	end
 end
 
 function CovenantSanctumUpgradesTabMixin:OnEvent(event, ...)
-	if event == "GARRISON_TALENT_UPDATE" then
-		self:Refresh();
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+	if event == "CURRENCY_DISPLAY_UPDATE" then
 		local currencyID, total = ...;
 		local animaCurrencyID = C_CovenantSanctumUI.GetAnimaInfo();
 		if currencyID == animaCurrencyID and total > self.ReservoirUpgrade:GetAnimaAmount() then
@@ -107,7 +115,27 @@ function CovenantSanctumUpgradesTabMixin:OnEvent(event, ...)
 		else
 			self:OnCurrencyUpdate();
 		end
+	elseif event == "GARRISON_TALENT_RESEARCH_STARTED" then
+		local garrTypeID, talentTreeID, talentID = ...;
+		self:OnResearchStarted(talentTreeID);
+	else
+		self:Refresh();
 	end
+end
+
+function CovenantSanctumUpgradesTabMixin:OnResearchStarted(talentTreeID)
+	for i, frame in ipairs(self.Upgrades) do
+		if frame.treeID == talentTreeID then
+			local effectID = GetEffectID(EFFECT_RESEARCH);
+			if effectID then
+				local target, onEffectFinish = nil, nil;
+				local onEffectResolution = function() frame.researchEffect = nil; end;
+				frame.researchEffect = GlobalFXDialogModelScene:AddEffect(effectID, frame, target, onEffectFinish, onEffectResolution);
+				frame.GlowAnim:Play();
+			end
+			break;
+		end
+	end	
 end
 
 function CovenantSanctumUpgradesTabMixin:OnAnimaGained()
@@ -310,6 +338,10 @@ end
 --=============================================================================================
 CovenantSanctumUpgradeTalentMixin = { };
 
+function CovenantSanctumUpgradeTalentMixin:OnLoad()
+	self.Name:SetFontObjectsToTry("SystemFont_Shadow_Med2", "GameFontHighlight");
+end
+
 function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 	self.Name:SetText(talentInfo.name);
 	self.Icon:SetTexture(talentInfo.icon);
@@ -317,6 +349,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 	self.info = talentInfo;
 	local disabled = false;
 	local abbreviateCost = true;
+	local showingCost = false;
 
 	local textColor = HIGHLIGHT_FONT_COLOR;
 	if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave then
@@ -331,6 +364,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 		self.UpgradeArrow:Show();
 		local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
 		self.InfoText:SetText(costString or "");
+		showingCost = not not costString;
 	else
 		disabled = true;
 		self.UpgradeArrow:Hide();
@@ -338,11 +372,26 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 		if isMet then
 			local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
 			self.InfoText:SetText(costString);
+			showingCost = not not costString;
 		else
 			self.InfoText:SetText(failureString or "");
 		end
 	end
 	self.InfoText:SetTextColor(textColor:GetRGB());
+
+	local spaceOutLines = false;
+	if showingCost then
+		if self.Name:GetNumLines() > 1 and self.Name:GetFontObject() == SystemFont_Shadow_Med2 then
+			spaceOutLines = true;
+		end
+	end
+	if spaceOutLines then
+		self.Name:SetPoint("TOPLEFT", 58, -5);
+		self.InfoText:SetPoint("LEFT", self, "BOTTOMLEFT", 58, 13);
+	else
+		self.Name:SetPoint("TOPLEFT", 58, -6);
+		self.InfoText:SetPoint("LEFT", self, "BOTTOMLEFT", 58, 14);
+	end
 
 	if disabled then
 		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, g_sanctumTextureKit);

@@ -55,6 +55,7 @@ do
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
 		self:RegisterEvent("CHAT_MSG_CHANNEL_LEAVE_PREVENTED");
+		self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE");
 
 		local promptSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatPromptActivateChannel);
 		ChatAlertFrame:SetSubSystemAnchorPriority(promptSubSystem, 10);
@@ -162,6 +163,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnChannelLeavePrevented(...)
 	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
 		self:MarkDirty("UpdateChannelList");
+	elseif event == "CHAT_MSG_CHANNEL_NOTICE" then
+		self:OnChannelNotice(...);
 	end
 end
 
@@ -627,6 +630,24 @@ end
 
 function ChannelFrameMixin:OnChannelLeavePrevented(channelName)
 	ChatFrame_DisplaySystemMessageInPrimary(CHAT_LEAVE_CHANNEL_PREVENTED:format(channelName));
+end
+
+function ChannelFrameMixin:OnChannelNotice(...)
+	local eventType = select(1, ...);
+	local channelIndex = select(8, ...);
+
+	if eventType == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(channelIndex) == Enum.ChatChannelRuleset.Mentor then
+		local channelSlashCommand = GetSlashCommandForChannelOpenChat(channelIndex);
+		if IsActivePlayerNewcomer() then
+			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
+			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
+			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
+		else
+			-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
+			-- then if you're not a newcomer, you must be a guide.
+			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
+		end
+	end
 end
 
 --[ Utility Functions ]--

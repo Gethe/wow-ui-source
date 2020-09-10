@@ -643,7 +643,7 @@ function UpgradeAccount()
 			ToggleStoreUI();
 		else
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-			LoadURLIndex(2);
+			LoadURLIndex(22);
 		end
 	else
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then

@@ -12,11 +12,13 @@ end
 
 function VignetteDataProviderMixin:OnShow()
 	self:RegisterEvent("VIGNETTES_UPDATED");
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
 	self.ticker = C_Timer.NewTicker(0, function() self:UpdatePinPositions() end);
 end
 
 function VignetteDataProviderMixin:OnHide()
 	self:UnregisterEvent("VIGNETTES_UPDATED");
+	EventRegistry:UnregisterCallback("Supertracking.OnChanged", self);
 	if self.ticker then
 		self.ticker:Cancel();
 		self.ticker = nil;
@@ -41,6 +43,12 @@ function VignetteDataProviderMixin:InitializeAllTrackingTables()
 end
 
 function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
+	local mapInfo = C_Map.GetMapInfo(self:GetMap():GetMapID());
+	if FlagsUtil.IsSet(mapInfo.flags, Enum.UIMapFlag.HideVignettes) then
+		self:RemoveAllData();
+		return;
+	end
+
 	local pinsToRemove = {};
 	for vignetteGUID, pin in pairs(self.vignetteGuidsToPins) do
 		pinsToRemove[vignetteGUID] = pin;
@@ -57,6 +65,7 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 				existingPin:UpdateFogOfWar(vignetteInfo);
 			else
 				local pin = self:GetMap():AcquirePin(pinTemplate, vignetteGUID, vignetteInfo, self:GetMap():GetNumActivePinsByTemplate(pinTemplate));
+				pin.dataProvider = self;
 				self.vignetteGuidsToPins[vignetteGUID] = pin;
 				if pin:IsUnique() then
 					self:AddUniquePin(pin);
@@ -71,6 +80,13 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 		end
 		self:GetMap():RemovePin(pin);
 		self.vignetteGuidsToPins[vignetteGUID] = nil;
+	end
+end
+
+function VignetteDataProviderMixin:OnSuperTrackingChanged()
+	local template = self:GetPinTemplate();
+	for pin in self:GetMap():EnumeratePinsByTemplate(template) do
+		pin:UpdateSupertrackedHighlight();
 	end
 end
 
@@ -156,6 +172,7 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameLevelCount
 	self.ShowAnim:Play();
 
 	self:UpdatePosition();
+	self:UpdateSupertrackedHighlight();
 
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_VIGNETTE", frameLevelCount);
 end
@@ -212,6 +229,11 @@ function VignettePinMixin:UpdatePosition(bestUniqueVignette)
 	else
 		self:Hide();
 	end
+end
+
+function VignettePinMixin:UpdateSupertrackedHighlight()
+	local highlight = (self:GetVignetteType() == Enum.VignetteType.Treasure) and QuestSuperTracking_ShouldHighlightTreasures(self:GetMap():GetMapID());
+	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Texture);
 end
 
 function VignettePinMixin:OnMouseEnter()

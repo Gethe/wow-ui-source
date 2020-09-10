@@ -2391,11 +2391,6 @@ if IsGMClient() then
 	end
 end
 
-SLASH_PERFREPORT1 = "/perfreport";
-SlashCmdList["PERFREPORT"] = function(msg)
-	C_ReportSystem.ReportServerLag();
-end
-
 SlashCmdList["TABLEINSPECT"] = function(msg)
 	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
 		return;
@@ -3064,7 +3059,7 @@ local function GetFirstChannelIDOfChannelMatchingRuleset(ruleset, excludeChannel
 	return nil;
 end
 
-local function GetSlashCommandForChannelOpenChat(channelIndex)
+function GetSlashCommandForChannelOpenChat(channelIndex)
   	return "/" .. channelIndex;
 end
 
@@ -3119,7 +3114,6 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 
 		if self == DEFAULT_CHAT_FRAME then
-			self.needsMentorChatExplanation = true;
 			ChatEdit_UpdateNewcomerEditBoxHint(self.editBox);
 
 			local isInitialLogin, isUIReload = ...;
@@ -3479,11 +3473,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 			if not found or not info then
-				if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRulesetForChannelID(arg7) == Enum.ChatChannelRuleset.Mentor and self == DEFAULT_CHAT_FRAME then
-					ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(arg7));
-				else
-					return true;
-				end
+				return true;
 			end
 		end
 
@@ -3621,21 +3611,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
 				ChatFrame_UpdateDefaultChatTarget(self);
 				ChatEdit_UpdateNewcomerEditBoxHint(self.editBox);
-
-				if self.needsMentorChatExplanation then
-					self.needsMentorChatExplanation = nil;
-
-					local channelSlashCommand = GetSlashCommandForChannelOpenChat(arg8);
-					if IsActivePlayerNewcomer() then
-						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
-						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
-						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
-					else
-						-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
-						-- then if you're not a newcomer, you must be a guide.
-						ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
-					end
-				end
 			else
 				if arg1 == "YOU_LEFT" then
 					ChatEdit_UpdateNewcomerEditBoxHint(self.editBox, arg8);
@@ -5477,9 +5452,11 @@ function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
 end
 
 function Chat_GetChannelShortcutName(index)
-	local _, name = GetChannelName(index);
-	name = strtrim(name:match("([^%-]+)"));
-	return name;
+	if not tonumber(index) and type(index) == "string" then
+		index = GetChannelName(index);
+	end
+
+	return C_ChatInfo.GetChannelShortcut(index);
 end
 
 function ChatChannelDropDown_PopInChat(self, chatType, chatTarget)

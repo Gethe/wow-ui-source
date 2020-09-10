@@ -65,7 +65,7 @@
 		</Scripts>
 	</DropDownToggleButton>
 
-	<Button name="WorldMapTrackingPinButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingPinButtonMixin" virtual="true">
+	<Button name="WorldMapTrackingPinButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingPinButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">

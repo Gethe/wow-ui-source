@@ -5,13 +5,14 @@ local ChatConstants =
 		{
 			Name = "ChatChannelRuleset",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "None", Type = "ChatChannelRuleset", EnumValue = 0 },
 				{ Name = "Mentor", Type = "ChatChannelRuleset", EnumValue = 1 },
+				{ Name = "Disabled", Type = "ChatChannelRuleset", EnumValue = 2 },
 			},
 		},
 		{

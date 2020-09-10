@@ -21,11 +21,7 @@ end
 
 function TorghastLevelPickerFrameMixin:OnShow()
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
-	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_UI); 
-end 
-
-function TorghastLevelPickerFrameMixin:OnHide()
-	self:UnregisterEvent("PARTY_LEADER_CHANGED");
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES); 
 end 
 
 function TorghastLevelPickerFrameMixin:CancelEffects()
@@ -35,11 +31,16 @@ function TorghastLevelPickerFrameMixin:CancelEffects()
 	end 
 end 
 
-function TorghastLevelPickerFrameMixin:UpdatePortalButtonState()
+function TorghastLevelPickerFrameMixin:UpdatePortalButtonState(startingIndex)
 	local inParty = UnitInParty("player"); 
 	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
+	local enabled = true; 
 
-	self.OpenPortalButton:SetEnabled(self.isPartyLeader and self.currentSelectedButton)
+	if	(startingIndex and self.currentSelectedButtonIndex) then 
+		enabled = startingIndex <= self.currentSelectedButtonIndex;
+	end 
+
+	self.OpenPortalButton:SetEnabled(self.isPartyLeader and self.currentSelectedButton and enabled)
 end 
 
 function TorghastLevelPickerFrameMixin:TryShow(textureKit) 
@@ -58,10 +59,9 @@ function TorghastLevelPickerFrameMixin:TryShow(textureKit)
 end 
 
 function TorghastLevelPickerFrameMixin:OnHide()
-	if(self.currentSelectedButton) then 
-		self.currentSelectedButton:ClearSelection(); 
-	end 
-	self.currentSelectedButton = nil; 
+	self:UnregisterEvent("PARTY_LEADER_CHANGED");
+	self:ClearLevelSelection(); 
+
 	self.textureKit = nil; 
 	EmbeddedItemTooltip:Hide(); 
 	self:CancelEffects(); 
@@ -90,15 +90,28 @@ function TorghastLevelPickerFrameMixin:GetCurrentPage()
 	return self.Pager.currentPage; 
 end
 
-function TorghastLevelPickerFrameMixin:SelectLevel(selectedLevelButton)
-	if(self.currentSelectedButton == selectedLevelButton) then 
+function TorghastLevelPickerFrameMixin:ClearLevelSelection() 
+	if (self.currentSelectedButton) then 
 		self.currentSelectedButton:ClearSelection(); 
 		self.currentSelectedButton = nil;
+		self.currentSelectedButtonIndex = nil;
+	end 
+	self:UpdatePortalButtonState(); 
+end 
+
+function TorghastLevelPickerFrameMixin:SelectLevel(selectedLevelButton)
+	if(self.currentSelectedButton == selectedLevelButton and self.currentSelectedButtonIndex == selectedLevelButton.index) then 
+		self.currentSelectedButton:ClearSelection(); 
+		self.currentSelectedButton = nil;
+		self.currentSelectedButtonIndex = nil;
 	else 
+		if (self.currentSelectedButton) then 
+			self.currentSelectedButton:ClearSelection(); 
+		end 
 		self.currentSelectedButton = selectedLevelButton; 
+		self.currentSelectedButtonIndex = self.currentSelectedButton.index; 
 	end
 	self:UpdatePortalButtonState(); 
-	
 end		
 
 function TorghastLevelPickerFrameMixin:SetupBackground()
@@ -142,7 +155,10 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 	self.RewardBanner.Reward:Init()
 	self.Background:SetDesaturated(lockedState);
 	self.Icon:SetDesaturated(lockedState); 
-
+	local parent = self:GetParent():GetParent(); 
+	local isChecked = (self == parent.currentSelectedButton) and (self.index == parent.currentSelectedButtonIndex);
+	self:SetChecked(isChecked); 
+	self.SelectedBorder:SetShown(self:GetChecked());
 	local fontColor = HIGHLIGHT_FONT_COLOR; 
 	if(lockedState) then
 		fontColor = LIGHTGRAY_FONT_COLOR;
@@ -152,11 +168,12 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 end
 
 function TorghastLevelPickerOptionButtonMixin:ClearSelection()
-	self:SetChecked(false)
+	self:SetChecked(false);
+	self.SelectedBorder:SetShown(self:GetChecked()); 
 end 
 
 function TorghastLevelPickerOptionButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_SELECT_DIFFICULTY); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_SELECT_DIFFICULTY, nil, SOUNDKIT_ALLOW_DUPLICATES); 
 	self:SetChecked(true);
 	self:GetParent():GetParent():SelectLevel(self);
 	self.SelectedBorder:SetShown(self:GetChecked()); 
@@ -191,6 +208,7 @@ function TorghastPagingContainerMixin:PagePrevious()
 	self:GetParent():SetupOptionsByStartingIndex(startingIndex);
 	self:Setup(); 
 	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_PAGING_CLICK);
+	self:GetParent():UpdatePortalButtonState(startingIndex);
 end 
 
 function TorghastPagingContainerMixin:PageNext()
@@ -198,6 +216,7 @@ function TorghastPagingContainerMixin:PageNext()
 	local startingIndex = ((self.currentPage - 1) * self.maxOptionsPerPage) + 1;
 	self:GetParent():SetupOptionsByStartingIndex(startingIndex);
 	self:Setup(); 
+	self:GetParent():UpdatePortalButtonState(startingIndex);
 	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_PAGING_CLICK);
 end 
 
@@ -208,10 +227,14 @@ local function TorghastLevelPickerRewardSortFunction(firstValue, secondValue)
 end
 
 function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
+	local continuableContainer = ContinuableContainer:Create();
+	self.itemRewards = { };
+	self.currencyRewards = { };
+
 	for _, reward in ipairs(self.rewards) do 
 		if	(reward.rewardType == Enum.GossipOptionRewardType.Item) then 
-			local _, _, quality = GetItemInfo(reward.id);
-			table.insert(self.itemRewards, {id = reward.id, quality = quality});
+			local item = Item:CreateFromItemID(reward.id);
+			continuableContainer:AddContinuable(item);
 		else
 			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(reward.id, reward.quantity); 
 			if (IsCurrencyContainer) then 
@@ -223,14 +246,24 @@ function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
 			end 
 		end
 	end 
+
+	continuableContainer:ContinueOnLoad(function()
+		for  _, reward in ipairs(self.rewards) do
+			if	(reward.rewardType == Enum.GossipOptionRewardType.Item) then 
+				local name, _, quality, _, _, _, _, _, _, itemIcon = GetItemInfo(reward.id);
+				table.insert(self.itemRewards, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name});
+			end
+		end
+		if (self.itemRewards and #self.itemRewards > 1) then
+			table.sort(self.itemRewards, function(a, b) 
+				return TorghastLevelPickerRewardSortFunction(a.quality, b.quality); 
+			end);
+		end 
+		self:RefreshTooltip();
+	end);
+
 	if (self.currencyRewards and #self.currencyRewards > 1) then
 		table.sort(self.currencyRewards, function(a, b) 
-			return TorghastLevelPickerRewardSortFunction(a.quality, b.quality); 
-		end);
-	end 
-
-	if (self.itemRewards and #self.itemRewards > 1) then
-		table.sort(self.itemRewards, function(a, b) 
 			return TorghastLevelPickerRewardSortFunction(a.quality, b.quality); 
 		end);
 	end 
@@ -289,6 +322,14 @@ function TorghastLevelPickerRewardCircleMixin:Init()
 end 
 
 function TorghastLevelPickerRewardCircleMixin:OnEnter()
+	self:RefreshTooltip(); 
+end 
+
+function TorghastLevelPickerRewardCircleMixin:RefreshTooltip()
+	if (not self:IsMouseOver()) then 
+		return;
+	end 
+
 	if (self.lockedState) then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		if (UnitInParty("player")) then 
@@ -319,14 +360,26 @@ function TorghastLevelPickerRewardCircleMixin:OnEnter()
 		self:AddCurrencyToTooltip(currencyReward, EmbeddedItemTooltip);
 	end 
 
-	if (self.itemRewards and self.itemRewards[1]) then 
+	for i, itemReward in ipairs(self.itemRewards) do 
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemRewards[1].id);
+		if(i == 1) then 
+			EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, itemReward.id)
+		else 
+			local text;
+			if itemReward.quantity > 1 then
+				text = string.format(JAILERS_TOWER_ITEM_REWARD_TOOLTIP_WITH_COUNT_FORMAT, itemReward.texture, HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(itemReward.quantity), itemReward.name);
+			else
+				text = string.format(JAILERS_TOWER_ITEM_REWARD_TOOLTIP_FORMAT, itemReward.texture, itemReward.name);
+			end
+			if text then
+				local color = ITEM_QUALITY_COLORS[itemReward.quality];
+				EmbeddedItemTooltip:AddLine(text, color.r, color.g, color.b);
+			end
+		end
 	end 
 
 	if(self.index and self.index > 1) then 
-		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		GameTooltip_AddNormalLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_HIGH_DIFFICULTY, true)
+		GameTooltip_SetBottomText(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_HIGH_DIFFICULTY, NORMAL_FONT_COLOR);
 	end 
 
 	EmbeddedItemTooltip:Show(); 
@@ -356,5 +409,5 @@ function TorghastLevelPickerOpenPortalButtonMixin:OnClick()
 		return; 
 	end
 	C_GossipInfo.SelectOption(selectedPortal.index); 
-	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL, nil, SOUNDKIT_ALLOW_DUPLICATES); 
 end 

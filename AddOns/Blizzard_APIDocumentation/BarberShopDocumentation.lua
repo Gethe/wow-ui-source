@@ -60,6 +60,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "HasAnyChanges",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasChanges", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsViewingAlteredForm",
 			Type = "Function",
 

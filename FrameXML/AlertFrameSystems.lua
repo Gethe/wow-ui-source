@@ -716,9 +716,12 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
 	frame.Title:SetText(GarrisonFollowerOptions[missionInfo.followerTypeID].strings.ALERT_FRAME_TITLE);
+	frame.MissionType:SetShown(true);
+	frame.EncounterIcon:SetShown(false);
+
 	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0) then
-		frame.MissionType:SetShown(false);
 		frame.EncounterIcon:SetShown(true);
+		frame.MissionType:SetShown(false);
 
 		local encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(missionInfo.missionID);
 		frame.EncounterIcon.RareOverlay:SetShown(encounterIconInfo.isRare);
@@ -1149,60 +1152,16 @@ function NewRuneforgePowerAlertSystem_SetUp(frame, powerID)
 	frame:SetUp(powerID);
 end
 
-NewRuneforgePowerAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+NewRuneforgePowerAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin, RuneforgePowerBaseMixin);
 
 function NewRuneforgePowerAlertFrameMixin:SetUp(powerID)
-	self.powerID = powerID;
+	self:SetPowerID(powerID);
+end
 
-	local powerInfo = C_LegendaryCrafting.GetRuneforgePowerInfo(powerID);
+function NewRuneforgePowerAlertFrameMixin:OnPowerSet(oldPowerID, newPowerID)
+	local powerInfo = self:GetPowerInfo();
 	self.powerInfo = powerInfo;
 	self:SetUpDisplay(powerInfo.iconFileID, Enum.ItemQuality.Legendary, powerInfo.name, YOU_EARNED_LABEL);
-end
-
-function NewRuneforgePowerAlertFrameMixin:OnShow(event, ...)
-	self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-end
-
-function NewRuneforgePowerAlertFrameMixin:OnHide(event, ...)
-	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-end
-
-function NewRuneforgePowerAlertFrameMixin:OnEvent(event, ...)
-	if event == "RUNEFORGE_POWER_INFO_UPDATED" then
-		local powerID = ...;
-		if powerID == self.powerID then
-			self:SetUp(powerID);
-			if self:IsMouseOver() then
-				self:OnEnter();
-			end
-		end
-	end
-end
-
-function NewRuneforgePowerAlertFrameMixin:OnEnter()
-	if self.powerInfo then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
-		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name);
-	
-		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR);
-	
-		if not self.slotNames then
-			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
-		end
-
-		if #self.slotNames > 0 then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
-			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
-		end
-
-		GameTooltip:Show();
-	end
-end
-
-function NewRuneforgePowerAlertFrameMixin:OnLeave()
-	GameTooltip_Hide();
 end
 
 function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
@@ -1211,8 +1170,4 @@ function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 	end
 
 	-- No left-click behavior.
-end
-
-function NewRuneforgePowerAlertFrameMixin:GetPowerID()
-	return self.powerID;
 end

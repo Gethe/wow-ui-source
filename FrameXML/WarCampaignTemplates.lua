@@ -320,7 +320,13 @@ CampaignCollapseButtonMixin = {};
 
 function CampaignCollapseButtonMixin:OnClick()
 	local header = self:GetParent();
-	header:SetCollapsed(not header:IsCollapsed());
+	local isCollapsed = header:IsCollapsed()
+	if(isCollapsed) then
+		PlaySound(SOUNDKIT.UI_JOURNEYS_EXPAND_HEADER);
+	else
+		PlaySound(SOUNDKIT.UI_JOURNEYS_COLLAPSE_HEADER);
+	end
+	header:SetCollapsed(not isCollapsed);
 end
 
 function CampaignCollapseButtonMixin:OnEnter()
@@ -350,9 +356,11 @@ end
 
 function CampaignLoreButtonMixin:OnClick()
 	if self.mode == "overview" then
+		PlaySound(SOUNDKIT.UI_JOURNEYS_OPEN_LORE_BOOK);
 		HelpTip:Hide(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
 		EventRegistry:TriggerEvent("QuestLog.ShowCampaignOverview", self:GetParent():GetCampaign():GetID());
 	elseif self.mode == "questlog" then
+		PlaySound(SOUNDKIT.UI_JOURNEYS_CLOSE_LORE_BOOK);
 		EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	end
 end

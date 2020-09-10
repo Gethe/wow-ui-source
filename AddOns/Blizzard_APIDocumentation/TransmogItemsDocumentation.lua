@@ -13,6 +13,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
+				{ Name = "categoryID", Type = "number", Nilable = true },
 			},
 
 			Returns =

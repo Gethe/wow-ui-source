@@ -556,8 +556,8 @@
 				</Alpha>
 			</AnimationGroup>
 			<AnimationGroup parentKey="ScrollingBackgroundScroll" looping="REPEAT">
-				<Translation childKey="ScrollingBG" duration="50" order="1" offsetX="300" offsetY="0" smoothing="OUT"/>
-				<Translation childKey="ScrollingBG" duration="50" order="2" offsetX="-300" offsetY="0" smoothing="OUT"/>
+				<Translation childKey="ScrollingBG" duration="35" order="1" offsetX="300" offsetY="0" smoothing="OUT"/>
+				<Translation childKey="ScrollingBG" duration="35" order="2" offsetX="-300" offsetY="0" smoothing="OUT"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeoutSelected" setToFinalAlpha="true">
 				<Alpha startDelay="1.25" order="1" duration=".25" fromAlpha="1" toAlpha="0"/>
@@ -730,6 +730,11 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="1" y="2" />
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():CloseUIFromExitButton(); 
+					</OnClick>
+				</Scripts>
 			</Button>
 			<ModelScene parentKey="HighStrataModelScene" frameStrata="HIGH" drawLayer="BORDER"  inherits="ScriptAnimatedModelSceneTemplate" hidden="true" alpha="0.5" enableMouse="false"/>
 		</Frames>

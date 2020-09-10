@@ -63,7 +63,7 @@ end
 
 function MawBuffsContainerMixin:OnClick()
 	self.List:SetShown(not self.List:IsShown());
-	PlaySound(SOUNDKIT.UI_MAW_BUFFS_ANIMA_POWERS_BUTTON);
+	PlaySound(SOUNDKIT.UI_MAW_BUFFS_ANIMA_POWERS_BUTTON, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function MawBuffsContainerMixin:HighlightBuffAndShow(spellID, maxStacks)
@@ -168,11 +168,16 @@ function MawBuffMixin:SetBuffInfo(buffInfo)
 	self.Icon:SetTexture(buffInfo.icon);
 	self.slot = buffInfo.slot;
 	self.count = buffInfo.count;
-	self.spellID = buffInfo.spellID; 
-	local showCount = buffInfo.count > 1;
+	self.spellID = buffInfo.spellID;
 
+	local _, rarityAtlas = C_Spell.GetMawPowerRarityStringAndBorderAtlasBySpellID(self.spellID);
+	local showCount = buffInfo.count > 1;
+		
 	if (showCount) then
 		self.Count:SetText(buffInfo.count);
+	end 
+	if(rarityAtlas) then
+		self.Border:SetAtlas(rarityAtlas, TextureKitConstants.UseAtlasSize);
 	end 
 
 	self.Count:SetShown(showCount);
@@ -186,8 +191,43 @@ function MawBuffMixin:SetBuffInfo(buffInfo)
 end
 
 function MawBuffMixin:OnEnter()
+	self:RefreshTooltip(); 
+end 
+
+function MawBuffMixin:RefreshTooltip()
+	local spell = Spell:CreateFromSpellID(self.spellID);
+	local name, spellDescription = nil; 
+
+
+	if (spell:IsSpellDataCached()) then 
+		name = UnitAura("player", self.slot, "MAW");
+		spellDescription = GetSpellDescription(self.spellID);
+	else
+		spell:ContinueOnSpellLoad(function()
+			self:RefreshTooltip();
+		end);
+	end
+
+	if(not self:IsMouseOver()) then 
+		return;
+	end 
+
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetUnitAura("player", self.slot, "MAW");
+	local name = UnitAura("player", self.slot, "MAW");
+
+	if (name) then 
+		GameTooltip_AddNormalLine(GameTooltip, name);
+	end 
+
+	local rarityString = C_Spell.GetMawPowerRarityStringAndBorderAtlasBySpellID(self.spellID);
+	if (rarityString) then
+		GameTooltip_AddNormalLine(GameTooltip, rarityString);
+	end
+
+	local spellDescription = GetSpellDescription(self.spellID);
+	if (spellDescription) then 
+		GameTooltip_AddHighlightLine(GameTooltip, spellDescription)
+	end 
 	GameTooltip:Show();
 	self.HighlightBorder:Show(); 
 end

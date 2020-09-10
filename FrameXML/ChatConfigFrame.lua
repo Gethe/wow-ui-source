@@ -718,9 +718,16 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		-- Default selections
 		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
 		ChatConfig_UpdateCombatTabs(1);
-	elseif ( event == "CHANNEL_UI_UPDATE" ) then
+
 		ChatConfigCategory_UpdateEnabled();
 		ChatConfig_UpdateChatSettings();
+
+		self.hasEnteredWorld = true;
+	elseif ( event == "CHANNEL_UI_UPDATE" ) then
+		if self.hasEnteredWorld then
+			ChatConfigCategory_UpdateEnabled();
+			ChatConfig_UpdateChatSettings();
+		end
 	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
 		if ChatConfigChannelSettings:IsVisible() then
 			ChatConfigChannelSettings_OnShow();
@@ -1537,6 +1544,17 @@ function ChatConfigCategory_UpdateEnabled()
 	end
 end
 
+local function IsChannelNameChecked(channelList, channelName)
+	if channelList then
+		for index, value in pairs(channelList) do
+			if value == channelName then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
 function CreateChatChannelList(self, ...)
 	if ( not FCF_GetCurrentChatFrame() ) then
 		return;
@@ -1553,21 +1571,7 @@ function CreateChatChannelList(self, ...)
 		if C_ChatInfo.GetChannelRuleset(channelID) == Enum.ChatChannelRuleset.Mentor then
 			disabled = disabled or not C_ChatInfo.IsRegionalServiceAvailable();
 		end
-		local checked = nil;
-		if ( channelList ) then
-			for index, value in pairs(channelList) do
-				if ( value == channel ) then
-					checked = 1;
-				end
-			end
-		end
-		if ( zoneChannelList ) then
-			for index, value in pairs(zoneChannelList) do
-				if ( value == channel ) then
-					checked = 1;
-				end
-			end
-		end
+		local checked = IsChannelNameChecked(channelList, channel);
 
 		while count < channelID do
 			-- Leave empty entries for missing channels to allow for re-ordering.
@@ -1994,7 +1998,6 @@ function ChatConfig_RefreshCurrentChatCategory(preserveCategorySelection)
 
 	ChatConfigCategoryFrame_Refresh(preserveCategorySelection);
 end
-
 function ChatConfigChatSettings_UpdateCheckboxes()
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
 end
@@ -2005,14 +2008,13 @@ function ChatConfigChatSettings_OnShow()
 end
 
 function ChatConfigChannelSettings_UpdateCheckboxes()
+	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 	ChatConfigChannelSettingsLeft:UpdateStates();
 end
 
 function ChatConfigChannelSettings_OnShow()
-	-- Have to build it here since the channel list doesn't exist on load
-	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfigChannelSettings_UpdateCheckboxes();
 	UpdateDefaultButtons(false);
 end
@@ -2023,9 +2025,7 @@ function ChatConfigChannelSettings_MoveChannelDown(channelIndex)
 	end
 
 	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex + 1);
-	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
-	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	ChatConfigChannelSettings_UpdateCheckboxes();
 end
 
 function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
@@ -2034,9 +2034,7 @@ function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
 	end
 
 	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex - 1);
-	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
-	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	ChatConfigChannelSettings_UpdateCheckboxes();
 end
 
 function ChatConfigOtherSettings_UpdateCheckboxes()
@@ -2294,9 +2292,6 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
 			C_ChatInfo.SwapChatChannelsByChannelIndex(i, i + 1);
 		end
-
-		CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
-		ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	else
 		LeaveChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID);
 		if channelIndex == #CHAT_CONFIG_CHANNEL_LIST then
@@ -2309,5 +2304,5 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 		end
 	end
 
-	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	ChatConfigChannelSettings_UpdateCheckboxes();
 end

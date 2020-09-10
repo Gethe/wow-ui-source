@@ -1,4 +1,100 @@
 
+RuneforgePowerBaseMixin = {};
+
+function RuneforgePowerBaseMixin:OnHide()
+	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
+end
+
+function RuneforgePowerBaseMixin:OnEvent(event, ...)
+	if event == "RUNEFORGE_POWER_INFO_UPDATED" then
+		local powerID = ...;
+		if powerID == self:GetPowerID() then
+			self:SetPowerID(powerID);
+
+			if self:IsMouseOver() then
+				self:OnEnter();
+			end
+		end
+	end
+end
+
+function RuneforgePowerBaseMixin:OnEnter()
+	local powerInfo = self:GetPowerInfo();
+	if powerInfo then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		GameTooltip_SetTitle(GameTooltip, powerInfo.name, LEGENDARY_ORANGE_COLOR);
+	
+		GameTooltip_AddColoredLine(GameTooltip, powerInfo.description, GREEN_FONT_COLOR);
+	
+		if not self.slotNames then
+			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
+		end
+
+		if #self.slotNames > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
+			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
+		end
+
+		if not self:ShouldHideSource() and powerInfo.source then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, powerInfo.source);
+		end
+
+		if self:ShouldShowUnavailableError() and (powerInfo.state ~= Enum.RuneforgePowerState.Available) then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddErrorLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_NOT_COLLECTED);
+		end
+
+		GameTooltip:Show();
+	end
+end
+
+function RuneforgePowerBaseMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function RuneforgePowerBaseMixin:SetPowerID(powerID)
+	local oldPowerID = self.powerID;
+
+	self.powerID = powerID;
+	self.slotNames = nil;
+
+	local hasPowerID = powerID ~= nil;
+	self.powerInfo = hasPowerID and C_LegendaryCrafting.GetRuneforgePowerInfo(powerID) or nil;
+	if hasPowerID then
+		self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
+	else
+		self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
+	end
+
+	self:OnPowerSet(oldPowerID, powerID);
+end
+
+function RuneforgePowerBaseMixin:GetPowerID()
+	return self.powerID;
+end
+
+function RuneforgePowerBaseMixin:GetPowerInfo()
+	return self.powerInfo;
+end
+
+function RuneforgePowerBaseMixin:OnPowerSet(oldPowerID, newPowerID)
+	-- override in your mixin.
+end
+
+function RuneforgePowerBaseMixin:ShouldHideSource()
+	-- override in your mixin.
+	return false;
+end
+
+function RuneforgePowerBaseMixin:ShouldShowUnavailableError()
+	-- override in your mixin.
+	return false;
+end
+
+
 RuneforgeEffectOwnerMixin = {};
 
 function RuneforgeEffectOwnerMixin:GetRuneforgeFrame()

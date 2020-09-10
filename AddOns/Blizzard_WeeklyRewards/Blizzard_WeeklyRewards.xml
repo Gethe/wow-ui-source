@@ -14,7 +14,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="Glow" atlas="services-ring-large-glow" alpha="1" ignoreParentAlpha="true" useAtlasSize="true" scale="0.2">
+				<Texture parentKey="Glow" atlas="services-ring-large-glow" alpha="1" ignoreParentAlpha="true" useAtlasSize="true" scale="0.4">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>

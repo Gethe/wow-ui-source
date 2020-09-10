@@ -126,6 +126,7 @@ PVPUtil.lua
 TransmogUtil.lua
 ActionButtonUtil.lua
 DifficultyUtil.lua
+CovenantUtil.lua
 ItemDisplay.xml
 HelpTip.xml
 ExtraAbilityContainer.xml

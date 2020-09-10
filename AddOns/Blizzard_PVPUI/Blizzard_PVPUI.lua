@@ -294,14 +294,24 @@ function PVPQueueFrame_OnLoad(self)
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
 
 	-- disable unusable side buttons
+	local disabledButtons = false;
 	if not C_PvP.CanPlayerUseRatedPVPUI() then
+		disabledButtons = true;
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, false);
 		self.CategoryButton2.tooltip = format(PVP_CONQUEST_LOWLEVEL, PVP_TAB_CONQUEST, GetMaxLevelForLatestExpansion());
+	end
+
+	local canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
+	if not canUse then
+		disabledButtons = true;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, false);
+		self.CategoryButton3.tooltip = self.CategoryButton3.tooltip or failureReason;
+	end
+
+	if disabledButtons then
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	end
-
-	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
 
 	-- set up accessors
 	self.getSelection = PVPQueueFrame_GetSelection;
@@ -319,10 +329,18 @@ end
 
 function PVPQueueFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_LEVEL_CHANGED") then
-		if C_PvP.CanPlayerUseRatedPVPUI() then
+		local canUseRated = C_PvP.CanPlayerUseRatedPVPUI();
+		local canUsePremade = C_LFGInfo.CanPlayerUsePremadeGroup();
+		if canUseRated then
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
 			self.CategoryButton2.tooltip = nil;
-			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_CHANGED");
+		end
+		if canUsePremade then
+			self.CategoryButton3.tooltip = nil;
+			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
+		end
+		if canUseRated and canUsePremade then
+			self:UnregisterEvent("PLAYER_LEVEL_CHANGED");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		PVP_UpdateStatus();
@@ -948,13 +966,14 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = buttons[4];
 		local brawlInfo = C_PvP.GetAvailableBrawlInfo();
-		button.canQueue = brawlInfo and brawlInfo.canQueue and PartyUtil.GetMinLevel() == GetMaxLevelForPlayerExpansion();
+		local expansionMaxLevel = GetMaxLevelForPlayerExpansion();
+		local meetsMaxLevel = PartyUtil.GetMinLevel() == expansionMaxLevel;
+		button.canQueue = brawlInfo and brawlInfo.canQueue and meetsMaxLevel;
+		HonorFrameBonusFrame_SetButtonState(button, button.canQueue, expansionMaxLevel);
 		button.isBrawl = true;
 
 		if (brawlInfo and brawlInfo.canQueue) then
-			button:Enable();
 			button.Title:SetText(brawlInfo.name);
-			button.Title:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 
 			PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetBrawlRewards(brawlInfo.brawlType));
 			button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
@@ -965,9 +984,7 @@ function HonorFrameBonusFrame_Update()
 			else
 				button.Title:SetText(BRAWL_CLOSED_NEW:format(SecondsToTime(timeUntilNext, false, false, 1)));
 			end
-			button.Title:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 			button.Reward:Hide();
-			button:Disable();
 		end
 		HelpTip:Hide(button, BRAWL_TUTORIAL);
 		if ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.canQueue, (IsPlayerAtEffectiveMaxLevel())) then

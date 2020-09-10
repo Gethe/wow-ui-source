@@ -127,8 +127,7 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 		end
 	end
 
-	-- We need to reset any state that may have been modified by transformations.
-	self:SetAlpha(1.0);
+	self:SetAlpha(effectDescription.startingAlpha or 1.0);
 
 	self:DeltaUpdate(0);
 end

@@ -16,6 +16,15 @@ local PlayerMentorship =
 			},
 		},
 		{
+			Name = "GetMentorOptionalAchievementIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "achievementIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMentorshipStatus",
 			Type = "Function",
 

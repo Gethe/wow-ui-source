@@ -44,14 +44,14 @@
 				<FontString parentKey="Type" inherits="GameFontHighlight" justifyH="LEFT" JustifyV="BOTTOM">
 					<Size x="147" y="25"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.Name" x="0" y="10"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.Name" x="0" y="8"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/> 
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -161,31 +161,33 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Shadow_Enormous">
+						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="Fancy32Font">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="15" y="5"/>
+								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="15" y="13"/>
 							</Anchors>
+							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Shadow_Large">
+						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Large">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
+								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-5"/>
 							</Anchors>
+							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med1">
-							<Size x="500" y="0"/>
+						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med3">
+							<Size x="495" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="40" y="-30"/>
+								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="18" y="-45"/>
 							</Anchors>
-							<Color r="0.2824" g="0.0157" b="0.0157"/>
+							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="AbilitiesLabel" JustifyH="LEFT" JustifyV="TOP" inherits="QuestFont_Super_Huge" text="COVENANT_PREVIEW_ABILITIE_LABEL">
 							<Size x="450" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="LEFT" x="30" y="-30"/>
 							</Anchors>
-							<Color r="0.2824" g="0.0157" b="0.0157"/>
+							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -202,7 +204,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(CovenantPreviewFrame); 
+						HideUIPanel(CovenantPreviewFrame);
+						PlaySound(SOUNDKIT.UI_COVENANT_CHOICE_CLICK_BACK_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>

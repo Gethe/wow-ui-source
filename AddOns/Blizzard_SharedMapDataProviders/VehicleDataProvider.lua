@@ -31,7 +31,7 @@ function VehicleDataProviderMixin:RefreshAllData(fromOnShow)
 	local numVehicles = GetNumBattlefieldVehicles();
 	for i = 1, numVehicles do
 		local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(i, mapID);
-		if vehicleInfo.x and vehicleInfo.isAlive and not vehicleInfo.isPlayer and vehicleInfo.atlas then
+		if vehicleInfo and vehicleInfo.x and vehicleInfo.isAlive and not vehicleInfo.isPlayer and vehicleInfo.atlas then
 			self:GetMap():AcquirePin("VehiclePinTemplate", i);
 		end
 	end

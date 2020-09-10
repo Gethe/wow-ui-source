@@ -103,13 +103,15 @@ function TransmogUtil.GetSetIcon(setID)
 	local bestItemID;
 	local bestSortOrder = 100;
 	local sources = C_TransmogSets.GetSetSources(setID);
-	for sourceID, collected in pairs(sources) do
-		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
-		if sourceInfo then
-			local sortOrder = EJ_GetInvTypeSortOrder(sourceInfo.invType);
-			if sortOrder < bestSortOrder then
-				bestSortOrder = sortOrder;
-				bestItemID = sourceInfo.itemID;
+	if sources then
+		for sourceID, collected in pairs(sources) do
+			local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
+			if sourceInfo then
+				local sortOrder = EJ_GetInvTypeSortOrder(sourceInfo.invType);
+				if sortOrder < bestSortOrder then
+					bestSortOrder = sortOrder;
+					bestItemID = sourceInfo.itemID;
+				end
 			end
 		end
 	end

@@ -39,8 +39,8 @@
 							<Layer level="BACKGROUND">
 								<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOPRIGHT" x="7" y="35"/>
-										<Anchor point="BOTTOMRIGHT" x="7" y="-35"/>
+										<Anchor point="TOPRIGHT" x="7" y="37"/>
+										<Anchor point="BOTTOMRIGHT" x="7" y="-37"/>
 									</Anchors>
 								</Texture>
 							</Layer>

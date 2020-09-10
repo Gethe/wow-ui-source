@@ -1563,15 +1563,22 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 		end
 	end
 
+	local maxDetailsWidth = 0;
 	for index, selectionData in ipairs(self.selections) do
 		local button = self.buttonPool:Acquire();
 		local selectionInfo = self.selections[index];
 
 		local isSelected = (index == self.selectedIndex);
 		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice);
-		button:Show();
+		maxDetailsWidth = math.max(maxDetailsWidth, button.SelectionDetails:GetWidth());
 
 		table.insert(buttons, button);
+	end
+
+	for _, button in ipairs(buttons) do
+		button.SelectionDetails:SetWidth(maxDetailsWidth);
+		button:Layout();
+		button:Show();
 	end
 
 	if stride ~= self.lastStride then
@@ -1807,7 +1814,6 @@ function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, 
 
 	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq);
 	self.SelectionDetails:AdjustWidth(multipleColumns, 116);
-	self:Layout();
 end
 
 function SelectionPopoutEntryMixin:GetTooltipText()

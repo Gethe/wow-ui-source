@@ -203,6 +203,7 @@ function WeeklyRewardsActivityMixin:SetSelectionState(state)
 		self.SelectedTexture:Hide();
 		self.UnselectedFrame:Hide();
 	end
+	self.ItemFrame:OnSelectionChanged(state == SELECTION_STATE_SELECTED);
 end
 
 function WeeklyRewardsActivityMixin:Refresh(activityInfo)
@@ -443,6 +444,12 @@ function WeeklyRewardActivityItemMixin:OnClick()
 	else
 		activityFrame:GetParent():SelectActivity(activityFrame);
 	end
+end
+
+function WeeklyRewardActivityItemMixin:OnSelectionChanged(selected)
+	local alpha = selected and 1 or 0;
+	self.Glow:SetAlpha(alpha);
+	self.GlowSpin:SetAlpha(alpha);
 end
 
 function WeeklyRewardActivityItemMixin:SetDisplayedItem()

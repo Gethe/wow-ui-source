@@ -12,59 +12,7 @@ local function LootJournal_GetPreviewClassAndSpec()
 end
 
 
-RuneforgeLegendaryPowerLootJournalMixin = {};
-
-function RuneforgeLegendaryPowerLootJournalMixin:OnHide()
-	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-end
-
-function RuneforgeLegendaryPowerLootJournalMixin:OnEvent(event, ...)
-	if event == "RUNEFORGE_POWER_INFO_UPDATED" then
-		local powerID = ...;
-		if powerID == self:GetPowerID() then
-			self:SetPowerID(powerID);
-
-			if self:IsMouseOver() then
-				self:OnEnter();
-			end
-		end
-	end
-end
-
-function RuneforgeLegendaryPowerLootJournalMixin:OnEnter()
-	if self.powerInfo then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
-		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name);
-	
-		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR);
-	
-		if not self.slotNames then
-			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
-		end
-
-		if #self.slotNames > 0 then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
-			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
-		end
-
-		if self.powerInfo.source then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddNormalLine(GameTooltip, self.powerInfo.source);
-		end
-
-		GameTooltip:Show();
-	end
-end
-
-function RuneforgeLegendaryPowerLootJournalMixin:OnLeave()
-	GameTooltip_Hide();
-end
-
-function RuneforgeLegendaryPowerLootJournalMixin:OnHide()
-	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-end
+RuneforgeLegendaryPowerLootJournalMixin = CreateFromMixins(RuneforgePowerBaseMixin);
 
 function RuneforgeLegendaryPowerLootJournalMixin:InitElement(lootJournal)
 	self.lootJournal = lootJournal;
@@ -74,18 +22,18 @@ function RuneforgeLegendaryPowerLootJournalMixin:UpdateDisplay()
 	self:SetPowerID(self.lootJournal:GetPowerID(self:GetListIndex()));
 end
 
-function RuneforgeLegendaryPowerLootJournalMixin:SetPowerID(powerID)
-	self.powerID = powerID;
-	self.slotNames = nil;
+function RuneforgeLegendaryPowerLootJournalMixin:OnPowerSet(oldPowerID, newPowerID)
+	local powerInfo = self:GetPowerInfo();
+	self.Icon:SetTexture(powerInfo.iconFileID);
 
-	self.powerInfo = C_LegendaryCrafting.GetRuneforgePowerInfo(powerID);
-	self.Icon:SetTexture(self.powerInfo.iconFileID);
-	self.Name:SetText(self.powerInfo.name);
-	self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
+	local isAvailable = powerInfo.state == Enum.RuneforgePowerState.Available;
+	self.Icon:SetDesaturation(isAvailable and 0 or 0.8);
+	self.Icon:SetAlpha(isAvailable and 1.0 or 0.7);
+	self.Name:SetText(powerInfo.name);
 end
 
-function RuneforgeLegendaryPowerLootJournalMixin:GetPowerID()
-	return self.powerID;
+function RuneforgeLegendaryPowerLootJournalMixin:ShouldShowUnavailableError()
+	return true;
 end
 
 

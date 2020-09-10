@@ -178,12 +178,14 @@ function WorldQuestDataProviderMixin:OnShow()
 	assert(self.ticker == nil);
 	self.ticker = C_Timer.NewTicker(0.5, function() self:RefreshAllData() end);
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
 end
 
 function WorldQuestDataProviderMixin:OnHide()
 	self.ticker:Cancel();
 	self.ticker = nil;
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
+	EventRegistry:UnregisterCallback("Supertracking.OnChanged", self);
 end
 
 function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
@@ -250,8 +252,38 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	mapCanvas:TriggerEvent("WorldQuestsUpdate", mapCanvas:GetNumActivePinsByTemplate(self:GetPinTemplate()));
 end
 
+function WorldQuestDataProviderMixin:OnSuperTrackingChanged()
+	local template = self:GetPinTemplate();
+	for pin in self:GetMap():EnumeratePinsByTemplate(template) do
+		pin:UpdateSupertrackedHighlight();
+	end
+end
+
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	return not self.focusedQuestID and not self:IsQuestSuppressed(info.questId);
+	if self:IsQuestSuppressed(info.questId) then
+		return false;
+	end
+
+	if self.focusedQuestID then
+		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldHighlightInfo(info.questId);
+	end
+
+	return true;
+end
+
+function WorldQuestDataProviderMixin:ShouldHighlightInfo(questID, tagInfo)
+	local mapID = self:GetMap():GetMapID();
+	if QuestSuperTracking_ShouldHighlightWorldQuests(mapID) then
+		return true;
+	end
+
+	-- Avoid querying tag info if we don't have to.
+	if not QuestSuperTracking_ShouldHighlightWorldQuestsElite(mapID) then
+		return false;
+	end
+
+	tagInfo = tagInfo or C_QuestLog.GetQuestTagInfo(questID);
+	return tagInfo.quality == Enum.WorldQuestQuality.Rare and tagInfo.isElite;
 end
 
 function WorldQuestDataProviderMixin:GetPinTemplate()
@@ -283,7 +315,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(self:GetPinTemplate()));
 
 	local tagInfo = C_QuestLog.GetQuestTagInfo(pin.questID);
-	pin.worldQuestType = tagInfo and tagInfo.worldQuestType;
+	pin.tagInfo = tagInfo;
+	pin.worldQuestType = tagInfo.worldQuestType;
 
 	if tagInfo.quality ~= Enum.WorldQuestQuality.Common then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
@@ -365,6 +398,7 @@ end
 
 function WorldQuestPinMixin:RefreshVisuals()
 	local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
+	self.tagInfo = tagInfo;
 	local selected = self.questID == C_SuperTrack.GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);
 	self.SelectedGlow:SetShown(tagInfo.quality ~= Enum.WorldQuestQuality.Common and selected);
@@ -380,7 +414,8 @@ function WorldQuestPinMixin:RefreshVisuals()
 	end
 
 	local bountyQuestID = self.dataProvider:GetBountyQuestID();
-	self.BountyRing:SetShown(bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID));
+	self.bountyRingShownBecauseOfBountyQuest = bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID);
+	self:UpdateSupertrackedHighlight();
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
 	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID);
@@ -389,6 +424,15 @@ function WorldQuestPinMixin:RefreshVisuals()
 		self.Texture:SetSize(26, 22);
 	else
 		self.Texture:SetSize(width * 2, height * 2);
+	end
+end
+
+function WorldQuestPinMixin:UpdateSupertrackedHighlight()
+	if self.bountyRingShownBecauseOfBountyQuest then
+		self.BountyRing:Show();
+	else
+		local highlight = self.dataProvider:ShouldHighlightInfo(self.questID, self.tagInfo);
+		MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Background);
 	end
 end
 
