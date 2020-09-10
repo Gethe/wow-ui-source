@@ -44,6 +44,10 @@ function SplashFrameMixin:SetupFrame(screenInfo)
 		return;
 	end
 
+	if(screenInfo.soundKitID > 0) then 
+		PlaySound(screenInfo.soundKitID);
+	end 
+
 	SetupTextureKitOnRegions(screenInfo.textureKit, self, splashFrameTextureRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	self.BottomTexture:SetSize(371, 137);
 

@@ -82,7 +82,7 @@ do
 		end,
 
 		function()
-			local achievements = { 7383, 13963, 14144, 14196, 14061 };
+			local achievements = C_PlayerMentorship.GetMentorOptionalAchievementIDs();
 			local achievementStrings = {};
 			local mustEarnAtLeast = 2;
 			local completedCount = 0;
@@ -100,6 +100,11 @@ do
 
 			achievementStrings = table.concat(achievementStrings, "\n");
 			return NPEV2_CHAT_GUIDE_FRAME_ACHIEVEMENT_COUNT_EARNED:format(mustEarnAtLeast, achievementStrings), completedCount >= mustEarnAtLeast;
+		end,
+
+		-- IsMentorRestricted backed by a combined state, check this first.
+		function()
+			return nil, not C_SocialRestrictions.IsMuted(), "muted";
 		end,
 
 		function()
@@ -153,9 +158,9 @@ do
 
 		self.ScrollFrame.ConfirmationButton:ClearAllPoints();
 		if params.anchorButtonAfterText then
-			self.ScrollFrame.ConfirmationButton:SetPoint("TOP", self.ScrollFrame.Child.Text, "BOTTOM", 0, -10);
+			self.ScrollFrame.ConfirmationButton:SetPoint("TOP", self.ScrollFrame.Child.Text, "BOTTOM", 0, -25);
 		else
-			self.ScrollFrame.ConfirmationButton:SetPoint("BOTTOM", self.ScrollFrame, "BOTTOM", 0, 20);
+			self.ScrollFrame.ConfirmationButton:SetPoint("BOTTOM", self.ScrollFrame, "BOTTOM", 0, 26);
 		end
 	end
 
@@ -199,6 +204,8 @@ function GuideFrameMixin:SetStateCannotGuide(errorType)
 		message = NPEV2_CHAT_GUIDE_FRAME_ERROR_BAD_STANDING;
 	elseif errorType == "starter" then
 		message = NPEV2_CHAT_GUIDE_FRAME_ERROR_STARTER_ACCOUNTS_CANNOT_GUIDE;
+	elseif errorType == "muted" then
+		message = NPEV2_CHAT_GUIDE_FRAME_ERROR_ACCOUNT_MUTED;
 	end
 
 	self:SetDescription(message);

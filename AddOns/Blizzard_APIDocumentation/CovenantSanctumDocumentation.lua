@@ -7,6 +7,15 @@ local CovenantSanctum =
 	Functions =
 	{
 		{
+			Name = "CanDepositAnima",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDeposit", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DepositAnima",
 			Type = "Function",
 		},
@@ -46,6 +55,12 @@ local CovenantSanctum =
 			Name = "GetRenownMilestones",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "covenantID", Type = "number", Nilable = false },
+				{ Name = "renownLevel", Type = "number", Nilable = false },
+			},
+
 			Returns =
 			{
 				{ Name = "milestones", Type = "table", InnerType = "CovenantSanctumRenownMilestoneInfo", Nilable = false },
@@ -57,7 +72,8 @@ local CovenantSanctum =
 
 			Arguments =
 			{
-				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "covenantID", Type = "number", Nilable = false },
+				{ Name = "renownLevel", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -96,6 +112,16 @@ local CovenantSanctum =
 			Name = "CovenantSanctumInteractionStarted",
 			Type = "Event",
 			LiteralName = "COVENANT_SANCTUM_INTERACTION_STARTED",
+		},
+		{
+			Name = "CovenantSanctumRenownLevelChanged",
+			Type = "Event",
+			LiteralName = "COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED",
+			Payload =
+			{
+				{ Name = "newRenownLevel", Type = "number", Nilable = false },
+				{ Name = "oldRenownLevel", Type = "number", Nilable = false },
+			},
 		},
 	},
 
@@ -138,6 +164,7 @@ local CovenantSanctum =
 				{ Name = "icon", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = true },
+				{ Name = "toastDescription", Type = "string", Nilable = true },
 			},
 		},
 	},

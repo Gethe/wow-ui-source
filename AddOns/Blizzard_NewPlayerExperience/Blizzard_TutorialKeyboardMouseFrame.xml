@@ -4,7 +4,7 @@
 	<Frame name="NPE_TutorialKeyboardMouseFrame_Frame" mixin="NPE_TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="288" type="number"/>
-			<KeyValue key="heightPadding" value="170" type="number"/>
+			<KeyValue key="heightPadding" value="130" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" y="104" />
@@ -27,7 +27,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="KeyboardMouseConfirmButton" inherits="UIPanelDynamicResizeButtonTemplate" text="OKAY" virtual="true">
+			<Button name="KeyboardMouseConfirmButton" inherits="UIPanelButtonTemplate" text="OKAY" virtual="true">
 				<Size x="150" y="24"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Keyboard" relativePoint="BOTTOM" y="-40"/>

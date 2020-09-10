@@ -2189,6 +2189,7 @@ function GarrisonFollowerTabMixin:UpdateAutoSpellAbilities(followerInfo)
 		local abilityFrame = self.autoSpellPool:Acquire();
 		abilityFrame:SetSize(abilityIconSize, abilityIconSize); 
 		abilityFrame.Icon:SetSize(abilityIconSize, abilityIconSize);
+		abilityFrame.SpellBorder:SetSize(abilityIconSize, abilityIconSize);
 		abilityFrame.info = autoSpell;
 		abilityFrame.info.showCounters = false;
 		abilityFrame.Icon:SetTexture(autoSpell.icon);

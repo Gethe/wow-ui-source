@@ -256,6 +256,10 @@ local TrajectoryToCallback = {
 -- An additional column to support an override for the particle scale, which will match the actor
 -- scale by default.
 -- particleOverrideScale: the override scale for particles.
+--
+-- (5) Starting alpha
+-- An additional column to support an override for the effect actor's starting alpha.
+-- startingAlpha: the effect actor's starting alpha.
 
 Enum.ScriptedAnimationTransformation = {};
 Enum.ScriptedAnimationTransformation.Alpha = 1;
@@ -348,9 +352,45 @@ local ScriptAnimationTableExtension = {
 	[89] = {
 		animation = 215, 
 	},
+
+	-- Covenant Toast Looping Sounds. 
+	[91] = { 
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+	},
+	[92] = { 
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+	},
+	[93] = { 
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+	},
+	[94] = { 
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+	},
+	[96] = { 
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+	},
+
 	[98] = {
 		animation = 158,
 	},
+
+	[119] = {
+		startingAlpha = 0.2,
+	},
+	[120] = {
+		startingAlpha = 0.3,
+	},
+	[121] = {
+		startingAlpha = 0.2,
+	},
+	[122] = {
+		startingAlpha = 0.3,
+	},
+	[123] = {
+		startingAlpha = 0.4,
+	},
+
+
 };
 
 -- Split into chunks of 10. These effects were created with old-style particle scaling,
@@ -363,7 +403,7 @@ local LegacyParticleScaleEffects = {
 	65, 77, 67, 68, 70, 72, 73, 74, 75, 76,
 	77, 78, 79, 80, 81, 82, 83, 84, 85, 86,
 	87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-	97, 101,
+	97, 101, 119, 120, 121, 122, 123
 };
 
 for i, effectID in ipairs(LegacyParticleScaleEffects) do

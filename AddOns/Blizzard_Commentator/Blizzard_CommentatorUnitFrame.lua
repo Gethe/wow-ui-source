@@ -24,7 +24,9 @@ function CommentatorUnitFrameMixin:OnLoad()
 
 	local seconds = 60;
 	self.CCRemover.Cooldown:SetCountdownAbbrevThreshold(seconds);
+	self.CCRemover.Cooldown:SetSwipeColor(0, 0, 0, .7);
 	self.Circle.CCCooldown:SetHideCountdownNumbers(true);
+	self.Circle.CCCooldown:SetSwipeColor(0, 0, 0, .7);
 
 	self.Bars:SetFrameLevel(self:GetFrameLevel() - 1);
 end
@@ -362,6 +364,8 @@ function CommentatorUnitFrameMixin:SetSpellActive(trackedSpellID, isActive)
 end
 
 function CommentatorUnitFrameMixin:SetCCRemoverIcon(spellID)
+	self.CCRemover:SetShown(spellID > 0);
+
 	if spellID ~= self.CCRemover.Icon.spellID then
 		local textureID = select(3, GetSpellInfo(spellID));
 		local icon = self.CCRemover.Icon;

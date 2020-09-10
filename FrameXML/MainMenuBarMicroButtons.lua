@@ -48,6 +48,7 @@ LFDMicroButtonMixin = {};
 
 function LFDMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "LFG");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 	SetDesaturation(self:GetDisabledTexture(), true);
 	self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 	self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;

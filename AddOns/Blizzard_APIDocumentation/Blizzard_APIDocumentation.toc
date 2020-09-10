@@ -19,6 +19,7 @@ AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
+ArdenwealdGardeningDocumentation.lua
 AreaPoiInfoDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua

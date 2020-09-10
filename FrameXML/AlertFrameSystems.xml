@@ -2650,7 +2650,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>

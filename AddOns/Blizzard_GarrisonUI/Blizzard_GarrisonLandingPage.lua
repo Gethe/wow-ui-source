@@ -83,8 +83,13 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:SetAtlas(("BfAMissionsLandingPage-Background-%s"):format(UnitFactionGroup("player")));
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
 		self:SetupCovenantRenownLevel();
+
+		self:ResetSectionLayoutIndex();
 		self:SetupCovenantCallings();
 		self:SetupSoulbind();
+		self:SetupGardenweald();
+		self:LayoutSection();
+
 		self.FollowerTabButton:SetText(COVENANT_MISSIONS_FOLLOWERS);
 		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSIONS_FOLLOWERS);
 		self.FollowerTab.FollowerText:Hide();
@@ -152,13 +157,29 @@ function GarrisonLandingPageMixin:SetupCovenantRenownLevel()
 	end
 end
 
+function GarrisonLandingPageMixin:ResetSectionLayoutIndex()
+	self.sectionsLayoutIndex = 1;
+end
+
+function GarrisonLandingPageMixin:SetSectionLayoutIndex(frame)
+	if frame then
+		frame.layoutIndex = self.sectionsLayoutIndex or 1;
+		self.sectionsLayoutIndex = frame.layoutIndex + 1;
+	end
+end
+
+function GarrisonLandingPageMixin:LayoutSection()
+	self.Report.Sections:Layout();
+end
+
 function GarrisonLandingPageMixin:SetupCovenantCallings()
 	if not self.CovenantCallings then
 		if UIParentLoadAddOn("Blizzard_CovenantCallings") then
-			self.CovenantCallings = CovenantCallings.Create(self.Report);
-			self.CovenantCallings:SetPoint("TOPLEFT", self.Report.Title, "BOTTOMLEFT", -46, -55);
+			self.CovenantCallings = CovenantCallings.Create(self.Report.Sections);
 		end
 	end
+
+	self:SetSectionLayoutIndex(self.CovenantCallings);
 end
 
 function GarrisonLandingPageMixin:SetupSoulbind()
@@ -169,10 +190,25 @@ function GarrisonLandingPageMixin:SetupSoulbind()
 		local soulbindID = C_Soulbinds.GetActiveSoulbindID();
 		if soulbindID > 0 and UIParentLoadAddOn("Blizzard_LandingSoulbinds") then
 			local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
-			self.SoulbindPanel = LandingSoulbind.Create(self.Report);
-			self.SoulbindPanel:SetPoint("TOPLEFT", self.Report.Title, "TOPLEFT", -46, -250);
+			self.SoulbindPanel = LandingSoulbind.Create(self.Report.Sections);
 		end
 	end
+
+	self:SetSectionLayoutIndex(self.SoulbindPanel);
+end
+
+function GarrisonLandingPageMixin:SetupGardenweald()
+	if C_ArdenwealdGardening.IsGardenAccessible() then
+		if self.ArdenwealdGardeningPanel then
+			self.ArdenwealdGardeningPanel:Show();
+		elseif UIParentLoadAddOn("Blizzard_ArdenwealdGardening") then
+			self.ArdenwealdGardeningPanel = ArdenwealdGardening.Create(self.Report.Sections);
+		end
+	elseif self.ArdenwealdGardeningPanel then
+		self.ArdenwealdGardeningPanel:Hide();
+	end
+
+	self:SetSectionLayoutIndex(self.ArdenwealdGardeningPanel);
 end
 
 function GarrisonLandingPageMixin:UpdateCovenantCallings()

@@ -556,23 +556,23 @@ function ClubFocusClubDropdownInitialize(self)
 
 	info.text = CLUB_FINDER_FOCUS_SOCIAL_LEVELING;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Social, CLUB_FINDER_FOCUS_SOCIAL_LEVELING, allowMultipleSelection, isRadioStyle);
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 
 	info.text = GUILD_INTEREST_DUNGEON;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Dungeons, GUILD_INTEREST_DUNGEON, allowMultipleSelection, isRadioStyle);
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 
 	info.text = GUILD_INTEREST_RAID;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Raids, GUILD_INTEREST_RAID, allowMultipleSelection, isRadioStyle);
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 
 	info.text = CLUB_FINDER_FOCUS_PVP;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.PvP, PVP_ENABLED, allowMultipleSelection, isRadioStyle);
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 
 	info.text = GUILD_INTEREST_RP;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.RP, GUILD_INTEREST_RP, allowMultipleSelection, isRadioStyle);
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 end
 
 LookingForDropdownMixin = { };
@@ -969,7 +969,7 @@ function ClubSortByDropdownInitialize(self)
 		info.text = text;
 		local dropdownText = info.text;
 		self:SetDropdownInfoForPreferences(info, sortByFlag, dropdownText, allowMultipleSelection, isRadioStyle);
-		UIDropDownMenu_AddButton(info, level);
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
@@ -980,18 +980,18 @@ function ClubSizeDropdownInitialize(self)
 
 	info.text = SMALL;
 	local dropdownText = info.text;
-	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Small, dropdownText)
-	UIDropDownMenu_AddButton(info, level);
+	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Small, dropdownText)	
+	UIDropDownMenu_AddButton(info);
 
 	info.text = CLUB_FINDER_MEDIUM;
 	local dropdownText = info.text;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Medium, dropdownText)
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 
 	info.text = LARGE;
 	local dropdownText = info.text;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Large, dropdownText)
-	UIDropDownMenu_AddButton(info, level);
+	UIDropDownMenu_AddButton(info);
 end
 
 ClubFinderOptionsMixin = { };

@@ -2313,6 +2313,8 @@ function StoreFrame_OnShow(self)
 
 	StoreFrame_UpdateCoverState();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_OPEN_BUTTON);
+
+	C_StoreSecure.ClearPreGeneratedExternalTransactionID();
 end
 
 function StoreFrame_OnHide(self)
@@ -2329,6 +2331,8 @@ function StoreFrame_OnHide(self)
 	StoreVASValidationFrame:Hide();
 	SimpleCheckout:Hide();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_CLOSE_BUTTON);
+	
+	C_StoreSecure.ClearPreGeneratedExternalTransactionID();
 end
 
 function StoreFrame_OnMouseWheel(self, value)
@@ -2511,7 +2515,7 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
 		else
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-			LoadURLIndex(2);
+			LoadURLIndex(22);
 		end
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);

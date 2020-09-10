@@ -7,7 +7,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="36" y="36"/>
+					<Size x="35" y="35"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -23,7 +23,7 @@
 				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Border" atlas="jailerstower-animapowerlist-powerborder">
+				<Texture parentKey="Border">
 					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

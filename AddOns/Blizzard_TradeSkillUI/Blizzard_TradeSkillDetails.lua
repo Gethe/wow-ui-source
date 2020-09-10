@@ -802,12 +802,12 @@ function TradeSkillDetailsMixin:OnOptionalReagentClicked(reagentButton, button)
 	end
 
 	if button == "LeftButton" then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		PlaySound(SOUNDKIT.UI_9_0_CRAFTING_CLICK_OPTIONAL_REAGENT_SLOT);
 		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, reagentButton.optionalReagentIndex);
 		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Slot);
 		self:Refresh();
 	elseif button == "RightButton" then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		PlaySound(SOUNDKIT.UI_9_0_CRAFTING_RIGHT_CLICK_REMOVE_REAGENT);
 		self:SetOptionalReagent(reagentButton.optionalReagentIndex, nil);
 		self:OnOptionalReagentMouseEnter(reagentButton);
 	end

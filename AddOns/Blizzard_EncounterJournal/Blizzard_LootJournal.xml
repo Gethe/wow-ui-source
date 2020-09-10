@@ -36,6 +36,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="12" y="0"/>
 					</Anchors>
+					<Color color="LEGENDARY_ORANGE_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -84,7 +85,11 @@
 					<Anchor point="BOTTOMLEFT" x="35" y="3"/>
 				</Anchors>
 				<Frames>
-					<Slider inherits="EncounterJournalScrollBarTemplate"/>
+					<Slider inherits="EncounterJournalScrollBarTemplate">
+						<KeyValues>
+							<KeyValue key="scrollStep" value="20" type="number"/>
+						</KeyValues>
+					</Slider>
 				</Frames>
 			</ScrollFrame>
 		</Frames>

@@ -14,6 +14,10 @@ local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
 local CLASS_ANIM_WAIT_TIME_SECONDS = 5;
 
+local HIGH_PRIORITY = 1;
+local MEDIUM_PRIORITY = 2;
+local LOW_PRIORITY = 3;
+
 local RaceAndClassFrame;
 local NameChoiceFrame;
 local ClassTrialSpecs;
@@ -388,6 +392,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 
 		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
 			self.BottomBackgroundOverlay.FadeIn:Play();
+			self:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT);
 		end
 	elseif mode == CHAR_CREATE_MODE_CUSTOMIZE then
 		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
@@ -406,6 +411,10 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 
 			ClassTrialSpecs:SetClass(RaceAndClassFrame.selectedClassID, RaceAndClassFrame.selectedSexID);
 			ZoneChoiceFrame:Setup();
+
+			if not RaceAndClassFrame.selectedRaceData.enabled then
+				self:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT, HIGH_PRIORITY);
+			end
 		else
 			self:EnableZoneChoiceMode(false);
 		end
@@ -451,10 +460,6 @@ local function SortBlockers(a, b)
 	return a.priority < b.priority;
 end
 
-local HIGH_PRIORITY = 1;
-local MEDIUM_PRIORITY = 2;
-local LOW_PRIORITY = 3;
-
 function CharacterCreateMixin:AddNavBlocker(navBlocker, priority)
 	for i, currentBlocker in ipairs(self.navBlockers) do
 		if currentBlocker.error == navBlocker then
@@ -463,7 +468,7 @@ function CharacterCreateMixin:AddNavBlocker(navBlocker, priority)
 		end
 	end
 
-	table.insert(self.navBlockers, {error = navBlocker, priority = priority or MEDIUM_PRIORITY});
+	table.insert(self.navBlockers, {error = navBlocker, priority = priority or LOW_PRIORITY});
 	table.sort(self.navBlockers, SortBlockers);
 
 	self:RefreshCurrentNavBlocker();
@@ -621,7 +626,11 @@ function CharacterCreateMixin:UpdateForwardButton()
 	self.ForwardButton:SetEnabled(self:CanNavForward());
 
 	if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
-		self.ForwardButton:UpdateText(CUSTOMIZE, FORWARD_ARROW);
+		if RaceAndClassFrame.selectedRaceData and not RaceAndClassFrame.selectedRaceData.enabled then
+			self.ForwardButton:UpdateText(PREVIEW, FORWARD_ARROW);
+		else
+			self.ForwardButton:UpdateText(CUSTOMIZE, FORWARD_ARROW);
+		end
 	elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
 		if ZoneChoiceFrame:ShouldShow() then
 			self.ForwardButton:UpdateText(NEXT, FORWARD_ARROW);
@@ -717,12 +726,14 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 			local validAllianceRaceNames = {};
 			local validHordeRaceNames = {};
 			for _, raceData in ipairs(validRaces) do
-				if raceData.isNeutralRace or (raceData.factionInternalName == "Alliance") then 
-					tinsert(validAllianceRaceNames, raceData.name);
-				end
+				if not raceData.isAlliedRace or not C_CharacterCreation.IsNewPlayerRestricted() then
+					if raceData.isNeutralRace or (raceData.factionInternalName == "Alliance") then 
+						tinsert(validAllianceRaceNames, raceData.name);
+					end
 
-				if raceData.isNeutralRace or (raceData.factionInternalName == "Horde") then 
-					tinsert(validHordeRaceNames, raceData.name);
+					if raceData.isNeutralRace or (raceData.factionInternalName == "Horde") then 
+						tinsert(validHordeRaceNames, raceData.name);
+					end
 				end
 			end
 
@@ -774,7 +785,7 @@ end
 
 function CharacterCreateClassButtonMixin:OnEnter()
 	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
-	if self:IsDisabledByRace() then
+	if not CharacterCreateFrame.paidServiceType and self:IsDisabledByRace() then
 		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
 		local validRacesMap = {};
 		for _, raceData in ipairs(validRaces) do
@@ -823,6 +834,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self:SetIconAtlas(atlas);
 
 	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
+	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame.paidServiceType;
 	self:SetEnabledState(isValidRace);
 
 	if isValidRace and RaceAndClassFrame.classValidRaces then
@@ -833,6 +845,14 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 
 	self.RaceName:SetText(raceData.name);
 	self.RaceName:SetShown(C_CharacterCreation.IsNewPlayerRestricted());
+
+	if not raceData.isAlliedRace then
+		if C_CharacterCreation.IsNewPlayerRestricted() then
+			self.tooltipXOffset = 16;
+		else
+			self.tooltipXOffset = 113;
+		end
+	end
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(raceData.name, HIGHLIGHT_FONT_COLOR);
@@ -1033,7 +1053,7 @@ function CharacterCreateRaceAndClassMixin:StopClassAnimations()
 	self:ClearTimer();
 	self.currentSpellVisualKitID = nil;
 	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
-	C_CharacterCreation.SetModelsHiddenState(false);
+	C_CharacterCreation.SetPlayerModelHiddenState(false);
 end
 
 function CharacterCreateRaceAndClassMixin:StopActiveGroundEffect()
@@ -1133,9 +1153,9 @@ function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisu
 			self.currentSpellVisualKitID = nil;
 
 			if nextAction.hidePlayerModel then
-				C_CharacterCreation.SetModelsHiddenState(true);
+				C_CharacterCreation.SetPlayerModelHiddenState(true);
 			elseif nextAction.showPlayerModel then
-				C_CharacterCreation.SetModelsHiddenState(false);
+				C_CharacterCreation.SetPlayerModelHiddenState(false);
 			end
 
 			local modelSvkID;
@@ -1228,7 +1248,7 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 		self.selectedFaction = self.selectedRaceData.factionInternalName;
 	end
 
-	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) then
+	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame.paidServiceType then
 		local randomRaceData = self:GetRandomValidRaceData();
 		self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName)
 		return;
@@ -1243,6 +1263,7 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 
 	CharacterCreateFrame:RemoveNavBlocker(CHAR_FACTION_CHANGE_SWAP_FACTION);
 	CharacterCreateFrame:RemoveNavBlocker(CHAR_FACTION_CHANGE_CHOOSE_RACE);
+	CharacterCreateFrame:UpdateForwardButton();
 	self:UpdateButtons();
 end
 
@@ -1512,7 +1533,7 @@ end
 function CharacterCreateEditBoxMixin:OnTextChanged()
 	local selectedName = self:GetText();
 	if selectedName == "" or selectedName == PENDING_RANDOM_NAME then
-		CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME, HIGH_PRIORITY);
+		CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME, MEDIUM_PRIORITY);
 		self.NameAvailabilityState:Hide();
 	else
 		CharacterCreateFrame:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME);

@@ -492,6 +492,15 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Sections" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="spacing" value="-34" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SubTitle" relativePoint="BOTTOMLEFT" x="-44" y="-10"/>
+							<Anchor point="BOTTOMLEFT" x="300"/>
+						</Anchors>
+					</Frame>
 					<Frame parentKey="List" name="$parentList">
 						<Size x="433" y="420"/>
 						<Anchors>

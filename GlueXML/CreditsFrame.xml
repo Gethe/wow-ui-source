@@ -20,6 +20,7 @@
 		<Scripts>
 			<OnClick>
 				self:GetParent():SetSelectedExpansion(self:GetID());
+				self.Highlight:Hide();
 			</OnClick>
 			<OnEnter>
 				if not self.Selection:IsShown() then
@@ -35,7 +36,9 @@
 		<DisabledFont style="GlueFontDisableSmall"/>
 		<Layers>
 			<Layer frameStrata="ARTWORK">
-				<Texture parentKey="Selection" setAllPoints="true" hidden="true" atlas="CreditsScreen-Selected"/>
+				<Texture parentKey="Selection" setAllPoints="true" hidden="true" atlas="CreditsScreen-Selected">
+					<Color a="0.8" r="1.0" g="1.0" b="1.0"/>
+				</Texture>
 				<Texture parentKey="Highlight" setAllPoints="true" hidden="true" atlas="CreditsScreen-Highlight"/>
 			</Layer>
 		</Layers>
@@ -49,7 +52,7 @@
 					<KeyValue key="textString" value="EXPANSION" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="Border" inherits="DialogBorderOpaqueTemplate"/>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
 			<Button parentKey="OKButton" text="OKAY" inherits="GlueButtonSmallTemplate">
 				<Size x="100" y="28"/>
 				<Anchors>
@@ -127,6 +130,25 @@
 					</SimpleHTML>
 				</ScrollChild>
 			</ScrollFrame>
+			<Slider parentKey="Slider" orientation="VERTICAL" minValue="0" maxValue="1000" valueStep="10" defaultValue="0" inherits="BackdropTemplate" hidden="true">
+				<Size x="16" y="0"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnValueChanged>
+						CreditsFrame.ScrollFrame.scroll = value;
+						CreditsFrame.ScrollFrame:SetVerticalScroll(value);
+					</OnValueChanged>
+				</Scripts>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size x="32" y="32"/>
+				</ThumbTexture>
+			</Slider>
 			<Button parentKey="BackButton" text="BACK" inherits="GlueButtonSmallTemplate">
 				<Size x="150" y="28"/>
 				<Anchors>

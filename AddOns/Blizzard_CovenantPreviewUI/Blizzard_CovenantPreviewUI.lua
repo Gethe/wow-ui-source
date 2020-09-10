@@ -1,6 +1,34 @@
 local MAX_ABILITIES_IN_ROW = 2; 
 local PLAYER_CHOICE_TEXTURE_KIT = "Oribos";
 
+
+local closeButtonBorder = {
+	["NightFae"] = {
+		closeButtonX = -2,
+		closeButtonY = 0,
+		closeBorderX = -1,
+		closeBorderY = 1,
+	},
+	["Kyrian"] = { 
+		closeButtonX = 1,
+		closeButtonY = 2,
+		closeBorderX = -1,
+		closeBorderY = 1,
+	},
+	["Venthyr"] = { 
+		closeButtonX = 0,
+		closeButtonY = 0,
+		closeBorderX = -1,
+		closeBorderY = 1,
+	},
+	["Necrolord"] = { 
+		closeButtonX = -1,
+		closeButtonY = 0,
+		closeBorderX = 0,
+		closeBorderY = 1,
+	},
+}
+
 local backgroundTextureKitRegions = {
 	["BackgroundTile"] = "UI-Frame-%s-BackgroundTile",
 };
@@ -58,6 +86,13 @@ function CovenantPreviewFrameMixin:OnEvent(event, ...)
 	end 
 end 
 
+function CovenantPreviewFrameMixin:HandleEscape()
+	if (self.showingFromPlayerChoice and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then 
+		HideUIPanel(PlayerChoiceFrame);
+	end 
+	HideUIPanel(self);
+end 
+
 function CovenantPreviewFrameMixin:Reset()
 	self.lastAbility = nil;
 	self.previousRowOption = nil; 
@@ -84,7 +119,10 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 	self:SetupTextureKits(self.InfoPanel, infoPanelTextureKitRegions);
 	self:SetupTextureKits(self.Background, backgroundTextureKitRegions, self.uiTextureKit);
 
-	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", 0, 0, self.uiTextureKit);
+	local layout = closeButtonBorder[self.uiTextureKit];
+	self.CloseButton:ClearAllPoints(); 
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", layout.closeButtonX, layout.closeButtonY);
+	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", layout.closeBorderX, layout.closeBorderY, self.uiTextureKit);
 
 	if(self.showingFromPlayerChoice) then 
 		self:SetupTextureKits(self.Title, titleTextureKitRegions, PLAYER_CHOICE_TEXTURE_KIT);
@@ -155,9 +193,11 @@ end
 
 function CovenantPreviewFrameMixin:SetupModelSceneFrame(transmogSetID, mountID)
 	self:SetupTextureKits(self.ModelSceneContainer, modelSceneContainerTextureKitRegions);
-	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0); 
+	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0, true); 
 	local sources = C_TransmogSets.GetAllSourceIDs(transmogSetID);
 	DressUpTransmogSet(sources);
+
+	TransmogAndMountDressupFrame:RemoveWeapons(); 
 end 
 
 function CovenantPreviewFrameMixin:SetupCovenantInfoPanel(covenantInfo) 

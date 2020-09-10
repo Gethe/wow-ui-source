@@ -21,6 +21,21 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetMawPowerRarityStringAndBorderAtlasBySpellID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rarityString", Type = "string", Nilable = false },
+				{ Name = "rarityBorderAtlas", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSpellDataCached",
 			Type = "Function",
 

@@ -33,7 +33,7 @@ function OptionalReagentListLineMixin:OnClick()
 	end
 
 	if self:ShouldAllowSelection() then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		PlaySound(SOUNDKIT.UI_9_0_CRAFTING_CLICK_MAT_TO_SLOT);
 		TemplatedListElementMixin.OnClick(self);
 	end
 end
@@ -400,5 +400,5 @@ OptionalReagentListCloseButtonMixin = {};
 function OptionalReagentListCloseButtonMixin:OnClick()
 	self:GetParent():ClearSelection();
 	self:GetParent():Hide();
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	PlaySound(SOUNDKIT.UI_9_0_CRAFTING_CLOSE_REAGENT_WINDOW);
 end

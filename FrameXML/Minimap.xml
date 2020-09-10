@@ -3,26 +3,26 @@
 	<Script file="Minimap.lua"/>
 <!-- Patchwerk
 <Texture name="GuildDungeonDifficultyBanner.png" >
-	<Size x="41" y="53"/>	
-	<TexCoords left="0.00781250" right="0.32812500" top="0.01562500" bottom="0.84375000"/>	
+	<Size x="41" y="53"/>
+	<TexCoords left="0.00781250" right="0.32812500" top="0.01562500" bottom="0.84375000"/>
 </Texture>
 <Texture name="GuildDungeonDifficultyBorder.png" >
-	<Size x="41" y="53"/>	
-	<TexCoords left="0.34375000" right="0.66406250" top="0.01562500" bottom="0.84375000"/>	
+	<Size x="41" y="53"/>
+	<TexCoords left="0.34375000" right="0.66406250" top="0.01562500" bottom="0.84375000"/>
 </Texture>
 <Texture name="GuildDungeonDifficultyDarkBG.png" >
-	<Size x="30" y="21"/>	
-	<TexCoords left="0.67968750" right="0.91406250" top="0.01562500" bottom="0.34375000"/>	
+	<Size x="30" y="21"/>
+	<TexCoords left="0.67968750" right="0.91406250" top="0.01562500" bottom="0.34375000"/>
 </Texture>
 <Texture name="GuildDungeonDifficultyHanger.png" >
-	<Size x="39" y="16"/>	
-	<TexCoords left="0.67968750" right="0.98437500" top="0.37500000" bottom="0.62500000"/>	
+	<Size x="39" y="16"/>
+	<TexCoords left="0.67968750" right="0.98437500" top="0.37500000" bottom="0.62500000"/>
 </Texture>
 <Texture name="GuildDungeonDifficultyHeroicIcon.png" >
-	<Size x="12" y="13"/>	
-	<TexCoords left="0.67968750" right="0.77343750" top="0.65625000" bottom="0.85937500"/>	
+	<Size x="12" y="13"/>
+	<TexCoords left="0.67968750" right="0.77343750" top="0.65625000" bottom="0.85937500"/>
 </Texture>
--->	
+-->
 	<Frame name="EyeTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="45" y="45"/>
@@ -168,7 +168,7 @@
 								if( GameTooltip:IsOwned(self) ) then
 									MinimapMailFrameUpdate();
 								end
-							</OnEnter>							
+							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
@@ -246,13 +246,13 @@
 								<PushedTexture file="Interface\minimap\UI-Minimap-WorldMapSquare">
 									<Size x="32" y="32"/>
 									<TexCoords left="0.0" right="1" top="0.5" bottom="1"/>
-								</PushedTexture>									
+								</PushedTexture>
 								<HighlightTexture file="Interface\BUTTONS\UI-Common-MouseHilight.png" alphaMode="ADD">
 									<Size x="28" y="28"/>
 									<Anchors>
 										<Anchor point="TOPRIGHT" x="2" y="-2"/>
 									</Anchors>
-								</HighlightTexture>									
+								</HighlightTexture>
 							</Button>
 							<Frame name="MiniMapTracking">
 								<Size x="32" y="32"/>
@@ -353,7 +353,7 @@
 								</Anchors>
 								<HitRectInsets>
 									<AbsInset left="4" right="4" top="2" bottom="6"/>
-								</HitRectInsets>								
+								</HitRectInsets>
 								<Scripts>
 									<OnClick function="Minimap_ZoomInClick"/>
 									<OnEnter>
@@ -382,7 +382,7 @@
 								</Anchors>
 								<HitRectInsets>
 									<AbsInset left="4" right="4" top="2" bottom="6"/>
-								</HitRectInsets>								
+								</HitRectInsets>
 								<Scripts>
 									<OnClick function="Minimap_ZoomOutClick"/>
 									<OnEnter>
@@ -524,6 +524,7 @@
 												self:GetParent().AlertText:Hide();
 												self:GetParent().SideToastGlow:Hide();
 												self:GetParent().MinimapPulseAnim:Stop();
+												GarrisonMinimap_CheckQueuedHelpTip(self:GetParent());
 											</OnFinished>
 										</Scripts>
 									</AnimationGroup>
@@ -541,7 +542,7 @@
 									<OnLeave>
 										GameTooltip:Hide();
 									</OnLeave>
-								</Scripts>						
+								</Scripts>
 								<NormalTexture atlas="GarrLanding-MinimapIcon-Alliance-Up" useAtlasSize="true"/>
 								<PushedTexture atlas="GarrLanding-MinimapIcon-Alliance-Down" useAtlasSize="true"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
@@ -558,7 +559,7 @@
 			<Frame name="MiniMapInstanceDifficulty" hidden="true">
 				<Size>
 					<AbsDimension x="38" y="46"/>
-				</Size>			
+				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -571,14 +572,14 @@
 						<Texture name="$parentTexture" file="Interface\Minimap\UI-DungeonDifficulty-Button">
 							<Size>
 								<AbsDimension x="64" y="46"/>
-							</Size>							
+							</Size>
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
-							</Anchors>							
+							</Anchors>
 							<TexCoords left="0.0" right="0.25" top="0.0703125" bottom="0.4140625"/>
 						</Texture>
 						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER">
@@ -588,7 +589,7 @@
 										<AbsDimension x="-1" y="-7"/>
 									</Offset>
 								</Anchor>
-							</Anchors>						
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>

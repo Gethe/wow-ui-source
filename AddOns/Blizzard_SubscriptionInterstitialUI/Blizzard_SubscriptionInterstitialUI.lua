@@ -25,7 +25,7 @@ function SubscriptionInterstitialSubscribeButtonMixin:OnClick()
 		StoreFrame_SelectGameTimeProduct();
 		ToggleStoreUI();
 	else
-		LoadURLIndex(2);
+		LoadURLIndex(22);
 	end
 
 	self.wasClicked = true;

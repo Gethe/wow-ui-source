@@ -53,6 +53,9 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
+		if (self.data.confirmationSoundkit) then 
+			PlaySound(self.data.confirmationSoundkit);
+		end 
 		SendPlayerChoiceResponse(self.data.response);
 		HideUIPanel(self.data.owner);
 	end,
@@ -314,6 +317,9 @@ local choiceLayout = {
 		covenantPreviewId = 1,
 		secondButtonClickDoesntCloseUI = true,
 		enlargeBackgroundOnMouseOver = true,
+		mouseOverSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_MOUSE_OVER_COVENANT, 
+		confirmationOkSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CONFIRM_COVENANT,
+		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
 	},
 }
 
@@ -418,7 +424,7 @@ function PlayerChoiceFrameMixin:OnShow()
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
 
 	if(choiceInfo and choiceInfo.soundKitID) then
-		PlaySound(choiceInfo.soundKitID);
+		PlaySound(choiceInfo.soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	else
 		PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 	end
@@ -579,6 +585,13 @@ function PlayerChoiceFrameMixin:TryShow()
 	self:SetAlpha(1);
 	self:Update();
 end
+
+function PlayerChoiceFrameMixin:CloseUIFromExitButton()
+	if(self.optionLayout.exitButtonSoundKit) then
+		PlaySound(self.optionLayout.exitButtonSoundKit);
+	end
+	HideUIPanel(self);
+end 
 
 local function IsTopWidget(widgetFrame)
 	return widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay;
@@ -1106,8 +1119,12 @@ function PlayerChoiceOptionFrameMixin:OnEnterOverride()
 		self.OptionButtonsContainer:Show();
 		needsLayout = true;
 	end
+	local optionLayout = self:GetOptionLayoutInfo(); 
 
-	if(self:GetOptionLayoutInfo().enlargeBackgroundOnMouseOver) then
+	if(optionLayout.mouseOverSoundKit) then 
+		PlaySound(optionLayout.mouseOverSoundKit);
+	end 
+	if(optionLayout.enlargeBackgroundOnMouseOver) then
 		self.BlackBackground:Show();
 		self.Background:Hide();
 		self.ScrollingBackgroundAnimIn:Play();
@@ -1443,16 +1460,16 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
-
+	local optionLayout = self:GetParent().optionLayout;
 	if ( button.optID ) then
 		if ( IsInGroup() and (self.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or self.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
 			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = button.optID, owner = self:GetParent() });
 		elseif ( button.confirmation ) then
-			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", button.confirmation, nil, { response = button.optID, owner = self:GetParent() });
+			local confirmationSoundKit = optionLayout.confirmationOkSoundKit;
+			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", button.confirmation, nil, { response = button.optID, owner = self:GetParent(), confirmationSoundkit = confirmationSoundKit});
 		else
 			SendPlayerChoiceResponse(button.optID);
 			local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
-			local optionLayout = self:GetParent().optionLayout;
 			local isSecondButton = button.buttonIndex == 2;
 
 			if (optionLayout.useArtworkGlowOnSelection) then 

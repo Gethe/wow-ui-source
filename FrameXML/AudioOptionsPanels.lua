@@ -434,6 +434,7 @@ function AudioOptionsVoicePanelEnableVoice_UpdateControls(self)
 	local enabled = (not errorString);
 	BlizzardOptionsPanel_SetControlsEnabled(self, enabled);
 	AudioOptionsVoicePanel_SetCustomControlsEnabled(self, enabled);
+	self.MacMicrophoneAccessWarning:UpdateState();
 
 	if(enabled) then
 		self.ErrorStateMessage:Hide();
@@ -483,7 +484,7 @@ local function AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, 
 		max = 100;
 	end
 	self.Text:SetText(FormatPercentage(self.newValue / max, true));
-	
+
 	-- If the underlying cvar's value has an inverse range, i.e. the slider
 	-- range is [0,1], but the cvar represents this range as [0,1], the value
 	-- can be inverted before returning. This changes a slider value of .9 to
@@ -822,4 +823,18 @@ function AudioOptionsVoicePanelTestInputDevice_OnEvent(self, event, ...)
 	elseif event == "VOICE_CHAT_AUDIO_CAPTURE_ENERGY" then
 		UpdateVUMeter(self, ...);
 	end
+end
+
+MacMicrophoneAccessWarningMixin = {};
+
+function MacMicrophoneAccessWarningMixin:UpdateState()
+	local shown = MacOptions_IsMicrophoneEnabled and not MacOptions_IsMicrophoneEnabled();
+	if shown then
+		self.Label:SetFormattedText(MAC_MIC_PREMISSIONS_NOTIFICATION, MacOptions_GetGameBundleName());
+	end
+
+	self:SetShown(shown);
+	local color = shown and RED_FONT_COLOR or NORMAL_FONT_COLOR;
+	AudioOptionsVoicePanelOutputDeviceDropdownLabel:SetTextColor(color:GetRGBA());
+	AudioOptionsVoicePanelMicDeviceDropdownLabel:SetTextColor(color:GetRGBA());
 end

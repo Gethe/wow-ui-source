@@ -24,7 +24,26 @@ function SuperTrackEventMixin:CacheCurrentSuperTrackInfo()
 	self.isComplete = nil;
 	if self.superTrackQuestID > 0 then
 		self.isComplete = C_QuestLog.ReadyForTurnIn(self.superTrackQuestID);
+		self.uiMapID, self.worldQuests, self.worldQuestsElite, self.dungeons, self.treasures = C_QuestLog.GetQuestAdditionalHighlights(self.superTrackQuestID);
 	end
+
+	EventRegistry:TriggerEvent("Supertracking.OnChanged");
+end
+
+function QuestSuperTracking_ShouldHighlightWorldQuests(uiMapID)
+	return SuperTrackEventFrame.uiMapID == uiMapID and SuperTrackEventFrame.worldQuests;
+end
+
+function QuestSuperTracking_ShouldHighlightWorldQuestsElite(uiMapID)
+	return SuperTrackEventFrame.uiMapID == uiMapID and SuperTrackEventFrame.worldQuestsElite;
+end
+
+function QuestSuperTracking_ShouldHighlightDungeons(uiMapID)
+	return SuperTrackEventFrame.uiMapID == uiMapID and SuperTrackEventFrame.dungeons;
+end
+
+function QuestSuperTracking_ShouldHighlightTreasures(uiMapID)
+	return SuperTrackEventFrame.uiMapID == uiMapID and SuperTrackEventFrame.treasures;
 end
 
 function QuestSuperTracking_Initialize()

@@ -20,6 +20,7 @@ local listTextureKitRegions = {
 };
 local featureBorderTextureKitRegions = {
 	["Border"] = "CovenantSanctum-Icon-Border-%s",
+	["Glow"] = "CovenantSanctum-Icon-Glow-%s",
 }
 local reservoirTextureKitRegions = {
 	["Glow"] = "CovenantSanctum-Resevoir-Glow-%s",
@@ -41,12 +42,13 @@ end
 local EFFECT_MISSILE = 1;
 local EFFECT_IMPACT = 2;
 local EFFECT_ANIMA_FULL = 3;
+local EFFECT_RESEARCH = 4;
 
 local covenantSanctumEffectList = {
-	["Venthyr"] = { 103, 107, 111 },
-	["Kyrian"] = { 104, 108, 112 },
-	["NightFae"] = { 105, 109, 113 },
-	["Necrolord"] = { 106, 110, 114 },
+	["Venthyr"] = { 103, 107, 111, 115 },
+	["Kyrian"] = { 104, 108, 112, 116 },
+	["NightFae"] = { 105, 109, 113, 117 },
+	["Necrolord"] = { 106, 110, 114, 118 },
 }
 
 local function GetEffectID(index)
@@ -61,6 +63,8 @@ local CovenantSanctumUpgradesEvents = {
 	"GARRISON_TALENT_UPDATE",
     "GARRISON_TALENT_COMPLETE",
 	"SPELL_TEXT_UPDATE",
+	"GARRISON_TALENT_RESEARCH_STARTED",
+	"BAG_UPDATE",
 };
 
 function CovenantSanctumUpgradesTabMixin:OnLoad()
@@ -94,12 +98,17 @@ function CovenantSanctumUpgradesTabMixin:OnHide()
 	if self.animaGainEffect then
 		self.animaGainEffect:CancelEffect();
 	end
+	for i, frame in ipairs(self.Upgrades) do
+		if frame.researchEffect then
+			frame.researchEffect:CancelEffect();
+			frame.GlowAnim:Stop();
+			frame.Glow:SetAlpha(0);
+		end
+	end
 end
 
 function CovenantSanctumUpgradesTabMixin:OnEvent(event, ...)
-	if event == "GARRISON_TALENT_UPDATE" then
-		self:Refresh();
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+	if event == "CURRENCY_DISPLAY_UPDATE" then
 		local currencyID, total = ...;
 		local animaCurrencyID = C_CovenantSanctumUI.GetAnimaInfo();
 		if currencyID == animaCurrencyID and total > self.ReservoirUpgrade:GetAnimaAmount() then
@@ -107,7 +116,29 @@ function CovenantSanctumUpgradesTabMixin:OnEvent(event, ...)
 		else
 			self:OnCurrencyUpdate();
 		end
+	elseif event == "GARRISON_TALENT_RESEARCH_STARTED" then
+		local garrTypeID, talentTreeID, talentID = ...;
+		self:OnResearchStarted(talentTreeID);
+	elseif event == "BAG_UPDATE" then
+		self:UpdateDepositButton();
+	else
+		self:Refresh();
 	end
+end
+
+function CovenantSanctumUpgradesTabMixin:OnResearchStarted(talentTreeID)
+	for i, frame in ipairs(self.Upgrades) do
+		if frame.treeID == talentTreeID then
+			local effectID = GetEffectID(EFFECT_RESEARCH);
+			if effectID then
+				local target, onEffectFinish = nil, nil;
+				local onEffectResolution = function() frame.researchEffect = nil; end;
+				frame.researchEffect = GlobalFXDialogModelScene:AddEffect(effectID, frame, target, onEffectFinish, onEffectResolution);
+				frame.GlowAnim:Play();
+			end
+			break;
+		end
+	end	
 end
 
 function CovenantSanctumUpgradesTabMixin:OnAnimaGained()
@@ -119,7 +150,8 @@ function CovenantSanctumUpgradesTabMixin:OnAnimaGained()
 	end
 	local onEffectFinish = playMissile and GenerateClosure(self.OnAnimaGainEffectMissileFinished, self) or nil;
 	local onEffectResolution = GenerateClosure(self.OnAnimaGainEffectImpactFinished, self);
-	self.animaGainEffect = GlobalFXDialogModelScene:AddEffect(effectID, self.BagsGlowFrame, self.ReservoirUpgrade, onEffectFinish, onEffectResolution);
+	local source = CharacterBag1Slot;	-- middle bag
+	self.animaGainEffect = GlobalFXDialogModelScene:AddEffect(effectID, source, self.ReservoirUpgrade, onEffectFinish, onEffectResolution);
 	if playMissile then
 		self.BagsGlowFrame.Glow:SetAlpha(1);
 	else
@@ -152,6 +184,11 @@ function CovenantSanctumUpgradesTabMixin:Refresh()
 		frame:Refresh();
 	end
 	self.TalentsList:Refresh();
+	self:UpdateDepositButton();
+end
+
+function CovenantSanctumUpgradesTabMixin:UpdateDepositButton()
+	self.DepositButton:SetEnabled(C_CovenantSanctumUI.CanDepositAnima());
 end
 
 function CovenantSanctumUpgradesTabMixin:SetSelectedTree(treeID)
@@ -166,7 +203,7 @@ function CovenantSanctumUpgradesTabMixin:GetSelectedTree()
 end
 
 function CovenantSanctumUpgradesTabMixin:DepositAnima()
-	C_CovenantSanctumUI.DepositAnima(); -- TO DO: hook this to a player condition to see if the person even can deposit. 
+	C_CovenantSanctumUI.DepositAnima();
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
@@ -300,7 +337,7 @@ end
 
 function CovenantSanctumUpgradeTalentListMixin:FindTalentButton(talentID)
 	for talentFrame in self.talentPool:EnumerateActive() do
-		if talentFrame.info.id == talentID then
+		if talentFrame.talentID == talentID then
 			return talentFrame;
 		end
 	end
@@ -310,13 +347,18 @@ end
 --=============================================================================================
 CovenantSanctumUpgradeTalentMixin = { };
 
+function CovenantSanctumUpgradeTalentMixin:OnLoad()
+	self.Name:SetFontObjectsToTry("SystemFont_Shadow_Med2", "GameFontHighlight");
+end
+
 function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 	self.Name:SetText(talentInfo.name);
 	self.Icon:SetTexture(talentInfo.icon);
 
-	self.info = talentInfo;
+	self.talentID = talentInfo.id;
 	local disabled = false;
 	local abbreviateCost = true;
+	local showingCost = false;
 
 	local textColor = HIGHLIGHT_FONT_COLOR;
 	if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave then
@@ -331,6 +373,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 		self.UpgradeArrow:Show();
 		local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
 		self.InfoText:SetText(costString or "");
+		showingCost = not not costString;
 	else
 		disabled = true;
 		self.UpgradeArrow:Hide();
@@ -338,21 +381,40 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo)
 		if isMet then
 			local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost);
 			self.InfoText:SetText(costString);
+			showingCost = not not costString;
 		else
 			self.InfoText:SetText(failureString or "");
 		end
 	end
 	self.InfoText:SetTextColor(textColor:GetRGB());
 
+	local spaceOutLines = false;
+	if showingCost then
+		if self.Name:GetNumLines() > 1 and self.Name:GetFontObject() == SystemFont_Shadow_Med2 then
+			spaceOutLines = true;
+		end
+	end
+	if spaceOutLines then
+		self.Name:SetPoint("TOPLEFT", 58, -5);
+		self.InfoText:SetPoint("LEFT", self, "BOTTOMLEFT", 58, 13);
+	else
+		self.Name:SetPoint("TOPLEFT", 58, -6);
+		self.InfoText:SetPoint("LEFT", self, "BOTTOMLEFT", 58, 14);
+	end
+
 	if disabled then
-		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, g_sanctumTextureKit);
-		self.Border:SetAtlas(atlas);
 		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	else
-		self.Border:SetAtlas("CovenantSanctum-Upgrade-Border-Available");
 		self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 	end
 	self.Icon:SetDesaturated(disabled);
+
+	if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.Available then
+		self.Border:SetAtlas("CovenantSanctum-Upgrade-Border-Available");
+	else
+		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, g_sanctumTextureKit);
+		self.Border:SetAtlas(atlas);
+	end
 
 	if talentInfo.isBeingResearched and not talentInfo.hasInstantResearch then
 		self.Cooldown:SetCooldownUNIX(talentInfo.startTime, talentInfo.researchDuration);
@@ -369,14 +431,20 @@ TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableAnotherIsRes
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = COVENANT_SANCTUM_NOT_ENOUGH_RESOURCES;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughGold] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableTierUnavailable] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
-TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent] = ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT;
+TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent] = COVENANT_SANCTUM_TALENT_REQUIRES_PREVIOUS_TIER;
 
 function CovenantSanctumUpgradeTalentMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:RefreshTooltip();
+end
 
-	local talent			= self.info;
+function CovenantSanctumUpgradeTalentMixin:RefreshTooltip()
+	local talent			= C_Garrison.GetTalentInfo(self.talentID);
 	local garrTalentTreeID	= C_Garrison.GetCurrentGarrTalentTreeID();
 	local talentTreeType	= C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
+
+	GameTooltip:ClearLines();
+	self.UpdateTooltip = nil;
 
 	-- Multi-Rank Talents
 	if talent.talentMaxRank > 1 then
@@ -400,11 +468,13 @@ function CovenantSanctumUpgradeTalentMixin:OnEnter()
 	if talent.isBeingResearched and not talent.hasInstantResearch then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.timeRemaining), 1, 1, 1);
+		self.UpdateTooltip = CovenantSanctumUpgradeTalentMixin.RefreshTooltip;
 	elseif (talentTreeType == Enum.GarrTalentTreeType.Tiers and not talent.selected) or (talentTreeType == Enum.GarrTalentTreeType.Classic and not talent.researched) then
 		GameTooltip:AddLine(" ");
 
 		if (talent.researchDuration and talent.researchDuration > 0) then
 			GameTooltip:AddLine(RESEARCH_TIME_LABEL.." "..HIGHLIGHT_FONT_COLOR_CODE..SecondsToTime(talent.researchDuration)..FONT_COLOR_CODE_CLOSE);
+			self.UpdateTooltip = CovenantSanctumUpgradeTalentMixin.RefreshTooltip;
 		end
 
 		local costString = GetGarrisonTalentCostString(talent);
@@ -413,7 +483,7 @@ function CovenantSanctumUpgradeTalentMixin:OnEnter()
 		end
 
 		if talent.talentAvailability == Enum.GarrisonTalentAvailability.Available or (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching) then
-			GameTooltip:AddLine(ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
+			GameTooltip_AddInstructionLine(GameTooltip, COVENANT_SANCTUM_TALENT_RESEARCH);
 		else
 			if (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailablePlayerCondition and talent.playerConditionReason) then
 				GameTooltip:AddLine(talent.playerConditionReason, 1, 0, 0);
@@ -437,12 +507,29 @@ end
 CovenantSanctumUpgradeBaseMixin = { };
 
 function CovenantSanctumUpgradeBaseMixin:Refresh()
-	local treeInfo = C_Garrison.GetTalentTreeInfo(self.treeID);
+	local treeInfo = C_Garrison.GetTalentTreeInfo(self.treeID);	
 	if treeInfo then
 		local currentTier = GetCurrentTier(treeInfo.talents);
 		self.Tier:SetText(currentTier);
 		self.Icon:SetTexture(treeInfo.talents[1].icon);
 		self.SelectedTexture:SetShown(self:IsSelected());
+		-- check for cooldown any talent
+		local startTime, researchDuration
+		for i, talentInfo in ipairs(treeInfo.talents) do
+			if talentInfo.isBeingResearched and not talentInfo.hasInstantResearch then
+				startTime = talentInfo.startTime;
+				researchDuration = talentInfo.researchDuration;
+				break;
+			end
+		end
+		if startTime and researchDuration then
+			self.Cooldown:SetCooldownUNIX(startTime, researchDuration);
+			self.Cooldown:Show();
+			self.Icon:SetVertexColor(0.25, 0.25, 0.25);
+		else
+			self.Cooldown:Hide();
+			self.Icon:SetVertexColor(1, 1, 1);
+		end
 	end
 end
 

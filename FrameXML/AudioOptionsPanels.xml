@@ -789,7 +789,7 @@
 					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
-			
+
 			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />
 				<Anchors>
@@ -808,7 +808,7 @@
 					<OnLoad function="AudioOptionsVoicePanelMicDeviceDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
 			<Slider name="$parentVoiceChatMicVolume" parentKey="VoiceChatMicVolume" inherits="OptionsSliderTemplate">
 				<Size x="185" y="16" />
 				<Anchors>
@@ -938,6 +938,38 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
+			</Frame>
+			<Frame name="$parentMacMicrophoneAccessWarning" parentKey="MacMicrophoneAccessWarning" mixin="MacMicrophoneAccessWarningMixin" hidden="true">
+				<Size x="420" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentChatModeDropdown" relativePoint="BOTTOMLEFT" x="45" y="-26"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<Color color="RED_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="OpenAccessButton" inherits="UIPanelButtonTemplate" text="MAC_MIC_PERMISSIONS_OPEN_BUTTON">
+						<Size x="200" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if MacOptions_OpenMicrophoneRequestDialogue then
+									MacOptions_OpenMicrophoneRequestDialogue();
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

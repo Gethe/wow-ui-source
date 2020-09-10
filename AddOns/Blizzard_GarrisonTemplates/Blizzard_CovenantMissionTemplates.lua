@@ -323,12 +323,8 @@ function CovenantMissionListMixin:Update()
 			else
 				button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
 			end
-			if ( mission.locTextureKit ) then
-				button.LocBG:Show();
-				button.LocBG:SetAtlas(mission.locTextureKit.."-List");
-			else
-				button.LocBG:Hide();
-			end
+
+			button.LocBG:Hide();
 
 			if ( button.EncounterIcon ) then
 				button.EncounterIcon:SetEncounterInfo(button.info.encounterIconInfo);
@@ -658,6 +654,8 @@ function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	self.HealthBar:SetMaxHealth(followerInfo.autoCombatantStats.maxHealth);
 	self.HealthBar:SetHealth(followerInfo.autoCombatantStats.currentHealth);
 	self.HealthBar:SetRole(followerInfo.role);
+	local puckBorderAtlas = followerInfo.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
+	self.PuckBorder:SetAtlas(puckBorderAtlas);
 end
 
 function CovenantPortraitMixin:SetQuality(followerInfo)

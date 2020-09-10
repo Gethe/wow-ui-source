@@ -387,24 +387,20 @@ function PVPMatchResultsMixin:AddItemReward(item)
 	frame:SetScale(.7931);
 end
 function PVPMatchResultsMixin:InitHonorFrame(currency)
-	local deltaString = FormatValueWithSign(currency.quantityChanged);
+	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged));
 	self.honorText:SetText(PVP_HONOR_CHANGE:format(deltaString));
 	self.honorButton:Update();
 	self.honorFrame:Show();
 end
 function PVPMatchResultsMixin:InitConquestFrame(currency)
-	local deltaString = FormatValueWithSign(currency.quantityChanged / 100);
+	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged / 100));
 	self.conquestText:SetText(PVP_CONQUEST_CHANGE:format(deltaString));
 
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
-		local questID = select(3, PVPGetConquestLevelInfo());
-		if questID and IsPlayerAtEffectiveMaxLevel() then
-			self.conquestButton:LegacySetup(questID, nil);
-		else
-			self.conquestButton:Clear();
-		end
+	local questID = select(3, PVPGetConquestLevelInfo());
+	if questID and IsPlayerAtEffectiveMaxLevel() then
+		self.conquestButton:LegacySetup(questID, nil);
 	else
-		--
+		self.conquestButton:Clear();
 	end
 	self.conquestFrame:Show();
 end

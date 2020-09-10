@@ -96,7 +96,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
+			<ModelScene parentKey="ModelScene" inherits="ModelSceneMixinTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>

@@ -13,6 +13,7 @@ function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnEnter()
 		self:QuickKeybindButtonSetTooltip();
 		self.oldUpdateScript = self:GetScript("OnUpdate");
 		self:SetScript("OnUpdate", self.QuickKeybindButtonOnUpdate);
+		self.changedUpdateScript = true;
 		self.QuickKeybindHighlightTexture:SetAlpha(1);
 	end
 end
@@ -24,7 +25,10 @@ function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnLeave()
 		self.QuickKeybindHighlightTexture:SetAlpha(idleAlpha);
 	end
 	QuickKeybindTooltip:Hide();
-	self:SetScript("OnUpdate", self.oldUpdateScript);
+	if ( self.changedUpdateScript ) then
+		self:SetScript("OnUpdate", self.oldUpdateScript);
+		self.changedUpdateScript = nil;
+	end
 end
 
 function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnMouseWheel(delta)

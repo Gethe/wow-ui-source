@@ -12,6 +12,9 @@
 	</Button>
 	
 	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="maxTabWidth" value="220" type="number"/>
+		</KeyValues>
 		<Size x="980" y="637"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

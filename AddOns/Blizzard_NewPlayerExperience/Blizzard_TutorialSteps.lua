@@ -402,15 +402,17 @@ end
 function Class_Intro_CombatTactics:Reset()
 	self:HidePointerTutorials();
 	self:HideResourceCallout();
-	self:HideAbilityPointer();
+	self:HideAbilityPrompt();
 	self.firstTime = true;
 
 	local unitGUID = UnitGUID("target");
 	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		local playerClass = TutorialHelper:GetClass();
 		if playerClass == "WARRIOR" then
+			-- warriors are the only class that can't use their ability straight away
 			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 		else
+			-- every other class can be immediatedly prompted
 			self:ShowAbilityPrompt();
 		end
 	else
@@ -422,7 +424,6 @@ function Class_Intro_CombatTactics:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
 	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		Dispatcher:UnregisterEvent("UNIT_TARGET", self);
-		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 	end
 end
 
@@ -430,7 +431,7 @@ function Class_Intro_CombatTactics:ACTIONBAR_SLOT_CHANGED()
 	self:Reset();
 end
 
-function Class_Intro_CombatTactics:ResourceCallout()
+function Class_Intro_CombatTactics:ShowResourceCallout()
 	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 	if not namePlatePlayer then
 		return;
@@ -462,10 +463,15 @@ function Class_Intro_CombatTactics:PLAYER_LEAVE_COMBAT()
 end
 
 function Class_Intro_CombatTactics:ShowAbilityPrompt()
+	local playerClass = TutorialHelper:GetClass();
+	if self.firstTime == false and (playerClass == "WARRIOR" or playerClass == "ROGUE") then
+		-- warriors and rogues only show the very first ability prompt because their resource callout reinforces it as well
+		return;
+	end
+
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 	local combatString;
-
 	if self.firstTime == true then
 		combatString = TutorialHelper:FormatString(classData.initialString:format(self.keyBindString, self.spellIDString));
 	else
@@ -479,22 +485,28 @@ function Class_Intro_CombatTactics:ShowAbilityPrompt()
 end
 
 function Class_Intro_CombatTactics:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
-	if spellID == self.spellID then
-		self:HideAbilityPointer();
+	self:HideAbilityPrompt();
 
+	local playerClass = TutorialHelper:GetClass();
+	if (playerClass == "WARRIOR" or playerClass == "ROGUE") then
+		-- warriors and rogues have a resource callout that reinforces ability use
+		self:ShowResourceCallout();
+		return;
+	end
+
+	if spellID == self.spellID then
+		self:HideAbilityPrompt();
 		self.firstTime = false;
 		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
 		local isUsable, _ = IsUsableAction(button.action);
 		if isUsable then
 			self:ShowAbilityPrompt();
-		else
-			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 		end
 	end
 end
 
 function Class_Intro_CombatTactics:UNIT_POWER_FREQUENT(unit, resource)
-	self:ResourceCallout();
+	-- for the intro tutorial, we only sue this for warriors to ensure they have enough rage before slamming
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
 	if button then
 		local isUsable, notEnoughMana = IsUsableAction(button.action);
@@ -519,7 +531,7 @@ function Class_Intro_CombatTactics:HideResourceCallout()
 	end
 end
 
-function Class_Intro_CombatTactics:HideAbilityPointer()
+function Class_Intro_CombatTactics:HideAbilityPrompt()
 	if self.abilityPointerID then
 		self:HidePointerTutorial(self.abilityPointerID);
 		self.abilityPointerID = nil;
@@ -528,7 +540,7 @@ end
 
 function Class_Intro_CombatTactics:OnComplete()
 	self:HideResourceCallout();
-	self:HideAbilityPointer();
+	self:HideAbilityPrompt();
 	self:HidePointerTutorials();
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 end
@@ -837,14 +849,15 @@ function Class_QueueSystem:UPDATE_SHAPESHIFT_FORM()
 			end
 		end
 	end
-	self.Timer = C_Timer.NewTimer(0.1, function()
+	self.Timer = C_Timer.NewTimer(0.25, function()
 		self:CheckQueue();
 	end);
 end
 
 function Class_QueueSystem:UNIT_INVENTORY_CHANGED()
 	local level = UnitLevel("player");
-	if (level > 9) then
+	if (level > 10) then
+		-- if the player comes back after level 10, don't prompt them on loot anymore
 		Dispatcher:UnregisterEvent("UNIT_INVENTORY_CHANGED", self);
 	else
 		local value = {};
@@ -911,14 +924,14 @@ function Class_QueueSystem:CheckQueue()
 					Tutorials.AddSpellToActionBar:Begin(value.spellID, value.warningString, value.spellMicroButtonString);
 				end
 			else
-				-- not in the correct form, push it back on the queue
-				self.tutorialQueue:Push(value);
+				-- not in the correct form, dump it
+				self:CheckQueue();
 			end
 		elseif value.type == "UNIT_INVENTORY_CHANGED" then
 			self.inProgress = Tutorials.EquipFirstItemWatcher:CheckForUpgrades();
 		elseif value.type == "MOUNT_TUTORIAL" then
 			self.inProgress = true;
-			Tutorials.MountAddedWatcher:StartTutorial();
+			Tutorials.MountAddedWatcher:ForceBegin();
 		elseif value.type == "SPEC_TUTORIAL" then
 			self.inProgress = true;
 			Tutorials.SpecTutorial:StartTutorial();
@@ -1052,6 +1065,16 @@ function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 	elseif (actionType == "flyout" and FlyoutHasSpell(sID, self.spellToAdd)) then
 		self:Complete();
 	else
+		-- HACK: there is a special Tutorial only condition here we need to check here for Freezing Trap
+		local normalFreezingTrapSpellID = 187650;
+		local specialFreezingTrapSpellID = 321164;
+		if self.spellToAdd == normalFreezingTrapSpellID then
+			if (sID == normalFreezingTrapSpellID) or (sID == specialFreezingTrapSpellID) then
+				self:Complete();
+				return;
+			end
+		end
+
 		local nextEmptyButton = TutorialHelper:FindEmptyButton();
 		if not nextEmptyButton then
 			-- no more empty buttons
@@ -1091,7 +1114,9 @@ function Class_AddClassSpellToActionBar:OnBegin()
 	local classData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 	local spellID = classData.classQuestSpellID;
 	if spellID then
-		Tutorials.QueueSystem:QueueSpellTutorial(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
+		local playerClass = TutorialHelper:GetClass();
+		local preferredActionBar = playerClass == "ROGUE" and "MultiBarBottomLeftButton" or nil;
+		Tutorials.QueueSystem:QueueSpellTutorial(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar);
 	end
 	self:Complete();
 end
@@ -1490,7 +1515,7 @@ end
 
 function Class_EquipFirstItemWatcher:OnBegin()
 	local level = UnitLevel("player");
-	if (level > 10) then -- if the player comes back after level 10, don't prompt them on loot anymore
+	if (level > 10) then -- if the player comes back after level 10, don't prompt them anymore
 		self:Complete();
 		return;
 	end
@@ -1508,10 +1533,10 @@ function Class_EquipFirstItemWatcher:CheckForUpgrades()
 	return false;
 end
 
-function Class_EquipFirstItemWatcher:STRUCT_ItemContainer(itemID, characterSlot, container, containerSlot)
+function Class_EquipFirstItemWatcher:STRUCT_ItemContainer(itemLink, characterSlot, container, containerSlot)
 	return
 	{
-		ItemID = itemID,
+		ItemLink = itemLink,
 		Container = container,
 		ContainerSlot = containerSlot,
 		CharacterSlot = characterSlot,
@@ -1529,7 +1554,8 @@ function Class_EquipFirstItemWatcher:GetBestItemUpgrades()
 		local highestIlvl = 0;
 
 		for i = 1, #items do
-			local ilvl = select(4, GetItemInfo(items[i].ItemID));
+			itemLink = items[i].ItemLink;
+			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
 			if (ilvl > highestIlvl) then
 				highest = items[i];
 				highestIlvl = ilvl;
@@ -1573,11 +1599,12 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		local existingItemIlvl = 0;
 		local existingItemWeaponType;
 
-		local existingItemID = GetInventoryItemID("player", i);
-		if (existingItemID ~= nil) then
-			existingItemIlvl = select(4, GetItemInfo(existingItemID)) or 0;
+		local existingItemLink = GetInventoryItemLink("player", i);
+		if (existingItemLink ~= nil) then
+			existingItemIlvl = GetDetailedItemLevelInfo(existingItemLink) or 0;
 
 			if (i == INVSLOT_MAINHAND) then
+				local existingItemID = GetInventoryItemID("player", i);
 				existingItemWeaponType = self:GetWeaponType(existingItemID);
 			end
 		end
@@ -1585,9 +1612,9 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		local availableItems = {};
 		GetInventoryItemsForSlot(i, availableItems);
 
-		for packedLocation, itemID in pairs(availableItems) do
-			local itemInfo = {GetItemInfo(itemID)};
-			local ilvl = itemInfo[4];
+		for packedLocation, itemLink in pairs(availableItems) do
+			local itemInfo = {GetItemInfo(itemLink)};
+			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
 
 			if (ilvl ~= nil) then
 				if (ilvl > existingItemIlvl) then
@@ -1630,7 +1657,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 								potentialUpgrades[i] = {};
 							end
 
-							table.insert(potentialUpgrades[i], self:STRUCT_ItemContainer(itemID, i, bag, slot));
+							table.insert(potentialUpgrades[i], self:STRUCT_ItemContainer(itemLink, i, bag, slot));
 						end
 					end
 				end
@@ -1788,7 +1815,10 @@ function Class_EquipTutorial:CheckReady()
 end
 
 function Class_EquipTutorial:PLAYER_EQUIPMENT_CHANGED()
-	if (GetInventoryItemID("player", self.data.CharacterSlot) == self.data.ItemID) then
+	local item = Item:CreateFromItemLink(self.data.ItemLink);
+	local itemID = item:GetItemID();
+
+	if (GetInventoryItemID("player", self.data.CharacterSlot) == itemID) then
 		-- the player successfully equipped the item
 		Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 		self.success = true;
@@ -1847,7 +1877,9 @@ function Class_EquipTutorial:StartAnimation()
 end
 
 function Class_EquipTutorial:UpdateItemContainerAndSlotInfo()
-	local currentItemID = self.data.ItemID;
+	local item = Item:CreateFromItemLink(self.data.ItemLink);
+	local currentItemID = item:GetItemID();
+
 	if itemInfo and itemInfo[10] == currentItemID then
 		-- nothing in the inventory changed that effected the current tutorial
 	else
@@ -2201,34 +2233,6 @@ function Class_EnhancedCombatTactics_Rogue:UNIT_TARGET()
 		return;
 	end
 	Class_EnhancedCombatTactics.UNIT_TARGET(self);
-	--[[
-	local unitGUID = UnitGUID("target");
-	if unitGUID and (TutorialHelper:GetCreatureIDFromGUID(unitGUID) == TutorialHelper:GetFactionData().EnhancedCombatTacticsCreatureID) then
-		--check for the builder spell on the action bar
-		if not self:IsSpellOnActionBar(self.combatData.resourceBuilderSpellID, self.combatData.warningBuilderString, NPEV2_SPELLBOOK_ADD_SPELL) then
-			return;
-		end;
-
-		--check for the spender spell on the action bar
-		if not self:IsSpellOnActionBar(self.combatData.resourceSpenderSpellID, self.combatData.warningSpenderString, NPEV2_SPELLBOOK_ADD_SPELL) then
-			return;
-		end;
-
-		if (self.builderPointerID == nil) and (self.spenderPointerID == nil) then
-			self:ShowBuilderPrompt();
-		end
-		Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
-		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	else
-		self:HideScreenTutorial();
-		self:HideBuilderPrompt();
-		self:HideSpenderPrompt();
-		self:HidePointerTutorials();
-
-		Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
-		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	end
-	]]
 end
 
 function Class_EnhancedCombatTactics:UPDATE_SHAPESHIFT_FORM()
@@ -2792,6 +2796,9 @@ function Class_LookingForGroup:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
 	Dispatcher:RegisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 	Dispatcher:RegisterEvent("LFG_UPDATE", self);
+	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
+	Dispatcher:RegisterEvent("LFG_PROPOSAL_SUCCEEDED", self);
+	Dispatcher:RegisterEvent("LFG_PROPOSAL_FAILED", self);
 
 	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self.EmptyDungeonList, self);
 	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self.ReadyDungeonList, self);
@@ -2858,7 +2865,7 @@ function Class_LookingForGroup:LFG_UPDATE(args)
 end
 
 function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
-	--Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 	GlowEmitterFactory:Hide(LFDQueueFrameFindGroupButton);
 
 	self:HidePointerTutorials();
@@ -2866,21 +2873,20 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 	if QueueStatusMinimapButton:IsVisible() then
 		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 20, 0, nil, "RIGHT"); 
 	end
-
-	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
-	Dispatcher:RegisterEvent("LFG_PROPOSAL_FAILED", self);
 end
 
 function Class_LookingForGroup:LFG_PROPOSAL_SHOW()
-	Dispatcher:UnregisterEvent("LFG_PROPOSAL_SHOW", self);
+	self:HidePointerTutorials();
+end
 
-	-- if the player reaches this part, they have succeeded
+function Class_LookingForGroup:LFG_PROPOSAL_SUCCEEDED()
+	Dispatcher:UnregisterEvent("LFG_PROPOSAL_SUCCEEDED", self);
 	Tutorials.LFGStatusWatcher.tutorialSuccess = true;
-
 	self:Complete();
 end
 
 function Class_LookingForGroup:LFG_PROPOSAL_FAILED()
+	Dispatcher:RegisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 end
 
 function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
@@ -2892,6 +2898,9 @@ end
 
 function Class_LookingForGroup:OnComplete()
 	GlowEmitterFactory:Hide(LFDQueueFrameFindGroupButton);
+	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+	Dispatcher:UnregisterEvent("LFG_PROPOSAL_FAILED", self);
+	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
@@ -3169,7 +3178,7 @@ end
 function Class_HunterTameTutorial:StartTameTutorial()
 	local button = TutorialHelper:GetActionButtonBySpellID(1515);
 	if button then
-		self:ShowPointerTutorial(NPEV2_HUNTER_TAME_ANIMAL, "LEFT", button, 0, 25, nil, "UP");
+		self:ShowPointerTutorial(NPEV2_HUNTER_TAME_ANIMAL, "DOWN", button, 0, 30, nil, "UP");
 		Dispatcher:RegisterEvent("PET_STABLE_UPDATE", self);
 	else
 		self:AddHunterSpellsToActionBar();
@@ -3274,18 +3283,37 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_HunterStableTutorial = class("HunterStableTutorial", Class_TutorialBase);
 function Class_HunterStableTutorial:OnBegin()
+	local count = C_StableInfo.GetNumStablePets();
+	if count > 0 then
+		self:Complete();
+		return;
+	end
+
 	Dispatcher:RegisterEvent("PET_STABLE_SHOW", self);
 	Dispatcher:RegisterEvent("PET_STABLE_CLOSED", self);
 end
 
 function Class_HunterStableTutorial:PET_STABLE_SHOW()
+	local count = C_StableInfo.GetNumStablePets();
+	if count > 0 then
+		self:Complete();
+		return;
+	end
 	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", PetStableStabledPet5, 10, 0, nil, "LEFT");
 end
 
 function Class_HunterStableTutorial:PET_STABLE_CLOSED()
-	self:HidePointerTutorials();
+	local count = C_StableInfo.GetNumStablePets();
+	if count > 0 then
+		self:Complete();
+	end
 end
 
+function Class_HunterStableTutorial:OnComplete()
+	Dispatcher:UnregisterEvent("PET_STABLE_SHOW", self);
+	Dispatcher:UnregisterEvent("PET_STABLE_CLOSED", self);
+	self:HidePointerTutorials();
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Auto Spell Watcher
@@ -3327,7 +3355,8 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_MountAddedWatcher = class("MountAddedWatcher", Class_TutorialBase);
 function Class_MountAddedWatcher:OnBegin()
-	Tutorials.QueueSystem:QueueMountTutorial();
+	--Tutorials.QueueSystem:QueueMountTutorial();
+	self:StartTutorial();
 end
 
 function Class_MountAddedWatcher:StartTutorial()
@@ -3452,7 +3481,83 @@ function Class_MountTutorial:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	NPE_TutorialDragButton:Hide();
 	self:HidePointerTutorials();
-	Tutorials.QueueSystem:TutorialFinished();
+
+	local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+	if TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
+		Tutorials.UseMountWatcher:Begin();
+	else
+		Tutorials.QueueSystem:QueueMountTutorial();
+		Tutorials.QueueSystem:TutorialFinished();
+	end
+end
+
+
+Class_UseMountTutorialWatcher = class("UseMountWatcher", Class_TutorialBase);
+function Class_UseMountTutorialWatcher:OnBegin()
+	Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_USABLE", self);
+	local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+	self.mountID = mountData.mountID;
+	self:TryUseMount();
+end
+
+function Class_UseMountTutorialWatcher:TryUseMount()
+	local button = TutorialHelper:GetActionButtonBySpellID(self.mountID);
+	if button and IsUsableAction(button.action) then
+		Tutorials.UseMountTutorial:Begin();
+	else
+		self:HidePointerTutorials();
+	end
+end
+
+function Class_UseMountTutorialWatcher:ACTIONBAR_UPDATE_USABLE()
+	self:TryUseMount()
+end
+
+function Class_UseMountTutorialWatcher:OnComplete()
+	Dispatcher:UnregisterEvent("ACTIONBAR_UPDATE_USABLE", self);
+	self:HidePointerTutorials();
+end
+
+
+Class_UseMountTutorial = class("UseMountTutorial", Class_TutorialBase);
+function Class_UseMountTutorial:OnBegin()
+	if IsMounted() then
+		self:Complete();
+		return;
+	end
+
+	Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_USABLE", self);
+	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+	self.mountID = mountData.mountID;
+	self.mountSpellID = mountData.mountSpellID;
+
+	local button = TutorialHelper:GetActionButtonBySpellID(self.mountID);
+	if button and IsUsableAction(button.action) then
+		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P4, "DOWN", button, 0, 10, nil, "UP");
+	else
+		self:Complete();
+	end
+end
+
+function Class_UseMountTutorial:ACTIONBAR_UPDATE_USABLE()
+	local button = TutorialHelper:GetActionButtonBySpellID(self.mountID);
+	if not button or not IsUsableAction(button.action) then
+		self:Complete();
+	end
+end
+
+function Class_UseMountTutorial:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
+	if self.mountSpellID == spellID then
+		Tutorials.UseMountWatcher:Complete();
+		self:Complete();
+	end
+end
+
+function Class_UseMountTutorial:OnComplete()
+	Dispatcher:UnregisterEvent("ACTIONBAR_UPDATE_USABLE", self);
+	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	self:HidePointerTutorials();
 end
 
 

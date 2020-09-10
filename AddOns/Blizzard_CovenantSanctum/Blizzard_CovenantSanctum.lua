@@ -17,7 +17,7 @@ end
 
 local CovenantSanctumEvents = {
 	"COVENANT_SANCTUM_INTERACTION_ENDED",
-	"CURRENCY_DISPLAY_UPDATE",
+	"COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED",
 };
 
 function CovenantSanctumMixin:OnShow()
@@ -39,7 +39,7 @@ function CovenantSanctumMixin:OnEvent(event, ...)
 		ShowUIPanel(self);
 	elseif event == "COVENANT_SANCTUM_INTERACTION_ENDED" then
 		HideUIPanel(self);
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+	elseif event == "COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED" then
 		self:RefreshLevel();
 	end
 end

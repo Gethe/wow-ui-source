@@ -572,7 +572,7 @@
 			</Frame>
 			<Frame parentKey="NewPlayerTutorial" inherits="ResizeLayoutFrame" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="45" y="250"/>
+					<Anchor point="BOTTOMLEFT" x="52" y="205"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -584,7 +584,7 @@
 						<FontString parentKey="Description" inherits="GameFontNormalLarge2" text="CHARACTER_CUSTOMIZATION_TUTORIAL_DESCRIPTION" justifyH="LEFT">
 							<Size x="300" />
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-8"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-11"/>
 							</Anchors>
 						</FontString>
 					</Layer>

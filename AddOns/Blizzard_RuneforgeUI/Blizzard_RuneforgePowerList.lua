@@ -1,12 +1,8 @@
 
-RuneforgePowerButtonMixin = {};
+RuneforgePowerButtonMixin = CreateFromMixins(RuneforgePowerBaseMixin);
 
-function RuneforgePowerButtonMixin:SetPowerID(powerID)
-	self.powerID = powerID;
-	self.slotNames = nil;
-
+function RuneforgePowerButtonMixin:OnPowerSet(oldPowerID, powerID)
 	local hasPowerID = powerID ~= nil;
-	self.powerInfo = hasPowerID and C_LegendaryCrafting.GetRuneforgePowerInfo(powerID) or nil;
 	self.Icon:SetShown(hasPowerID);
 	if hasPowerID then
 		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
@@ -16,67 +12,14 @@ function RuneforgePowerButtonMixin:SetPowerID(powerID)
 		self.Icon:SetDesaturated(not isAvailable);
 		self.Icon:SetAlpha(isActive and 1.0 or 0.5);
 		self:SetEnabled(isActive);
-
-		self:RegisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-	else
-		self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-	end
-end
-
-function RuneforgePowerButtonMixin:GetPowerID()
-	return self.powerID;
-end
-
-function RuneforgePowerButtonMixin:OnHide()
-	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
-end
-
-function RuneforgePowerButtonMixin:OnEvent(event, ...)
-	if event == "RUNEFORGE_POWER_INFO_UPDATED" then
-		local powerID = ...;
-		if powerID == self:GetPowerID() then
-			self:SetPowerID(powerID);
-
-			if self:IsMouseOver() then
-				self:OnEnter();
-			end
-		end
 	end
 end
 
 function RuneforgePowerButtonMixin:OnEnter()
-	if self.powerInfo then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", self.tooltipOffsetX or 0, self.tooltipOffsetY or 0);
-
-		GameTooltip_SetTitle(GameTooltip, self.powerInfo.name);
-	
-		GameTooltip_AddColoredLine(GameTooltip, self.powerInfo.description, GREEN_FONT_COLOR);
-	
-		if not self.slotNames then
-			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
-		end
-
-		if #self.slotNames > 0 then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
-			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
-		end
-
-		if (self.powerInfo.state == Enum.RuneforgePowerState.Unavailable) and self.powerInfo.source then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddErrorLine(GameTooltip, self.powerInfo.source);
-		end
-
-		GameTooltip:Show();
+	local powerInfo = self:GetPowerInfo();
+	if powerInfo ~= nil then
+		RuneforgePowerBaseMixin.OnEnter(self);
 	end
-end
-
-function RuneforgePowerButtonMixin:OnLeave()
-	GameTooltip_Hide();
-end
-
-function RuneforgePowerButtonMixin:OnHide()
-	self:UnregisterEvent("RUNEFORGE_POWER_INFO_UPDATED");
 end
 
 
@@ -136,13 +79,12 @@ function RuneforgePowerSlotMixin:UpdateState()
 	self:SetEffectShown("chains2", showEffects);
 end
 
-function RuneforgePowerSlotMixin:SetPowerID(powerID)
-	local oldPowerID = self:GetPowerID();
+function RuneforgePowerSlotMixin:OnPowerSet(oldPowerID, powerID)
 	if oldPowerID == powerID then
 		return;
 	end
 
-	RuneforgePowerButtonMixin.SetPowerID(self, powerID);
+	RuneforgePowerButtonMixin.OnPowerSet(self, oldPowerID, powerID);
 
 	local runeforgeFrame = self:GetRuneforgeFrame();
 	runeforgeFrame:TriggerEvent(RuneforgeFrameMixin.Event.PowerSelected, powerID);
@@ -175,6 +117,10 @@ function RuneforgePowerSlotMixin:OnBaseItemChanged()
 	end
 end
 
+function RuneforgePowerSlotMixin:ShouldHideSource()
+	return self:GetPowerInfo().state == Enum.RuneforgePowerState.Available;
+end
+
 
 RuneforgePowerMixin = {};
 
@@ -197,6 +143,10 @@ function RuneforgePowerMixin:UpdateDisplay()
 	self.SelectedTexture:SetShown(isSelected);
 
 	self:SetAlpha(self:IsEnabled() and 1.0 or 0.5);
+end
+
+function RuneforgePowerMixin:ShouldHideSource()
+	return self:GetPowerInfo().state == Enum.RuneforgePowerState.Available;
 end
 
 

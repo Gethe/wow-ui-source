@@ -282,6 +282,24 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestAdditionalHighlights",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "worldQuests", Type = "bool", Nilable = false },
+				{ Name = "worldQuestsElite", Type = "bool", Nilable = false },
+				{ Name = "dungeons", Type = "bool", Nilable = false },
+				{ Name = "treasures", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestDetailsTheme",
 			Type = "Function",
 

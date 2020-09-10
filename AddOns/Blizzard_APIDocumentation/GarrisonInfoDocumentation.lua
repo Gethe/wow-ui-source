@@ -805,6 +805,17 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GarrisonTalentResearchStarted",
+			Type = "Event",
+			LiteralName = "GARRISON_TALENT_RESEARCH_STARTED",
+			Payload =
+			{
+				{ Name = "garrTypeID", Type = "number", Nilable = false },
+				{ Name = "garrisonTalentTreeID", Type = "number", Nilable = false },
+				{ Name = "garrTalentID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GarrisonTalentUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_UPDATE",

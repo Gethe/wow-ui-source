@@ -41,8 +41,8 @@ TutorialData.LevelAbilitiesTable = {
 	ROGUE = {
 		1752,	-- Start with Sinister Strike
 		196819,	-- Eviscerate, level 2
-		1784,	-- Stealth, level 3
-		nil,	-- 1833, Cheap Shot, level 4
+		nil,	-- 1833 Cheap Shot, level 3 - Rogues also get Stealth, 1784
+		nil,	-- 
 		2983,	-- Sprint, level 5
 		1766,	-- Kick, level 6
 		nil,	-- 8676, Ambush, level 7
@@ -182,6 +182,7 @@ TutorialData.ClassData = {
 		builderString = nil,
 		spenderString = nil,
 		classQuestSpellID = 187650,			-- Freezing Trap
+		-- 321164 is a special tutorial only Freezing Trap
 	},
 	ROGUE = {
 		firstSpellID = 1752,				-- Sinister Strike
@@ -331,6 +332,8 @@ TutorialData.Alliance = {
 
 	SpecChoiceQuest = 59587;
 
+	AnUrgentMeeting = 58912;
+
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;
 		PointerTutorialStringID = NPEV2_USEQUESTITEM;
@@ -452,6 +455,8 @@ TutorialData.Horde = {
 	GetMountQuest = 60345;
 
 	SpecChoiceQuest = 60348;
+
+	AnUrgentMeeting = 60360;
 
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;

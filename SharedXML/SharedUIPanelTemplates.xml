@@ -2175,7 +2175,7 @@
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT" hidden="true">
+				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT"  maxLines="1" hidden="true">
 					<Size x="25" y="20"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>

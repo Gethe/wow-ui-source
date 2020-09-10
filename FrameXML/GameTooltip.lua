@@ -387,6 +387,10 @@ GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY = {
 	padding = { left = 3, right = 3, top = 3, bottom = 3 },
 };
 
+GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
+	["jailerstower"] = GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY;
+};
+
 function GameTooltip_OnHide(self)
 	self.needsReset = true;
 	SharedTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or TOOLTIP_BACKDROP_STYLE_DEFAULT);

@@ -11,6 +11,7 @@ local CONTROL_KEY = "controlkey";
 local SHIFT_KEY = "shiftkey";
 local NO_KEY = "none";
 
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	return securecall(next, elements, key);

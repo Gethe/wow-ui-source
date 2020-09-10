@@ -131,6 +131,10 @@ end
 
 AdventuresRewardsScreenContinueButtonMixin = {}
 
+function AdventuresRewardsScreenContinueButtonMixin:OnShow()
+	self.FlashAnim:Play();
+end
+
 function AdventuresRewardsScreenContinueButtonMixin:OnClick()
 	local missionCompleteScreen = self:GetParent():GetParent():GetParent();
 	missionCompleteScreen:CloseMissionComplete();

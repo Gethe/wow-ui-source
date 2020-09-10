@@ -53,6 +53,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetChannelShortcut",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelShortcutForChannelID",
 			Type = "Function",
 

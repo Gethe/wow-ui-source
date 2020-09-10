@@ -190,7 +190,7 @@ end
 function RuneforgeCraftingFrameMixin:GetRuneforgeFlyoutItemsCallback(filterFunction, resultsTable)
 	local function ItemLocationCallback(itemLocation)
 		if filterFunction(itemLocation) then
-			resultsTable[itemLocation] = C_Item.GetItemID(itemLocation);
+			resultsTable[itemLocation] = C_Item.GetItemLink(itemLocation);
 		end
 	end
 

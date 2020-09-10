@@ -43,6 +43,14 @@
 	
 	<Frame name="AdventuresPuckTemplate" mixin="AdventuresPuckMixin" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="PuckShadow" atlas="adventurers-frame-shadow">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Portrait">
 					<Anchors>

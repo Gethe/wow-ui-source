@@ -242,12 +242,8 @@ function SoulbindViewerMixin:UpdateActivateSoulbindButton()
 	
 	self.ActivateSoulbindButton:SetEnabled(enabled);
 
-	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
-		local showTutorial = enabled and self.Tree:HasSelectedNodes() and not GetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex);
-		GlowEmitterFactory:SetShown(self.ActivateSoulbindButton, showTutorial, GlowEmitterMixin.Anims.FadeAnim);
-	else
-		GlowEmitterFactory:Hide(self.ActivateSoulbindButton);
-	end
+	local showTutorial = enabled and self.Tree:HasSelectedNodes() and not GetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex);
+	GlowEmitterFactory:SetShown(self.ActivateSoulbindButton, showTutorial, GlowEmitterMixin.Anims.FadeAnim);
 end
 
 function SoulbindViewerMixin:UpdateCommitConduitsButton()

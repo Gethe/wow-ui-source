@@ -1,5 +1,6 @@
 -- if you change something here you probably want to change the glue version too
 
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	-- not totally necessary in all cases in this file (since Interface Options are independent), but

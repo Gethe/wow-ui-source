@@ -513,7 +513,7 @@
 		<Size x="140" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="CostLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COSTS_LABEL">
+				<FontString parentKey="CostLabel" inherits="GameFontNormalLarge" justifyH="LEFT" text="COSTS_LABEL">
 					<Anchors>
 						<Anchor point="LEFT" y="1"/>
 					</Anchors>

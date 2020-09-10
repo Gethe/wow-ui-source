@@ -81,16 +81,21 @@ function WaypointLocationDataProviderMixin:HandleClick()
 		C_SuperTrack.SetSuperTrackedUserWaypoint(false);
 		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE);
 	else
-		if self.toggleActive then
-			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE);
+		local mapID = self:GetMap():GetMapID();
+		if C_Map.CanSetUserWaypointOnMap(mapID) then
+			if self.toggleActive then
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE);
+			else
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK);
+			end
+			local scrollContainer = self:GetMap().ScrollContainer;
+			local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
+			local uiMapPoint = UiMapPoint.CreateFromCoordinates(mapID, cursorX, cursorY);
+			C_Map.SetUserWaypoint(uiMapPoint);
+			C_SuperTrack.SetSuperTrackedUserWaypoint(false);
 		else
-			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK);
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, RED_FONT_COLOR:GetRGBA());
 		end
-		local scrollContainer = self:GetMap().ScrollContainer;
-		local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
-		local uiMapPoint = UiMapPoint.CreateFromCoordinates(self:GetMap():GetMapID(), cursorX, cursorY);
-		C_Map.SetUserWaypoint(uiMapPoint);
-		C_SuperTrack.SetSuperTrackedUserWaypoint(false);
 	end
 end
 

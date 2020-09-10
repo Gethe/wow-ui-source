@@ -652,6 +652,7 @@ end
 
 function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
+	self.garrisonType = garrisonType;
 
 	ApplyGarrisonTypeAnchor(self, garrisonType);
 
@@ -688,8 +689,9 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	end
 end
 
-function GarrisonLandingPageMinimapButton_OnClick()
+function GarrisonLandingPageMinimapButton_OnClick(self, button)
 	GarrisonLandingPage_Toggle();
+	GarrisonMinimap_HideHelpTip(self);
 end
 
 function GarrisonLandingPage_Toggle()
@@ -780,6 +782,18 @@ function GarrisonMinimap_ShowCovenantCallingsNotification(self)
 	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();
 	self.MinimapLoopPulseAnim:Play();
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS) then
+		GarrisonMinimap_SetQueuedHelpTip(self, {
+			text = FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 0,
+			useParentStrata = true,
+		});
+	end
 end
 
 function GarrisonMinimap_OnCallingsUpdated(self, callings, completedCount, availableCount)
@@ -789,5 +803,30 @@ function GarrisonMinimap_OnCallingsUpdated(self, callings, completedCount, avail
 		end
 
 		self.isInitialLogin = false;
+	end
+end
+
+function GarrisonMinimap_SetQueuedHelpTip(self, tipInfo)
+	self.queuedHelpTip = tipInfo;
+end
+
+function GarrisonMinimap_CheckQueuedHelpTip(self)
+	if self.queuedHelpTip then
+		local tip = self.queuedHelpTip;
+		self.queuedHelpTip = nil;
+		HelpTip:Show(self, tip);
+	end
+end
+
+function GarrisonMinimap_ClearQueuedHelpTip(self)
+	if self.queuedHelpTip and self.queuedHelpTip.text == FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS then
+		self.queuedHelpTip = nil;
+	end
+end
+
+function GarrisonMinimap_HideHelpTip(self)
+	if self.garrisonType == Enum.GarrisonType.Type_9_0 then
+		HelpTip:Acknowledge(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
+		GarrisonMinimap_ClearQueuedHelpTip(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 	end
 end

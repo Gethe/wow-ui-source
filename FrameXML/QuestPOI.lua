@@ -313,6 +313,10 @@ local function QuestPOI_GetButtonInternal(parent, questID, style, index)
 end
 
 function QuestPOI_GetButton(parent, questID, style, index)
+	if C_QuestLog.IsQuestCalling(questID) then
+		return;
+	end
+
 	local poiButton = QuestPOI_GetButtonInternal(parent, questID, style, index);
 	QuestPOI_UpdateButtonStyle(poiButton);
 	poiButton:Show();

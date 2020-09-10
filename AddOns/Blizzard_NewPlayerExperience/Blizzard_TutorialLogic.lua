@@ -112,6 +112,14 @@ function Tutorials:Begin()
 		end
 	end
 
+	questID = tutorialData.AnUrgentMeeting;
+	if C_QuestLog.GetLogIndexForQuestID(questID) ~= nil then
+		local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+		if TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
+			self.UseMountWatcher:Begin();
+		end
+	end
+
 	-- if we are past a certain point, turn on of all the UI
 	if C_QuestLog.IsQuestFlaggedCompleted(tutorialData.ShowAllUIQuest) then
 		self.Hide_Backpack:Complete();
@@ -144,8 +152,10 @@ function Tutorials:Begin()
 	if C_QuestLog.IsQuestFlaggedCompleted(questID) then	-- Mount Quest is complete
 		-- is the mount already on the action bar?
 		local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
-		if not TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
-			self.MountAddedWatcher:Begin();
+		if TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
+			self.UseMountWatcher:Begin();
+		else
+			Tutorials.QueueSystem:QueueMountTutorial();
 		end
 	end
 
@@ -193,6 +203,12 @@ function Tutorials:Quest_Accepted(questData)
 	elseif (questID == vendorQuestID) then
 		-- Use Vendor Quest
 		self.Vendor_Watcher:Begin();
+	elseif (questID == tutorialData.AnUrgentMeeting) then
+		-- second use mount reminder
+		local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+		if TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
+			self.UseMountWatcher:Begin();
+		end
 	elseif (questID == tutorialData.ShowAllUIQuest) then
 		-- Show All UI Quest
 		self.Hide_Backpack:Complete();
@@ -410,6 +426,8 @@ Tutorials.Death_ResurrectPrompt			= Class_Death_ResurrectPrompt:new(Tutorials.De
 -- Mount Tutorial
 Tutorials.MountAddedWatcher				= Class_MountAddedWatcher:new();
 Tutorials.MountTutorial					= Class_MountTutorial:new();
+Tutorials.UseMountWatcher				= Class_UseMountTutorialWatcher:new();
+Tutorials.UseMountTutorial				= Class_UseMountTutorial:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Spec Choice Tutorial

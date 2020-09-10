@@ -37,6 +37,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_PHASE");
+	self:RegisterEvent("UNIT_CTR_OPTIONS");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
@@ -134,7 +135,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateHealPrediction(self);
 			elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 				CompactUnitFrame_UpdateStatusText(self);
-			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" ) then
+			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
 			elseif ( event == "GROUP_JOINED" ) then
 				CompactUnitFrame_UpdateAggroFlash(self);

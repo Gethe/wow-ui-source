@@ -203,6 +203,7 @@ function WeeklyRewardsActivityMixin:SetSelectionState(state)
 		self.SelectedTexture:Hide();
 		self.UnselectedFrame:Hide();
 	end
+	self.ItemFrame:OnSelectionChanged(state == SELECTION_STATE_SELECTED);
 end
 
 function WeeklyRewardsActivityMixin:Refresh(activityInfo)
@@ -396,7 +397,11 @@ function WeeklyRewardsActivityMixin:HandlePreviewPvPRewardTooltip(itemLevel, upg
 		if ascendTierInfo then
 			GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 			local ascendTierName = PVPUtil.GetTierName(ascendTierInfo.pvpTierEnum);
-			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_PVP, ascendTierName, tierInfo.ascendRating, ascendTierInfo.ascendRating - 1));
+			if ascendTierInfo.ascendRating == 0 then
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_PVP_MAX, ascendTierName, tierInfo.ascendRating));
+			else
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_PVP, ascendTierName, tierInfo.ascendRating, ascendTierInfo.ascendRating - 1));
+			end
 		end
 	end
 end
@@ -443,6 +448,12 @@ function WeeklyRewardActivityItemMixin:OnClick()
 	else
 		activityFrame:GetParent():SelectActivity(activityFrame);
 	end
+end
+
+function WeeklyRewardActivityItemMixin:OnSelectionChanged(selected)
+	local alpha = selected and 1 or 0;
+	self.Glow:SetAlpha(alpha);
+	self.GlowSpin:SetAlpha(alpha);
 end
 
 function WeeklyRewardActivityItemMixin:SetDisplayedItem()

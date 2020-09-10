@@ -1,8 +1,10 @@
+
 local mainTextureKitRegions = {
 	["Background"] = "CovenantSanctum-Renown-Background-%s",
 	["BackgroundTile"] = "UI-Frame-%s-BackgroundTile",
 	["Divider"] = "CovenantSanctum-Renown-Divider-%s",
 	["Anima"] = "CovenantSanctum-Renown-Anima-%s",
+	["FinalToastSlabTexture"] = "CovenantSanctum-Renown-FinalToast-%s",
 }
 local rewardTextureKitRegions = {
 	["Toast"] = "CovenantSanctum-Renown-Toast-%s",
@@ -14,68 +16,24 @@ local milestonesTextureKitRegions = {
 	["Middle"] = "_UI-Frame-%s-TitleMiddle",
 };
 
+local finalToastSwirlEffects = 
+{
+	Kyrian = {119},
+	Venthyr = {120},
+	NightFae = {121, 123},
+	Necrolord = {122},
+}
+
 local g_sanctumTextureKit;
 local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(g_sanctumTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
-local function GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback)
-	if rewardInfo.itemID then
-		local item = Item:CreateFromItemID(rewardInfo.itemID);
-		local icon, name;
-		if item:IsItemDataCached() then
-			icon = item:GetItemIcon();
-			name = item:GetItemName();
-		else
-			item:ContinueOnItemLoad(onItemUpdateCallback);
-		end
-		return icon, name, RENOWN_REWARD_ITEM_NAME_FORMAT, RENOWN_REWARD_ITEM_DESCRIPTION;
-	elseif rewardInfo.mountID then
-		local name, spellID, icon = C_MountJournal.GetMountInfoByID(rewardInfo.mountID);
-		return icon, name, RENOWN_REWARD_MOUNT_NAME_FORMAT, RENOWN_REWARD_MOUNT_DESCRIPTION;
-	elseif rewardInfo.spellID then
-		local name, _, icon = GetSpellInfo(rewardInfo.spellID);
-		return icon, name, RENOWN_REWARD_SPELL_NAME_FORMAT, RENOWN_REWARD_SPELL_DESCRIPTION;
-	elseif rewardInfo.titleID then
-		local name = GetTitleName(rewardInfo.titleID);
-		return nil, name, RENOWN_REWARD_TITLE_NAME_FORMAT, RENOWN_REWARD_TITLE_DESCRIPTION;
-	elseif rewardInfo.transmogID then
-		local itemID = C_Transmog.GetItemIDForSource(rewardInfo.transmogID);
-		local item = Item:CreateFromItemID(itemID);
-		local icon, name;
-		if item:IsItemDataCached() then
-			icon = item:GetItemIcon();
-			name = item:GetItemName();
-		else
-			item:ContinueOnItemLoad(onItemUpdateCallback);
-		end
-		return icon, name, RENOWN_REWARD_TRANSMOG_NAME_FORMAT, RENOWN_REWARD_TRANSMOG_DESCRIPTION;
-	elseif rewardInfo.transmogSetID then
-		local icon = TransmogUtil.GetSetIcon(rewardInfo.transmogSetID);
-		local setInfo = C_TransmogSets.GetSetInfo(rewardInfo.transmogSetID);
-		return icon, setInfo.name, RENOWN_REWARD_TRANSMOGSET_NAME_FORMAT, RENOWN_REWARD_TRANSMOGSET_DESCRIPTION;
-	elseif rewardInfo.garrFollowerID then
-		local followerInfo = C_Garrison.GetFollowerInfo(rewardInfo.garrFollowerID);
-		return followerInfo.portraitIconID, followerInfo.name, RENOWN_REWARD_FOLLOWER_NAME_FORMAT, RENOWN_REWARD_FOLLOWER_DESCRIPTION;
-	elseif rewardInfo.transmogIllusionSourceID then
-		local visualID, name, link, icon = C_TransmogCollection.GetIllusionSourceInfo(rewardInfo.transmogIllusionSourceID);
-		return icon, name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
-	end
-end
-
-local function GetRenownRewardInfo(rewardInfo, onItemUpdateCallback)
-	local icon, name, formatString, description = GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback);
-	if name and formatString then
-		name = formatString:format(name);
-	else
-		name = rewardInfo.name;
-	end
-	return (rewardInfo.icon or icon), name, (rewardInfo.description or description);
-end
-
 CovenantSanctumRenownTabMixin = {};
 
 function CovenantSanctumRenownTabMixin:OnLoad()
+	self.FinalToastSlabTexture = self.FinalToast.SlabTexture;
+
 	self.milestonesPool = CreateFramePool("FRAME", self.MilestonesFrame, "CovenantSanctumRenownMilestoneTemplate");
 	self.rewardsPool = CreateFramePool("FRAME", self, "CovenantSanctumRenownRewardTemplate");
 end
@@ -83,15 +41,18 @@ end
 function CovenantSanctumRenownTabMixin:OnShow()
 	self:SetUpTextureKits();
 	self:Refresh();
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED");
 end
 
 function CovenantSanctumRenownTabMixin:OnHide()
-	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:UnregisterEvent("COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED");
+	self:SetCelebrationSwirlEffects(nil);
 end
 
-function CovenantSanctumRenownTabMixin:OnEvent()
-	self:Refresh();
+function CovenantSanctumRenownTabMixin:OnEvent(event, ...)
+	if event == "COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED" then
+		self:Refresh();
+	end
 end
 
 function CovenantSanctumRenownTabMixin:SetUpTextureKits()
@@ -107,7 +68,7 @@ end
 function CovenantSanctumRenownTabMixin:Refresh()
 	self.milestonesPool:ReleaseAll();
 
-	local milestones = C_CovenantSanctumUI.GetRenownMilestones();
+	local milestones = C_CovenantSanctumUI.GetRenownMilestones(C_Covenants.GetActiveCovenantID(), C_CovenantSanctumUI.GetRenownLevel());
 	local spacing = 9;
 	local lastFrame;
 	for i, milestoneInfo in ipairs(milestones) do
@@ -126,12 +87,22 @@ function CovenantSanctumRenownTabMixin:Refresh()
 	self:RefreshRewards();
 end
 
+function CovenantSanctumRenownTabMixin:SetCelebrationSwirlEffects(swirlEffects)
+	if swirlEffects == nil then
+		self.CelebrationModelScene:ClearEffects();
+	else
+		for i, swirlEffect in ipairs(swirlEffects) do
+			self.CelebrationModelScene:AddEffect(swirlEffect, self.FinalToast.SlabTexture);
+		end
+	end
+end
+
 function CovenantSanctumRenownTabMixin:RefreshRewards()
 	self.rewardsPool:ReleaseAll();
 	local nextLevel = C_CovenantSanctumUI.GetRenownLevel() + 1;
-	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(nextLevel);
+	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(C_Covenants.GetActiveCovenantID(), nextLevel);
 	local numRewards = #rewards;
-	
+
 	for i, rewardInfo in ipairs(rewards) do
 		local rewardFrame = self.rewardsPool:Acquire();
 		if numRewards == 1 then
@@ -157,14 +128,23 @@ function CovenantSanctumRenownTabMixin:RefreshRewards()
 	end
 
 	if numRewards > 0 then
+		self.Header:SetText(COVENANT_SANCTUM_RENOWN_REWARD_TITLE);
 		self.Description:SetFormattedText(COVENANT_SANCTUM_RENOWN_REWARD_DESC, nextLevel);
+		self.FinalToast:Hide();
+		self:SetCelebrationSwirlEffects(nil);
 	else
-		-- todo: need design
-		self.Description:SetFormattedText(COVENANT_SANCTUM_RENOWN_REWARD_DESC, 0);
+		self.Header:SetText(COVENANT_SANCTUM_RENOWN_REWARD_TITLE_COMPLETE);
+
+		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+		self.Description:SetFormattedText(COVENANT_SANCTUM_RENOWN_REWARD_DESC_COMPLETE, covenantData and covenantData.name or "");
+
+		self.FinalToast:Show();
+		self.FinalToast:SetCovenantTextureKit(covenantData.textureKit);
+		self:SetCelebrationSwirlEffects(finalToastSwirlEffects[covenantData.textureKit]);
 	end
 end
 
-CovenantSanctumRenownMilestoneMixin = { }
+CovenantSanctumRenownMilestoneMixin = { };
 
 function CovenantSanctumRenownMilestoneMixin:SetMilestone(milestoneInfo)
 	self.level = milestoneInfo.level;
@@ -204,7 +184,7 @@ function CovenantSanctumRenownMilestoneMixin:RefreshTooltip()
 	end
 
 	local onItemUpdateCallback = GenerateClosure(self.RefreshTooltip, self);
-	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(self.level);
+	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(C_Covenants.GetActiveCovenantID(), self.level);
 	local addRewards = true;
 	if self.isCapstone then
 		GameTooltip_SetTitle(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_TITLE);
@@ -213,7 +193,7 @@ function CovenantSanctumRenownMilestoneMixin:RefreshTooltip()
 		GameTooltip_AddHighlightLine(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_DESC2);
 	else
 		if #rewards == 1 then
-			local icon, name, description = GetRenownRewardInfo(rewards[1], onItemUpdateCallback);
+			local icon, name, description = CovenantUtil.GetRenownRewardInfo(rewards[1], onItemUpdateCallback);
 			GameTooltip_SetTitle(GameTooltip, name);
 			GameTooltip_AddNormalLine(GameTooltip, description);
 			addRewards = false;
@@ -223,7 +203,7 @@ function CovenantSanctumRenownMilestoneMixin:RefreshTooltip()
 	end
 	if addRewards then
 		for i, rewardInfo in ipairs(rewards) do
-			local icon, name, description = GetRenownRewardInfo(rewardInfo, onItemUpdateCallback);
+			local icon, name, description = CovenantUtil.GetRenownRewardInfo(rewardInfo, onItemUpdateCallback);
 			if name then
 				GameTooltip_AddNormalLine(GameTooltip, string.format(RENOWN_REWARD_TOOLTIP_REWARD_LINE, name));
 			end
@@ -232,7 +212,7 @@ function CovenantSanctumRenownMilestoneMixin:RefreshTooltip()
 	GameTooltip:Show();	
 end
 
-CovenantSanctumRenownRewardMixin = { }
+CovenantSanctumRenownRewardMixin = { };
 
 function CovenantSanctumRenownRewardMixin:SetReward(rewardInfo)
 	SetupTextureKit(self, rewardTextureKitRegions);
@@ -242,7 +222,7 @@ function CovenantSanctumRenownRewardMixin:SetReward(rewardInfo)
 end
 
 function CovenantSanctumRenownRewardMixin:RefreshReward()
-	local icon, name, description = GetRenownRewardInfo(self.rewardInfo, GenerateClosure(self.RefreshReward, self));
+	local icon, name, description = CovenantUtil.GetRenownRewardInfo(self.rewardInfo, GenerateClosure(self.RefreshReward, self));
 	self.Icon:SetTexture(icon);
 	self.Name:SetText(name);
 	self.description = description;

@@ -646,6 +646,22 @@ string.rtgsub = RestrictedTable_rtgsub;
 -- Working environments and control handles
 
 local function ManagedEnvironmentsIndex(t, k)
+    if (not issecure() or type(k) ~= "table") then
+        error("Invalid access of managed environments table");
+        return;
+    end;
+
+    local ownerHandle = GetFrameHandle(k, true);
+    if (not ownerHandle) then
+        error("Invalid access of managed environments table (bad frame)");
+        return;
+    end
+    local _, explicitProtected = ownerHandle:IsProtected();
+    if (not explicitProtected) then
+        error("Invalid access of managed environments table (not protected)");
+        return;
+    end
+
     local e = RestrictedTable_create();
     e._G = e;
     e.owner = ownerHandle;
@@ -661,22 +677,6 @@ setmetatable(LOCAL_Managed_Environments,
              });
 
 function GetManagedEnvironment(envKey, withCreate)
-	if (not issecure() or type(envKey) ~= "table") then
-        error("Invalid access of managed environments table");
-        return;
-    end;
-
-    local ownerHandle = GetFrameHandle(envKey, true);
-    if (not ownerHandle) then
-        error("Invalid access of managed environments table (bad frame)");
-        return;
-    end
-    local _, explicitProtected = ownerHandle:IsProtected();
-    if (not explicitProtected) then
-        error("Invalid access of managed environments table (not protected)");
-        return;
-    end
-
     if (withCreate) then
         return LOCAL_Managed_Environments[envKey];
     else

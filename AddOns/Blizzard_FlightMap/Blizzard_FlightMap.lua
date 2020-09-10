@@ -77,7 +77,7 @@ function FlightMapMixin:OnShow()
 	MapCanvasMixin.OnShow(self);
 
 	local playerPosition = C_Map.GetPlayerMapPosition(mapID, "player");
-	local subMapInfo = C_Map.GetMapInfoAtPosition(mapID, playerPosition:GetXY());
+	local subMapInfo = playerPosition and C_Map.GetMapInfoAtPosition(mapID, playerPosition:GetXY()) or nil;
 	if subMapInfo and (subMapInfo.mapID ~= mapID) and FlagsUtil.IsSet(subMapInfo.flags, Enum.UIMapFlag.FlightMapAutoZoom) then
 		local centerX, centerY = MapUtil.GetMapCenterOnMap(subMapInfo.mapID, mapID);
 		local ignoreScaleRatio = true;

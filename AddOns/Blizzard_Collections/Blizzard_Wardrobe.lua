@@ -1917,8 +1917,8 @@ function WardrobeCollectionFrame_SortSources(sources, primaryVisualID, primarySo
 	return sources;
 end
 
-function WardrobeCollectionFrame_GetSortedAppearanceSources(visualID)
-	local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+function WardrobeCollectionFrame_GetSortedAppearanceSources(visualID, categoryID)
+	local sources = C_TransmogCollection.GetAppearanceSources(visualID, categoryID);
 	return WardrobeCollectionFrame_SortSources(sources);
 end
 
@@ -1947,7 +1947,7 @@ end
 function WardrobeItemsCollectionMixin:GetAnAppearanceSourceFromVisual(visualID, mustBeUsable)
 	local sourceID = self:GetChosenVisualSource(visualID);
 	if ( sourceID == NO_TRANSMOG_SOURCE_ID ) then
-		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID);
+		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID, self.activeCategory);
 		for i = 1, #sources do
 			-- first 1 if it doesn't have to be usable
 			if ( not mustBeUsable or not sources[i].useError ) then
@@ -2032,7 +2032,7 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 	if ( not self.tooltipVisualID ) then
 		return;
 	end
-	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.tooltipVisualID);
+	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.tooltipVisualID, self.activeCategory);
 	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);
 	WardrobeCollectionFrame_SetAppearanceTooltip(self, sources, chosenSourceID);
 end
@@ -2130,7 +2130,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 		if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
 			link = select(3, C_TransmogCollection.GetIllusionSourceInfo(self.visualInfo.sourceID));
 		else
-			local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.visualInfo.visualID);
+			local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.visualInfo.visualID, self.activeCategory);
 			if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 				local index = WardrobeUtils_GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 				link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));

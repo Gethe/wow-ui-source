@@ -342,11 +342,17 @@ function CharCustomizeMaskedButtonMixin:StopFlash()
 end
 
 function CharCustomizeMaskedButtonMixin:SetEnabledState(enabled)
-	self:SetEnabled(enabled);
+	local buttonEnableState = enabled or self.allowSelectionOnDisable;
+	self:SetEnabled(buttonEnableState);
 
 	local normalTex = self:GetNormalTexture();
 	if normalTex then
 		normalTex:SetDesaturated(not enabled);
+	end
+
+	local pushedTex = self:GetPushedTexture();
+	if pushedTex then
+		pushedTex:SetDesaturated(not enabled);
 	end
 
 	self.Ring:SetAtlas(self.ringAtlas..(enabled and "" or "-disabled"));
@@ -483,9 +489,9 @@ function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
 	self:ClearTooltipLines();
 
 	if sexID == Enum.Unitsex.Male then
-		self:AddTooltipLine(MALE);
+		self:AddTooltipLine(MALE, HIGHLIGHT_FONT_COLOR);
 	else
-		self:AddTooltipLine(FEMALE);
+		self:AddTooltipLine(FEMALE, HIGHLIGHT_FONT_COLOR);
 	end
 
 	local atlas = GetGenderAtlas(sexID);
