@@ -216,6 +216,7 @@
 					CharSelectAccountUpgradeButtonPointerFrame:Show();
 					CharSelectAccountUpgradeButtonGlow:Show();
 				end
+				CharacterSelect.dragToIndex = self:GetID();
 			</OnEnter>
 			<OnLeave>
 				if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
@@ -225,6 +226,7 @@
 				CharSelectAccountUpgradeButtonPointerFrame:Hide();
 				CharSelectAccountUpgradeButtonGlow:Hide();
 				GlueTooltip:Hide();
+				CharacterSelect.dragToIndex = nil;
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Hover" alphaMode="ADD">

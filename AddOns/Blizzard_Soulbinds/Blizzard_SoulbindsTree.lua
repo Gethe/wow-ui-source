@@ -88,7 +88,7 @@ end
 function SoulbindTreeMixin:OnNodeLearned(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
+	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function SoulbindTreeMixin:OnNodeUnlearned(nodeID)
@@ -97,12 +97,9 @@ function SoulbindTreeMixin:OnNodeUnlearned(nodeID)
 end
 
 function SoulbindTreeMixin:OnPathChanged()
-	-- Temp. Removed once the tree isn't being reset.
-	Soulbinds.SetPathChangePending(true);
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
-	Soulbinds.SetPathChangePending(false);
+	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function SoulbindTreeMixin:SelectNode(button, buttonName)

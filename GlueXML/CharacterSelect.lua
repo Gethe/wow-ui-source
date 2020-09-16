@@ -11,8 +11,6 @@ CHARACTER_LIST_OFFSET = 0;
 
 MOVING_TEXT_OFFSET = 12;
 DEFAULT_TEXT_OFFSET = 0;
-CHARACTER_BUTTON_HEIGHT = 57;
-CHARACTER_LIST_TOP = 688;
 AUTO_DRAG_TIME = 0.5;				-- in seconds
 
 CHARACTER_UNDELETE_COOLDOWN = 0;	-- in seconds
@@ -502,11 +500,12 @@ function CharacterSelect_OnEvent(self, event, ...)
 
         local listSize = ...;
         if ( listSize ) then
+            CharacterSelect.orderChanged = (listSize > #translationTable);
+
             table.wipe(translationTable);
             for i = 1, listSize do
                 tinsert(translationTable, i);
             end
-            CharacterSelect.orderChanged = nil;
         end
         local numChars = GetNumCharacters();
         if (self.undeleting and numChars == 0) then
@@ -1477,23 +1476,12 @@ function CharacterSelectButton_OnDragUpdate(self)
         CharacterSelectButton_OnDragStop(self);
         return;
     end
-    -- only check Y-axis, user dragging horizontally should not change anything
-    local _, cursorY = GetCursorPosition();
-    if ( cursorY <= CHARACTER_LIST_TOP ) then
-        -- check if the mouse is on a different button
-        local buttonIndex = floor((CHARACTER_LIST_TOP - cursorY) / CHARACTER_BUTTON_HEIGHT) + 1;
-        local button = _G["CharSelectCharacterButton"..buttonIndex];
-        if ( button and button.index ~= CharacterSelect.draggedIndex and button:IsShown() ) then
-            -- perform move
-            if ( button.index > CharacterSelect.draggedIndex ) then
-                -- move down
-                MoveCharacter(CharacterSelect.draggedIndex, CharacterSelect.draggedIndex + 1, true);
-            else
-                -- move up
-                MoveCharacter(CharacterSelect.draggedIndex, CharacterSelect.draggedIndex - 1, true);
-            end
-        end
-    end
+	if ( CharacterSelect.dragToIndex and CharacterSelect.dragToIndex ~= CharacterSelect.draggedIndex ) then
+		local button = _G["CharSelectCharacterButton"..CharacterSelect.dragToIndex];
+		if ( button and button:IsShown() ) then
+			MoveCharacter(CharacterSelect.draggedIndex, CharacterSelect.dragToIndex, true);
+		end
+	end
 end
 
 function CharacterSelectButton_OnDragStart(self)

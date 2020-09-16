@@ -1215,11 +1215,19 @@
 	<Binding name="PREVVIEW" category="BINDING_HEADER_CAMERA">
 		PrevView();
 	</Binding>
-	<Binding name="CAMERAZOOMIN" category="BINDING_HEADER_CAMERA">
+	<Binding name="CAMERAZOOMIN" runOnUp="true" category="BINDING_HEADER_CAMERA">
+		if ( keystate == "down" ) then
+			MoveViewInStart(1.0, 0, true);
+		else
 			CameraZoomIn(1.0);
+		end
 	</Binding>
-	<Binding name="CAMERAZOOMOUT" category="BINDING_HEADER_CAMERA">
+	<Binding name="CAMERAZOOMOUT" runOnUp="true" category="BINDING_HEADER_CAMERA">
+		if ( keystate == "down" ) then
+			MoveViewOutStart(1.0, 0, true);
+		else
 			CameraZoomOut(1.0);
+		end
 	</Binding>
 	<Binding name="SETVIEW1" category="BINDING_HEADER_CAMERA">
 		SetView(1);
@@ -1329,12 +1337,6 @@
 	</Binding>
 	<Binding name="VEHICLEAIMDECREMENT" category="BINDING_HEADER_VEHICLE">
 		VehicleAimDecrement(0.1);
-	</Binding>
-	<Binding name="VEHICLECAMERAZOOMIN" category="BINDING_HEADER_VEHICLE">
-		VehicleCameraZoomIn(1.0);
-	</Binding>
-	<Binding name="VEHICLECAMERAZOOMOUT" category="BINDING_HEADER_VEHICLE">
-		VehicleCameraZoomOut(1.0);
 	</Binding>
 
 <!-- Hidden bindings -->

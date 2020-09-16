@@ -23,7 +23,7 @@ function RuneforgeItemSlotMixin:OnClick(buttonName)
 	local cursorItem = C_Cursor.GetCursorItem();
 	if cursorItem then
 		if self:IsRuneforgeUpgrading() then
-			if C_LegendaryCrafting.IsRuneforgeLegendary(cursorItem) then
+			if RuneforgeUtil.IsUpgradeableRuneforgeLegendary(cursorItem) then
 				self:SetItem(cursorItem);
 				ClearCursor();
 			end

@@ -195,6 +195,20 @@ local LegendaryCrafting =
 			},
 		},
 		{
+			Name = "IsRuneforgeLegendaryMaxLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "runeforgeLegendary", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMaxLevel", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUpgradeItemValidForRuneforgeLegendary",
 			Type = "Function",
 

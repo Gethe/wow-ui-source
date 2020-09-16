@@ -111,6 +111,7 @@ EXPANSION_HIGH_RES_BG = {
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
 	[LE_EXPANSION_LEGION] = "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion.m2",
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = "Interface\\Glues\\Models\\UI_MAINMENU_BATTLEFORAZEROTH\\UI_MainMenu_BattleForAzeroth.m2",
+	[LE_EXPANSION_SHADOWLANDS] = "Interface\\Glues\\Models\\UI_MAINMENU_SHADOWLANDS\\UI_MainMenu_Shadowlands.m2",
 };
 
 EXPANSION_LOW_RES_BG = {
@@ -121,6 +122,7 @@ EXPANSION_LOW_RES_BG = {
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
 	[LE_EXPANSION_LEGION] =  "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion_LowBandwidth.m2",
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] =  "Interface\\Glues\\Models\\UI_MAINMENU_BFA_LOWBANDWIDTH\\UI_MainMenu_BFA_LowBandwidth.m2",
+	[LE_EXPANSION_SHADOWLANDS] = "Interface\\Glues\\Models\\UI_MAINMENU_SHADOWLANDS\\UI_MainMenu_Shadowlands_LowBandwidth.m2",
 };
 
 --Tooltip

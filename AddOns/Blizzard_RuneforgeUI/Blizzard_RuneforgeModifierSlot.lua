@@ -319,8 +319,17 @@ end
 
 function RuneforgeModifierFrameMixin:GetModifiers()
 	local modifiers = {};
-	modifiers[self.FirstSlot:GetID()] = self.FirstSlot:GetItemID();
-	modifiers[self.SecondSlot:GetID()] = self.SecondSlot:GetItemID();
+
+	local firstItemID = self.FirstSlot:GetItemID();
+	if firstItemID then
+		table.insert(modifiers, firstItemID);
+	end
+
+	local secondItemID = self.SecondSlot:GetItemID();
+	if secondItemID then
+		table.insert(modifiers, secondItemID);
+	end
+
 	return modifiers;
 end
 

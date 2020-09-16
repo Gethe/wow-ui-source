@@ -65,7 +65,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(GameMenuFrame);
-						C_SplashScreen.RequestLatestSplashScreen();
+						C_SplashScreen.RequestLatestSplashScreen(true);
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -2231,7 +2231,8 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level or 1);
 	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 
-	local portraitFrame = self.CovenantFollowerPortraitFrame or self.PortraitFrame;
+	local isAutoCombatant = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+	local portraitFrame = isAutoCombatant and self.CovenantFollowerPortraitFrame or self.PortraitFrame;
 	if(portraitFrame) then
 		GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo);
 	end
@@ -2265,7 +2266,6 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	self:ShowEquipment(followerInfo);
 
 	--Auto Combat Stats and Abilities
-	local isAutoCombatant = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
 	if self.AbilitiesFrame.StatsLabel then 
 		self.AbilitiesFrame.StatsLabel:SetShown(isAutoCombatant);
 	end

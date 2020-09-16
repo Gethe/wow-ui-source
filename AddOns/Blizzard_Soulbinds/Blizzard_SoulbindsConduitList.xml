@@ -335,14 +335,14 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Frame frameStrata="HIGH">
+					<Frame parentKey="BottomShadowContainer" frameStrata="HIGH">
 						<Size x="1" y="1"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer>
-								<Texture atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
+								<Texture parentKey="BottomShadow" atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT"/>
 									</Anchors>

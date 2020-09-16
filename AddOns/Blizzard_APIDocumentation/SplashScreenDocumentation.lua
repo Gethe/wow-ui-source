@@ -22,6 +22,11 @@ local SplashScreen =
 		{
 			Name = "RequestLatestSplashScreen",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "fromGameMenu", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

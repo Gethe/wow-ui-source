@@ -198,3 +198,12 @@ function GetCurrenciesString(currencies)
 
 	return text;
 end
+
+function ReplaceGenderTokens(string, gender)
+	if not strfind(string, "%$") then
+		return string;
+	end
+
+	-- This is a very simple parser that will only handle $G/$g tokens
+	return gsub(string, "$[Gg]([^:]+):([^;]+);", "%"..gender);
+end

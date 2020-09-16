@@ -77,12 +77,24 @@ function ChannelButtonBaseMixin:SetChannelRuleset(ruleset)
 	end
 end
 
+function ChannelButtonBaseMixin:SetChannelIsRegional(isRegional)
+	self.isRegional = isRegional;
+end
+
+function ChannelButtonBaseMixin:IsRegional()
+	return self.isRegional;
+end
+
 function ChannelButtonBaseMixin:GetChannelRuleset()
 	return self.ruleset, self.activePlayerRole;
 end
 
 function ChannelButtonBaseMixin:AllowedToLeave()
-	return not ChannelFrame_IsCategoryGroup(self:GetCategory()) and self:IsActive() and self:GetChannelRuleset() ~= Enum.ChatChannelRuleset.Mentor;
+	if self:IsRegional() then
+		return false;
+	end
+
+	return not ChannelFrame_IsCategoryGroup(self:GetCategory()) and self:IsActive();
 end
 
 function ChannelButtonBaseMixin:SetVoiceChannel(voiceChannel)
@@ -142,7 +154,7 @@ end
 
 function ChannelButtonBaseMixin:IsActive()
 	if self.active then
-		if self.ruleset == Enum.ChatChannelRuleset.Mentor then
+		if self:IsRegional() then
 			return C_ChatInfo.IsRegionalServiceAvailable();
 		end
 	end
@@ -226,6 +238,7 @@ function ChannelButtonBaseMixin:Setup(channelID, name, header, channelNumber, co
 
 	if channelNumber then
 		self:SetChannelRuleset(C_ChatInfo.GetChannelRuleset(channelNumber));
+		self:SetChannelIsRegional(C_ChatInfo.IsChannelRegional(channelNumber));
 	end
 
 	self:Update();

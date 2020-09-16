@@ -77,12 +77,19 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Hide_Backpack = class("Hide_Backpack", Class_TutorialBase);
 function Class_Hide_Backpack:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	MainMenuBarBackpackButton:Hide();
 end
 
+function Class_Hide_Backpack:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
+	self:Complete();
+end
+
 function Class_Hide_Backpack:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	MainMenuBarBackpackButton:Show();
 end
+
 
 Class_Hide_MainMenuBar = class("Hide_MainMenuBar", Class_TutorialBase);
 function Class_Hide_MainMenuBar:OnBegin()
@@ -761,10 +768,14 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_QueueSystem = class("QueueSystem", Class_TutorialBase);
 function Class_QueueSystem:OnInitialize()
+	self:Reset();
+end
+
+function Class_QueueSystem:Reset()
 	self.tutorialQueue = {};
 	self.tutorialQueue.first = 1;
 	self.tutorialQueue.last = 0;
-
+	
 	self.tutorialQueue.Push = function(self, value)
 		local last = self.last + 1;
 		self.last = last;
@@ -781,6 +792,7 @@ function Class_QueueSystem:OnInitialize()
 		end
 		return value;
 	end
+	self.inProgress = false;
 end
 
 function Class_QueueSystem:OnBegin()
@@ -1624,6 +1636,8 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 
 					-- if it's a main-hand, make sure it matches the current type, if there is one
 					if (i == INVSLOT_MAINHAND) then
+						local item = Item:CreateFromItemLink(itemLink);
+						local itemID = item:GetItemID();
 						local weaponType = self:GetWeaponType(itemID);
 						match = (not existingItemWeaponType) or (existingItemWeaponType == weaponType);
 
@@ -1941,6 +1955,7 @@ function Class_EquipTutorial:BAG_UPDATE_DELAYED()
 end
 
 function Class_EquipTutorial:OnInterrupt()
+	self:Complete();
 end
 
 function Class_EquipTutorial:OnComplete()
@@ -2756,7 +2771,7 @@ function Class_LFGStatusWatcher:HideLFG()
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 
-	if Tutorials.LookingForGroup.inQueue then
+	if Tutorials.LookingForGroup.inQueue or LFGDungeonReadyPopup:IsShown() then
 		-- the player is queued for the dungeon
 		return;
 	elseif self.tutorialSuccess then
@@ -2838,7 +2853,11 @@ function Class_LookingForGroup:UpdateDungeonPointer()
 			message = NPEV2_LFD_SPECIFIC_DUNGEON_ERROR;
 		else
 			local tutorialDungeonChecked = LFGEnabledList[TutorialData.NPEDungeonID];
-			if not tutorialDungeonChecked then
+			if tutorialDungeonChecked  then
+				if LFDQueueFrameFindGroupButton:IsEnabled() and not self.inQueue then
+					GlowEmitterFactory:Show(LFDQueueFrameFindGroupButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+				end
+			else
 				message = NPEV2_LFD_SPECIFIC_DUNGEON;
 			end
 		end
@@ -2886,7 +2905,12 @@ function Class_LookingForGroup:LFG_PROPOSAL_SUCCEEDED()
 end
 
 function Class_LookingForGroup:LFG_PROPOSAL_FAILED()
-	Dispatcher:RegisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+	if(PVEFrame:IsShown()) then
+		Dispatcher:RegisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+	else
+		self:Complete();
+		Tutorials.LFGStatusWatcher:ForceBegin();
+	end
 end
 
 function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
@@ -2904,6 +2928,27 @@ function Class_LookingForGroup:OnComplete()
 
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
+end
+
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Looking For Group
+-- /script Tutorials.LeavePartyPrompt:OnBegin()
+-- ------------------------------------------------------------------------------------------------------------
+Class_LeavePartyPrompt = class("LeavePartyPrompt", Class_TutorialBase);
+function Class_LeavePartyPrompt:OnBegin()
+	--self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_LEAVE_PARTY_PROMPT), "LEFT", PlayerFrame, 0, 0);
+	self.pointerID = self:AddPointerTutorial(NPEV2_LEAVE_PARTY_PROMPT, "LEFT", PlayerFrame, 0, 0);
+	C_Timer.After(10, function()
+		self:Complete();
+	end);
+end
+
+function Class_LeavePartyPrompt:OnComplete()
+	if self.pointerID then
+		self:HidePointerTutorial(self.pointerID);
+		self.pointerID = nil;
+	end
 end
 
 -- ============================================================================================================

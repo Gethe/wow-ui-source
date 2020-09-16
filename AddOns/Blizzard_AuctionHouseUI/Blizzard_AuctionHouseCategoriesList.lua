@@ -160,6 +160,10 @@ function FilterButton_SetUp(button, info)
 	button.type = info.type; 
 end
 
+function AuctionFrameFilter_OnLoad(self)
+	self:SetPushedTextOffset(0, 0);
+end
+
 function AuctionFrameFilter_OnEnter(self)
 	TruncatedTooltipScript_OnEnter(self);
 
@@ -170,6 +174,14 @@ function AuctionFrameFilter_OnLeave(self)
 	TruncatedTooltipScript_OnLeave(self);
 
 	self.HighlightTexture:Hide();
+end
+
+function AuctionFrameFilter_OnMouseDown(self)
+	self.Text:AdjustPointsOffset(1, -1);
+end
+
+function AuctionFrameFilter_OnMouseUp(self)
+	self.Text:AdjustPointsOffset(-1, 1);
 end
 
 function AuctionFrameFilter_OnClick(self, button)
@@ -201,7 +213,7 @@ function AuctionFrameFilter_OnClick(self, button)
 	end
 
 	categoriesList:SetSelectedCategory(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex);
-	AuctionFrameFilters_Update(categoriesList, true)
+	AuctionFrameFilters_Update(categoriesList, true);
 end
 
 

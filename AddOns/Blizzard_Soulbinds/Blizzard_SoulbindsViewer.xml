@@ -33,6 +33,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="ConduitPreview" atlas="Soulbinds_Background_NoConduits" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="ActivateFX" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="212" y="-45"/>

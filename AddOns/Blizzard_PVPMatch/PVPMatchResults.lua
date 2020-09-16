@@ -17,6 +17,25 @@ function LeaveMatchFormatter:GetDesiredUnitCount(seconds)
 	return 1;
 end
 
+PVPMatchResultsCurrencyRewardMixin = {};
+function PVPMatchResultsCurrencyRewardMixin:OnLoad()
+	local currencyInfo = self.currencyID and C_CurrencyInfo.GetCurrencyInfo(self.currencyID) or nil;
+	if currencyInfo then
+		self.Icon:SetTexture(currencyInfo.iconFileID);
+	end
+end
+
+function PVPMatchResultsCurrencyRewardMixin:OnEnter()
+	if self.currencyID then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetCurrencyByID(self.currencyID);
+	end
+end
+
+function PVPMatchResultsCurrencyRewardMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
 PVPMatchResultsMixin = {};
 function PVPMatchResultsMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -42,9 +61,11 @@ function PVPMatchResultsMixin:OnLoad()
 	self.honorFrame = self.progressContainer.honor;
 	self.honorText = self.honorFrame.text;
 	self.honorButton = self.honorFrame.button;
+	self.legacyHonorButton = self.honorFrame.legacyButton;
 	self.conquestFrame = self.progressContainer.conquest;
 	self.conquestText = self.conquestFrame.text;
 	self.conquestButton = self.conquestFrame.button;
+	self.legacyConquestButton = self.conquestFrame.legacyButton;
 	self.ratingFrame = self.progressContainer.rating;
 	self.ratingText = self.progressContainer.rating.text;
 	self.ratingButton = self.progressContainer.rating.button;
@@ -59,7 +80,7 @@ function PVPMatchResultsMixin:OnLoad()
 	self.progressHeader:SetText(PVP_PROGRESS_REWARDS_HEADER);
 	self.rewardsHeader:SetText(PVP_ITEM_REWARDS_HEADER);
 
-	self.conquestButton:SetTooltipAnchor("ANCHOR_RIGHT");
+	self.legacyConquestButton:SetTooltipAnchor("ANCHOR_RIGHT");
 	self.requeueButton:SetScript("OnClick", function() self:OnRequeueButtonClicked(self.requeueButton) end);
 	self.requeueButton:SetText(PVP_QUEUE_AGAIN);
 	
@@ -389,19 +410,39 @@ end
 function PVPMatchResultsMixin:InitHonorFrame(currency)
 	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged));
 	self.honorText:SetText(PVP_HONOR_CHANGE:format(deltaString));
-	self.honorButton:Update();
+
+	if PVPUtil.ShouldShowLegacyRewards() then
+		self.legacyHonorButton:Update();
+
+		self.honorButton:Hide();
+		self.legacyHonorButton:Show();
+	else
+		self.honorButton:Show();
+		self.legacyHonorButton:Hide();
+	end
+
+	
 	self.honorFrame:Show();
 end
 function PVPMatchResultsMixin:InitConquestFrame(currency)
 	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged / 100));
 	self.conquestText:SetText(PVP_CONQUEST_CHANGE:format(deltaString));
 
-	local questID = select(3, PVPGetConquestLevelInfo());
-	if questID and IsPlayerAtEffectiveMaxLevel() then
-		self.conquestButton:LegacySetup(questID, nil);
+	if PVPUtil.ShouldShowLegacyRewards() then
+		local questID = select(3, PVPGetConquestLevelInfo());
+		if questID and IsPlayerAtEffectiveMaxLevel() then
+			self.legacyConquestButton:LegacySetup(questID, nil);
+		else
+			self.legacyConquestButton:Clear();
+		end
+
+		self.conquestButton:Hide();
+		self.legacyConquestButton:Show();
 	else
-		self.conquestButton:Clear();
+		self.conquestButton:Show();
+		self.legacyConquestButton:Hide();
 	end
+
 	self.conquestFrame:Show();
 end
 function PVPMatchResultsMixin:InitRatingFrame()

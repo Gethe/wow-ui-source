@@ -2770,7 +2770,6 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("NEWCOMER_GRADUATION");
 	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
 	self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
-	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
 	self.messageTypeList = {};
@@ -3202,6 +3201,14 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 	end
 end
 
+local function GetRegionalChatAvailableString()
+	return DoesActivePlayerHaveMentorStatus() and NPEV2_CHAT_AVAILABLE or NPEV2_REGIONAL_CHAT_AVAILABLE;
+end
+
+local function GetRegionalChatUnavailableString()
+	return DoesActivePlayerHaveMentorStatus() and NPEV2_CHAT_UNAVAILABLE or NPEV2_REGIONAL_CHAT_UNAVAILABLE;
+end
+
 function ChatFrame_SystemEventHandler(self, event, ...)
 	if ( event == "TIME_PLAYED_MSG" ) then
 		local arg1, arg2 = ...;
@@ -3270,14 +3277,14 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local isServiceAvailable = ...;
 		local info = ChatTypeInfo["SYSTEM"];
 		if isServiceAvailable then
-			self:AddMessage(NPEV2_CHAT_AVAILABLE, info.r, info.g, info.b, info.id);
+			self:AddMessage(GetRegionalChatAvailableString(), info.r, info.g, info.b, info.id);
 		else
-			self:AddMessage(NPEV2_CHAT_UNAVAILABLE, info.r, info.g, info.b, info.id);
+			self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
 		end
 		return true;
 	elseif event == "CHAT_REGIONAL_SEND_FAILED" then
 		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(NPEV2_CHAT_UNAVAILABLE, info.r, info.g, info.b, info.id);
+		self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
 		return true;
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
@@ -3364,6 +3371,10 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	return false;
 end
 
+function DoesActivePlayerHaveMentorStatus()
+	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) ~= Enum.PlayerMentorshipStatus.None;
+end
+
 function IsActivePlayerMentor()
 	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor;
 end
@@ -3388,7 +3399,7 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 			end
 		elseif specialFlag == "NEWCOMER" then
 			if IsActivePlayerMentor() then
-				return NPEV2_CHAT_USER_TAG_NEWCOMER .. " ";
+				return NPEV2_CHAT_USER_TAG_NEWCOMER;
 			end
 		else
 			return _G["CHAT_FLAG_"..specialFlag];
@@ -3790,7 +3801,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( type == "WHISPER" or type == "BN_WHISPER" ) then
 			--BN_WHISPER FIXME
 			ChatEdit_SetLastTellTarget(arg2, type);
-			if ( self.tellTimer and (GetTime() > self.tellTimer) ) then
+
+			if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
 				PlaySound(SOUNDKIT.TELL_MESSAGE);
 			end
 			self.tellTimer = GetTime() + CHAT_TELL_ALERT_TIME;
@@ -4663,6 +4675,14 @@ function ChatEdit_UpdateNewcomerEditBoxHint(editBox, excludeChannel)
 		end
 	else
 		editBox.NewcomerHint:Hide();
+	end
+end
+
+function ChatEdit_CheckUpdateNewcomerEditBoxHint()
+	local editBox = ChatEdit_GetActiveWindow() or ChatEdit_GetLastActiveWindow();
+	if editBox then
+		-- No need for an exlcude channel, this should not be called when leaving a channel.
+		ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 	end
 end
 

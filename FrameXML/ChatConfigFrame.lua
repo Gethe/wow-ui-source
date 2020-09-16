@@ -1568,7 +1568,7 @@ function CreateChatChannelList(self, ...)
 		local tag = "CHANNEL"..channelID;
 		local channel = select(i+1, ...);
 		local disabled = select(i+2, ...);
-		if C_ChatInfo.GetChannelRuleset(channelID) == Enum.ChatChannelRuleset.Mentor then
+		if C_ChatInfo.IsChannelRegional(channelID) then
 			disabled = disabled or not C_ChatInfo.IsRegionalServiceAvailable();
 		end
 		local checked = IsChannelNameChecked(channelList, channel);
@@ -1733,6 +1733,7 @@ end
 function ChatConfig_ResetChatSettings()
 	C_ChatInfo.ResetDefaultZoneChannels();
 	ChatConfig_UpdateChatSettings();
+	ChatEdit_CheckUpdateNewcomerEditBoxHint();
 end
 
 function UsesGUID(direction)
@@ -2228,6 +2229,8 @@ function ChatConfigWideCheckBoxManagerMixin:StopMovingEntry()
 	self.movingIndex = nil;
 	self:SetScript("OnUpdate", nil);
 	self:UpdateStates();
+
+	ChatEdit_CheckUpdateNewcomerEditBoxHint();
 end
 
 function ChatConfigWideCheckBoxManagerMixin:GetMovingEntry()

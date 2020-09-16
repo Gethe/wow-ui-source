@@ -1,26 +1,38 @@
 NewPlayerExperience = {};
-
 -- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:Initialize()
+	print("NewPlayerExperience:Initialize");
 	self:Begin();
+	Tutorials.QueueSystem:Reset();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
+local NPE_AchievementID = 14287;
 function NewPlayerExperience:Begin()
-	if ( not GetCVarBool("showNPETutorials") ) then
-		return;
+	local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
+	if ( completed == true ) then
+		-- we have completed the NPE at least once, check to see if Tutorials are on
+		local showTutorials = GetCVarBool("showTutorials");
+		if ( not showTutorials ) then
+			-- Tutorials are off, just exit
+			self:Shutdown();
+			return;
+		end
+	else
+		-- this player does not have the achievement, but they also aren't elligible
+		if not C_PlayerInfo.IsPlayerEligibleForNPEv2() then
+			self:Shutdown();
+			return;
+		end
 	end
+	
+	-- if the achievement is NOT completed, we don't care if Tutorials are on or off
 
-	-- in the NPE
+	-- anyone going through the NPE Tutorial has this CVAR set
 	SetCVar("whisperMode", "popout");
 
-	-- Completion Criteria
-	if not C_PlayerInfo.IsPlayerEligibleForNPEv2() then
-		self:RegisterComplete();
-		return;
-	else
-		Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
-	end
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
+	Dispatcher:RegisterEvent("CVAR_UPDATE", self);
 
 	HelpTip:SetHelpTipsEnabled("NPEv2", false);
 	HelpTip:ForceHideAll();
@@ -38,7 +50,22 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:PLAYER_LEVEL_UP(newLevel)
 	if not C_PlayerInfo.IsPlayerEligibleForNPEv2() then
-		self:RegisterComplete();
+		self:Shutdown();
+	end
+end
+
+function NewPlayerExperience:CVAR_UPDATE(cvar, value)
+	if (cvar == "SHOW_TUTORIALS" ) then
+		if (value == "0") then
+			-- player is trying to shut the NPE Tutorial off
+			local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
+			-- they can  ONLY do that if the achievement is completed
+			if (completed) then
+				self:Shutdown();
+			end
+		else
+			-- you can turn the tutorials back on, but they wont load without a relog
+		end
 	end
 end
 
@@ -52,13 +79,6 @@ function NewPlayerExperience:Shutdown()
 
 	Tutorials:Shutdown();
 	self.IsActive = false;
-end
-
--- ------------------------------------------------------------------------------------------------------------
-function NewPlayerExperience:RegisterComplete()
-	self:Shutdown();
-
-	SetCVar("showNPETutorials", 0);
 end
 
 -- ------------------------------------------------------------------------------------------------------------

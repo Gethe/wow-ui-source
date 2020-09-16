@@ -127,6 +127,34 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsChannelRegional",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegional", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChannelRegionalForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegional", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyChannelType",
 			Type = "Function",
 

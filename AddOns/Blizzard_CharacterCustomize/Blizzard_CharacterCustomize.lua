@@ -331,12 +331,25 @@ function CharCustomizeMaskedButtonMixin:SetIconAtlas(atlas)
 	self.Flash.Portrait:SetAtlas(atlas);
 end
 
+function CharCustomizeMaskedButtonMixin:ClearFlashTimer()
+	if self.FlashTimer then
+		self.FlashTimer:Cancel();
+	end
+end
+
 function CharCustomizeMaskedButtonMixin:StartFlash()
-	self.Flash:Show();
-	self.Flash.Anim:Play();
+	self:ClearFlashTimer();
+
+	local function playFlash()
+		self.Flash:Show();
+		self.Flash.Anim:Play();
+	end
+
+	self.FlashTimer = C_Timer.NewTimer(0.8, playFlash);
 end
 
 function CharCustomizeMaskedButtonMixin:StopFlash()
+	self:ClearFlashTimer();
 	self.Flash.Anim:Stop();
 	self.Flash:Hide();
 end

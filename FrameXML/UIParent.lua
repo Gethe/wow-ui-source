@@ -277,6 +277,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SCRIPT_DEPRECATED");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
+	self:RegisterEvent("CVAR_UPDATE");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -724,7 +725,12 @@ function Tutorial_LoadUI()
 end
 
 function NPE_LoadUI()
-	if ( GetTutorialsEnabled() and C_PlayerInfo.IsPlayerEligibleForNPEv2() ) then
+	if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
+		return;
+	end
+	local tutEnabled = GetTutorialsEnabled();
+	local isEligible = C_PlayerInfo.IsPlayerEligibleForNPEv2();
+	if ( tutEnabled and isEligible ) then
 		UIParentLoadAddOn("Blizzard_NewPlayerExperience");
 	end
 end
@@ -781,10 +787,6 @@ end
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
-	if ( BlizzardTutorial and not BlizzardTutorial.IsActive ) then
-		BlizzardTutorial:Begin();
-		return;
-	end
 	if( event == "PLAYER_ENTERING_WORLD" ) then
 		playerEnteredWorld = true;
 	elseif ( event == "VARIABLES_LOADED" ) then
@@ -1319,6 +1321,18 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+	elseif ( event == "CVAR_UPDATE" ) then
+		local cvarName = ...;
+		if cvarName and cvarName == "SHOW_TUTORIALS" then
+			local showTutorials = GetCVarBool("showTutorials");
+			if ( showTutorials ) then
+				if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
+					NewPlayerExperience:Initialize();
+				else
+					NPE_LoadUI();
+				end
+			end
+		end
 	elseif ( event == "VARIABLES_LOADED" ) then
 		UIParent.variablesLoaded = true;
 

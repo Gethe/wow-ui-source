@@ -11,7 +11,6 @@ function ToggleCharacter (tab, onlyShow)
 				if ( subFrame:IsShown() ) then
 					if ( not onlyShow ) then
 						HideUIPanel(CharacterFrame);
-						EventRegistry:TriggerEvent("CharacterFrame.Hide");
 					end
 				else
 					PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -20,7 +19,6 @@ function ToggleCharacter (tab, onlyShow)
 			else
 				CharacterFrame_ShowSubFrame(tab);
 				ShowUIPanel(CharacterFrame);
-				EventRegistry:TriggerEvent("CharacterFrame.Show");
 			end
 		end
 	end
@@ -146,6 +144,7 @@ function CharacterFrame_OnShow (self)
 	end
 
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
+	EventRegistry:TriggerEvent("CharacterFrame.Show");
 end
 
 function CharacterFrame_OnHide (self)
@@ -165,6 +164,7 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(PetFrameManaBar);
 	StatusTrackingBarManager:SetTextLocked(false);
 	PaperDollFrame.currentSideBar = nil;
+	EventRegistry:TriggerEvent("CharacterFrame.Hide");
 end
 
 function CharacterFrame_Collapse()

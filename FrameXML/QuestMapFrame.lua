@@ -1051,7 +1051,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local useLargeIcon = false;
 	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title, useLargeIcon, ignoreReplayable, ignoreDisabled));
 
-	local difficultyColor = GetQuestDifficultyColor(info.difficultyLevel, info.isScaling, questID);
+	local difficultyColor = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
 	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);
 
 	if C_QuestLog.GetQuestWatchType(questID) == Enum.QuestWatchType.Manual then
@@ -1415,7 +1415,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 	if isHeader then
 		difficultyHighlightColor = QuestDifficultyHighlightColors["header"];
 	else
-		difficultyHighlightColor = select(2, GetQuestDifficultyColor(info.difficultyLevel, info.isScaling, questID));
+		difficultyHighlightColor = select(2, GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID)));
 	end
 
 	self.Text:SetTextColor(difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b);
@@ -1547,7 +1547,7 @@ end
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
 	local info = C_QuestLog.GetInfo(self.questLogIndex);
-	local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetQuestDifficultyColor(info.difficultyLevel, info.isScaling, info.questID);
+	local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID));
 	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 
 	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(info.questID);

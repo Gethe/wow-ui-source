@@ -1,6 +1,36 @@
 
 local ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
 
+-- Include sound information based on texture kit for now.
+local TextureKitToSoundEffects = {
+	["bastion-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_BASTION, };
+	["revendreth-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_REVENDRETH, };
+	["ardenweald-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_ARDENWEALD, };
+	["maldraxxus-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_MALDRAXXUS, };
+};
+
+local function GetActiveZoneAbilities()
+	local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
+	for i, zoneAbility in ipairs(zoneAbilities) do
+		local soundEffectData = TextureKitToSoundEffects[zoneAbility.textureKit]
+		if soundEffectData then
+			zoneAbility = Mixin(zoneAbility, soundEffectData);
+		end
+	end
+
+	return zoneAbilities;
+end
+
+local function DoZoneAbilitiesIncludeSpellID(zoneAbilities, spellID)
+	for i, zoneAbility in ipairs(zoneAbilities) do
+		if zoneAbility.spellID == spellID then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 local function HasZoneAbilitySpellOnBar(spellID)
 	local slots = C_ActionBar.FindSpellActionButtons(spellID);
 	if slots == nil then
@@ -72,13 +102,17 @@ end
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	HideZoneAbilityTutorial();
 
-	local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
+	local zoneAbilities = GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
 	
 	local displayedZoneAbilities = {};
+	local activeAbilityIsDisplayedOnBar = {};
 	local displayedTextureKit = nil;
 	for i, zoneAbilityInfo in ipairs(zoneAbilities) do
-		if not HasZoneAbilitySpellOnBar(zoneAbilityInfo.spellID) then
+		local spellID = zoneAbilityInfo.spellID;
+		local hasZoneAbilityOnBar = HasZoneAbilitySpellOnBar(spellID);
+		activeAbilityIsDisplayedOnBar[spellID] = hasZoneAbilityOnBar;
+		if not hasZoneAbilityOnBar then
 			if #displayedZoneAbilities == 0 then
 				table.insert(displayedZoneAbilities, zoneAbilityInfo);
 
@@ -93,6 +127,28 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 			end
 		end
 	end
+
+	if self.previousZoneAbilities then
+		for i, previousZoneAbility in ipairs(self.previousZoneAbilities) do
+			if previousZoneAbility.placedSoundEffect then
+				local spellID = previousZoneAbility.spellID;
+				if activeAbilityIsDisplayedOnBar[spellID] and not DoZoneAbilitiesIncludeSpellID(displayedZoneAbilities, spellID) then
+					PlaySound(previousZoneAbility.placedSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				end
+			end
+		end
+	end
+
+	for i, displayZoneAbility in ipairs(displayedZoneAbilities) do
+		if displayZoneAbility.shownSoundEffect then
+			local spellID = displayZoneAbility.spellID;
+			if not self.previousZoneAbilities or not DoZoneAbilitiesIncludeSpellID(self.previousZoneAbilities, spellID) then
+				PlaySound(displayZoneAbility.shownSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			end
+		end
+	end
+
+	self.previousZoneAbilities = displayedZoneAbilities;
 
 	local numDisplayedAbilites = #displayedZoneAbilities;
 	if numDisplayedAbilites == 0 then

@@ -334,6 +334,8 @@ TutorialData.Alliance = {
 
 	AnUrgentMeeting = 58912;
 
+	LeavePartyPromptQuest = 55992;
+
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;
 		PointerTutorialStringID = NPEV2_USEQUESTITEM;
@@ -457,6 +459,8 @@ TutorialData.Horde = {
 	SpecChoiceQuest = 60348;
 
 	AnUrgentMeeting = 60360;
+
+	LeavePartyPromptQuest = 59984;
 
 	UseQuestItemData = {
 		ScreenTutorialStringID = NPEV2_APPROACH_INJURED_CREWMEMBER;

@@ -43,6 +43,8 @@ function SoulbindViewerMixin:OnLoad()
 
 	self.ShadowTop:SetTexCoord(1, 0, 1, 0);
 	self.ShadowLeft:SetTexCoord(1, 0, 1, 0);
+
+	self.ConduitList:SetConduitPreview(self.ConduitPreview);
 end
 
 function SoulbindViewerMixin:OnCloseButtonClicked()
@@ -81,7 +83,7 @@ function SoulbindViewerMixin:OnShow()
 
 	self:UpdateButtons();
 
-	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
+	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function SoulbindViewerMixin:OnResetConduitsButtonLeave()
@@ -121,7 +123,7 @@ function SoulbindViewerMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindViewerEvents);
 	C_Soulbinds.CloseUI();
 
-	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI);
+	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function SoulbindViewerMixin:UpdateButtons()
@@ -209,7 +211,7 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	
 	self:TriggerEvent(SoulbindViewerMixin.Event.OnSoulbindChanged, self.covenantData, soulbindData);
 
-	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED);
+	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
@@ -263,7 +265,7 @@ end
 function SoulbindViewerMixin:OnActivateSoulbindClicked()
 	self.ActivateSoulbindButton:SetEnabled(false);
 	C_Soulbinds.ActivateSoulbind(self:GetOpenSoulbindID());
-	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
+	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND, nil, SOUNDKIT_ALLOW_DUPLICATES);
 
 	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
 		GlowEmitterFactory:Hide(self.ActivateSoulbindButton);
@@ -287,7 +289,7 @@ end
 function SoulbindViewerMixin:OnCommitConduitsClicked()
 	local onConfirm = function()
 		C_Soulbinds.CommitPendingConduitsInSoulbind(self:GetOpenSoulbindID());
-		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
+		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", nil, nil, onConfirm);
 end
@@ -295,7 +297,7 @@ end
 function SoulbindViewerMixin:OnResetConduitsClicked()
 	local onConfirm = function()
 		C_Soulbinds.ResetSoulbindConduits(self:GetOpenSoulbindID());
-		PlaySound(SOUNDKIT.SOULBINDS_RESET_CONDUITS);
+		PlaySound(SOUNDKIT.SOULBINDS_RESET_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 	StaticPopup_Show("SOULBIND_RESET_TREE", nil, nil, onConfirm);
 end

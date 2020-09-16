@@ -2239,7 +2239,7 @@
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="WorldQuestCompleteAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
-		<Size x="311" y="78"/>
+		<Size x="337" y="78"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
 		</Anchors>
@@ -2285,7 +2285,7 @@
 				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
 					<Size x="127" y="72"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="69" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="70" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.9921875" top="0" bottom="0.28125"/>
 				</Texture>

@@ -1312,19 +1312,19 @@ function ContainerFrameItemButton_OnUpdate(self)
 	newItemTexture:Hide();
 	battlepayItemTexture:Hide();
 	
-	if (flash:IsPlaying() or newItemGlowAnim:IsPlaying()) then
+	if ( flash:IsPlaying() or newItemGlowAnim:IsPlaying() ) then
 		flash:Stop();
 		newItemGlowAnim:Stop();
 	end
 	
 	local showSell = nil;
 	local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(self:GetParent():GetID(), self:GetID());
-	if(speciesID and speciesID > 0) then
+	if ( speciesID and speciesID > 0 ) then
 		ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip); -- Battle pet tooltip uses the GameTooltip's anchor
 		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
 		return;
 	else
-		if (BattlePetTooltip) then
+		if ( BattlePetTooltip ) then
 			BattlePetTooltip:Hide();
 		end
 	end
@@ -1343,23 +1343,23 @@ function ContainerFrameItemButton_OnUpdate(self)
 		showSell = 1;
 	end
 
-	if ( IsModifiedClick("DRESSUP") and self.hasItem ) then
-		ShowInspectCursor();
-	elseif ( showSell ) then
-		ShowContainerSellCursor(self:GetParent():GetID(),self:GetID());
-	elseif ( self.readable ) then
-		ShowInspectCursor();
-	else
-		ResetCursor();
+	if ( not SpellIsTargeting() ) then
+		if ( IsModifiedClick("DRESSUP") and self.hasItem ) then
+			ShowInspectCursor();
+		elseif ( showSell ) then
+			ShowContainerSellCursor(self:GetParent():GetID(),self:GetID());
+		elseif ( self.readable ) then
+			ShowInspectCursor();
+		else
+			ResetCursor();
+		end
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME) then
+	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME) ) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-		if itemLocation and itemLocation:IsValid() then
-			if C_PlayerInfo.CanPlayerUseMountEquipment() and (not CollectionsJournal or not CollectionsJournal:IsShown()) then
-				local tabIndex = 1;
-				CollectionsMicroButton_SetAlertShown(tabIndex);
-			end
+		if ( itemLocation and itemLocation:IsValid() and C_PlayerInfo.CanPlayerUseMountEquipment() and (not CollectionsJournal or not CollectionsJournal:IsShown()) ) then
+			local tabIndex = 1;
+			CollectionsMicroButton_SetAlertShown(tabIndex);
 		end
 	end
 end
@@ -1367,16 +1367,18 @@ end
 function ContainerFrameItemButton_OnEnter(self)
 	ContainerFrameItemButton_OnUpdate(self);
 	
-	if ArtifactFrame and self.hasItem then
+	if ( ArtifactFrame and self.hasItem ) then
 		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
 	end
 end
 
 function ContainerFrameItemButton_OnLeave(self)
 	GameTooltip_Hide();
-	ResetCursor();
+	if ( not SpellIsTargeting() ) then
+		ResetCursor();
+	end
 
-	if ArtifactFrame then
+	if ( ArtifactFrame ) then
 		ArtifactFrame:OnInventoryItemMouseLeave(self:GetParent():GetID(), self:GetID());
 	end
 end

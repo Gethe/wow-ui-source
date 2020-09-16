@@ -6,6 +6,10 @@
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 
+	<FontString name="CreditsNormal" inherits="GlueFontHighlightSmall" spacing="2" virtual="true"/>
+	<FontString name="CreditsHeader1" inherits="GlueFontNormalLarge" spacing="4" virtual="true"/>
+	<FontString name="CreditsHeader2" inherits="GlueFontHighlight" spacing="4" virtual="true"/>
+
 	<Button name="CreditsFrameSwitchButtonTemplate" inherits="GlueButtonSmallTemplate" virtual="true">
 		<Size x="260" y="28"/>
 		<Scripts>
@@ -105,7 +109,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame parentKey="ScrollFrame" mixin="CreditsScrollFrameMixin">
+			<ScrollFrame parentKey="ScrollFrame">
 				<Size x="250" y="740"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-50" y="0"/>
@@ -118,9 +122,6 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnScrollRangeChanged method ="OnScrollRangeChanged"/>
-				</Scripts>
 				<ScrollChild>
 					<SimpleHTML parentKey="Text">
 						<Size x="250" y="740"/>
@@ -130,6 +131,7 @@
 					</SimpleHTML>
 				</ScrollChild>
 			</ScrollFrame>
+			<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true"/>
 			<Slider parentKey="Slider" orientation="VERTICAL" minValue="0" maxValue="1000" valueStep="10" defaultValue="0" inherits="BackdropTemplate" hidden="true">
 				<Size x="16" y="0"/>
 				<Anchors>
@@ -141,8 +143,9 @@
 				</KeyValues>
 				<Scripts>
 					<OnValueChanged>
-						CreditsFrame.ScrollFrame.scroll = value;
-						CreditsFrame.ScrollFrame:SetVerticalScroll(value);
+						if self:IsDraggingThumb() then
+							CreditsFrame.scrollIdx = value;
+						end
 					</OnValueChanged>
 				</Scripts>
 				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">

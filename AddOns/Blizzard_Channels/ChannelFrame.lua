@@ -79,6 +79,7 @@ do
 
 		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
 		self:MarkDirty("UpdateAll");
+		self:MarkDirty("CheckShowTutorial");
 	end
 
 	function ChannelFrameMixin:OnHide()

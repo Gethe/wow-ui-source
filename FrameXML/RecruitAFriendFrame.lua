@@ -71,30 +71,7 @@ function RecruitAFriendFrameMixin:SetRAFSystemEnabled(rafEnabled)
 end
 
 function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
-	local showIntroTutorial = false;
-	local showRewardTutorial = false;
-
-	if self.varsLoaded and self.rafEnabled then
-		showIntroTutorial = self.rafRecruitingEnabled and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO);
-		if not showIntroTutorial then
-			showRewardTutorial = self:ShouldShowRewardTutorial();
-		end
-	end
-
-	if showIntroTutorial then
-			local introHelpTipInfo = {
-				text = RAF_INTRO_TUTORIAL_TEXT,
-				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFramesAccountWide",
-				bitfieldFlag = LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO,
-				targetPoint = HelpTip.Point.RightEdgeCenter,
-				autoEdgeFlipping = true,
-				useParentStrata = true,
-			};
-			HelpTip:Show(QuickJoinToastButton, introHelpTipInfo);
-	else
-		HelpTip:Hide(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
-	end
+	local showRewardTutorial = self.varsLoaded and self.rafEnabled and self:ShouldShowRewardTutorial();
 
 	if showRewardTutorial then
 		local rewardHelpTipInfo = {

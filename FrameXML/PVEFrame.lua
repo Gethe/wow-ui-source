@@ -223,7 +223,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 	local canUse, failureReason = C_LFGInfo.CanPlayerUseLFD();
 	if not canUse then
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, false);
-		self.groupButton1.tooltip = self.groupButton1.tooltip or failureReason;
+		self.groupButton1.tooltip = failureReason;
 	else
 		self.groupButton1.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, true);
@@ -232,7 +232,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 	canUse, failureReason = C_LFGInfo.CanPlayerUseLFR();
 	if not canUse then
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
-		self.groupButton2.tooltip = self.groupButton2.tooltip or failureReason;
+		self.groupButton2.tooltip = failureReason;
 	else
 		self.groupButton2.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
@@ -241,7 +241,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
 	if not canUse then
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
-		self.groupButton3.tooltip = self.groupButton3.tooltip or failureReason;
+		self.groupButton3.tooltip = failureReason;
 	else
 		self.groupButton3.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
@@ -338,7 +338,7 @@ end
 function GroupFinderFrameGroupButton_OnEnter(self)
 	if self.tooltip then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip_SetTitle(GameTooltip, self.tooltip, nil, true);
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltip);
 		GameTooltip:Show();
 	end
 end
