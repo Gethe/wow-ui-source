@@ -94,7 +94,7 @@
 		</Scripts>
 	</Button>
 	<Button name="KeybindingsDefaultsButtonTemplate" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT" virtual="true" mixin="KeybindingsDefaultsButtonMixin">
-		<Size x="130" y="22"/>
+		<Size x="150" y="22"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
@@ -156,39 +156,6 @@
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-245" y="-20"/>
 				</Anchors>
 			</CheckButton>
-			<Button parentKey="unbindButton" inherits="UIPanelButtonTemplate" text="UNBIND" mixin="KeybindingsUnbindButtonMixin">
-				<Size x="130" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-205" y="16"/>
-				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="okayButton" inherits="KeybindingsOkayButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.unbindButton" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="cancelButton" inherits="KeybindsCancelButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.okayButton" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="quickKeybindButton" inherits="UIPanelButtonTemplate" text="QUICK_KEYBIND_MODE_BUTTON" mixin="QuickKeybindButtonMixin">
-				<Size x="160" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.unbindButton" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="defaultsButton" inherits="KeybindingsDefaultsButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="16" y="16"/>
-				</Anchors>
-			</Button>
 			<Frame name="$parentCategoryList" parentKey="categoryList" inherits="OptionsFrameListTemplate">
 				<Size x="175" y="569"/>
 				<Anchors>
@@ -199,6 +166,12 @@
 					<KeyValue key="buttonTemplate" value="KeyBindingsCategoryListButtonTemplate" type="string"/>
 				</KeyValues>
 			</Frame>
+			<Button parentKey="defaultsButton" inherits="KeybindingsDefaultsButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+					<Anchor point="LEFT" relativeKey="$parent.categoryList" relativePoint="LEFT"/>
+				</Anchors>
+			</Button>
 			<Frame parentKey="bindingsContainer" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.categoryList" relativePoint="TOPRIGHT" x="16" y="0"/>
@@ -209,6 +182,36 @@
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 				</KeyValues>
 			</Frame>
+			<Button parentKey="cancelButton" inherits="KeybindsCancelButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.defaultsButton" relativePoint="BOTTOM"/>
+					<Anchor point="RIGHT" relativeKey="$parent.bindingsContainer" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="okayButton" inherits="KeybindingsOkayButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.cancelButton" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="unbindButton" inherits="UIPanelButtonTemplate" text="UNBIND" mixin="KeybindingsUnbindButtonMixin">
+				<Size x="130" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.okayButton" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="quickKeybindButton" inherits="UIPanelButtonTemplate" text="QUICK_KEYBIND_MODE_BUTTON" mixin="QuickKeybindButtonMixin">
+				<Size x="200" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.bindingsContainer" relativePoint="LEFT" x="0" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.cancelButton" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
 			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="FauxScrollFrameTemplate" mixin="KeyBindingFrameScrollFrameMixin">
 				<Size x="560" y="554"/>
 				<Anchors>

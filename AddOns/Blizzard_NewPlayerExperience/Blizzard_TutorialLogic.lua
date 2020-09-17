@@ -87,7 +87,8 @@ function Tutorials:Begin()
 	end
 
 	-- LFG Quest
-	if (C_QuestLog.GetLogIndexForQuestID(tutorialData.LookingForGroupQuest)) then
+	local questID = tutorialData.LookingForGroupQuest;
+	if C_QuestLog.GetLogIndexForQuestID(questID) and not C_QuestLog.ReadyForTurnIn(questID) then
 		-- Looking For Group Quest is Active
 		self.LFGStatusWatcher:ForceBegin();
 	end
@@ -203,6 +204,9 @@ function Tutorials:Quest_Accepted(questData)
 	elseif (questID == vendorQuestID) then
 		-- Use Vendor Quest
 		self.Vendor_Watcher:Begin();
+	elseif (questID == tutorialData.LeavePartyPromptQuest) then
+		-- leave party prompt quest
+		self.LeavePartyPrompt:Begin();
 	elseif (questID == tutorialData.AnUrgentMeeting) then
 		-- second use mount reminder
 		local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
@@ -317,6 +321,11 @@ function Tutorials:Quest_TurnedIn(questData)
 			self.MountAddedWatcher:Begin();
 		end
 
+		if (questID == tutorialData.LeavePartyPromptQuest) then
+			-- leave party prompt quest
+			self.LeavePartyPrompt:Begin();
+		end
+
 		local classQuestID = TutorialHelper:FilterByClass(tutorialData.ClassQuests);
 		if questID == classQuestID then
 			self.AddClassSpellToActionBar:Begin();
@@ -414,6 +423,7 @@ Tutorials.Vendor_Watcher				= Class_Vendor_Watcher:new();
 -- Looking For Group
 Tutorials.LFGStatusWatcher				= Class_LFGStatusWatcher:new();
 Tutorials.LookingForGroup				= Class_LookingForGroup:new()
+Tutorials.LeavePartyPrompt				= Class_LeavePartyPrompt:new()
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Death

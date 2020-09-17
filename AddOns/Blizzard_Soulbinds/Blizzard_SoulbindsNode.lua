@@ -45,16 +45,10 @@ function SoulbindTreeNodeMixin:PlaySelectionEffect()
 end
 
 function SoulbindTreeNodeMixin:OnStateTransition(oldState, newState)
-	if newState == Enum.SoulbindNodeState.Selected then
-		-- IsPathChangePending Temp. Remove once tree is no longer being reset.
-		if oldState == Enum.SoulbindNodeState.Selectable and not Soulbinds.IsPathChangePending() then
-			self:PlaySelectionEffect();
-			local LEARN_SHAKE_DELAY = 0;
-			C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
-		elseif oldState == Enum.SoulbindNodeState.Unselected then
-			-- Lattice changed from reselection of a branch. Effect pending and
-			-- awaiting tree not being reset.
-		end
+	if newState == Enum.SoulbindNodeState.Selected and oldState == Enum.SoulbindNodeState.Selectable then
+		self:PlaySelectionEffect();
+		local LEARN_SHAKE_DELAY = 0;
+		C_Timer.After(LEARN_SHAKE_DELAY, GenerateClosure(self.Shake, self));
 	end
 end
 
@@ -337,7 +331,7 @@ function SoulbindConduitNodeMixin:AssignPendingConduit(conduitID)
 	if self:AssignConduitData(conduitID, pending) then
 		self:DisplayConduit();
 		self:PlaySocketAnimation();
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_ADD_PENDING);
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_ADD_PENDING, nil, SOUNDKIT_ALLOW_DUPLICATES);
 
 		if GameTooltip:IsShown() then
 			GameTooltip:Hide();

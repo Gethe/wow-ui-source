@@ -132,6 +132,16 @@ function WorldMap_AddQuestTimeToTooltip(questID)
 	end
 end
 
+function CallingPOI_OnEnter(self)
+	local noWrap = false;
+	GameTooltip_SetTitle(GameTooltip, QuestUtils_GetQuestName(self.questID), nil, noWrap);
+	WorldMap_AddQuestTimeToTooltip(self.questID);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
+	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD);
+	GameTooltip.recalculatePadding = true;
+end
+
 function TaskPOI_OnEnter(self, skipSetOwner)
 	if not skipSetOwner then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -139,6 +149,12 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 
 	if ( not HaveQuestData(self.questID) ) then
 		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip:Show();
+		return;
+	end
+
+	if C_QuestLog.IsQuestCalling(self.questID) then
+		CallingPOI_OnEnter(self);
 		GameTooltip:Show();
 		return;
 	end

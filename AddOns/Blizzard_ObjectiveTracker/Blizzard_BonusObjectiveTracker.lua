@@ -829,7 +829,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		if showAsCompleted then
 			local completionText;
 			if block.isThreatQuest then
-				local questLogIndex = GetQuestLogIndexByID(questID);
+				local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 				completionText = GetQuestLogCompletionText(questLogIndex);
 			end
 			module:AddObjective(block, "QuestComplete", completionText or QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);

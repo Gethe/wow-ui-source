@@ -43,15 +43,6 @@ function Soulbinds.GetDefaultSoulbindID(covenantID)
 	return soulbindDefaultIDs[covenantID];
 end
 
-local isPathChangePending = false;
-function Soulbinds.SetPathChangePending(pending)
-	isPathChangePending = pending;
-end
-
-function Soulbinds.IsPathChangePending()
-	return isPathChangePending;
-end
-
 function Soulbinds.GetConduitName(conduitType)
 	if conduitType == Enum.SoulbindConduitType.Potency then
 		return CONDUIT_POTENCY;

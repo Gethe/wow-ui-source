@@ -79,14 +79,14 @@ function WaypointLocationDataProviderMixin:HandleClick()
 	if self.pin and self.pin:IsMouseOver() then
 		C_Map.ClearUserWaypoint();
 		C_SuperTrack.SetSuperTrackedUserWaypoint(false);
-		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE);
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	else
 		local mapID = self:GetMap():GetMapID();
 		if C_Map.CanSetUserWaypointOnMap(mapID) then
 			if self.toggleActive then
-				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE);
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE, nil, SOUNDKIT_ALLOW_DUPLICATES);
 			else
-				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK);
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK, nil, SOUNDKIT_ALLOW_DUPLICATES);
 			end
 			local scrollContainer = self:GetMap().ScrollContainer;
 			local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
@@ -94,7 +94,7 @@ function WaypointLocationDataProviderMixin:HandleClick()
 			C_Map.SetUserWaypoint(uiMapPoint);
 			C_SuperTrack.SetSuperTrackedUserWaypoint(false);
 		else
-			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, RED_FONT_COLOR:GetRGBA());
+			UIErrorsFrame:AddMessage(MAP_PIN_INVALID_MAP, RED_FONT_COLOR:GetRGBA());
 		end
 	end
 end
@@ -133,10 +133,15 @@ end
 function WaypointLocationPinMixin:OnMouseClickAction(mouseButton)
 	if IsModifiedClick("CHATLINK") then
 		ChatEdit_InsertLink(C_Map.GetUserWaypointHyperlink());
-		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	elseif mouseButton == "LeftButton" then
-		C_SuperTrack.SetSuperTrackedUserWaypoint(not C_SuperTrack.IsSuperTrackingUserWaypoint());
-		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK);
+		local shouldSuperTrack = not C_SuperTrack.IsSuperTrackingUserWaypoint();
+		C_SuperTrack.SetSuperTrackedUserWaypoint(shouldSuperTrack);
+		if shouldSuperTrack then
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_ON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		else
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		end
 	end
 end
 

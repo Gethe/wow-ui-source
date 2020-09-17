@@ -27,6 +27,7 @@ end
 function ConduitListCategoryButtonMixin:Init(conduitType)
 	local name = self.Container.Name;
 	name:SetText(Soulbinds.GetConduitName(conduitType));
+	name:SetWidth(200); -- Required to recalculate the desired string width.
 	name:SetWidth(name:GetStringWidth());
 
 	local useAtlasSize = false;
@@ -295,29 +296,10 @@ function ConduitListSectionMixin:OnLoad()
 	self.CategoryButton:RegisterCallback(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.OnExpandedChanged, self);
 end
 
-function ConduitListSectionMixin:Init()
-	local collection = C_Soulbinds.GetConduitCollection(self.conduitType);
-	local isIndexTable = true;
-	local activeCovenantID = C_Covenants.GetActiveCovenantID();
-	local includeIf = function(collectionData)
-		local covenantID = collectionData.covenantID;
-		return not covenantID or covenantID == activeCovenantID;
-	end;
-	self.collection = tFilter(collection, includeIf, isIndexTable);
-
-	table.sort(self.collection, function(a, b)
-		local s1 = a.conduitSpecName or "";
-		local s2 = b.conduitSpecName or "";
-		local compare = strcmputf8i(s1, s2);
-		if compare == 0 then
-			return a.conduitRank < b.conduitRank;
-		end
-		return compare < 0;
-	end);
+function ConduitListSectionMixin:Init(collection)
+	self:BuildConduits(collection);
 
 	self.CategoryButton:Init(self.conduitType);
-
-	return self:BuildConduits();
 end
 
 function ConduitListSectionMixin:Update()
@@ -343,17 +325,17 @@ function ConduitListSectionMixin:AddCollectionData(collectionData)
 	return false;
 end
 
-function ConduitListSectionMixin:BuildConduits()
+function ConduitListSectionMixin:BuildConduits(collection)
 	self.pool:ReleaseAll();
 
-	local count = #self.collection;
+	local count = #collection;
 	local function FactoryFunction(index)
 		if index > count then
 			return nil;
 		end
 
 		local frame = self.pool:Acquire();
-		frame:Init(self.collection[index]);
+		frame:Init(collection[index]);
 
 		frame:SetPoint("LEFT", 0, 0);
 		frame:SetPoint("RIGHT", 0, 0);
@@ -399,6 +381,7 @@ local ConduitListEvents =
 	"SOULBIND_CONDUIT_COLLECTION_UPDATED",
 	"SOULBIND_CONDUIT_COLLECTION_REMOVED",
 	"SOULBIND_CONDUIT_COLLECTION_CLEARED",
+	"PLAYER_SPECIALIZATION_CHANGED",
 };
 
 function ConduitListMixin:OnLoad()
@@ -418,6 +401,8 @@ function ConduitListMixin:OnEvent(event, ...)
 		self:Init();
 	elseif event == "SOULBIND_CONDUIT_COLLECTION_CLEARED" then
 		self:Init();
+	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+		self:Init();
 	end
 end
 
@@ -433,18 +418,84 @@ function ConduitListMixin:GetLists()
 	return self.ScrollBox.ScrollTarget.Lists;
 end
 
-function ConduitListMixin:Init()
-	for index, list in ipairs(self:GetLists()) do
-		list.layoutIndex = index;
-		local populated = list:Init();
-		list:SetShown(populated);
-	end
-	
-	self.ScrollBox.ScrollTarget:Layout();
+function ConduitListMixin:SetConduitPreview(preview)
+	self.preview = preview;
+end
 
-	local scrollValue = 0;
-	local elementExtent = 41;
-	ScrollUtil.Init(self.ScrollBar, self.ScrollBox, scrollValue, elementExtent);
+function ConduitListMixin:Init()
+	local activeCovenantID = C_Covenants.GetActiveCovenantID();
+	local filterCollection = function(collection)
+		local isIndexTable = true;
+		local includeIf = function(collectionData)
+			local covenantID = collectionData.covenantID;
+			return not covenantID or covenantID == activeCovenantID;
+		end;
+		collection = tFilter(collection, includeIf, isIndexTable);
+	end;
+
+	local anyShown = false;
+	local parsed = 0;
+	local lists = self:GetLists();
+
+	for index, list in ipairs(lists) do
+		list.layoutIndex = index;
+
+		local collection = C_Soulbinds.GetConduitCollection(list.conduitType);
+		filterCollection(collection);
+
+		local continuableContainer = ContinuableContainer:Create();
+		local matchesSpecSet = {};
+		for index, collectionData in ipairs(collection) do
+			local specSetID = collectionData.conduitSpecSetID;
+			if not matchesSpecSet[specSetID] then
+				matchesSpecSet[specSetID] = C_Soulbinds.MatchesCurrentSpecSet(specSetID);
+			end
+
+			if not collectionData.conduitSpecName then
+				collectionData.sortingCategory = 1;
+			elseif matchesSpecSet[specSetID] then
+				collectionData.sortingCategory = 2;
+			else
+				collectionData.sortingCategory = 3;
+			end
+
+			collectionData.item = Item:CreateFromItemID(collectionData.conduitItemID);
+			continuableContainer:AddContinuable(collectionData.item);
+		end
+
+		continuableContainer:ContinueOnLoad(function()
+			table.sort(collection, function(lhs, rhs)
+				if lhs.sortingCategory == rhs.sortingCategory then
+					if (not lhs.conduitSpecName or not rhs.conduitSpecname) or lhs.conduitSpecName == rhs.conduitSpecName then
+						return lhs.item:GetItemName() < rhs.item:GetItemName();
+					else
+						return lhs.conduitSpecName < rhs.conduitSpecName;
+					end
+				else
+					return lhs.sortingCategory < rhs.sortingCategory;
+				end
+			end);
+
+			local shown = #collection > 0;
+			if shown then
+				list:Init(collection);
+				anyShown = true;
+			end
+
+			list:SetShown(shown);
+
+			parsed = parsed + 1;
+			if parsed == #lists then
+				self.ScrollBox.ScrollTarget:Layout();
+				self.ScrollBox.BottomShadowContainer.BottomShadow:SetShown(anyShown);
+				self.preview:SetShown(not anyShown);
+
+				local scrollValue = 0;
+				local elementExtent = 41;
+				ScrollUtil.Init(self.ScrollBar, self.ScrollBox, scrollValue, elementExtent);
+			end
+		end);
+	end
 end
 
 function ConduitListMixin:Update()
@@ -471,7 +522,7 @@ function ConduitListMixin:PlayLearnAnimation(button)
 	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay=0, duration = 0.769, speed = 1 },};
 	modelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
 
-	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_LEARNED);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function ConduitListMixin:OnCollectionDataUpdated(collectionData)

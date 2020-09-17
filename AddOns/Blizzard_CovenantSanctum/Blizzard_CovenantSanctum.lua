@@ -25,12 +25,16 @@ function CovenantSanctumMixin:OnShow()
 
 	self:SetTab(TAB_UPGRADES);
 	self:RefreshLevel();
+
+	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_OPEN_WINDOW);
 end
 
 function CovenantSanctumMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CovenantSanctumEvents);
 
 	C_CovenantSanctumUI.EndInteraction();
+
+	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_CLOSE_WINDOW);
 end
 
 function CovenantSanctumMixin:OnEvent(event, ...)

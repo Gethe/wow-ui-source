@@ -174,7 +174,7 @@
 				</FontString>
 				<FontString parentKey="SubTitle" inherits="GameFontHighlightMedium" text="JAILERSTOWER_LEVEL_PICKER_SELECT_DIFFICULTY">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -200,6 +200,15 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-60" y="-60" />
 				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder" atlas="jailerstower-wayfinder-exitborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_CLOSE_UI);

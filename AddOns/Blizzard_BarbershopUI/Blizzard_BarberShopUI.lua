@@ -180,6 +180,8 @@ end
 function BarberShopMixin:SetCharacterSex(sexID)
 	C_BarberShop.SetSelectedSex(sexID);
 	self:UpdateSex();
+	self:ResetCharacterRotation();
+	CharCustomizeFrame:UpdateCameraMode();
 end
 
 BarberShopButtonMixin = {};

@@ -46,7 +46,7 @@
 	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" topLevel="true" hidden="true">
 		<Size x="816" y="536"/>
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="CENTER" x="0" y="100"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="false" frameLevel="1000">

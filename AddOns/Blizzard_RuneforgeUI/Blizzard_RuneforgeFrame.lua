@@ -384,7 +384,7 @@ end
 
 function RuneforgeFrameMixin:HasValidItemForRuneforgeState()
 	if self:IsRuneforgeUpgrading() then
-		if not self:HasAnyItem(C_LegendaryCrafting.IsRuneforgeLegendary) then
+		if not self:HasAnyItem(RuneforgeUtil.IsUpgradeableRuneforgeLegendary) then
 			return false;
 		end
 	else

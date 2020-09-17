@@ -432,8 +432,6 @@ function GuildMicroButtonMixin:EvaluateAlertVisibility()
 		if alertShown then
 			self.showOfflineJoinAlert = false;
 		end
-	elseif (self:ShouldShowAlert()) then 
-		alertShown = MainMenuMicroButton_ShowAlert(self, CLUB_FINDER_NEW_FEATURE_TUTORIAL, LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE, "closedInfoFramesAccountWide");
 	end
 	return alertShown;
 end 
@@ -459,11 +457,6 @@ function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 	else
 		self.NotificationOverlay:SetShown(false);
 	end
-end
-
-function GuildMicroButtonMixin:ShouldShowAlert()
-	return C_ClubFinder.IsEnabled() and (not CommunitiesFrame or not CommunitiesFrame:IsShown()) and 
-	not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE) and not IsTrialAccount() and not IsVeteranTrialAccount();
 end
 
 function GuildMicroButtonMixin:UpdateTabard(forceUpdate)

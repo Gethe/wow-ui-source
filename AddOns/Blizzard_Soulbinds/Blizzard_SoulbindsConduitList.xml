@@ -255,7 +255,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<ScrollBarButton parentKey="Decrease" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
+					<EventButton parentKey="Decrease" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
 						<KeyValues>
 							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
 						</KeyValues>
@@ -271,8 +271,8 @@
 								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
 							</Layer>
 						</Layers>
-					</ScrollBarButton>
-					<ScrollBarButton parentKey="Increase" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
+					</EventButton>
+					<EventButton parentKey="Increase" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
 						<KeyValues>
 							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
 						</KeyValues>
@@ -288,8 +288,8 @@
 								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
 							</Layer>
 						</Layers>
-					</ScrollBarButton>
-					<ScrollBarButton parentKey="Thumb" inherits="ConduitScrollBarButtonScripts" enableMouse="true">
+					</EventButton>
+					<EventButton parentKey="Thumb" inherits="ConduitScrollBarButtonScripts" enableMouse="true">
 						<Size x="16" y="100"/>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -302,7 +302,7 @@
 								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
 							</Layer>
 						</Layers>
-					</ScrollBarButton>
+					</EventButton>
 				</Frames>
 			</Frame>
 			<Frame parentKey="ScrollBox" inherits="ScrollBoxTemplate" frameStrata="MEDIUM">
@@ -335,14 +335,14 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Frame frameStrata="HIGH">
+					<Frame parentKey="BottomShadowContainer" frameStrata="HIGH">
 						<Size x="1" y="1"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer>
-								<Texture atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
+								<Texture parentKey="BottomShadow" atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT"/>
 									</Anchors>

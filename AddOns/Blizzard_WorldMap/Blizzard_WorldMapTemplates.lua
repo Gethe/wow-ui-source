@@ -235,9 +235,13 @@ function WorldMapTrackingPinButtonMixin:OnMouseUp()
 end
 
 function WorldMapTrackingPinButtonMixin:OnClick()
-	local mapID = self:GetParent():GetMapID();
-	self:SetActive(not self.isActive);
-	PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_BUTTON_CLICK);
+	local shouldSetActive = not self.isActive;
+	self:SetActive(shouldSetActive);
+	if shouldSetActive then
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_BUTTON_CLICK_ON);
+	else
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_BUTTON_CLICK_OFF);
+	end
 end
 
 function WorldMapTrackingPinButtonMixin:OnEnter()
@@ -249,7 +253,7 @@ function WorldMapTrackingPinButtonMixin:OnEnter()
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddInstructionLine(GameTooltip, MAP_PIN_TOOLTIP_INSTRUCTIONS);
 	else
-		GameTooltip_AddErrorLine(GameTooltip, ERR_CLIENT_LOCKED_OUT);
+		GameTooltip_AddErrorLine(GameTooltip, MAP_PIN_INVALID_MAP);
 	end
 	GameTooltip:Show();
 end

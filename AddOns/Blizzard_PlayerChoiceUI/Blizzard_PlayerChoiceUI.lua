@@ -4,6 +4,7 @@ local INIT_OPTION_HEIGHT = 370;
 
 local GORGROND_GARRISON_ALLIANCE_CHOICE = 55;
 local GORGROND_GARRISON_HORDE_CHOICE = 56;
+local THREADS_OF_FATE_RESPONSE = 3272;
 
 local STANDARD_SIZE_TEXT_WIDTH = 196;
 local STANDARD_SIZE_WIDTH = 240;
@@ -63,6 +64,50 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_PLAYER_CHOICE_WITH_CONFIRMATION_STRING"] = {
+	text = "%s",
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+
+	OnAccept = function(self)
+		SendPlayerChoiceResponse(self.data.response);
+		HideUIPanel(PlayerChoiceFrame);
+	end,
+	OnShow = function(self)
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		if (parent.button1:IsEnabled()) then
+			SendPlayerChoiceResponse(parent.data.response);
+			HideUIPanel(PlayerChoiceFrame);
+		end
+	end,
+	EditBoxOnTextChanged = function (self)
+		local parent = self:GetParent();
+		if (strupper(parent.editBox:GetText()) == parent.data.confirmationString ) then
+			parent.button1:Enable();
+		else
+			parent.button1:Disable();
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide(); 
+		ClearCursor();
+	end
 }
 
 local borderFrameTextureKitRegions = {
@@ -1464,6 +1509,8 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 	if ( button.optID ) then
 		if ( IsInGroup() and (self.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or self.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
 			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = button.optID, owner = self:GetParent() });
+		elseif (button.confirmation and self.id == THREADS_OF_FATE_RESPONSE) then 
+			StaticPopup_Show("CONFIRM_PLAYER_CHOICE_WITH_CONFIRMATION_STRING", button.confirmation, nil, { response = button.optID, owner = self:GetParent(), confirmationString = SHADOWLANDS_EXPERIENCE_THREADS_OF_FATE_CONFIRMATION_STRING});
 		elseif ( button.confirmation ) then
 			local confirmationSoundKit = optionLayout.confirmationOkSoundKit;
 			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", button.confirmation, nil, { response = button.optID, owner = self:GetParent(), confirmationSoundkit = confirmationSoundKit});

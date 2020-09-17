@@ -289,20 +289,7 @@ function ChannelRosterButtonMixin:GetMemberChannelRank()
 	if channel then
 		local ruleset, activePlayerRole = channel:GetChannelRuleset();
 		if ruleset == Enum.ChatChannelRuleset.Mentor then
-			local playerLocation = self:GetMemberPlayerLocation();
-			if playerLocation then
-				local role = C_PlayerMentorship.GetMentorshipStatus(playerLocation);
-				-- Only returning ranks for those player who don't match the local player.
-				if playerLocation and role ~= activePlayerRole then
-					if role == Enum.PlayerMentorshipStatus.Mentor then
-						return "mentor";
-					elseif role == Enum.PlayerMentorshipStatus.Newcomer then
-						return "newcomer";
-					end
-				end
-			end
-
-			return;
+			return nil;
 		end
 	end
 
@@ -315,8 +302,6 @@ end
 
 local channelRankImages =
 {
-	mentor = { isAtlas = true, asset = "newplayerchat-chaticon-guide" },
-	newcomer = { isAtlas = true, asset = "newplayerchat-chaticon-newcomer" },
 	owner = { asset = "Interface\\GroupFrame\\UI-Group-LeaderIcon" },
 	moderator = { asset = "Interface\\GroupFrame\\UI-Group-AssistantIcon" },
 }

@@ -28,6 +28,7 @@ function CovenantChoiceToastMixin:PlayCovenantChoiceToast(covenantID)
 			name = covenantData.name, 
 			covenantColor = COVENANT_COLORS[covenantData.textureKit],
 			textureKit = covenantData.textureKit,
+			celebrationSoundKit = covenantData.celebrationSoundKit,
 		});
 	end
 end
@@ -36,6 +37,7 @@ function CovenantChoiceToastMixin:PlayBanner(data)
 	self.CovenantName:SetText(data.name);
 	self.CovenantName:SetTextColor(data.covenantColor:GetRGB());
 	self:SetCovenantTextureKit(data.textureKit);
+	PlaySound(data.celebrationSoundKit);
 
 	self.ToastBG:SetAlpha(0);
 	self.GlowLineTop:SetAlpha(0);

@@ -218,6 +218,10 @@ function RuneforgeUtil.GetCostsString(costs)
 	return resultString;
 end
 
+function RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation)
+	return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and not C_LegendaryCrafting.IsRuneforgeLegendaryMaxLevel(itemLocation);
+end
+
 Enum.RuneforgePowerState =
 {
 	Available = 0,

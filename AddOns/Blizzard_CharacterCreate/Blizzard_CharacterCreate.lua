@@ -914,7 +914,9 @@ function CharacterCreateSpecButtonMixin:SetSpec(specData, selectedSpecID, layout
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(specData.name, HIGHLIGHT_FONT_COLOR);
-	self:AddTooltipLine(specData.description);
+
+	local specDescription = ReplaceGenderTokens(specData.description, RaceAndClassFrame.selectedSexID + 1);
+	self:AddTooltipLine(specDescription);
 
 	if not self:IsEnabled() then
 		self:AddBlankTooltipLine();
@@ -980,7 +982,7 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
 			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
 			return self.selectedFaction;
 		else
@@ -1616,7 +1618,7 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateNavBlocker(navBlocker)
 		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
 	end
 
-	if self:GetParent():IsShown() and navBlocker then
+	if NameChoiceFrame:IsShown() and navBlocker then
 		CharacterCreateFrame:AddNavBlocker(navBlocker);
 		self.navBlocker = navBlocker;
 	else

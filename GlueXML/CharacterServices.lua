@@ -586,15 +586,6 @@ local function SetCharacterButtonEnabled(button, enabled)
 	button:SetEnabled(enabled);
 end
 
-local function formatDescription(description, gender)
-	if (not strfind(description, "%$")) then
-		return description;
-	end
-
-	-- This is a very simple parser that will only handle $G/$g tokens
-	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..gender);
-end
-
 function IsExpansionTrialCharacter(characterGUID)
 	local isExpansionTrialCharacter = select(28, GetCharacterInfoByGUID(characterGUID));
 	return isExpansionTrialCharacter;
@@ -913,9 +904,9 @@ function CharacterUpgradeCharacterSelectBlock:GetPopupText()
 	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetRaceIDFromName(raceFilename));
 
 	if GetCurrentRegionName() == "CN" then
-		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING_CN:format(raceData.name), gender+1);
+		return ReplaceGenderTokens(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING_CN:format(raceData.name), gender+1);
 	else
-		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING:format(raceData.name), gender+1);
+		return ReplaceGenderTokens(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING:format(raceData.name), gender+1);
 	end
 end
 
@@ -1072,7 +1063,7 @@ function ClickRecommendedSpecButton(ownerFrame, overrideSpecID)
 end
 
 local function createTooltipText(description, gender, isRecommended, isTrialBoost)
-	local tooltipText = formatDescription(description, gender);
+	local tooltipText = ReplaceGenderTokens(description, gender);
 
 	if (not isRecommended) then
 		local warningText = CHARACTER_BOOST_RECOMMENDED_SPEC_ONLY;

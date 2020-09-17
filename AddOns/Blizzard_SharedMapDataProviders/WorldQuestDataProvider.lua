@@ -283,7 +283,7 @@ function WorldQuestDataProviderMixin:ShouldHighlightInfo(questID, tagInfo)
 	end
 
 	tagInfo = tagInfo or C_QuestLog.GetQuestTagInfo(questID);
-	return tagInfo.quality == Enum.WorldQuestQuality.Rare and tagInfo.isElite;
+	return tagInfo and (tagInfo.quality == Enum.WorldQuestQuality.Rare and tagInfo.isElite);
 end
 
 function WorldQuestDataProviderMixin:GetPinTemplate()

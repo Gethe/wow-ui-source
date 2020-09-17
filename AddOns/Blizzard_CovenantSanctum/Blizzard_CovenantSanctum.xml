@@ -5,7 +5,7 @@
 	<Button name="CovenantSanctumFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" frameStrata="LOW" virtual="true">
 		<Scripts>
 			<OnClick>
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+				PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_TAB_CLICK);
 				self:GetParent():SetTab(self:GetID());
 			</OnClick>
 		</Scripts>

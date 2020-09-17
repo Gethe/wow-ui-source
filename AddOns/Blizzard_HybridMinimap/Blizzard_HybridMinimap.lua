@@ -55,6 +55,9 @@ function HybridMinimapMixin:OnEvent(event)
 end
 
 function HybridMinimapMixin:OnUpdate(elapsed)
+	if not self.mapID then
+		self:CheckMap();
+	end
 	self:UpdatePosition();
 end
 

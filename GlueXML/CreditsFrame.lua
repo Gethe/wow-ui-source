@@ -10,7 +10,73 @@ end
 function CreditsFrameMixin:OnHide()
 	self.ExpansionList:Hide();
 	ShowCursor();
+	self:ResetPools();
 end
+
+function CreditsFrameMixin:ResetPools()
+	if not self.normalPool then
+		self.normalPool = CreateFontStringPool(self.ClipFrame, "ARTWORK", 0, "CreditsNormal");
+	end
+	if not self.header1Pool then
+		self.header1Pool = CreateFontStringPool(self.ClipFrame, "ARTWORK", 0, "CreditsHeader1");
+	end
+	if not self.header2Pool then
+		self.header2Pool = CreateFontStringPool(self.ClipFrame, "ARTWORK", 0, "CreditsHeader2");
+	end
+
+	self.normalPool:ReleaseAll();
+	self.header1Pool:ReleaseAll();
+	self.header2Pool:ReleaseAll();
+
+	self.strings = {};
+end
+
+function CreditsFrameMixin:GetFontStringPool(type)
+	if type == "H1" then
+		return self.header1Pool;
+	elseif type == "H2" then
+		return self.header2Pool;
+	else
+		return self.normalPool;
+	end
+end
+
+function CreditsFrameMixin:GetCreditsFontString(data)
+	local fontString = self:GetFontStringPool(data.type):Acquire();
+	fontString:SetText(data.text);
+	fontString:SetWidth(self.creditsTextWidth);
+	fontString:SetJustifyH(data.align);
+	fontString:Show();
+	return fontString;
+end
+
+function CreditsFrameMixin:ReleaseCreditsFontString(data, fontString)
+	self:GetFontStringPool(data.type):Release(fontString);
+end
+
+function CreditsFrameMixin:JumpToCreditsIndex(position)
+	self:ResetPools();
+
+	local screenHeight = self:GetHeight();
+	local left = self.ScrollFrame:GetLeft() - self:GetLeft();
+
+	self.startIdx = Clamp(position, 1, #self.data);
+	self.startPos = 0;
+	local startPos = self.startPos;
+	for i = self.startIdx, #self.data do
+		assert(not self.strings[i]);
+		local fontString = self:GetCreditsFontString(self.data[i]);
+		self.strings[i] = fontString;
+		fontString:SetPoint("TOPLEFT", CreditsFrame, "TOPLEFT", left, startPos + fontString:GetSpacing());
+		startPos = startPos - fontString:GetHeight() - fontString:GetSpacing();
+		if startPos < -screenHeight then
+			break;
+		end
+	end
+
+	self.Slider:SetValue(self.startIdx);
+end
+
 
 function CreditsFrameMixin:Update()
 	PlayCreditsMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, self.expansion));
@@ -20,15 +86,18 @@ function CreditsFrameMixin:Update()
 	end
 
 	self:SetSpeed(CREDITS_SCROLL_RATE_PLAY);
-	self.ScrollFrame:SetVerticalScroll(0);
-	self.ScrollFrame.scroll = 0;
-	self.ScrollFrame:UpdateMax();
 
 	self:UpdateArt();
 
+	self.creditsTextWidth = self.ScrollFrame:GetWidth();
+
 	-- Set Credits Text
 	self.ScrollFrame.Text:SetText(GetCreditsText(self.expansion));
-	self.Slider:SetValue(0);
+	self.data = self.ScrollFrame.Text:GetTextData();
+	self.Slider:SetMinMaxValues(1, #self.data);
+	self.ScrollFrame.Text:SetText("");
+
+	self:JumpToCreditsIndex(1);
 end
 
 function CreditsFrameMixin:Switch(expansion)
@@ -45,7 +114,7 @@ function CreditsFrameMixin:UpdateArt()
 		local x = -(self:GetRight() - self.ScrollFrame:GetLeft() + 100) / 2;
 		self.KeyArt:SetPoint("TOP", self, "TOP", x, -50);
 		self.KeyArt:SetAtlas(keyArt, true);
-		self.KeyArt:SetScale((GetScreenHeight() - 120) / info.height);
+		self.KeyArt:SetScale((self:GetHeight() - 120) / info.height);
 	end
 
 	-- The following anchors the background textures to the entire screen regardless of GlueParent
@@ -102,20 +171,79 @@ function CreditsFrameMixin:UpdateSpeedButtons()
 end
 
 function CreditsFrameMixin:OnUpdate(elapsed)
-	if ( not self.ScrollFrame:IsShown() ) then
+	local scrollIdx = self.scrollIdx;
+	if scrollIdx then
+		self.scrollIdx = nil;
+		local startIdx = math.floor(scrollIdx);
+		self:JumpToCreditsIndex(startIdx);
 		return;
 	end
 
-	self.ScrollFrame.scroll = self.ScrollFrame.scroll + (CREDITS_SCROLL_RATE * elapsed);
-	self.ScrollFrame.scroll = max(self.ScrollFrame.scroll, 1);
+	local screenHeight = self:GetHeight();
+	local left = self.ScrollFrame:GetLeft() - self:GetLeft();
 
-	if ( self.ScrollFrame.scroll >= self.ScrollFrame.scrollMax ) then
-		GlueParent_CloseSecondaryScreen();
-		return;
+	self.startPos = self.startPos + CREDITS_SCROLL_RATE * elapsed;
+	if (CREDITS_SCROLL_RATE < 0) then
+		local startPos = self.startPos;
+		local prevString = self.strings[self.startIdx];
+		while (prevString:GetTop() - self:GetTop() < screenHeight and self.startIdx > 1) do
+			self.startIdx = self.startIdx - 1;
+			self.Slider:SetValue(self.startIdx);
+			assert(not self.strings[self.startIdx]);
+			local fontString = self:GetCreditsFontString(self.data[self.startIdx]);
+			self.strings[self.startIdx] = fontString;
+			self.startPos = self.startPos + fontString:GetHeight() + fontString:GetSpacing();
+			fontString:SetPoint("TOPLEFT", CreditsFrame, "TOPLEFT", left, self.startPos - fontString:GetSpacing());
+			prevString = fontString;
+		end
+
+		if (self.startIdx == 1 and self.startPos <= 0) then
+			self.startPos = 0;
+			CREDITS_SCROLL_RATE = 0;
+			self:UpdateSpeedButtons();
+			return;
+		end
 	end
 
-	self.ScrollFrame:SetVerticalScroll(self.ScrollFrame.scroll);
-	self.Slider:SetValue(self.ScrollFrame.scroll);
+	local startPos = self.startPos;
+	local lastIdx;
+	for i = self.startIdx, #self.data do
+		local fontString = self.strings[i];
+		if not fontString then
+			fontString = self:GetCreditsFontString(self.data[i]);
+			self.strings[i] = fontString;
+		end
+		if not fontString then
+			break;
+		end
+		fontString:SetPoint("TOPLEFT", CreditsFrame, "TOPLEFT", left, startPos - fontString:GetSpacing());
+		startPos = startPos - fontString:GetHeight() - fontString:GetSpacing();
+		if fontString:GetBottom() - self:GetBottom() > screenHeight then
+			self.startIdx = i + 1;
+			self.Slider:SetValue(self.startIdx);
+			self.startPos = self.startPos - fontString:GetHeight() - fontString:GetSpacing();
+			self:ReleaseCreditsFontString(self.data[i], fontString);
+			self.strings[i] = nil;
+			if self.startIdx >= #self.data then
+				GlueParent_CloseSecondaryScreen();
+				return;
+			end
+		end
+		if startPos < -screenHeight then
+			lastIdx = i;
+			break;
+		end
+	end
+	if lastIdx then
+		for i = lastIdx + 1, #self.data do
+			if self.strings[i] then
+				self:ReleaseCreditsFontString(self.data[i], self.strings[i]);
+				self.strings[i] = nil;
+			else
+				break;
+			end
+		end
+	end
 end
 
 function CreditsFrameMixin:OnKeyDown(key)
@@ -136,17 +264,6 @@ function CreditsFrameMixin:ToggleExpansionList()
 	else
 		self.ExpansionList:Hide();
 	end
-end
-
-CreditsScrollFrameMixin = {}
-
-function CreditsScrollFrameMixin:OnScrollRangeChanged()
-	self:UpdateMax();
-end
-
-function CreditsScrollFrameMixin:UpdateMax()
-	self.scrollMax = self:GetVerticalScrollRange() + 768;
-	self:GetParent().Slider:SetMinMaxValues(0, self.scrollMax);
 end
 
 CreditsExpansionListMixin = {}

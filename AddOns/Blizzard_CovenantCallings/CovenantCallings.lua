@@ -2,6 +2,7 @@ CovenantCallingQuestMixin = {};
 
 function CovenantCallingQuestMixin:Set(calling, covenantData)
 	self.calling = calling;
+	self.questID = calling.questID;
 	self.covenantData = covenantData;
 	self:Update();
 	self:Show();
@@ -56,15 +57,7 @@ function CovenantCallingQuestMixin:UpdateTooltipCheckHasQuestData()
 end
 
 function CovenantCallingQuestMixin:UpdateTooltipQuestOffer()
-	if not self:UpdateTooltipCheckHasQuestData() then
-		return;
-	end
-
-	GameTooltip_SetTitle(GameTooltip, QuestUtils_GetQuestName(self.calling.questID), nil, false);
-	WorldMap_AddQuestTimeToTooltip(self.calling.questID);
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION, true);
-	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.calling.questID, TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD);
+	TaskPOI_OnEnter(self);
 end
 
 -- NOTE/TODO: Basically lifted from TaskPOI_OnEnter, but there were enough differences that I decided to keep this separate until we get approvals
@@ -154,8 +147,15 @@ function CovenantCallingQuestMixin:OnLeave()
 end
 
 function CovenantCallingQuestMixin:OnMouseUp(button, upInside)
-	if button == "LeftButton" and upInside and self.calling:GetState() == Enum.CallingStates.QuestActive then
-		QuestMapFrame_OpenToQuestDetails(self.calling.questID);
+	if button == "LeftButton" and upInside then
+		local state = self.calling:GetState();
+
+		if state == Enum.CallingStates.QuestActive then
+			PlaySound(SOUNDKIT.UI_COVENANT_CALLINGS_CLICK_ON_QUEST);
+			QuestMapFrame_OpenToQuestDetails(self.questID);
+		elseif state == Enum.CallingStates.QuestOffer then
+			OpenWorldMap(C_TaskQuest.GetQuestZoneID(self.questID));
+		end
 	end
 end
 

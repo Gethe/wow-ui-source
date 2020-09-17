@@ -35,7 +35,7 @@ function RuneforgeCraftingFrameMixin:OnLoad()
 
 	self.flyoutTypeToSettings = {
 		[RuneforgeUtil.FlyoutType.BaseItem] = CreateSettingsTable(C_LegendaryCrafting.IsValidRuneforgeBaseItem, SelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarving-Flyout]]),
-		[RuneforgeUtil.FlyoutType.Legendary] = CreateSettingsTable(C_LegendaryCrafting.IsRuneforgeLegendary, SelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarvingUpgrade-Flyout]]),
+		[RuneforgeUtil.FlyoutType.Legendary] = CreateSettingsTable(RuneforgeUtil.IsUpgradeableRuneforgeLegendary, SelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarvingUpgrade-Flyout]]),
 		[RuneforgeUtil.FlyoutType.UpgradeItem] = CreateSettingsTable(UpgradeItemValidation, UpgradeItemSelectFlyoutItemButtonCallback, [[Interface\PaperDollInfoFrame\UI-GearManager-RuneCarving-Flyout]]),
 	};
 end
@@ -123,7 +123,7 @@ function RuneforgeCraftingFrameMixin:SetItem(item, autoSelectSlot)
 			if self:GetRuneforgeFrame():IsUpgradeItemValidForRuneforgeLegendary(item) then
 				self:SetUpgradeItem(item);
 			end
-		elseif C_LegendaryCrafting.IsRuneforgeLegendary(item) then
+		elseif RuneforgeUtil.IsUpgradeableRuneforgeLegendary(item) then
 			self.BaseItemSlot:SetItem(item);
 		end
 	else

@@ -105,26 +105,39 @@ function AuctionCategoryMixin:CreateNamedSubCategory(name)
 	return subCategory;
 end
 
-function AuctionCategoryMixin:CreateNamedSubCategoryAndFilter(name, classID, subClassID, inventoryType, implicitFilter)
+function AuctionCategoryMixin:CreateNamedSubCategoryAndFilter(name, classID, subClassID, inventoryType, implicitFilter, useParentFilters)
 	local category = self:CreateNamedSubCategory(name);
-	category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
+
+	if useParentFilters then
+		self.filters = self.filters or {};
+		category:SetFilters(self.filters);
+	else
+		category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
+	end
 
 	return category;
 end
 
-function AuctionCategoryMixin:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, implicitFilter)
+function AuctionCategoryMixin:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, implicitFilter, useParentFilters)
 	local category = self:CreateSubCategory(classID, subClassID, inventoryType, implicitFilter);
-	category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
+
+	if useParentFilters then
+		self.filters = self.filters or {};
+		category:SetFilters(self.filters);
+	else
+		category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
+	end
 
 	return category;
 end
 
 function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID, inventoryTypes)
 	local inventoryType = nil;
-	self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly);
+	local useParentFilters = true;
+	self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly, useParentFilters);
 
 	for i, inventoryType in ipairs(inventoryTypes) do
-		self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, implicitFilter);
+		self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType);
 	end
 end
 
@@ -141,6 +154,10 @@ function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType, impl
 	if self.parent then
 		self.parent:AddFilter(classID, subClassID, inventoryType, implicitFilter);
 	end
+end
+
+function AuctionCategoryMixin:SetFilters(filters)
+	self.filters = filters;
 end
 
 do
@@ -268,8 +285,11 @@ do -- Armor
 	clothChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, Enum.InventoryType.IndexRobeType);
 
 	local miscCategory = armorCategory:CreateSubCategory(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, nil, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.NECK_TYPE);
+
+	local useParentFilters = true;
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, nil, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly, useParentFilters);
+
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexNeckType);
 
 	miscCategory:CreateNamedSubCategoryAndFilter(AUCTION_SUBCATEGORY_CLOAK, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, Enum.InventoryType.IndexCloakType);
 	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexFingerType);

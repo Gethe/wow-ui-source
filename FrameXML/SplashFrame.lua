@@ -147,7 +147,7 @@ function SplashRightFeatureFrameMixin:GetQuestID(screenInfo)
 	end
 end
 
-function SplashRightFeatureFrameMixin:ShouldEnableStartQuestButton()
+function SplashRightFeatureFrameMixin:ShouldShowQuestButton()
 	if( self.questID ) then
 		local autoQuest = false;
 		for i = 1, GetNumAutoQuestPopUps() do
@@ -175,14 +175,13 @@ end
 
 function SplashRightFeatureFrameMixin:SetStartQuestButtonDisplay(screenInfo)
 	self.Title:ClearAllPoints();
-	local showStartButton = self.questID ~= nil and screenInfo.shouldShowQuest;
+	local showStartButton = self.questID ~= nil and screenInfo.shouldShowQuest and self:ShouldShowQuestButton(self.questID);
 	if (showStartButton) then
 		self.Description:ClearAllPoints();
 		self.Description:SetPoint("BOTTOM", self.StartQuestButton, "TOP", 0, 25);
 		self.Description:SetWidth(300);
 
 		self.Title:SetPoint("BOTTOM", self.Description, "TOP", 0, 10);
-		self.StartQuestButton:SetButtonState(self:ShouldEnableStartQuestButton(self.questID));
 	else
 		self.Description:SetWidth(234);
 		self.Title:SetPoint("BOTTOM", self.Description, "TOP", 0, 20);

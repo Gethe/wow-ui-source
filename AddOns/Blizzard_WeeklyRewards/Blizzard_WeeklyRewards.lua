@@ -10,7 +10,7 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD);
+		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD, nil, SOUNDKIT_ALLOW_DUPLICATES);
 		C_WeeklyRewards.ClaimReward(self.data);
 		HideUIPanel(WeeklyRewardsFrame);
 	end,
@@ -48,17 +48,19 @@ end
 function WeeklyRewardsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 
-	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW);
+	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
 
 	-- for preview item tooltips
 	C_MythicPlus.RequestMapInfo();
+
+	self.hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
 
 	self:Refresh();
 end
 
 function WeeklyRewardsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
-	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLOSE_WINDOW);
+	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLOSE_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	self.selectedActivity = nil;
 	C_WeeklyRewards.CloseInteraction();
 	StaticPopup_Hide("CONFIRM_SELECT_WEEKLY_REWARD");
@@ -68,7 +70,13 @@ function WeeklyRewardsMixin:OnEvent(event)
 	if event == "WEEKLY_REWARDS_HIDE" then
 		HideUIPanel(self);
 	elseif event == "WEEKLY_REWARDS_UPDATE" then
-		self:Refresh();
+		if not self.hasAvailableRewards and C_WeeklyRewards.HasAvailableRewards() then
+			-- this means the week ticked over with the UI open
+			-- hide the UI so the rewards can be generated when the user reopens it
+			HideUIPanel(self);
+		else
+			self:Refresh();
+		end
 	elseif event == "CHALLENGE_MODE_COMPLETED" then
 		C_MythicPlus.RequestMapInfo();
 	elseif event == "CHALLENGE_MODE_MAPS_UPDATE" then
@@ -149,7 +157,7 @@ end
 
 function WeeklyRewardsMixin:SelectActivity(activityFrame)
 	if activityFrame.hasRewards then
-		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLICK_REWARD);
+		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLICK_REWARD, nil, SOUNDKIT_ALLOW_DUPLICATES);
 		if self.selectedActivity == activityFrame then
 			self.selectedActivity = nil;
 		else
@@ -183,7 +191,7 @@ function WeeklyRewardsMixin:GetSelectedActivityInfo()
 end
 
 function WeeklyRewardsMixin:SelectReward()
-	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_SELECT_REWARD);
+	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_SELECT_REWARD, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	if not self.confirmSelectionFrame then
 		self.confirmSelectionFrame = CreateFrame("FRAME", nil, self, "WeeklyRewardConfirmSelectionTemplate");
 	end
@@ -221,7 +229,7 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	self.hasRewards = #activityInfo.rewards > 0;
 	self.info = activityInfo;
 
-	self:SetProgressText(activityInfo);
+	self:SetProgressText();
 
 	local useAtlasSize = true;
 
@@ -249,7 +257,12 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		self.Border:SetAtlas("weeklyrewards-frame-reward-locked", useAtlasSize);
 		self.Threshold:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		self.LockIcon:Hide();
+		if C_WeeklyRewards.HasAvailableRewards() then
+			self.LockIcon:Show();
+			self.LockIcon:SetAtlas("weeklyrewards-icon-incomplete", useAtlasSize);
+		else
+			self.LockIcon:Hide();
+		end
 		self.ItemFrame:Hide();
 		self.ItemGlow:Hide();
 		self:ClearActiveEffect();
@@ -277,9 +290,11 @@ function WeeklyRewardsActivityMixin:ClearActiveEffect()
 	self:SetActiveEffect(nil);
 end
 
-function WeeklyRewardsActivityMixin:SetProgressText()
+function WeeklyRewardsActivityMixin:SetProgressText(text)
 	local activityInfo = self.info;
-	if self.hasRewards then
+	if text then
+		self.Progress:SetText(text);
+	elseif self.hasRewards then
 		self.Progress:SetText(nil);	
 	elseif self.unlocked then
 		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
@@ -475,7 +490,14 @@ function WeeklyRewardActivityItemMixin:SetDisplayedItem()
 			end
 		end
 	end
-
+	if self.displayedItemDBID then
+		local hyperlink = C_WeeklyRewards.GetItemHyperlink(self.displayedItemDBID);
+		if hyperlink then
+			local itemLevel = GetDetailedItemLevelInfo(hyperlink);
+			local progressText = string.format(ITEM_LEVEL, itemLevel);
+			self:GetParent():SetProgressText(progressText);
+		end
+	end
 	self:SetShown(self.displayedItemDBID ~= nil);
 	self.GlowSpinAnim:Play();
 end

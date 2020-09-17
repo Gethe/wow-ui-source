@@ -54,7 +54,25 @@ function MawBuffsContainerMixin:Update()
 	else
 		self:Enable();
 	end
+	self:UpdateHelptip(); 
 end
+
+function MawBuffsContainerMixin:UpdateHelptip()
+	if(self.buffCount > 0 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_9_0_JAILERS_TOWER_BUFFS)) then
+		local selectLocationHelpTipInfo = {
+			text = JAILERS_TOWER_BUFFS_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_9_0_JAILERS_TOWER_BUFFS,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			autoEdgeFlipping = true,
+			useParentStrata = true,
+		};
+		 HelpTip:Show(self, selectLocationHelpTipInfo)
+	else 
+		HelpTip:Hide(self, JAILERS_TOWER_BUFFS_TUTORIAL);
+	end
+end 
 
 function MawBuffsContainerMixin:UpdateListState(shouldShow) 
 	self:SetEnabled(not shouldShow); 
@@ -63,6 +81,7 @@ end
 
 function MawBuffsContainerMixin:OnClick()
 	self.List:SetShown(not self.List:IsShown());
+	HelpTip:Acknowledge(self, JAILERS_TOWER_BUFFS_TUTORIAL);
 	PlaySound(SOUNDKIT.UI_MAW_BUFFS_ANIMA_POWERS_BUTTON, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
@@ -170,12 +189,13 @@ function MawBuffMixin:SetBuffInfo(buffInfo)
 	self.count = buffInfo.count;
 	self.spellID = buffInfo.spellID;
 
-	local _, rarityAtlas = C_Spell.GetMawPowerRarityStringAndBorderAtlasBySpellID(self.spellID);
+	local rarityAtlas = C_Spell.GetMawPowerBorderAtlasBySpellID(self.spellID);
 	local showCount = buffInfo.count > 1;
 		
 	if (showCount) then
 		self.Count:SetText(buffInfo.count);
 	end 
+
 	if(rarityAtlas) then
 		self.Border:SetAtlas(rarityAtlas, TextureKitConstants.UseAtlasSize);
 	end 
@@ -195,39 +215,9 @@ function MawBuffMixin:OnEnter()
 end 
 
 function MawBuffMixin:RefreshTooltip()
-	local spell = Spell:CreateFromSpellID(self.spellID);
-	local name, spellDescription = nil; 
-
-
-	if (spell:IsSpellDataCached()) then 
-		name = UnitAura("player", self.slot, "MAW");
-		spellDescription = GetSpellDescription(self.spellID);
-	else
-		spell:ContinueOnSpellLoad(function()
-			self:RefreshTooltip();
-		end);
-	end
-
-	if(not self:IsMouseOver()) then 
-		return;
-	end 
-
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	local name = UnitAura("player", self.slot, "MAW");
+	GameTooltip:SetUnitAura("player", self.slot, "MAW");
 
-	if (name) then 
-		GameTooltip_AddNormalLine(GameTooltip, name);
-	end 
-
-	local rarityString = C_Spell.GetMawPowerRarityStringAndBorderAtlasBySpellID(self.spellID);
-	if (rarityString) then
-		GameTooltip_AddNormalLine(GameTooltip, rarityString);
-	end
-
-	local spellDescription = GetSpellDescription(self.spellID);
-	if (spellDescription) then 
-		GameTooltip_AddHighlightLine(GameTooltip, spellDescription)
-	end 
 	GameTooltip:Show();
 	self.HighlightBorder:Show(); 
 end

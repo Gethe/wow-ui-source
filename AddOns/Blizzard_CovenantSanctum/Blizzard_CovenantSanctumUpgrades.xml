@@ -114,6 +114,16 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Spark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.FillBackground" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SparkGlow" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Spark"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Reservoir-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
@@ -121,9 +131,24 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="SparkMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="182" y="182"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Spark"/>
+						<MaskedTexture childKey="SparkGlow"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Glow" useAtlasSize="true">
+				<Texture parentKey="Glow" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StaticGlow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -138,6 +163,19 @@
 				</Anchors>
 			</ModelScene>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.3"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():UpdateAnima();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="SparkGlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="SparkGlow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.5"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	
 	<Frame name="CovenantSanctumUpgradeTalentTemplate" mixin="CovenantSanctumUpgradeTalentMixin" virtual="true">
@@ -172,6 +210,13 @@
 					<Anchors>
 						<Anchor point="LEFT" x="5" y="0"/>
 					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>	
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -289,22 +334,22 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="TravelUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+			<Frame parentKey="TravelUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="147" y="-140"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="DiversionUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+			<Frame parentKey="DiversionUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="374" y="-151"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="AdventureUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+			<Frame parentKey="AdventureUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="558" y="-250"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="UniqueUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+			<Frame parentKey="UniqueUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
 				<KeyValues>
 					<KeyValue key="uniqueUpgrade" value="true" type="boolean"/>
 				</KeyValues>
@@ -317,7 +362,7 @@
 					<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="220" y="236"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="DepositButton" inherits="UIPanelButtonTemplate" text="COVENANT_SANCTUM_DEPOSIT_ANIMA">
+			<Button parentKey="DepositButton" inherits="UIPanelButtonTemplate" text="COVENANT_SANCTUM_DEPOSIT_ANIMA" frameLevel="100">
 				<Size x="153" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="141" y="56"/>

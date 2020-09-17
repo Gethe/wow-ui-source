@@ -13,7 +13,7 @@
 					<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_HELP">
+			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_SUPPORT">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>
 				</Anchors>
@@ -65,7 +65,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(GameMenuFrame);
-						C_SplashScreen.RequestLatestSplashScreen();
+						C_SplashScreen.RequestLatestSplashScreen(true);
 					</OnClick>
 				</Scripts>
 			</Button>

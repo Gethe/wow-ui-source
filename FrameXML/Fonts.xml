@@ -930,6 +930,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="Game40Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="40"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="40"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="40"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="40"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="40"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="Game42Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="42"/>

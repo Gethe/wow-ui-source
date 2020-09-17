@@ -182,6 +182,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetBattlefieldVehicles",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "vehicles", Type = "table", InnerType = "BattlefieldVehicleInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBrawlRewards",
 			Type = "Function",
 

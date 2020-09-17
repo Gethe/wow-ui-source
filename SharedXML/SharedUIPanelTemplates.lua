@@ -1598,7 +1598,7 @@ end
 function SelectionPopoutButtonMixin:UpdateButtonDetails()
 	local currentSelectedData = self:GetCurrentSelectedData();
 	self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
-	local maxNameWidth = 125;
+	local maxNameWidth = 126;
 	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
 		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
 	end

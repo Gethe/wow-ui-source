@@ -15,7 +15,12 @@ end
 
 function TorghastLevelPickerFrameMixin:OnEvent(event, ...)
 	if (event == "PARTY_LEADER_CHANGED") then 
+		local inParty = UnitInParty("player"); 
+		self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 		self:UpdatePortalButtonState();
+		if(not self.isPartyLeader) then 
+			HideUIPanel(self);
+		end 
 	end 
 end 
 
@@ -32,12 +37,11 @@ function TorghastLevelPickerFrameMixin:CancelEffects()
 end 
 
 function TorghastLevelPickerFrameMixin:UpdatePortalButtonState(startingIndex)
-	local inParty = UnitInParty("player"); 
-	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 	local enabled = true; 
 
 	if	(startingIndex and self.currentSelectedButtonIndex) then 
-		enabled = startingIndex <= self.currentSelectedButtonIndex;
+		local maxIndexPerPage = (self.maxOptionsPerPage + startingIndex) - 1; 
+		enabled = self.currentSelectedButtonIndex >= startingIndex and self.currentSelectedButtonIndex <= maxIndexPerPage;
 	end 
 
 	self.OpenPortalButton:SetEnabled(self.isPartyLeader and self.currentSelectedButton and enabled)
@@ -46,6 +50,9 @@ end
 function TorghastLevelPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
+
+	local inParty = UnitInParty("player"); 
+	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 
 	self:CancelEffects(); 
 

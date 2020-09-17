@@ -95,6 +95,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetMentorChannelID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActiveChannels",
 			Type = "Function",
 
@@ -124,6 +133,34 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isRegistered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChannelRegional",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegional", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChannelRegionalForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegional", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -35,8 +35,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad function="AuctionFrameFilter_OnLoad"/>
 			<OnEnter function="AuctionFrameFilter_OnEnter"/>
 			<OnLeave function="AuctionFrameFilter_OnLeave"/>
+			<OnMouseDown function="AuctionFrameFilter_OnMouseDown"/>
+			<OnMouseUp function="AuctionFrameFilter_OnMouseUp"/>
 			<OnClick function="AuctionFrameFilter_OnClick"/>
 		</Scripts>
 		<ButtonText parentKey="Text" justifyH="LEFT">

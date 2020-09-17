@@ -109,13 +109,16 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
 	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
-
-	self:UpdateCovenantCallings();
 end
 
 function GarrisonLandingPageMixin:OnShow()
 	self:UpdateUIToGarrisonType();
-	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
+
+	if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+	    PlaySound(SOUNDKIT.UI_GARRISON_9_0_OPEN_LANDING_PAGE);
+	else
+	    PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
+	end
 
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
 
@@ -125,7 +128,12 @@ function GarrisonLandingPageMixin:OnShow()
 end
 
 function GarrisonLandingPageMixin:OnHide()
-	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_CLOSE);
+    if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+        PlaySound(SOUNDKIT.UI_GARRISON_9_0_CLOSE_LANDING_PAGE);
+    else
+        PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_CLOSE);
+    end
+
 	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
@@ -180,6 +188,7 @@ function GarrisonLandingPageMixin:SetupCovenantCallings()
 	end
 
 	self:SetSectionLayoutIndex(self.CovenantCallings);
+	self.CovenantCallings:Update();
 end
 
 function GarrisonLandingPageMixin:SetupSoulbind()
@@ -209,16 +218,6 @@ function GarrisonLandingPageMixin:SetupGardenweald()
 	end
 
 	self:SetSectionLayoutIndex(self.ArdenwealdGardeningPanel);
-end
-
-function GarrisonLandingPageMixin:UpdateCovenantCallings()
-	if self.CovenantCallings then
-		local hasCallings = (self.garrTypeID == Enum.GarrisonType.Type_9_0);
-		self.CovenantCallings:SetShown(hasCallings);
-		if hasCallings then
-			self.CovenantCallings:Update();
-		end
-	end
 end
 
 function GarrisonLandingPageMixin:OnEvent(event)

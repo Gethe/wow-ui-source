@@ -318,6 +318,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.StackCount:SetText(spellInfo.stackDisplay);
 	else
 		self.StackCount:Hide();
+		self.AmountBorder:Hide();
 	end
 
 	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff or spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);

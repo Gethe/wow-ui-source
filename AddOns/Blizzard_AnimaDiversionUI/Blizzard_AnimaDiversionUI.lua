@@ -30,6 +30,7 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
 	OnAccept =	function(self, selectedNode)
 					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
 					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
+					HelpTip:Acknowledge(AnimaDiversionFrame.ReinforceProgressFrame, ANIMA_DIVERSION_TUTORIAL_FILL_BAR);
 				end,
 	OnShow = function(self, selectedNode)
 		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
@@ -116,45 +117,7 @@ function AnimaDiversionFrameMixin:HasAvailableNode()
 end
 
 function AnimaDiversionFrameMixin:UpdateTutorialTips()
-	self.hasIntroTutorialShowing = false;
-
 	local updateTutorialTipsClosure = GenerateClosure(self.UpdateTutorialTips, self);
-
-	local spendAnimaHelpTipInfo = {
-		text = ANIMA_DIVERSION_TUTORIAL_SPEND_ANIMA,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ANIMA_DIVERSION_SPEND_ANIMA,
-		targetPoint = HelpTip.Point.RightEdgeCenter,
-		offsetX = -50,
-		checkCVars = true,
-		autoEdgeFlipping = true,
-		useParentStrata = true,
-		onAcknowledgeCallback = updateTutorialTipsClosure,
-	};
-
-	if HelpTip:Show(self.AnimaDiversionCurrencyFrame, spendAnimaHelpTipInfo) then
-		self.hasIntroTutorialShowing = true;
-		return;
-	end
-
-	local fillBarHelpTipInfo = {
-		text = ANIMA_DIVERSION_TUTORIAL_FILL_BAR,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ANIMA_DIVERSION_FILL_BAR,
-		targetPoint = HelpTip.Point.RightEdgeCenter,
-		offsetX = -17,
-		checkCVars = true,
-		autoEdgeFlipping = true,
-		useParentStrata = true,
-		onAcknowledgeCallback = function() self:UpdateTutorialTips(); self:RefreshAllDataProviders(); end,
-	};
-
-	if HelpTip:Show(self.ReinforceProgressFrame, fillBarHelpTipInfo) then
-		self.hasIntroTutorialShowing = true;
-		return;
-	end
 
 	if self:CanReinforceNode() then
 		local reinforceLocationHelpTipInfo = {
@@ -184,12 +147,23 @@ function AnimaDiversionFrameMixin:UpdateTutorialTips()
 			targetPoint = HelpTip.Point.LeftEdgeCenter,
 			offsetX = 120,
 			offsetY = 30,
-			checkCVars = true,
 			useParentStrata = true,
 			onAcknowledgeCallback = updateTutorialTipsClosure,
 		};
 
-		 HelpTip:Show(self, selectLocationHelpTipInfo)
+		HelpTip:Show(self, selectLocationHelpTipInfo);
+
+		local fillBarHelpTipInfo = {
+			text = ANIMA_DIVERSION_TUTORIAL_FILL_BAR,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = -17,
+			autoEdgeFlipping = true,
+			useParentStrata = true,
+			onAcknowledgeCallback = updateTutorialTipsClosure,
+		};
+
+		HelpTip:Show(self.ReinforceProgressFrame, fillBarHelpTipInfo);
 	end
 end
 
@@ -209,10 +183,6 @@ end
 function AnimaDiversionFrameMixin:ClearExclusiveSelectionNode()
 	self:RefreshAllDataProviders();
 	self.disallowSelection = false;
-end
-
-function AnimaDiversionFrameMixin:HasIntroTutorialShowing()
-	return self.hasIntroTutorialShowing;
 end
 
 function AnimaDiversionFrameMixin:CanReinforceNode() 
@@ -290,7 +260,9 @@ end
 
 function AnimaDiversionFrameMixin:AddStandardDataProviders() 
 	self:AddDataProvider(CreateFromMixins(AnimaDiversionDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(AnimaDiversion_WorldQuestDataProviderMixin));	
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager(); 
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ANIMA_DIVERSION_MODELSCENE_PIN");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
 end 

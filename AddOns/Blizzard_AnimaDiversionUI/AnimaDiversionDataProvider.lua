@@ -134,11 +134,6 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 	self:AddOrigin(originPosition);
 
 	for _, nodeData in ipairs(animaNodes) do
-		if AnimaDiversionFrame:HasIntroTutorialShowing() then
-			-- if one of the 2 intro tutorials is showing, we want to pretend that all nodes are unavailable.
-			nodeData.state = Enum.AnimaDiversionNodeState.Unavailable;
-		end
-
 		self:AddNode(nodeData);
 	end
 end
@@ -286,6 +281,15 @@ function AnimaDiversionPinMixin:OnMouseEnter()
 		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then 
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_POI_REINFORCED, GREEN_FONT_COLOR);
+		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+			local talentInfo = C_Garrison.GetTalentInfo(self.nodeData.talentID);
+			if talentInfo then
+				local costString = GetGarrisonTalentCostString(talentInfo);
+				if costString then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddHighlightLine(GameTooltip, costString);
+				end
+			end
 		end
 	end 
 

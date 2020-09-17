@@ -13,23 +13,23 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="6">
-				<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-Whirls" useAtlasSize="true">
+				<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-Whirls-Soulbinds" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<Color r="1" g="0.83921568627451" b="0.45098039215686"/>
 				</Texture>
-				<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys" useAtlasSize="true" inherits="PowerSwirlScale">
+				<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys" useAtlasSize="true" inherits="PowerSwirlScale">
+				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-YellowRing" useAtlasSize="true" inherits="PowerSwirlScale">
+				<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-YellowRing-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -47,7 +47,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="7">
-				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-StarBurst" useAtlasSize="true" inherits="PowerSwirlScale">
+				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-StarBurst-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -56,10 +56,10 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
-				<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<!--<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BigWhirls" startDelay="0.25" duration="0.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.25" toScaleY="1.25"/>
 				<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" degrees="-90"/>
-				<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>-->
 
 				<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.75" toScaleY="0.75"/>
@@ -71,12 +71,12 @@
 				<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
 				<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 
-				<Alpha childKey="StarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="StarBurst" smoothing="IN" duration="0.5" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1.5" toScaleY="1.5"/>
-				<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="StarBurst" smoothing="IN" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="StarBurst" startDelay="0.4" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="StarBurst" smoothing="IN" duration="0.4" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1.5" toScaleY="1.5"/>
 
-				<Alpha childKey="RingBurst" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RingBurst" startDelay="0.5" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RingBurst" smoothing="OUT" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingBurst" startDelay="0.4" smoothing="OUT" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.75" toScaleY="0.75"/>
 			</AnimationGroup>
 		</Animations>

@@ -11,11 +11,16 @@ local SEASON_STATE_PRESEASON = 2;
 local SEASON_STATE_ACTIVE = 3;
 local SEASON_STATE_DISABLED = 4;
 
+local HONOR_CURRENCY_ID = 1792;
 local CONQUEST_CURRENCY_ID = 1602;
 local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
 
-local BFA_START_SEASON = 26
+local BFA_START_SEASON = 26;
+local BFA_FINAL_SEASON = 29;
 local SL_START_SEASON = 30;
+
+local HORDE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Horde];
+local ALLIANCE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Alliance];
 
 ---------------------------------------------------------------
 -- PVP FRAME
@@ -99,7 +104,7 @@ end
 function PVPUIFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 
-	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde) then
+	if (UnitFactionGroup("player") == HORDE_PLAYER_FACTION_GROUP_NAME) then
 		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-background-casual-horde", true)
 	else
 		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-background-casual-alliance", true)
@@ -295,17 +300,18 @@ function PVPQueueFrame_OnLoad(self)
 
 	-- disable unusable side buttons
 	local disabledButtons = false;
-	if not C_PvP.CanPlayerUseRatedPVPUI() then
+	local canUse, failureReason = C_PvP.CanPlayerUseRatedPVPUI();
+	if not canUse then
 		disabledButtons = true;
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, false);
-		self.CategoryButton2.tooltip = format(PVP_CONQUEST_LOWLEVEL, PVP_TAB_CONQUEST, GetMaxLevelForLatestExpansion());
+		self.CategoryButton2.tooltip = failureReason;
 	end
 
-	local canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
+	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
 	if not canUse then
 		disabledButtons = true;
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, false);
-		self.CategoryButton3.tooltip = self.CategoryButton3.tooltip or failureReason;
+		self.CategoryButton3.tooltip = failureReason;
 	end
 
 	if disabledButtons then
@@ -382,7 +388,7 @@ function PVPQueueFrame_Update(self, frame)
 end
 
 function PVPQueueFrame_OnShow(self)
-	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde) then
+	if (UnitFactionGroup("player") == HORDE_PLAYER_FACTION_GROUP_NAME) then
 		PVEFrame:SetPortraitToAsset("Interface\\Icons\\INV_BannerPVP_01");
 	else
 		PVEFrame:SetPortraitToAsset("Interface\\Icons\\INV_BannerPVP_02");
@@ -400,7 +406,7 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+		if PVPUtil.ShouldShowLegacyRewards() then
 			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON_LEGACY:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
 		else
 			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
@@ -1167,6 +1173,14 @@ function PVPRatedTier_OnEnter(self)
 	if tierName then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, tierName);
+
+		if not PVPUtil.ShouldShowLegacyRewards() then
+			local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
+			if weeklyItemLevel > 0 then
+				GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_BY_RANK:format(weeklyItemLevel), NORMAL_FONT_COLOR);
+			end
+		end
+
 		GameTooltip:Show();
 	end
 end
@@ -1183,7 +1197,12 @@ function NextTier_OnEnter(self)
 		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
 		if activityItemLevel > 0 then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_CHANCE_LONG:format(activityItemLevel), NORMAL_FONT_COLOR);
+
+			if PVPUtil.ShouldShowLegacyRewards() then
+				GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_CHANCE_LONG:format(activityItemLevel), NORMAL_FONT_COLOR);
+			else
+				GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_BY_NEXT_RANK:format(weeklyItemLevel), NORMAL_FONT_COLOR);
+			end
 		end
 		GameTooltip:Show();
 	end
@@ -1442,6 +1461,15 @@ end
 -- Rewards
 ---------------------------------------------------------------
 
+local function AddPVPRewardCurrency(tooltip, currencyID, amount)
+	local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(currencyID, amount);
+	if currencyInfo then
+		local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.icon, currencyInfo.displayAmount, currencyInfo.name);
+		local currencyColor = GetColorForCurrencyReward(currencyID, currencyInfo.displayAmount);
+		tooltip:AddLine(text, currencyColor:GetRGB());
+	end
+end
+
 function PVPStandardRewardTemplate_OnEnter(self)
 	if (not self.Icon:IsShown()) then
 		return;
@@ -1453,33 +1481,36 @@ function PVPStandardRewardTemplate_OnEnter(self)
 	if (self.experience > 0) then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_REWARD_XP_FORMAT:format(BreakUpLargeNumbers(self.experience)), HIGHLIGHT_FONT_COLOR);
 	else
-		GameTooltip_AddColoredLine(EmbeddedItemTooltip, REWARD_FOR_PVP_WIN_HONOR:format(BreakUpLargeNumbers(self.honor)), HIGHLIGHT_FONT_COLOR);
+		if PVPUtil.ShouldShowLegacyRewards() then
+			GameTooltip_AddColoredLine(EmbeddedItemTooltip, REWARD_FOR_PVP_WIN_HONOR:format(BreakUpLargeNumbers(self.honor)), HIGHLIGHT_FONT_COLOR);
+		else
+			AddPVPRewardCurrency(EmbeddedItemTooltip, HONOR_CURRENCY_ID, self.honor);
+		end
 	end
 	if self.conquestAmount > 0 then
-		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(CONQUEST_CURRENCY_ID, self.conquestAmount);
-		if currencyInfo then
-			local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.icon, currencyInfo.displayAmount, currencyInfo.name);
-			local currencyColor = GetColorForCurrencyReward(CONQUEST_CURRENCY_ID, self.conquestAmount);
-			EmbeddedItemTooltip:AddLine(text, currencyColor:GetRGB());
+		AddPVPRewardCurrency(EmbeddedItemTooltip, CONQUEST_CURRENCY_ID, self.conquestAmount);
+	end
+
+	if PVPUtil.ShouldShowLegacyRewards() then
+		local activityItemLevel;
+		local pvpTierEnum = self:GetParent().pvpTierEnum;
+		if pvpTierEnum then
+			activityItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierEnum);
+		end
+		local rewardQuestID = self:GetParent().rewardQuestID;
+		if rewardQuestID then
+			if HaveQuestRewardData(rewardQuestID) then
+				activityItemLevel = select(7, GetQuestLogRewardInfo(1, rewardQuestID));
+			else
+				self.UpdateTooltip = PVPStandardRewardTemplate_OnEnter;
+			end
+		end
+		if activityItemLevel and activityItemLevel > 0 then
+			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+			GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_GEAR_REWARD_CHANCE:format(activityItemLevel), HIGHLIGHT_FONT_COLOR);
 		end
 	end
-	local activityItemLevel;
-	local pvpTierEnum = self:GetParent().pvpTierEnum;
-	if pvpTierEnum then
-		activityItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierEnum);
-	end
-	local rewardQuestID = self:GetParent().rewardQuestID;
-	if rewardQuestID then
-		if HaveQuestRewardData(rewardQuestID) then
-			activityItemLevel = select(7, GetQuestLogRewardInfo(1, rewardQuestID));
-		else
-			self.UpdateTooltip = PVPStandardRewardTemplate_OnEnter;
-		end
-	end
-	if activityItemLevel and activityItemLevel > 0 then
-		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_GEAR_REWARD_CHANCE:format(activityItemLevel), HIGHLIGHT_FONT_COLOR);
-	end
+
 	if self.itemID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID);
@@ -1564,25 +1595,29 @@ function PVPUIHonorInsetMixin:DisplayCasualPanel()
 end
 
 local SEASON_REWARD_ACHIEVEMENTS = {
+	[BFA_FINAL_SEASON] = {
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 13944,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 13943,
+	},
 	[SL_START_SEASON] = {
-		[PLAYER_FACTION_GROUP.Horde] = 14561,
-		[PLAYER_FACTION_GROUP.Alliance] = 14555,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14561,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14555,
 	},
 	[SL_START_SEASON + 1] = {
-		[PLAYER_FACTION_GROUP.Horde] = 14563,
-		[PLAYER_FACTION_GROUP.Alliance] = 14557,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14563,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14557,
 	},
 	[SL_START_SEASON + 2] = {
-		[PLAYER_FACTION_GROUP.Horde] = 14564,
-		[PLAYER_FACTION_GROUP.Alliance] = 14558,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14564,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14558,
 	},
 	[SL_START_SEASON + 3] = {
-		[PLAYER_FACTION_GROUP.Horde] = 14565,
-		[PLAYER_FACTION_GROUP.Alliance] = 14559,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14565,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14559,
 	},
 	[SL_START_SEASON + 4] = {
-		[PLAYER_FACTION_GROUP.Horde] = 14566,
-		[PLAYER_FACTION_GROUP.Alliance] = 14560,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14566,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14560,
 	},
 };
 
@@ -1617,7 +1652,7 @@ PVPUIHonorLevelDisplayMixin = { };
 
 function PVPUIHonorLevelDisplayMixin:OnLoad()
 	self:Pause();
-	if UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde then
+	if UnitFactionGroup("player") == HORDE_PLAYER_FACTION_GROUP_NAME then
 		self.Background:SetAtlas("pvpqueue-sidebar-honorbar-background-horde", false);
 		self.FactionBadge:SetAtlas("pvpqueue-sidebar-honorbar-badge-horde", false);
 	else
@@ -1704,7 +1739,7 @@ function PVPUIHonorLevelDisplayMixin:LegacyOnEnter()
 end
 
 function PVPUIHonorLevelDisplayMixin:OnEnter()
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyOnEnter();
 		return;
 	end
@@ -1900,7 +1935,7 @@ function PVPConquestBarMixin:Update()
 	self.locked = not IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(self.locked);
 
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyUpdate();
 		return;
 	end
@@ -1910,7 +1945,9 @@ function PVPConquestBarMixin:Update()
 	local maxProgress = weeklyProgress.maxProgress;
 	local displayType = weeklyProgress.displayType;
 
-	if progress < maxProgress then
+	local isAtMax = progress >= maxProgress;
+	self.Border:SetDesaturated(isAtMax);
+	if not isAtMax then
 		if displayType == Enum.ConquestProgressBarDisplayType.Seasonal then
 			self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
 		else
@@ -1925,7 +1962,7 @@ function PVPConquestBarMixin:Update()
 		self:SetValue(0);
 	else
 		local maxCurrentProgress = math.min(progress, maxProgress);
-		self:SetValue( maxCurrentProgress/ maxProgress * 100);
+		self:SetValue((maxCurrentProgress / maxProgress) * 100);
 	end
 
 	self:SetDisabled(inactiveSeason or self.locked);
@@ -1964,6 +2001,7 @@ function NewPvpSeasonMixin:OnShow()
 	if showSeasonReward then
 		self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
 	end
+	self.SeasonRewardText:SetShown(showSeasonReward);
 	self.SeasonRewardFrame:SetShown(showSeasonReward);
 end
 
@@ -1995,7 +2033,7 @@ end
 function PVPWeeklyChestMixin:LegacyOnShow()
 	local state = self:LegacyGetState();
 	local atlas;
-	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP.Horde) then
+	if (UnitFactionGroup("player") == HORDE_PLAYER_FACTION_GROUP_NAME) then
 		atlas = "pvpqueue-chest-horde-"..state;
 	else
 		atlas = "pvpqueue-chest-alliance-"..state;
@@ -2014,7 +2052,7 @@ function PVPWeeklyChestMixin:LegacyOnShow()
 end
 
 function PVPWeeklyChestMixin:OnShow()
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyOnShow();
 		return;
 	end
@@ -2030,7 +2068,7 @@ function PVPWeeklyChestMixin:OnShow()
 end
 
 function PVPWeeklyChestMixin:OnEnter()
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyOnEnter();
 		return;
 	end
@@ -2161,7 +2199,7 @@ function PVPWeeklyRatedPanelMixin:OnShow()
 		if seasonID == NO_ARENA_SEASON then
 			seasonID = GetPreviousArenaSeason();
 		end
-		if seasonID and seasonID >= SL_START_SEASON then
+		if seasonID and seasonID >= BFA_FINAL_SEASON then
 			local achievementID = GetPVPSeasonAchievementID(seasonID);
 			if achievementID ~= nil then
 				showSeasonReward = true;

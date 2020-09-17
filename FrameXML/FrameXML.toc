@@ -53,6 +53,7 @@
 ..\SharedXML\GlobalCallbackRegistry.lua
 ..\SharedXML\SelectableButton.xml
 ..\SharedXML\ButtonGroup.lua
+..\SharedXML\EventButton.xml
 ..\SharedXML\ScrollController.xml
 ..\SharedXML\ScrollBox.xml
 ..\SharedXML\ScrollBar.xml

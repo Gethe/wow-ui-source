@@ -105,7 +105,7 @@ local EJ_TIER_DATA =
 	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
 	[7] = { backgroundAtlas = "UI-EJ-Legion", r = 0.0, g = 0.6, b = 0.2 },
 	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
-	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.788, g = 0.439, b = 1 },
+	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.278, g = 0.471, b = .937 },
 }
 
 EJButtonMixin = {}

@@ -43,7 +43,7 @@ function PVPConquestRewardMixin:Setup(seasonState, tooltipAnchor)
 		self.CheckMark:Hide();
 		self.Ring:SetDesaturated(false);
 	else
-		self:SetTexture("Interface\\Icons\\inv_misc_bag_10", 0.2);
+		self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 0.2);
 		self.CheckMark:Show();
 		self.CheckMark:SetDesaturated(true);
 		self.Ring:SetDesaturated(true);
@@ -103,7 +103,7 @@ function PVPConquestRewardMixin:LegacyTryShowTooltip()
 end
 
 function PVPConquestRewardMixin:TryShowTooltip()
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
+	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyTryShowTooltip();
 		return;
 	end

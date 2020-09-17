@@ -48,6 +48,9 @@ PROFESSION_RANKS[11] = {950, BATTLE_FOR_AZEROTH_MASTER};
 OPEN_REASON_PENDING_GLYPH = "pendingglyph";
 OPEN_REASON_ACTIVATED_GLYPH = "activatedglyph";
 
+local SKILL_LINE_CLASS = 2;
+local SKILL_LINE_SPEC = 3;
+
 local ceil = ceil;
 local strlen = strlen;
 local tinsert = tinsert;
@@ -99,12 +102,9 @@ function SpellBookFrame_GetTutorialEnum()
 end
 
 function SpellBookFrame_OnLoad(self)
-	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-	self:RegisterEvent("PLAYER_GUILD_UPDATE");
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("USE_GLYPH");
 	self:RegisterEvent("CANCEL_GLYPH_CAST");
 	self:RegisterEvent("ACTIVATE_GLYPH");
@@ -123,7 +123,7 @@ function SpellBookFrame_OnLoad(self)
 	SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] = 1;
 
 	-- Set to the class tab by default
-	SpellBookFrame.selectedSkillLine = 2;
+	SpellBookFrame.selectedSkillLine = SKILL_LINE_CLASS;
 
 	-- Initialize tab flashing
 	SpellBookFrame.flashTabs = nil;
@@ -137,12 +137,7 @@ end
 
 function SpellBookFrame_OnEvent(self, event, ...)
 	if ( event == "SPELLS_CHANGED" ) then
-		if ( SpellBookFrame:IsVisible() ) then
-			if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
-				SpellBookFrame.selectedSkillLine = 2;
-			end
-			SpellBookFrame_Update();
-		end
+		SpellBookFrame_Update();
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if (self.castingGlyphSlot and not IsCastingGlyph()) then
 			SpellBookFrame.castingGlyphSlot = nil;
@@ -165,17 +160,12 @@ function SpellBookFrame_OnEvent(self, event, ...)
 	elseif (event == "PLAYER_GUILD_UPDATE") then
 		-- default to class tab if the selected one is gone - happens if you leave a guild with perks
 		if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
-			SpellBookFrame.selectedSkillLine = 2;
 			SpellBookFrame_Update();
 		else
 			SpellBookFrame_UpdateSkillLineTabs();
 		end
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		local unit = ...;
-		if ( unit == "player" ) then
-			SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
-			SpellBookFrame_Update();
-		end
+		SpellBookFrame_Update();
 	elseif ( event == "USE_GLYPH" ) then
 		local spellID = ...;
 		SpellBookFrame_OpenToPageForGlyph(spellID, OPEN_REASON_PENDING_GLYPH);
@@ -203,9 +193,18 @@ function SpellBookFrame_OnShow(self)
 
 	SpellBookFrame_PlayOpenSound();
 	MicroButtonPulseStop(SpellbookMicroButton);
+
+	self:RegisterEvent("SPELLS_CHANGED");
+	self:RegisterUnitEvent("PLAYER_GUILD_UPDATE", "player");
+	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
 end
 
 function SpellBookFrame_Update()
+	-- Reset if selected skillline button is gone
+	if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
+		SpellBookFrame.selectedSkillLine = SKILL_LINE_CLASS;
+	end
+
 	-- Hide all tabs
 	SpellBookFrameTabButton3:Hide();
 	SpellBookFrameTabButton4:Hide();
@@ -466,6 +465,10 @@ function SpellBookFrame_OnHide(self)
 
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();
+
+	self:UnregisterEvent("SPELLS_CHANGED");	
+	self:UnregisterEvent("PLAYER_GUILD_UPDATE");
+	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 end
 
 function SpellButton_OnLoad(self)
@@ -737,7 +740,7 @@ function SpellButton_UpdateButton(self)
 	end
 
 	if ( not SpellBookFrame.selectedSkillLine ) then
-		SpellBookFrame.selectedSkillLine = 2;
+		SpellBookFrame.selectedSkillLine = SKILL_LINE_CLASS;
 	end
 	local _, _, offset, numSlots, _, offSpecID, shouldHide, specID = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineNumSlots = numSlots;

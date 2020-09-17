@@ -62,6 +62,7 @@ local Covenants =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "celebrationSoundKit", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "soulbindIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
