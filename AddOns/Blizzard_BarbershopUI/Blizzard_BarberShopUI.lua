@@ -24,6 +24,10 @@ function BarberShopMixin:OnEvent(event, ...)
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
 		self:Cancel();
+	elseif event == "BARBER_SHOP_CAMERA_VALUES_UPDATED" then
+		self:ResetCharacterRotation();
+		CharCustomizeFrame:UpdateCameraMode();
+		self:UnregisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	end
 end
 
@@ -71,6 +75,8 @@ function BarberShopMixin:OnHide()
 	UIErrorsFrame:SetPoint(unpack(self.oldErrorFramePointInfo));
 
 	ActionStatus:SetParent(UIParent);
+
+	self:UnregisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 end
 
 function BarberShopMixin:OnKeyDown(key)
@@ -178,10 +184,11 @@ function BarberShopMixin:SetCameraDistanceOffset(offset)
 end
 
 function BarberShopMixin:SetCharacterSex(sexID)
+	-- We need to reset the zoom and rotation, but only AFTER the model has completed loading and we have the new custom rotation values
+	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
+
 	C_BarberShop.SetSelectedSex(sexID);
 	self:UpdateSex();
-	self:ResetCharacterRotation();
-	CharCustomizeFrame:UpdateCameraMode();
 end
 
 BarberShopButtonMixin = {};

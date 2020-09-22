@@ -95,6 +95,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetMentorChannelID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActiveChannels",
 			Type = "Function",
 

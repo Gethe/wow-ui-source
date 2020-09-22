@@ -192,6 +192,11 @@ local BarberShop =
 			LiteralName = "BARBER_SHOP_APPEARANCE_APPLIED",
 		},
 		{
+			Name = "BarberShopCameraValuesUpdated",
+			Type = "Event",
+			LiteralName = "BARBER_SHOP_CAMERA_VALUES_UPDATED",
+		},
+		{
 			Name = "BarberShopClose",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_CLOSE",

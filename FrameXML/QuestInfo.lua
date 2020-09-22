@@ -480,6 +480,7 @@ local function QuestInfo_ShowRewardAsCurrency(questItem, index, isChoice)
 		name, texture, amount, quality = GetQuestCurrencyInfo(questItem.type, index);
 		currencyID = GetQuestCurrencyID(questItem.type, index);
 	end
+	name, texture, amount, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, amount, name, texture, quality);
 
 	questItem.objectType = "currency";
 	questItem:SetID(index)

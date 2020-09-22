@@ -3118,12 +3118,17 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 			local isInitialLogin, isUIReload = ...;
 			if isInitialLogin then
 				ChatFrame_CheckShowNewcomerGraduation();
+				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 			end
 		end
 
 		self.chatLevelUP = {};
 		LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
 
+		return true;
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+		ChatFrame_CheckRemoveNewcomerChannel();
+		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3425,6 +3430,12 @@ function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
 	end
 end
 
+function ChatFrame_CheckRemoveNewcomerChannel()
+	if not IsActivePlayerNewcomer() and not IsActivePlayerMentor() then
+		LeaveChannelByName(C_ChatInfo.GetChannelShortcutForChannelID(C_ChatInfo.GetMentorChannelID()));
+	end
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3484,7 +3495,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 			if not found or not info then
-				return true;
+				if arg1 == "YOU_CHANGED" and C_ChatInfo.IsChannelRegional(arg8) then
+					ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(arg7));
+				else
+					return true;
+				end
 			end
 		end
 

@@ -446,6 +446,20 @@ local Map =
 			},
 		},
 		{
+			Name = "IsMapValidForNavBarDropDown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "MapHasArt",
 			Type = "Function",
 
@@ -542,9 +556,9 @@ local Map =
 		{
 			Name = "UIMapFlag",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 16,
 			MinValue = 1,
-			MaxValue = 16384,
+			MaxValue = 32768,
 			Fields =
 			{
 				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
@@ -562,6 +576,7 @@ local Map =
 				{ Name = "ForceAllOverlayExplored", Type = "UIMapFlag", EnumValue = 4096 },
 				{ Name = "FlightMapShowZoomOut", Type = "UIMapFlag", EnumValue = 8192 },
 				{ Name = "FlightMapAutoZoom", Type = "UIMapFlag", EnumValue = 16384 },
+				{ Name = "ForceOnNavbar", Type = "UIMapFlag", EnumValue = 32768 },
 			},
 		},
 		{

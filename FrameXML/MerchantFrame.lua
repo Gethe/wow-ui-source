@@ -11,6 +11,7 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL");
+	self:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
 	-- Tab Handling code
@@ -54,6 +55,8 @@ function MerchantFrame_OnEvent(self, event, ...)
 		StaticPopup_Show("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL", item);
 	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		MerchantFrame_UpdateItemQualityBorders(self);
+	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
+		MerchantFrame_Update();
 	end
 end
 

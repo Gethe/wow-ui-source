@@ -283,8 +283,20 @@ function QuestSessionManagementMixin:OnLoad()
 	EventRegistry:RegisterCallback("QuestLog.HideCampaignOverview", self.OnQuestLogHideCampaignOverview, self);
 end
 
+function QuestSessionManagementMixin:OnShow()
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
+end
+
 function QuestSessionManagementMixin:OnHide()
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED");
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+
 	UpdateMicroButtons();
+end
+
+function QuestSessionManagementMixin:OnEvent(event, ...)
+	self:UpdateExecuteSessionCommandState();
 end
 
 function QuestSessionManagementMixin:OnClick(button, down)
@@ -323,10 +335,14 @@ function QuestSessionManagementMixin:UpdateVisibility()
 			local onlyShowSessionActive = command == Enum.QuestSessionCommand.SessionActiveNoCommand;
 			self.ExecuteSessionCommand:SetShown(not onlyShowSessionActive);
 			self.SessionActiveFrame:SetShown(onlyShowSessionActive);
-			self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
+			self:UpdateExecuteSessionCommandState();
 			self:UpdateExecuteCommandAtlases(command);
 		end
 	end
+end
+
+function QuestSessionManagementMixin:UpdateExecuteSessionCommandState()
+	self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
 end
 
 function QuestSessionManagementMixin:UpdateExecuteCommandAtlases(command)

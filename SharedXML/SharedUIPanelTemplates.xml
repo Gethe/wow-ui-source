@@ -2104,6 +2104,7 @@
 	</Slider>
 	
 	<Frame name="SliderWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SliderWithButtonsAndLabelMixin" virtual="true">
+		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" font="GameFontHighlightMedium">
@@ -2217,6 +2218,7 @@
 	</Frame>
 
 	<Button name="SelectionPopoutEntryTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutEntryMixin" virtual="true">
+		<Size x="1" y="1"/>
 		<ButtonText parentKey="ButtonText" setAllPoints="true"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="14" type="number"/>
@@ -2261,6 +2263,7 @@
 	</Button>
 
 	<Frame name="SelectionPopoutTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutMixin" virtual="true">
+		<Size x="1" y="1"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="6" type="number"/>
 			<KeyValue key="heightPadding" value="32" type="number"/>
@@ -2292,7 +2295,9 @@
 			</Anchors>
 		</ButtonText>
 		<Frames>
-			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true" />
+			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true">
+				<Size x="1" y="1"/>
+			</Frame>
 			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>

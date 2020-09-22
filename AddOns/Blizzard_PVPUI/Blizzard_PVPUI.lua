@@ -252,12 +252,12 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 				if quality == Enum.ItemQuality.Artifact then
 					local quantity;
 					name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
+					currencyID = reward.id;
+					rewardTexture = texture;
+					rewardQuantity = reward.quantity;
 				elseif reward.id == CONQUEST_CURRENCY_ID then
 					rewardFrame.conquestAmount = reward.quantity;
 				end
-				currencyID = reward.id;
-				rewardTexture = texture;
-				rewardQuantity = reward.quantity;
 			end
 		end
 	end

@@ -79,12 +79,11 @@ function CharacterSelectLockedButtonMixin:OnEnter()
         tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST;
     end
 
-    -- TODO: Add color constants to glue?
-    GlueTooltip:SetText(self.tooltipTitle, 1, 1, 1, 1, false);
-    GlueTooltip:AddLine(self.tooltipText, nil, nil, nil, nil, true);
-    GlueTooltip:AddLine(tooltipFooter, .1, 1, .1, 1, true);
-    GlueTooltip:Show();
     GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
+	GameTooltip_SetTitle(GlueTooltip, self.tooltipTitle, nil, false);
+	GameTooltip_AddNormalLine(GlueTooltip, self.tooltipText);
+ 	GameTooltip_AddDisabledLine(GlueTooltip, tooltipFooter);
+    GlueTooltip:Show();
 end
 
 function CharacterSelectLockedButtonMixin:OnLeave()

@@ -320,6 +320,7 @@ function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("CHARACTER_ITEM_FIXUP_NOTIFICATION");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("GX_RESTARTED");
 	-- flyout settings
 	PaperDollItemsFrame.flyoutSettings = {
 		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
@@ -362,7 +363,7 @@ end
 
 function PaperDollFrame_OnEvent(self, event, ...)
 	local unit = ...;
-	if ( event == "PLAYER_ENTERING_WORLD" or
+	if ( event == "PLAYER_ENTERING_WORLD" or event == "GX_RESTARTED" or
 		event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
 		CharacterModelFrame:SetUnit("player", false);
 		return;

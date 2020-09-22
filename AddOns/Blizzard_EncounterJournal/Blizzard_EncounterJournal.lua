@@ -2574,6 +2574,11 @@ end
 function EJTierDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	local numTiers = EJ_GetNumTiers();
+
+	if numTiers == 9 and (GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS) then
+		numTiers = numTiers - 1;
+	end
+
 	local currTier = EJ_GetCurrentTier();
 	for i=1,numTiers do
 		info.text = EJ_GetTierInfo(i);
