@@ -184,6 +184,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEvent method="BaseOnEvent"/>
+			<OnShow method="BaseOnShow"/>
+			<OnHide method="BaseOnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -203,6 +206,7 @@
 				<KeyValues>
 					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_START_SESSION_BUTTON" type="global"/>
 					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+					<KeyValue key="requiresValidateDialog" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
 
@@ -211,9 +215,10 @@
 					<KeyValue key="confirmText" value="QUEST_SESSION_I_AM_READY" type="global"/>
 					<KeyValue key="cancelText" value="QUEST_SESSION_I_AM_NOT_READY" type="global"/>
 					<KeyValue key="showDivider" value="true" type="boolean"/>
+					<KeyValue key="requiresValidateDialog" value="true" type="boolean"/>
 				</KeyValues>
 				<Scripts>
-					<OnEvent method="OnEvent"/>
+					<OnEvent method="OnEvent" inherit="append"/>
 				</Scripts>
 			</Frame>
 

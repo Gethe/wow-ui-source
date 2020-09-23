@@ -90,8 +90,8 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self:SetupGardenweald();
 		self:LayoutSection();
 
-		self.FollowerTabButton:SetText(COVENANT_MISSIONS_FOLLOWERS);
-		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSIONS_FOLLOWERS);
+		self.FollowerTabButton:SetText(COVENANT_MISSION_FOLLOWER_CATEGORY);
+		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSION_FOLLOWER_CATEGORY);
 		self.FollowerTab.FollowerText:Hide();
 		self.FollowerTab.PortraitFrame:Hide();
 		self.FollowerTab.CovenantFollowerPortraitFrame:Show();

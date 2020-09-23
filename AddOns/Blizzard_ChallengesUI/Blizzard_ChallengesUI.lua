@@ -140,6 +140,7 @@ end
 function ChallengesFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
+	self:RegisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");
 
     PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
@@ -160,6 +161,7 @@ function ChallengesFrame_OnHide(self)
     PVEFrame_ShowLeftInset();
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
+	self:UnregisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");
 end
 
 function ChallengesFrame_Update(self)

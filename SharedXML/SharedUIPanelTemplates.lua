@@ -1447,8 +1447,6 @@ SelectionPopoutButtonMixin = {};
 function SelectionPopoutButtonMixin:OnLoad()
 	self.parent = self:GetParent();
 	self.SelectionDetails:SetPoint("CENTER", self.ButtonText,"CENTER");
-	self.SelectionDetails.SelectionNumber:SetWidth(0);
-	self.SelectionDetails.SelectionName:SetPoint("LEFT", self.SelectionDetails.SelectionNumber, "RIGHT", 5, 0);
 
 	self.buttonPool = CreateFramePool("BUTTON", self.Popout, "SelectionPopoutEntryTemplate");
 	self.initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Popout, "TOPLEFT", 6, -12);
@@ -1722,8 +1720,6 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 	self.name = selectionData.name;
 	self.index = index;
 
-	self.SelectionNumber:ClearAllPoints();
-
 	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
 	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
 	if color1 then
@@ -1744,7 +1740,6 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 
 		self.SelectionName:Hide();
 		self.SelectionNumber:SetWidth(25);
-		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	elseif selectionData.name ~= "" then
 		self.ColorSwatch1:Hide();
 		self.ColorSwatch1Glow:Hide();
@@ -1754,7 +1749,6 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.SelectionName:SetWidth(0);
 		self.SelectionName:SetText(selectionData.name);
 		self.SelectionNumber:SetWidth(25);
-		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	else
 		self.ColorSwatch1:Hide();
 		self.ColorSwatch1Glow:Hide();
@@ -1762,7 +1756,6 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.ColorSwatch2Glow:Hide();
 		self.SelectionName:Hide();
 		self.SelectionNumber:SetWidth(0);
-		self.SelectionNumber:SetPoint("LEFT", self, "LEFT");
 	end
 
 	if isSelected ~= nil then
@@ -1776,9 +1769,9 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 	local hideNumber = ((isSelected == nil) and (color1 or (selectionData.name ~= "")));
 	if hideNumber then
 		self.SelectionNumber:Hide();
-		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "LEFT", 0, 0);
-		self.ColorSwatch1:SetPoint("LEFT", self.SelectionNumber, "LEFT", 0, 0);
-		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "LEFT", 18, -2);
+		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
+		self.ColorSwatch1:SetPoint("LEFT", self, "LEFT", 0, 0);
+		self.ColorSwatch2:SetPoint("LEFT", self, "LEFT", 18, -2);
 	else
 		self.SelectionNumber:Show();
 		self.SelectionNumber:SetText(index);

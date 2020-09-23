@@ -6,7 +6,6 @@ local SELECT_ANIM_TEMPLATE = "PowerSwirlTemplate";
 local SoulbindTreeEvents =
 {
 	"SOULBIND_NODE_LEARNED",
-	"SOULBIND_NODE_UNLEARNED",
 	"SOULBIND_PATH_CHANGED",
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURSOR_CHANGED",
@@ -39,14 +38,11 @@ function SoulbindTreeMixin:OnEvent(event, ...)
 	if event == "SOULBIND_NODE_LEARNED" then
 		local nodeID = ...;
 		self:OnNodeLearned(nodeID);
-	elseif event == "SOULBIND_NODE_UNLEARNED" then
-		local nodeID = ...;
-		self:OnNodeUnlearned(nodeID);
 	elseif event == "SOULBIND_PATH_CHANGED" then
 		self:OnPathChanged();
 	elseif event == "CURSOR_CHANGED" then
 		local isDefault, newCursorType, oldCursorType = ...;
-		self:OnCursorChanged(isDefault, oldCursorType);
+		self:OnCursorChanged(isDefault, newCursorType, oldCursorType);
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
 		local currencyID = ...;
 		if currencyID == SOULBINDS_RENOWN_CURRENCY_ID then
@@ -89,9 +85,10 @@ function SoulbindTreeMixin:OnNodeLearned(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
 	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
-function SoulbindTreeMixin:OnNodeUnlearned(nodeID)
+function SoulbindTreeMixin:OnNodeSwitched(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
 end
@@ -99,7 +96,7 @@ end
 function SoulbindTreeMixin:OnPathChanged()
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function SoulbindTreeMixin:SelectNode(button, buttonName)
@@ -262,7 +259,7 @@ function SoulbindTreeMixin:OnCollectionConduitLeave()
 	end
 end
 
-function SoulbindTreeMixin:OnCursorChanged(isDefault, oldCursorType)
+function SoulbindTreeMixin:OnCursorChanged(isDefault, newCursorType, oldCursorType)
 	if isDefault and oldCursorType == Enum.UICursorType.ConduitCollectionItem then
 		local previewConduitType = Soulbinds.GetPreviewConduitType();
 		if previewConduitType then
@@ -272,6 +269,12 @@ function SoulbindTreeMixin:OnCursorChanged(isDefault, oldCursorType)
 			self:StopThenApplyAttentionAnims();
 		end
 		self.handleCursor = false;
+	end
+
+	if newCursorType == Enum.UICursorType.ConduitCollectionItem then
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_BEGIN, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	elseif oldCursorType == Enum.UICursorType.ConduitCollectionItem then
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_END, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 

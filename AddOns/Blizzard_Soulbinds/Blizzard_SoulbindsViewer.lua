@@ -225,8 +225,14 @@ function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
 	self.Fx.ActivateFXRunes1.ActivateAnim:Play();
 	self.Fx.ActivateFXRunes2.ActivateAnim:Play();
 	self.SelectGroup:OnSoulbindActivated(soulbindID);
-	self.Tree:Init(C_Soulbinds.GetSoulbindData(soulbindID));
+
+	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
+	self.Tree:Init(soulbindData);
 	self:UpdateButtons();
+
+	if soulbindData.activationSoundKitID then
+		PlaySound(soulbindData.activationSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	end
 end
 
 function SoulbindViewerMixin:GetCovenantData()

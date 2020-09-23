@@ -414,7 +414,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 	end
 
 	local bountyQuestID = self.dataProvider:GetBountyQuestID();
-	self.bountyRingShownBecauseOfBountyQuest = bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID);
+	self.BountyRing:SetShown(bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID));
 	self:UpdateSupertrackedHighlight();
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
@@ -428,12 +428,8 @@ function WorldQuestPinMixin:RefreshVisuals()
 end
 
 function WorldQuestPinMixin:UpdateSupertrackedHighlight()
-	if self.bountyRingShownBecauseOfBountyQuest then
-		self.BountyRing:Show();
-	else
-		local highlight = self.dataProvider:ShouldHighlightInfo(self.questID, self.tagInfo);
-		MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Background);
-	end
+	local highlight = self.dataProvider:ShouldHighlightInfo(self.questID, self.tagInfo);
+	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Background);
 end
 
 function WorldQuestPinMixin:OnMouseEnter()

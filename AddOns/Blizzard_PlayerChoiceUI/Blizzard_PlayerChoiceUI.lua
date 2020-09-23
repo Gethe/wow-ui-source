@@ -302,6 +302,13 @@ local borderLayout = {
 	},
 }
 
+local PLAYER_CHOICE_QUALITY_TEXT = {
+	[Enum.PlayerChoiceRarity.Common] = ITEM_QUALITY1_DESC,
+	[Enum.PlayerChoiceRarity.Uncommon] = ITEM_QUALITY2_DESC,
+	[Enum.PlayerChoiceRarity.Rare] = ITEM_QUALITY3_DESC,
+	[Enum.PlayerChoiceRarity.Epic] = ITEM_QUALITY4_DESC,
+};
+
 local choiceLayout = {
 	["default"] = {
 		atlasBackgroundWidthPadding = 0,
@@ -330,7 +337,7 @@ local choiceLayout = {
 		highlightChoiceBeforeHide = true, 
 		useArtworkGlowOnSelection = true,
 		artworkAboveBorder = true;
-		optionFixedHeight = 90,
+		optionFixedHeight = 115,
 		optionYOffset = -35,
 		optionsButtonContainerYOffset = 10,
 		headerYOffset = -50;
@@ -343,8 +350,11 @@ local choiceLayout = {
 				GameTooltip_AddColoredLine(tooltip, choiceInfo.header, choiceInfo.rarityColor);
 			else 
 				GameTooltip_AddHighlightLine(tooltip, choiceInfo.header);
-			end 
-			GameTooltip_AddHighlightLine(tooltip, MAW_POWER);
+			end
+			if (choiceInfo.rarity and choiceInfo.rarityColor) then
+				local rarityText = PLAYER_CHOICE_QUALITY_TEXT[choiceInfo.rarity];
+				GameTooltip_AddColoredLine(tooltip, rarityText,  choiceInfo.rarityColor);
+			end
 			GameTooltip_AddNormalLine(tooltip, choiceInfo.description, true);
 			tooltip:Show();
 		end;

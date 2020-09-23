@@ -2306,6 +2306,9 @@
 			<OnShow>
 				self:SetHeight(self.Text:GetHeight()+30);
 			</OnShow>
+			<OnHide>
+				self.target = nil;
+			</OnHide>
 		</Scripts>
 	</Frame>
 

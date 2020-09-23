@@ -284,8 +284,7 @@ end
 function CovenantMission:UpdateEnemyPower(missionPage, enemies)
 	local totalPower = 0;
 	for _, enemy in ipairs(enemies) do
-		totalPower = totalPower + enemy.attack;
-		totalPower = totalPower + enemy.maxHealth;
+		totalPower = totalPower + enemy.estimatedPowerLevel;
 	end
 
 	self.enemyPowerLevel = totalPower;
@@ -299,8 +298,7 @@ function CovenantMission:UpdateAllyPower(missionPage)
 
 	for followerFrame in missionPage.Board:EnumerateFollowers() do
 		if followerFrame.info then
-			partyPower = partyPower + followerFrame.info.autoCombatantStats.attack;
-			partyPower = partyPower + followerFrame.info.autoCombatantStats.currentHealth;
+			partyPower = partyPower + followerFrame.info.autoCombatantStats.estimatedPowerLevel;
 		end
 	end
 

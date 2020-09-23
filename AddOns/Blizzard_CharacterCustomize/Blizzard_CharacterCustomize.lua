@@ -537,7 +537,6 @@ end
 
 function CharCustomizeOptionSliderMixin:SetupOption(optionData)
 	self.optionData = optionData;
-	self.layoutIndex = optionData.orderIndex;
 	self.currentChoice = nil;
 
 	local minValue = 1;
@@ -584,7 +583,6 @@ CharCustomizeOptionCheckButtonMixin = CreateFromMixins(CharCustomizeFrameWithToo
 
 function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.optionData = optionData;
-	self.layoutIndex = optionData.orderIndex;
 	self.checked = (optionData.currentChoiceIndex == 2);
 
 	if showDebugTooltipInfo then
@@ -667,9 +665,7 @@ end
 
 function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
-	self.layoutIndex = optionData.orderIndex;
 
-	self:SetPoint("TOPLEFT");
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
 
 	self:ClearTooltipLines();
@@ -938,6 +934,8 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	self.hasShapeshiftForms = false;
 	self.numNormalCategories = 0;
 
+	local optionsToSetup = {};
+
 	for _, categoryData in ipairs(self.categories) do
 		local showCategory = not self.selectedCategoryData.spellShapeshiftFormID or categoryData.spellShapeshiftFormID;
 
@@ -966,7 +964,11 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 							optionFrame = optionPool:Acquire();
 						end
 
-						optionFrame:SetupOption(optionData);
+						-- Just set layoutIndex on the option and add it to optionsToSetup for now.
+						-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
+						optionFrame.layoutIndex = optionData.orderIndex;
+						optionsToSetup[optionFrame] = optionData;
+
 						optionFrame:Show();
 					end
 				end
@@ -976,6 +978,11 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	self.Categories:Layout();
 	self.Options:Layout();
+
+	for optionFrame, optionData in pairs(optionsToSetup) do
+		optionFrame:SetupOption(optionData);
+	end
+
 	self:UpdateAlteredFormButtons();
 
 	if self.numNormalCategories > 1 then

@@ -443,7 +443,7 @@ local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryF
 		name, texture, numItems, quality, isUsable, itemID = questLogQueryFunction(index);
 		SetItemButtonQuality(questItem, quality, itemID);
 	else
-		name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, index);
+		name, texture, numItems, quality, isUsable, itemID = GetQuestItemInfo(questItem.type, index);
 		SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, index));
 	end
 
@@ -451,17 +451,28 @@ local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryF
 	questItem:SetID(index);
 	questItem:Show();
 
-	-- For the tooltip
-	questItem.Name:SetText(name);
-	SetItemButtonCount(questItem, numItems);
-	SetItemButtonTexture(questItem, texture);
-	if ( isUsable ) then
-		SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
-		SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-	else
-		SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
-		SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
-	end
+	local item = Item:CreateFromItemID(itemID);
+	item:ContinueOnItemLoad(function()
+		if ( QuestInfoFrame.questLog ) then
+			name, texture, numItems, quality, isUsable = questLogQueryFunction(index);
+			SetItemButtonQuality(questItem, quality, itemID);
+		else
+			name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, index);
+			SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, index));
+		end
+
+		-- For the tooltip
+		questItem.Name:SetText(name);
+		SetItemButtonCount(questItem, numItems);
+		SetItemButtonTexture(questItem, texture);
+		if ( isUsable ) then
+			SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+			SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+		else
+			SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
+			SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
+		end
+	end);
 end
 
 local function QuestInfo_ShowRewardAsItem(questItem, index)
@@ -480,6 +491,7 @@ local function QuestInfo_ShowRewardAsCurrency(questItem, index, isChoice)
 		name, texture, amount, quality = GetQuestCurrencyInfo(questItem.type, index);
 		currencyID = GetQuestCurrencyID(questItem.type, index);
 	end
+	name, texture, amount, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, amount, name, texture, quality);
 
 	questItem.objectType = "currency";
 	questItem:SetID(index)

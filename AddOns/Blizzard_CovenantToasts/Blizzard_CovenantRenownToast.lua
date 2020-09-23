@@ -19,6 +19,14 @@ function CovenantRenownToastMixin:OnHide()
 	TopBannerManager_BannerFinished();
 end
 
+function CovenantRenownToastMixin:AddSwirlEffects(covenantTextureKit) -- override
+	local swirlEffects = CovenantChoiceToasts.GetSwirlEffectsByTextureKit(covenantTextureKit);
+	for i, effect in ipairs(swirlEffects) do
+		local effectDescription = { effectID = effect, soundEnabled = false, };
+		self.IconSwirlModelScene:AddDynamicEffect(effectDescription, self);
+	end
+end
+
 function CovenantRenownToastMixin:ShowRenownLevelUpToast(covenantID, renownLevel)
 	local covenantData = C_Covenants.GetCovenantData(covenantID);
 	if covenantData then
@@ -56,7 +64,7 @@ function CovenantRenownToastMixin:SetupRewardVisuals(covenantID, renownLevel)
 		for i, rewardInfo in ipairs(rewards) do
 			if rewardInfo.toastDescription then
 				if description then
-					description = COVENANT_RENOWN_TOAST_REWARD_COMBINER:format(description, rewardInfo.toastDescription);
+					description = description .. "|n" .. rewardInfo.toastDescription;
 				else
 					description = rewardInfo.toastDescription;
 				end
@@ -72,6 +80,14 @@ function CovenantRenownToastMixin:SetupRewardVisuals(covenantID, renownLevel)
 		self.RewardDescription:SetText(nil);
 	end
 end
+
+local SOUND_KIT_BY_TEXTURE_KIT = 
+{
+	Kyrian = { default = 172612, [20] = 172613, [40] = 172614, },
+	Venthyr = { default = 172642, [20] = 172645, [40] = 172649, },
+	NightFae = { default = 172643, [20] = 172646, [40] = 172650, },
+	Necrolord = { default = 172644, [20] = 172648, [40] = 172651, },
+};
 
 function CovenantRenownToastMixin:PlayBanner(data)
 	self.RenownLabel:SetFormattedText(COVENANT_RENOWN_LEVEL_TOAST, data.renownLevel);
@@ -97,6 +113,9 @@ function CovenantRenownToastMixin:PlayBanner(data)
 	self.RewardDescription:SetAlpha(0);
 
 	self:SetupRewardVisuals(data.covenantID, data.renownLevel);
+
+	local soundKitData = SOUND_KIT_BY_TEXTURE_KIT[data.textureKit]
+	PlaySound(soundKitData[data.renownLevel] or soundKitData.default)
 
 	self.bannerData = data;
 

@@ -187,6 +187,7 @@ end
 
 function CharacterCreateMixin:OnHide()
 	C_CharacterCreation.SetInCharacterCreate(false);
+	RaceAndClassFrame:StopClassAnimations();
 	self:ClearPaidServiceInfo();
 	self.creatingCharacter = false;
 	self.currentMode = 0;
@@ -373,16 +374,14 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	end
 
 	if mode == CHAR_CREATE_MODE_CLASS_RACE then
-		RaceAndClassFrame.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
-
 		C_CharacterCreation.SetViewingAlteredForm(false);
 
 		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
 			local useBlending = true;
-			RaceAndClassFrame:PlayClassIdleAnimation(useBlending);
+			RaceAndClassFrame:PlayClassIdleAnimation(useBlending, CLASS_ANIM_WAIT_TIME_SECONDS);
+		else
+			RaceAndClassFrame.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
 		end
-		
-		RaceAndClassFrame:PlayClassAnimations();
 
 		C_CharacterCreation.SetBlurEnabled(false);
 
@@ -1202,12 +1201,12 @@ function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisu
 	end
 end
 
-function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending)
+function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending, overrideAnimLoopWaitTimeSeconds)
 	self:StopClassAnimations();
 	CharacterCreateFrame:ResetCharacterRotation(nil, true);
 	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(not useBlending);
 
-	self.allowClassAnimationsAfterSeconds = self.selectedClassData.animLoopWaitTimeSeconds;
+	self.allowClassAnimationsAfterSeconds = overrideAnimLoopWaitTimeSeconds or self.selectedClassData.animLoopWaitTimeSeconds;
 	self:PlayClassAnimations();
 end
 

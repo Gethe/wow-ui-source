@@ -230,10 +230,10 @@ function EncounterJournal_OnLoad(self)
 	local homeData = {
 		name = HOME,
 		OnClick = function()
-			if ( not EncounterJournal.instanceSelect.suggestTab:IsEnabled() ) then
-				EJSuggestFrame_OpenFrame();
+			if self.selectedTab then
+				EJ_ContentTab_Select(self.selectedTab);
 			else
-				EncounterJournal_ListInstances();
+				EJSuggestFrame_OpenFrame();
 			end
 		end,
 	}
@@ -703,7 +703,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.instance.title:SetText(instanceName);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
 	self.instance.loreBG:SetTexture(loreImage);
-	
+
 	self.info.instanceTitle:ClearAllPoints();
 	local iconIndex = GetIconIndexForDifficultyID(difficultyID);
 	local hasDifficultyIcon = iconIndex ~= nil;
@@ -723,8 +723,10 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.instance.loreScroll.ScrollBar:SetValue(0);
 	if loreHeight <= EJ_LORE_MAX_HEIGHT then
 		self.instance.loreScroll.ScrollBar:Hide();
+		self.instance.loreScroll.child.lore:SetWidth(300);
 	else
 		self.instance.loreScroll.ScrollBar:Show();
+		self.instance.loreScroll.child.lore:SetWidth(285);
 	end
 
 	self.info.instanceButton.instanceID = instanceID;
@@ -760,9 +762,9 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 		bossButton.creature:SetTexture(bossImage);
 		bossButton:UnlockHighlight();
-		
+
 		EncounterJournalBossButton_UpdateDifficultyOverlay(bossButton);
-		
+
 		if ( not hasBossAbilities ) then
 			hasBossAbilities = rootSectionID > 0;
 		end
@@ -842,7 +844,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.encounterTitle:SetText(ename);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
-	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());	
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
 
@@ -2574,6 +2576,11 @@ end
 function EJTierDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	local numTiers = EJ_GetNumTiers();
+
+	if numTiers == 9 and (GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS) then
+		numTiers = numTiers - 1;
+	end
+
 	local currTier = EJ_GetCurrentTier();
 	for i=1,numTiers do
 		info.text = EJ_GetTierInfo(i);
@@ -3367,7 +3374,7 @@ end
 function EncounterJournalBossButtonDefeatedOverlay_OnEnter(self)
 	if self.tooltipText then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		
+
 		local wrap = true;
 		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
 		GameTooltip:Show();

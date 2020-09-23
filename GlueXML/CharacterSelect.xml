@@ -910,34 +910,30 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="StoreButton" inherits="UIPanelGoldButtonTemplate" hidden="true" text="BLIZZARD_STORE">
-						<Size x="164" y="32"/>
+					<Button name="StoreButton" inherits="GlueGoldRedButtonSmallTemplate" hidden="true" text="BLIZZARD_STORE">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="CharacterSelectAddonsButton" relativePoint="TOP" x="1" y="2"/>
+							<Anchor point="BOTTOM" relativeTo="CharacterSelectAddonsButton" relativePoint="TOP" x="0" y="4"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="Logo" file="Interface\Store\Store-Main">
-									<Size x="21" y="20"/>
-									<TexCoords left="0.97460938" right="0.99511719" top="0.27148438" bottom="0.29101563"/>
+								<Texture parentKey="Logo" atlas="128-Store-Main">
+									<Size x="16" y="16"/>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
 							<OnLoad>
 								local fontString = self:GetFontString();
-								fontString:SetPoint("CENTER", 8, 2);
+								fontString:SetPoint("CENTER", 8, 0);
 								self.Logo:ClearAllPoints();
-								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -5, 0);
 							</OnLoad>
 							<OnClick function="ToggleStoreUI"/>
-							<OnEnable>
+							<OnEnable inherit="append">
 								self.Logo:SetDesaturated(false);
-								self.Logo:SetAlpha(1);
 							</OnEnable>
-							<OnDisable>
+							<OnDisable inherit="append">
 								self.Logo:SetDesaturated(true);
-								self.Logo:SetAlpha(0.4);
 							</OnDisable>
 						</Scripts>
 					</Button>

@@ -39,16 +39,29 @@ end
 function AnimaDiversionDataProviderMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS);
 	self:ResetModelScene();
+	self:StopChannelSound();
 end 
 
 function AnimaDiversionDataProviderMixin:OnEvent(event, ...)
 	self:RefreshAllData(); 
 end 
 
+function AnimaDiversionDataProviderMixin:StopChannelSound()
+	if self.channelSoundHandle then
+		StopSound(self.channelSoundHandle);
+		self.channelSoundHandle = nil;
+	end
+end
+
 function AnimaDiversionDataProviderMixin:SetupConnectionOnPin(pin)
 	local connection = self.connectionPool:Acquire();
 	connection:Setup(self.textureKit, self.origin, pin);
 	connection:Show();
+
+	if not self.channelSoundHandle then
+		local _, soundHandle = PlaySound(AnimaDiversionFrame.covenantData.animaChannelActiveSoundKit);
+		self.channelSoundHandle = soundHandle;
+	end
 
 	self.origin.IconBorder:Show();
 end
@@ -133,8 +146,17 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:AddOrigin(originPosition);
 
+	local hasAnyChanneledNodes = false;
 	for _, nodeData in ipairs(animaNodes) do
-		self:AddNode(nodeData);
+		local wasChanneled = self:AddNode(nodeData);
+
+		if wasChanneled then
+			hasAnyChanneledNodes = true;
+		end
+	end
+
+	if not hasAnyChanneledNodes then
+		self:StopChannelSound();
 	end
 end
 
@@ -150,6 +172,7 @@ function AnimaDiversionDataProviderMixin:AddNode(nodeData)
 
 	if pin:IsConnected() then
 		self:SetupConnectionOnPin(pin);
+		return true;
 	end
 end
 

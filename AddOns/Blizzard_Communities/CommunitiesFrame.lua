@@ -290,7 +290,6 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 				end
 			end
 		end
-		self:ValidateDisplayMode(); 
 	elseif event == "CLUB_FINDER_ENABLED_OR_DISABLED" then
 		StaticPopup_Show("CLUB_FINDER_ENABLED_DISABLED");
 		HideUIPanel(self);
@@ -992,8 +991,6 @@ function CommunitiesFrameMixin:SelectedClubHasApplicants()
 end
 
 function CommunitiesFrameMixin:CheckForTutorials()
-	HelpTip:HideAll(self);
-
 	if not C_ClubFinder.IsEnabled() then
 		return;
 	end

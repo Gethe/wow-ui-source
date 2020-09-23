@@ -476,17 +476,15 @@ function WeeklyRewardActivityItemMixin:SetDisplayedItem()
 	local bestItemQuality = 0;
 	local bestItemLevel = 0;
 	for i, rewardInfo in ipairs(self:GetParent().info.rewards) do
-		if rewardInfo.type == Enum.CachedRewardType.Item then
+		if rewardInfo.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(rewardInfo.id) then
 			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(rewardInfo.id);
-			if itemEquipLoc ~= "" then
-				-- want highest item level of highest quality
-				-- this comparison is not really needed now since the rewards are 1 equippable and 1 non-equippable item
-				if itemQuality > bestItemQuality or (itemQuality == bestItemQuality and itemLevel > bestItemLevel) then
-					self.displayedItemDBID = rewardInfo.itemDBID;
-					self.Name:SetText(itemName);
-					self.Icon:SetTexture(itemIcon);
-					SetItemButtonOverlay(self, C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID));
-				end
+			-- want highest item level of highest quality
+			-- this comparison is not really needed now since the rewards are 1 equippable and 1 non-equippable item
+			if itemQuality > bestItemQuality or (itemQuality == bestItemQuality and itemLevel > bestItemLevel) then
+				self.displayedItemDBID = rewardInfo.itemDBID;
+				self.Name:SetText(itemName);
+				self.Icon:SetTexture(itemIcon);
+				SetItemButtonOverlay(self, C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID));
 			end
 		end
 	end

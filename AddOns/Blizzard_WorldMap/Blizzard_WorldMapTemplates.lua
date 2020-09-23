@@ -281,10 +281,6 @@ end
 
 WorldMapNavBarMixin = { };
 
-local function IsMapValidForNavBarDropDown(mapInfo)
-	return mapInfo.mapType == Enum.UIMapType.World or mapInfo.mapType == Enum.UIMapType.Continent or mapInfo.mapType == Enum.UIMapType.Zone;
-end
-
 function WorldMapNavBarMixin:OnLoad()
 	local homeData = {
 		name = WORLD,
@@ -312,7 +308,7 @@ function WorldMapNavBarMixin:Refresh()
 			id = mapInfo.mapID,
 			OnClick = WorldMapNavBarButtonMixin.OnClick,
 		};
-		if ( IsMapValidForNavBarDropDown(mapInfo) ) then
+		if ( C_Map.IsMapValidForNavBarDropDown(mapInfo.mapID) ) then
 			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
 		end
 		tinsert(hierarchy, 1, buttonData);
@@ -334,7 +330,7 @@ function WorldMapNavBarButtonMixin:GetDropDownList()
 		local children = C_Map.GetMapChildrenInfo(mapInfo.parentMapID);
 		if ( children ) then
 			for i, childInfo in ipairs(children) do
-				if ( IsMapValidForNavBarDropDown(childInfo) ) then
+				if ( C_Map.IsMapValidForNavBarDropDown(childInfo.mapID) ) then
 					local entry = { text = childInfo.name, id = childInfo.mapID, func = function(button, mapID) self:GetParent():GoToMap(mapID); end };
 					tinsert(list, entry);
 				end

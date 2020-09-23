@@ -78,6 +78,10 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardIcon" />
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						-- disabled by request
+						self:EnableMouse(false);
+					</OnLoad>
 					<OnEnter>
 						self:GetParent():OnMouseEnter();
 					</OnEnter>
@@ -107,7 +111,7 @@
 				<Alpha childKey="RewardIcon" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RewardDescription" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
 
-				<Alpha parentKey="HoldAlpha" duration="2" fromAlpha="1" toAlpha="1" order="1">
+				<Alpha parentKey="HoldAlpha" duration="5" fromAlpha="1" toAlpha="1" order="1">
 					<Scripts>
 						<OnPlay>
 							self:GetParent():GetParent():OnHoldAnimStarted();

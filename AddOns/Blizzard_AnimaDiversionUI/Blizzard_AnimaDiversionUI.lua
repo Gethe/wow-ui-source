@@ -6,16 +6,23 @@ AnimaDiversionFrameMixin = { };
 
 local fullGemsTextureKitAnimationEffectId = {
 	["Kyrian"] = 24,
-	["NightFae"] = 30,
 	["Venthyr"] = 27,
+	["NightFae"] = 30,
 	["Necrolord"] = 33, 
 }; 
 
 local newGemTextureKitAnimationEffectId = {
 	["Kyrian"] = 23,
-	["NightFae"] = 29,
 	["Venthyr"] = 26,
+	["NightFae"] = 29,
 	["Necrolord"] = 32, 
+}; 
+
+local textureKitToCovenantId = {
+	["Kyrian"] = 1,
+	["Venthyr"] = 2,
+	["NightFae"] = 3,
+	["Necrolord"] = 4, 
 }; 
 
 local ANIMA_DIVERSION_FRAME_EVENTS = {
@@ -28,6 +35,7 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept =	function(self, selectedNode)
+					PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_CHANNEL);
 					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
 					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
 					HelpTip:Acknowledge(AnimaDiversionFrame.ReinforceProgressFrame, ANIMA_DIVERSION_TUTORIAL_FILL_BAR);
@@ -47,6 +55,7 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_REINFORCE"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept =	function(self, selectedNode)
+					PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_REINFORCE);
 					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, false);
 					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION_PERMANENT);
 				end,
@@ -79,7 +88,7 @@ function AnimaDiversionFrameMixin:OnShow()
 	MapCanvasMixin.OnShow(self);
 
 	self:ResetZoom();
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_OPEN);
 	FrameUtil.RegisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
 end
 
@@ -88,6 +97,8 @@ function AnimaDiversionFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
 	self.SelectPinInfoFrame:Hide();
 	self.ReinforceInfoFrame:Hide();
+	self:StopGemsFullSound();
+	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLOSE);
 end 
 
 function AnimaDiversionFrameMixin:OnEvent(event, ...) 
@@ -194,6 +205,13 @@ function AnimaDiversionFrameMixin:AddBolsterEffectToGem(gem, effectID, overlay)
 	modelScene:AddEffect(effectID, gem, gem);
 end
 
+function AnimaDiversionFrameMixin:StopGemsFullSound()
+	if self.gemsFullSoundHandle then
+		StopSound(self.gemsFullSoundHandle);
+		self.gemsFullSoundHandle = nil;
+	end
+end
+
 function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 	self.bolsterProgressGemPool:ReleaseAll(); 
 	self.ReinforceProgressFrame.ModelScene:ClearEffects();
@@ -209,7 +227,17 @@ function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 	end
 	self.bolsterProgress = newBolsterProgress; 
 
-	local isReinforceReady = self:CanReinforceNode(); 
+	local isReinforceReady = self:CanReinforceNode();
+
+	if isReinforceReady then
+		if not self.gemsFullSoundHandle then
+			local _, soundHandle = PlaySound(self.covenantData.animaGemsFullSoundKit);
+			self.gemsFullSoundHandle = soundHandle;
+		end
+	else
+		self:StopGemsFullSound();
+	end
+
 	local firstNewGem = (newBolsterProgress - numNewGems) + 1;
 
 	for i=1, newBolsterProgress do
@@ -219,6 +247,10 @@ function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 
 		if isNewGem then
 			self:AddBolsterEffectToGem(self.lastGem, newGemEffectID, true);
+
+			if not isReinforceReady then
+				PlaySound(self.covenantData.animaNewGemSoundKit);
+			end
 		end
 
 		if isReinforceReady then
@@ -277,6 +309,7 @@ function AnimaDiversionFrameMixin:TryShow(frameInfo)
 	end 
 
 	self.uiTextureKit = frameInfo.textureKit; 
+	self.covenantData = C_Covenants.GetCovenantData(textureKitToCovenantId[self.uiTextureKit]);
 	self.mapID = frameInfo.mapID; 
 	self:SetupBolsterProgressBar();
 	self:SetupCurrencyFrame(); 
@@ -357,6 +390,7 @@ function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
 
 	self:Layout(); 
 	self:Show();
+	PlaySound(AnimaDiversionFrame.covenantData.animaChannelSelectSoundKit);
 end 
 
 function AnimaDiversionSelectionInfoMixin:GetSelectedNode()
@@ -404,6 +438,7 @@ AnimaDiversionSelectButtonMixin = { };
 function AnimaDiversionSelectButtonMixin:OnClick() 
 	local selectedNode = self:GetParent():GetSelectedNode();
 	if selectedNode then 
+		PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLICK_CHANNEL_BUTTON);
 		StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", selectedNode.nodeData.name, nil, selectedNode);
 		self:GetParent():Hide(); 
 	end		
@@ -488,12 +523,14 @@ function ReinforceInfoFrameMixin:SelectNodeToReinforce(node)
 	node:SetSelectedState(true);
 	self.Title:SetText(self.selectedNode.nodeData.name);
 	self.AnimaNodeReinforceButton:Enable(); 
+	PlaySound(AnimaDiversionFrame.covenantData.animaReinforceSelectSoundKit);
 end 
 
 AnimaNodeReinforceButtonMixin = { };
 function AnimaNodeReinforceButtonMixin:OnClick()
 	local selectedNode = self:GetParent():GetSelectedNode();
 	if selectedNode then
+		PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLICK_REINFORCE_BUTTON);
 		StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_REINFORCE", selectedNode.nodeData.name, nil, selectedNode);
 	end
 end

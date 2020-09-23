@@ -249,12 +249,12 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 				if quality == Enum.ItemQuality.Artifact then
 					local quantity;
 					name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality);
+					currencyID = reward.id;
+					rewardTexture = texture;
+					rewardQuantity = reward.quantity;
 				elseif reward.id == CONQUEST_CURRENCY_ID then
 					rewardFrame.conquestAmount = reward.quantity;
 				end
-				currencyID = reward.id;
-				rewardTexture = texture;
-				rewardQuantity = reward.quantity;
 			end
 		end
 	end
@@ -1153,7 +1153,8 @@ function ConquestFrame_OnShow(self)
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
 	local lastSeasonNumber = tonumber(GetCVar("newPvpSeason"));
-	if lastSeasonNumber < (GetCurrentArenaSeason() - SL_START_SEASON + 1) then
+	local currentSeasonNumber = GetCurrentArenaSeason();
+	if currentSeasonNumber >= SL_START_SEASON and lastSeasonNumber < currentSeasonNumber then
 		PVPQueueFrame.NewSeasonPopup:Show();
 	end
 end
@@ -1600,8 +1601,8 @@ local SEASON_REWARD_ACHIEVEMENTS = {
 		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 13943,
 	},
 	[SL_START_SEASON] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14561,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14555,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14611,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14612,
 	},
 	[SL_START_SEASON + 1] = {
 		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14563,
@@ -2145,7 +2146,7 @@ end
 
 function PVPNewSeasonPopupOnClick(self)
 	self:GetParent():Hide();
-	SetCVar("newPvpSeason", GetCurrentArenaSeason() - SL_START_SEASON + 1);
+	SetCVar("newPvpSeason", GetCurrentArenaSeason());
 end
 
 PVPWeeklyCasualPanelMixin = { };

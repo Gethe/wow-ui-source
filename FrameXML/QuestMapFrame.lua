@@ -283,8 +283,20 @@ function QuestSessionManagementMixin:OnLoad()
 	EventRegistry:RegisterCallback("QuestLog.HideCampaignOverview", self.OnQuestLogHideCampaignOverview, self);
 end
 
+function QuestSessionManagementMixin:OnShow()
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
+end
+
 function QuestSessionManagementMixin:OnHide()
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED");
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+
 	UpdateMicroButtons();
+end
+
+function QuestSessionManagementMixin:OnEvent(event, ...)
+	self:UpdateExecuteSessionCommandState();
 end
 
 function QuestSessionManagementMixin:OnClick(button, down)
@@ -323,10 +335,14 @@ function QuestSessionManagementMixin:UpdateVisibility()
 			local onlyShowSessionActive = command == Enum.QuestSessionCommand.SessionActiveNoCommand;
 			self.ExecuteSessionCommand:SetShown(not onlyShowSessionActive);
 			self.SessionActiveFrame:SetShown(onlyShowSessionActive);
-			self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
+			self:UpdateExecuteSessionCommandState();
 			self:UpdateExecuteCommandAtlases(command);
 		end
 	end
+end
+
+function QuestSessionManagementMixin:UpdateExecuteSessionCommandState()
+	self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
 end
 
 function QuestSessionManagementMixin:UpdateExecuteCommandAtlases(command)
@@ -898,7 +914,9 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign; -- Always display campaign headers, the rest start as hidden
 	else
-		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);  -- TOOD: Do this in QuestLog? Either way, cached for later use
+		-- "Intro" Callings go into Campaigns...current move is to not let them display under a calling header, because they will be duplicated
+		-- Fixing that is a ton more work at this point than we have time to do.
+		info.isCalling = info.campaignID == nil and C_QuestLog.IsQuestCalling(info.questID);
 
 		if lastHeader and not lastHeader.shouldDisplay then
 			lastHeader.shouldDisplay = info.isCalling or QuestLogQuests_ShouldShowQuestButton(info);
@@ -907,8 +925,8 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		-- Make it easy for a quest to look up its header
 		info.header = lastHeader;
 
-		-- Might as well just keep this in Lua
-		if info.isCalling and info.header then
+		-- Might as well just keep this in Lua, also ensure that callings are never sorted into a campaign.
+		if info.isCalling and info.header and not info.header.isCampaign then
 			info.header.isCalling = true;
 		end
 	end

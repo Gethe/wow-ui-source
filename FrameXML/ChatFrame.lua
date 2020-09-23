@@ -3495,7 +3495,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 			if not found or not info then
-				return true;
+				if arg1 == "YOU_CHANGED" and C_ChatInfo.IsChannelRegional(arg8) then
+					ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(arg7));
+				else
+					return true;
+				end
 			end
 		end
 

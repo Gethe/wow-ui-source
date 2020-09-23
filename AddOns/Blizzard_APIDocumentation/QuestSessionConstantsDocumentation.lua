@@ -19,9 +19,9 @@ local QuestSessionConstants =
 		{
 			Name = "QuestSessionResult",
 			Type = "Enumeration",
-			NumValues = 32,
+			NumValues = 33,
 			MinValue = 0,
-			MaxValue = 31,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "Ok", Type = "QuestSessionResult", EnumValue = 0 },
@@ -56,6 +56,7 @@ local QuestSessionConstants =
 				{ Name = "InPetBattle", Type = "QuestSessionResult", EnumValue = 29 },
 				{ Name = "InvalidPublicParty", Type = "QuestSessionResult", EnumValue = 30 },
 				{ Name = "Unknown", Type = "QuestSessionResult", EnumValue = 31 },
+				{ Name = "InCombat", Type = "QuestSessionResult", EnumValue = 32 },
 			},
 		},
 	},

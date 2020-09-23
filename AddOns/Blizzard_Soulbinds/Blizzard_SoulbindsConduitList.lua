@@ -27,13 +27,13 @@ end
 function ConduitListCategoryButtonMixin:Init(conduitType)
 	local name = self.Container.Name;
 	name:SetText(Soulbinds.GetConduitName(conduitType));
-	name:SetWidth(200); -- Required to recalculate the desired string width.
-	name:SetWidth(name:GetStringWidth());
+	name:SetWidth(name:GetStringWidth() + 40);
 
 	local useAtlasSize = false;
 	local icon = self.Container.ConduitIcon;
 	icon:SetAtlas(Soulbinds.GetConduitEmblemAtlas(conduitType), false);
 	icon:SetScale(GetConduitIconScale(conduitType));
+	icon:SetPoint("LEFT", name, "RIGHT", -40, 0);
 end
 
 function ConduitListCategoryButtonMixin:OnEnter()

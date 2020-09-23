@@ -1,7 +1,6 @@
 NewPlayerExperience = {};
 -- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:Initialize()
-	print("NewPlayerExperience:Initialize");
 	self:Begin();
 	Tutorials.QueueSystem:Reset();
 end

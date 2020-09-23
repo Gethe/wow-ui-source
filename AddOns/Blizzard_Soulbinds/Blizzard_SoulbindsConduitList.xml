@@ -258,6 +258,7 @@
 					<EventButton parentKey="Decrease" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
 						<KeyValues>
 							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
 						</KeyValues>
 						<Size x="20" y="17"/>
 						<Layers>
@@ -275,6 +276,7 @@
 					<EventButton parentKey="Increase" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
 						<KeyValues>
 							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
 						</KeyValues>
 						<Size x="20" y="17"/>
 						<Layers>
@@ -290,6 +292,9 @@
 						</Layers>
 					</EventButton>
 					<EventButton parentKey="Thumb" inherits="ConduitScrollBarButtonScripts" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
+						</KeyValues>
 						<Size x="16" y="100"/>
 						<Layers>
 							<Layer level="BACKGROUND">

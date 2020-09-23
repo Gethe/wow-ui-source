@@ -36,6 +36,10 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 	if self.tooltip and self.tooltip ~= "" then
 		self:SetTooltipOwner();
 
+		if self.tooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(EmbeddedItemTooltip, self.tooltipBackdropStyle);
+		end
+
 		if self.tooltipContainsHyperLink then
 			local clearTooltip = true;
 			if self.preString and self.preString:len() > 0 then

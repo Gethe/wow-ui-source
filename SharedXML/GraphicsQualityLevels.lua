@@ -437,18 +437,21 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 	graphicsCVar =	"graphicsParticleDensity",
 	data = {
 		[1] = {
-			text = VIDEO_OPTIONS_LOW,
+			text = VIDEO_OPTIONS_DISABLED,
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
+			text = VIDEO_OPTIONS_LOW,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
+			text = VIDEO_OPTIONS_FAIR,
 		},
 		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
+			text = VIDEO_OPTIONS_MEDIUM,
 		},
 		[5] = {
+			text = VIDEO_OPTIONS_HIGH,
+		},
+		[6] = {
 			text = VIDEO_OPTIONS_ULTRA,
 		},
 	},
@@ -1126,6 +1129,32 @@ VideoData["Advanced_RTShadowQualityDropDown"]={
 			tooltip = VIDEO_OPTIONS_RT_SHADOW_QUALITY_HIGH,
 			cvars =	{
 				shadowrt = 3,
+			},
+		},
+	},
+}
+
+VideoData["Advanced_SSAOTypeDropDown"]={
+	name = SSAO_TYPE_LABEL;
+	validateOnGXRestart = true,
+
+	data = {
+		{
+			text = GX_ADAPTER_AUTO_DETECT,
+			cvars =    {
+				ResolvedSSAOType = 0,
+			},
+		},
+		{
+			text = SSAO_TYPE_ASSAO,
+			cvars =    {
+				ResolvedSSAOType = 1,
+			},
+		},
+		{
+			text = SSAO_TYPE_CACAO,
+			cvars =	{
+				ResolvedSSAOType = 2,
 			},
 		},
 	},
