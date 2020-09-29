@@ -61,6 +61,10 @@ function Class_CreatureRangeWatcher:UNIT_TARGET()
 	self:HideScreenTutorial();
 end
 
+function Class_CreatureRangeWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_CreatureRangeWatcher:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	self.targets = nil;
@@ -96,9 +100,14 @@ function Class_Hide_MainMenuBar:OnBegin()
 	MainMenuBarArtFrame:Hide();
 end
 
+function Class_Hide_MainMenuBar:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_MainMenuBar:OnComplete()
 	MainMenuBarArtFrame:Show();
 end
+
 
 Class_Hide_BagsBar = class("Hide_BagsBar", Class_TutorialBase);
 function Class_Hide_BagsBar:OnBegin()
@@ -110,10 +119,15 @@ function Class_Hide_BagsBar:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
 	self:Complete();
 end
 
+function Class_Hide_BagsBar:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_BagsBar:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	MicroButtonAndBagsBar:Show();
 end
+
 
 Class_Hide_OtherMicroButtons = class("Hide_OtherMicroButtons", Class_TutorialBase);
 function Class_Hide_OtherMicroButtons:OnBegin()
@@ -127,6 +141,10 @@ function Class_Hide_OtherMicroButtons:OnBegin()
 	EJMicroButton:Hide();
 end
 
+function Class_Hide_OtherMicroButtons:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_OtherMicroButtons:OnComplete()
 	GuildMicroButton:Show();
 	TalentMicroButton:Show();
@@ -138,14 +156,20 @@ function Class_Hide_OtherMicroButtons:OnComplete()
 	EJMicroButton:Show();
 end
 
+
 Class_Hide_StoreMicroButton = class("Hide_StoreMicroButton", Class_TutorialBase);
 function Class_Hide_StoreMicroButton:OnBegin()
 	StoreMicroButton:Hide();
 end
 
+function Class_Hide_StoreMicroButton:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_StoreMicroButton:OnComplete()
 	StoreMicroButton:Show();
 end
+
 
 Class_Hide_SpellbookMicroButton = class("Hide_SpellbookMicroButton", Class_TutorialBase);
 function Class_Hide_SpellbookMicroButton:OnBegin()
@@ -157,36 +181,57 @@ function Class_Hide_SpellbookMicroButton:PLAYER_LEVEL_CHANGED(originalLevel, new
 	self:Complete();
 end
 
+function Class_Hide_SpellbookMicroButton:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_SpellbookMicroButton:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	SpellbookMicroButton:Show();
 end
 
+
 Class_Hide_CharacterMicroButton = class("Hide_CharacterMicroButton", Class_TutorialBase);
 function Class_Hide_CharacterMicroButton:OnBegin()
 	CharacterMicroButton:Hide();
 end
+
+function Class_Hide_CharacterMicroButton:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_CharacterMicroButton:OnComplete()
 	CharacterMicroButton:Show();
 end
+
 
 Class_Hide_TargetFrame = class("Hide_TargetFrame", Class_TutorialBase);
 function Class_Hide_TargetFrame:OnBegin()
 	TargetFrame:Hide();
 end
 
+function Class_Hide_TargetFrame:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_TargetFrame:OnComplete()
 	TargetFrame:Show();
 end
+
 
 Class_Hide_StatusTrackingBar = class("Hide_StatusTrackingBar", Class_TutorialBase);
 function Class_Hide_StatusTrackingBar:OnBegin()
 	StatusTrackingBarManager:Hide();
 end
 
+function Class_Hide_StatusTrackingBar:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_StatusTrackingBar:OnComplete()
 	StatusTrackingBarManager:Show();
 end
+
 
 Class_Hide_Minimap = class("Hide_Minimap", Class_TutorialBase);
 function Class_Hide_Minimap:OnBegin()
@@ -208,6 +253,10 @@ function Class_Hide_Minimap:ShowTutorial()
 	end);
 end
 
+function Class_Hide_Minimap:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Hide_Minimap:OnComplete()
 	Minimap:Show();
 	MinimapCluster:Show();
@@ -223,7 +272,7 @@ function Class_Intro_KeyboardMouse:OnBegin()
 
 	self:HideScreenTutorial();
 
-	C_Timer.After(2, function()
+	C_Timer.After(4, function()
 		self:LaunchMouseKeyboardFrame();
 	end);
 	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self.TutorialClosed, self);
@@ -243,6 +292,11 @@ function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
 end
 
 function Class_Intro_KeyboardMouse:TutorialClosed()
+	self:Complete();
+end
+
+function Class_Intro_KeyboardMouse:OnInterrupt(interruptedBy)
+	NPE_TutorialKeyboardMouseFrame_Frame:HideTutorial();
 	self:Complete();
 end
 
@@ -285,6 +339,10 @@ function Class_Intro_CameraLook:QUEST_DETAIL()
 	self:Complete()
 end
 
+function Class_Intro_CameraLook:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Intro_CameraLook:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_STARTED_TURNING", self);
 	Dispatcher:UnregisterEvent("PLAYER_STOPPED_TURNING", self);
@@ -310,6 +368,10 @@ function Class_Intro_ApproachQuestGiver:OnBegin()
 	end
 end
 
+function Class_Intro_ApproachQuestGiver:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Intro_ApproachQuestGiver:OnComplete()
 	self:HideWalkTutorial();
 	Tutorials.Intro_Interact:Begin();
@@ -330,6 +392,10 @@ function Class_Intro_Interact:QUEST_DETAIL(logindex, questID)
 	if not TutorialHelper:IsQuestCompleteOrActive(questID) then
 		self:Complete();
 	end
+end
+
+function Class_Intro_Interact:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 
@@ -545,6 +611,10 @@ function Class_Intro_CombatTactics:HideAbilityPrompt()
 	end
 end
 
+function Class_Intro_CombatTactics:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Intro_CombatTactics:OnComplete()
 	self:HideResourceCallout();
 	self:HideAbilityPrompt();
@@ -592,6 +662,10 @@ function Class_GossipFrameWatcher:GOSSIP_CLOSED()
 	self:HidePointerTutorials();
 end
 
+function Class_GossipFrameWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_GossipFrameWatcher:OnComplete()
 	self:HidePointerTutorials();
 end
@@ -612,6 +686,9 @@ function Class_AcceptQuestWatcher:OnShow()
 	Tutorials.AcceptQuest:Begin();
 end
 
+function Class_AcceptQuestWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Accept Quest - Always prompts the player to accept a quest when the window is up
@@ -631,6 +708,10 @@ function Class_AcceptQuest:OnBegin()
 end
 
 function Class_AcceptQuest:QUEST_ACCEPTED()
+	self:Complete();
+end
+
+function Class_AcceptQuest:OnInterrupt(interruptedBy)
 	self:Complete();
 end
 
@@ -673,6 +754,10 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 	end
 end
 
+function Class_TurnInQuestWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Turn In Quest - Always prompts the player to complete a quest when the window is up
@@ -690,6 +775,10 @@ function Class_TurnInQuest:OnBegin()
 		end, true);
 
 	self.Timer = C_Timer.NewTimer(4, function() GlowEmitterFactory:Show(QuestFrameCompleteQuestButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) end);
+end
+
+function Class_TurnInQuest:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_TurnInQuest:OnComplete()
@@ -727,6 +816,10 @@ function Class_QuestRewardChoice:OnBegin(areAllItemsUsable)
 	Dispatcher:RegisterScript(QuestFrame, "OnHide", function() self:Interrupt(self) end, true);
 end
 
+function Class_QuestRewardChoice:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Quest Complete - Quest objective pop up
@@ -758,7 +851,11 @@ function Class_QuestCompleteHelp:QUEST_REMOVED(questIDRemoved)
 	end
 end
 
-function Class_QuestCompleteHelp:OnCompelte()
+function Class_QuestCompleteHelp:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
+function Class_QuestCompleteHelp:OnComplete()
 	self:HidePointerTutorials();
 end
 
@@ -951,11 +1048,40 @@ function Class_QueueSystem:CheckQueue()
 	end
 end
 
+
+Class_SpellChecker = class("SpellChecker", Class_TutorialBase);
+function Class_SpellChecker:OnBegin()
+	LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
+	local playerLevel = UnitLevel("player");
+	for i = 1, playerLevel do
+	 	local spellID = LevelUpTutorial_spellIDlookUp[i];
+
+		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
+		if not button then
+			Tutorials.QueueSystem:QueueSpellTutorial(spellID, nil, NPEV2_SPELLBOOK_TUTORIAL);
+		end
+	end
+	self:Complete();
+end
+
+function Class_SpellChecker:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
+function Class_SpellChecker:OnComplete()
+end
+
+
 -- ------------------------------------------------------------------------------------------------------------
 -- XP Bar Tutorial
 -- ------------------------------------------------------------------------------------------------------------
 Class_XPBarTutorial = class("XPBarTutorial", Class_TutorialBase);
 -- @param data: type STRUCT_ItemContainer
+function Class_XPBarTutorial:OnInitialize()
+	self:HidePointerTutorials();
+	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
+end
+
 function Class_XPBarTutorial:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_TURNED_IN", self);
 end
@@ -976,9 +1102,8 @@ function Class_XPBarTutorial:QUEST_DETAIL()
 	self:Complete();
 end
 
-function Class_XPBarTutorial:OnInitialize()
-	self:HidePointerTutorials();
-	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
+function Class_XPBarTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -1099,6 +1224,10 @@ function Class_AddSpellToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 	end
 end
 
+function Class_AddSpellToActionBar:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_AddSpellToActionBar:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
@@ -1157,6 +1286,10 @@ function Class_Intro_OpenMap:OnShow()
 end
 
 function Class_Intro_OpenMap:PLAYER_DEAD()
+	self:Complete();
+end
+
+function Class_Intro_OpenMap:OnInterrupt(interruptedBy)
 	self:Complete();
 end
 
@@ -1223,6 +1356,10 @@ function Class_Intro_MapHighlights:OnUnsuppressed()
 	self:Display();
 end
 
+function Class_Intro_MapHighlights:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Intro_MapHighlights:OnComplete()
 end
 
@@ -1276,6 +1413,10 @@ function Class_UseQuestItemTutorial:InRange()
 		local pointerString = self.questData.PointerTutorialStringID;
 		QuestItemTutorial =	self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", module.itemButton);
 	end
+end
+
+function Class_UseQuestItemTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_UseQuestItemTutorial:OnComplete()
@@ -1463,6 +1604,10 @@ function Class_LootCorpse:Display()
 	end
 	local content = {text = prompt, icon="newplayertutorial-icon-mouse-rightbutton"};
 	self:ShowScreenTutorial(content);
+end
+
+function Class_LootCorpse:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_LootCorpse:OnComplete()
@@ -1680,6 +1825,10 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 	end
 
 	return potentialUpgrades;
+end
+
+function Class_EquipFirstItemWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_EquipFirstItemWatcher:OnComplete()
@@ -2139,6 +2288,10 @@ function Class_EnhancedCombatTactics:UNIT_SPELLCAST_SUCCEEDED(unitID, _, spellID
 	end
 end
 
+function Class_EnhancedCombatTactics:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_EnhancedCombatTactics:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
@@ -2218,6 +2371,10 @@ function Class_EnhancedCombatTactics_Warrior:UNIT_SPELLCAST_SUCCEEDED(unitID, _,
 			Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 		end
 	end
+end
+
+function Class_EnhancedCombatTactics_Warrior:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_EnhancedCombatTactics_Warrior:OnComplete()
@@ -2304,6 +2461,10 @@ function Class_EnhancedCombatTactics_Rogue:UNIT_SPELLCAST_SUCCEEDED(unitID, _, s
 	end
 end
 
+function Class_EnhancedCombatTactics_Rogue:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_EnhancedCombatTactics_Rogue:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
@@ -2370,6 +2531,10 @@ function Class_EnhancedCombatTactics_UseDoTs:UNIT_TARGET()
 		self:HideScreenTutorial();
 		self:HidePointerTutorials();
 	end
+end
+
+function Class_EnhancedCombatTactics_UseDoTs:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_EnhancedCombatTactics_UseDoTs:OnComplete()
@@ -2444,6 +2609,10 @@ function Class_EnhancedCombatTactics_Ranged:UNIT_SPELLCAST_SUCCEEDED(unitID, _, 
 	end
 end
 
+function Class_EnhancedCombatTactics_Ranged:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_EnhancedCombatTactics_Ranged:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:UnregisterEvent("UNIT_TARGETABLE_CHANGED", self);
@@ -2492,8 +2661,13 @@ function Class_LowHealthWatcher:UNIT_HEALTH(arg1)
 	end
 end
 
+function Class_LowHealthWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_LowHealthWatcher:OnComplete()
 end
+
 
 Class_EatFood = class("EatFood", Class_TutorialBase);
 function Class_EatFood:OnBegin(inCombat)
@@ -2582,6 +2756,10 @@ end
 
 function Class_EatFood:PLAYER_REGEN_ENABLED()
 	self.inCombat = false;
+end
+
+function Class_EatFood:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_EatFood:OnComplete()
@@ -2717,6 +2895,10 @@ function Class_Vendor_Watcher:MERCHANT_CLOSED()
 	self:HidePointerTutorials();
 end
 
+function Class_Vendor_Watcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Vendor_Watcher:OnComplete()
 	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
 	self.buyPointerID = nil;
@@ -2780,6 +2962,10 @@ function Class_LFGStatusWatcher:HideLFG()
 		return;
 	end
 	self:Restart();
+end
+
+function Class_LFGStatusWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_LFGStatusWatcher:OnComplete()
@@ -2920,6 +3106,10 @@ function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
 	end
 end
 
+function Class_LookingForGroup:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_LookingForGroup:OnComplete()
 	GlowEmitterFactory:Hide(LFDQueueFrameFindGroupButton);
 	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
@@ -2932,7 +3122,7 @@ end
 
 
 -- ------------------------------------------------------------------------------------------------------------
--- Looking For Group
+-- Leave Party Prompt
 -- /script Tutorials.LeavePartyPrompt:OnBegin()
 -- ------------------------------------------------------------------------------------------------------------
 Class_LeavePartyPrompt = class("LeavePartyPrompt", Class_TutorialBase);
@@ -2942,6 +3132,10 @@ function Class_LeavePartyPrompt:OnBegin()
 	C_Timer.After(10, function()
 		self:Complete();
 	end);
+end
+
+function Class_LeavePartyPrompt:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_LeavePartyPrompt:OnComplete()
@@ -2977,6 +3171,10 @@ function Class_Death_ReleaseCorpse:PLAYER_ALIVE()
 	self:Complete();
 end
 
+function Class_Death_ReleaseCorpse:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Death_ReleaseCorpse:OnComplete()
 	if (UnitIsGhost("player")) then
 		Tutorials.Death_MapPrompt:Begin();
@@ -3004,6 +3202,10 @@ function Class_Death_MapPrompt:CORPSE_IN_RANGE()
 	self:Complete();
 end
 
+function Class_Death_MapPrompt:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_Death_MapPrompt:OnComplete()
 	self:HideSingleKeyTutorial();
 	Tutorials.Death_ResurrectPrompt:Begin();
@@ -3022,8 +3224,13 @@ function Class_Death_ResurrectPrompt:PLAYER_UNGHOST()
 	self:Complete();
 end
 
+function Class_Death_ResurrectPrompt:OnInterrupt(interruptedBy)
+	self:Complete();
+end
 
-
+function Class_Death_ResurrectPrompt:OnComplete()
+	GlowEmitterFactory:Hide(StaticPopup1Button1);
+end
 
 -- ============================================================================================================
 -- Misc Tutorials
@@ -3063,46 +3270,42 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Chat Frame
--- Prompts the player if they open the chat frame.  also auto closes it if it sits open for a while
 -- ------------------------------------------------------------------------------------------------------------
 Class_ChatFrame = class("ChatFrame", Class_TutorialBase);
 function Class_ChatFrame:OnInitialize()
 	self.ShowCount = 0;
 end
 
-function Class_ChatFrame:OnBegin(editBox)
-	if (editBox) then
-		self.EditBox = editBox;
-		self.ShowCount = self.ShowCount + 1;
+function Class_ChatFrame:OnBegin()
+	if not IsActivePlayerNewcomer() then
+		self:Complete();
+	end
 
+	local editBox = ChatEdit_GetActiveWindow() or ChatEdit_GetLastActiveWindow();
+	if (editBox) then
+		self.ShowCount = self.ShowCount + 1;
 		if (self.ShowCount == 1) then
 			self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_CHATFRAME2), "LEFT", editBox);
 		end
 
 		self.Elapsed = 0;
 		Dispatcher:RegisterEvent("OnUpdate", self);
-		Dispatcher:RegisterFunction("ChatEdit_DeactivateChat", function() self:Complete() end, true);
 	end
 end
-
 function Class_ChatFrame:OnUpdate(elapsed)
 	self.Elapsed = self.Elapsed + elapsed;
 
-	if (self.Elapsed > 30) then
-		if (self.EditBox) then
-			ChatEdit_DeactivateChat(self.EditBox);
-		end
-		self:Interrupt(self);
+	if (self.Elapsed > 10) then
+		self:Complete();
 	end
 end
 
-function Class_ChatFrame:OnShutdown()
-	self.EditBox = nil;
+function Class_ChatFrame:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_ChatFrame:OnComplete()
 	Dispatcher:UnregisterEvent("OnUpdate", self);
-	Dispatcher:RegisterFunction("ChatEdit_DeactivateChat", nil, true);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -3126,6 +3329,10 @@ function Class_StealthTutorial:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
 	if spellID == STEALTH_SPELL_ID then
 		self:Complete();
 	end
+end
+
+function Class_StealthTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_StealthTutorial:OnComplete()
@@ -3164,6 +3371,10 @@ function Class_DruidFormTutorial:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
 	elseif spellID == TutorialData.DruidAnimalFormSpells.BEAR_FORM_SPELL_ID then
 		self:Complete();
 	end
+end
+
+function Class_DruidFormTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_DruidFormTutorial:OnComplete()
@@ -3316,6 +3527,10 @@ function Class_HunterTameTutorial:PET_STABLE_UPDATE()
 	self:Complete();
 end
 
+function Class_HunterTameTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_HunterTameTutorial:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
@@ -3354,6 +3569,10 @@ function Class_HunterStableTutorial:PET_STABLE_CLOSED()
 	end
 end
 
+function Class_HunterStableTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_HunterStableTutorial:OnComplete()
 	Dispatcher:UnregisterEvent("PET_STABLE_SHOW", self);
 	Dispatcher:UnregisterEvent("PET_STABLE_CLOSED", self);
@@ -3387,6 +3606,10 @@ function Class_AutoPushSpellWatcher:ACTIONBAR_SLOT_CHANGED(slot)
 	if not button then
 		self:Complete();
 	end
+end
+
+function Class_AutoPushSpellWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_AutoPushSpellWatcher:OnComplete()
@@ -3465,6 +3688,10 @@ function Class_MountAddedWatcher:NEW_MOUNT_ADDED(data)
 	end, true);
 end
 
+function Class_MountAddedWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
 function Class_MountAddedWatcher:OnComplete()
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 	ActionButton_HideOverlayGlow(CollectionsMicroButton);
@@ -3520,6 +3747,10 @@ function Class_MountTutorial:ACTIONBAR_SLOT_CHANGED(slot)
 			NPE_TutorialDragButton:Show(self.originButton, self.destButton);
 		end
 	end
+end
+
+function Class_MountTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_MountTutorial:OnComplete()
@@ -3597,6 +3828,10 @@ function Class_UseMountTutorial:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, sp
 		Tutorials.UseMountWatcher:Complete();
 		self:Complete();
 	end
+end
+
+function Class_UseMountTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_UseMountTutorial:OnComplete()
@@ -3678,6 +3913,10 @@ function Class_SpecTutorial:PLAYER_SPECIALIZATION_CHANGED()
 		self.Timer:Cancel();
 	end
 	self:Complete()
+end
+
+function Class_SpecTutorial:OnInterrupt(interruptedBy)
+	self:Complete();
 end
 
 function Class_SpecTutorial:OnComplete()

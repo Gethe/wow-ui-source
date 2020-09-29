@@ -36,6 +36,7 @@
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
 ..\SharedXML\PixelUtilSecure.lua
+..\SharedXML\PixelUtil.lua
 ..\SharedXML\AnchorUtil.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml

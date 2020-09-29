@@ -890,7 +890,7 @@
 		</Scripts>
 	</CinematicModel>
 
-	<CinematicModel name="GarrisonFollowerTabModelClusterModel" inherits="ModelTemplate" hidden="true" virtual="true" enableMouse="false">
+	<CinematicModel name="GarrisonFollowerTabModelClusterModel" inherits="MouseDisabledModelTemplate" hidden="true" virtual="true" enableMouse="false">
 		<Size x="305" y="370"/>
 		<Scripts>
 			<OnModelLoaded>

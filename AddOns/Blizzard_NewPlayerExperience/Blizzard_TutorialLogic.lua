@@ -9,6 +9,7 @@ function Tutorials:Begin()
 
 	self.QueueSystem:Begin();
 	self.AutoPushSpellWatcher:Begin();
+	C_Timer.After(2, function() self.SpellChecker:Begin(); end); -- after 2 seconds, prompt for missing spells
 
 	-- Hide various UI elements until they are turned on
 	self.Hide_Backpack:Begin();
@@ -74,8 +75,6 @@ function Tutorials:Begin()
 		self.Hide_MainMenuBar:Complete();			-- Show the Main Menu bar
 		self.Hide_TargetFrame:Complete();			-- Show the Target Frame
 		self.Hide_StatusTrackingBar:Complete();	-- and show the status tracker
-		-- Chat frame
-		Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 	elseif C_QuestLog.ReadyForTurnIn(questID) then	-- Starting Quest is ready to turn in
 		self.Hide_MainMenuBar:Complete();		-- Show the Main Menu bar
 		self.Intro_CombatTactics:Complete();	-- Intro Combat Tactics is complete
@@ -119,6 +118,12 @@ function Tutorials:Begin()
 		if TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
 			self.UseMountWatcher:Begin();
 		end
+	end
+
+	local standYourGround = C_QuestLog.IsQuestFlaggedCompleted(tutorialData.StandYourGround);
+	local braceForImpact = C_QuestLog.IsQuestFlaggedCompleted(tutorialData.BraceForImpact);
+	if standYourGround and not braceForImpact then
+		self.ChatFrame:Begin(editBox)
 	end
 
 	-- if we are past a certain point, turn on of all the UI
@@ -242,8 +247,6 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 			if questID == tutorialData.StartingQuest then
 				self.Intro_CombatTactics:Complete();
 				self.QuestCompleteHelp:Begin();
-				-- Chat frame
-				Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 			elseif questID == tutorialData.UseQuestItemData.ItemQuest then
 				self.UseQuestItemTutorial:Complete();
 			elseif questID == tutorialData.RemindUseQuestItemData.ItemQuest then
@@ -330,6 +333,10 @@ function Tutorials:Quest_TurnedIn(questData)
 		if questID == classQuestID then
 			self.AddClassSpellToActionBar:Begin();
 		end
+
+		if (questID == tutorialData.StandYourGround) then
+			self.ChatFrame:Begin(editBox)
+		end
 	end
 end
 
@@ -375,6 +382,7 @@ Tutorials.QuestCompleteHelp				= Class_QuestCompleteHelp:new();
 -- ------------------------------------------------------------------------------------------------------------
 -- Queue System
 Tutorials.QueueSystem					= Class_QueueSystem:new();
+Tutorials.SpellChecker					= Class_SpellChecker:new();
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Intro to XP and Level Up

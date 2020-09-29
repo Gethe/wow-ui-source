@@ -6,10 +6,23 @@ local Tutorial =
 
 	Functions =
 	{
+		{
+			Name = "AbandonTutorialArea",
+			Type = "Function",
+		},
+		{
+			Name = "ReturnToTutorialArea",
+			Type = "Function",
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "LeavingTutorialArea",
+			Type = "Event",
+			LiteralName = "LEAVING_TUTORIAL_AREA",
+		},
 		{
 			Name = "NpeTutorialUpdate",
 			Type = "Event",

@@ -729,6 +729,10 @@ function CharCustomizeMixin:OnEvent(event, ...)
 	end
 end
 
+function CharCustomizeMixin:OnHide()
+	self:ResetCustomizationPreview();
+end
+
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
 	self.parentFrame = parentFrame;
 	self:SetParent(parentFrame);

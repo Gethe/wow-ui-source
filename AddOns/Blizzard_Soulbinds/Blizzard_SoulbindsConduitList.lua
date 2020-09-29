@@ -11,6 +11,7 @@ ConduitListCategoryButtonMixin:GenerateCallbackEvents(
 function ConduitListCategoryButtonMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
+	self.expanded = false;
 	self:SetExpanded(true);
 end
 
@@ -62,13 +63,21 @@ function ConduitListCategoryButtonMixin:OnClick(buttonName)
 end
 
 function ConduitListCategoryButtonMixin:SetExpanded(expanded)
+	local changed = self.expanded ~= expanded;
 	self.expanded = expanded;
 
 	local atlas = expanded and "Soulbinds_Collection_CategoryHeader_Collapse" or "Soulbinds_Collection_CategoryHeader_Expand";
 	local useAtlasSize = true;
 	self.Container.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
 
-	self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
+	if changed then
+		if expanded then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		end
+		self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
+	end
 end
 
 function ConduitListCategoryButtonMixin:IsExpanded()

@@ -214,7 +214,7 @@ function AchievementFrame_ToggleView()
 		if ( emblemFilename ) then
 			AchievementFrameGuildEmblemLeft:SetTexture(emblemFilename);
 			AchievementFrameGuildEmblemRight:SetTexture(emblemFilename);
-			local r, g, b = ACHIEVEMENT_YELLOW_COLOR:GetRGB();
+			local r, g, b = ACHIEVEMENT_YELLOW_BORDER_COLOR:GetRGB();
 			AchievementFrameGuildEmblemLeft:SetVertexColor(r, g, b, 0.5);
 			AchievementFrameGuildEmblemRight:SetVertexColor(r, g, b, 0.5);
 		end

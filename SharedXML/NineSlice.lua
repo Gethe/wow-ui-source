@@ -243,10 +243,10 @@ local layouts =
 	BFAMissionAlliance =
 	{
 		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "AllianceFrameCornerTopLeft", x = 6, y = -6, },
+		TopLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = -6, },
 		TopEdge = { atlas = "_AllianceFrameTile-Top", },
 		BottomEdge = { atlas = "_AllianceFrameTile-Top", },
 		LeftEdge = { atlas = "!AllianceFrameTile-Left", },
