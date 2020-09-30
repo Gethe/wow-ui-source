@@ -99,7 +99,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Button name="CovenantFollowerButtonTemplate" virtual="true">
 		<Size x="260" y="56"/>
 		<Anchors>
@@ -122,7 +122,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="130" y="0"/>
+					<Size x="122" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="60" y="-8"/>
 					</Anchors>
@@ -516,7 +516,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="CovenantFollowerTabTemplate" inherits="CovenantMissionBaseFrameTemplate" mixin="GarrisonFollowerTabMixin,CovenantFollowerTabMixin" hidden="true" virtual="true">
 		<Size x="574" y="538"/>
 		<Layers>
@@ -684,7 +684,7 @@
 		<Scripts>
 			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Thumb" parentKey="thumbTexture">
+		<ThumbTexture name="$parentThumbTexture" atlas="Soulbinds_Collection_Scrollbar_Thumb_Wide" parentKey="thumbTexture">
 			<Size x="10" y="24"/>
 		</ThumbTexture>
 	</Slider>
@@ -771,7 +771,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="EmptyListString" inherits="GameFontNormalHuge" text="GARRISON_EMPTY_MISSION_LIST">
+				<FontString parentKey="EmptyListString" inherits="GameFontNormalHuge" text="COVENANT_MISSIONS_EMPTY_LIST">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -950,7 +950,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Button name="CovenantMissionListButtonTemplate" virtual="true">
 		<Size x="843" y="93"/>
 		<Layers>
@@ -1116,6 +1116,6 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="SupportColorationAnimatorTemplate" mixin="SupportColorationAnimatorMixin" setAllPoints="true" virtual="true"/>
 </Ui>

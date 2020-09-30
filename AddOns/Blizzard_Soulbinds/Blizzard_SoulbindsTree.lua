@@ -201,6 +201,19 @@ function SoulbindTreeMixin:StopNodeAnimations()
 	end
 end
 
+local function AreConduitsResettingOrIsUninstalled(nodeFrame)
+	return Soulbinds.IsConduitResetPending() or not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID());
+end
+
+local function IsInstallingConduitsOrNotPending(soulbindID, nodeFrame)
+	if not Soulbinds.IsConduitCommitPending() then
+		return true;
+	end
+
+	local conduit = nodeFrame:GetConduit();
+	return not conduit or conduit:GetConduitID() == 0;
+end
+
 function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
 	if not C_Soulbinds.CanModifySoulbind() then
 		return;
@@ -208,7 +221,13 @@ function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
 
 	local canAnimateConduit = (function()
 		local canAnimate = function(nodeFrame, conduitType)
-			return nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) and not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID());
+			-- If a conduit reset or install is pending, the animation conditions won't be accurately
+			-- evaluable in the sense that their actual state would not match their expected state. 
+			-- For example a commit is in flight, entering the collection would incorrectly animate
+			-- a conduit that is about to be installed. Similarly, if conduits are being reset, entering the 
+			-- collection would incorrect disallow animation because it would still appear installed. 
+			return nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) and 
+				AreConduitsResettingOrIsUninstalled(nodeFrame) and IsInstallingConduitsOrNotPending(self.soulbindID, nodeFrame);
 		end
 
 		if C_Soulbinds.IsUnselectedConduitPendingInSoulbind(self.soulbindID) then
@@ -230,6 +249,10 @@ function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
 end
 
 function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
+	if not C_Soulbinds.CanModifySoulbind() then
+		return;
+	end
+
 	local oldTimer = self.mouseOverTimer;
 	if oldTimer then
 		self.mouseOverTimer:Cancel();
@@ -247,6 +270,10 @@ function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
 end
 
 function SoulbindTreeMixin:OnCollectionConduitLeave()
+	if not C_Soulbinds.CanModifySoulbind() then
+		return;
+	end
+
 	if not Soulbinds.HasConduitAtCursor() then
 		if self.mouseOverTimer then
 			self.mouseOverTimer:Cancel();

@@ -1,3 +1,6 @@
+
+local forceinsecure = forceinsecure;
+
 MESSAGE_SCROLLBUTTON_INITIAL_DELAY = 0;
 MESSAGE_SCROLLBUTTON_SCROLL_DELAY = 0.05;
 CHAT_BUTTON_FLASH_TIME = 0.5;
@@ -3047,8 +3050,8 @@ end
 -- want to count them.
 local function GetFirstChannelIDOfChannelMatchingRuleset(ruleset, excludeChannel)
 	for i = 1, GetNumDisplayChannels() do
-		local localID = select(4, GetChannelDisplayInfo(i));
-		if localID and localID > 0 and localID ~= excludeChannel then
+		local localID, _, active = select(4, GetChannelDisplayInfo(i));
+		if active and localID and localID > 0 and localID ~= excludeChannel then
 			if C_ChatInfo.GetChannelRuleset(localID) == ruleset then
 				return localID;
 			end
@@ -3058,8 +3061,8 @@ local function GetFirstChannelIDOfChannelMatchingRuleset(ruleset, excludeChannel
 	return nil;
 end
 
-function GetSlashCommandForChannelOpenChat(channelIndex)
-  	return "/" .. channelIndex;
+function GetSlashCommandForChannelOpenChat(localID)
+  	return "/" .. localID;
 end
 
 local function HasNewcomerChannelEnabled(chatFrame)
@@ -3220,8 +3223,8 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
 	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
-		local oldLevel, newLevel = ...;
-		if oldLevel ~= 0 and newLevel ~= 0 then
+		local oldLevel, newLevel, real = ...;
+		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
 				LevelUpDisplay_ChatPrint(self, newLevel, LEVEL_UP_TYPE_CHARACTER)
 			elseif newLevel < oldLevel then
@@ -3415,7 +3418,15 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 end
 
 function ChatFrame_ShowNewcomerGraduation(s)
-	local slashCmd = GetSlashCommandForChannelOpenChat(1); -- The 1 is a lie, but there's no current way to find the general channel index here...
+	local localID = C_ChatInfo.GetGeneralChannelLocalID();
+	local slashCmd;
+
+	if localID then
+		slashCmd = GetSlashCommandForChannelOpenChat(localID);
+	else
+		slashCmd = ("%s %s"):format(SLASH_JOIN1, C_ChatInfo.GetChannelShortcutForChannelID(C_ChatInfo.GetGeneralChannelID()));
+	end
+
 	ChatFrame_DisplaySystemMessageInPrimary(s:format(slashCmd));
 end
 

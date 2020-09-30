@@ -316,6 +316,10 @@ local ScriptAnimationTableExtension = {
 	[31] = AnimaDiversionHoldAnimation,
 	[33] = AnimaDiversionHoldAnimation,
 
+	[41] = {
+		animation = 158,
+	},
+
 	[52] = {
 		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_MAIN_WINDOW_OPEN_LOOP,
 	},

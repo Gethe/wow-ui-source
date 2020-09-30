@@ -110,7 +110,7 @@
 						<FontString parentKey="Description" inherits="SystemFont_Shadow_Med2">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="30"/>
+								<Anchor point="BOTTOM" x="0" y="40"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Title" inherits="Game32Font"  mixin="ShrinkUntilTruncateFontStringMixin" justifyV="BOTTOM">

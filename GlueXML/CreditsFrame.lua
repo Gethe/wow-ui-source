@@ -62,6 +62,7 @@ function CreditsFrameMixin:JumpToCreditsIndex(position)
 
 	self.startIdx = Clamp(position, 1, #self.data);
 	self.startPos = 0;
+	self.pixelAlignedRemainder = 0;
 	local startPos = self.startPos;
 	for i = self.startIdx, #self.data do
 		assert(not self.strings[i]);
@@ -182,8 +183,14 @@ function CreditsFrameMixin:OnUpdate(elapsed)
 	local screenHeight = self:GetHeight();
 	local left = self.ScrollFrame:GetLeft() - self:GetLeft();
 
-	self.startPos = self.startPos + CREDITS_SCROLL_RATE * elapsed;
-	if (CREDITS_SCROLL_RATE < 0) then
+	if CREDITS_SCROLL_RATE ~= 0 then
+		local offset = self.pixelAlignedRemainder + CREDITS_SCROLL_RATE * elapsed;
+		local pixelAlignedOffset = PixelUtil.GetNearestPixelSize(offset, 1);
+		self.pixelAlignedRemainder = offset - pixelAlignedOffset;
+		self.startPos = self.startPos + pixelAlignedOffset;
+	end
+
+	if CREDITS_SCROLL_RATE < 0 then
 		local startPos = self.startPos;
 		local prevString = self.strings[self.startIdx];
 		while (prevString:GetTop() - self:GetTop() < screenHeight and self.startIdx > 1) do

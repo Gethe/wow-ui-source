@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_HybridMinimap.lua"/>
 
-	<Frame name="HybridMinimap" parent="Minimap" mixin="HybridMinimapMixin" hidden="true" clipChildren="true" setAllPoints="true">
+	<Frame name="HybridMinimap" parent="Minimap" mixin="HybridMinimapMixin" hidden="true" clipChildren="true" setAllPoints="true" useParentLevel="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-7">
 				<Texture parentKey="Background" setAllPoints="true">
@@ -18,7 +18,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="MapCanvas" inherits="MapCanvasFrameTemplate">
+			<Frame parentKey="MapCanvas" inherits="MapCanvasFrameTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>

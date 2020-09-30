@@ -126,6 +126,9 @@ function CovenantFollowerTabMixin:UpdateHealCost()
 		if (buttonCost > currencyInfo.quantity) then 
 			self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 			self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
+		elseif self.followerInfo.status == GARRISON_FOLLOWER_ON_MISSION then
+			self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
+			self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_ON_ADVENTURE;
 		else
 			self.HealFollowerFrame.HealFollowerButton:SetEnabled(true);
 		end

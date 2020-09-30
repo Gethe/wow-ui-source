@@ -314,7 +314,15 @@ function HelpTipTemplateMixin:OnLoad()
 	self.acknowledged = false;
 end
 
+function HelpTipTemplateMixin:OnShow()
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
 function HelpTipTemplateMixin:OnHide()
+	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+
 	local info = self.info;
 	if info.onHideCallback then
 		info.onHideCallback(self.acknowledged, info.callbackArg);
@@ -323,6 +331,10 @@ function HelpTipTemplateMixin:OnHide()
 		info.onAcknowledgeCallback(info.callbackArg);
 	end
 	HelpTip:Release(self);
+end
+
+function HelpTipTemplateMixin:OnEvent()
+	self:Layout();
 end
 
 -- this exists because OnHide can be deferred

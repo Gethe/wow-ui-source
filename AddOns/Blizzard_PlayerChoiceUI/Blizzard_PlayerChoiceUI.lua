@@ -267,7 +267,7 @@ local borderLayout = {
 		closeBorderY = 1,
 		header = 0,
 		setAtlasVisibility = true,
-		frameOffsetY = 90,
+		frameOffsetY = 130,
 		hideBorder = true,
 	},
 	["Oribos"] = {
@@ -309,16 +309,19 @@ local PLAYER_CHOICE_QUALITY_TEXT = {
 	[Enum.PlayerChoiceRarity.Epic] = ITEM_QUALITY4_DESC,
 };
 
+local defaultChoiceLayout = {
+	atlasBackgroundWidthPadding = 0,
+	optionHeightOffset = 0,
+	extraPaddingOnArtworkBorder = 0,
+	backgroundYOffset = 0,
+	optionButtonOverrideWidth = 175,
+	optionTextJustifyH = "LEFT",
+	offsetBetweenOptions = 0,
+};
+
 local choiceLayout = {
-	["default"] = {
-		atlasBackgroundWidthPadding = 0,
-		optionHeightOffset = 0,
-		extraPaddingOnArtworkBorder = 0,
-		backgroundYOffset = 0,
-		optionButtonOverrideWidth = 175,
-		optionTextJustifyH = "LEFT",
-		offsetBetweenOptions = 0,
-	},
+	["default"] = defaultChoiceLayout,
+
 	["jailerstower"] = {
 		atlasBackgroundWidthPadding = 50,
 		optionHeightOffset = 90,
@@ -376,6 +379,16 @@ local choiceLayout = {
 		confirmationOkSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CONFIRM_COVENANT,
 		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
 	},
+	["Venthyr"] = setmetatable(
+		{
+			restrictByID = {636, 652, 653,},
+			optionFixedHeight = 125,
+			widgetFixedHeight = 135,
+		},
+		{ 
+			__index = defaultChoiceLayout
+		}
+	),
 }
 
 local choiceButtonLayout = {
@@ -552,14 +565,25 @@ function PlayerChoiceFrameMixin:HideOptions(option)
 	end
 end 
 
+local function GetChoiceLayout(choiceInfo)
+	local overrideLayout = choiceLayout[choiceInfo.uiTextureKit or DEFAULT_TEXTURE_KIT];
+	if overrideLayout then
+		if not overrideLayout.restrictByID or tContains(overrideLayout.restrictByID, choiceInfo.choiceID) then
+			return overrideLayout;
+		end
+	end
+
+	return choiceLayout.default;
+end
+
 function PlayerChoiceFrameMixin:TryShow()
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceInfo();
-	if(not choiceInfo) then 
+	if(not choiceInfo) then
 		return; 
 	end 
 	self.uiTextureKit = choiceInfo.uiTextureKit or DEFAULT_TEXTURE_KIT;
 	local layout = borderLayout[self.uiTextureKit] or borderLayout["neutral"];
-	self.optionLayout = choiceLayout[self.uiTextureKit] or choiceLayout["default"];
+	self.optionLayout = GetChoiceLayout(choiceInfo);
 	self.optionInitHeight = INIT_OPTION_HEIGHT - self.optionLayout.optionHeightOffset;
 
 	self:SetPoint("CENTER", 0, layout.frameOffsetY);
@@ -598,6 +622,7 @@ function PlayerChoiceFrameMixin:TryShow()
 	for _, option in pairs(self.Options) do
 		option.Header.Text:SetFontObject(self.optionTitleFont)
 		option.Header.Text:SetTextColor(self.optionHeaderTitleColor:GetRGBA());
+		option.OptionText:ClearText()
 		if (self.optionLayout.optionFixedHeight) then
 			option.OptionText:SetUseHTML(false);
 			option.OptionText:SetStringHeight(self.optionLayout.optionFixedHeight);
@@ -652,8 +677,8 @@ local function IsTopWidget(widgetFrame)
 	return widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay;
 end
 
-local function WidgetsLayout(widgetContainer, sortedWidgets)
-	local widgetsHeight = 0;
+local function WidgetsLayout(widgetContainer, sortedWidgets, fixedHeight)
+	local widgetsHeight = fixedHeight or 0;
 	local maxWidgetWidth = 0;
 
 	local lastTopWidget, lastBottomWidget;
@@ -677,7 +702,9 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 			lastBottomWidget = widgetFrame;
 		end
 
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
+		if not fixedHeight then
+			widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
+		end
 
 		local widgetWidth = widgetFrame:GetWidgetWidth();
 		if widgetWidth > maxWidgetWidth then
@@ -685,7 +712,7 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 		end
 	end
 
-	if lastTopWidget and lastBottomWidget then
+	if not fixedHeight and lastTopWidget and lastBottomWidget then
 		widgetsHeight = widgetsHeight + 20;
 	end
 
@@ -696,7 +723,7 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 end
 
 function PlayerChoiceFrameMixin:WidgetLayout(widgetContainer, sortedWidgets)
-	WidgetsLayout(widgetContainer, sortedWidgets);
+	WidgetsLayout(widgetContainer, sortedWidgets, self.optionLayout.widgetFixedHeight);
 	self.optionsAligned = false;
 	self:MarkDirty();
 end
@@ -712,7 +739,14 @@ function PlayerChoiceFrameMixin:UpdateOptionWidgetRegistration(option, widgetSet
 		return;
 	end
 
-	option.WidgetContainer:RegisterForWidgetSet(widgetSetID,  function(...) self:WidgetLayout(...) end, function(...) self:WidgetInit(...) end);
+	option.WidgetContainer:RegisterForWidgetSet(widgetSetID, function(...) self:WidgetLayout(...); end, function(...) self:WidgetInit(...); end);
+	if not option:HasWidgets() then
+		if self.optionLayout.widgetFixedHeight then
+			option.WidgetContainer:SetHeight(self.optionLayout.widgetFixedHeight);
+		else
+			option.WidgetContainer:SetHeight(1);
+		end
+	end
 end
 
 function PlayerChoiceFrameMixin:OnCleaned()
@@ -881,8 +915,8 @@ function PlayerChoiceFrameMixin:Update()
 	local noTitleOffset = layout.noTitleOffset;
 
 	for i, option in ipairs(self.Options) do
+		self:UpdateOptionWidgetRegistration(option, nil);
 		if i > self.numActiveOptions then
-			self:UpdateOptionWidgetRegistration(option, nil);
 			option:Hide();
 		else
 			option:ResetOption();
@@ -914,7 +948,7 @@ function PlayerChoiceFrameMixin:Update()
 			option:UpdateOptionSize();
 
 			local hasArtworkBorderArt = option.ArtworkBorder:IsShown();
-			option.ArtworkBorder:SetShown(hasArtworkBorderArt and not option.hasDesaturatedArt and optionInfo.choiceArtID > 0 );
+			option.ArtworkBorder:SetShown(hasArtworkBorderArt and not option.hasDesaturatedArt and optionInfo.choiceArtID > 0);
 
 			local hasArtworkBorderDisabledArt = option.ArtworkBorderDisabled:IsShown();
 			option.ArtworkBorderDisabled:SetShown(hasArtworkBorderDisabledArt and option.hasDesaturatedArt);
@@ -1024,7 +1058,7 @@ end
 
 function PlayerChoiceFrameMixin:SetupRewards()
 	for i=1, self.numActiveOptions do
-		local optionFrameRewards = self["Option"..i].RewardsFrame.Rewards;
+		local optionFrameRewards = self.Options[i].RewardsFrame.Rewards;
 		local rewardInfo = C_PlayerChoice.GetPlayerChoiceRewardInfo(i);
 
 		optionFrameRewards.ItemRewardsPool:ReleaseAll();
@@ -1051,9 +1085,9 @@ function PlayerChoiceFrameMixin:SetupRewards()
 
 			optionFrameRewards:Layout();
 
-			self["Option"..i].RewardsFrame:SetHeight(optionFrameRewards:GetHeight());
+			self.Options[i].RewardsFrame:SetHeight(optionFrameRewards:GetHeight());
 		else
-			self["Option"..i].RewardsFrame:SetHeight(1);
+			self.Options[i].RewardsFrame:SetHeight(1);
 		end
 	end
 end
@@ -1083,8 +1117,7 @@ function PlayerChoiceItemButtonMixin:OnUpdate()
 end
 
 function PlayerChoiceItemButtonMixin:OnModifiedClick(button)
-	local modifiedClick = IsModifiedClick();
-	if ( modifiedClick ) then
+	if IsModifiedClick() then
 		HandleModifiedItemClick(self.itemLink);
 	end
 end
@@ -1106,6 +1139,9 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.ArtworkBorder:SetAtlas("UI-Frame-Horde-Portrait", true);
 	self.ArtworkBorder:ClearAllPoints();
 	self.ArtworkBorder:SetPoint("TOP");
+	self.Artwork:ClearAllPoints();
+	self.Artwork:SetPoint("TOPLEFT", self.ArtworkBorder, 10, -9);
+	self.Artwork:SetPoint("BOTTOMRIGHT", self.ArtworkBorder, -10, 9);
 
 	self.ArtworkBorderAdditionalGlow:SetRotation(0);
 	self.ArtworkBorderAdditionalGlow:SetAlpha(1);
@@ -1113,6 +1149,7 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	self.BlackBackground:Hide();
 	self.BackgroundGlow:Hide();
 	self.ArtworkBorder2:Hide();
+	self.ScrollingBG:SetAlpha(0);
 	self.BackgroundShadowSmall:Hide();
 	self.BackgroundShadowLarge:Hide();
 	self.RotateArtworkBorderAnimation:Stop();
@@ -1121,7 +1158,9 @@ function PlayerChoiceOptionFrameMixin:ResetOption()
 	local optionButtonLayout = choiceButtonLayout[self:GetParent().uiTextureKit] or choiceButtonLayout["default"];
 	self.OptionButtonsContainer:SetShown(not optionButtonLayout.hideOptionButtonsUntilMouseOver);
 	self.MouseOverOverride:Show();
-	self:UpdatePadding(1);
+	self.WidgetContainer:SetHeight(1);
+	self.RewardsFrame:SetHeight(1);
+	self:SetHeight(332);
 	self:SetAlpha(1);
 end
 
@@ -1379,7 +1418,7 @@ function PlayerChoiceOptionFrameMixin:SetupTextureKits(frame, regions, textureKi
 end
 
 function PlayerChoiceOptionFrameMixin:GetPaddingFrame()
-	if (self.hasRewards) then
+	if self.hasRewards then
 		return self.RewardsFrame;
 	else
 		return self.WidgetContainer;
@@ -1409,6 +1448,10 @@ end
 
 function PlayerChoiceOptionFrameMixin:GetPaddingHeight()
 	return self:GetPaddingFrame():GetHeight();
+end
+
+function PlayerChoiceOptionFrameMixin:HasWidgets()
+	return self.WidgetContainer and self.WidgetContainer:GetNumWidgetsShowing() > 0;
 end
 
 local HEADER_TEXT_AREA_WIDTH = 195;
@@ -1814,8 +1857,9 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	if (self.isPlayerChoiceFrameSetup) then
 		self:SetPoint("TOP", PlayerChoiceFrame, "BOTTOM", 0, -70);
 	else
-		self:SetPoint("CENTER", self:GetParent(), 0, -300);
+		self:SetPoint("CENTER", self:GetParent(), 0, -200);
 	end
+	self.hasSetPoint = true;
 
 	self.textureKit = choiceInfo.uiTextureKit;
 	local overrideTextInfo = hideButtonOverrideInfo[self.textureKit];
@@ -1830,7 +1874,7 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	end 
 
 	if(not isPlayerChoiceShowing and modelSceneLayout and modelSceneLayout.extraButtonEffectID) then 
-		self.dialogEffectController = GlobalFXDialogModelScene:AddEffect(modelSceneLayout.extraButtonEffectID, self);
+		self.dialogEffectController = GlobalFXMediumModelScene:AddEffect(modelSceneLayout.extraButtonEffectID, self);
 	end 
 	local normalTextureAtlas = GetFinalNameFromTextureKit(normalTextureKitInfo, self.textureKit);
 	local highlightTextureAtlas = GetFinalNameFromTextureKit(highlightTextureKitInfo, self.textureKit);
@@ -1905,8 +1949,17 @@ function PlayerChoiceOptionTextWrapperMixin:SetUseHTML(useHTML)
 	self.textObject = useHTML and self.HTML or self.String;
 end
 
+function PlayerChoiceOptionTextWrapperMixin:ClearText()
+	self.HTML:SetText(nil);
+	self.HTML:SetHeight(0);
+	self.String:SetText(nil);
+	self.String:SetHeight(0);
+	self:SetHeight(10);
+end
+
 function PlayerChoiceOptionTextWrapperMixin:SetText(...)
 	self.textObject:SetText(...);
+
 	if self.useHTML then
 		self:SetHeight(self.HTML:GetHeight());
 	end
@@ -1926,4 +1979,5 @@ end
 
 function PlayerChoiceOptionTextWrapperMixin:SetStringHeight(height)
 	self.String:SetHeight(height);
+	self:SetHeight(height);
 end

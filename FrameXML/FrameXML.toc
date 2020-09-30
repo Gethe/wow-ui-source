@@ -58,6 +58,7 @@
 ..\SharedXML\ScrollBox.xml
 ..\SharedXML\ScrollBar.xml
 ..\SharedXML\ScrollUtil.lua
+..\SharedXML\Dump.lua
 MixinUtil.lua
 
 ## intrinsics
@@ -128,6 +129,7 @@ TransmogUtil.lua
 ActionButtonUtil.lua
 DifficultyUtil.lua
 CovenantUtil.lua
+TitleUtil.lua
 ItemDisplay.xml
 HelpTip.xml
 ExtraAbilityContainer.xml
@@ -183,14 +185,15 @@ UIErrorsFrame.xml
 AutoComplete.xml
 StaticPopup.xml
 Sound.lua
-OptionsFrameTemplates.xml
-OptionsPanelTemplates.xml
 UIOptions.xml
-VideoOptionsFrame.xml
+..\SharedXML\OptionsFrameTemplates.xml
+..\SharedXML\OptionsPanelTemplates.xml
+..\SharedXML\VideoOptionsFrame.xml
 ..\SharedXML\VideoOptionsPanels.xml
 MacOptionsPanel.xml
-AudioOptionsFrame.xml
-AudioOptionsPanels.xml
+..\SharedXML\AudioOptionsFrame.xml
+..\SharedXML\AudioOptionsPanels.xml
+..\SharedXML\AudioOptionsPanelsVoice.xml
 InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml

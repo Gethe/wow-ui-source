@@ -2,7 +2,6 @@ SoulbindConduitMixin = CreateFromMixins(SpellMixin)
 
 function SoulbindConduitMixin:Init(conduitID, conduitRank)
 	self.conduitID = conduitID;
-	self.conduitRank = conduitRank;
 	self:SetSpellID(C_Soulbinds.GetConduitSpellID(conduitID, conduitRank));
 end
 
@@ -11,7 +10,7 @@ function SoulbindConduitMixin:GetConduitID()
 end
 
 function SoulbindConduitMixin:GetConduitRank()
-	return self.conduitRank;
+	return C_Soulbinds.GetConduitRankFromCollection(self.conduitID);
 end
 
 function SoulbindConduitMixin:Matches(conduit)

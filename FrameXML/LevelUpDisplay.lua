@@ -274,8 +274,8 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		-- This is to avoid the player seeing toasts for several levels at a time if they click on the Level Up link after gaining several levels in one session
 		LevelUpDisplay_InitPlayerStates(LevelUpDisplaySide);	
 	elseif event == "PLAYER_LEVEL_CHANGED" then
-		local oldLevel, newLevel = ...;
-		if oldLevel ~= 0 and newLevel ~= 0 then
+		local oldLevel, newLevel, real = ...;
+		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			LevelUpSpellsCache:Store(newLevel + 1);
 			if newLevel > oldLevel then
 				self.level = newLevel;

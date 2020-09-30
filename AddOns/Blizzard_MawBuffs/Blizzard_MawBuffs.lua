@@ -14,7 +14,7 @@ function MawBuffsContainerMixin:OnEvent(event, ...)
 		self:Update();
 	elseif event == "GLOBAL_MOUSE_DOWN" then
 		if self.List:IsShown() then
-			if (self:IsMouseOver() or self.List:IsMouseOver())  then 
+			if (self:IsMouseOver() or self.List:IsMouseOver() or (PlayerChoiceFrame and PlayerChoiceFrame:IsShown()))  then 
 				return; 
 			end 
 

@@ -852,7 +852,7 @@ function EmbeddedItemTooltip_PrepareForFollower(self)
 	self.FollowerTooltip:Show();
 end
 
-function EmbeddedItemTooltip_SetItemByID(self, id)
+function EmbeddedItemTooltip_SetItemByID(self, id, count)
 	self.itemID = id;
 	self.spellID = nil;
 	local itemName, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(id);
@@ -861,7 +861,7 @@ function EmbeddedItemTooltip_SetItemByID(self, id)
 	self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 	self.Tooltip:SetItemByID(id);
 	SetItemButtonQuality(self, quality, id);
-	SetItemButtonCount(self, 1);
+	SetItemButtonCount(self, count or 1);
 	self.Icon:SetTexture(itemTexture);
 	self.itemTextureSet = (itemTexture ~= nil);
 	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);

@@ -97,7 +97,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
@@ -257,7 +257,7 @@
 			<OnClick function="GarrisonMissionController_OnClickTab"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="OrderHallMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, OrderHallMission" frameLevel="1">
 		<Size x="962" y="662"/>
 		<Anchors>
@@ -635,9 +635,9 @@
 
 					<Button parentKey="MissionPage" inherits="OrderHallMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,OrderHallFollowerMissionPageMixin"/>
 
-					<!-- We need 13 preload models; 
+					<!-- We need 13 preload models;
 						potentially (2 troops with 5 displayIDs each) + (1 follower with 2 displayIDs) + (1 enemy model)
-						= 10 + 2 + 1 = 13 
+						= 10 + 2 + 1 = 13
 						TODO: Convert these to use a frame pool			-->
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>

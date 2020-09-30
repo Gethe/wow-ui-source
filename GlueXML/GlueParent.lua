@@ -400,6 +400,10 @@ function GlueParent_CheckCinematic()
 	end
 end
 
+function ToggleFrame(frame)
+	frame:SetShown(not frame:IsShown());
+end
+
 -- =============================================================
 -- Model functions
 -- =============================================================
@@ -638,13 +642,7 @@ end
 
 function UpgradeAccount()
 	if IsTrialAccount() then
-		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
-			StoreFrame_SelectGameTimeProduct()
-			ToggleStoreUI();
-		else
-			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-			LoadURLIndex(22);
-		end
+		StoreInterfaceUtil.OpenToSubscriptionProduct();
 	else
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
 			StoreFrame_SetGamesCategory();

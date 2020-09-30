@@ -3,6 +3,15 @@
 -- should refactor this to use more frame re-use like a hybrid scroll frame. Inherited frames should
 -- not rely on the current behavior.
 
+
+GridListElementMixin = {};
+
+function GridListElementMixin:GetList()
+	local scrollChild = self:GetParent();
+	return scrollChild:GetParent();
+end
+
+
 GridListMixin = {};
 
 function GridListMixin:OnLoad()

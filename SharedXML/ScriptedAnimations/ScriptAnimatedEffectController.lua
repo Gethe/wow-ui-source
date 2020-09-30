@@ -4,6 +4,7 @@ ScriptAnimatedEffectControllerMixin = {};
 function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution)
 	self.modelScene = modelScene;
 	self.effectID = effectID;
+	self.initialEffectID = effectID;
 	self.source = source;
 	self.target = target;
 	self.onEffectFinish = onEffectFinish;
@@ -18,6 +19,14 @@ end
 
 function ScriptAnimatedEffectControllerMixin:GetEffect()
 	return ScriptedAnimationEffectsUtil.GetEffectByID(self.effectID);
+end
+
+function ScriptAnimatedEffectControllerMixin:GetCurrentEffectID()
+	return self.effectID;
+end
+
+function ScriptAnimatedEffectControllerMixin:GetInitialEffectID()
+	return self.initialEffectID;
 end
 
 function ScriptAnimatedEffectControllerMixin:IsSoundEnabled()

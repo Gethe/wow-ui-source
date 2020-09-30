@@ -19,16 +19,13 @@ end
 function SubscriptionInterstitialSubscribeButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-	SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Clicked);
-
-	if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
-		StoreFrame_SelectGameTimeProduct();
-		ToggleStoreUI();
-	else
-		LoadURLIndex(22);
-	end
-
 	self.wasClicked = true;
+
+	if StoreInterfaceUtil.OpenToSubscriptionProduct() then
+		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Clicked);
+	else
+		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.WebRedirect)
+	end
 
 	HideUIPanel(self:GetParent());
 end

@@ -1,5 +1,3 @@
--- if you change something here you probably want to change the frame version too
-
 local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
@@ -16,18 +14,17 @@ function OptionsList_OnLoad (self, buttonTemplate)
 
 	--Setup random things!
 	self.scrollFrame = _G[name .. "List"];
-	_G[name.."Bottom"]:SetVertexColor(.66, .66, .66);
 
 	--Create buttons for scrolling
 	local buttons = {};
-	local button = CreateFrame("BUTTON", name .. "Button1", self, buttonTemplate or "OptionsListButtonTemplate");
+	local button = CreateFrame("BUTTON", name .. "Button1", self, self.buttonTemplate or buttonTemplate or "OptionsListButtonTemplate");
 	button:SetPoint("TOPLEFT", self, 0, -8);
 	self.buttonHeight = button:GetHeight();
 	tinsert(buttons, button);
 
 	local maxButtons = (self:GetHeight() - 8) / self.buttonHeight;
 	for i = 2, maxButtons do
-		button = CreateFrame("BUTTON", name .. "Button" .. i, self, buttonTemplate or "OptionsListButtonTemplate");
+		button = CreateFrame("BUTTON", name .. "Button" .. i, self, self.buttonTemplate or buttonTemplate or "OptionsListButtonTemplate");
 		button:SetPoint("TOPLEFT", buttons[#buttons], "BOTTOMLEFT");
 		tinsert(buttons, button);
 	end
@@ -67,25 +64,25 @@ function OptionsList_DisplayButton (button, element)
 	-- Do display things
 	button:Show();
 	button.element = element;
-	
+
 	if (element.parent) then
-		button:SetNormalFontObject(GlueFontHighlightSmall);
-		button:SetHighlightFontObject(GlueFontHighlightSmall);
+		button:SetNormalFontObject(GameFontHighlightSmall);
+		button:SetHighlightFontObject(GameFontHighlightSmall);
 		button.text:SetPoint("LEFT", 16, 2);
 	else
-		button:SetNormalFontObject(GlueFontNormal);
-		button:SetHighlightFontObject(GlueFontHighlight);
+		button:SetNormalFontObject(GameFontNormal);
+		button:SetHighlightFontObject(GameFontHighlight);
 		button.text:SetPoint("LEFT", 8, 2);
 	end
 	button.text:SetText(element.name);
-	
+
 	if (element.hasChildren) then
 		if (element.collapsed) then
 			button.toggle:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-UP");
 			button.toggle:SetPushedTexture("Interface\\Buttons\\UI-PlusButton-DOWN");
 		else
 			button.toggle:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
-			button.toggle:SetPushedTexture("Interface\\Buttons\\UI-MinusButton-DOWN");		
+			button.toggle:SetPushedTexture("Interface\\Buttons\\UI-MinusButton-DOWN");
 		end
 		button.toggle:Show();
 	else
@@ -108,6 +105,7 @@ end
 
 function OptionsList_ClearSelection (listFrame, buttons)
 	for _, button in SecureNext, buttons do
+		button.highlight:SetVertexColor(.196, .388, .8);
 		button:UnlockHighlight();
 	end
 
@@ -115,6 +113,7 @@ function OptionsList_ClearSelection (listFrame, buttons)
 end
 
 function OptionsList_SelectButton (listFrame, button)
+	button.highlight:SetVertexColor(1, 1, 0);
 	button:LockHighlight()
 
 	listFrame.selection = button.element;
@@ -153,16 +152,16 @@ end
 
 function OptionsListButton_OnEnter (self)
 	if (self.text:IsTruncated()) then
-		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GlueTooltip:SetText(self:GetText(), NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self:GetText(), NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
 	end
 end
 
 function OptionsListButton_OnLeave (self)
-	GlueTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 end
 
-function OptionsListButton_ToggleSubCategories (button)
+function OptionsListButton_ToggleSubCategories (self)
 	local element = self.element;
 
 	element.collapsed = not element.collapsed;
@@ -199,22 +198,24 @@ end
 -- "panel" is used when referring to the frame that displays foo
 
 function OptionsFrame_OnLoad(self)
-	self.categoryFrame = _G[self:GetName().."CategoryFrame"];
-	self.panelContainer = _G[self:GetName().."PanelContainer"];
+	local name = self:GetName();
 
-	self.okay = _G[self:GetName().."Okay"];
-	self.cancel = _G[self:GetName().."Cancel"];
-	self.apply = _G[self:GetName().."Apply"];
-	self.default = _G[self:GetName().."Default"];
+	self.categoryFrame = _G[name.."CategoryFrame"];
+	self.panelContainer = _G[name.."PanelContainer"];
+
+	self.okay = _G[name.."Okay"];
+	self.cancel = _G[name.."Cancel"];
+	self.apply = _G[name.."Apply"];
+	self.default = _G[name.."Default"];
 
 	self.categoryList = { };
+
+	if UIErrorsFrame then
+		self:SetFrameLevel(UIErrorsFrame:GetFrameLevel() - 1);
+	end
 end
 
 function OptionsFrame_OnShow (self)
-	if ( self.lastFrame ) then
-		self.lastFrame:Hide();
-	end
-
 	--Refresh the category frames and display the first category if nothing is displayed.
 	self.categoryFrame:update();
 	if ( not self.panelContainer.displayedPanel ) then
@@ -228,16 +229,12 @@ function OptionsFrame_OnHide (self)
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 
 	if ( self.lastFrame ) then
-		self.lastFrame:Show();
+		ShowUIPanel(self.lastFrame);
 		self.lastFrame = nil;
 	end
-end
 
-function OptionsFrame_OnKeyDown(self, key)
-	if ( key == "ESCAPE" ) then
-		self.cancel:Click();
-	elseif ( key == "PRINTSCREEN" ) then
-		Screenshot();
+	if UpdateMicroButtons then
+		UpdateMicroButtons();
 	end
 end
 
@@ -281,7 +278,7 @@ end
 function OptionsFrame_SetAllToDefaults (self)
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 	for _, category in SecureNext, self.categoryList do
-		securecall("pcall", category.default, category);
+		securecall(OptionsFrame_RunDefaultForCategory, category);
 	end
 
 	--Refresh the categories to pick up changes made.

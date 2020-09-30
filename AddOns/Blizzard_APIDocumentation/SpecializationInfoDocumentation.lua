@@ -113,6 +113,20 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetSpecIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellsDisplay",
 			Type = "Function",
 
@@ -147,6 +161,20 @@ local SpecializationInfo =
 			Returns =
 			{
 				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MatchesCurrentSpecSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matches", Type = "bool", Nilable = false },
 			},
 		},
 		{

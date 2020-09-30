@@ -949,29 +949,29 @@ end
 
 function VideoOptionsControl_OnEnter(self)
 	if(self.tooltip ~= nil) then
-		VideoOptionsTooltip:SetOwner(self);
+		GetAppropriateTooltip():SetOwner(self);
 		if(self.name == nil) then
 			self.name = " ";
 		end
-		VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
-		VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
-		VideoOptionsTooltip:Show();
+		GetAppropriateTooltip():SetText(self.name .. ":", nil, nil, nil, nil, 1);
+		GetAppropriateTooltip():AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
+		GetAppropriateTooltip():Show();
 	end
 end
 
 function VideoOptionsControl_OnLeave(self)
-	VideoOptionsTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 end
 
 function VideoOptionsWarning_OnEnter(self)
 	if ( self.tooltip ) then
-		VideoOptionsTooltip:SetOwner(self, "ANCHOR_LEFT");
-		VideoOptionsTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0, 1, 1);
+		GetAppropriateTooltip():SetOwner(self, "ANCHOR_LEFT");
+		GetAppropriateTooltip():SetText(self.tooltip, 1.0, 1.0, 1.0, 1, 1);
 	end
 end
 
 function VideoOptionsWarning_OnLeave(self)
-	VideoOptionsTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 end
 
 
@@ -1098,12 +1098,12 @@ function InterfaceOptionsLanguagesPanel_UpdateRestartTexture()
 end
 
 function InterfaceOptionsLanguagePanelLocalDropDown_OnEnter(self)
-	VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-	VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+	GetAppropriateTooltip():SetOwner(self, "ANCHOR_TOPRIGHT");
+	GetAppropriateTooltip():SetText(self.tooltip, nil, nil, nil, nil, 1);
 end
 
 function InterfaceOptionsLanguagePanelLocalDropDown_OnLeave(self)
-	VideoOptionsTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)

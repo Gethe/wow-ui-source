@@ -458,7 +458,7 @@ local function SortWidgets(a, b)
 end
 
 function UIWidgetContainerMixin:GetNumWidgetsShowing()
-	return self.numWidgetsShowing;
+	return self.numWidgetsShowing or 0;
 end
 
 function UIWidgetContainerMixin:UpdateWidgetLayout()

@@ -1514,7 +1514,7 @@ function PVPStandardRewardTemplate_OnEnter(self)
 
 	if self.itemID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID);
+		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID, self.quantity);
 	elseif self.currencyID and self.currencyID ~= CONQUEST_CURRENCY_ID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetCurrencyByID(EmbeddedItemTooltip.ItemTooltip, self.currencyID, self.quantity);
@@ -1847,8 +1847,7 @@ function PVPAchievementRewardMixin:UpdateTooltip()
 	EmbeddedItemTooltip:Show();
 end
 
-function PVPAchievementRewardMixin:OnEnter()
-	self:UpdateTooltip();
+function PVPAchievementRewardMixin:UpdateCursor()
 	if self.rewardItemID and IsModifiedClick("DRESSUP") then
 		ShowInspectCursor();
 	else
@@ -1856,7 +1855,16 @@ function PVPAchievementRewardMixin:OnEnter()
 	end
 end
 
+function PVPAchievementRewardMixin:OnEnter()
+	self:SetScript("OnUpdate", self.UpdateCursor);
+
+	self:UpdateTooltip();
+	self:UpdateCursor();
+end
+
 function PVPAchievementRewardMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+
 	EmbeddedItemTooltip:Hide();
 	ResetCursor();
 end
@@ -1994,8 +2002,15 @@ NewPvpSeasonMixin = { };
 
 function NewPvpSeasonMixin:OnShow()
 	local currentSeason = GetCurrentArenaSeason();
-	self.SeasonDescription:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
-	self.SeasonDescription2:SetText(SL_PVP_SEASON_DESCRIPTION);
+	if currentSeason == SL_START_SEASON then
+		self.SeasonDescription:SetText(SL_PVP_FIRST_SEASON_DESCRIPTION);
+		self.SeasonDescription2:SetText(nil);
+		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescription, "BOTTOM", 0, -14);
+	else
+		self.SeasonDescription:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
+		self.SeasonDescription2:SetText(SL_PVP_SEASON_DESCRIPTION);
+		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescription2, "BOTTOM", 0, -14);
+	end
 
 	local achievementID = GetPVPSeasonAchievementID(currentSeason);
 	local showSeasonReward = achievementID ~= nil;

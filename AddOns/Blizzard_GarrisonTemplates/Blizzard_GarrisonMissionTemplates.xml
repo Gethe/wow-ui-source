@@ -533,6 +533,13 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="GarrisonMissionPageCostWithTooltipTemplate" inherits="GarrisonMissionPageCostFrameTemplate" mixin="GarrisonMissionPageCostWithTooltipMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="GarrisonMissionPageStageTemplate" inherits="GarrisonMissionStageTemplate" virtual="true">
 		<Size x="556" y="230"/>
 		<Anchors>
@@ -747,7 +754,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
@@ -894,8 +901,10 @@
 		<Size x="305" y="370"/>
 		<Scripts>
 			<OnModelLoaded>
+				self:ResetModel();
+				self:ZeroCachedCenterXY();
 				self:SetAlpha(1);
-				self:SetFacing(self.facing or -0.2);
+				self:ApplyRotation(self.facing or -0.2);
 			</OnModelLoaded>
 			<OnShow>
 				self:SetTargetDistance(0);

@@ -11,6 +11,7 @@ ConduitListCategoryButtonMixin:GenerateCallbackEvents(
 function ConduitListCategoryButtonMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
+	self.expanded = false;
 	self:SetExpanded(true);
 end
 
@@ -33,7 +34,7 @@ function ConduitListCategoryButtonMixin:Init(conduitType)
 	local icon = self.Container.ConduitIcon;
 	icon:SetAtlas(Soulbinds.GetConduitEmblemAtlas(conduitType), false);
 	icon:SetScale(GetConduitIconScale(conduitType));
-	icon:SetPoint("LEFT", name, "RIGHT", -40, 0);
+	icon:SetPoint("LEFT", name, "RIGHT", -40, -1);
 end
 
 function ConduitListCategoryButtonMixin:OnEnter()
@@ -62,13 +63,21 @@ function ConduitListCategoryButtonMixin:OnClick(buttonName)
 end
 
 function ConduitListCategoryButtonMixin:SetExpanded(expanded)
+	local changed = self.expanded ~= expanded;
 	self.expanded = expanded;
 
 	local atlas = expanded and "Soulbinds_Collection_CategoryHeader_Collapse" or "Soulbinds_Collection_CategoryHeader_Expand";
 	local useAtlasSize = true;
 	self.Container.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
 
-	self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
+	if changed then
+		if expanded then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		end
+		self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
+	end
 end
 
 function ConduitListCategoryButtonMixin:IsExpanded()
@@ -119,15 +128,43 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	self.ConduitName:SetTextColor(r, g, b);
 
 	self.ConduitName:ClearAllPoints();
-	local specName = conduitData.conduitSpecName;
-	if specName then
-		self.ConduitName:SetPoint("BOTTOMLEFT", self.Icon, "RIGHT", 10, -8);
-		self.ConduitName:SetPoint("RIGHT");
-		self.SpecName:SetText(specName);
+	self.ConduitName:SetPoint("BOTTOMLEFT", self.Icon, "RIGHT", 10, -8);
+	self.ConduitName:SetPoint("RIGHT");
+	self.ItemLevel:SetText(conduitData.conduitItemLevel);
+
+	local conduitSpecName = conduitData.conduitSpecName;
+	if conduitSpecName then
+		local specIDs = C_SpecializationInfo.GetSpecIDs(conduitData.conduitSpecSetID);
+		self.Spec.Icon:SetTexture(select(4, GetSpecializationInfoByID(specIDs[1])));
+
+		local isCurrentSpec = C_SpecializationInfo.MatchesCurrentSpecSet(conduitData.conduitSpecSetID);
+		if isCurrentSpec then
+			self.Spec.stateAlpha = 1;
+			self.Spec.stateAtlas = "soulbinds_collection_specborder_primary";
+			self.ItemLevel:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+		else
+			self.Spec.stateAlpha = .4;
+			self.Spec.stateAtlas = "soulbinds_collection_specborder_secondary";
+			self.ItemLevel:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		end
+		self.Spec.Icon:SetAlpha(self.Spec.stateAlpha);
+
+		self.Spec:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(self.Spec, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, conduitSpecName);
+			GameTooltip:Show();
+		end);
+		self.Spec:SetScript("OnLeave", function()
+			GameTooltip_Hide();
+		end);
+		self.Spec:Show();
 	else
-		self.ConduitName:SetPoint("LEFT", self.Icon, "RIGHT", 10, 0);
-		self.ConduitName:SetPoint("RIGHT");
-		self.SpecName:SetText("");
+		self.ItemLevel:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+		self.Spec:Hide();
+		self.Spec:SetScript("OnEnter", nil);
+		self.Spec:SetScript("OnLeave", nil);
+		self.Spec.stateAlpha = 1;
+		self.Spec.stateAtlas = "soulbinds_collection_specborder_primary";
 	end
 
 	self:Update();
@@ -180,11 +217,16 @@ function ConduitListConduitButtonMixin:UpdateVisuals(state)
 	local installed = state == ConduitListConduitButtonMixin.State.Installed;
 	local pending = state == ConduitListConduitButtonMixin.State.Pending;
 	local dark = installed or pending;
+	self.ConduitName:SetAlpha(dark and .5 or 1);
+	self.ItemLevel:SetAlpha(dark and .2 or 1);
 	self.IconOverlayDark:SetShown(dark);
 	self.IconDark:SetShown(dark);
-	self.ConduitName:SetAlpha(dark and .5 or 1);
-	self.SpecName:SetAlpha(dark and .5 or 1);
 	
+	local specIconAlpha = dark and .2 or self.Spec.stateAlpha;
+	local specIconAtlas = dark and "soulbinds_collection_specborder_tertiary" or self.Spec.stateAtlas;
+	local useAtlasSize = true;
+	self.Spec.IconOverlay:SetAtlas(specIconAtlas, useAtlasSize);
+	self.Spec.Icon:SetAlpha(specIconAlpha);
 	self.Pending:SetShown(pending);
 end
 
@@ -240,7 +282,7 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 			self.conduitOnSpellLoadCb = nil;
 		end
 
-		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 190, 0);
+		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 178, 0);
 		
 		local conduitID = self.conduit:GetConduitID();
 		GameTooltip:SetConduit(conduitID, self.conduit:GetConduitRank());
@@ -423,16 +465,6 @@ function ConduitListMixin:SetConduitPreview(preview)
 end
 
 function ConduitListMixin:Init()
-	local activeCovenantID = C_Covenants.GetActiveCovenantID();
-	local filterCollection = function(collection)
-		local isIndexTable = true;
-		local includeIf = function(collectionData)
-			local covenantID = collectionData.covenantID;
-			return not covenantID or covenantID == activeCovenantID;
-		end;
-		collection = tFilter(collection, includeIf, isIndexTable);
-	end;
-
 	local anyShown = false;
 	local parsed = 0;
 	local lists = self:GetLists();
@@ -441,14 +473,13 @@ function ConduitListMixin:Init()
 		list.layoutIndex = index;
 
 		local collection = C_Soulbinds.GetConduitCollection(list.conduitType);
-		filterCollection(collection);
 
 		local continuableContainer = ContinuableContainer:Create();
 		local matchesSpecSet = {};
 		for index, collectionData in ipairs(collection) do
 			local specSetID = collectionData.conduitSpecSetID;
 			if not matchesSpecSet[specSetID] then
-				matchesSpecSet[specSetID] = C_Soulbinds.MatchesCurrentSpecSet(specSetID);
+				matchesSpecSet[specSetID] = C_SpecializationInfo.MatchesCurrentSpecSet(specSetID);
 			end
 
 			if not collectionData.conduitSpecName then
@@ -466,7 +497,11 @@ function ConduitListMixin:Init()
 		continuableContainer:ContinueOnLoad(function()
 			table.sort(collection, function(lhs, rhs)
 				if lhs.sortingCategory == rhs.sortingCategory then
-					if (not lhs.conduitSpecName or not rhs.conduitSpecname) or lhs.conduitSpecName == rhs.conduitSpecName then
+					if (not lhs.conduitSpecName or not rhs.conduitSpecName) or lhs.conduitSpecName == rhs.conduitSpecName then
+						if lhs.conduitRank ~= rhs.conduitRank then
+							return lhs.conduitRank > rhs.conduitRank;	
+						end
+
 						return lhs.item:GetItemName() < rhs.item:GetItemName();
 					else
 						return lhs.conduitSpecName < rhs.conduitSpecName;

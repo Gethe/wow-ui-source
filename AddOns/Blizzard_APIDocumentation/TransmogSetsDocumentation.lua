@@ -1,6 +1,6 @@
 local TransmogSets =
 {
-	Name = "Transmogrify",
+	Name = "TransmogrifySets",
 	Type = "System",
 	Namespace = "C_TransmogSets",
 

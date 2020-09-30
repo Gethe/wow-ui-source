@@ -1,12 +1,5 @@
 function AccountReactivate_ReactivateNow()
-	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAME_TIME_CATEGORY_ID);
-	if info then
-		StoreFrame_SelectGameTimeProduct();
-		ToggleStoreUI();
-	else
-		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-		LoadURLIndex(22);
-	end
+	StoreInterfaceUtil.OpenToSubscriptionProduct();
 end
 
 function AccountReactivate_Cancel()

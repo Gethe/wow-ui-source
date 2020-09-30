@@ -380,6 +380,8 @@ function SoulbindConduitNodeMixin:UpdatePendingAnim()
 	self.Pending:SetShown(self.pending);
 	self.PendingStick.RotateAnim:SetPlaying(self.pending);
 	self.PendingStick2.RotateAnim:SetPlaying(self.pending);
+	self.PendingStick3.RotateAnim:SetPlaying(self.pending);
+	self.PendingStick4.RotateAnim:SetPlaying(self.pending);
 end
 
 function SoulbindConduitNodeMixin:UpdateVisuals()
@@ -506,7 +508,12 @@ function SoulbindTreeNodeMixin:AddTooltipContents()
 			self:AddNotInProximityLine();
 		end
 	elseif self:IsUnselected() then
-		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED);
+		local canModify = C_Soulbinds.CanModifySoulbind();
+		if canModify then
+			GameTooltip_AddInstructionLine(GameTooltip, SOULBIND_NODE_SELECT_PATH);
+		else
+			GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED);
+		end
 	elseif self:IsUnavailable() then
 		local reason = self:GetUnavailableReason();
 		if reason then

@@ -2,10 +2,10 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SoulbindsConduitList.lua"/>
 
-	<Texture name="ConduitButtonGlow" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="add" virtual="true">
-		<Size x="240" y="68"/>
+	<Texture name="ConduitButtonGlow" atlas="Soulbinds_Collection_Entry_Glow" alpha="0" alphaMode="add" virtual="true">
+		<Size x="242" y="68"/>
 		<Anchors>
-			<Anchor point="LEFT" x="-10"/>
+			<Anchor point="LEFT"/>
 		</Anchors>
 		<Animations>
 			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
@@ -15,21 +15,14 @@
 	</Texture>
 	
 	<Button name="ConduitListConduitButtonTemplate" mixin="ConduitListConduitButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
-		<Size x="234" y="41"/>
+		<Size x="242" y="42"/>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-3">
-				<Texture atlas="heartofazeroth-list-item-highlight" parentArray="Hovers" hidden="true" alphaMode="ADD"/>
-			</Layer>
-			
-			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Texture parentKey="PendingBackground" atlas="heartofazeroth-list-item-selected" hidden="true" alphaMode="ADD"/>
-			</Layer>
 			
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="Icon">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="LEFT" x="10"/>
+						<Anchor point="LEFT" x="22"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -46,7 +39,7 @@
 				<Texture parentKey="Icon2" parentArray="Hovers" hidden="true" alphaMode="ADD" alpha=".3">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="LEFT" x="10"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -96,6 +89,14 @@
 			</Layer>
 
 			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture atlas="Soulbinds_Collection_Entry_Highlight" parentArray="Hovers" hidden="true" alphaMode="ADD"/>
+			</Layer>
+			
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="PendingBackground" atlas="Soulbinds_Collection_Entry_Selected" hidden="true" alphaMode="ADD"/>
+			</Layer>
+			
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="IconOverlayDark" atlas="Soulbinds_Collection_Conduit_Border" hidden="true" alpha=".5">
 					<Size x="32" y="32"/>
 					<Anchors>
@@ -105,14 +106,14 @@
 				<FontString parentKey="ConduitName" inherits="SystemFont_Shadow_Med1" justifyH="LEFT">
 					<Size y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="10"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="8"/>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SpecName" inherits="SystemFont_Shadow_Small" justifyH="LEFT">
+				<FontString parentKey="ItemLevel" inherits="SystemFont_Shadow_Small" justifyH="LEFT">
 					<Size y="30"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.ConduitName" y="15"/>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.ConduitName" y="16"/>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 					<Color color="GRAY_FONT_COLOR"/>
@@ -129,6 +130,7 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
+			
 			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture parentKey="Pending" atlas="Soulbinds_Collection_Conduit_Pending" useAtlasSize="true" hidden="true">
 					<Anchors>
@@ -136,7 +138,34 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+
+
 		</Layers>
+		<Frames>
+			<Button parentKey="Spec">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" >
+						<Texture parentKey="IconOverlay">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
@@ -152,14 +181,14 @@
 	<Frame name="ConduitListSectionTemplate" parentArray="Sections" inherits="ResizeLayoutFrame" mixin="ConduitListSectionMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="Spacer">
-				<Size x="1" y="5"/>
+				<Size x="1" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="CategoryButton" mixin="ConduitListCategoryButtonMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMLEFT" x="10"/>
 				</Anchors>
 				<Size x="216" y="23"/>
 				<Frames>
@@ -186,7 +215,7 @@
 									<Color r="1.0" g=".674" b=".627"/>
 								</FontString>
 								<Texture parentKey="ConduitIcon">
-									<Size x="23" y="24"/>
+									<Size x="18" y="22"/>
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Name" x="1" y="-1"/>
 									</Anchors>
@@ -206,7 +235,7 @@
 			</Button>
 			<Frame parentKey="Container" inherits="ResizeLayoutFrame">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryButton" relativePoint="BOTTOMLEFT" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryButton" relativePoint="BOTTOMLEFT" x="-10" y="-5"/>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.CategoryButton" relativePoint="BOTTOMRIGHT" y="-5"/>
 				</Anchors>
 			</Frame>
@@ -235,16 +264,16 @@
 	</Frame>
 	
 	<Frame name="ConduitListTemplate" mixin="ConduitListMixin" virtual="true">
-		<Size x="260"/>
+		<Size x="268"/>
 		<Frames>
 			<Frame parentKey="ScrollBar" inherits="ScrollBarTemplate" frameStrata="HIGH">
-				<Size x="10" y="553"/>
+				<Size x="10" y="560"/>
 				<KeyValues>
 					<KeyValue key="stepRepeatTime" value=".1" type="number"/>
 					<KeyValue key="stepRepeatDelay" value=".5" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-6" y="-39"/>
+					<Anchor point="TOPRIGHT" x="-6" y="-1"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="Track" useParentLevel="true" enableMouse="true">
@@ -260,16 +289,28 @@
 							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
 							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
 						</KeyValues>
-						<Size x="20" y="17"/>
+						<Size x="20" y="15"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" y="-4"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+									<Anchors>
+										<Anchor point="CENTER" y="-4"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+									<Anchors>
+										<Anchor point="CENTER" y="-4"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</EventButton>
@@ -278,16 +319,28 @@
 							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
 							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
 						</KeyValues>
-						<Size x="20" y="17"/>
+						<Size x="20" y="15"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true"/>
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" y="4"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+									<Anchors>
+										<Anchor point="CENTER" y="4"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+									<Anchors>
+										<Anchor point="CENTER" y="4"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</EventButton>
@@ -298,13 +351,28 @@
 						<Size x="16" y="100"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true"/>
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="7" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
+								</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="7" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
+								</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="7" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
+								</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</EventButton>

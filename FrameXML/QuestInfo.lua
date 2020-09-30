@@ -409,9 +409,11 @@ QUEST_SPELL_REWARD_TYPE_ABILITY = 3;
 QUEST_SPELL_REWARD_TYPE_AURA = 4;
 QUEST_SPELL_REWARD_TYPE_SPELL = 5;
 QUEST_SPELL_REWARD_TYPE_UNLOCK = 6;
+QUEST_SPELL_REWARD_TYPE_COMPANION = 7;
 
 QUEST_INFO_SPELL_REWARD_ORDERING = {
 	QUEST_SPELL_REWARD_TYPE_FOLLOWER,
+	QUEST_SPELL_REWARD_TYPE_COMPANION,
 	QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL,
 	QUEST_SPELL_REWARD_TYPE_ABILITY,
 	QUEST_SPELL_REWARD_TYPE_AURA,
@@ -421,6 +423,7 @@ QUEST_INFO_SPELL_REWARD_ORDERING = {
 
 QUEST_INFO_SPELL_REWARD_TO_HEADER = {
 	[QUEST_SPELL_REWARD_TYPE_FOLLOWER] = REWARD_FOLLOWER,
+	[QUEST_SPELL_REWARD_TYPE_COMPANION] = REWARD_COMPANION,
 	[QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL] = REWARD_TRADESKILL_SPELL,
 	[QUEST_SPELL_REWARD_TYPE_ABILITY] = REWARD_ABILITY,
 	[QUEST_SPELL_REWARD_TYPE_AURA] = REWARD_AURA,
@@ -702,7 +705,12 @@ function QuestInfo_ShowRewards()
 				elseif ( isBoostSpell ) then
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
 				elseif ( garrFollowerID ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
+					local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
+					if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_COMPANION, rewardSpellIndex);
+					else
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
+					end
 				elseif ( isSpellLearned ) then
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_SPELL, rewardSpellIndex);
 				elseif ( genericUnlock ) then

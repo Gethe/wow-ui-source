@@ -148,7 +148,7 @@ function GarrisonMission:ShowMission(missionInfo)
 	missionPage.xp = missionDeploymentInfo.xp;
 
 	self:SetEnvironmentTexture(missionDeploymentInfo.environmentTexture)
-	
+
 	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(environmentTexture);
 
 	local locTextureKit = missionDeploymentInfo.locTextureKit;
@@ -488,7 +488,9 @@ function GarrisonMission:GetStartMissionButtonFrame(missionPage)
 	return missionPage.ButtonFrame;
 end
 
-function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned)
+function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned, currencyType)
+	missionPage.CostFrame:SetCurrency(currencyType);
+
 	if ( owned < cost ) then
 		missionPage.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
 	elseif (cost < baseCost) then
@@ -498,7 +500,7 @@ function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned)
 	end
 
 	local buttonFrame = self:GetStartMissionButtonFrame(missionPage);
-	
+
 	local leftAnchor = missionPage.CostFrame.leftAnchor or 50;
 	missionPage.CostFrame:SetPoint("LEFT", buttonFrame, "LEFT", leftAnchor, 0);
 	missionPage.CostFrame:SetPoint("RIGHT", buttonFrame, "CENTER");
@@ -532,13 +534,13 @@ function GarrisonMission:UpdateStartButton(missionPage)
 	end
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(missionInfo.costCurrencyTypesID);
-	if ( currencyInfo ~= nil) then 
+	if ( currencyInfo ~= nil) then
 		local amountOwned = currencyInfo.quantity;
 		if ( not disableError and amountOwned < missionInfo.cost ) then
 			disableError = GarrisonFollowerOptions[self.followerTypeID].strings.NOT_ENOUGH_MATERIALS;
 		end
-		
-		self:UpdateCostFrame(missionPage, baseCost, cost, amountOwned);
+
+		self:UpdateCostFrame(missionPage, baseCost, cost, amountOwned, missionInfo.costCurrencyTypesID);
 	end
 
 	-- specific required champions
@@ -991,7 +993,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 
 			local displayIDs = followerMissionCompleteInfo.displayIDs;
 			local height = followerMissionCompleteInfo.height;
-			local scale = followerMissionCompleteInfo.scale;			
+			local scale = followerMissionCompleteInfo.scale;
 			local isTroop = followerMissionCompleteInfo.isTroop;
 
 			followerFrame.followerID = mission.followers[missionFollowerIndex];
@@ -2883,7 +2885,7 @@ end
 
 function MissionCompletePreload_Cancel(mainFrame)
 	local models = mainFrame.MissionTab.MissionCompletePreloadModels;
-	if ( models ) then 
+	if ( models ) then
 		for i = 1, #models do
 			models[i].loading = nil;
 			models[i]:ClearModel();
@@ -2942,4 +2944,26 @@ end
 
 function GarrisonMissionCompleteModelClusterMixin:GetFollowerID()
 	return self.Model[1].followerID;
+end
+
+---------------------------------------------------------------------------------
+--- GarrisonMissionPageCostWithTooltipMixin                                  ---
+---------------------------------------------------------------------------------
+
+GarrisonMissionPageCostWithTooltipMixin = {}
+
+function GarrisonMissionPageCostWithTooltipMixin:SetCurrency(currency)
+	self.currency = currency;
+end
+
+function GarrisonMissionPageCostWithTooltipMixin:OnEnter()
+	if self.currency then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetCurrencyTokenByID(self.currency);
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonMissionPageCostWithTooltipMixin:OnLeave()
+	GameTooltip:Hide();
 end

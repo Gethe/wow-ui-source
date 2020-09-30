@@ -306,15 +306,16 @@ local CalendarConstants =
 		{
 			Name = "HolidayFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "IsRegionwide", Type = "HolidayFlags", EnumValue = 1 },
 				{ Name = "DontShowInCalendar", Type = "HolidayFlags", EnumValue = 2 },
 				{ Name = "DontDisplayEnd", Type = "HolidayFlags", EnumValue = 4 },
 				{ Name = "DontDisplayBanner", Type = "HolidayFlags", EnumValue = 8 },
+				{ Name = "NotAvailableClientSide", Type = "HolidayFlags", EnumValue = 16 },
 			},
 		},
 	},

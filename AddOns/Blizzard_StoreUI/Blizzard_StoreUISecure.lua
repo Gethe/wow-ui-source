@@ -381,6 +381,7 @@ Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
 
 Import("WOW_GAMES_CATEGORY_ID");
 Import("WOW_GAME_TIME_CATEGORY_ID");
+Import("WOW_SUBSCRIPTION_CATEGORY_ID");
 
 --Lua enums
 Import("SOUNDKIT");
@@ -2509,18 +2510,12 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 			LoadURLIndex(2);
 		end
-	elseif ( name == "opengametimecategory" ) then
-		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
-			self:Show();
-			SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
-		else
-			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-			LoadURLIndex(22);
-		end
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 	elseif ( name == "selectboost") then
 		SelectBoostForPurchase(WOW_SERVICES_CATEGORY_ID, value.boostType, value.reason, value.guid);
+	elseif ( name == "selectsubscription" ) then
+		SetStoreCategoryFromAttribute(WOW_SUBSCRIPTION_CATEGORY_ID);
 	elseif ( name == "selectgametime" ) then
 		SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
 	elseif ( name == "getvaserrormessage" ) then

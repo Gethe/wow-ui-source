@@ -668,6 +668,7 @@ local Unit =
 			{
 				{ Name = "oldLevel", Type = "number", Nilable = false },
 				{ Name = "newLevel", Type = "number", Nilable = false },
+				{ Name = "real", Type = "bool", Nilable = false },
 			},
 		},
 		{

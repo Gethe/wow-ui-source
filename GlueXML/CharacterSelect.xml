@@ -924,9 +924,9 @@
 						<Scripts>
 							<OnLoad>
 								local fontString = self:GetFontString();
-								fontString:SetPoint("CENTER", 8, 0);
+								fontString:SetPoint("CENTER", 10, 0);
 								self.Logo:ClearAllPoints();
-								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -5, 0);
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -3, 0);
 							</OnLoad>
 							<OnClick function="ToggleStoreUI"/>
 							<OnEnable inherit="append">

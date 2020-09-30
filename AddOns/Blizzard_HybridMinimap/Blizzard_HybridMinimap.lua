@@ -1,8 +1,6 @@
 HybridMinimapMixin = { };
 
 function HybridMinimapMixin:OnLoad()
-	self:SetFrameStrata("BACKGROUND");
-
 	local mapCanvas = self.MapCanvas;
 	mapCanvas:SetShouldZoomInOnClick(false);
 	mapCanvas:SetShouldPanOnClick(false);
@@ -13,7 +11,9 @@ function HybridMinimapMixin:OnLoad()
 	mapCanvas:SetMaskTexture(self.CircleMask);
 	mapCanvas:SetUseMaskTexture(true);
 
-	mapCanvas:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
+	local explorationDataProvider = CreateFromMixins(MapExplorationDataProviderMixin);
+	explorationDataProvider:SetDrawLayer("BACKGROUND", -6);
+	mapCanvas:AddDataProvider(explorationDataProvider);
 
 	local pinFrameLevelsManager = mapCanvas:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");

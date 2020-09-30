@@ -174,6 +174,20 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetConduitRankFromCollection",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conduitRank", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConduitSpellID",
 			Type = "Function",
 
@@ -369,20 +383,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "MatchesCurrentSpecSet",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "specSetID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "matches", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "RemovePendingConduit",
 			Type = "Function",
 
@@ -534,8 +534,10 @@ local Soulbinds =
 			{
 				{ Name = "conduitID", Type = "number", Nilable = false },
 				{ Name = "conduitRank", Type = "number", Nilable = false },
+				{ Name = "conduitItemLevel", Type = "number", Nilable = false },
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = false },
 				{ Name = "conduitSpecSetID", Type = "number", Nilable = false },
+				{ Name = "conduitSpecIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "conduitSpecName", Type = "string", Nilable = true },
 				{ Name = "covenantID", Type = "number", Nilable = true },
 				{ Name = "conduitItemID", Type = "number", Nilable = false },

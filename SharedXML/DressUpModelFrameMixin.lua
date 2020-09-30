@@ -134,16 +134,12 @@ function TransmogAndMountDressupFrameMixin:OnHide()
 end 
 
 function TransmogAndMountDressupFrameMixin:RemoveWeapons()
-	local playerActor = self.ModelScene:GetPlayerActor();
-
-	if (not playerActor) then
-		return true;
+	for actor in self.ModelScene:EnumerateActiveActors() do
+		local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+		local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+		actor:UndressSlot(mainHandSlotID);
+		actor:UndressSlot(offHandSlotID);
 	end
-
-	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
-	local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
-	playerActor:UndressSlot(mainHandSlotID);
-	playerActor:UndressSlot(offHandSlotID);
 end 
 
 function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
@@ -152,10 +148,10 @@ function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
 	else
 		local sources = C_TransmogSets.GetAllSourceIDs(self.transmogSetID);
 		DressUpTransmogSet(sources);
-	
-		if(self.removeWeapons) then 
-			self:RemoveWeapons(); 
-		end 
 	end
+
+	if(self.removeWeapons) then 
+		self:RemoveWeapons(); 
+	end 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end

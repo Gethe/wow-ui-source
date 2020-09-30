@@ -70,8 +70,10 @@ function SoulbindViewerMixin:OnEvent(event, ...)
 		local nodeID, conduitID, pending = ...;
 		self:OnConduitChanged();
 	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
+		Soulbinds.SetConduitInstallPending(false);
 		self:UpdateButtons();
 	elseif event == "SOULBIND_CONDUITS_RESET" then
+		Soulbinds.SetConduitResetPending(false);
 		self:UpdateResetConduitsButton();
 	end
 end
@@ -294,6 +296,7 @@ end
 
 function SoulbindViewerMixin:OnCommitConduitsClicked()
 	local onConfirm = function()
+		Soulbinds.SetConduitInstallPending(true);
 		C_Soulbinds.CommitPendingConduitsInSoulbind(self:GetOpenSoulbindID());
 		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
@@ -302,6 +305,7 @@ end
 
 function SoulbindViewerMixin:OnResetConduitsClicked()
 	local onConfirm = function()
+		Soulbinds.SetConduitResetPending(true);
 		C_Soulbinds.ResetSoulbindConduits(self:GetOpenSoulbindID());
 		PlaySound(SOUNDKIT.SOULBINDS_RESET_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end

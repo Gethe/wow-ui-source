@@ -308,6 +308,9 @@ TutorialData.Alliance = {
 	StartingQuestGiverCreatureID = 156280;
 	StartingQuestTargetDummyCreatureID = 160737;
 
+	StandYourGround = 58209;
+	BraceForImpact = 58208;
+
 	ShowMinimapQuest = 55122;
 	
 	UseMapQuest = 54952;
@@ -433,6 +436,9 @@ TutorialData.Horde = {
 	StartingQuestInteractString = NPEV2_INTRO_QUESTGIVER_INTERACT_HORDE;
 	StartingQuestGiverCreatureID = 166573;
 	StartingQuestTargetDummyCreatureID = 160737;
+
+	StandYourGround = 59927;
+	BraceForImpact = 59928;
 
 	ShowMinimapQuest = 59929;
 	

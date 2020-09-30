@@ -78,15 +78,23 @@
 			<KeyValue key="checkedTextureSize" value="118" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="RaceName" inherits="GameFontNormalMed2Outline" justifyH="CENTER" justifyV="MIDDLE">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="7"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+		<Frames>
+			<Frame parentKey="RaceName">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormalMed2Outline" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</CheckButton>
 
 	<CheckButton name="CharacterCreateAllianceButtonTemplate" inherits="CharacterCreateRaceButtonTemplate" virtual="true">

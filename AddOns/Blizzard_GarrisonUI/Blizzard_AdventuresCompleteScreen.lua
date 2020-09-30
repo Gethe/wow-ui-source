@@ -100,6 +100,7 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
    	self:ResetMissionDisplay();
 	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, mission);
 	self.MissionInfo.EncounterIcon:SetEncounterInfo(mission.encounterIconInfo);
+	self.AdventuresCombatLog.environmentEffect = C_Garrison.GetAutoMissionEnvironmentEffect(mission.missionID);
 
 	if not mission.completed then
    		C_Garrison.MarkMissionComplete(self.currentMission.missionID);
@@ -322,7 +323,10 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 
 		local sourceBoardIndex = combatLogEvent.casterBoardIndex;
 		local sourceFrame = self:GetFrameFromBoardIndex(sourceBoardIndex);
-		self.Board:RaiseFrameByBoardIndex(sourceBoardIndex);
+		
+		if sourceBoardIndex ~= -1 then
+			self.Board:RaiseFrameByBoardIndex(sourceBoardIndex);
+		end 
 
 		local effectInfo = ScriptedAnimationEffectsUtil.GetEffectByID(effect);
 		local secondaryEffect = effectInfo and effectInfo.finishEffectID or nil;
@@ -336,7 +340,7 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 			self.Board:UpdateBoardAuraState(combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura, combatLogEvent);
 		end
 
-		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or eventType == Enum.GarrAutoMissionEventType.RemoveAura or eventType == combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
+		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
 			if #combatLogEvent.targetInfo > 2 then
 				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
 			end
@@ -371,8 +375,13 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 				self:OnReplayEffectResolved();
 			end
 			
-			local primaryTarget = self:GetFrameFromBoardIndex(combatLogEvent.targetInfo[1].boardIndex);
-			self.ModelScene:AddEffect(effect, sourceFrame, primaryTarget, PrimaryEffectOnFinish, EffectOnResolution);
+			if sourceFrame then
+				local primaryTarget = self:GetFrameFromBoardIndex(combatLogEvent.targetInfo[1].boardIndex);
+				self.ModelScene:AddEffect(effect, sourceFrame, primaryTarget, PrimaryEffectOnFinish, EffectOnResolution);
+			else
+				PrimaryEffectOnFinish();
+				EffectOnResolution();
+			end
 		else
 			local resolutionCount = #combatLogEvent.targetInfo;
 			local function MultiEffectOnResolution()

@@ -167,7 +167,7 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	end
 
 	self.unit = unit;
-	healthbar.unit = unit;
+	UnitFrameHealthBar_SetUnit(healthbar, unit)
 	if ( manabar ) then	--Party Pet frames don't have a mana bar.
 		manabar.unit = unit;
 	end
@@ -558,11 +558,9 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	if ( frequentUpdates ) then
 		statusbar:RegisterEvent("VARIABLES_LOADED");
 	end
-	if ( GetCVarBool("predictedHealth") and frequentUpdates ) then
-		statusbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
-	else
-		statusbar:RegisterUnitEvent("UNIT_HEALTH", unit);
-	end
+	
+	UnitFrameHealthBar_RefreshUpdateEvent(statusbar);
+
 	statusbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 	statusbar:SetScript("OnEvent", UnitFrameHealthBar_OnEvent);
 
@@ -576,19 +574,28 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	end
 end
 
+function UnitFrameHealthBar_RefreshUpdateEvent(self)
+	if ( GetCVarBool("predictedHealth") and self.frequentUpdates ) then
+		self:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
+		self:UnregisterEvent("UNIT_HEALTH");
+	else
+		self:SetScript("OnUpdate", nil);
+		self:RegisterUnitEvent("UNIT_HEALTH", self.unit);
+	end
+end
+
+function UnitFrameHealthBar_SetUnit(self, unit)
+	self.unit = unit;
+	UnitFrameHealthBar_RefreshUpdateEvent(self);
+end
+
 function UnitFrameHealthBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
 		TextStatusBar_OnEvent(self, event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
-		if ( GetCVarBool("predictedHealth") and self.frequentUpdates ) then
-			self:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
-			self:UnregisterEvent("UNIT_HEALTH");
-		else
-			self:RegisterUnitEvent("UNIT_HEALTH", self.unit);
-			self:SetScript("OnUpdate", nil);
-		end
-	else
+		UnitFrameHealthBar_RefreshUpdateEvent(self);
+	elseif self:IsShown() then
 		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
 			UnitFrameHealthBar_Update(self, ...);
 		end

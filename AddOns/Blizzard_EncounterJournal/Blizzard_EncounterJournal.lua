@@ -718,15 +718,15 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.instanceTitle:SetText(instanceName);
 	self.instance.mapButton:SetShown(dungeonAreaMapID and dungeonAreaMapID > 0);
 
+	self.instance.loreScroll.ScrollBar:Hide();
+	self.instance.loreScroll.child.lore:SetWidth(335);
 	self.instance.loreScroll.child.lore:SetText(description);
+
 	local loreHeight = self.instance.loreScroll.child.lore:GetHeight();
 	self.instance.loreScroll.ScrollBar:SetValue(0);
-	if loreHeight <= EJ_LORE_MAX_HEIGHT then
-		self.instance.loreScroll.ScrollBar:Hide();
-		self.instance.loreScroll.child.lore:SetWidth(300);
-	else
+	if loreHeight > EJ_LORE_MAX_HEIGHT then
 		self.instance.loreScroll.ScrollBar:Show();
-		self.instance.loreScroll.child.lore:SetWidth(285);
+		self.instance.loreScroll.child.lore:SetWidth(313);
 	end
 
 	self.info.instanceButton.instanceID = instanceID;

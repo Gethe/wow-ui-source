@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_LootJournal.lua"/>
 
-	<Frame name="RuneforgeLegendaryPowerLootJournalTemplate" mixin="RuneforgeLegendaryPowerLootJournalMixin" inherits="TemplatedListElementTemplate" virtual="true">
+	<Button name="RuneforgeLegendaryPowerLootJournalTemplate" mixin="RuneforgeLegendaryPowerLootJournalMixin" inherits="GridListElementTemplate" virtual="true">
 		<Size x="326" y="80"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -46,7 +46,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-	</Frame>
+	</Button>
 	
 	<Frame parentKey="LootJournal" mixin="LootJournalMixin" parent="EncounterJournal" hidden="true">
 		<Anchors>

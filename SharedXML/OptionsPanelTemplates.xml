@@ -1,7 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<!-- if you change something here you probably want to change the frame version too -->
-
+	<Script file="OptionsPanelTemplates.lua"/>
+	<Button name="OptionsButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="90" y="21"/>
+		</Size>
+	</Button>
 	<CheckButton name="OptionsBaseCheckButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="26" y="26"/>
@@ -20,16 +24,16 @@
 			</OnClick>
 			<OnEnter>
 				if ( self.tooltipText ) then
-					GlueTooltip:SetOwner(self);
-					GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+					GetAppropriateTooltip():SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+					GetAppropriateTooltip():SetText(self.tooltipText, nil, nil, nil, nil, true);
 				end
 				if ( self.tooltipRequirement ) then
-					GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, true);
-					GlueTooltip:Show();
+					GetAppropriateTooltip():AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
+					GetAppropriateTooltip():Show();
 				end
 			</OnEnter>
 			<OnLeave>
-				GlueTooltip:Hide();
+				GetAppropriateTooltip():Hide();
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -41,7 +45,7 @@
 	<CheckButton name="OptionsCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="OptionsFont">
+				<FontString name="$parentText" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -56,7 +60,7 @@
 	<CheckButton name="OptionsSmallCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="OptionsFontSmall">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -75,12 +79,12 @@
 		<Size x="144" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" parentKey="Text" inherits="OptionsFontHighlight">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLow" parentKey="Low" inherits="OptionsFontSmall" text="LOW">
+				<FontString name="$parentLow" parentKey="Low" inherits="GameFontHighlightSmall" text="LOW">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 							<Offset>
@@ -89,7 +93,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentHigh" parentKey="High" inherits="OptionsFontSmall" text="HIGH">
+				<FontString name="$parentHigh" parentKey="High" inherits="GameFontHighlightSmall" text="HIGH">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
 							<Offset>
@@ -104,24 +108,29 @@
 			<OnEnter>
 				if ( self:IsEnabled() ) then
 					if ( self.tooltipText ) then
-						GlueTooltip:SetOwner(self, self.tooltipPoint, self.tooltipOwnerPoint);
-						GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+						GetAppropriateTooltip():SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+						GetAppropriateTooltip():SetText(self.tooltipText, nil, nil, nil, nil, true);
 					end
 					if ( self.tooltipRequirement ) then
-						GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, true);
-						GlueTooltip:Show();
+						GetAppropriateTooltip():AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
+						GetAppropriateTooltip():Show();
 					end
 				end
 			</OnEnter>
 			<OnLeave>
-				GlueTooltip:Hide();
+				GetAppropriateTooltip():Hide();
 			</OnLeave>
 		</Scripts>
 	</Slider>
+	<Frame name="OptionsDropdownTemplate" inherits="UIDropDownMenuTemplate" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
+		</KeyValues>
+	</Frame>
 	<Frame name="OptionsBoxTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentTitle" inherits="OptionsFontHighlightSmall">
+				<FontString name="$parentTitle" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 							<Offset>

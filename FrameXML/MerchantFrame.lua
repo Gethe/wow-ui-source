@@ -10,6 +10,7 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
+	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL");
 	self:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player");
 	self:RegisterForDrag("LeftButton");
@@ -43,8 +44,9 @@ function MerchantFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_MONEY" or event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		MerchantFrame_UpdateCanRepairAll();
 		MerchantFrame_UpdateRepairButtons();
-	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
+	elseif ( event == "CURRENCY_DISPLAY_UPDATE" or event == "BAG_UPDATE") then
 		MerchantFrame_UpdateCurrencyAmounts();
+		MerchantFrame_Update();
 	elseif ( event == "HEIRLOOMS_UPDATED" ) then
 		local itemID, updateReason = ...;
 		if itemID and updateReason == "NEW" then

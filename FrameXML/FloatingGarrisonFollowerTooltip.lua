@@ -93,40 +93,51 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		else
 			tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_XP, data.levelxp - data.xp);
 		end
-		tooltipFrame.XP:Show();
+
 		if (not xpWidth) then
 			xpWidth = GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH;
 		end
 		tooltipFrame.XPBar:SetWidth(PercentageBetween(data.xp, 0, data.levelxp) * xpWidth);
+
+		tooltipFrame.XPBarBackground:SetPoint("TOPLEFT", tooltipFrame.ClassSpecName, "BOTTOMLEFT", 0, -10);
+		tooltipFrame.XPBar:SetPoint("TOPLEFT", tooltipFrame.ClassSpecName, "BOTTOMLEFT", 0, -10);
+
 		if (data.xp == 0) then
 			tooltipFrame.XPBar:Hide()
+			tooltipFrame.XPBarBackground:Hide();
+			tooltipFrame.XP:Hide();
 		else
 			tooltipFrame.XPBar:Show();
+			tooltipFrame.XPBarBackground:Show();
+			tooltipFrame.XP:Show();
 		end
-
-		tooltipFrame.XPBarBackground:Show();
 	end
 
 	tooltipFrame.PortraitFrame:SetShown(not isAutoCombatant);
 	tooltipFrame.Class:SetShown(not isAutoCombatant);
-	local autoCombatantTooltipBaseHeight = 65;
+
+	local tooltipFrameHeightBase = isAutoCombatant and 27 or 80;	-- this is the tooltip frame height w/ no abilities/traits being displayed
+
 	if isAutoCombatant then	
 		tooltipFrame.XPBar:Hide();
 		tooltipFrame.XPBarBackground:Hide();
 
 		tooltipFrame.Name:SetPoint("TOPLEFT", 16, -15);
-		tooltipFrame.ClassSpecName:SetPoint("TOPLEFT", 16, -35);
-		tooltipFrame.XP:SetPoint("TOPLEFT", 16, -48);
+		tooltipFrame.ClassSpecName:SetPoint("TOPLEFT", tooltipFrame.Name, "BOTTOMLEFT", 0, -2);
+
+		tooltipFrameHeightBase = tooltipFrameHeightBase + tooltipFrame.Name:GetHeight() + tooltipFrame.ClassSpecName:GetHeight();
+
+		tooltipFrame.XP:SetPoint("TOPLEFT", tooltipFrame.ClassSpecName, "BOTTOMLEFT", 0, -2);
 		tooltipFrame.XP:SetJustifyH("LEFT");
-		if	(data.xp == 0) then
-			autoCombatantTooltipBaseHeight = 55;
-			tooltipFrame.XP:Hide();
+
+		if tooltipFrame.XP:IsShown() then
+			tooltipFrameHeightBase = tooltipFrameHeightBase + tooltipFrame.XP:GetHeight() + 2;
 		end
 	else
 		tooltipFrame.Name:SetPoint("TOPLEFT", 66, -10);
-		tooltipFrame.ClassSpecName:SetPoint("TOPLEFT", 66, -35);
+		tooltipFrame.ClassSpecName:SetPoint("TOPLEFT", tooltipFrame.Name, "BOTTOMLEFT", 0, -2);
+		tooltipFrame.XP:SetPoint("TOPLEFT", tooltipFrame.XPBarBackground, "BOTTOMLEFT", 0, -3);
 		tooltipFrame.XP:SetJustifyH("CENTER");
-		tooltipFrame.XP:SetPoint("TOPLEFT", tooltipFrame.XPBar, "BOTTOMLEFT", 0, -3);
 	end
 
 	local abilities = {data.ability1, data.ability2, data.ability3, data.ability4};
@@ -149,7 +160,6 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	
 	local abilityTemplate = "GarrisonFollowerAbilityTemplate";
 
-	local tooltipFrameHeightBase = isAutoCombatant and autoCombatantTooltipBaseHeight or 80;	-- this is the tooltip frame height w/ no abilities/traits being displayed
 	local abilityOffset = 10;																	-- distance between ability entries
 	local abilityFrameHeightBase = 20;															-- ability frame height w/ no description/details being displayed
 	local spacingBetweenLabelAndFirstAbility = 8;												-- distance between the "Abilities" label and the first ability below it
@@ -332,7 +342,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		tooltipFrameHeight = tooltipFrameHeight + Trait:GetHeight();
 	end
 
-	if ( not detailed ) then
+	if ( not isAutoCombatant and not detailed ) then
 		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
 	end
 

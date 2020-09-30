@@ -43,6 +43,24 @@ function Soulbinds.GetDefaultSoulbindID(covenantID)
 	return soulbindDefaultIDs[covenantID];
 end
 
+local conduitResetPending;
+function Soulbinds.SetConduitResetPending(pending)
+	conduitResetPending = pending;
+end
+
+function Soulbinds.IsConduitResetPending()
+	return conduitResetPending;
+end
+
+local conduitInstallPending;
+function Soulbinds.SetConduitInstallPending(pending)
+	conduitInstallPending = pending;
+end
+
+function Soulbinds.IsConduitCommitPending()
+	return conduitInstallPending;
+end
+
 function Soulbinds.GetConduitName(conduitType)
 	if conduitType == Enum.SoulbindConduitType.Potency then
 		return CONDUIT_POTENCY;

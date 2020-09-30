@@ -124,6 +124,18 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="GlowBurst" atlas="weeklyrewards-frame-burst" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture  parentKey="Sheen" atlas="weeklyrewards-frame-sheen" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-20" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="ItemFrame" inherits="WeeklyRewardActivityItemFrameTemplate" hidden="true" frameLevel="10">
@@ -143,6 +155,25 @@
 				</Layers>
 			</Frame>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="SheenAnim">
+				<Alpha parentKey="SheenDelay" childKey="Sheen" fromAlpha="0" toAlpha="0" duration="0" order="1"/>
+				<Alpha parentKey="GlowBurstDelay" childKey="GlowBurst" fromAlpha="0" toAlpha="0" duration="0" order="1"/>
+
+				<Alpha childKey="Sheen" fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+				<Alpha childKey="GlowBurst" fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+
+				<Alpha childKey="GlowBurst" fromAlpha="1" toAlpha="0" duration="0.5" order="3"/>
+				<Translation childKey="Sheen" offsetX="150" offsetY="0" duration="0.85" order="3"/>
+				<Alpha childKey="Sheen" startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="3"/>
+
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnSheenAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnEnter method="OnEnter"/>

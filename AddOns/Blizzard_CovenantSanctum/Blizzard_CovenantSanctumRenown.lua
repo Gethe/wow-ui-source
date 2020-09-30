@@ -24,6 +24,14 @@ local finalToastSwirlEffects =
 	Necrolord = {122},
 }
 
+local finalToastSounds =
+{
+	Kyrian = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_KYRIAN,
+	Venthyr = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_VENTHYR,
+	NightFae = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_NIGHTFAE,
+	Necrolord = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_NECROLORD,
+}
+
 local g_sanctumTextureKit;
 local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(g_sanctumTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -47,6 +55,7 @@ end
 function CovenantSanctumRenownTabMixin:OnHide()
 	self:UnregisterEvent("COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED");
 	self:SetCelebrationSwirlEffects(nil);
+	self:CancelFinalToastSound();
 end
 
 function CovenantSanctumRenownTabMixin:OnEvent(event, ...)
@@ -132,6 +141,7 @@ function CovenantSanctumRenownTabMixin:RefreshRewards()
 		self.Description:SetFormattedText(COVENANT_SANCTUM_RENOWN_REWARD_DESC, nextLevel);
 		self.FinalToast:Hide();
 		self:SetCelebrationSwirlEffects(nil);
+		self:CancelFinalToastSound()
 	else
 		self.Header:SetText(COVENANT_SANCTUM_RENOWN_REWARD_TITLE_COMPLETE);
 
@@ -141,6 +151,19 @@ function CovenantSanctumRenownTabMixin:RefreshRewards()
 		self.FinalToast:Show();
 		self.FinalToast:SetCovenantTextureKit(covenantData.textureKit);
 		self:SetCelebrationSwirlEffects(finalToastSwirlEffects[covenantData.textureKit]);
+
+		if not self.finalToastSoundHandle then
+			local soundKitID = finalToastSounds[covenantData.textureKit];
+			local _, soundHandle = PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			self.finalToastSoundHandle = soundHandle;
+		end
+	end
+end
+
+function CovenantSanctumRenownTabMixin:CancelFinalToastSound()
+	if self.finalToastSoundHandle then
+		StopSound(self.finalToastSoundHandle);
+		self.finalToastSoundHandle = nil;
 	end
 end
 

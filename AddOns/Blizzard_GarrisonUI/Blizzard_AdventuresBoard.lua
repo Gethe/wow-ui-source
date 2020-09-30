@@ -269,7 +269,9 @@ end
 
 function AdventuresBoardCombatMixin:UpdateCooldownsFromEvent(combatLogEvent)
 	local sourceFrame = self:GetFrameByBoardIndex(combatLogEvent.casterBoardIndex);
-	sourceFrame:StartCooldown(combatLogEvent.spellID);
+	if sourceFrame then
+		sourceFrame:StartCooldown(combatLogEvent.spellID);
+	end
 end
 
 function AdventuresBoardCombatMixin:UpdateCooldownsFromNewRound()
@@ -454,9 +456,12 @@ end
 function AdventuresSocketMixin:RemoveAura(spellID, effectIndex, auraType)
 	local collection = self:GetCollectionByAuraType(auraType);
 
-	collection[spellID][effectIndex] = nil;
-	if next(collection[spellID]) == nil then 
-		collection[spellID] = nil;
+	if collection[spellID] then
+		collection[spellID][effectIndex] = nil;
+		
+		if next(collection[spellID]) == nil then 
+			collection[spellID] = nil;
+		end
 	end
 
 	self:UpdateAuraVisibility();

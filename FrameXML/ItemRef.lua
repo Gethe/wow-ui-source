@@ -298,7 +298,7 @@ function SetItemRef(link, text, button, chatFrame)
 			StoreFrame_SetServicesCategory();
 			ToggleStoreUI();
 		elseif category == "gametime" then
-			StoreFrame_OpenGameTimeCategory();
+			StoreInterfaceUtil.OpenToSubscriptionProduct();
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then

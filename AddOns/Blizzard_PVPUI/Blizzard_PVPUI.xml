@@ -19,6 +19,7 @@
 			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
 	</Frame>
 	
@@ -1596,9 +1597,6 @@
 												</MaskTexture>
 											</Layer>
 										</Layers>
-										<Scripts>
-											<OnMouseDown method="OnMouseDown"/>
-										</Scripts>
 									</Frame>
 								</Frames>
 								<Scripts>

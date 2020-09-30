@@ -4072,6 +4072,28 @@ StaticPopupDialogs["AUCTION_HOUSE_DEPRECATED"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["LEAVING_TUTORIAL_AREA"] = {
+	text = "",
+	button1 = "",
+	button2 = NPE_ABANDON_LEAVE_TUTORIAL,
+	OnButton1 = function(self)
+		C_Tutorial.ReturnToTutorialArea();
+	end,
+	OnButton2 = function(self)
+		C_Tutorial.AbandonTutorialArea();
+	end,
+	OnShow = function(self)
+		if UnitFactionGroup("player") == "Horde" then
+			self.button1:SetText(NPE_ABANDON_H_RETURN);
+			self.text:SetText(NPE_ABANDON_H_WARNING);
+		else
+			self.button1:SetText(NPE_ABANDON_A_RETURN);
+			self.text:SetText(NPE_ABANDON_A_WARNING);
+		end
+	end,
+	selectCallbackByIndex = true,
+};
+
 local function InviteToClub(clubId, text)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;

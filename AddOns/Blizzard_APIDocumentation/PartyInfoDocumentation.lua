@@ -175,6 +175,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "IsPartyInJailersTower",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPartyInJailersTower", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LeaveParty",
 			Type = "Function",
 			Documentation = { "Usually this will leave the party immediately. In some cases (e.g. PartySync) the user will be prompted to confirm leaving the party, because it's potentially destructive" },

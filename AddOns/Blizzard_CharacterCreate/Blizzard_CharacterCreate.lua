@@ -842,7 +842,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 		self:StopFlash();
 	end
 
-	self.RaceName:SetText(raceData.name);
+	self.RaceName.Text:SetText(raceData.name);
 	self.RaceName:SetShown(C_CharacterCreation.IsNewPlayerRestricted());
 
 	if not raceData.isAlliedRace then

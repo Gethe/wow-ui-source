@@ -366,6 +366,9 @@
 					<MaskedTextures>
 						<MaskedTexture childKey="Artwork"/>
 					</MaskedTextures>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 				</MaskTexture>
 				<MaskTexture parentKey="TypeCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>

@@ -183,14 +183,13 @@ function SplashRightFeatureFrameMixin:SetStartQuestButtonDisplay(screenInfo)
 
 		self.Title:SetPoint("BOTTOM", self.Description, "TOP", 0, 10);
 	else
-		self.Description:SetWidth(234);
-		self.Title:SetPoint("BOTTOM", self.Description, "TOP", 0, 20);
+		self.Description:SetWidth(228);
+		self.Title:SetPoint("BOTTOM", self.Description, "TOP", 0, 10);
 
 		if (screenInfo.rightFeatureDescSubText) then
 			self.Description:SetText(screenInfo.rightFeatureDescSubText);
 			self.Description:ClearAllPoints();
 			self.Description:SetPoint("TOP", self.Title, "BOTTOM", 0, -10);
-			self.Description:SetWidth(234);
 		end
 	end
 

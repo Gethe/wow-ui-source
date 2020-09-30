@@ -4,8 +4,14 @@
 	
 	<Button name="CovenantSanctumFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" frameStrata="LOW" virtual="true">
 		<Scripts>
+			<OnEnter>
+				if self.tooltipText then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -16, -10);
+					GameTooltip_SetTitle(GameTooltip, self.tooltipText, NORMAL_FONT_COLOR);
+				end
+			</OnEnter>
 			<OnClick>
-				PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_TAB_CLICK);
+				PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_TAB_CLICK, nil, SOUNDKIT_ALLOW_DUPLICATES);
 				self:GetParent():SetTab(self:GetID());
 			</OnClick>
 		</Scripts>

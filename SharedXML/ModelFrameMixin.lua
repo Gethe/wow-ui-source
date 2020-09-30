@@ -106,6 +106,11 @@ function ModelFrameMixin:UpdateRotation(leftButton, rightButton, elapsedTime, ro
 	end
 end
 
+function ModelFrameMixin:ApplyRotation(rotation)
+	self.rotation = rotation;
+	self:SetRotation(rotation);
+end
+
 function ModelFrameMixin:OnUpdate(elapsedTime)
 	local rotationsPerSecond = ROTATIONS_PER_SECOND;
 	

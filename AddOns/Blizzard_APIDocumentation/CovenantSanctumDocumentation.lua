@@ -7,6 +7,15 @@ local CovenantSanctum =
 	Functions =
 	{
 		{
+			Name = "CanAccessReservoir",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canAccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanDepositAnima",
 			Type = "Function",
 
@@ -158,7 +167,7 @@ local CovenantSanctum =
 				{ Name = "mountID", Type = "number", Nilable = true },
 				{ Name = "transmogID", Type = "number", Nilable = true },
 				{ Name = "transmogSetID", Type = "number", Nilable = true },
-				{ Name = "titleID", Type = "number", Nilable = true },
+				{ Name = "titleMaskID", Type = "number", Nilable = true },
 				{ Name = "garrFollowerID", Type = "number", Nilable = true },
 				{ Name = "transmogIllusionSourceID", Type = "number", Nilable = true },
 				{ Name = "icon", Type = "number", Nilable = true },

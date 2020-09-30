@@ -592,3 +592,4 @@ retain("C_RecruitAFriend");
 -- retain shared constants
 retain("WOW_GAMES_CATEGORY_ID");
 retain("WOW_GAME_TIME_CATEGORY_ID");
+retain("WOW_SUBSCRIPTION_CATEGORY_ID");

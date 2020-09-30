@@ -1966,7 +1966,7 @@ AccessibilityPanelOptions = {
 	shakeStrengthCamera = { text = "ADJUST_MOTION_SICKNESS_SHAKE" },
 	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
 	colorblindSimulator = { text = "COLORBLIND_FILTER" },
-	overrideScreenFlash = { text = "OVERRIDE_SCREEN_FLASH" },
+	overrideScreenFlash = { text = "ALTERNATE_SCREEN_EFFECTS" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)

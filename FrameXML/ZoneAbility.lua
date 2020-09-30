@@ -66,6 +66,7 @@ local function CheckShowZoneAbilityTutorial(zoneAbilityButton)
 		text = zoneAbilityInfo.tutorialText,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedExtraAbiltyTutorials",
+		onAcknowledgeCallback = function() ZoneAbilityFrame:CheckForTutorial() end,
 		bitfieldFlag = zoneAbilityInfo.zoneAbilityID,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		offsetY = 20,

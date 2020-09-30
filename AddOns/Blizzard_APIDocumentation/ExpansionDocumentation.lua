@@ -232,13 +232,14 @@ local Expansion =
 		{
 			Name = "SubscriptionInterstitialResponseType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Clicked", Type = "SubscriptionInterstitialResponseType", EnumValue = 0 },
 				{ Name = "Closed", Type = "SubscriptionInterstitialResponseType", EnumValue = 1 },
+				{ Name = "WebRedirect", Type = "SubscriptionInterstitialResponseType", EnumValue = 2 },
 			},
 		},
 		{

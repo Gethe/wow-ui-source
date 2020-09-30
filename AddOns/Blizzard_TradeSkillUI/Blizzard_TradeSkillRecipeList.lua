@@ -104,6 +104,7 @@ function TradeSkillRecipeListMixin:OnDataSourceChanged(tradeSkillChanged)
 end
 
 function TradeSkillRecipeListMixin:OnHeaderButtonClicked(categoryButton, categoryInfo, mouseButton)
+	PlaySound(SOUNDKIT.UI_90_BLACKSMITHING_TREECLICK);
 	self:SetCategoryCollapsed(categoryInfo.categoryID, not self:IsCategoryCollapsed(categoryInfo.categoryID));
 end
 
@@ -121,6 +122,7 @@ end
 function TradeSkillRecipeListMixin:OnRecipeButtonClicked(recipeButton, recipeInfo, mouseButton)
 	if mouseButton == "LeftButton" then
 		self:SetSelectedRecipeID(recipeInfo.recipeID);
+		PlaySound(SOUNDKIT.UI_90_BLACKSMITHING_TREEITEMCLICK);
 	elseif mouseButton == "RightButton" then
 		if recipeInfo.learned and not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsTradeSkillLinked() then
 			self.contextMenuRecipeID = recipeInfo.recipeID;

@@ -46,6 +46,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetAutoMissionEnvironmentEffect",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autoMissionEnvEffect", Type = "AutoMissionEnvironmentEffect", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAutoMissionTargetingInfo",
 			Type = "Function",
 
@@ -369,6 +383,15 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RushHealAllFollowers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "followerType", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -975,6 +998,15 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "AutoMissionEnvironmentEffect",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "autoCombatSpellInfo", Type = "AutoCombatSpellInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "AutoMissionEvent",
 			Type = "Structure",
 			Fields =
@@ -1013,7 +1045,6 @@ local GarrisonInfo =
 				{ Name = "currentHealth", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "attack", Type = "number", Nilable = false },
-				{ Name = "estimatedPowerLevel", Type = "number", Nilable = false },
 				{ Name = "healingTimestamp", Type = "number", Nilable = false },
 			},
 		},
@@ -1105,7 +1136,6 @@ local GarrisonInfo =
 				{ Name = "health", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "attack", Type = "number", Nilable = false },
-				{ Name = "estimatedPowerLevel", Type = "number", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },
 			},
 		},

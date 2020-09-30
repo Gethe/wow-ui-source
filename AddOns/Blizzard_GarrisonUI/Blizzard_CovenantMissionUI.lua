@@ -31,6 +31,18 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_CONFIRMATION"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION"] = {
+	text = COVENANT_MISSIONS_CONFIRM_HEAL_ALL,
+	button1 = COVENANT_MISSIONS_HEAL_ALL,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_Garrison.RushHealAllFollowers(self.data.followerType);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
 
 
 local covenantGarrisonStyleData =
@@ -112,10 +124,10 @@ function CovenantMission:OnLoadMainFrame()
 
 	self:GetMissionPage().Board:Reset();
 
-	self:GetMissionPage().Stage.EnemyPowerLabel:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
 	self:GetMissionPage().Stage.EnemyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Stage.PartyPowerLabel:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Stage.PartyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+	self:GetMissionPage().Stage.EnemyHealthValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+	self:GetMissionPage().Board.AllyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
+	self:GetMissionPage().Board.AllyHealthValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
 
 	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
 		followerFrame:SetMainFrame(self);
@@ -137,6 +149,7 @@ local COVENANT_MISSION_EVENTS = {
 local COVENANT_MISSION_STATIC_POPUPS = {
 	"COVENANT_MISSIONS_CONFIRM_ADVENTURE",
 	"COVENANT_MISSIONS_HEAL_CONFIRMATION",
+	"COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION"
 };
 
 function CovenantMission:OnEventMainFrame(event, ...)
@@ -274,6 +287,8 @@ function CovenantMission:ShowMission(missionInfo)
 	missionPage.environment = missionDeploymentInfo.environment;
 	self:SetEnvironmentTexture(missionDeploymentInfo.environmentTexture);
 	missionPage.EncounterIcon:SetEncounterInfo(missionInfo.encounterIconInfo);
+	missionInfo.environmentEffect = C_Garrison.GetAutoMissionEnvironmentEffect(missionInfo.missionID);
+	missionPage.Stage.EnvironmentEffectFrame:SetEnvironmentEffect(missionInfo.environmentEffect);
 	local enemies = missionDeploymentInfo.enemies;
 	self:SetEnemies(missionPage, enemies);
 	self:UpdateEnemyPower(missionPage, enemies);
@@ -282,29 +297,34 @@ function CovenantMission:ShowMission(missionInfo)
 end
 
 function CovenantMission:UpdateEnemyPower(missionPage, enemies)
+	local totalHealth = 0;
 	local totalPower = 0;
 	for _, enemy in ipairs(enemies) do
-		totalPower = totalPower + enemy.estimatedPowerLevel;
+		totalHealth = totalHealth + enemy.maxHealth;
+		totalPower = totalPower + enemy.attack;
 	end
 
 	self.enemyPowerLevel = totalPower;
+	self.enemyHealthLevel = totalHealth;
 
 	missionPage.Stage.EnemyPowerValue:SetText(BreakUpLargeNumbers(self.enemyPowerLevel));
+	missionPage.Stage.EnemyHealthValue:SetText(BreakUpLargeNumbers(self.enemyHealthLevel));
 	missionPage.Stage.EnemyPowerValue:Show();
+	missionPage.Stage.EnemyHealthValue:Show();
 end
 
 function CovenantMission:UpdateAllyPower(missionPage)
 	local partyPower = 0;
-
+	local partyHealth = 0;
 	for followerFrame in missionPage.Board:EnumerateFollowers() do
 		if followerFrame.info then
-			partyPower = partyPower + followerFrame.info.autoCombatantStats.estimatedPowerLevel;
+			partyPower = partyPower + followerFrame.info.autoCombatantStats.attack;
+			partyHealth = partyHealth + followerFrame.info.autoCombatantStats.currentHealth;
 		end
 	end
 
-	local textColorCode = partyPower < self.enemyPowerLevel and RED_FONT_COLOR_CODE or YELLOW_FONT_COLOR_CODE;
-	missionPage.Stage.PartyPowerValue:SetText(textColorCode .. BreakUpLargeNumbers(partyPower) .. FONT_COLOR_CODE_CLOSE);
-	missionPage.Stage.PartyPowerValue:Show();
+	missionPage.Board.AllyPowerValue:SetText(BreakUpLargeNumbers(partyPower));
+	missionPage.Board.AllyHealthValue:SetText(BreakUpLargeNumbers(partyHealth));
 end
 
 function CovenantMission:ClearParty()
@@ -492,7 +512,8 @@ end
 
 function CovenantMission:UpdateCurrencyInfo()
 	local _, secondaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
-	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency).iconFileID;
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency);
+	local currencyTexture = currencyInfo.iconFileID;
 
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
@@ -501,6 +522,8 @@ function CovenantMission:UpdateCurrencyInfo()
 	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetSize(18, 18);
 	self.FollowerTab.HealFollowerFrame.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon, "LEFT", -8, -1);
+
+	self.FollowerList.HealAllButton.currencyInfo = currencyInfo;
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
@@ -716,4 +739,95 @@ function CovenantMissionPage_OnHide(self)
 	mainFrame.FollowerList.showUncollected = true;
 
 	self.lastUpdate = nil;
+end
+
+---------------------------------------------------------------------------------
+--- Mission Page Environment Effect Mixin                                     ---
+---------------------------------------------------------------------------------
+
+CovenantMissionEnvironmentEffectMixin = {};
+
+function CovenantMissionEnvironmentEffectMixin:SetEnvironmentEffect(environmentEffect)
+	if not environmentEffect then
+		self.info = nil;
+		self:Hide();
+		return;
+	end
+
+	self.info = environmentEffect.autoCombatSpellInfo;
+	self:Show();
+	self.Name:SetText(self.info.name);
+	self.Icon:SetTexture(self.info.icon);
+end
+
+function CovenantMissionEnvironmentEffectMixin:OnEnter()
+	CovenantMissionAutoSpellAbilityTemplate_OnEnter(self);
+end
+
+function CovenantMissionEnvironmentEffectMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+---------------------------------------------------------------------------------
+--- Covenant Follower List Heal All support Mixin                             ---
+---------------------------------------------------------------------------------
+
+CovenantFollowerListMixin = {}
+
+function CovenantFollowerListMixin:OnShow() 
+	GarrisonFollowerList.OnShow(self);
+
+	self:CalculateHealAllFollowersCost();
+end
+
+function CovenantFollowerListMixin:OnUpdate() 
+	self:CalculateHealAllFollowersCost();
+end
+
+function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
+	local healAllCost = 0;
+	self.HealAllButton.tooltip = nil;
+	self:SetScript("OnUpdate", nil);
+
+	for _, follower in ipairs(self.followers) do
+		if follower.status ~= GARRISON_FOLLOWER_ON_MISSION then
+			local followerStats = follower.autoCombatantStats;
+			healAllCost = healAllCost + math.ceil(((followerStats.maxHealth - followerStats.currentHealth) / followerStats.maxHealth) * Constants.GarrisonConstsExposed.GARRISON_AUTO_COMBATANT_FULL_HEAL_COST);
+		end
+	end
+
+	self.HealAllButton.followerType = self.followerType;
+	self.HealAllButton.healAllCost = healAllCost;
+
+	if healAllCost == 0 then
+		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_ALL_ADVENTURERS_FULL;
+		self.HealAllButton:SetEnabled(false);
+	elseif healAllCost > self.HealAllButton.currencyInfo.quantity then
+		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
+		self.HealAllButton:SetEnabled(false)
+	else	
+		self:SetScript("OnUpdate", self.OnUpdate);
+		self.HealAllButton:SetEnabled(true);
+	end
+end
+
+---------------------------------------------------------------------------------
+--- Heal All Button support functions										  ---
+---------------------------------------------------------------------------------
+
+function CovenantMissionHealAllButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
+	GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", 0, 0);
+	local wrap = false;
+	GameTooltip_AddNormalLine(GameTooltip, self.tooltip, wrap);
+	GameTooltip:Show();
+end
+
+function CovenantMissionHealAllButton_OnLeave(self)
+	GameTooltip_Hide();
+end
+
+function CovenantMissionHealAllButton_OnClick(self)
+	local currencyString = CreateTextureMarkup(self.currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, self.currencyInfo.name);
+	StaticPopup_Show("COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION", currencyString, "", {followerType = self.followerType});
 end

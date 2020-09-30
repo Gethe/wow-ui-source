@@ -343,6 +343,7 @@ end
 
 function QuestSessionManagementMixin:UpdateExecuteSessionCommandState()
 	self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
+	self:UpdateTooltip();
 end
 
 function QuestSessionManagementMixin:UpdateExecuteCommandAtlases(command)
@@ -372,6 +373,12 @@ function QuestSessionManagementMixin:ShowTooltip()
 
 		local wrap = true;
 		GameTooltip_AddNormalLine(GameTooltip, text, wrap);
+
+		local failureReason = QuestSessionManager:GetSessionManagementFailureReason();
+		if failureReason == "inCombat" then
+			GameTooltip_AddErrorLine(GameTooltip, QUEST_SESSION_TOOLTIP_START_SESSION_NOT_IN_COMBAT);
+		end
+
 		GameTooltip:Show();
 	end
 end

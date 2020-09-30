@@ -44,16 +44,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="RankBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
+				<Texture parentKey="TierBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" y="-11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="UpgradeArrow" atlas="covenantsanctum-upgrade-icon-available" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" y="3"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Tier" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RankBorder"/>
+						<Anchor point="CENTER" relativeKey="$parent.TierBorder"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -95,14 +100,14 @@
 		<Size x="224" y="224"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="Background">
+				<Texture parentKey="Background" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="FillBackground" useAtlasSize="true">
+				<Texture parentKey="FillBackground" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Background"/>
 					</Anchors>
@@ -219,12 +224,19 @@
 					</Anchors>	
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="UpgradeArrow" atlas="CovenantSanctum-Upgrade-Icon-Available" useAtlasSize="true">
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="TierBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="-3" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<FontString parentKey="Tier" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TierBorder"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" setAllPoints="true" atlas="CovenantSanctum-Upgrade-Hover" alphaMode="ADD"/>
@@ -317,6 +329,41 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="IntroBox" useParentLevel="true" mixin="CovenantSanctumIntroBoxMixin">
+						<Size x="257" y="292"/>
+						<Anchors>
+							<Anchor point="TOP" x="-4" y="-181"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Background">
+									<Anchors>
+										<Anchor point="TOP"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Description" inherits="SystemFont_Shadow_Med2" justifyH="LEFT">
+									<Size x="232" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" y="-27"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Info" inherits="SystemFont_Shadow_Med2" justifyH="LEFT" text="COVENANT_SANCTUM_UPGRADES_INFO">
+									<Size x="232" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-14"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="StatusText" inherits="GameFontHighlight">
+									<Size x="242" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOM" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="COVENANT_SANCTUM_UNLOCK_UPGRADE">
 						<Size x="153" y="22"/>
 						<Anchors>
@@ -335,16 +382,25 @@
 			</Frame>
 
 			<Frame parentKey="TravelUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="description" value="COVENANT_SANCTUM_FEATURE_TRAVELNETWORK" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="147" y="-140"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="DiversionUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="description" value="COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="374" y="-151"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="AdventureUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="description" value="COVENANT_SANCTUM_FEATURE_ADVENTURES" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="558" y="-250"/>
 				</Anchors>

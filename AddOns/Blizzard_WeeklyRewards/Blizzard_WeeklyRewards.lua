@@ -54,8 +54,9 @@ function WeeklyRewardsMixin:OnShow()
 	C_MythicPlus.RequestMapInfo();
 
 	self.hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
+	self.couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards();
 
-	self:Refresh();
+	self:Refresh(self.couldClaimRewardsInOnShow);
 end
 
 function WeeklyRewardsMixin:OnHide()
@@ -75,7 +76,14 @@ function WeeklyRewardsMixin:OnEvent(event)
 			-- hide the UI so the rewards can be generated when the user reopens it
 			HideUIPanel(self);
 		else
-			self:Refresh();
+			-- On initially opening the chest we might not have reward data available, if this changes then play the sheen
+			local playSheenAnims = false;
+			if self.couldClaimRewardsInOnShow == false and C_WeeklyRewards.CanClaimRewards() then
+				playSheenAnims = true;
+				self.couldClaimRewardsInOnShow = nil;
+			end
+
+			self:Refresh(playSheenAnims);
 		end
 	elseif event == "CHALLENGE_MODE_COMPLETED" then
 		C_MythicPlus.RequestMapInfo();
@@ -124,7 +132,7 @@ function WeeklyRewardsMixin:GetActivityFrame(activityType, index)
 	end
 end
 
-function WeeklyRewardsMixin:Refresh()
+function WeeklyRewardsMixin:Refresh(playSheenAnims)
 	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
 	if canClaimRewards then
 		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_CHOOSE_REWARD);
@@ -142,6 +150,9 @@ function WeeklyRewardsMixin:Refresh()
 		-- hide current progress for current week if rewards are present
 		if canClaimRewards and #activityInfo.rewards == 0 then
 			activityInfo.progress = 0;
+		end
+		if playSheenAnims then
+			frame:MarkForPendingSheenAnim();
 		end
 		frame:Refresh(activityInfo);
 	end
@@ -214,6 +225,10 @@ function WeeklyRewardsActivityMixin:SetSelectionState(state)
 	self.ItemFrame:OnSelectionChanged(state == SELECTION_STATE_SELECTED);
 end
 
+function WeeklyRewardsActivityMixin:MarkForPendingSheenAnim()
+	self.hasPendingSheenAnim = true;
+end
+
 function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	local thresholdString;
 	if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
@@ -251,6 +266,16 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 			self.ItemGlow:Hide();
 			self:SetActiveEffect(UNLOCKED_EFFECT_INFO);
 		end
+
+		if self.hasPendingSheenAnim then
+			self.hasPendingSheenAnim = nil;
+			self.GlowBurst:Show();
+			self.Sheen:Show();
+			local startDelay = (self.index - 1) * 0.7
+			self.SheenAnim.GlowBurstDelay:SetDuration(startDelay);
+			self.SheenAnim.SheenDelay:SetDuration(startDelay);
+			self.SheenAnim:Play();
+		end
 	else
 		self.Orb:SetAtlas("weeklyrewards-orb-locked", useAtlasSize);
 		self.Background:SetAtlas("weeklyrewards-background-reward-locked", useAtlasSize);
@@ -265,8 +290,17 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		end
 		self.ItemFrame:Hide();
 		self.ItemGlow:Hide();
+		self.GlowBurst:Hide();
+		self.Sheen:Hide();
 		self:ClearActiveEffect();
 	end
+end
+
+function WeeklyRewardsActivityMixin:OnSheenAnimFinished()
+	self.GlowBurst:Hide();
+	self.Sheen:Hide();
+
+	self.ItemFrame:RestartGlowSpinAnim();
 end
 
 function WeeklyRewardsActivityMixin:SetActiveEffect(effectInfo)
@@ -427,6 +461,7 @@ function WeeklyRewardsActivityMixin:OnLeave()
 end
 
 function WeeklyRewardsActivityMixin:OnHide()
+	self.hasPendingSheenAnim = nil;
 	self:ClearActiveEffect();
 end
 
@@ -466,9 +501,23 @@ function WeeklyRewardActivityItemMixin:OnClick()
 end
 
 function WeeklyRewardActivityItemMixin:OnSelectionChanged(selected)
-	local alpha = selected and 1 or 0;
-	self.Glow:SetAlpha(alpha);
-	self.GlowSpin:SetAlpha(alpha);
+	self.Glow:SetShown(selected);
+	self.GlowSpin:SetShown(selected);
+	if selected then
+		self.GlowSpinAnim:Play();
+	else
+		self.GlowSpinAnim:Stop();
+	end
+end
+
+function WeeklyRewardActivityItemMixin:RestartGlowSpinAnim()
+	-- working around an anim bug where it captures the wrong state due to a parent's anim playing/finishing
+	-- restarting it will re-capture the now correct state
+	if self.GlowSpinAnim:IsPlaying() then
+		local offset = self.GlowSpinAnim:GetProgress() * self.GlowSpinAnim:GetDuration();
+		self.GlowSpinAnim:Stop();
+		self.GlowSpinAnim:Play(false, offset);
+	end
 end
 
 function WeeklyRewardActivityItemMixin:SetDisplayedItem()
@@ -497,7 +546,6 @@ function WeeklyRewardActivityItemMixin:SetDisplayedItem()
 		end
 	end
 	self:SetShown(self.displayedItemDBID ~= nil);
-	self.GlowSpinAnim:Play();
 end
 
 function WeeklyRewardActivityItemMixin:SetRewards(rewards)
@@ -527,6 +575,10 @@ function WeeklyRewardsConcessionMixin:SetSelectionState(state)
 		self.SelectedTexture:Hide();
 		self.UnselectedFrame:Hide();
 	end
+end
+
+function WeeklyRewardsConcessionMixin:MarkForPendingSheenAnim()
+	-- nothing?
 end
 
 function WeeklyRewardsConcessionMixin:Refresh(activityInfo)
@@ -619,7 +671,15 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 		local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(self.itemDBID);
 		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
 		itemFrame.Icon:SetTexture(itemIcon or QUESTION_MARK_ICON);
-		local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
+		local count = 0;
+		for i, rewardInfo in ipairs(self.activityInfo.rewards) do
+			if rewardInfo.itemDBID == self.itemDBID then
+				count = rewardInfo.quantity;
+				break;
+			end
+		end
+		SetItemButtonCount(itemFrame, count);
+		local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);		
 		SetItemButtonQuality(itemFrame, itemQuality, itemHyperlink);
 		if itemName and itemQuality then
 			itemFrame.Name:SetText(itemName);
