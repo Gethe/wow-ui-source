@@ -9,7 +9,7 @@ function Tutorials:Begin()
 
 	self.QueueSystem:Begin();
 	self.AutoPushSpellWatcher:Begin();
-	C_Timer.After(2, function() self.SpellChecker:Begin(); end); -- after 2 seconds, prompt for missing spells
+	self.SpellChecker:Begin();
 
 	-- Hide various UI elements until they are turned on
 	self.Hide_Backpack:Begin();

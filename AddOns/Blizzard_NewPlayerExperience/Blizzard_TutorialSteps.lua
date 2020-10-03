@@ -1048,13 +1048,18 @@ function Class_QueueSystem:CheckQueue()
 	end
 end
 
-
+-- this tutorial checks on relog or reloadui, if the player has their abilities gained from level up
+-- on their action bar
 Class_SpellChecker = class("SpellChecker", Class_TutorialBase);
 function Class_SpellChecker:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_ENTERING_WORLD", self);
+end
+
+function Class_SpellChecker:CheckSpells()
 	LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
 	local playerLevel = UnitLevel("player");
-	for i = 1, playerLevel do
-	 	local spellID = LevelUpTutorial_spellIDlookUp[i];
+	for startLevel = 1, playerLevel do
+	 	local spellID = LevelUpTutorial_spellIDlookUp[startLevel];
 
 		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
 		if not button then
@@ -1062,6 +1067,11 @@ function Class_SpellChecker:OnBegin()
 		end
 	end
 	self:Complete();
+end
+
+function Class_SpellChecker:PLAYER_ENTERING_WORLD()
+	Dispatcher:UnregisterEvent("PLAYER_ENTERING_WORLD", self);
+	self:CheckSpells();
 end
 
 function Class_SpellChecker:OnInterrupt(interruptedBy)
@@ -3402,6 +3412,9 @@ function Class_HunterTameTutorial:OnBegin()
 				else
 					self:AddHunterSpellsToActionBar();
 				end
+			else
+				-- we don't know the hunter spells yet
+				Dispatcher:RegisterEvent("SPELLS_CHANGED", self);
 			end
 		else
 			-- wait for the bottom left action bar to show up
@@ -3464,6 +3477,11 @@ function Class_HunterTameTutorial:AddHunterSpellsToActionBar()
 	end
 
 	self:StartTameTutorial();
+end
+
+function Class_HunterTameTutorial:SPELLS_CHANGED()
+	Dispatcher:UnregisterEvent("SPELLS_CHANGED", self);
+	self:AddHunterSpellsToActionBar();
 end
 
 function Class_HunterTameTutorial:LEARNED_SPELL_IN_TAB(spellID)

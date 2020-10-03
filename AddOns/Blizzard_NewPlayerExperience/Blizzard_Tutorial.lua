@@ -5,10 +5,9 @@ function NewPlayerExperience:Initialize()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-local NPE_AchievementID = 14287;
 function NewPlayerExperience:Begin()
-	local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
-	if ( completed == true ) then
+	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
+	if not isNewPlayerRestricted then
 		-- we have completed the NPE at least once, check to see if Tutorials are on
 		local showTutorials = GetCVarBool("showTutorials");
 		if ( not showTutorials ) then
@@ -56,13 +55,11 @@ function NewPlayerExperience:CVAR_UPDATE(cvar, value)
 	if (cvar == "SHOW_TUTORIALS" ) then
 		if (value == "0") then
 			-- player is trying to shut the NPE Tutorial off
-			local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
-			-- they can  ONLY do that if the achievement is completed
-			if (completed) then
+			local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
+			if not isNewPlayerRestricted then
+				-- you can NOT shut the addon off if you're Restricted
 				self:Shutdown();
 			end
-		else
-			-- you can turn the tutorials back on, but they wont load without a relog
 		end
 	end
 end
