@@ -47,7 +47,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Logo" file="Interface/Glues/Common/Glues-WoW-StarterLogo">
+				<Texture parentKey="Logo" file="Interface/Glues/Common/Glues-WoW-FreeTrial">
 					<Size x="320" y="160"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentBG" relativePoint="TOP" x="0" y="-30"/>

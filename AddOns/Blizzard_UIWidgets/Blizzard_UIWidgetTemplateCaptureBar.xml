@@ -82,16 +82,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="FlashLeftAnim" setToFinalAlpha="true">
-						<Alpha childKey="Left" fromAlpha="0" toAlpha="1" duration=".1" order="0"/>
-						<Alpha childKey="Left" fromAlpha="1" toAlpha="0" duration=".1" order="1" startDelay="0.9" />
-					</AnimationGroup>
-					<AnimationGroup parentKey="FlashRightAnim">
-						<Alpha childKey="Right" fromAlpha="0" toAlpha="1" duration=".1" order="0"/>
-						<Alpha childKey="Right" fromAlpha="1" toAlpha="0" duration=".1" order="1" startDelay="0.9" />
-					</AnimationGroup>
-				</Animations>
 			</Frame>
 		</Frames>
 	</Frame>

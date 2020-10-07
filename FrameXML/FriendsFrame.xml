@@ -4048,6 +4048,7 @@ TRAVEL PASS
 						<Scripts>
 							<OnLoad>
 								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
+								self.addHighlightedText = true;
 							</OnLoad>
 							<OnEnterPressed>
 								if ( not AutoCompleteEditBox_OnEnterPressed(self) and AddFriendEntryFrameAcceptButton:IsEnabled() ) then

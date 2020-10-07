@@ -49,19 +49,15 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo)
 	end
 
 	-- Left/Right indicators
-	if ( position < self.oldValue ) then
-		self.Indicator.FlashLeftAnim:Play();
-		self.Indicator.FlashRightAnim:Stop();
-		self.Indicator.Right:SetAlpha(0);
-	elseif ( position > self.oldValue ) then
-		self.Indicator.FlashLeftAnim:Stop();
-		self.Indicator.Left:SetAlpha(0);
-		self.Indicator.FlashRightAnim:Play();
+	if ( position < self.oldValue and widgetInfo.barPercent < 1 ) then
+		self.Indicator.Left:Show();
+		self.Indicator.Right:Hide();
+	elseif ( position > self.oldValue and widgetInfo.barPercent > 0 ) then
+		self.Indicator.Left:Hide();
+		self.Indicator.Right:Show();
 	else
-		self.Indicator.FlashLeftAnim:Stop();
-		self.Indicator.Left:SetAlpha(0);
-		self.Indicator.FlashRightAnim:Stop();
-		self.Indicator.Right:SetAlpha(0);
+		self.Indicator.Left:Hide();
+		self.Indicator.Right:Hide();
 	end
 
 	-- Figure out if the ticker is in neutral territory or on a faction's side

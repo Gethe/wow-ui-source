@@ -685,7 +685,7 @@ end
 function GetDisplayedExpansionLogo(expansionLevel)
 	local isTrial = expansionLevel == nil;
 	if isTrial then
-		return "Interface\\Glues\\Common\\Glues-WoW-StarterLogo";
+		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
 	elseif expansionLevel <= GetMinimumExpansionLevel() then
 		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
 		if expansionInfo then
