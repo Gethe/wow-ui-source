@@ -247,7 +247,7 @@
 		 <Scripts>
 			 <OnEnter>
 				 GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				 GameTooltip:SetCurrencyByID(Constant.Currency.Honor);
+				 GameTooltip:SetCurrencyByID(Constants.CurrencyConsts.HONOR_CURRENCY_ID);
 			 </OnEnter>
 			 <OnLeave function="GameTooltip_Hide" />
 		 </Scripts>

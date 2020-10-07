@@ -1180,7 +1180,7 @@ do
 		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
 
 		-- The following is the priority order for debuffs
-		local bossDebuffs, bossBuffs, priorityDebuffs, nonBossDebuffs;
+		local bossDebuffs, bossBuffs, priorityDebuffs, nonBossDebuffs, nonBossRaidDebuffs;
 		local index = 1;
 		local batchCount = frame.maxDebuffs;
 
@@ -1265,10 +1265,10 @@ do
 			AuraUtil.ForEachAura(frame.displayedUnit, "HARMFUL|RAID", batchCount, function(...)
 				if not doneWithDebuffs and displayOnlyDispellableDebuffs then
 					if CompactUnitFrame_Util_ShouldDisplayDebuff(...) and not CompactUnitFrame_Util_IsBossAura(...) and not CompactUnitFrame_Util_IsPriorityDebuff(...) then
-						if not nonBossDebuffs then
-							nonBossDebuffs = {};
+						if not nonBossRaidDebuffs then
+							nonBossRaidDebuffs = {};
 						end
-						tinsert(nonBossDebuffs, {index, ...});
+						tinsert(nonBossRaidDebuffs, {index, ...});
 						numUsedDebuffs = numUsedDebuffs + 1;
 						if numUsedDebuffs == frame.maxDebuffs then
 							doneWithDebuffs = true;
@@ -1313,7 +1313,12 @@ do
 		do
 			local isBossAura = false;
 			local isBossBuff = false;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL|RAID", isBossAura, isBossBuff, nonBossDebuffs);
+			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL|RAID", isBossAura, isBossBuff, nonBossRaidDebuffs);
+		end
+		do
+			local isBossAura = false;
+			local isBossBuff = false;
+			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL", isBossAura, isBossBuff, nonBossDebuffs);
 		end
 		numUsedDebuffs = frameNum - 1;
 

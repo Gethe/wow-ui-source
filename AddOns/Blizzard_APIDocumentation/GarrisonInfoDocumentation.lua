@@ -339,6 +339,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetTalentUnlockWorldQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "worldQuestID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAtGarrisonMissionNPC",
 			Type = "Function",
 
@@ -383,6 +397,17 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveFollowerFromMission",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "boardIndex", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -837,6 +862,11 @@ local GarrisonInfo =
 				{ Name = "garrisonTalentTreeID", Type = "number", Nilable = false },
 				{ Name = "garrTalentID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "GarrisonTalentUnlocksResult",
+			Type = "Event",
+			LiteralName = "GARRISON_TALENT_UNLOCKS_RESULT",
 		},
 		{
 			Name = "GarrisonTalentUpdate",

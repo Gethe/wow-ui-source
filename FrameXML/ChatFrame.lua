@@ -3120,7 +3120,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 
 			local isInitialLogin, isUIReload = ...;
 			if isInitialLogin then
-				ChatFrame_CheckShowNewcomerGraduation();
+				C_Timer.After(3, ChatFrame_CheckShowNewcomerGraduation);
 				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 			end
 		end

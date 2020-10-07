@@ -252,7 +252,7 @@ function PVPMatchResultsMixin:DisplayRewards()
 
 	for k, item in pairs(C_PvP.GetPostMatchItemRewards()) do
 		-- Conquest is displayed in the progress section, so ignore it if found.
-		if not (item.type == "currency" and C_CurrencyInfo.GetCurrencyIDFromLink(item.link) == Constant.Currency.Conquest) then
+		if not (item.type == "currency" and C_CurrencyInfo.GetCurrencyIDFromLink(item.link) == Constants.CurrencyConsts.CONQUEST_CURRENCY_ID) then
 			self:AddItemReward(item);
 		end
 	end
@@ -262,9 +262,9 @@ function PVPMatchResultsMixin:DisplayRewards()
 	end
 
 	for k, currency in pairs(C_PvP.GetPostMatchCurrencyRewards()) do
-		if currency.currencyType == Constant.Currency.Honor then
+		if currency.currencyType == Constants.CurrencyConsts.HONOR_CURRENCY_ID then
 			self:InitHonorFrame(currency);
-		elseif currency.currencyType == Constant.Currency.Conquest then
+		elseif currency.currencyType == Constants.CurrencyConsts.CONQUEST_CURRENCY_ID then
 			self:InitConquestFrame(currency);
 		end
 	end

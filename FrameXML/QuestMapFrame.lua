@@ -921,19 +921,17 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign; -- Always display campaign headers, the rest start as hidden
 	else
-		-- "Intro" Callings go into Campaigns...current move is to not let them display under a calling header, because they will be duplicated
-		-- Fixing that is a ton more work at this point than we have time to do.
-		info.isCalling = info.campaignID == nil and C_QuestLog.IsQuestCalling(info.questID);
+		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);
 
 		if lastHeader and not lastHeader.shouldDisplay then
-			lastHeader.shouldDisplay = info.isCalling or QuestLogQuests_ShouldShowQuestButton(info);
+			lastHeader.shouldDisplay = QuestLogQuests_ShouldShowQuestButton(info);
 		end
 
 		-- Make it easy for a quest to look up its header
 		info.header = lastHeader;
 
-		-- Might as well just keep this in Lua, also ensure that callings are never sorted into a campaign.
-		if info.isCalling and info.header and not info.header.isCampaign then
+		-- Might as well just keep this in Lua
+		if info.isCalling and info.header then
 			info.header.isCalling = true;
 		end
 	end
@@ -1253,7 +1251,6 @@ function CovenantCallingsHeaderMixin:UpdateBG()
 end
 
 function CovenantCallingsHeaderMixin:UpdateText()
-	CovenantCalling_CheckCallings();
 	self:SetText(QUEST_LOG_COVENANT_CALLINGS_HEADER:format(CovenantCalling_GetCompletedCount(), Constants.Callings.MaxCallings));
 end
 
@@ -1261,6 +1258,7 @@ local function QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info
 	local button = QuestScrollFrame.covenantCallingsHeaderFramePool:Acquire();
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
 	button.SelectedTexture:SetShown(not info.isCollapsed);
+	CovenantCalling_CheckCallings();
 	button:UpdateText();
 	button:UpdateBG();
 

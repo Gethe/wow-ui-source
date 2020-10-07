@@ -188,6 +188,7 @@ ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua
+CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua

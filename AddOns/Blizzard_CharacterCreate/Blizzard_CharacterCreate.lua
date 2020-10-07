@@ -182,7 +182,28 @@ function CharacterCreateMixin:OnShow()
 	local instantRotate = true;
 	self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
 
+	self:UpdateRecruitInfo();
+
 	RaceAndClassFrame:UpdateState(selectedFaction);
+end
+
+local rafHelpTipInfo = {
+	buttonStyle = HelpTip.ButtonStyle.Okay,
+	offsetY = 100,
+	autoEdgeFlipping = true,
+};
+
+function CharacterCreateMixin:UpdateRecruitInfo()
+	local active, faction = C_RecruitAFriend.GetRecruitInfo();
+	if active and not self.paidServiceType and C_CharacterCreation.IsNewPlayerRestricted() then
+		local recruiterIsHorde = (PLAYER_FACTION_GROUP[faction] == "Horde");
+		rafHelpTipInfo.text = recruiterIsHorde and RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE or RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
+		rafHelpTipInfo.targetPoint = recruiterIsHorde and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter;
+		rafHelpTipInfo.offsetX = recruiterIsHorde and 10 or -10;
+
+		local anchorFrame = recruiterIsHorde and RaceAndClassFrame.HordeRaces or RaceAndClassFrame.AllianceRaces;
+		HelpTip:Show(anchorFrame, rafHelpTipInfo);
+	end
 end
 
 function CharacterCreateMixin:OnHide()
@@ -255,7 +276,8 @@ function CharacterCreateMixin:UpdateBackgroundModel()
 end
 
 local classBGAlphaValues = {
-	DEATHKNIGHT = 0.5,
+	DEMONHUNTER = 0.7,
+	DEATHKNIGHT = 0.8,
 };
 
 local raceBGAlphaValues = {

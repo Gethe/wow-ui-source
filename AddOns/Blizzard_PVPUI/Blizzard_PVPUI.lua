@@ -11,10 +11,6 @@ local SEASON_STATE_PRESEASON = 2;
 local SEASON_STATE_ACTIVE = 3;
 local SEASON_STATE_DISABLED = 4;
 
-local HONOR_CURRENCY_ID = 1792;
-local CONQUEST_CURRENCY_ID = 1602;
-local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
-
 local BFA_START_SEASON = 26;
 local BFA_FINAL_SEASON = 29;
 local SL_START_SEASON = 30;
@@ -241,7 +237,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 	-- artifact-level currency trumps item
 	if currencyRewards then
 		for i, reward in ipairs(currencyRewards) do	
-			if(reward.id ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
+			if(reward.id ~= Constants.CurrencyConsts.ECHOES_OF_NYALOTHA_CURRENCY_ID or #currencyRewards == 1) then
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
 				local name = currencyInfo.name;
 				local texture = currencyInfo.iconFileID;
@@ -252,7 +248,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 					currencyID = reward.id;
 					rewardTexture = texture;
 					rewardQuantity = reward.quantity;
-				elseif reward.id == CONQUEST_CURRENCY_ID then
+				elseif reward.id == Constants.CurrencyConsts.CONQUEST_CURRENCY_ID then
 					rewardFrame.conquestAmount = reward.quantity;
 				end
 			end
@@ -1485,11 +1481,11 @@ function PVPStandardRewardTemplate_OnEnter(self)
 		if PVPUtil.ShouldShowLegacyRewards() then
 			GameTooltip_AddColoredLine(EmbeddedItemTooltip, REWARD_FOR_PVP_WIN_HONOR:format(BreakUpLargeNumbers(self.honor)), HIGHLIGHT_FONT_COLOR);
 		else
-			AddPVPRewardCurrency(EmbeddedItemTooltip, HONOR_CURRENCY_ID, self.honor);
+			AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.HONOR_CURRENCY_ID, self.honor);
 		end
 	end
 	if self.conquestAmount > 0 then
-		AddPVPRewardCurrency(EmbeddedItemTooltip, CONQUEST_CURRENCY_ID, self.conquestAmount);
+		AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.CONQUEST_CURRENCY_ID, self.conquestAmount);
 	end
 
 	if PVPUtil.ShouldShowLegacyRewards() then

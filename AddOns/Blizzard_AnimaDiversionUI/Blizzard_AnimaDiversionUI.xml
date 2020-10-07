@@ -204,6 +204,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound(SOUNDKIT.UI_9_0_ANIMA_DIVERSION_GENERAL_EXIT, nil, SOUNDKIT_ALLOW_DUPLICATES);
 								self:GetParent():ClearSelectedNode();
 								self:GetParent():Hide();
 							</OnClick>

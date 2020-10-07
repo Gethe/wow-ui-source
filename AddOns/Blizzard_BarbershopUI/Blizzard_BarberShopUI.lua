@@ -105,7 +105,14 @@ function BarberShopMixin:ApplyChanges()
 end
 
 function BarberShopMixin:UpdatePrice()
-	self.PriceFrame:SetAmount(C_BarberShop.GetCurrentCost());
+	local currentCost = C_BarberShop.GetCurrentCost();
+	local copperCost = currentCost % 100;
+	if copperCost > 0 then
+		-- Round any copper cost up to the next silver
+		currentCost = currentCost - copperCost + 100;
+	end
+
+	self.PriceFrame:SetAmount(currentCost);
 
 	local hasAnyChanges = C_BarberShop.HasAnyChanges();
 	self.AcceptButton:SetEnabled(hasAnyChanges);

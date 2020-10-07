@@ -4481,7 +4481,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
 		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
-		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT")) then 
+		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT") or
+		 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then 
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -4820,7 +4821,8 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT") or 
-			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING")) then
+			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") or
+			 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
@@ -4846,6 +4848,10 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				text:SetText(StaticPopupDialogs[which].text .. " " ..TIME_REMAINING .. " " .. time);
 			elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then 
 				dialog.SubText:SetText(StaticPopupDialogs[which].subText:format(SecondsToTime(timeleft)));
+			elseif (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL") then
+				local formatterOutput = WorldQuestsSecondsFormatter:Format(timeleft);
+				local formattedTime = BONUS_OBJECTIVE_TIME_LEFT:format(formatterOutput);
+				text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, formattedTime);
 			else
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);

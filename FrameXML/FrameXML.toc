@@ -131,7 +131,7 @@ DifficultyUtil.lua
 CovenantUtil.lua
 TitleUtil.lua
 ItemDisplay.xml
-HelpTip.xml
+..\SharedXML\HelpTip.xml
 ExtraAbilityContainer.xml
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml

@@ -37,6 +37,10 @@ function SpellMixin:GetSpellName()
 	return (GetSpellInfo(self:GetSpellID()));
 end
 
+function SpellMixin:GetSpellTexture()
+	return (GetSpellTexture(self:GetSpellID()));
+end
+
 function SpellMixin:GetSpellSubtext()
 	return GetSpellSubtext(self:GetSpellID());
 end

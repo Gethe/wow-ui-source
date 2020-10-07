@@ -31,6 +31,7 @@ function InterfaceOptionsPanel_CheckButton_Update (checkButton)
 	end
 
 	checkButton.value = setting;
+	checkButton:SetValue(setting);
 
 	if ( checkButton.cvar ) then
 		BlizzardOptionsPanel_SetCVarSafe(checkButton.cvar, setting, checkButton.event);
@@ -61,7 +62,12 @@ end
 local function InterfaceOptionsPanel_CancelControl (control)
 	if ( control.oldValue ) then
 		if ( control.value and control.value ~= control.oldValue ) then
-			control:SetValue(control.oldValue);
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetChecked(not control:GetChecked());
+				InterfaceOptionsPanel_CheckButton_Update(control);
+			else
+				control:SetValue(control.oldValue);
+			end
 		end
 	elseif ( control.value ) then
 		if ( control:GetValue() ~= control.value ) then
@@ -2097,7 +2103,7 @@ function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnEvent(self, 
 		UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, self.value);
 
-		self.SetValue = 
+		self.SetValue =
 			function (self, value)
 				self.value = value;
 				BlizzardOptionsPanel_SetCVarSafe(cameraKeepCharacterCentered, motionSicknessOptions[value][cameraKeepCharacterCentered]);
@@ -2162,7 +2168,7 @@ function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent(self, 
 		UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, self.value);
 
-		self.SetValue = 
+		self.SetValue =
 			function (self, value)
 				self.value = value;
 
@@ -2173,7 +2179,7 @@ function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent(self, 
 
 		self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
 
-		self.RefreshValue = 
+		self.RefreshValue =
 			function (self)
 				UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize);
 				UIDropDownMenu_SetSelectedValue(self, self.value);

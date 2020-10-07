@@ -23,6 +23,7 @@ local ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"GARRISON_TALENT_COMPLETE",
 	"GARRISON_TALENT_EVENT_UPDATE",
+	"GARRISON_TALENT_UNLOCKS_RESULT",
 };
 
 local ANIMA_DIVERSION_ORIGIN_PIN_BORDER = "AnimaChannel-Icon-Device-%s-Border";
@@ -39,29 +40,16 @@ end
 function AnimaDiversionDataProviderMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS);
 	self:ResetModelScene();
-	self:StopChannelSound();
 end 
 
 function AnimaDiversionDataProviderMixin:OnEvent(event, ...)
 	self:RefreshAllData(); 
 end 
 
-function AnimaDiversionDataProviderMixin:StopChannelSound()
-	if self.channelSoundHandle then
-		StopSound(self.channelSoundHandle);
-		self.channelSoundHandle = nil;
-	end
-end
-
 function AnimaDiversionDataProviderMixin:SetupConnectionOnPin(pin)
 	local connection = self.connectionPool:Acquire();
 	connection:Setup(self.textureKit, self.origin, pin);
 	connection:Show();
-
-	if not self.channelSoundHandle then
-		local _, soundHandle = PlaySound(AnimaDiversionFrame.covenantData.animaChannelActiveSoundKit);
-		self.channelSoundHandle = soundHandle;
-	end
 
 	self.origin.IconBorder:Show();
 end
@@ -154,10 +142,6 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 			hasAnyChanneledNodes = true;
 		end
 	end
-
-	if not hasAnyChanneledNodes then
-		self:StopChannelSound();
-	end
 end
 
 function AnimaDiversionDataProviderMixin:AddNode(nodeData)
@@ -222,7 +206,7 @@ function AnimaDiversionPinMixin:SetupOrigin()
 end 
 
 function AnimaDiversionPinMixin:IsConnected() 
-	return (self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary) or (self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent);
+	return AnimaDiversionUtil.IsNodeActive(self.nodeData.state);
 end 
 
 function AnimaDiversionPinMixin:SetupNode()
@@ -238,6 +222,12 @@ function AnimaDiversionPinMixin:SetupNode()
 		end
 	elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then
 		self:SetSelectedState(true, true);
+	end
+
+	local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
+	if worldQuestID then
+		-- prime the data;
+		HaveQuestRewardData(worldQuestID);
 	end
 
 	self:SetVisualState(useState);
@@ -289,10 +279,16 @@ function AnimaDiversionPinMixin:OnMouseEnter()
 	end 
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:RefreshTooltip();
+end
+
+function AnimaDiversionPinMixin:RefreshTooltip()
+	GameTooltip:ClearLines();
+	self.UpdateTooltip = nil;
 
 	if not self.nodeData then -- If we are the origin pin we want to show a special tooltip. 
 		GameTooltip_AddHighlightLine(GameTooltip, ANIMA_DIVERSION_ORIGIN_TOOLTIP);
-	else 
+	else
 		GameTooltip_AddNormalLine(GameTooltip, self.nodeData.name);
 		GameTooltip_AddHighlightLine(GameTooltip, self.nodeData.description);
 		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable then 
@@ -312,6 +308,14 @@ function AnimaDiversionPinMixin:OnMouseEnter()
 					GameTooltip_AddBlankLineToTooltip(GameTooltip);
 					GameTooltip_AddHighlightLine(GameTooltip, costString);
 				end
+			end
+		end
+		local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
+		if worldQuestID then
+			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, worldQuestID);
+			GameTooltip.recalculatePadding = true;
+			if not HaveQuestRewardData(worldQuestID) then
+				self.UpdateTooltip = self.RefreshTooltip;
 			end
 		end
 	end 

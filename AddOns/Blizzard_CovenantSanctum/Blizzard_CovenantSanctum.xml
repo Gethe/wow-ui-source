@@ -17,7 +17,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true">
+	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true" toplevel="true">
 		<KeyValues>
 			<KeyValue key="maxTabWidth" value="220" type="number"/>
 		</KeyValues>

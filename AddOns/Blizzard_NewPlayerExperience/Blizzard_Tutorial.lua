@@ -61,8 +61,6 @@ function NewPlayerExperience:CVAR_UPDATE(cvar, value)
 			if (completed) then
 				self:Shutdown();
 			end
-		else
-			-- you can turn the tutorials back on, but they wont load without a relog
 		end
 	end
 end

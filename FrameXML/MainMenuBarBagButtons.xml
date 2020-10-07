@@ -46,9 +46,9 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-        BagSlotButton_OnLoad(self);
+        		BagSlotButton_OnLoad(self);
 				self:RegisterForClicks("AnyUp");
-      </OnLoad>
+      		</OnLoad>
 			<OnEvent function="BagSlotButton_OnEvent"/>
 			<OnShow>
 				PaperDollItemSlotButton_OnShow(self, true);

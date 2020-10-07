@@ -93,6 +93,7 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE_WITH_CONFIRMATION_STRING"] = {
 		local parent = self:GetParent();
 		if (parent.button1:IsEnabled()) then
 			SendPlayerChoiceResponse(parent.data.response);
+			parent:Hide(); 
 			HideUIPanel(PlayerChoiceFrame);
 		end
 	end,

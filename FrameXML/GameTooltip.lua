@@ -778,6 +778,9 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 	if not self.widgetContainer then
 		self.widgetFrame = CreateFrame("FRAME", nil, self, "WidgetOffsetContainerTemplate");
 		self.widgetContainer = self.widgetFrame.WidgetContainer; 
+		self.widgetContainer.verticalAnchorPoint = "TOPLEFT"; 
+		self.widgetContainer.verticalRelativePoint = "BOTTOMLEFT"; 
+		self.widgetContainer.verticalAnchorYOffset = -10;
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
 		self.widgetContainer.disableWidgetTooltips = true;
 		self.widgetContainer:Hide();
@@ -920,6 +923,25 @@ function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
 		EmbeddedItemTooltip_PrepareForSpell(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
+		SetItemButtonQuality(self, Enum.ItemQuality.Common);
+		SetItemButtonCount(self, 0);
+		self.Icon:SetTexture(texture);
+		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
+		EmbeddedItemTooltip_UpdateSize(self);
+		return true;
+	end
+	return false;
+end
+
+function EmbeddedItemTooltip_SetSpellWithTextureByID(self, spellID, texture)
+	if texture then
+		self.itemID = nil;
+		self.spellID = spellID;
+
+		self:Show();
+		EmbeddedItemTooltip_PrepareForSpell(self);
+		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+		self.Tooltip:AddSpellByID(spellID);
 		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
 		self.Icon:SetTexture(texture);

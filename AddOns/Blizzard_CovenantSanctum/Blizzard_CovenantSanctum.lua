@@ -153,7 +153,7 @@ function CovenantSanctumMixin:SetTab(tabID)
 end
 
 function CovenantSanctumMixin:SetCovenantInfo()
-	local treeID = C_Garrison.GetCurrentGarrTalentTreeID();
+	local treeID = C_CovenantSanctumUI.GetCurrentTalentTreeID();
 	if treeID ~= self.treeID then
 		self.treeID = treeID;
 		local treeInfo = C_Garrison.GetTalentTreeInfo(treeID);

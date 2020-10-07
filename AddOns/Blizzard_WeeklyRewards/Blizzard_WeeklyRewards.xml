@@ -258,7 +258,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WeeklyRewardsFrame" mixin="WeeklyRewardsMixin" parent="UIParent" hidden="true" enableMouse="true">
+	<Frame name="WeeklyRewardsFrame" mixin="WeeklyRewardsMixin" parent="UIParent" hidden="true" enableMouse="true" toplevel="true">
 		<Size x="1165" y="657"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

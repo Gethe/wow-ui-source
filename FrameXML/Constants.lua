@@ -3,15 +3,6 @@
 -- deprecated and moved to this file.
 --
 
-Constant = {
-	Currency =
-	{
-		Honor = 1585,
-		Conquest = 1602,
-	}
-};
-
-
 WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[129] = "worldquest-icon-firstaid",
 	[164] = "worldquest-icon-blacksmithing",

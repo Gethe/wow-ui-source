@@ -554,7 +554,7 @@ end
 
 function CovenantSanctumUpgradeTalentMixin:RefreshTooltip()
 	local talent			= C_Garrison.GetTalentInfo(self.talentID);
-	local garrTalentTreeID	= C_Garrison.GetCurrentGarrTalentTreeID();
+	local garrTalentTreeID	= C_CovenantSanctumUI.GetCurrentTalentTreeID();
 	local talentTreeType	= C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
 
 	GameTooltip:ClearLines();

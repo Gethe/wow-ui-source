@@ -332,7 +332,7 @@ function CovenantMission:ClearParty()
 	for followerFrame in missionPage.Board:EnumerateFollowers() do
 		local followerGUID = followerFrame:GetFollowerGUID();
 		if followerGUID then
-			C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerGUID);
+			C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerGUID, followerFrame.boardIndex);
 		end
 	end
 
@@ -586,7 +586,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	local missionID = missionPage.missionInfo.missionID;
 
 	if previousFollowerID then
-		C_Garrison.RemoveFollowerFromMission(missionID, previousFollowerID);
+		C_Garrison.RemoveFollowerFromMission(missionID, previousFollowerID, frame.boardIndex);
 		frame:SetEmpty();
 	end
 	
@@ -634,7 +634,7 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 
 	local followerID = frame:GetFollowerGUID();
 	if followerID then
-		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerID);
+		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerID, frame.boardIndex);
 	end
 
 	if frame.autoCombatSpells and frame.autoCombatSpells[1].autoCombatSpellID == self.lastAssignedSpell then

@@ -43,6 +43,15 @@ local CovenantSanctum =
 			},
 		},
 		{
+			Name = "GetCurrentTalentTreeID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currentTalentTreeID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetFeatures",
 			Type = "Function",
 

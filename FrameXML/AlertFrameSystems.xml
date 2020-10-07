@@ -68,7 +68,7 @@
 				<Texture parentKey="dungeonTexture">
 					<Size x="45" y="45"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="13" y="13"/>
+						<Anchor point="BOTTOMLEFT" x="13" y="18"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -76,56 +76,33 @@
 				<Texture file="Interface\LFGFrame\LFR-Texture" parentKey="raidArt">
 					<Size x="310" y="72"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="0" y="-3"/>
 					</Anchors>
 					<TexCoords left="0.00195313" right="0.60742188" top="0.00390625" bottom="0.28515625"/>
 				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt1">
-					<Size x="70" y="72"/>
+				<Texture parentKey="dungeonArt" atlas="ui-lfg-dungeontoast" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0" right="0.546875" top="0.28515" bottom="0.5664"/>
-				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt2">
-					<Size x="15" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.5546875" right="0.671875" top="0.28515" bottom="0.5664"/>
-				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt3">
-					<Size x="127" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="69" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.9921875" top="0" bottom="0.28125"/>
-				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt4">
-					<Size x="127" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-14" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.9921875" top="0.58203" bottom="0.86328"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontWhiteTiny" text="DUNGEON_COMPLETED">
+				<FontString parentKey="completionText" inherits="GameFontWhiteTiny" text="DUNGEON_COMPLETED">
 					<Size x="200" y="12"/>
 					<Anchors>
-						<Anchor point="TOP" x="25" y="-29"/>
+						<Anchor point="TOP" x="25" y="-24"/>
 					</Anchors>
 				</FontString>
 				<FontString inherits="GameFontNormal" parentKey="instanceName">
 					<!--Size x="200" y="16"/-->
 					<Anchors>
-						<Anchor point="TOP" x="25" y="-44"/>
+						<Anchor point="TOP" x="25" y="-39"/>
 					</Anchors>
 				</FontString>
 				<Texture file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
 					<Size x="16" y="20"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.instanceName" relativePoint="LEFT" x="-3" y="-3"/>
+						<Anchor point="RIGHT" relativeKey="$parent.instanceName" relativePoint="LEFT" x="-3" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.5" top="0" bottom="0.625"/>
 				</Texture>
@@ -134,7 +111,7 @@
 				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
 					<Size x="67" y="72"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="0" y="3"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="animIn">
@@ -159,7 +136,7 @@
 						<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
 							<Size x="415" y="171"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-5"/>
+								<Anchor point="CENTER" x="0" y="-2"/>
 							</Anchors>
 							<Animations>
 								<AnimationGroup parentKey="animIn">
@@ -2263,51 +2240,28 @@
 				<Texture parentKey="QuestTexture">
 					<Size x="45" y="45"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="13" y="15"/>
+						<Anchor point="BOTTOMLEFT" x="13" y="18"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
-					<Size x="70" y="72"/>
+				<Texture parentKey="ToastBackground" atlas="ui-lfg-dungeontoast" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0" right="0.546875" top="0.28515" bottom="0.5664"/>
-				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
-					<Size x="15" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.5546875" right="0.671875" top="0.28515" bottom="0.5664"/>
-				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
-					<Size x="127" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="70" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.9921875" top="0" bottom="0.28125"/>
-				</Texture>
-				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
-					<Size x="127" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-14" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.9921875" top="0.58203" bottom="0.86328"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="ToastText" inherits="GameFontWhiteTiny" text="WORLD_QUEST_COMPLETE">
 					<Size x="200" y="12"/>
 					<Anchors>
-						<Anchor point="TOP" x="25" y="-29"/>
+						<Anchor point="TOP" x="25" y="-24"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="QuestName" inherits="GameFontNormal" wordwrap="false">
 					<Size x="214"/>
 					<Anchors>
-						<Anchor point="TOP" x="25" y="-44"/>
+						<Anchor point="TOP" x="25" y="-39"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -2315,7 +2269,7 @@
 				<Texture parentKey="shine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true">
 					<Size x="67" y="72"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="0" y="3"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="animIn">

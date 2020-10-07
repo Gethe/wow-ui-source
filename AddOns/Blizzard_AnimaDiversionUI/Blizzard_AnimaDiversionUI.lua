@@ -9,21 +9,28 @@ local fullGemsTextureKitAnimationEffectId = {
 	["Venthyr"] = 27,
 	["NightFae"] = 30,
 	["Necrolord"] = 33, 
-}; 
+};
 
 local newGemTextureKitAnimationEffectId = {
 	["Kyrian"] = 23,
 	["Venthyr"] = 26,
 	["NightFae"] = 29,
 	["Necrolord"] = 32, 
-}; 
+};
 
 local textureKitToCovenantId = {
 	["Kyrian"] = 1,
 	["Venthyr"] = 2,
 	["NightFae"] = 3,
 	["Necrolord"] = 4, 
-}; 
+};
+
+local textureKitToConfirmSound = {
+	["Kyrian"] = SOUNDKIT.UI_9_0_ANIMA_DIVERSION_BASTION_CONFIRM_CHANNEL,
+	["Venthyr"] = SOUNDKIT.UI_9_0_ANIMA_DIVERSION_REVENDRETH_CONFIRM_CHANNEL,
+	["NightFae"] = SOUNDKIT.UI_9_0_ANIMA_DIVERSION_ARDENWEALD_CONFIRM_CHANNEL,
+	["Necrolord"] = SOUNDKIT.UI_9_0_ANIMA_DIVERSION_MALDRAXXUS_CONFIRM_CHANNEL, 
+};
 
 local ANIMA_DIVERSION_FRAME_EVENTS = {
 	"ANIMA_DIVERSION_CLOSE",
@@ -35,13 +42,14 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept =	function(self, selectedNode)
-					PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_CHANNEL, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(textureKitToConfirmSound[selectedNode.textureKit], nil, SOUNDKIT_ALLOW_DUPLICATES);
 					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
 					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
 					HelpTip:Acknowledge(AnimaDiversionFrame.ReinforceProgressFrame, ANIMA_DIVERSION_TUTORIAL_FILL_BAR);
 				end,
 	OnShow = function(self, selectedNode)
 		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
+		self.timeleft = C_DateAndTime.GetSecondsUntilDailyReset();
 	end,
 	OnHide = function(self, selectedNode)
 		AnimaDiversionFrame.SelectPinInfoFrame:ClearSelectedNode();
@@ -88,8 +96,13 @@ function AnimaDiversionFrameMixin:OnShow()
 	MapCanvasMixin.OnShow(self);
 
 	self:ResetZoom();
-	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_OPEN, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	FrameUtil.RegisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
+
+	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_OPEN, nil, SOUNDKIT_ALLOW_DUPLICATES);
+
+	if AnimaDiversionUtil.IsAnyNodeActive() then
+		PlaySound(self.covenantData.animaChannelActiveSoundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	end
 end
 
 function AnimaDiversionFrameMixin:OnHide()
