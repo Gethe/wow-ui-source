@@ -196,11 +196,12 @@ local rafHelpTipInfo = {
 function CharacterCreateMixin:UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
 	if active and not self.paidServiceType and C_CharacterCreation.IsNewPlayerRestricted() then
-		rafHelpTipInfo.text = (faction == FACTION_GROUP_HORDE) and RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE or RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
-		rafHelpTipInfo.targetPoint = (faction == FACTION_GROUP_HORDE) and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter;
-		rafHelpTipInfo.offsetX = (faction == FACTION_GROUP_HORDE) and 10 or -10;
+		local recruiterIsHorde = (PLAYER_FACTION_GROUP[faction] == "Horde");
+		rafHelpTipInfo.text = recruiterIsHorde and RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE or RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
+		rafHelpTipInfo.targetPoint = recruiterIsHorde and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter;
+		rafHelpTipInfo.offsetX = recruiterIsHorde and 10 or -10;
 
-		local anchorFrame = (faction == FACTION_GROUP_HORDE) and RaceAndClassFrame.HordeRaces or RaceAndClassFrame.AllianceRaces;
+		local anchorFrame = recruiterIsHorde and RaceAndClassFrame.HordeRaces or RaceAndClassFrame.AllianceRaces;
 		HelpTip:Show(anchorFrame, rafHelpTipInfo);
 	end
 end

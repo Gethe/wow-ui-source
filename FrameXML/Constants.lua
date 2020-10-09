@@ -6,7 +6,7 @@
 Constant = {
 	Currency =
 	{
-		Honor = 1585,
+		Honor = 1792,
 		Conquest = 1602,
 	}
 };

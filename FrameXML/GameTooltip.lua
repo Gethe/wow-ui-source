@@ -778,6 +778,9 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 	if not self.widgetContainer then
 		self.widgetFrame = CreateFrame("FRAME", nil, self, "WidgetOffsetContainerTemplate");
 		self.widgetContainer = self.widgetFrame.WidgetContainer; 
+		self.widgetContainer.verticalAnchorPoint = "TOPLEFT"; 
+		self.widgetContainer.verticalRelativePoint = "BOTTOMLEFT"; 
+		self.widgetContainer.verticalAnchorYOffset = -10;
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
 		self.widgetContainer.disableWidgetTooltips = true;
 		self.widgetContainer:Hide();
