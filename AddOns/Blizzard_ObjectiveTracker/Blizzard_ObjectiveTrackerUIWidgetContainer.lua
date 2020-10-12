@@ -26,10 +26,9 @@ function ObjectiveTrackerUIWidgetContainerMixin:UnattachFromBlockAndHide()
 	self:SetParent(UIParent);
 end
 
-UI_WIDGET_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("UI_WIDGET_TRACKER_MODULE");
+UI_WIDGET_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("UI_WIDGET_TRACKER_MODULE", nil, "ObjectiveTrackerUIWidgetBlock");
 UI_WIDGET_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS;
 UI_WIDGET_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader, GetRealZoneText(), OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS);
-UI_WIDGET_TRACKER_MODULE.blockTemplate = "ObjectiveTrackerUIWidgetBlock";
 
 function UI_WIDGET_TRACKER_MODULE:Update()
 	self:BeginLayout();

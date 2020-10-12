@@ -39,6 +39,15 @@ local PlayerMentorship =
 			},
 		},
 		{
+			Name = "IsActivePlayerConsideredNewcomer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isConsideredNewcomer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMentorRestricted",
 			Type = "Function",
 
