@@ -14,7 +14,7 @@ jobs:
     - name: Remove old files
       run: |
         shopt -s extglob
-        rm -r !(*.git*|*.sublime-*|README.md)
+        rm -r !(*.git*|*.sublime-*|*.md)
 
     - name: Install Lua
       uses: leafo/gh-actions-lua@v6

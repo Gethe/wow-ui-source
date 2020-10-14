@@ -139,6 +139,7 @@ function ToggleBackpack()
 			if ( frame:IsShown() ) then
 				EventRegistry:TriggerEvent("ContainerFrame.CloseBackpack");
 				frame:Hide();
+				EventRegistry:TriggerEvent("ContainerFrame.CloseBackpack");
 			end
 			-- Hide the token bar if closing the backpack
 			if ( BackpackTokenFrame ) then
@@ -1460,7 +1461,8 @@ function ToggleAllBags()
 	local totalBags = 1;
 	if ( IsBagOpen(0) ) then
 		bagsOpen = bagsOpen +1;
-		CloseBackpack()
+		CloseBackpack();
+		EventRegistry:TriggerEvent("ContainerFrame.CloseBackpack");
 	end
 
 	local bagClosed = false;

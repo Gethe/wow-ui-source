@@ -725,17 +725,24 @@ function Tutorial_LoadUI()
 	end
 end
 
+function NPE_CheckTutorials()
+	if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
+		-- Hacky 9.0.1 fix for WOW9-58485...just force tutorials to on if they are entering Exile's Reach on a level 1 character
+		SetCVar("showTutorials", 1);
+	end
+
+	NPE_LoadUI();
+end
+
 function NPE_LoadUI()
-	if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
+	if ( not GetTutorialsEnabled() or IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
 		return;
 	end
-	local tutEnabled = GetTutorialsEnabled();
-	local isEligible = C_PlayerInfo.IsPlayerEligibleForNPEv2();
-	if ( tutEnabled and isEligible ) then
+	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
+	if  isRestricted then
 		UIParentLoadAddOn("Blizzard_NewPlayerExperience");
 	end
 end
-
 
 function BoostTutorial_AttemptLoad()
 	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
@@ -794,9 +801,7 @@ function NPETutorial_AttemptToBegin(event)
 		varsLoaded = true;
 	end
 	if ( playerEnteredWorld and varsLoaded ) then
-		if C_PlayerInfo.IsPlayerNPERestricted() then
-			NPE_LoadUI();
-		end
+		NPE_CheckTutorials();
 	end
 end
 

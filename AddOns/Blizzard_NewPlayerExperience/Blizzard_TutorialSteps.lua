@@ -1052,7 +1052,9 @@ end
 -- on their action bar
 Class_SpellChecker = class("SpellChecker", Class_TutorialBase);
 function Class_SpellChecker:OnBegin()
+	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_ENTERING_WORLD", self);
+	self:CheckSpells();
 end
 
 function Class_SpellChecker:CheckSpells()
@@ -1072,6 +1074,13 @@ end
 function Class_SpellChecker:PLAYER_ENTERING_WORLD()
 	Dispatcher:UnregisterEvent("PLAYER_ENTERING_WORLD", self);
 	self:CheckSpells();
+end
+
+function Class_SpellChecker:ACTIONBAR_SLOT_CHANGED(slot)
+	if slot == 0 then
+		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+		self:CheckSpells();
+	end
 end
 
 function Class_SpellChecker:OnInterrupt(interruptedBy)
@@ -2459,12 +2468,10 @@ end
 function Class_EnhancedCombatTactics_Rogue:UNIT_SPELLCAST_SUCCEEDED(unitID, _, spellID)
 	if unitID == "player" then
 		if spellID == self.combatData.resourceSpenderSpellID then
-			print("success spender");
 			self:HideSpenderPrompt();
 			-- the rogue tutorial teaches 3, then 4, then 5 point eviscerates, in that order
 			self.resourceGateAmount = min(self.resourceGateAmount + 1, 5);
 		elseif spellID == self.combatData.resourceBuilderSpellID then
-			print("success builder");
 			self:HideBuilderPrompt();
 		end
 		self:HideScreenTutorial();
