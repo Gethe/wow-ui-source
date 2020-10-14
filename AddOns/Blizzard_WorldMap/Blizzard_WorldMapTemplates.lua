@@ -8,7 +8,7 @@ function WorldMapFloorNavigationFrameMixin:Refresh()
 	local mapID = self:GetParent():GetMapID();
 	local mapGroupID = C_Map.GetMapGroupID(mapID);
 	if mapGroupID then
-		UIDropDownMenu_Initialize(self, self.InitializeDropDown);	
+		UIDropDownMenu_Initialize(self, self.InitializeDropDown);
 		UIDropDownMenu_SetSelectedValue(self, mapID);
 		self:Show();
 	else
@@ -18,6 +18,7 @@ end
 
 function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 	local mapID = self:GetParent():GetMapID();
+
 	local mapGroupID = C_Map.GetMapGroupID(mapID);
 	if not mapGroupID then
 		return;
@@ -27,7 +28,7 @@ function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 	if not mapGroupMembersInfo then
 		return;
 	end
-	
+
 	local function GoToMap(button)
 		self:GetParent():SetMapID(button.value);
 	end
@@ -48,7 +49,8 @@ function WorldMapTrackingOptionsButtonMixin:OnLoad()
 	local function InitializeDropDown(self)
 		self:GetParent():InitializeDropDown();
 	end
-	UIDropDownMenu_Initialize(self.DropDown, InitializeDropDown, "MENU");
+	UIDropDownMenu_SetInitializeFunction(self.DropDown, InitializeDropDown);
+	UIDropDownMenu_SetDisplayMode(self.DropDown, "MENU");
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
@@ -103,7 +105,7 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	local function OnSelection(button)
 		self:OnSelection(button.value, button.checked);
 	end
-	
+
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.isTitle = true;
@@ -203,18 +205,77 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.value = "worldQuestFilterEquipment";
 	info.checked = GetCVarBool("worldQuestFilterEquipment");
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.text = WORLD_QUEST_REWARD_FILTERS_REPUTATION;
 	info.value = "worldQuestFilterReputation";
 	info.checked = GetCVarBool("worldQuestFilterReputation");
 	UIDropDownMenu_AddButton(info);
 end
 
-WorldMapNavBarMixin = { };
+WorldMapTrackingPinButtonMixin = { };
 
-local function IsMapValidForNavBarDropDown(mapInfo)
-	return mapInfo.mapType == Enum.UIMapType.World or mapInfo.mapType == Enum.UIMapType.Continent or mapInfo.mapType == Enum.UIMapType.Zone;
+function WorldMapTrackingPinButtonMixin:OnLoad()
+	self:RegisterEvent("USER_WAYPOINT_UPDATED");
 end
+
+function WorldMapTrackingPinButtonMixin:OnEvent()
+	self:SetActive(false);
+end
+
+function WorldMapTrackingPinButtonMixin:OnMouseDown(button)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("TOPLEFT", 8, -8);
+		self.IconOverlay:Show();
+	end
+end
+
+function WorldMapTrackingPinButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 6, -6);
+	self.IconOverlay:Hide();
+end
+
+function WorldMapTrackingPinButtonMixin:OnClick()
+	local mapID = self:GetParent():GetMapID();
+	self:SetActive(not self.isActive);
+	PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_BUTTON_CLICK);
+end
+
+function WorldMapTrackingPinButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, MAP_PIN);
+	local mapID = self:GetParent():GetMapID();
+	if C_Map.CanSetUserWaypointOnMap(mapID) then
+		GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_TOOLTIP);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddInstructionLine(GameTooltip, MAP_PIN_TOOLTIP_INSTRUCTIONS);
+	else
+		GameTooltip_AddErrorLine(GameTooltip, ERR_CLIENT_LOCKED_OUT);
+	end
+	GameTooltip:Show();
+end
+
+function WorldMapTrackingPinButtonMixin:OnHide()
+	self:SetActive(false);
+end
+
+function WorldMapTrackingPinButtonMixin:Refresh()
+	local mapID = self:GetParent():GetMapID();
+	if C_Map.CanSetUserWaypointOnMap(mapID) then
+		self:Enable();
+		self:DesaturateHierarchy(0);
+	else
+		self:Disable();
+		self:DesaturateHierarchy(1);
+	end
+end
+
+function WorldMapTrackingPinButtonMixin:SetActive(isActive)
+	self.isActive = isActive;
+	self.ActiveTexture:SetShown(isActive);
+	self:GetParent():TriggerEvent("WaypointLocationToggleUpdate", isActive);
+end
+
+WorldMapNavBarMixin = { };
 
 function WorldMapNavBarMixin:OnLoad()
 	local homeData = {
@@ -243,7 +304,7 @@ function WorldMapNavBarMixin:Refresh()
 			id = mapInfo.mapID,
 			OnClick = WorldMapNavBarButtonMixin.OnClick,
 		};
-		if ( IsMapValidForNavBarDropDown(mapInfo) ) then
+		if ( C_Map.IsMapValidForNavBarDropDown(mapInfo.mapID) ) then
 			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
 		end
 		tinsert(hierarchy, 1, buttonData);
@@ -265,7 +326,7 @@ function WorldMapNavBarButtonMixin:GetDropDownList()
 		local children = C_Map.GetMapChildrenInfo(mapInfo.parentMapID);
 		if ( children ) then
 			for i, childInfo in ipairs(children) do
-				if ( IsMapValidForNavBarDropDown(childInfo) ) then
+				if ( C_Map.IsMapValidForNavBarDropDown(childInfo.mapID) ) then
 					local entry = { text = childInfo.name, id = childInfo.mapID, func = function(button, mapID) self:GetParent():GoToMap(mapID); end };
 					tinsert(list, entry);
 				end
@@ -349,7 +410,7 @@ local function DoActiveThreatMapsMatchBountySet(mapBountySetID)
 	local threatMaps = C_QuestLog.GetActiveThreatMaps();
 	if threatMaps then
 		for i, mapID in ipairs(threatMaps) do
-			local bounties, displayLocation, lockedQuestID, bountySetID = GetQuestBountyInfoForMapID(mapID);
+			local displayLocation, lockedQuestID, bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
 			if bountySetID == mapBountySetID then
 				return true;
 			end
@@ -363,7 +424,7 @@ function WorldMapThreatFrameMixin:Refresh()
 	if C_QuestLog.HasActiveThreats() then
 		local mapID = self:GetParent():GetMapID();
 		if mapID then
-			local bounties, displayLocation, lockedQuestID, bountySetID = GetQuestBountyInfoForMapID(mapID);
+			local displayLocation, lockedQuestID, bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
 			if displayLocation then
 				show = DoActiveThreatMapsMatchBountySet(bountySetID);
 			end
@@ -373,7 +434,7 @@ function WorldMapThreatFrameMixin:Refresh()
 	if show then
 		self.Background:Show();
 		self.Eye:Show();
-		
+
 		if not self.threatQuests then
 			self.threatQuests = C_TaskQuest.GetThreatQuests();
 		end
@@ -448,6 +509,8 @@ function WorldMapThreatEyeMixin:OnShow()
 			bitfieldFlag = LE_FRAME_TUTORIAL_WORLD_MAP_THREAT_ICON,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			alignment = HelpTip.Alignment.Left,
+			system = "WorldMap",
+			systemPriority = 10,
 		};
 		HelpTip:Show(self, helpTipInfo);
 	end

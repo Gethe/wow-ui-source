@@ -83,6 +83,46 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="TransmogAndMountDressupFrame" mixin="TransmogAndMountDressupFrameMixin" flattenRenderLayers="true" enableMouse="true" hidden="true">
+		<Frames>
+			<CheckButton parentKey="ShowMountCheckButton" inherits="UICheckButtonTemplate">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ModelScene" relativePoint="BOTTOMRIGHT" x="-20" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():CheckButtonOnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<ModelScene parentKey="ModelScene" inherits="ModelSceneMixinTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="normalIntensity" value="0.75" type="number"/>
+					<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+				</KeyValues>
+			</ModelScene>
+			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" inherits="UIPanelButtonTemplate" text="RESET" hidden="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ModelScene" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnClick method="OnClick" />
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="DressUpFrame" mixin="DressUpModelFrameFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
 		<Size x="450" y="545"/>
 		<Anchors>

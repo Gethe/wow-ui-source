@@ -12,8 +12,8 @@ local AUCTION_HOUSE_BROWSE_RESULTS_FRAME_EVENTS = {
 	"AUCTION_HOUSE_BROWSE_FAILURE",
 };
 
-function AuctionHouseBrowseResultsFrameMixin:SetupTableBuilder(extraColumnInfo, sortable, ...)
-	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetBrowseListLayout(self, self.ItemList, extraColumnInfo, sortable, ...));
+function AuctionHouseBrowseResultsFrameMixin:SetupTableBuilder(extraInfoColumn)
+	self.ItemList:SetTableBuilderLayout(AuctionHouseTableBuilder.GetBrowseListLayout(self, self.ItemList, extraInfoColumn));
 
 	self.tableBuilderLayoutDirty = false;
 end
@@ -54,16 +54,6 @@ function AuctionHouseBrowseResultsFrameMixin:OnLoad()
 
 	self:Reset();
 
-	self.categorySelectedCallback = function (event, ...)
-		self:OnCategorySelected(...);
-	end;
-
-	self.browseSearchStartedCallback = function ()
-		self.searchStarted = true;
-		self.browseResults = {};
-		self.ItemList:DirtyScrollFrame();
-	end;
-
 	-- If the player has favorites, an automatic search will be started immediately. This is required because
 	-- when the addon is loaded, the AuctionHouseFrame on show is called first. All other times the auction house
 	-- is opened, the BrowseResultsFrame will have on show called first and register for the browse search started event first.
@@ -73,13 +63,13 @@ end
 function AuctionHouseBrowseResultsFrameMixin:OnShow()
 	self.ItemList:RefreshScrollFrame();
 
-	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CategorySelected, self.categorySelectedCallback);
-	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.BrowseSearchStarted, self.browseSearchStartedCallback);
+	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.CategorySelected, self.OnCategorySelected, self);
+	self:GetAuctionHouseFrame():RegisterCallback(AuctionHouseFrameMixin.Event.BrowseSearchStarted, self.OnBrowseSearchStarted, self);
 end
 
 function AuctionHouseBrowseResultsFrameMixin:OnHide()
-	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CategorySelected, self.categorySelectedCallback);
-	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.BrowseSearchStarted, self.browseSearchStartedCallback);
+	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CategorySelected, self);
+	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.BrowseSearchStarted, self);
 end
 
 function AuctionHouseBrowseResultsFrameMixin:OnEvent(event, ...)
@@ -102,21 +92,21 @@ end
 
 function AuctionHouseBrowseResultsFrameMixin:OnCategorySelected(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex)
 	local extraColumnInfo = AuctionFrame_GetDetailColumnStringUnsafe(selectedCategoryIndex, selectedSubCategoryIndex);
-	local sortable = not AuctionFrame_DoesCategoryHaveFlag("UNSORTABLE", selectedCategoryIndex);
-	self.pendingExtraColumnInfo = { extraColumnInfo, sortable, };
+	self.pendingExtraColumnInfo = extraColumnInfo;
 	self.tableBuilderLayoutDirty = true;
+end
+
+function AuctionHouseBrowseResultsFrameMixin:OnBrowseSearchStarted()
+	self.searchStarted = true;
+	self.browseResults = {};
+	self.ItemList:DirtyScrollFrame();
 end
 
 function AuctionHouseBrowseResultsFrameMixin:UpdateBrowseResults(addedBrowseResults)
 	self.searchStarted = true;
 
 	if self.tableBuilderLayoutDirty then
-		if self.pendingExtraColumnInfo then
-			self:SetupTableBuilder(unpack(self.pendingExtraColumnInfo));
-		else
-			self:SetupTableBuilder(nil);
-		end
-
+		self:SetupTableBuilder(self.pendingExtraColumnInfo);
 		self.pendingExtraColumnInfo = nil;
 	end
 	

@@ -1,0 +1,90 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeCraftingFrame.lua"/>
+
+	<Frame name="RuneforgeCraftingFrameTemplate" mixin="RuneforgeCraftingFrameMixin" virtual="true">
+		<Size x="448" y="454"/>
+		<Frames>
+			<!-- Wrap the animating textures in a subframe to avoid problems with the animation system preventing alpha changes on other subframes and subtextures -->
+			<Frame parentKey="AnimWrapper" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="AnimationBacking" atlas="runecarving-frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RuneLitBackground" atlas="runecarving-frame-runes-lit" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="CrossFadeToBackground" setToFinalAlpha="true">
+						<Alpha childKey="Background" duration="0.25" fromAlpha="0" toAlpha="1" order="1"/>
+						<Alpha childKey="RuneLitBackground" duration="0.25" fromAlpha="1" toAlpha="0" order="1"/>
+					</AnimationGroup>
+
+					<AnimationGroup parentKey="CrossFadeToRuneLitBackground" setToFinalAlpha="true">
+						<Alpha childKey="Background" duration="0.25" fromAlpha="1" toAlpha="0" order="1"/>
+						<Alpha childKey="RuneLitBackground" duration="0.25" fromAlpha="0" toAlpha="1" order="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+
+			<ItemButton parentKey="BaseItemSlot" inherits="RuneforgeItemSlotTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="CENTER" x="-1" y="0"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="UpgradeItemSlot" inherits="RuneforgeUpgradeItemSlotTemplate" frameLevel="900" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BaseItemSlot" relativePoint="BOTTOM" x="0" y="-16"/>
+				</Anchors>
+			</ItemButton>
+
+			<Frame parentKey="ModifierFrame" inherits="RuneforgeModifierFrameTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-91" y="-4"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="PowerSlot" inherits="RuneforgePowerSlotTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="36" y="-3"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PowerFrame" inherits="RuneforgePowerFrameTemplate" frameStrata="HIGH" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PowerSlot" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="20" y="-20"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

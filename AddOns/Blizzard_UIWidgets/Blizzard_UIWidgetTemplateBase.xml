@@ -86,15 +86,19 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="StackCount" inherits="NumberFontNormal">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
-					</Anchors>
-				</FontString>
 				<MaskTexture parentKey="IconMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" />
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hidden="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2" />
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon"/>
@@ -121,6 +125,16 @@
 					<Color r="0.8" g="0" b="0"/>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>
+				<Texture parentKey="AmountBorder">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="StackCount" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -249,5 +263,30 @@
 				<Alpha childKey="CapturedGlowStar" fromAlpha="1" toAlpha="0" order="1" duration=".4"/>
 			</AnimationGroup>
 		</Animations>
+	</Frame>
+
+	<Frame name="UIWidgetBaseScenarioHeaderTemplate" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetBaseScenarioHeaderTemplateMixin">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" justifyV="MIDDLE" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size x="172" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-8"/>
+					</Anchors>
+					<Color color="SCENARIO_STAGE_COLOR" />
+					<Shadow>
+						<Offset x="1" y="-1"/>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

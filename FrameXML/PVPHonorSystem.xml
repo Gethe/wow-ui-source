@@ -308,10 +308,10 @@
                         </Layers>
                         <Scripts>
                             <OnEnter>
-                                GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
-                                GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]));
-                                GameTooltip:Show();
-                            </OnEnter>
+								GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+								GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, GetMaxLevelForLatestExpansion()));
+								GameTooltip:Show();
+							</OnEnter>
                             <OnLeave function="GameTooltip_Hide"/>
                         </Scripts>
                      </Frame>

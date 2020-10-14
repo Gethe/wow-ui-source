@@ -73,7 +73,7 @@ function ChannelRosterMixin:ResetScrollPosition()
 end
 
 function ChannelRosterMixin:GetChannelCountText(count, category)
-	if count > 0 and self:GetChannelFrame():IsCategoryGroup(category) then
+	if count > 0 and ChannelFrame_IsCategoryGroup(category) then
 		return ("(%d)"):format(count);
 	end
 

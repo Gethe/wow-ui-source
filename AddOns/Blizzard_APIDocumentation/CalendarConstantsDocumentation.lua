@@ -134,7 +134,7 @@ local CalendarConstants =
 			{
 				{ Name = "Raid", Type = "CalendarEventType", EnumValue = 0 },
 				{ Name = "Dungeon", Type = "CalendarEventType", EnumValue = 1 },
-				{ Name = "Pvp", Type = "CalendarEventType", EnumValue = 2 },
+				{ Name = "PvP", Type = "CalendarEventType", EnumValue = 2 },
 				{ Name = "Meeting", Type = "CalendarEventType", EnumValue = 3 },
 				{ Name = "Other", Type = "CalendarEventType", EnumValue = 4 },
 				{ Name = "HeroicDeprecated", Type = "CalendarEventType", EnumValue = 5 },
@@ -292,17 +292,30 @@ local CalendarConstants =
 			},
 		},
 		{
+			Name = "HolidayCalendarFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Alliance", Type = "HolidayCalendarFlags", EnumValue = 1 },
+				{ Name = "Horde", Type = "HolidayCalendarFlags", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "HolidayFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "IsRegionwide", Type = "HolidayFlags", EnumValue = 1 },
 				{ Name = "DontShowInCalendar", Type = "HolidayFlags", EnumValue = 2 },
 				{ Name = "DontDisplayEnd", Type = "HolidayFlags", EnumValue = 4 },
 				{ Name = "DontDisplayBanner", Type = "HolidayFlags", EnumValue = 8 },
+				{ Name = "NotAvailableClientSide", Type = "HolidayFlags", EnumValue = 16 },
 			},
 		},
 	},

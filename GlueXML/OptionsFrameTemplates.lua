@@ -1,5 +1,6 @@
 -- if you change something here you probably want to change the frame version too
 
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	-- not totally necessary in all cases in this file (since Interface Options are independent), but
@@ -15,7 +16,6 @@ function OptionsList_OnLoad (self, buttonTemplate)
 
 	--Setup random things!
 	self.scrollFrame = _G[name .. "List"];
-	self:SetBackdropBorderColor(.6, .6, .6, 1);
 	_G[name.."Bottom"]:SetVertexColor(.66, .66, .66);
 
 	--Create buttons for scrolling

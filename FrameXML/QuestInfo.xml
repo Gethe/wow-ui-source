@@ -82,6 +82,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 	</Button>
 
@@ -159,6 +167,17 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="4" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+						self:SetScale(.8);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="AdventuresFollowerPortraitFrame" inherits="AdventuresLevelPortraitTemplate" mixin="AdventuresLevelPortraitMixin" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" x="4" y="1"/>
 				</Anchors>

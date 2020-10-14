@@ -5,8 +5,7 @@
 	<ScopedModifier scriptsUseGivenEnv="true">
 			<Frame name="BaseLayoutFrameTemplate" virtual="true">
 				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="Layout"/>
+					<OnShow method="OnShow"/>
 					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
@@ -41,7 +40,7 @@
 				layoutIndex is required to be included in the layout system. You can choose not to have
 				a layoutIndex, in which case this region/frame should be anchored separately
 				<KeyValue key="layoutIndex" value="3" type="number"/>
-				
+
 				Some LayoutFrames (like ResizeLayoutFrame) set ignoreLayoutIndex to true, meaning that layoutIndex is completely ignored, and ALL child regions are processed in the layout.
 				If you want to keep a region out of the layout calculations for these LayoutFrames you must set ignoreInLayout to true
 				<KeyValue key="ignoreInLayout" value="true" type="boolean"/>

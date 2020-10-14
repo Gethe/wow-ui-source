@@ -228,7 +228,7 @@ local function GetActiveBidList()
 end
 
 
-AuctionHouseFrameMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+AuctionHouseFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
 AuctionHouseFrameMixin:GenerateCallbackEvents(
 {
@@ -282,7 +282,7 @@ local MaxWidthArguments = {
 };
 
 function AuctionHouseFrameMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
 
 	self.activeSearches = {};
 
@@ -696,17 +696,22 @@ function AuctionHouseFrameMixin:SendBrowseQueryInternal(browseSearchContext, sea
 		return;
 	end
 
+	local categoriesList = self:GetCategoriesList();
+	local filterData, implicitCategoryFilter;
+	if categoriesList:IsWoWTokenCategorySelected() then
+		categoriesList:SetSelectedCategory(nil);
+	else
+		filterData, implicitCategoryFilter = categoriesList:GetCategoryFilterData();
+	end
+
+	if implicitCategoryFilter then
+		table.insert(filtersArray, implicitCategoryFilter);
+	end
+
 	self.activeSearches[browseSearchContext] = { browseSearchContext, searchString, minLevel, maxLevel, filtersArray };
 
 	self.isDisplayingFavorites = browseSearchContext == AuctionHouseSearchContext.AllFavorites;
 
-	local filterData = nil;
-	local categoriesList = self:GetCategoriesList();
-	if categoriesList:IsWoWTokenCategorySelected() then
-		categoriesList:SetSelectedCategory(nil);
-	else
-		filterData = categoriesList:GetCategoryFilterData();
-	end
 
 	local query = {};
 	query.searchString = searchString;

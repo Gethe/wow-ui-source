@@ -1,15 +1,18 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ItemButtonTemplate.lua"/>
+
  	<Button name="ItemButton" registerForClicks="LeftButtonUp, RightButtonUp" mixin="ItemButtonMixin" intrinsic="true">
-		<!--
-		<KeyValues>	
+		<KeyValues>
+			<!-- Show system-specific highlight when this item button matches the current context. -->
+			<KeyValue key="showMatchHighlight" value="true" type="boolean"/>
+
+			<!--
 			Set a function to use to get item context match results. This will automatically enable item context highlighting.
 			Should take self as the only parameter and return an ItemButtonUtil.ItemContextMatchResult.
 			<KeyValue key="GetItemContextMatchResult" value="BagButton_GetItemContextMatchResult" type="global"/>
+			-->
 		</KeyValues>
-		-->
-		
 		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -25,7 +28,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+				<FontString name="$parentStock" parentKey="Stock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -41,9 +44,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true">
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
+				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="LevelLinkLockTexture"/>
@@ -64,11 +65,19 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="PostOnLoad" intrinsicOrder="postcall"/>
 			<OnShow method="PostOnShow" intrinsicOrder="postcall"/>
 			<OnHide method="PostOnHide" intrinsicOrder="postcall"/>
+			<OnEvent method="PostOnEvent" intrinsicOrder="postcall"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size x="64" y="64"/>
@@ -79,6 +88,7 @@
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
+
 	<Button name="CircularGiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<KeyValues>
 			<KeyValue key="useCircularIconBorder" value="true" type="boolean"/>
@@ -115,6 +125,9 @@
 				<Texture parentKey="IconOverlay" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -129,6 +142,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+
 	<Button name="GiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="54" y="54"/>
 		<Layers>
@@ -170,6 +184,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -190,6 +212,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+
 	<CheckButton name="SimplePopupButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="36" y="36"/>
@@ -226,6 +249,7 @@
 			</Layer>
 		</Layers>
 	</CheckButton>
+
 	<CheckButton name="PopupButtonTemplate" virtual="true" inherits="SimplePopupButtonTemplate">
 		<NormalTexture name="$parentIcon">
 			<Size>
@@ -242,6 +266,7 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
+
 	<Button name="LargeItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<KeyValues>
 			<KeyValue key="largeItemButton" value="true" type="boolean"/>
@@ -270,7 +295,31 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-border-white" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1" />
@@ -279,6 +328,7 @@
 			</Layer>
 		</Layers>
 	</Button>
+
 	<Button name="SmallItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<KeyValues>
 			<KeyValue key="smallItemButton" value="true" type="boolean"/>

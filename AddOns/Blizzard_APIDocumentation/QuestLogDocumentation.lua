@@ -7,12 +7,161 @@ local QuestLog =
 	Functions =
 	{
 		{
+			Name = "AbandonQuest",
+			Type = "Function",
+		},
+		{
+			Name = "AddQuestWatch",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "watchType", Type = "QuestWatchType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "wasWatched", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AddWorldQuestWatch",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "watchType", Type = "QuestWatchType", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "wasWatched", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanAbandonQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canAbandon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAbandonQuest",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAbandonQuestItems",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveThreatMaps",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "uiMapIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllCompletedQuestIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "quests", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBountiesForMapID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bounties", Type = "table", InnerType = "BountyInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetBountySetInfoForMapID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "displayLocation", Type = "MapOverlayDisplayLocation", Nilable = false },
+				{ Name = "lockQuestID", Type = "number", Nilable = false },
+				{ Name = "bountySetID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDistanceSqToQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "distanceSq", Type = "number", Nilable = false },
+				{ Name = "onContinent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questLogIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "QuestInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetLogIndexForQuestID",
+			Type = "Function",
+			Documentation = { "Only returns a log index for actual quests, not headers" },
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questLogIndex", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -91,6 +240,16 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetNumQuestLogEntries",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numShownEntries", Type = "number", Nilable = false },
+				{ Name = "numQuests", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumQuestObjectives",
 			Type = "Function",
 
@@ -102,6 +261,56 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "leaderboardCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumQuestWatches",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numQuestWatches", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumWorldQuestWatches",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numQuestWatches", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestAdditionalHighlights",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "worldQuests", Type = "bool", Nilable = false },
+				{ Name = "worldQuestsElite", Type = "bool", Nilable = false },
+				{ Name = "dungeons", Type = "bool", Nilable = false },
+				{ Name = "treasures", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestDetailsTheme",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "theme", Type = "QuestTheme", Nilable = true },
 			},
 		},
 		{
@@ -119,17 +328,46 @@ local QuestLog =
 			},
 		},
 		{
-			Name = "GetQuestInfo",
+			Name = "GetQuestIDForLogIndex",
 			Type = "Function",
+			Documentation = { "Only returns a questID for actual quests, not headers" },
 
 			Arguments =
 			{
-				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "questLogIndex", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetQuestIDForQuestWatchIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questWatchIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetQuestIDForWorldQuestWatchIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questWatchIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -147,6 +385,34 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestTagInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "QuestTagInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetQuestWatchType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "watchType", Type = "QuestWatchType", Nilable = true },
+			},
+		},
+		{
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 
@@ -158,6 +424,89 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "quests", Type = "table", InnerType = "QuestOnMapInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRequiredMoney",
+			Type = "Function",
+			Documentation = { "Uses the selected quest if no questID is provided" },
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "requiredMoney", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSelectedQuest",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSuggestedGroupSize",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "suggestedGroupSize", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTimeAllowed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "totalTime", Type = "number", Nilable = false },
+				{ Name = "elapsedTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTitleForLogIndex",
+			Type = "Function",
+			Documentation = { "Returns a valid title for anything that is in the quest log." },
+
+			Arguments =
+			{
+				{ Name = "questLogIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "title", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTitleForQuestID",
+			Type = "Function",
+			Documentation = { "Only returns a valid title for quests, header titles cannot be discovered using this." },
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "title", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -185,6 +534,48 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsAccountQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAccountQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsComplete",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFailed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFailed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLegendaryQuest",
 			Type = "Function",
 
@@ -199,6 +590,21 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsOnMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "onMap", Type = "bool", Nilable = false },
+				{ Name = "hasLocalPOI", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnQuest",
 			Type = "Function",
 
@@ -210,6 +616,63 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isOnQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPushableQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPushable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestBounty",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBounty", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestCalling",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCalling", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestCriteriaForBounty",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "bountyQuestID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCriteriaForBounty", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -241,6 +704,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestInvasion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isInvasion", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsQuestReplayable",
 			Type = "Function",
 
@@ -269,6 +746,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestTask",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTask", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsQuestTrivial",
 			Type = "Function",
 
@@ -283,6 +774,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsRepeatableQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRepeatable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsThreatQuest",
 			Type = "Function",
 
@@ -294,6 +799,35 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isThreat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUnitOnQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isOnQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsWorldQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isWorldQuest", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -341,6 +875,48 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "ReadyForTurnIn",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "readyForTurnIn", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "RemoveQuestWatch",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "wasRemoved", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveWorldQuestWatch",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "wasRemoved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestLoadQuestByID",
 			Type = "Function",
 
@@ -350,12 +926,25 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "SetAbandonQuest",
+			Type = "Function",
+		},
+		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSelectedQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -372,6 +961,10 @@ local QuestLog =
 				{ Name = "shouldShow", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SortQuestWatches",
+			Type = "Function",
+		},
 	},
 
 	Events =
@@ -382,7 +975,6 @@ local QuestLog =
 			LiteralName = "QUEST_ACCEPTED",
 			Payload =
 			{
-				{ Name = "questIndex", Type = "number", Nilable = false },
 				{ Name = "questId", Type = "number", Nilable = false },
 			},
 		},
@@ -479,7 +1071,7 @@ local QuestLog =
 			LiteralName = "QUEST_WATCH_UPDATE",
 			Payload =
 			{
-				{ Name = "questIndex", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -490,11 +1082,6 @@ local QuestLog =
 			{
 				{ Name = "requestRequired", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "SuperTrackedQuestChanged",
-			Type = "Event",
-			LiteralName = "SUPER_TRACKED_QUEST_CHANGED",
 		},
 		{
 			Name = "TaskProgressUpdate",
@@ -525,6 +1112,35 @@ local QuestLog =
 	Tables =
 	{
 		{
+			Name = "MapOverlayDisplayLocation",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Default", Type = "MapOverlayDisplayLocation", EnumValue = 0 },
+				{ Name = "BottomLeft", Type = "MapOverlayDisplayLocation", EnumValue = 1 },
+				{ Name = "TopLeft", Type = "MapOverlayDisplayLocation", EnumValue = 2 },
+				{ Name = "BottomRight", Type = "MapOverlayDisplayLocation", EnumValue = 3 },
+				{ Name = "TopRight", Type = "MapOverlayDisplayLocation", EnumValue = 4 },
+				{ Name = "Hidden", Type = "MapOverlayDisplayLocation", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "QuestFrequency",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Default", Type = "QuestFrequency", EnumValue = 0 },
+				{ Name = "Daily", Type = "QuestFrequency", EnumValue = 1 },
+				{ Name = "Weekly", Type = "QuestFrequency", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "QuestTag",
 			Type = "Enumeration",
 			NumValues = 11,
@@ -533,7 +1149,7 @@ local QuestLog =
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
-				{ Name = "Pvp", Type = "QuestTag", EnumValue = 41 },
+				{ Name = "PvP", Type = "QuestTag", EnumValue = 41 },
 				{ Name = "Raid", Type = "QuestTag", EnumValue = 62 },
 				{ Name = "Dungeon", Type = "QuestTag", EnumValue = 81 },
 				{ Name = "Legendary", Type = "QuestTag", EnumValue = 83 },
@@ -543,6 +1159,59 @@ local QuestLog =
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
 				{ Name = "CombatAlly", Type = "QuestTag", EnumValue = 266 },
+			},
+		},
+		{
+			Name = "QuestWatchType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Automatic", Type = "QuestWatchType", EnumValue = 0 },
+				{ Name = "Manual", Type = "QuestWatchType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "WorldQuestQuality",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Common", Type = "WorldQuestQuality", EnumValue = 0 },
+				{ Name = "Rare", Type = "WorldQuestQuality", EnumValue = 1 },
+				{ Name = "Epic", Type = "WorldQuestQuality", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "QuestInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "questLogIndex", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "campaignID", Type = "number", Nilable = true },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "difficultyLevel", Type = "number", Nilable = false },
+				{ Name = "suggestedGroup", Type = "number", Nilable = false },
+				{ Name = "frequency", Type = "QuestFrequency", Nilable = true },
+				{ Name = "isHeader", Type = "bool", Nilable = false },
+				{ Name = "isCollapsed", Type = "bool", Nilable = false },
+				{ Name = "startEvent", Type = "bool", Nilable = false },
+				{ Name = "isTask", Type = "bool", Nilable = false },
+				{ Name = "isBounty", Type = "bool", Nilable = false },
+				{ Name = "isStory", Type = "bool", Nilable = false },
+				{ Name = "isScaling", Type = "bool", Nilable = false },
+				{ Name = "isOnMap", Type = "bool", Nilable = false },
+				{ Name = "hasLocalPOI", Type = "bool", Nilable = false },
+				{ Name = "isHidden", Type = "bool", Nilable = false },
+				{ Name = "isAutoComplete", Type = "bool", Nilable = false },
+				{ Name = "overridesSortOrder", Type = "bool", Nilable = false },
+				{ Name = "readyForTranslation", Type = "bool", Nilable = false, Default = true },
 			},
 		},
 		{
@@ -567,6 +1236,30 @@ local QuestLog =
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "type", Type = "number", Nilable = false },
 				{ Name = "isMapIndicatorQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestTagInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "tagName", Type = "string", Nilable = false },
+				{ Name = "tagID", Type = "number", Nilable = false },
+				{ Name = "worldQuestType", Type = "number", Nilable = true },
+				{ Name = "quality", Type = "WorldQuestQuality", Nilable = true },
+				{ Name = "tradeskillLineID", Type = "number", Nilable = true },
+				{ Name = "isElite", Type = "bool", Nilable = true },
+				{ Name = "displayExpiration", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "QuestTheme",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "background", Type = "string", Nilable = false },
+				{ Name = "seal", Type = "string", Nilable = false },
+				{ Name = "signature", Type = "string", Nilable = false },
 			},
 		},
 	},

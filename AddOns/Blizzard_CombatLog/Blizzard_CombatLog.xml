@@ -5,9 +5,7 @@
 
 	<Frame name="CombatLogDropDown" inherits="UIDropDownMenuTemplate"/>
 	<Button name="CombatLogQuickButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="0" y="20"/>
-		</Size>
+		<Size x="0" y="20"/>
 		<Scripts>
 			<OnClick>
 				Blizzard_CombatLog_QuickButton_OnClick(self:GetID());
@@ -17,15 +15,9 @@
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2" hidden="false">
-		<Size>
-			<AbsDimension x="65" y="24"/>
-		</Size>
+		<Size x="65" y="24"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="ChatFrame2" relativePoint="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" relativeTo="ChatFrame2" relativePoint="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -36,38 +28,20 @@
 		</Layers>
 		<Frames>
 			<StatusBar name="$parentProgressBar" hidden="true">
-				<Size>
-					<AbsDimension x="195" y="4"/>
-				</Size>
+				<Size x="195" y="4"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="2"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="2"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="2"/>
 				</Anchors>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.0" g="1.0" b="0.3"/>
 			</StatusBar>
 			<DropDownToggleButton name="$parentAdditionalFilterButton">
-				<Size>
-					<AbsDimension x="28" y="28"/>
-				</Size>
+				<Size x="28" y="28"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="6" right="6" top="7" bottom="7"/>
-				</HitRectInsets>
+				<HitRectInsets left="6" right="6" top="7" bottom="7"/>
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

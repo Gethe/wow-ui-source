@@ -3,6 +3,23 @@ SCROLLING_MESSAGE_FRAME_INSERT_MODE_BOTTOM = 2;
 
 ScrollingMessageFrameMixin = CreateFromMixins(FontableFrameMixin);
 
+function ScrollingMessageFrameScrollBar_OnValueChanged(self, value, userInput)
+	self.ScrollUp:Enable();
+	self.ScrollDown:Enable();
+
+	local minVal, maxVal = self:GetMinMaxValues();
+	if value >= maxVal then
+		self.ScrollDown:Disable()
+	end
+	if value <= minVal then
+		self.ScrollUp:Disable();
+	end
+	
+	if userInput then
+		self:GetParent():SetScrollOffset(maxVal - value);
+	end
+end
+
 -- where ... is any extra user data
 function ScrollingMessageFrameMixin:AddMessage(message, r, g, b, ...)
 	if self.historyBuffer:PushFront(self:PackageEntry(message, r, g, b, ...)) then
@@ -448,11 +465,7 @@ end
 local function CalculateDistanceSqToLine(x, y, visibleLine)
 	-- perimeter would be more accurate, but this seems to work well enough
 	local cx, cy = visibleLine:GetCenter();
-
-	local dx = x - cx;
-	local dy = y - cy;
-
-	return dx * dx + dy * dy;
+	return CalculateDistanceSq(x, y, cx, cy);
 end
 
 function ScrollingMessageFrameMixin:FindCharacterAndLineIndexAtCoordinate(x, y)

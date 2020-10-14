@@ -1,0 +1,63 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CommentatorSpell.lua"/>
+
+	<Frame name="CommentatorSpellBaseTemplate" inherits="CooldownFrameTemplate" useParentLevel="true" mixin="CommentatorSpellBaseMixin" virtual="true">
+		<Size x="32" y="32" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Border" atlas="CommentatorSpellBorder">
+					<Size x="48" y="48" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" hideCountdownNumbers="false" inherits="CooldownFrameTemplate" Mixin="CommentatorCooldownMixin" >
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+				<SwipeTexture>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</SwipeTexture>
+			</Cooldown>
+		</Frames>
+	</Frame>
+	<Frame name="CommentatorDebuffTemplate" inherits="CommentatorSpellBaseTemplate" mixin="CommentatorDebuffMixin" virtual="true"/>
+	<Frame name="CommentatorSpellTemplate" inherits="CommentatorSpellBaseTemplate" mixin="CommentatorSpellMixin" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="ActiveGlow" file="Interface\SpellActivationOverlay\IconAlert" hidden="true">
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ChargesText" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Ants" file="Interface\SpellActivationOverlay\IconAlertAnts" hidden="true">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Charges" frameStrata="DIALOG" hideCountdownNumbers="true" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

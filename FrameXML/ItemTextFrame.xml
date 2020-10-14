@@ -12,8 +12,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="ItemTextFramePageBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="543"/>
+				<Texture name="ItemTextFramePageBg" atlas="QuestBG-Parchment">
+					<Size x="299" y="357"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>

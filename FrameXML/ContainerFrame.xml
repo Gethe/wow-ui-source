@@ -2,71 +2,23 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ContainerFrame.lua"/>
 	
-	<Frame name="ContainerFrameHelpBoxTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" virtual="true">
-        <!--
-        <KeyValues>
-            <KeyValue key="tutorialText" value="ARTIFACT_TUTORIAL_SLOT_RELIC" type="global"/>
-            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH" type="global"/>
-        </KeyValues>
-        -->
-        <Size x="220" y="100"/>
-        <Layers>
-            <Layer level="OVERLAY">
-                <FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
-                    <Size x="188" y="0"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="16" y="-24"/>
-                    </Anchors>
-                </FontString>
-            </Layer>
-        </Layers>
-        <Frames>
-            <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-                <Anchors>
-                    <Anchor point="TOPRIGHT" x="6" y="6"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick inherit="append">
-						SetCVarBitfield("closedInfoFrames", self:GetParent().tutorialIndex, true);
-					</OnClick>
-                </Scripts>
-            </Button>
-            <Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-                <Anchors>
-                    <Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
-                </Anchors>
-            </Frame>
-        </Frames>
-        <Scripts>
-            <OnLoad>
-                self.Text:SetText(self.tutorialText);
-                self.Text:SetSpacing(4);
-                SetClampedTextureRotation(self.Arrow.Arrow, 270);
-                SetClampedTextureRotation(self.Arrow.Glow, 270);
-
-                self.Arrow.Glow:ClearAllPoints();
-                self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
-            </OnLoad>
-            <OnShow>
-                self:SetHeight(self.Text:GetHeight() + 42);
-            </OnShow>
-        </Scripts>
+	<Frame name="ContainerFrameExtendedItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="worldquest-tracker-lock">
+					<Size x="27" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="ContainerFrameExtendedItemButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
 	</Frame>
 
-    <Frame name="ArtifactRelicHelpBox" inherits="ContainerFrameHelpBoxTemplate">
-        <KeyValues>
-            <KeyValue key="tutorialText" value="ARTIFACT_TUTORIAL_SLOT_RELIC" type="global"/>
-            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH" type="global"/>
-        </KeyValues>
-    </Frame>
-
-    <Frame name="AzeriteItemInBagHelpBox" inherits="ContainerFrameHelpBoxTemplate">
-        <KeyValues>
-            <KeyValue key="tutorialText" value="AZERITE_TUTORIAL_ITEM_IN_SLOT" type="global"/>
-            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT" type="global"/>
-        </KeyValues>
-    </Frame>
-	
 	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" hidden="true" virtual="true">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
@@ -93,18 +45,6 @@
 				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BagStaticBottom" atlas="bags-static" alpha="0.2" alphaMode="ADD" hidden="true">
-					<Size x="172" y="37"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-4" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BagStaticTop" atlas="bags-static" alpha="0.2" alphaMode="ADD" hidden="true">
-					<Size x="172" y="37"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.BagStaticBottom" relativePoint="TOP"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -134,22 +74,6 @@
 							self:SetVertexColor(0.603, 0.875, 1);
 						</OnLoad>
 					</Scripts>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="4">
-				<Texture parentKey="ExtendedOverlay" alpha="1" alphaMode="MOD" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-1"/>
-					</Anchors>
-					<Color r="0.603" g="0.875" b="1"/>
-				</Texture>
-				<Texture parentKey="ExtendedOverlay2" alpha="0.2" alphaMode="ADD" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-1"/>
-					</Anchors>
-					<Color r="0.603" g="0.875" b="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="5">
@@ -358,10 +282,10 @@
 					</OnMouseDown>
 				</Scripts>
 			</Button>
-			<Button name="$parentAddSlotsButton" hidden="true">
+			<Button name="$parentAddSlotsButton" hidden="true" frameLevel="100">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="17" y="7"/>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="12" y="37"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -400,62 +324,9 @@
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						StaticPopup_Show("BACKPACK_INCREASE_SIZE");
-						ContainerFrame_SetBackpackForceExtended(true);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true">
-				<Size x="220" y="100"/>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-5" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-20"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Text:SetSpacing(4);
-						SetClampedTextureRotation(self.Arrow, 270);
-						SetClampedTextureRotation(self.ArrowGlow, 270);
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight() + 42);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
-					</OnShow>
-				</Scripts>
-			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
@@ -542,56 +413,11 @@
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self);
-				GameTooltip:SetText(BAG_CLEANUP_BAGS);
+				GameTooltip_SetTitle(GameTooltip, BAG_CLEANUP_BAGS, HIGHLIGHT_FONT_COLOR);
+				GameTooltip_AddNormalLine(GameTooltip, BAG_CLEANUP_BAGS_DESCRIPTION);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-
-	<Frame name="BagHelpBox" parent="UIParent" inherits="GlowBoxTemplate" frameStrata="HIGH" hidden="true">
-		<Size x="220" y="200"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
-					<Size x="188" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-12"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="6" y="6"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						if (self:GetParent().bitField) then
-							SetCVarBitfield("closedInfoFrames", self:GetParent().bitField, true);
-						end
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.Text:SetSpacing(4);
-				SetClampedTextureRotation(self.Arrow.Arrow, 270);
-				SetClampedTextureRotation(self.Arrow.Glow, 270);
-				self.Arrow.Glow:ClearAllPoints();
-				self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
-			</OnLoad>
-			<OnShow>
-				self:SetHeight(self.Text:GetHeight()+30);
-			</OnShow>
-		</Scripts>
-	</Frame>
 </Ui>

@@ -1,5 +1,6 @@
 -- if you change something here you probably want to change the glue version too
 
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	-- not totally necessary in all cases in this file (since Interface Options are independent), but
@@ -15,18 +16,17 @@ function OptionsList_OnLoad (self, buttonTemplate)
 
 	--Setup random things!
 	self.scrollFrame = _G[name .. "List"];
-	self:SetBackdropBorderColor(.6, .6, .6, 1);
 
 	--Create buttons for scrolling
 	local buttons = {};
-	local button = CreateFrame("BUTTON", name .. "Button1", self, buttonTemplate or "OptionsListButtonTemplate");
+	local button = CreateFrame("BUTTON", name .. "Button1", self, self.buttonTemplate or buttonTemplate or "OptionsListButtonTemplate");
 	button:SetPoint("TOPLEFT", self, 0, -8);
 	self.buttonHeight = button:GetHeight();
 	tinsert(buttons, button);
 
 	local maxButtons = (self:GetHeight() - 8) / self.buttonHeight;
 	for i = 2, maxButtons do
-		button = CreateFrame("BUTTON", name .. "Button" .. i, self, buttonTemplate or "OptionsListButtonTemplate");
+		button = CreateFrame("BUTTON", name .. "Button" .. i, self, self.buttonTemplate or buttonTemplate or "OptionsListButtonTemplate");
 		button:SetPoint("TOPLEFT", buttons[#buttons], "BOTTOMLEFT");
 		tinsert(buttons, button);
 	end

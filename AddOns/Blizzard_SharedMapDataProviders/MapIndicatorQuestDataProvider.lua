@@ -10,7 +10,7 @@ end
 
 function MapIndicatorQuestDataProviderMixin:OnEvent(event, ...)
 	if (event == "QUEST_LOG_UPDATE") then
-		self:RefreshAllData(); 
+		self:RefreshAllData();
 	end
 end
 
@@ -30,12 +30,12 @@ function MapIndicatorQuestDataProviderMixin:RefreshAllData()
 
 	if (questsOnMap) then
 		for i, info in ipairs(questsOnMap) do
-			if(info.isMapIndicatorQuest) then 
-				if (info.type == LE_QUEST_TAG_TYPE_ISLANDS and not ShouldShowIslandsWeeklyPOI()) then 
+			if(info.isMapIndicatorQuest) then
+				if (info.type == Enum.QuestTagType.Islands and not ShouldShowIslandsWeeklyPOI()) then
 					break;
-				else 
+				else
 					self:AddMapIndicatorQuest(info);
-				end 
+				end
 			end
 		end
 	end
@@ -46,22 +46,21 @@ function MapIndicatorQuestDataProviderMixin:AddMapIndicatorQuest(info)
 
 	pin.questID = info.questID;
 	pin.numObjectives = C_QuestLog.GetNumQuestObjectives(pin.questID);
-	pin.shouldShowObjectivesAsStatusBar = true; 
-	pin.questRewardTooltipStyle = TOOLTIP_QUEST_REWARDS_PRIORITIZE_CURRENCY_OVER_ITEM; 
+	pin.shouldShowObjectivesAsStatusBar = true;
+	pin.questRewardTooltipStyle = TOOLTIP_QUEST_REWARDS_PRIORITIZE_CURRENCY_OVER_ITEM;
 
 	local worldQuestType = info.type;
 	local inProgress = false; --We don't want this to display like a normal quest that's in progress.
-	local tradeskillLineIndex = select(6, GetQuestTagInfo(pin.questID));
+	local tagInfo = C_QuestLog.GetQuestTagInfo(pin.questID);
 
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineIndex)
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tagInfo.tradeSkillLineID);
 	pin.Icon:SetAtlas(atlas);
 	pin.Icon:SetSize(width, height);
-
 	pin:SetPosition(info.x, info.y);
 	pin:Show();
 end
 
-MapIndicatorQuestPinMixin = CreateFromMixins(MapCanvasPinMixin); 
+MapIndicatorQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function MapIndicatorQuestPinMixin:OnLoad()
 	WorldQuestPinMixin.OnLoad(self);

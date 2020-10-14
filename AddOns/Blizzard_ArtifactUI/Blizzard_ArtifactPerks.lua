@@ -270,7 +270,7 @@ function ArtifactPerksMixin:RefreshFinalPowerForTier(tier, isUnlocked)
 						finalTierButton:PlayUnlockAnimation();
 						finalTierButton.Tier2FinalPowerSparks:Play();
 						self:StartWithDelay(TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY, function ()
-							ShakeFrame(self:GetParent(), TIER_2_FINAL_POWER_REVEAL_SHAKE, TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION, TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY);
+							ScriptAnimationUtil.ShakeFrame(self:GetParent(), TIER_2_FINAL_POWER_REVEAL_SHAKE, TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION, TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY);
 						end);
 					end);
 				end
@@ -792,7 +792,7 @@ local function QueueReveal(self, powerButton, distance, tier)
 			if linkedPowerButton.hasSpentAny then
 				QueueReveal(self, linkedPowerButton, distance, tier);
 			else 
-				local distanceToLink = CalculateDistanceBetweenRegions(powerButton, linkedPowerButton);
+				local distanceToLink = RegionUtil.CalculateDistanceBetween(powerButton, linkedPowerButton);
 				local totalDistance = distance + distanceToLink;
 
 				QueueReveal(self, linkedPowerButton, totalDistance, tier);
@@ -1078,7 +1078,7 @@ function ArtifactPerksMixin:AnimateInCrest()
 
 	self.CrestFrame.RuneAnim:Play();
 	self:StartWithDelay(ARTIFACT_TIER_2_SHAKE_DELAY, function ()
-		ShakeFrame(self:GetParent(), ARTIFACT_TIER_2_SHAKE, ARTIFACT_TIER_2_SHAKE_DURATION, ARTIFACT_TIER_2_SHAKE_FREQUENCY);
+		ScriptAnimationUtil.ShakeFrame(self:GetParent(), ARTIFACT_TIER_2_SHAKE, ARTIFACT_TIER_2_SHAKE_DURATION, ARTIFACT_TIER_2_SHAKE_FREQUENCY);
 	end);
 	
 	self:StartWithDelay(TIER_2_SLAM_EFFECT_DELAY, function ()
@@ -1357,9 +1357,6 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Glass:Show();
-
-				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
-				ArtifactRelicHelpBox:Hide();
 			else
 				relicSlot.Icon:SetMask(nil);
 				relicSlot.Icon:SetAtlas("Relic-SlotBG", true);

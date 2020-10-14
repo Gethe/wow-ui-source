@@ -1,19 +1,8 @@
+local questItems = {};
 
-AUTO_QUEST_POPUP_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
-AUTO_QUEST_POPUP_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP;
-AUTO_QUEST_POPUP_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED;
-AUTO_QUEST_POPUP_TRACKER_MODULE.blockTemplate = "AutoQuestPopUpBlockTemplate";
-AUTO_QUEST_POPUP_TRACKER_MODULE.blockType = "ScrollFrame";
-AUTO_QUEST_POPUP_TRACKER_MODULE.freeBlocks = { };
-AUTO_QUEST_POPUP_TRACKER_MODULE.usedBlocks = { };
-AUTO_QUEST_POPUP_TRACKER_MODULE.Header = ObjectiveTrackerFrame.BlocksFrame.QuestHeader;		-- shares Quest header
-AUTO_QUEST_POPUP_TRACKER_MODULE.blockOffsetX = -39;
-AUTO_QUEST_POPUP_TRACKER_MODULE.blockOffsetY = -4;
-
-local questItems = { };
-
-function AUTO_QUEST_POPUP_TRACKER_MODULE:OnFreeBlock(block)
-	block.init = nil;
+local function AutoQuestPopupTracker_Initialize(owningModule)
+	owningModule:AddBlockOffset("AutoQuestPopUpBlockTemplate", -39, -4);
+	owningModule.initializedPopUpTracker = true;
 end
 
 function AutoQuestPopupTracker_OnFinishSlide(block)
@@ -28,29 +17,38 @@ end
 
 local SLIDE_DATA = { startHeight = 0, endHeight = 68, duration = 0.4, onFinishFunc = AutoQuestPopupTracker_OnFinishSlide };
 
-function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
-	AUTO_QUEST_POPUP_TRACKER_MODULE:BeginLayout();
-	
+function AutoQuestPopupTracker_OnFreeBlock(block)
+	block.init = nil;
+end
+
+local function AutoQuestPopupTracker_ShouldDisplayQuest(questID, owningModule)
+	return not C_QuestLog.IsQuestBounty(questID) and owningModule:ShouldDisplayQuest(QuestCache:Get(questID));
+end
+
+function AutoQuestPopupTracker_Update(owningModule)
 	if( SplashFrame:IsShown() ) then
-		AUTO_QUEST_POPUP_TRACKER_MODULE:EndLayout();
 		return;
+	end
+
+	if not owningModule.initializedPopUpTracker then
+		AutoQuestPopupTracker_Initialize(owningModule);
 	end
 
 	for i = 1, GetNumAutoQuestPopUps() do
 		local questID, popUpType = GetAutoQuestPopUp(i);
-		if ( not IsQuestBounty(questID) ) then
-			local questTitle = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+		if AutoQuestPopupTracker_ShouldDisplayQuest(questID, owningModule) then
+			local questTitle = C_QuestLog.GetTitleForQuestID(questID);
 			if ( questTitle and questTitle ~= "" ) then
-				local block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetBlock(questID);
+				local block = owningModule:GetBlock(questID, "ScrollFrame", "AutoQuestPopUpBlockTemplate");
 				-- fixed height, just add the block right away
 				block.height = 68;
 				if ( ObjectiveTracker_AddBlock(block) ) then
 					if ( not block.init ) then
-						local blockContents = block.ScrollChild;			
+						local blockContents = block.ScrollChild;
 						if ( popUpType == "COMPLETE" ) then
 							blockContents.QuestionMark:Show();
 							blockContents.Exclamation:Hide();
-							if ( IsQuestTask(questID) ) then
+							if ( C_QuestLog.IsQuestTask(questID) ) then
 								blockContents.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE_TASK);
 							else
 								blockContents.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
@@ -93,12 +91,11 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 					block:Show();
 				else
 					block.used = nil;
-					break;			
+					break;
 				end
 			end
 		end
 	end
-	AUTO_QUEST_POPUP_TRACKER_MODULE:EndLayout();
 end
 
 function AutoQuestPopupTracker_AddPopUp(questID, popUpType, itemID)
@@ -122,9 +119,9 @@ end
 
 function AutoQuestPopUpTracker_OnMouseDown(block)
 	if ( block.popUpType == "OFFER" ) then
-		ShowQuestOffer(GetQuestLogIndexByID(block.id));
+		ShowQuestOffer(block.id);
 	else
-		ShowQuestComplete(GetQuestLogIndexByID(block.id));
+		ShowQuestComplete(block.id);
 	end
 	AutoQuestPopupTracker_RemovePopUp(block.id);
 end

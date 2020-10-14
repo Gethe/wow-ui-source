@@ -29,24 +29,6 @@ function AlliedRacesFrameMixin:SetupAbilityPool(index, racialAbility)
 	return abilityButton;
 end
 
-function AlliedRacesFrameMixin:UpdateObjectivesFrame(achievementID)
-	local objectivesFrame = self.RaceInfoFrame.ScrollFrame.Child.ObjectivesFrame;
-	objectivesFrame.contentHeight = 0;
-	objectivesFrame.lastBullet = nil;
-
-	local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(achievementID);
-
-	local numCriteria = GetAchievementNumCriteria(achievementID);
-	self.bulletPool:ReleaseAll();
-
-	for criteriaIndex = 1, numCriteria do
-		local bulletFrame = self.bulletPool:Acquire();
-		bulletFrame:SetUp(achievementID, criteriaIndex, objectivesFrame);
-	end
-
-	objectivesFrame:SetHeight(objectivesFrame.contentHeight + 43);	-- total of header height plus top and bottom padding
-end
-
 function AlliedRacesFrameMixin:RacialAbilitiesData(raceID)
 	local racialAbilities = C_AlliedRaces.GetAllRacialAbilitiesFromID(raceID);
 
@@ -88,7 +70,7 @@ function AlliedRacesFrameMixin:LoadRaceData(raceID)
 	self:SetPortraitAtlasRaw(raceInfo.crestAtlas);
 	self:UpdatedBannerColor(raceInfo.bannerColor);
 	self:RacialAbilitiesData(raceID);
-	self:UpdateObjectivesFrame(raceInfo.achievementID);
+	self.RaceInfoFrame.ScrollFrame.Child.ObjectivesFrame:SetAchievement(raceInfo.achievementID);
 end
 
 function AlliedRacesFrameMixin:SetRaceNameForGender(gender)
@@ -124,7 +106,6 @@ end
 
 function AlliedRacesFrameMixin:OnLoad()
 	self.abilityPool = CreateFramePool("BUTTON", self.RaceInfoFrame.ScrollFrame.Child, "AlliedRaceAbilityTemplate");
-	self.bulletPool = CreateFramePool("FRAME", self.RaceInfoFrame.ScrollFrame.Child, "AlliedRaceOverviewBulletsTemplate");
 	self:RegisterEvent("ALLIED_RACE_CLOSE");
 	self.TopTileStreaks:Hide();
 	self.RaceInfoFrame.AlliedRacesRaceName:SetFontObjectsToTry("Fancy32Font", "Fancy30Font", "Fancy27Font", "Fancy24Font", "Fancy24Font", "Fancy18Font", "Fancy16Font");
@@ -138,92 +119,4 @@ end
 
 function AlliedRacesFrameMixin:OnHide()
 	C_AlliedRaces.ClearAlliedRaceDetailsGiver();
-end
-
-AlliedRacesBulletFrameMixin = { };
-
-function AlliedRacesBulletFrameMixin:SetUp(achievementID, criteriaIndex, objectivesFrame)
-	local BULLET_SPACING = 14;
-	local TEXT_ANCHOR_POINT_X = 27;		-- from XML
-	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, criteriaIndex);
-	local _, _, _, achievementCompleted = GetAchievementInfo(achievementID);
-
-	completed = completed or achievementCompleted; 
-
-	if (criteriaString and criteriaString ~= "") then
-		self.achievementID = achievementID;
-		self.criteriaIndex = criteriaIndex;
-
-		self.Text:SetText(criteriaString);
-
-		if (not objectivesFrame.lastBullet) then
-			self:SetPoint("TOPLEFT", objectivesFrame.HeaderBackground, "BOTTOMLEFT", 13, -6);
-		else
-			self:SetPoint("TOPLEFT", objectivesFrame.lastBullet, "BOTTOMLEFT", 0, -BULLET_SPACING);
-		end
-		objectivesFrame.lastBullet = self;
-
-		local textHeight = self.Text:GetHeight();
-		self:SetSize(self.Text:GetStringWidth() + TEXT_ANCHOR_POINT_X, textHeight);
-		objectivesFrame.contentHeight = objectivesFrame.contentHeight + textHeight + BULLET_SPACING;
-
-		if completed then
-			self.Text:SetTextColor(GREEN_FONT_COLOR:GetRGB());
-		else
-			self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		end
-		self.Dash:SetShown(not completed);
-		self.Check:SetShown(completed);
-		self:Show();
-	end
-end
-
-function AlliedRacesBulletFrameMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local criteriaString, criteriaType, criteriaCompleted, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(self.achievementID, self.criteriaIndex);
-	
-	local achievementID = self.achievementID;
-	local _, _, _, overallAchievementCompleted = GetAchievementInfo(achievementID);
-	local criteriaAchievementCompleted, month, day, year; 
-
-	if criteriaCompleted or overallAchievementCompleted then
-		-- check if the criteria is an achievement to use its completion date, otherwise try main achievement in case it's all complete
-		if AchievementUtil.IsCriteriaAchievementEarned(self.achievementID, self.criteriaIndex) then
-			achievementID = assetID;
-			 _, _, _, criteriaAchievementCompleted, month, day, year = GetAchievementInfo(achievementID); --Grab the criteria completed info if we have earned it.
-		end
-		if (criteriaAchieveCompleted) then
-			local completionDate = FormatShortDate(day, month, year);
-			GameTooltip_AddColoredLine(GameTooltip, CRITERIA_COMPLETED_DATE:format(completionDate), HIGHLIGHT_FONT_COLOR);
-		else 
-			GameTooltip_AddColoredLine(GameTooltip, CRITERIA_COMPLETED, HIGHLIGHT_FONT_COLOR); 
-		end
-	else
-		GameTooltip_SetTitle(GameTooltip, CRITERIA_NOT_COMPLETED, DISABLED_FONT_COLOR);
-	end
-
-	GameTooltip_AddColoredLine(GameTooltip, CLICK_FOR_MORE_INFO, GREEN_FONT_COLOR);
-	GameTooltip:Show();
-end
-
-function AlliedRacesBulletFrameMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
-function AlliedRacesBulletFrameMixin:OnMouseUp()
-	local criteriaString, criteriaType, criteriaCompleted, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(self.achievementID, self.criteriaIndex);
-	-- check if it's rep-related
-	local CHECK_CRITERIA_ACHIEVEMENT = true;
-	if AchievementUtil.IsCriteriaReputationGained(self.achievementID, self.criteriaIndex, CHECK_CRITERIA_ACHIEVEMENT) then
-		if not ReputationFrame:IsVisible() then
-			ToggleCharacter("ReputationFrame");
-		end
-	else
-		-- see if it's an achievement, otherwise use main achievement
-		if AchievementUtil.IsCriteriaAchievementEarned(self.achievementID, self.criteriaIndex) then
-			OpenAchievementFrameToAchievement(assetID);
-		else
-			OpenAchievementFrameToAchievement(self.achievementID);
-		end
-	end
 end

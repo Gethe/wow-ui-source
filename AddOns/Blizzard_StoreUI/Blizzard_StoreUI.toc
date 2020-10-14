@@ -2,6 +2,7 @@
 ## AllowLoad: Both
 ..\..\SharedXML\Mixin.lua
 ..\..\SharedXML\Spline.lua
+..\..\SharedXML\PixelUtilSecure.lua
 ..\..\SharedXML\Pools.lua
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml
 ..\..\SharedXML\ModelSceneMixinScripts.xml

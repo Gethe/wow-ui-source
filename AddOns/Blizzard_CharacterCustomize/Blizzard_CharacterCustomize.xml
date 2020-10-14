@@ -1,0 +1,408 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<GameTooltip name="CharCustomizeTooltipTemplate" inherits="SharedTooltipTemplate, DefaultScaleFrame" ignoreParentScale="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<GameTooltip name="CharCustomizeTooltip" inherits="CharCustomizeTooltipTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<GameTooltip name="CharCustomizeNoHeaderTooltip" inherits="CharCustomizeTooltipTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+	
+	<Frame name="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeFrameWithTooltipMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="10" type="number"/>
+			<KeyValue key="tooltipYOffset" value="0" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="300" type="number"/>
+			<KeyValue key="tooltipPadding" value="5" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CharCustomizeBaseButtonTemplate" mixin="CharCustomizeBaseButtonMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnBaseButtonClick"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="CharCustomizeSmallButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="48" y="48"/>
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-button-square-gray-up" alphaMode="ADD" alpha="0.2"/>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="24" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+		</Scripts>
+	</Button>
+
+	<Button name="CharCustomizeClickOrHoldButtonTemplate" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeClickOrHoldButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="holdWaitTimeSeconds" value="0.25" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+	
+	<CheckButton name="CharCustomizeMaskedButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeMaskedButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
+		</KeyValues>
+		<NormalTexture parentKey="NormalTexture"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.5"/>
+		<PushedTexture parentKey="PushedTexture">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select" texelSnappingBias="0.0" snapToPixelGrid="false">
+			<Anchors>
+				<Anchor point="CENTER" />
+			</Anchors>
+		</CheckedTexture>
+		
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="DisabledOverlay" hidden="true" setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+				<Texture parentKey="Ring">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" />
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<Frame parentKey="Flash" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Portrait" setAllPoints="true" alphaMode="ADD" />
+						<Texture parentKey="Ring" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Ring2" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0" toAlpha="0.6" />
+						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0.6" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="0" toAlpha="1" />
+						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="1" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Ring2" duration="0.8" fromAlpha="1" toAlpha="0" />
+						<Scale order="1" childKey="Ring2" duration="0.8" fromScaleX="1.3" toScaleX="1" fromScaleY="1.3" toScaleY="1" smoothing="NONE" />
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeAlteredFormButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
+		<Size x="79" y="79"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="139" type="number"/>
+			<KeyValue key="ringHeight" value="140" type="number"/>
+			<KeyValue key="checkedTextureSize" value="118" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeAlteredFormSmallButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="109" type="number"/>
+			<KeyValue key="ringHeight" value="110" type="number"/>
+			<KeyValue key="checkedTextureSize" value="93" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeCategoryButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeCategoryButtonMixin" virtual="true">
+		<Size x="104" y="105"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="108" type="number"/>
+			<KeyValue key="ringHeight" value="109" type="number"/>
+			<KeyValue key="checkedTextureSize" value="93" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="30" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-16" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+		<HitRectInsets left="15" right="15" top="15" bottom="15"/>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeShapeshiftFormButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeShapeshiftFormButtonMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="109" type="number"/>
+			<KeyValue key="ringHeight" value="110" type="number"/>
+			<KeyValue key="checkedTextureSize" value="94" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeSexButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeSexButtonMixin" virtual="true">
+		<Size x="46" y="46"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
+			<KeyValue key="ringWidth" value="99" type="number"/>
+			<KeyValue key="ringHeight" value="100" type="number"/>
+			<KeyValue key="checkedTextureSize" value="84" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackBG">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
+	<Frame name="CharCustomizeOptionSliderTemplate" inherits="SliderWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSliderMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="CharCustomizeOptionSelectionPopoutTemplate" inherits="SelectionPopoutWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSelectionPopoutMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="CharCustomizeOptionCheckButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionCheckButtonMixin" virtual="true">
+		<Size x="32" y="38"/>
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="Button">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-1" y="-3"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCheckButtonClick();
+					</OnClick>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharCustomizeFrame" mixin="CharCustomizeMixin" parent="UIParent" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="AlteredForms" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="18" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-41" y="-37"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Categories" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="-21" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-166"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="RandomizeAppearanceButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeRandomizeAppearanceButtonMixin">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="charactercreate-icon-dice" type="string"/>
+					<KeyValue key="simpleTooltipLine" value="RANDOMIZE_APPEARANCE" type="global"/>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+					<KeyValue key="tooltipXOffset" value="9" type="number"/>
+					<KeyValue key="tooltipYOffset" value="-9" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Categories" relativePoint="LEFT" x="-9"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="Options" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="32" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-33" y="-297"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SmallButtons" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="-5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="40" y="-30"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="ResetCameraButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeResetCameraButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="iconAtlas" value="common-icon-undo" type="string"/>
+							<KeyValue key="simpleTooltipLine" value="RESET_CAMERA" type="global"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="ZoomOutButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeZoomButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="iconAtlas" value="common-icon-zoomout" type="string"/>
+							<KeyValue key="simpleTooltipLine" value="ZOOM_OUT" type="global"/>
+							<KeyValue key="clickAmount" value="-20" type="number"/>
+							<KeyValue key="holdAmountPerSecond" value="-200" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="ZoomInButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeZoomButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="iconAtlas" value="common-icon-zoomin" type="string"/>
+							<KeyValue key="simpleTooltipLine" value="ZOOM_IN" type="global"/>
+							<KeyValue key="clickAmount" value="20" type="number"/>
+							<KeyValue key="holdAmountPerSecond" value="200" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RotateLeftButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeRotateButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+							<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
+							<KeyValue key="simpleTooltipLine" value="ROTATE_LEFT" type="global"/>
+							<KeyValue key="leftPadding" value="30" type="number"/>
+							<KeyValue key="clickAmount" value="-10" type="number"/>
+							<KeyValue key="holdAmountPerSecond" value="-100" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RotateRightButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeRotateButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+							<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
+							<KeyValue key="simpleTooltipLine" value="ROTATE_RIGHT" type="global"/>
+							<KeyValue key="clickAmount" value="10" type="number"/>
+							<KeyValue key="holdAmountPerSecond" value="100" type="number"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

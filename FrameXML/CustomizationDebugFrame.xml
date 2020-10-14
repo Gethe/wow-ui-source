@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CustomizationDebugFrame.lua"/>
+	<Frame name="CustomizationDebugFrame" setAllPoints="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CustomizationDebugFrameText" inherits="NumberFontNormal" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-16" y="192"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="CustomizationDebugFrame_OnLoad"/>
+			<OnUpdate function="CustomizationDebugFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,4 +1,0 @@
-## Title: Blizzard Warboard UI
-## LoadOnDemand: 1
-## RequiredDep: Blizzard_QuestChoice, Blizzard_UIWidgets
-Blizzard_WarboardUI.xml

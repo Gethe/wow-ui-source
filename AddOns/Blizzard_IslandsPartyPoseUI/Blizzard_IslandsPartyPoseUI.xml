@@ -29,6 +29,10 @@
 				<KeyValues>
 					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
 				</KeyValues>
+				<Scripts>
+					<OnShow>
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
 				<KeyValues>

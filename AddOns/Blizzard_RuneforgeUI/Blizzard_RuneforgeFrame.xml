@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeFrame.lua"/>
+
+	<Frame name="RuneforgeFrame" toplevel="true" parent="UIParent" enableMouse="true" mixin="RuneforgeFrameMixin" hidden="true">
+		<Size x="588" y="676"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="runecarving-background-smoke" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Title" font="QuestFont_Super_Huge">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-48"/>
+					</Anchors>
+					<Color color="WHITE_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CraftingFrame" inherits="RuneforgeCraftingFrameTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="40"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="98"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-90"/>
+				</Anchors>
+			</Frame>
+
+			<ModelScene parentKey="BackgroundModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="20" y="-20"/>
+				</Anchors>
+			</ModelScene>
+
+			<ModelScene parentKey="OverlayModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="20" y="-20"/>
+				</Anchors>
+			</ModelScene>
+
+			<!-- Tooltips must have a name. -->
+			<GameTooltip name="RuneforgeFrameResultTooltip" parentKey="ResultTooltip" inherits="RunforgeFrameTooltipTemplate"/>
+
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" text="LEGENDARY_CRAFTING_EXIT">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CurrencyDisplay" relativePoint="TOP"/>
+					<Anchor point="RIGHT" x="-55" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="CustomBorder" atlas="runecarving-exitborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

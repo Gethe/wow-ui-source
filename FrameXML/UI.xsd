@@ -298,11 +298,6 @@
 				<xs:element name="OnMouseDown" type="ScriptType"/>
 				<xs:element name="OnMouseUp" type="ScriptType"/>
 				<xs:element name="OnMouseWheel" type="ScriptType"/>
-				<xs:element name="OnJoystickStickMotion" type="ScriptType"/>
-				<xs:element name="OnJoystickAxisMotion" type="ScriptType"/>
-				<xs:element name="OnJoystickButtonDown" type="ScriptType"/>
-				<xs:element name="OnJoystickButtonUp" type="ScriptType"/>
-				<xs:element name="OnJoystickHatMotion" type="ScriptType"/>
 				<xs:element name="OnDragStart" type="ScriptType"/>
 				<xs:element name="OnDragStop" type="ScriptType"/>
 				<xs:element name="OnReceiveDrag" type="ScriptType"/>
@@ -333,6 +328,8 @@
 				<xs:element name="OnChar" type="ScriptType"/>
 				<xs:element name="OnKeyDown" type="ScriptType"/>
 				<xs:element name="OnKeyUp" type="ScriptType"/>
+				<xs:element name="OnGamePadDown" type="ScriptType"/>
+				<xs:element name="OnGamePadUp" type="ScriptType"/>
 				<xs:element name="OnColorSelect" type="ScriptType"/>
 				<xs:element name="OnHyperlinkEnter" type="ScriptType"/>
 				<xs:element name="OnHyperlinkLeave" type="ScriptType"/>
@@ -471,23 +468,6 @@
 		<xs:attribute name="hidden" type="xs:boolean" default="false"/>
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
-
-	<xs:complexType name="BackdropType">
-		<xs:sequence minOccurs="0">
-			<xs:choice maxOccurs="unbounded">
-				<xs:element name="BackgroundInsets" type="Inset"/>
-				<xs:element name="TileSize" type="Value"/>
-				<xs:element name="EdgeSize" type="Value"/>
-				<xs:element name="Color" type="ColorType"/>
-				<xs:element name="BorderColor" type="ColorType"/>
-			</xs:choice>
-		</xs:sequence>
-		<xs:attribute name="bgFile" type="xs:string"/>
-		<xs:attribute name="edgeFile" type="xs:string"/>
-		<xs:attribute name="tile" type="xs:boolean" default="false"/>
-        <xs:attribute name="tileEdge" type="xs:boolean" default="false"/>
-		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
-	</xs:complexType>
 
 	<xs:complexType name="RectType">
 		<xs:attribute name="ULx" type="xs:float"/>
@@ -652,7 +632,6 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="Backdrop" type="BackdropType"/>
 						<xs:element name="HitRectInsets" type="Inset"/>
 						<xs:element name="Layers">
 							<xs:complexType>
@@ -827,6 +806,7 @@
 				<xs:attribute name="letters" type="xs:int" default="0"/>
 				<xs:attribute name="blinkSpeed" type="xs:float" default="0.5"/>
 				<xs:attribute name="numeric" type="xs:boolean" default="false"/>
+				<xs:attribute name="alphabeticOnly" type="xs:boolean" default="false"/>
 				<xs:attribute name="password" type="xs:boolean" default="false"/>
 				<xs:attribute name="multiLine" type="xs:boolean" default="false"/>
 				<xs:attribute name="historyLines" type="xs:int" default="0"/>
@@ -1408,6 +1388,7 @@
 		<xs:attribute name="inherits" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="parentKey" type="xs:string"/>
+    <xs:attribute name="parentArray" type="xs:string"/>
 		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
 		<xs:attribute name="setToFinalAlpha" type="xs:boolean" default="false"/>
 	</xs:complexType>

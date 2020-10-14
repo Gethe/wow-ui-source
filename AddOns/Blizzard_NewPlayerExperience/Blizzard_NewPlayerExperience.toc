@@ -1,0 +1,21 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard New Player Experience
+## LoadOnDemand: 1
+
+middleclass.lua
+Blizzard_TutorialDispatcher.lua
+Blizzard_TutorialQuestManager.lua
+Blizzard_TutorialRangeManager.lua
+
+Blizzard_TutorialData.lua
+
+Blizzard_TutorialMainFrame.xml
+Blizzard_TutorialPointerFrame.xml
+Blizzard_TutorialKeyboardMouseFrame.xml
+Blizzard_TutorialEffects.xml
+
+Blizzard_TutorialBase.lua
+Blizzard_TutorialHelper.lua
+Blizzard_TutorialSteps.lua
+Blizzard_TutorialLogic.lua
+Blizzard_Tutorial.lua

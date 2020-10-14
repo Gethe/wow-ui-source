@@ -1,0 +1,220 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantPreviewUI.lua"/>
+	
+		<Button name="CovenantAbilityButtonTemplate" mixin="CovenantAbilityButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="228" y="77"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="8">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontNormalMed3" justifyH="LEFT" JustifyV="BOTTOM">
+					<Size x="147" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Type" inherits="GameFontHighlight" justifyH="LEFT" JustifyV="BOTTOM">
+					<Size x="147" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.Name" x="0" y="8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CovenantPreviewFrame" toplevel="true" mixin="CovenantPreviewFrameMixin" enableMouse="true" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="1100" y="607"/>
+		<Anchors>
+			<Anchor point="CENTER" x="-10" y="0"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="BorderFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+				</Frame>
+			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="BackgroundTile" atlas="UI-Frame-Neutral-BackgroundTile" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Title">
+				<Size x="0" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-25"/>
+					<Anchor point="LEFT" x="30" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="UI-Frame-Neutral-TitleLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="40"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="UI-Frame-Neutral-TitleRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" x="-40"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Middle" atlas="_UI-Frame-Neutral-TitleMiddle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ModelSceneContainer">
+				<Size x="414" y="432"/>
+				<Anchors>
+					<Anchor point="LEFT" x="65" y="-40"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="ModelSceneBorder">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture >
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+									<Anchor point="TOPLEFT" x="2" y="-2"/>
+									<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+								</Anchors>
+						</Texture >
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="InfoPanel">
+				<Size x="557" y="435"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ModelSceneContainer" relativePoint="RIGHT" x="15"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Parchment">
+							<Size x="557" y="435"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Crest">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="25" y="-25"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="Fancy32Font">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="15" y="13"/>
+							</Anchors>
+							<Color font="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Large">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-5"/>
+							</Anchors>
+							<Color font="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med3">
+							<Size x="495" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="18" y="-45"/>
+							</Anchors>
+							<Color font="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="AbilitiesLabel" JustifyH="LEFT" JustifyV="TOP" inherits="QuestFont_Super_Huge" text="COVENANT_PREVIEW_ABILITIE_LABEL">
+							<Size x="450" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" x="30" y="-30"/>
+							</Anchors>
+							<Color font="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3" y="2" />
+				</Anchors>
+			</Button>
+			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" frameLevel="510" hidden="true" text="BACK">
+				<Size x="150" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="220" y="70" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(CovenantPreviewFrame);
+						PlaySound(SOUNDKIT.UI_COVENANT_CHOICE_CLICK_BACK_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

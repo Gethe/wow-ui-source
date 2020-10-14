@@ -3,28 +3,16 @@
 	<Script file="ItemRef.lua"/>
 	<GameTooltip name="ItemRefShoppingTooltip1" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="ItemRefShoppingTooltip2" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
-	<GameTooltip name="ItemRefTooltip" inherits="GameTooltipTemplate" parent="UIParent" enableMouse="true" toplevel="true" movable="true" frameStrata="TOOLTIP" hidden="true">
-		<Size>
-			<AbsDimension x="128" y="64"/>
-		</Size>
+	<GameTooltip name="ItemRefTooltip" inherits="GameTooltipTemplate" parent="UIParent" enableMouse="true" toplevel="true" movable="true" frameStrata="TOOLTIP" hidden="true" mixin="ItemRefTooltipMixin">
+		<Size x="128" y="64"/>
 		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="80"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
 		<Frames>
-			<Button name="ItemRefCloseButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+			<Button parentKey="CloseButton">
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="1" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="1" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -37,61 +25,13 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GameTooltip_OnLoad(self);
-				self:RegisterForDrag("LeftButton");
-				self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
-				self.updateTooltipTime = 0;
-				self.UpdateTooltip = function(self, elapsed)
-					if ( IsModifiedClick("COMPAREITEMS")) then
-						self.updateTooltipTime = self.updateTooltipTime - elapsed;
-						if ( self.updateTooltipTime > 0 ) then
-							return;
-						end
-						self.updateTooltipTime = TOOLTIP_UPDATE_TIME;
-						GameTooltip_ShowCompareItem(self);
-					else
-						for _, frame in pairs(self.shoppingTooltips) do
-							frame:Hide();
-						end
-						
-						self.needsReset = true;
-						self.comparing = false;
-					end
-				end
-			</OnLoad>
-			<OnTooltipSetItem>
-				self.updateTooltipTime = 0;
-				self:SetPadding(16, 0);
-				if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver()) then
-					GameTooltip_ShowCompareItem(self);
-				end
-			</OnTooltipSetItem>
-			<OnDragStart>
-				self:StartMoving();
-			</OnDragStart>
-			<OnDragStop>
-				self:StopMovingOrSizing();
-				ValidateFramePosition(self);
-				if ( IsModifiedClick("COMPAREITEMS") ) then --We do this to choose where the comparison is shown
-					GameTooltip_ShowCompareItem(self);
-				end
-			</OnDragStop> 
-			<OnEnter>
-				self.updateTooltipTime = 0;
-				self:SetScript("OnUpdate", self.UpdateTooltip);
-			</OnEnter>
-			<OnLeave>
-				for _, frame in pairs(self.shoppingTooltips) do
-					frame:Hide();
-				end
-				self:SetScript("OnUpdate", nil);
-			</OnLeave>
-			<OnHide>
-				GameTooltip_OnHide(self);
-				--While it is true that OnUpdate won't fire while the frame is hidden, we don't want to have to check-and-unregister when we show it
-				self:SetScript("OnUpdate", nil);
-			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnTooltipSetItem method="OnTooltipSetItem"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</GameTooltip>
 </Ui>

@@ -513,7 +513,7 @@
 		<Size x="140" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="CostLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COSTS_LABEL">
+				<FontString parentKey="CostLabel" inherits="GameFontNormalLarge" justifyH="LEFT" text="COSTS_LABEL">
 					<Anchors>
 						<Anchor point="LEFT" y="1"/>
 					</Anchors>
@@ -890,7 +890,7 @@
 		</Scripts>
 	</CinematicModel>
 
-	<CinematicModel name="GarrisonFollowerTabModelClusterModel" inherits="ModelTemplate" hidden="true" virtual="true" enableMouse="false">
+	<CinematicModel name="GarrisonFollowerTabModelClusterModel" inherits="MouseDisabledModelTemplate" hidden="true" virtual="true" enableMouse="false">
 		<Size x="305" y="370"/>
 		<Scripts>
 			<OnModelLoaded>
@@ -935,27 +935,27 @@
 					<Frame frameLevel="10" parentKey="Shadows">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model1"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model2"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model3"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model4"/>
 									</Anchors>
 								</Texture>
-								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true" alpha=".45">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model5"/>
 									</Anchors>

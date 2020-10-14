@@ -30,7 +30,7 @@
 			<OnHide method="OnHide"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>	
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -467,7 +467,7 @@
 		<HighlightTexture atlas="heartofazeroth-list-item-highlight" alphaMode="ADD"/>
 	</Button>
 
-	<Frame name="AzeriteEssenceStarsAnimationFrameTemplate" useParentLevel="true" virtual="true">
+	<Frame name="AzeriteEssenceStarsAnimationFrameTemplate" parentArray="StarsAnimations" useParentLevel="true" virtual="true">
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="Stars" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-stars" useAtlasSize="true">
@@ -481,7 +481,7 @@
 			<AnimationGroup parentKey="Anim" looping="REPEAT">
 				<Alpha parentKey="Start" childKey="Stars" duration="0" order="1" fromAlpha="0" toAlpha="0"/>
 				<Rotation parentKey="Rotation" childKey="Stars" smoothing="NONE" duration="0" order="1" degrees="0"/>
-				<Scale childKey="Stars" smoothing="NONE" duration="9" order="2" fromScaleX=".5" fromScaleY=".5" toScaleX=".83" toScaleY=".83"/>				
+				<Scale childKey="Stars" smoothing="NONE" duration="9" order="2" fromScaleX=".5" fromScaleY=".5" toScaleX=".83" toScaleY=".83"/>
 				<Alpha childKey="Stars" startDelay="0" smoothing="OUT" duration="3" order="2" fromAlpha="0" toAlpha=".15"/>
 				<Alpha childKey="Stars" startDelay="3" smoothing="OUT" duration="6" order="2" fromAlpha=".15" toAlpha="0"/>
 				<Scripts>
@@ -523,7 +523,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="1" y="-1"/>
 							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/> 
+							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -616,31 +616,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-26" y="2"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="Tutorial" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="210" y="100"/>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="-19"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_ESSENCE_TUTORIAL_FIRST_ESSENCE">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="10" y="-18"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self:SetHeight(self.Text:GetHeight() + 34);
-							</OnLoad>
-						</Scripts>
-					</Frame>
 					<ModelScene parentKey="LearnEssenceModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
 						<Size x="650" y="650"/>
 					</ModelScene>
@@ -719,6 +694,42 @@
 					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</ScrollFrame>
+			<Frame parentKey="DisabledFrame" frameLevel="2000">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.EssenceList" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture setAllPoints="true" alpha="0.1">
+							<Color r="0.902" g="0.8" b="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true" alpha="0.2">
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture atlas="Artifacts-Retiring-Gradient" useAtlasSize="true">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString inherits="Fancy22Font" text="UI_AZERITE_ITEM_DISABLED">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="20" y="36"/>
+								<Anchor point="BOTTOMRIGHT" x="-20" y="36"/>
+							</Anchors>
+							<Color r="0.902" g="0.8" b="0.5" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-2">

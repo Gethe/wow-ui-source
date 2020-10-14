@@ -420,15 +420,7 @@
 				self:SetAlpha(0.5);
 				self.Icon:SetDesaturation(1);
 			</OnDisable>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(PAPERDOLL_SIDEBARS[self:GetID()].name, 1, 1, 1);
-				if ( not self:IsEnabled() and self.disabledTooltip ) then
-					GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-				end
-
-				GameTooltip:Show();
-			</OnEnter>
+			<OnEnter function="PaperDollFrame_SidebarTab_OnEnter" />
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
@@ -707,7 +699,7 @@
 				</Scripts>
 			</PlayerModel>
 
-			<Frame name="PaperDollItemsFrame" mixin="PaperDollItemsMixin" setAllPoints="true">
+			<Frame name="PaperDollItemsFrame" setAllPoints="true">
 				<Frames>
 					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>
@@ -818,13 +810,6 @@
 						</Layers>
 					</ItemButton>
 				</Frames>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnUpdate method="OnUpdate"/>
-					<OnShow method="OnShow"/>
-					<OnHide method="OnHide"/>
-					<OnEvent method="OnEvent"/>
-				</Scripts>
 			</Frame>
 		</Frames>
         <Scripts>

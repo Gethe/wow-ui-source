@@ -1,0 +1,4 @@
+## Title: Blizzard Quest Choice UI
+## LoadOnDemand: 1
+## RequiredDep: Blizzard_UIWidgets
+Blizzard_PlayerChoiceUI.xml

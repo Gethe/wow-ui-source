@@ -103,7 +103,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlightHugeOutline2" justifyH="CENTER" justifyV="TOP">
+				<FontString parentKey="Title" inherits="GameFontHighlightShadowOutline22" justifyH="CENTER" justifyV="TOP">
 					<Size x="270" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-45"/>

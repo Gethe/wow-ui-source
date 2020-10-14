@@ -48,7 +48,7 @@ function IslandsQueueWeeklyQuestMixin:UpdateRewardInformation()
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(self.questID);
 	for i = 1, numQuestCurrencies do
 		local name, texture, quantity, currencyID = GetQuestLogRewardCurrencyInfo(i, self.questID);
-		local quality = select(8, GetCurrencyInfo(currencyID));
+		local quality = C_CurrencyInfo.GetCurrencyInfo(currencyID).quality;
 		name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
 		self.QuestReward.Icon:SetTexture(texture);
 	end

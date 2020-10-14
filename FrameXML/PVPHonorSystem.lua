@@ -83,7 +83,7 @@ function PVPHonorRewardCurrencyMixin:Set(...)
 
 	self.id = id;
 	self.quantity = quantity;
-	self.icon = select(3, GetCurrencyInfo(id));
+	self.icon = C_CurrencyInfo.GetCurrencyInfo(id).iconFileID;
 end
 
 function PVPHonorRewardCurrencyMixin:SetTooltip()
@@ -192,7 +192,7 @@ function PVPHonorXPBar_Update(self)
 end
 
 function PVPHonorXPBar_CheckLockState(self)
-    if (UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
+    if not C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
         PVPHonorXPBar_Lock(self);
     else
         PVPHonorXPBar_Unlock(self);

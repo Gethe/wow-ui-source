@@ -320,15 +320,6 @@ local MountJournal =
 			},
 		},
 		{
-			Name = "IsMountEquipmentUnlocked",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isUnlocked", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsSourceChecked",
 			Type = "Function",
 

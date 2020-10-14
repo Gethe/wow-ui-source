@@ -557,7 +557,7 @@ function GroupLootFrame_OnShow(self)
 	end
 
 	self.IconFrame.Icon:SetTexture(texture);
-	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
 	self.Name:SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];
 	self.Name:SetVertexColor(color.r, color.g, color.b);
@@ -624,7 +624,9 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, curr
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
 	end
 
-	local _, count, icon = GetCurrencyInfo(currencyID);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local count = currencyInfo.quantity;
+	local icon = currencyInfo.iconFileID;
 	if ( count == 0 ) then
 		return;
 	end
@@ -706,6 +708,8 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.rollSound = soundHandle;
 		self.RollingFrame.LootSpinner:Show();
 		self.RollingFrame.LootSpinnerFinal:Hide();
+		self.LootSpinnerBG:Show();
+		self.IconBorder:Show();
 		self.StartRollAnim:Play();
 	elseif ( event == "BONUS_ROLL_RESULT" ) then
 		local rewardType, rewardLink, rewardQuantity, rewardSpecID,_,_, currencyID, isSecondaryResult, isCorrupted = ...;
@@ -810,45 +814,55 @@ function GetBonusRollEncounterJournalLinkDifficulty()
 	return BonusRollFrame.difficultyID;
 end
 
-function EncounterJournalLinkButton_IsLinkDataAvailable()
+EncounterJournalLinkButtonMixin = {};
+
+function EncounterJournalLinkButtonMixin:IsLinkDataAvailable()
     if ( BonusRollFrame.instanceID and BonusRollFrame.instanceID ~= 0 ) then
         local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
         -- Mythic+ doesn't yet have all the itemContext info available 
         --that we need to properly show item tooltips
-        if ( difficultyID ~= nil and difficultyID ~= DIFFICULTY_DUNGEON_CHALLENGE) then
+        if ( difficultyID ~= nil and difficultyID ~= DifficultyUtil.ID.DungeonChallenge) then
             return true;
         end
     end
     return false;
 end
 
-function EncounterJournalLinkButton_OnShow(self)
+function EncounterJournalLinkButtonMixin:OnShow()
 	local tutorialClosed = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK);
-	if not tutorialClosed and EncounterJournalLinkButton_IsLinkDataAvailable() then
-		self:GetParent().EncounterJournalLinkButtonHelp:Show();
+	if not tutorialClosed and self:IsLinkDataAvailable() then
+		local helpTipInfo = {
+			text = ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			offsetY = -14,
+		};
+		HelpTip:Show(self:GetParent(), helpTipInfo);
 	end
 end
 
-function EncounterJournalLinkButton_OnEnter(self)
+function EncounterJournalLinkButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
+	GameTooltip_SetTitle(GameTooltip, BONUS_ROLL_TOOLTIP_TITLE);
+	GameTooltip_AddNormalLine(GameTooltip, BONUS_ROLL_TOOLTIP_TEXT);
 
-	if ( EncounterJournalLinkButton_IsLinkDataAvailable() ) then
-		GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, true);
+	if ( self:IsLinkDataAvailable() ) then
+		GameTooltip_AddInstructionLine(GameTooltip, BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK);
 	end
 
 	GameTooltip:Show();
 end
 
-function OpenBonusRollEncounterJournalLink()
+function EncounterJournalLinkButtonMixin:OnClick()
 	local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
-	if ( not EncounterJournalLinkButton_IsLinkDataAvailable()) then
+	if ( not self:IsLinkDataAvailable()) then
 		return;
 	end
 
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true);
-	BonusRollFrame.PromptFrame.EncounterJournalLinkButtonHelp:Hide();
+	HelpTip:HideAll(BonusRollFrame.PromptFrame);
 
 	EncounterJournal_LoadUI();
 
@@ -871,6 +885,8 @@ function BonusRollFrame_AdvanceLootSpinnerAnim(self)
 end
 
 function BonusRollFrame_OnShow(self)
+	self.LootSpinnerBG:Hide();
+	self.IconBorder:Hide();
 	self.PromptFrame.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
 	self.BlackBackgroundHoist:SetFrameLevel(self.PromptFrame.Timer:GetFrameLevel() - 1);
 	--Update the remaining time in case we were hidden for some reason

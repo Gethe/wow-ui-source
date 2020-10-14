@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PagedList.lua"/>
+
+	<Frame name="PagedListTemplate" mixin="PagedListMixin" inherits="TemplatedListTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="PagedListControlButtonTemplate" mixin="PagedListControlButtonMixin" virtual="true">
+		<Size x="32" y="32" />
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="PagedListHorizontalControlTemplate" mixin="PagedListControlMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<!--
+			alwaysShow: Keep the control shown even when there's only 1 page.
+			<KeyValue key="alwaysShow" value="false" type="boolean"/>
+			-->
+			<KeyValue key="spacing" value="5" type="number"/>
+		</KeyValues>
+		<Size x="0" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PageText" font="GameFontWhite">
+					<Size x="0" y="32"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="rightPadding" value="10" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="BackwardButton" inherits="PagedListControlButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="pageAdjustment" value="-1" type="number"/>
+				</KeyValues>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="ForwardButton" inherits="PagedListControlButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="pageAdjustment" value="1" type="number"/>
+				</KeyValues>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -97,9 +97,6 @@ function GMSurveyScrollFrame_OnEvent(self, event, ...)
 end
 
 function GMSurveyQuestion_OnLoad(self)
-	self:SetBackdropBorderColor(0.5,0.5,0.5);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-
 	local name = self:GetName();
 	self.radioButtons = {
 		[0] = _G[name.."RadioButton0"],

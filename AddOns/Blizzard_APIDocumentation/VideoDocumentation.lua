@@ -20,6 +20,11 @@ local Video =
 	Events =
 	{
 		{
+			Name = "AdapterListChanged",
+			Type = "Event",
+			LiteralName = "ADAPTER_LIST_CHANGED",
+		},
+		{
 			Name = "DisplaySizeChanged",
 			Type = "Event",
 			LiteralName = "DISPLAY_SIZE_CHANGED",
@@ -28,6 +33,11 @@ local Video =
 			Name = "GlueScreenshotFailed",
 			Type = "Event",
 			LiteralName = "GLUE_SCREENSHOT_FAILED",
+		},
+		{
+			Name = "GxRestarted",
+			Type = "Event",
+			LiteralName = "GX_RESTARTED",
 		},
 		{
 			Name = "ScreenshotFailed",

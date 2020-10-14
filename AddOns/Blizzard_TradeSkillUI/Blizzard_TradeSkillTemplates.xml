@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TradeSkillTemplates.lua"/>
+
+	<Button name="OptionalReagentButtonTemplate" inherits="LargeItemButtonTemplate" mixin="OptionalReagentButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SocketGlow" atlas="tradeskills-icon-add" alphaMode="ADD" useAtlasSize="true" scale="1.06" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SocketGlowPulseAnim" looping="BOUNCE">
+				<Alpha childKey="SocketGlow" duration="0.8" fromAlpha="0" toAlpha="0.6"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<StatusBar name="TradeSkillStatusBarArtTemplate" minValue="0" maxValue="1" defaultValue="1" virtual="true">
+		<Size x="58" y="14"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+					<Size x="9" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-2" y="0"/>
+					</Anchors>
+					<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+				</Texture>
+				<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+					<Size x="9" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="3" y="0"/>
+					</Anchors>
+					<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+				</Texture>
+				<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Rank" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarColor r=".25" g=".25" b=".75"/>
+	</StatusBar>
+</Ui>

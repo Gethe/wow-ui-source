@@ -180,6 +180,11 @@ function ScrollFrame_OnVerticalScroll(self, offset)
 	(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):SetEnabled((scrollbar:GetValue() - max) ~= 0);
 end
 
+function ScrollFrame_SetScrollOffset(self, scrollOffset)
+	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
+	scrollbar:SetValue(scrollOffset);
+end
+
 function ScrollingEdit_OnTextChanged(self, scrollFrame)
 	-- force an update when the text changes
 	self.handleCursorChange = true;

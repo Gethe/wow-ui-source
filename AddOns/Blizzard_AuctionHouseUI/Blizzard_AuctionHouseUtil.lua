@@ -5,6 +5,28 @@ local WOW_TOKEN_TIME_LEFT_TOOLTIP_FORMAT = WHITE_FONT_COLOR:WrapTextInColorCode(
 
 local RED_TEXT_MINUTES_THRESHOLD = 60;
 
+local TIME_LEFT_ATLAS_MARKUP = CreateAtlasMarkup("auctionhouse-icon-clock", 16, 16, 2, -2);
+
+local function GetQualityFilterString(itemQuality)
+	local hex = select(4, GetItemQualityColor(itemQuality));
+	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
+	return "|c"..hex..text.."|r";
+end
+
+AUCTION_HOUSE_FILTER_STRINGS = {
+	[Enum.AuctionHouseFilter.UncollectedOnly] = AUCTION_HOUSE_FILTER_UNCOLLECTED_ONLY,
+	[Enum.AuctionHouseFilter.UsableOnly] = AUCTION_HOUSE_FILTER_USABLE_ONLY,
+	[Enum.AuctionHouseFilter.UpgradesOnly] = AUCTION_HOUSE_FILTER_UPGRADES_ONLY,
+	[Enum.AuctionHouseFilter.PoorQuality] = GetQualityFilterString(Enum.ItemQuality.Poor),
+	[Enum.AuctionHouseFilter.CommonQuality] = GetQualityFilterString(Enum.ItemQuality.Common),
+	[Enum.AuctionHouseFilter.UncommonQuality] = GetQualityFilterString(Enum.ItemQuality.Uncommon),
+	[Enum.AuctionHouseFilter.RareQuality] = GetQualityFilterString(Enum.ItemQuality.Rare),
+	[Enum.AuctionHouseFilter.EpicQuality] = GetQualityFilterString(Enum.ItemQuality.Epic),
+	[Enum.AuctionHouseFilter.LegendaryQuality] = GetQualityFilterString(Enum.ItemQuality.Legendary),
+	[Enum.AuctionHouseFilter.ArtifactQuality] = GetQualityFilterString(Enum.ItemQuality.Artifact),
+	[Enum.AuctionHouseFilter.LegendaryCraftedItemOnly] = AUCTION_HOUSE_FILTER_RUNECARVING,
+};
+
 AuctionHouseSearchContext = tInvert({
 	"BrowseAll",
 	"BrowseTradeGoods",
@@ -133,18 +155,19 @@ function AuctionHouseBuySystemMixin:SetAuctionID(auctionID)
 	self.auctionID = auctionID;
 end
 
-function AuctionHouseBuySystemMixin:SetPrice(minBid, buyoutPrice, isOwnerItem)
+function AuctionHouseBuySystemMixin:SetPrice(minBid, buyoutPrice, isOwnerItem, isPlayerHighBid)
 	minBid = minBid or 0;
 	buyoutPrice = buyoutPrice or 0;
 
 	self.minBid = minBid;
-	self.BidFrame:SetPrice(minBid, isOwnerItem);
+	self.BidFrame:SetPrice(minBid, isOwnerItem, isPlayerHighBid);
 	self.BuyoutFrame:SetPrice(buyoutPrice, isOwnerItem);
 end
 
-function AuctionHouseBuySystemMixin:SetAuction(auctionID, minBid, buyoutPrice, isOwnerItem)
+function AuctionHouseBuySystemMixin:SetAuction(auctionID, minBid, buyoutPrice, isOwnerItem, bidder)
+	local isPlayerHighBid = bidder == UnitGUID("player");
 	self:SetAuctionID(auctionID);
-	self:SetPrice(minBid, buyoutPrice, isOwnerItem);
+	self:SetPrice(minBid, buyoutPrice, isOwnerItem, isPlayerHighBid);
 end
 
 function AuctionHouseBuySystemMixin:ResetPrice()
@@ -286,18 +309,22 @@ function AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)
 	return "";
 end
 
+local MaxSellersListedExplicitly = 10;
 function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
 	local sellersString = sellers[1] == "player" and GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	local numSellers = #sellers;
 	if numSellers > 1 then
-		sellersString = sellersString..HIGHLIGHT_FONT_COLOR_CODE;
-		for i = 2, numSellers do
+		local numSellersListed = math.min(numSellers, MaxSellersListedExplicitly);
+		for i = 2, numSellersListed do
 			sellersString = sellersString..PLAYER_LIST_DELIMITER..sellers[i];
 		end
-		sellersString = sellersString..FONT_COLOR_CODE_CLOSE;
 
 		local wrap = true;
-		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
+		if numSellers > MaxSellersListedExplicitly then
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_OVERFLOW_SELLERS_FORMAT:format(sellersString, numSellers - MaxSellersListedExplicitly), wrap);
+		else
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
+		end
 	elseif numSellers > 0 then
 		local wrap = true;
 		GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_SELLER_FORMAT:format(sellersString), wrap);
@@ -330,7 +357,7 @@ function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, i
 	local itemColor = itemQualityColor.color;
 
 	if ownedAuctionData.quantity > 1 then
-		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, ownedAuctionData.quantity);
+		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, BreakUpLargeNumbers(ownedAuctionData.quantity));
 	end
 
 	if ownedAuctionData.status == Enum.AuctionStatus.Sold then
@@ -424,6 +451,8 @@ function AuctionHouseUtil.GetHeaderNameFromSortOrder(sortOrder)
 		return AUCTION_HOUSE_HEADER_BID_PRICE;
 	elseif sortOrder == Enum.AuctionHouseSortOrder.Buyout then
 		return AUCTION_HOUSE_HEADER_BUYOUT_PRICE;
+	elseif sortOrder == Enum.AuctionHouseSortOrder.TimeRemaining then
+		return TIME_LEFT_ATLAS_MARKUP;
 	-- Note: Level is contextual and must be set manually.
 	-- elseif sortOrder == Enum.AuctionHouseSortOrder.Level then
 	end
@@ -448,16 +477,17 @@ function AuctionHouseUtil.ConvertItemSellItemKey(itemKey)
 end
 
 local AuctionHouseTooltipType = {
-	PetLink = 1;
-	ItemLink = 2;
-	ItemKey = 3;
+	BucketPetLink = 1,
+	ItemLink = 2,
+	ItemKey = 3,
+	SpecificPetLink = 4,
 };
 
 local function GetAuctionHouseTooltipType(rowData)
 	if rowData.itemLink then
 		local linkType = LinkUtil.ExtractLink(rowData.itemLink);
 		if linkType == "battlepet" then
-			return AuctionHouseTooltipType.PetLink, rowData.itemLink;
+			return AuctionHouseTooltipType.SpecificPetLink, rowData.itemLink;
 		elseif linkType == "item" then
 			return AuctionHouseTooltipType.ItemLink, rowData.itemLink;
 		end
@@ -465,13 +495,20 @@ local function GetAuctionHouseTooltipType(rowData)
 		local restrictQualityToFilter = true;
 		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey, restrictQualityToFilter);
 		if itemKeyInfo and itemKeyInfo.battlePetLink then
-			return AuctionHouseTooltipType.PetLink, itemKeyInfo.battlePetLink;
+			return AuctionHouseTooltipType.BucketPetLink, itemKeyInfo.battlePetLink;
 		end
 
 		return AuctionHouseTooltipType.ItemKey, rowData.itemKey;
 	end
 
 	return nil;
+end
+
+function AuctionHouseUtil.AppendBattlePetVariationLines(tooltip)
+	GameTooltip_AddBlankLineToTooltip(tooltip);
+
+	local wrap = true;
+	GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_BUCKET_VARIATION_PET_TOOLTIP, wrap);
 end
 
 function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
@@ -486,7 +523,7 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 
 	GameTooltip:SetOwner(owner, "ANCHOR_RIGHT");
 	
-	if tooltipType == AuctionHouseTooltipType.PetLink then
+	if tooltipType == AuctionHouseTooltipType.BucketPetLink or tooltipType == AuctionHouseTooltipType.SpecificPetLink then
 		BattlePetToolTip_ShowLink(data);
 		tooltip = BattlePetTooltip;
 	else
@@ -495,7 +532,7 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 			local hideVendorPrice = true;
 			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
 		elseif tooltipType == AuctionHouseTooltipType.ItemKey then
-			GameTooltip:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix);
+			GameTooltip:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(data));
 		end
 	end
 
@@ -503,6 +540,10 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 		local methodFound, auctionHouseFrame = CallMethodOnNearestAncestor(owner, "GetAuctionHouseFrame");
 		local bidStatus = auctionHouseFrame and auctionHouseFrame:GetBidStatus(rowData) or nil;
 		AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus);
+	end
+
+	if tooltipType == AuctionHouseTooltipType.BucketPetLink then
+		AuctionHouseUtil.AppendBattlePetVariationLines(tooltip);
 	end
 
 	if tooltip == GameTooltip then

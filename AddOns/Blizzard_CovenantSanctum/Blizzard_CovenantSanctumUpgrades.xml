@@ -1,0 +1,325 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantSanctumUpgrades.lua"/>
+
+	<Frame name="CovenantSanctumUpgradeTreeTemplate" mixin="CovenantSanctumUpgradeTreeMixin" virtual="true">
+		<Size x="72" y="72"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum-Icon-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Icon-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RankBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Tier" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RankBorder"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Glow" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.5"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CovenantSanctumUpgradeReservoirTemplate" mixin="CovenantSanctumUpgradeReservoirMixin" virtual="true">
+		<Size x="224" y="224"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="FillBackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum-Reservoir-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Reservoir-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" drawLayer="BACKGROUND" useParentLevel="true">
+				<Size x="500" y="500"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+	</Frame>
+	
+	<Frame name="CovenantSanctumUpgradeTalentTemplate" mixin="CovenantSanctumUpgradeTalentMixin" virtual="true">
+		<Size x="257" y="56"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="CovenantSanctum-Upgrade-Background">
+					<Size x="257" y="56"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Med2" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="2" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="58" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InfoText" inherits="GameFontHighlight" maxLines="1" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="58" y="14"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="UpgradeArrow" atlas="CovenantSanctum-Upgrade-Icon-Available" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="-3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" setAllPoints="true" atlas="CovenantSanctum-Upgrade-Hover" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+				</Anchors>
+				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame parentKey="UpgradesTab" mixin="CovenantSanctumUpgradesTabMixin" parent="CovenantSanctumFrame" hidden="true" setAllPoints="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-26"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CurrencyBackground" atlas="CovenantSanctum-Currency-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-311" y="54"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- This will be reparented -->
+			<Frame parentKey="BagsGlowFrame">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="12" y="11"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.5"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="TalentsList" mixin="CovenantSanctumUpgradeTalentListMixin">
+				<Size x="296" y="585"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="-26"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BackgroundTile" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Divider">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-11"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="19" y="-35"/>
+								<Anchor point="TOPRIGHT" x="-20" y="-70"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Tier" inherits="SystemFont_Shadow_Large">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="Unlock Upgrade">
+						<Size x="153" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="30"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Upgrade();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="TravelUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="147" y="-140"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DiversionUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="374" y="-151"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AdventureUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="558" y="-250"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="UniqueUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate">
+				<KeyValues>
+					<KeyValue key="uniqueUpgrade" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="512" y="-430"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ReservoirUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeReservoirTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="220" y="236"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="DepositButton" inherits="UIPanelButtonTemplate" text="Deposit">
+				<Size x="153" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="141" y="56"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():DepositAnima();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="CurrencyDisplayGroup" inherits="CurrencyDisplayGroupTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-338" y="56"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

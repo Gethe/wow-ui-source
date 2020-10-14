@@ -106,20 +106,28 @@ function HANDLE:IsShown()   return GetHandleFrame(self):IsShown()   end
 function HANDLE:IsVisible() return GetHandleFrame(self):IsVisible() end
 function HANDLE:GetWidth()  return GetHandleFrame(self):GetWidth()  end
 function HANDLE:GetHeight() return GetHandleFrame(self):GetHeight() end
-function HANDLE:GetRect()   return GetHandleFrame(self):GetRect() end
 function HANDLE:GetScale()  return GetHandleFrame(self):GetScale()  end
 function HANDLE:GetEffectiveScale()
     return GetHandleFrame(self):GetEffectiveScale()
 end
 
+function HANDLE:GetRect()
+	local frame = GetHandleFrame(self);
+	if frame:IsAnchoringRestricted() then
+		return nil;
+	end
+
+	return frame:GetRect();
+end
+
 -- Cannot expose GetAlpha since alpha is not protected
 
 function HANDLE:GetFrameLevel()
-    return GetHandleFrame(self):GetFrameLevel()
+    return GetHandleFrame(self):GetFrameLevel();
 end
 
 function HANDLE:GetFrameStrata()
-    return GetHandleFrame(self):GetFrameStrata()
+    return GetHandleFrame(self):GetFrameStrata();
 end
 
 function HANDLE:IsMouseEnabled()
@@ -136,6 +144,14 @@ end
 
 function HANDLE:IsKeyboardEnabled()
     return GetHandleFrame(self):IsKeyboardEnabled();
+end
+
+function HANDLE:IsGamePadButtonEnabled()
+    return GetHandleFrame(self):IsGamePadButtonEnabled();
+end
+
+function HANDLE:IsGamePadStickEnabled()
+    return GetHandleFrame(self):IsGamePadStickEnabled();
 end
 
 function HANDLE:GetObjectType()
@@ -334,7 +350,12 @@ function HANDLE:GetNumPoints()
 end
 
 function HANDLE:GetPoint(i)
-    local point, frame, relative, dx, dy = GetHandleFrame(self):GetPoint(i);
+	local thisFrame = GetHandleFrame(self);
+	if thisFrame:IsAnchoringRestricted() then
+		return nil;
+	end
+
+    local point, frame, relative, dx, dy = thisFrame:GetPoint(i);
     local handle;
     if (frame) then
         handle = FrameHandleMapper(not InCombatLockdown(), frame);
@@ -584,6 +605,14 @@ end
 
 function HANDLE:EnableKeyboard(isEnabled)
     GetHandleFrame(self):EnableKeyboard((isEnabled and true) or false);
+end
+
+function HANDLE:EnableGamePadButton(isEnabled)
+    GetHandleFrame(self):EnableGamePadButton((isEnabled and true) or false);
+end
+
+function HANDLE:EnableGamePadStick(isEnabled)
+    GetHandleFrame(self):EnableGamePadStick((isEnabled and true) or false);
 end
 
 function HANDLE:RegisterAutoHide(duration)

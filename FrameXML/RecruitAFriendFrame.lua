@@ -12,7 +12,7 @@ function RecruitAFriendFrameMixin:OnLoad()
 
 	self.RecruitList.NoRecruitsDesc:SetText(RAF_NO_RECRUITS_DESC);
 	self.recruitScrollFrame = self.RecruitList.ScrollFrame;
-	
+
 	self.RewardClaiming.MonthCount.Text:SetFontObjectsToTry(FriendsFont_Large, FriendsFont_Normal, FriendsFont_Small);
 	self.RewardClaiming.NextRewardName.Text:SetFontObjectsToTry(FriendsFont_Normal, FriendsFont_Small);
 
@@ -71,30 +71,7 @@ function RecruitAFriendFrameMixin:SetRAFSystemEnabled(rafEnabled)
 end
 
 function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
-	local showIntroTutorial = false;
-	local showRewardTutorial = false;
-
-	if self.varsLoaded and self.rafEnabled then
-		showIntroTutorial = self.rafRecruitingEnabled and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO);
-		if not showIntroTutorial then
-			showRewardTutorial = self:ShouldShowRewardTutorial();
-		end
-	end
-
-	if showIntroTutorial then
-			local introHelpTipInfo = {
-				text = RAF_INTRO_TUTORIAL_TEXT,
-				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFramesAccountWide",
-				bitfieldFlag = LE_FRAME_TUTORIAL_ACCCOUNT_RAF_INTRO,
-				targetPoint = HelpTip.Point.RightEdgeCenter,
-				autoEdgeFlipping = true,
-				useParentStrata = true,
-			};
-			HelpTip:Show(QuickJoinToastButton, introHelpTipInfo);
-	else
-		HelpTip:Hide(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
-	end
+	local showRewardTutorial = self.varsLoaded and self.rafEnabled and self:ShouldShowRewardTutorial();
 
 	if showRewardTutorial then
 		local rewardHelpTipInfo = {
@@ -413,7 +390,7 @@ end
 function RecruitActivityButtonMixin:UpdateQuestName()
 	if not self.questName and self.activityInfo then
 		-- If we don't have the name now, get it. If it's not in the quest cache this will request it
-		self.questName = C_QuestLog.GetQuestInfo(self.activityInfo.rewardQuestID);
+		self.questName = C_QuestLog.GetTitleForQuestID(self.activityInfo.rewardQuestID);
 	end
 end
 
@@ -435,7 +412,7 @@ function RecruitActivityButtonMixin:OnEnter()
 
 		EmbeddedItemTooltip:SetMinimumWidth(300);
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, RAF_RECRUIT_ACTIVITY_DESCRIPTION:format(self.recruitInfo.nameText), true);
-	
+
 		local reqTextLines = C_RecruitAFriend.GetRecruitActivityRequirementsText(self.activityInfo.activityID, self.recruitInfo.acceptanceID);
 		for i = 1, #reqTextLines do
 			local reqText = reqTextLines[i];
@@ -1032,7 +1009,7 @@ function RecruitAFriendRewardButtonWithFanfareMixin:SetCanClaim(canClaim)
 			end
 		end
 	end
-	
+
 	self.lastCanClaim = canClaim;
 end
 

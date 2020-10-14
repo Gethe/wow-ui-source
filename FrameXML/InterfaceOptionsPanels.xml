@@ -186,11 +186,7 @@
       </Frame>
       <CheckButton name="$parentInteractOnLeftClick" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-70"/>
-            </Offset>
-          </Anchor>
+          <Anchor point="TOPLEFT" relativeTo="$parentAutoLootKeyDropDown" relativePoint="BOTTOMLEFT" x="16" y="-8"/>
         </Anchors>
         <Scripts>
           <OnLoad>
@@ -564,9 +560,21 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
+      <CheckButton name="$parentShowInGameNavigation" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAJAlerts" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "showInGameNavigation";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
       <CheckButton name="$parentShowTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentAJAlerts" relativePoint="BOTTOMLEFT">
+          <Anchor point="TOPLEFT" relativeTo="$parentShowInGameNavigation" relativePoint="BOTTOMLEFT">
             <Offset>
               <AbsDimension x="0" y="-8"/>
             </Offset>
@@ -603,7 +611,7 @@
           <OnClick>
             PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
             SetCVar("closedInfoFrames", "");			-- reset the help plates too
-            SetCVar("closedInfoFramesAccountWide", ""); 
+            SetCVar("closedInfoFramesAccountWide", "");
             SetCVar("showNPETutorials", "1");
             ResetTutorials();
             TutorialFrame_ClearQueue();
@@ -1659,6 +1667,7 @@
             </Anchors>
             <Scripts>
               <OnLoad function="InterfaceOptionsLargerNamePlate_OnLoad" />
+							<OnShow function="InterfaceOptionsLargerNamePlate_OnShow" />
             </Scripts>
           </CheckButton>
           <CheckButton name="$parentAggroFlash" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -2067,7 +2076,7 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            if ( not IsWindowsClient() ) then
+            if ( not SupportsClipCursor() ) then
             self:Hide();
             else
             self.type = CONTROLTYPE_CHECKBOX;
@@ -2175,14 +2184,14 @@
 
         <FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
           <Anchors>
-            <Anchor point="TOPLEFT" x="18" y="-174" />
+            <Anchor point="TOPLEFT" x="18" y="-224" />
           </Anchors>
         </FontString>
 
         <Texture parentKey="ColorblindFiltersSeparator">
           <Size x="600" y="1"/>
           <Anchors>
-            <Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-190"/>
+            <Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-220"/>
           </Anchors>
           <Color r="0.25" g="0.25" b="0.25"/>
         </Texture>
@@ -2191,7 +2200,7 @@
     <Frames>
       <CheckButton name="$parentMovePad" parentKey="MovePad" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="-8" />
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="0" />
         </Anchors>
         <Scripts>
           <OnLoad>
@@ -2208,7 +2217,7 @@
             end
             BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
             self:RegisterEvent("VARIABLES_LOADED");
-            if (IsKioskModeEnabled()) then
+            if (Kiosk.IsEnabled()) then
             self:RegisterEvent("PLAYER_ENTERING_WORLD");
             end
           </OnLoad>
@@ -2233,13 +2242,65 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
-      <CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "overrideScreenFlash"
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT" x="90" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MOTION_SICKNESS_DROPDOWN">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentShakeIntensityDropdown" parentKey="ShakeIntensityDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="TOPRIGHT" x="90" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ADJUST_MOTION_SICKNESS_SHAKE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-8"/>
-            </Offset>
-          </Anchor>
+          <Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT" x="0" y="-70" />
         </Anchors>
         <Scripts>
           <OnLoad>
@@ -2255,7 +2316,7 @@
       <Frame parentKey="ColorblindFilterExamples">
         <Size x="580" y="280" />
         <Anchors>
-          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-16" />
+          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-40" />
         </Anchors>
         <Layers>
           <Layer level="ARTWORK">

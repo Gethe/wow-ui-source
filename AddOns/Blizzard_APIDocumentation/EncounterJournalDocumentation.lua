@@ -35,6 +35,35 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "GetLootInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemInfo", Type = "EncounterJournalItemInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLootInfoByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "encounterIndex", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "itemInfo", Type = "EncounterJournalItemInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSectionIconFlags",
 			Type = "Function",
 			Documentation = { "Represents the icon indices for this EJ section.  An icon index can be used to arrive at texture coordinates for specific encounter types, e.g.: EncounterJournal_SetFlagIcon" },
@@ -61,6 +90,15 @@ local EncounterJournal =
 			Returns =
 			{
 				{ Name = "info", Type = "EncounterJournalSectionInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSlotFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "filter", Type = "ItemSlotFilterType", Nilable = false },
 			},
 		},
 		{
@@ -92,6 +130,10 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "ResetSlotFilter",
+			Type = "Function",
+		},
+		{
 			Name = "SetPreviewMythicPlusLevel",
 			Type = "Function",
 
@@ -107,6 +149,15 @@ local EncounterJournal =
 			Arguments =
 			{
 				{ Name = "tier", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSlotFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterSlot", Type = "ItemSlotFilterType", Nilable = false },
 			},
 		},
 	},
@@ -136,6 +187,32 @@ local EncounterJournal =
 	Tables =
 	{
 		{
+			Name = "ItemSlotFilterType",
+			Type = "Enumeration",
+			NumValues = 16,
+			MinValue = 0,
+			MaxValue = 15,
+			Fields =
+			{
+				{ Name = "Head", Type = "ItemSlotFilterType", EnumValue = 0 },
+				{ Name = "Neck", Type = "ItemSlotFilterType", EnumValue = 1 },
+				{ Name = "Shoulder", Type = "ItemSlotFilterType", EnumValue = 2 },
+				{ Name = "Cloak", Type = "ItemSlotFilterType", EnumValue = 3 },
+				{ Name = "Chest", Type = "ItemSlotFilterType", EnumValue = 4 },
+				{ Name = "Wrist", Type = "ItemSlotFilterType", EnumValue = 5 },
+				{ Name = "Hand", Type = "ItemSlotFilterType", EnumValue = 6 },
+				{ Name = "Waist", Type = "ItemSlotFilterType", EnumValue = 7 },
+				{ Name = "Legs", Type = "ItemSlotFilterType", EnumValue = 8 },
+				{ Name = "Feet", Type = "ItemSlotFilterType", EnumValue = 9 },
+				{ Name = "MainHand", Type = "ItemSlotFilterType", EnumValue = 10 },
+				{ Name = "OffHand", Type = "ItemSlotFilterType", EnumValue = 11 },
+				{ Name = "Finger", Type = "ItemSlotFilterType", EnumValue = 12 },
+				{ Name = "Trinket", Type = "ItemSlotFilterType", EnumValue = 13 },
+				{ Name = "Other", Type = "ItemSlotFilterType", EnumValue = 14 },
+				{ Name = "NoFilter", Type = "ItemSlotFilterType", EnumValue = 15 },
+			},
+		},
+		{
 			Name = "DungeonEntranceMapInfo",
 			Type = "Structure",
 			Fields =
@@ -146,6 +223,24 @@ local EncounterJournal =
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "journalInstanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "EncounterJournalItemInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "encounterID", Type = "number", Nilable = true },
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "itemQuality", Type = "string", Nilable = true },
+				{ Name = "filterType", Type = "ItemSlotFilterType", Nilable = true },
+				{ Name = "icon", Type = "number", Nilable = true },
+				{ Name = "slot", Type = "string", Nilable = true },
+				{ Name = "armorType", Type = "string", Nilable = true },
+				{ Name = "link", Type = "string", Nilable = true },
+				{ Name = "handError", Type = "bool", Nilable = true },
+				{ Name = "weaponTypeError", Type = "bool", Nilable = true },
 			},
 		},
 		{

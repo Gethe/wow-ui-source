@@ -19,7 +19,7 @@ function MainMenuBarMixin:OnLoad()
 
 	CreateFrame("FRAME", "StatusTrackingBarManager", self, "StatusTrackingBarManagerTemplate");
 
-	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+	MAX_PLAYER_LEVEL = GetMaxLevelForPlayerExpansion();
 
 	self.state = "player";
 	MainMenuBarArtFrame.PageNumber:SetText(GetActionBarPage());
@@ -66,17 +66,9 @@ function MainMenuBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarArtFrame.PageNumber:SetText(GetActionBarPage());
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
-		local showTokenFrame, showTokenFrameHonor = GetCVarBool("showTokenFrame"), GetCVarBool("showTokenFrameHonor");
-		if ( not showTokenFrame or not showTokenFrameHonor ) then
-			local name, isHeader, isExpanded, isUnused, isWatched, count, icon;
-			local hasNormalTokens;
-			for index=1, GetCurrencyListSize() do
-				name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
-				if ( (not isHeader) and count and (count > 0) ) then
-					hasNormalTokens = true;
-				end
-			end
-			if ( (not showTokenFrame) and (hasNormalTokens) ) then
+		local showTokenFrame = GetCVarBool("showTokenFrame");
+		if ( not showTokenFrame ) then
+			if ( C_CurrencyInfo.GetCurrencyListSize() > 0 ) then
 				SetCVar("showTokenFrame", 1);
 				if ( not CharacterFrame:IsVisible() ) then
 					MicroButtonPulse(CharacterMicroButton, 60);
@@ -84,17 +76,12 @@ function MainMenuBarMixin:OnEvent(event, ...)
 				if ( not TokenFrame:IsVisible() ) then
 					SetButtonPulse(CharacterFrameTab3, 60, 1);
 				end
-			end
-
-			if ( hasNormalTokens or showTokenFrame or showTokenFrameHonor ) then
-				TokenFrame_LoadUI();
 				TokenFrame_Update();
 				BackpackTokenFrame_Update();
 			else
 				CharacterFrameTab3:Hide();
 			end
 		else
-			TokenFrame_LoadUI();
 			TokenFrame_Update();
 			BackpackTokenFrame_Update();
 		end
@@ -362,4 +349,16 @@ function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
 
 	local isLargeSize = rightMultiBarShowing;
 	StatusTrackingBarManager:SetBarSize(isLargeSize);
+end
+
+function MainMenuBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
+	local artFrameBG = self.ArtFrame.Background;
+	local microBar = self.MicroButtonAndBagsBar;
+	artFrameBG.QuickKeybindBottomShadow:SetShown(showEffects);
+	local useLargeBackground = artFrameBG.BackgroundLarge:IsShown();
+	artFrameBG.QuickKeybindGlowSmall:SetShown(not useLargeBackground and showEffects);
+	artFrameBG.QuickKeybindGlowLarge:SetShown(useLargeBackground and showEffects);
+	microBar.QuickKeybindsMicroBagBarGlow:SetShown(showEffects);
+	local useRightShadow = MultiBarRight:IsShown();
+	artFrameBG.QuickKeybindRightShadow:SetShown(useRightShadow and showEffects);
 end

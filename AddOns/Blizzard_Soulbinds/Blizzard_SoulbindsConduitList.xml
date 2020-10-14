@@ -1,0 +1,380 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SoulbindsConduitList.lua"/>
+
+	<Texture name="ConduitButtonGlow" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="add" virtual="true">
+		<Size x="240" y="68"/>
+		<Anchors>
+			<Anchor point="LEFT" x="-10"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="2.1" order="1" smoothing="IN"/>
+			</AnimationGroup>
+		</Animations>
+	</Texture>
+	
+	<Button name="ConduitListConduitButtonTemplate" mixin="ConduitListConduitButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
+		<Size x="234" y="41"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture atlas="heartofazeroth-list-item-highlight" parentArray="Hovers" hidden="true" alphaMode="ADD"/>
+			</Layer>
+			
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="PendingBackground" atlas="heartofazeroth-list-item-selected" hidden="true" alphaMode="ADD"/>
+			</Layer>
+			
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture atlas="Soulbinds_Collection_Conduit_Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon2" parentArray="Hovers" hidden="true" alphaMode="ADD" alpha=".3">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="IconDark" alpha=".8">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture atlas="Soulbinds_Collection_Conduit_Border_Glass" parentArray="Hovers" hidden="true" alphaMode="ADD" alpha=".3">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconGlassOverlay" atlas="Soulbinds_Collection_Conduit_Border_Glass" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" atlas="Soulbinds_Collection_Conduit_Border" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconOverlay2" atlas="Soulbinds_Collection_Conduit_Border" parentArray="Hovers" hidden="true" alphaMode="ADD" alpha=".3">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="IconOverlayDark" atlas="Soulbinds_Collection_Conduit_Border" hidden="true" alpha=".5">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ConduitName" inherits="SystemFont_Shadow_Med1" justifyH="LEFT">
+					<Size y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="10"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SpecName" inherits="SystemFont_Shadow_Small" justifyH="LEFT">
+					<Size y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.ConduitName" y="15"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+				<MaskTexture atlas="Soulbinds_Collection_Conduit_Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="Icon2"/>
+						<MaskedTexture childKey="IconDark"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="Pending" atlas="Soulbinds_Collection_Conduit_Pending" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="ConduitListSectionTemplate" parentArray="Sections" inherits="ResizeLayoutFrame" mixin="ConduitListSectionMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="Spacer">
+				<Size x="1" y="5"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="CategoryButton" mixin="ConduitListCategoryButtonMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Size x="216" y="23"/>
+				<Frames>
+					<Size x="216" y="23"/>
+					<Frame parentKey="Container" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture atlas="Soulbinds_Collection_CategoryHeader" useAtlasSize="true"/>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="2">
+								<Texture atlas="Soulbinds_Collection_CategoryHeader" parentArray="Hovers" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+							<Layer>
+								<Texture parentKey="ExpandableIcon">
+									<Anchors>
+										<Anchor point="LEFT" x="5"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Name" inherits="SystemFont_Shadow_Med1" text="Category" justifyH="LEFT">
+									<Size x="150" y="50"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ExpandableIcon" x="5" y="1"/>
+									</Anchors>
+									<Color r="1.0" g=".674" b=".627"/>
+								</FontString>
+								<Texture parentKey="ConduitIcon">
+									<Size x="23" y="24"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Name" x="1" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Container" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryButton" relativePoint="BOTTOMLEFT" y="-5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.CategoryButton" relativePoint="BOTTOMRIGHT" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Spacer">
+				<Size x="1" y="5"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Container" relativePoint="BOTTOM"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ConduitScrollBarButtonScripts" mixin="ScrollBarButtonScriptsMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ConduitListTemplate" mixin="ConduitListMixin" virtual="true">
+		<Size x="260"/>
+		<Frames>
+			<Frame parentKey="ScrollBar" inherits="ScrollBarTemplate" frameStrata="HIGH">
+				<Size x="10" y="553"/>
+				<KeyValues>
+					<KeyValue key="stepRepeatTime" value=".1" type="number"/>
+					<KeyValue key="stepRepeatDelay" value=".5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-39"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Track" useParentLevel="true" enableMouse="true">
+						<Size x="10"/>
+						<Layers>
+							<Layer>
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Background" useAtlasSize="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<ScrollBarButton parentKey="Decrease" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
+						<KeyValues>
+							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+						</KeyValues>
+						<Size x="20" y="17"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+						</Layers>
+					</ScrollBarButton>
+					<ScrollBarButton parentKey="Increase" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
+						<KeyValues>
+							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+						</KeyValues>
+						<Size x="20" y="17"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+						</Layers>
+					</ScrollBarButton>
+					<ScrollBarButton parentKey="Thumb" inherits="ConduitScrollBarButtonScripts" enableMouse="true">
+						<Size x="16" y="100"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3"/>
+							</Layer>
+						</Layers>
+					</ScrollBarButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="ScrollBox" inherits="ScrollBoxTemplate" frameStrata="MEDIUM">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="LEFT" x="-10"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollTarget" inherits="VerticalLayoutFrame" frameStrata="MEDIUM">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
+								<KeyValues>
+									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Potency" type="global"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
+								<KeyValues>
+									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Endurance" type="global"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
+								<KeyValues>
+									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Finesse" type="global"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="BottomShadowContainer" frameStrata="HIGH">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<Texture parentKey="BottomShadow" atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Clip" clipChildren="true" frameStrata="DIALOG">
+				<Frames>
+					<ModelScene parentKey="ModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
+						<Size x="450" y="650"/>
+					</ModelScene>
+					<Frame parentKey="Effects" frameStrata="HIGH">
+						<Size x="1" y="1"/>
+						<Layers>
+							<Layer level="DIALOG">
+								<Texture parentArray="Glows" inherits="ConduitButtonGlow"/>
+								<Texture parentArray="Glows" inherits="ConduitButtonGlow"/>
+								<Texture parentArray="Glows" inherits="ConduitButtonGlow"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

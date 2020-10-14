@@ -7,8 +7,47 @@
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 	</Button>
+
+	<Button name="PVPMatchResultsCurrencyRewardTemplate" mixin="PVPMatchResultsCurrencyRewardMixin" virtual="true">
+		<Size x="36" y="36"/>
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="-2"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Ring" atlas="honorsystem-bar-rewardborder-circle" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
 	
-	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" frameStrata="DIALOG" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" frameStrata="HIGH" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="1024" y="620"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -29,6 +68,10 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-40" y="-30"/>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -238,7 +281,15 @@
 											<Anchor point="TOPLEFT" relativeKey="$parent.header" relativePoint="BOTTOMLEFT" y="-8"/>
 										</Anchors>
 										<Frames>
-											<Button parentKey="button" inherits="PVPHonorRewardTemplate">
+											<Button parentKey="button" inherits="PVPMatchResultsCurrencyRewardTemplate">
+												<KeyValues>
+													<KeyValue key="currencyID" value="1792" type="number"/>
+												</KeyValues>
+												<Anchors>
+													<Anchor point="LEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="legacyButton" inherits="PVPHonorRewardTemplate">
 												<Anchors>
 													<Anchor point="LEFT"/>
 												</Anchors>
@@ -260,7 +311,18 @@
 											<Anchor point="LEFT" relativeKey="$parent.honor" relativePoint="RIGHT" x="10"/>
 										</Anchors>
 										<Frames>
-											<Button parentKey="button" inherits="PVPConquestRewardButton">
+											<Button parentKey="button" inherits="PVPMatchResultsCurrencyRewardTemplate">
+												<KeyValues>
+													<KeyValue key="currencyID" value="1602" type="number"/>
+												</KeyValues>
+												<Anchors>
+													<Anchor point="LEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="legacyButton" inherits="PVPConquestRewardButton">
+												<KeyValues>
+													<KeyValue key="currencyID" value="1602" type="number"/>
+												</KeyValues>
 												<Anchors>
 													<Anchor point="LEFT"/>
 												</Anchors>

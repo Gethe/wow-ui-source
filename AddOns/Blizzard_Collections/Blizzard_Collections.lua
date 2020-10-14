@@ -11,7 +11,7 @@ function CollectionsJournal_GetTab(self)
 end
 
 local function ShouldShowHeirloomTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or IsKioskModeEnabled() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or Kiosk.IsEnabled() then
 		return false;
 	end
 
@@ -23,7 +23,7 @@ local function ShouldShowHeirloomTabHelpTip()
 end
 
 local function ShouldShowWardrobeTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) or IsKioskModeEnabled() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) or Kiosk.IsEnabled() then
 		return false;
 	end
 
@@ -102,7 +102,7 @@ end
 
 function CollectionsJournal_OnShow(self)
 	HideUIPanel(WardrobeFrame);
-	CollectionsMicroButtonAlert:Hide();
+	MainMenuMicroButton_HideAlert(CollectionsMicroButton);
 	MicroButtonPulseStop(CollectionsMicroButton);
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);

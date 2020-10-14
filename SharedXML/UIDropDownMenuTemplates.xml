@@ -1,0 +1,378 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Include file="UIDropDownMenuTemplates.lua"/>
+	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true"/>
+
+	<Button name="ColorSwatchTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture name="$parentSwatchBg" parentKey="SwatchBg" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="InnerBorder" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Color" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow inherit="prepend">
+				PixelUtil.SetSize(self.SwatchBg, 14, 14);
+				PixelUtil.SetSize(self.InnerBorder, 12, 12);
+				PixelUtil.SetSize(self.Color, 10, 10);
+			</OnShow>
+		</Scripts>
+	</Button>
+
+	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
+		<Size x="100" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentHighlight" parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentCheck" file="Interface\Common\UI-DropDownRadioChecks">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentUnCheck" file="Interface\Common\UI-DropDownRadioChecks">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentColorSwatch" inherits="ColorSwatchTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" x="-6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CloseMenus();
+						UIDropDownMenuButton_OpenColorPicker(self:GetParent());
+					</OnClick>
+					<OnEnter>
+						CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
+						_G[self:GetName().."SwatchBg"]:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave>
+						_G[self:GetName().."SwatchBg"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<DropDownToggleButton name="$parentExpandArrow" mixin="DropDownExpandArrowMixin" hidden="true" motionScriptsWhileDisabled="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter"/>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
+			</DropDownToggleButton>
+			<Button name="$parentInvisibleButton" hidden="true" parentKey="invisibleButton">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="RIGHT" relativeTo="$parentColorSwatch" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter function="UIDropDownMenuButtonInvisibleButton_OnEnter"/>
+					<OnLeave function="UIDropDownMenuButtonInvisibleButton_OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+			</OnLoad>
+			<OnClick>
+				UIDropDownMenuButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter function="UIDropDownMenuButton_OnEnter"/>
+			<OnLeave function="UIDropDownMenuButton_OnLeave"/>
+			<OnEnable>
+				self.invisibleButton:Hide();
+			</OnEnable>
+			<OnDisable>
+				self.invisibleButton:Show();
+			</OnDisable>
+		</Scripts>
+		<ButtonText name="$parentNormalText">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset x="-5" y="0"/>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmallLeft"/>
+		<HighlightFont style="GameFontHighlightSmallLeft"/>
+		<DisabledFont style="GameFontDisableSmallLeft"/>
+	</Button>
+	<Button name="UIDropDownListTemplate" hidden="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<Frames>
+			<Frame name="$parentBackdrop" parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+			<Frame name="$parentMenuBackdrop" setAllPoints="true" inherits="TooltipBackdropTemplate"/>
+			<Button name="$parentButton1" inherits="UIDropDownMenuButtonTemplate" id="1"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				self:Hide();
+			</OnClick>
+			<OnUpdate>
+				UIDropDownMenu_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				UIDropDownMenu_OnShow(self);
+			</OnShow>
+			<OnHide>
+				UIDropDownMenu_OnHide(self);
+			</OnHide>
+		</Scripts>
+	</Button>
+
+	<DropDownToggleButton name="UIDropDownMenuButtonScriptTemplate" mixin="DropDownMenuButtonMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</DropDownToggleButton>
+
+	<Frame name="UIDropDownMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentLeft" parentKey="Left" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="25" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="115" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" parentKey="Right" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="25" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Right">
+							<Offset>
+								<AbsDimension x="-43" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="30" y="2"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropDownToggleButton parentKey="Button" name="$parentButton" inherits="UIDropDownMenuButtonScriptTemplate" motionScriptsWhileDisabled="true" >
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Right">
+						<Offset>
+							<AbsDimension x="-16" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture name="$parentDisabledTexture" parentKey="DisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</DisabledTexture>
+				<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</HighlightTexture>
+			</DropDownToggleButton>
+		</Frames>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LargeUIDropDownMenuTemplate" virtual="true">
+		<Frames>
+			<DropDownToggleButton parentKey="Button" mixin="LargeDropDownMenuButtonMixin" inherits="UIDropDownMenuButtonScriptTemplate" motionScriptsWhileDisabled="true">
+				<Size x="27" y="26"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="2"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-ui-dropdown-arrow-up" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture" atlas="auctionhouse-ui-dropdown-arrow-down" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture parentKey="DisabledTexture" atlas="auctionhouse-ui-dropdown-arrow-disabled" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</DisabledTexture>
+				<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size x="33" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.NormalTexture" relativePoint="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+			</DropDownToggleButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" atlas="auctionhouse-ui-dropdown-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="auctionhouse-ui-dropdown-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="auctionhouse-ui-dropdown-middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="NumberFont_Small" wordwrap="false" justifyH="RIGHT">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Button" relativePoint="LEFT" x="-4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

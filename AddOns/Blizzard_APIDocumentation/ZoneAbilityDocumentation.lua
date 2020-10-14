@@ -2,9 +2,19 @@ local ZoneAbility =
 {
 	Name = "ZoneAbility",
 	Type = "System",
+	Namespace = "C_ZoneAbility",
 
 	Functions =
 	{
+		{
+			Name = "GetActiveAbilities",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "zoneAbilities", Type = "table", InnerType = "ZoneAbilityInfo", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -14,18 +24,15 @@ local ZoneAbility =
 	Tables =
 	{
 		{
-			Name = "ZoneAbilityType",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
+			Name = "ZoneAbilityInfo",
+			Type = "Structure",
 			Fields =
 			{
-				{ Name = "Garrison", Type = "ZoneAbilityType", EnumValue = 0 },
-				{ Name = "OrderHall", Type = "ZoneAbilityType", EnumValue = 1 },
-				{ Name = "Argus", Type = "ZoneAbilityType", EnumValue = 2 },
-				{ Name = "WarEffort", Type = "ZoneAbilityType", EnumValue = 3 },
-				{ Name = "Visions", Type = "ZoneAbilityType", EnumValue = 4 },
+				{ Name = "zoneAbilityID", Type = "number", Nilable = false },
+				{ Name = "uiPriority", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "tutorialText", Type = "string", Nilable = true },
 			},
 		},
 	},

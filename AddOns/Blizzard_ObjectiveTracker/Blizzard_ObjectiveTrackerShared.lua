@@ -147,13 +147,11 @@ end
 
 function QuestObjectiveFindGroup_OnClick(self)
 	local isFromGreenEyeButton = true;
-	--We only want green eye button groups to display the create a group button if there are already groups there. 
+	--We only want green eye button groups to display the create a group button if there are already groups there.
 	LFGListUtil_FindQuestGroup(self.questID, isFromGreenEyeButton);
 end
 
-local defaultInitialAnchorOffsets = { 0, 0 };
-
-function QuestObjectiveSetupBlockButton_AddRightButton(block, button, initialAnchorOffsets)
+function QuestObjectiveSetupBlockButton_AddRightButton(block, button, buttonOffsetsTag)
 	if block.rightButton == button then
 		-- TODO: Fix for real, some event causes the findGroup button to get added twice (could happen for any button)
 		-- so it doesn't need to be reanchored another time
@@ -162,19 +160,16 @@ function QuestObjectiveSetupBlockButton_AddRightButton(block, button, initialAnc
 
 	button:ClearAllPoints();
 
-	local paddingBetweenButtons = block.module.paddingBetweenButtons or 0;
-
 	if block.rightButton then
-		button:SetPoint("RIGHT", block.rightButton, "LEFT", -paddingBetweenButtons, 0);
+		button:SetPoint("RIGHT", block.rightButton, "LEFT", -ObjectiveTracker_GetPaddingBetweenButtons(block), 0);
 	else
-		initialAnchorOffsets = initialAnchorOffsets or defaultInitialAnchorOffsets;
-		button:SetPoint("TOPRIGHT", block, initialAnchorOffsets[1], initialAnchorOffsets[2]);
+		button:SetPoint("TOPRIGHT", block, ObjectiveTracker_GetButtonOffsets(block, buttonOffsetsTag));
 	end
 
 	button:Show();
 
 	block.rightButton = button;
-	block.lineWidth = block.lineWidth - button:GetWidth() - paddingBetweenButtons;
+	block.lineWidth = block.lineWidth - button:GetWidth() - ObjectiveTracker_GetPaddingBetweenButtons(block);
 end
 
 function QuestObjectiveSetupBlockButton_FindGroup(block, questID)
@@ -191,7 +186,7 @@ function QuestObjectiveSetupBlockButton_FindGroup(block, questID)
 			block.groupFinderButton = groupFinderButton;
 		end
 
-		QuestObjectiveSetupBlockButton_AddRightButton(block, groupFinderButton, block.module.buttonOffsets.groupFinder);
+		QuestObjectiveSetupBlockButton_AddRightButton(block, groupFinderButton, "groupFinder");
 	else
 		QuestObjectiveReleaseBlockButton_FindGroup(block);
 	end
@@ -209,7 +204,11 @@ function QuestObjectiveReleaseBlockButton_FindGroup(block)
 end
 
 function QuestObjectiveSetupBlockButton_Item(block, questLogIndex, isQuestComplete)
-	local _, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	local item, showItemWhenComplete, _;
+	if questLogIndex then
+		_, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	end
+
 	local shouldShowItem = item and (not isQuestComplete or showItemWhenComplete);
 
 	if shouldShowItem then
@@ -220,7 +219,7 @@ function QuestObjectiveSetupBlockButton_Item(block, questLogIndex, isQuestComple
 		end
 
 		QuestObjectiveItem_Initialize(itemButton, questLogIndex);
-		QuestObjectiveSetupBlockButton_AddRightButton(block, itemButton, block.module.buttonOffsets.useItem);
+		QuestObjectiveSetupBlockButton_AddRightButton(block, itemButton, "useItem");
 	else
 		QuestObjectiveReleaseBlockButton_Item(block);
 	end

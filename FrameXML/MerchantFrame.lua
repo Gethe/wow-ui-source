@@ -11,6 +11,7 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL");
+	self:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
 	-- Tab Handling code
@@ -54,6 +55,8 @@ function MerchantFrame_OnEvent(self, event, ...)
 		StaticPopup_Show("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL", item);
 	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		MerchantFrame_UpdateItemQualityBorders(self);
+	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
+		MerchantFrame_Update();
 	end
 end
 
@@ -204,7 +207,7 @@ function MerchantFrame_UpdateMerchantInfo()
 		local merchantMoney = _G["MerchantItem"..i.."MoneyFrame"];
 		local merchantAltCurrency = _G["MerchantItem"..i.."AltCurrencyFrame"];
 		if ( index <= numMerchantItems ) then
-			name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID = GetMerchantItemInfo(index);
+			name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID, spellID = GetMerchantItemInfo(index);
 
 			if(currencyID) then
 				name, texture, numAvailable = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numAvailable, name, texture, nil); 
@@ -692,7 +695,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		end
 	end
 	
-	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) or (not itemsString and not itemButton.price) then
+	if ( not usingCurrency and maxQuality <= Enum.ItemQuality.Uncommon and not itemButton.showNonrefundablePrompt) or (not itemsString and not itemButton.price) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -861,7 +864,10 @@ function MerchantFrame_UpdateCurrencies()
 				tokenButton:SetScript("OnEnter", MerchantFrame_ShowCurrencyTooltip);
 			end
 
-			local name, count, icon = GetCurrencyInfo(currencies[index]);
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencies[index]);
+			local name = currencyInfo.name;
+			local count = currencyInfo.quantity;
+			local icon = currencyInfo.iconFileID;
 			if ( name and name ~= "" ) then
 				tokenButton.icon:SetTexture(icon);
 				tokenButton.currencyID = currencies[index];
@@ -903,7 +909,7 @@ end
 
 function MerchantFrame_UpdateCurrencyButton(tokenButton)
 	if ( tokenButton.currencyID ) then
-		local name, count = GetCurrencyInfo(tokenButton.currencyID);
+		local count = C_CurrencyInfo.GetCurrencyInfo(tokenButton.currencyID).quantity;
 		local displayCount = count;
 		local displayWidth = 50;
 		if ( count > 99999 ) then

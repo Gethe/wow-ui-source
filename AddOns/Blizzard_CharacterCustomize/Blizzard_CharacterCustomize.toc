@@ -1,0 +1,6 @@
+## Title: Blizzard_CharacterCustomize
+## Author: Blizzard Entertainment
+## AllowLoad: Both
+## LoadOnDemand: 1
+Blizzard_CharacterCustomize.lua
+Blizzard_CharacterCustomize.xml

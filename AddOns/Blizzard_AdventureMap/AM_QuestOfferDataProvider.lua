@@ -15,7 +15,7 @@ function AdventureMap_QuestOfferDataProviderMixin:OnEvent(event, ...)
 		self:RefreshAllData();
 	elseif event == "QUEST_ACCEPTED" then
 		if self:GetMap():IsVisible() then
-			local questIndex, questID = ...;
+			local questID = ...;
 			for pin in self:GetMap():EnumeratePinsByTemplate("AdventureMap_QuestOfferPinTemplate") do
 				if pin.questID == questID then
 					self:OnQuestAccepted(pin);
@@ -54,7 +54,7 @@ function AdventureMap_QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 local function DetermineAtlas(isTrivial, frequency, isLegendary)
-	if frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY then
+	if frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly then
 		return "AdventureMapIcon-DailyQuest";
 	end
 

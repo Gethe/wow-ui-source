@@ -62,57 +62,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="LFGBonusRepButton" motionScriptsWhileDisabled="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentBackground" relativePoint="LEFT" x="-2" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Glow" file="Interface\Common\ReputationStar-Glow" alphaMode="ADD">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<NormalTexture file="Interface\Common\ReputationStar">
-					<TexCoords left="0.5" right="1" top="0" bottom="0.5"/>
-				</NormalTexture>
-				<HighlightTexture file="Interface\Common\ReputationStar">
-					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
-				</HighlightTexture>
-				<CheckedTexture file="Interface\Common\ReputationStar">
-					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-				</CheckedTexture>
-				<Animations>
-					<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
-						<Alpha childKey="Glow" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
-						<Scripts>
-							<OnPlay>
-								self.loopsRemaining = 5;
-							</OnPlay>
-							<OnLoop>
-								self.loopsRemaining = self.loopsRemaining - 1;
-								if ( self.loopsRemaining == 0 ) then
-									self:Stop();
-									self:GetParent().Glow:Hide();
-								end
-							</OnLoop>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(LFG_BONUS_REPUTATION_TOOLTIP, nil, nil, nil, nil, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnClick function="ReputationBarLFGBonusRepButton_OnClick"/>
-				</Scripts>
-			</CheckButton>
 			<Button name="$parentExpandOrCollapseButton">
 				<Size x="13" y="13"/>
 				<Anchors>
@@ -557,34 +506,6 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, true);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="ReputationDetailLFGBonusReputationCheckBox" inherits="OptionsSmallCheckButtonTemplate">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ReputationDetailMainScreenCheckBox" relativePoint="BOTTOMLEFT" x="0" y="3"/>
-						</Anchors>
-						<HitRectInsets>
-							<AbsInset left="0" right="0" top="0" bottom="0"/>
-						</HitRectInsets>
-						<Scripts>
-							<OnLoad>
-								_G[self:GetName().."Text"]:SetText(SET_FACTION_LFG_BONUS_REP);
-							</OnLoad>
-							<OnClick>
-								if ( self:GetChecked() ) then
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-									ReputationBar_SetLFBonus(self.factionID)
-								else
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-									ReputationBar_SetLFBonus(0)
-								end
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(SET_FACTION_LFG_BONUS_REP_TOOLTIP, nil, nil, nil, nil, true);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

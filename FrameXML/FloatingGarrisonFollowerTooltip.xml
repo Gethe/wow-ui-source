@@ -161,9 +161,6 @@ UI.xsd">
 				</Anchors>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad function="GarrisonFollowerTooltip_OnLoad"/>
-		</Scripts>
 	</Frame>
 	<Frame name="GarrisonFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="GarrisonFollowerTooltipContentsTemplate,TooltipBorderedFrameTemplate">
 	</Frame>
@@ -238,9 +235,6 @@ UI.xsd">
 				</Anchors>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad function="GarrisonFollowerTooltip_OnLoad"/>
-		</Scripts>
 	</Frame>
 
 	<Frame name="FloatingGarrisonFollowerTooltip" inherits="GarrisonFollowerTooltipTemplate" movable="true" toplevel="true">

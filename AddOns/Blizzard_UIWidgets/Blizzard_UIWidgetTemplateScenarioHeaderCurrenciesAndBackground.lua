@@ -9,14 +9,26 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Sce
 
 UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-local frameTextureKitRegions = {
-	["Frame"] = "%s-frame",
+local textureKitInfo =
+{
+	["jailerstower-scenario"] = {currencyContainerOffsets = {xOffset = 32, yOffset = -46}},
 }
 
 local DEFAULT_CURRENCY_FRAME_WIDTH = 95;
+local DEFAULT_CURRENCY_CONTAINER_OFFSETS = {xOffset = 19, yOffset = -46};
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+
+	local waitingForStageUpdate = UIWidgetBaseScenarioHeaderTemplateMixin.Setup(self, widgetInfo, widgetContainer);
+	if waitingForStageUpdate then
+		return;
+	end
+
+	local textureKitInfo = textureKitInfo[widgetInfo.frameTextureKit];
+	local currencyContainerOffsets = textureKitInfo and textureKitInfo.currencyContainerOffsets or DEFAULT_CURRENCY_CONTAINER_OFFSETS;
+	self.CurrencyContainer:SetPoint("TOPLEFT", self, "TOPLEFT", currencyContainerOffsets.xOffset, currencyContainerOffsets.yOffset);
+
 	self.currencyPool:ReleaseAll();
 
 	local previousCurrencyFrame;
@@ -50,11 +62,6 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 
 	self.CurrencyContainer:SetWidth(totalCurrencyWidth);
 	self.CurrencyContainer:SetHeight(totalCurrencyHeight);
-
-	SetupTextureKits(widgetInfo.frameTextureKitID, self, frameTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-
-	self:SetWidth(self.Frame:GetWidth());
-	self:SetHeight(self.Frame:GetHeight());
 end
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:CustomDebugSetup(color)

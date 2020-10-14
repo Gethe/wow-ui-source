@@ -54,6 +54,7 @@ end
 
 function AlternatePowerBar_OnUpdate(self, elapsed)
 	AlternatePowerBar_UpdateValue(self);
+	TextStatusBar_UpdateTextString(self);
 end
 
 function AlternatePowerBar_UpdateValue(self)

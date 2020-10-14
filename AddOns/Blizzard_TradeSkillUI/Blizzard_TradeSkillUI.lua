@@ -10,9 +10,17 @@ TradeSkillTypeColor = {
 	nodifficulty	= { r = 0.96, g = 0.96, b = 0.96,	font = GameFontNormalLeftGrey };
 };
 
-TradeSkillUIMixin = {};
+TradeSkillUIMixin = CreateFromMixins(CallbackRegistryMixin);
+
+TradeSkillUIMixin:GenerateCallbackEvents(
+{
+	"OptionalReagentUpdated",
+	"OptionalReagentListClosed",
+});
 
 function TradeSkillUIMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+	
 	self.RecipeList:SetRecipeChangedCallback(function(...) self:OnRecipeChanged(...) end);
 
 	self:RegisterEvent("TRADE_SKILL_DATA_SOURCE_CHANGING");
@@ -147,6 +155,7 @@ end
 
 function TradeSkillUIMixin:OnRecipeChanged(recipeID)
 	self.DetailsFrame:SetSelectedRecipeID(self.RecipeList:GetSelectedRecipeID());
+	self.OptionalReagentList:Hide();
 end
 
 function TradeSkillUIMixin:SelectRecipe(recipeID)
@@ -214,7 +223,7 @@ local function GenerateRankText(skillLineName, skillLineRank, skillLineMaxRank, 
 
 	if GameLimitedMode_IsActive() then
 		local _, _, profCap = GetRestrictedAccountData();
-		if skillLineRank >= profCap then
+		if skillLineRank >= profCap and profCap > 0 then
 			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
 		end
 	end
@@ -446,4 +455,47 @@ function TradeSkillUIMixin:OnRetrievingFrameUpdate(elapsed)
 		self.RetrievingFrame.dotCount = dotCount;
 		self.RetrievingFrame.timeUntilNextDotSecs = self.RetrievingFrame.timeUntilNextDotSecs + TIME_BETWEEN_DOTS_SEC;
 	end
+end
+
+function TradeSkillUIMixin:IsRecipeLearned()
+	return self.DetailsFrame:IsRecipeLearned();
+end
+
+function TradeSkillUIMixin:GetOptionalReagent(optionalReagentIndex)
+	return self.DetailsFrame:GetOptionalReagent(optionalReagentIndex);
+end
+
+function TradeSkillUIMixin:GetOptionalReagentBonusText(itemID, slot)
+	return self.DetailsFrame:GetOptionalReagentBonusText(itemID, slot);
+end
+
+function TradeSkillUIMixin:HasOptionalReagent(itemID)
+	return self.DetailsFrame:HasOptionalReagent(itemID);
+end
+
+function TradeSkillUIMixin:OpenOptionalReagentSelection(selectedRecipeID, optionalReagentIndex)
+	local function ReagentSelectedCallback(option)
+		self.DetailsFrame:SetOptionalReagent(optionalReagentIndex, option);
+		self:CloseOptionalReagentSelection();
+	end
+
+	self.OptionalReagentList:OpenSelection(selectedRecipeID, optionalReagentIndex, ReagentSelectedCallback);
+	self.OptionalReagentList:Show();
+end
+
+function TradeSkillUIMixin:IsOptionalReagentListShown()
+	return self.OptionalReagentList:IsShown();
+end
+
+function TradeSkillUIMixin:GetOptionalReagentListTutorialLine()
+	return self.OptionalReagentList:GetTutorialLine();
+end
+
+function TradeSkillUIMixin:GetSelectedOptionalReagentIndex()
+	return self:IsOptionalReagentListShown() and self.OptionalReagentList:GetOptionalReagentIndex() or nil;
+end
+
+function TradeSkillUIMixin:CloseOptionalReagentSelection(selectedRecipeID, optionalReagentIndex)
+	self.OptionalReagentList:ClearSelection(selectedRecipeID, optionalReagentIndex)
+	self.OptionalReagentList:Hide();
 end

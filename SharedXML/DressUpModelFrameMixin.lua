@@ -115,3 +115,47 @@ function SideDressUpModelFrameFrameMixin:OnHide()
 	UpdateUIPanelPositions();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
+
+TransmogAndMountDressupFrameMixin = {};
+
+function TransmogAndMountDressupFrameMixin:OnLoad()
+	local checkButton = self.ShowMountCheckButton; 
+	checkButton.text:SetFontObject("GameFontNormal");
+	checkButton.text:ClearAllPoints(); 
+	checkButton.text:SetPoint("RIGHT", checkButton, "LEFT"); 
+	checkButton.text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT);
+end 
+
+function TransmogAndMountDressupFrameMixin:OnHide()
+	self.mountID = nil; 
+	self.transmogSetID = nil; 
+	self.removeWeapons = nil; 
+	self.ShowMountCheckButton:SetChecked(false);
+end 
+
+function TransmogAndMountDressupFrameMixin:RemoveWeapons()
+	local playerActor = self.ModelScene:GetPlayerActor();
+
+	if (not playerActor) then
+		return true;
+	end
+
+	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+	local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+	playerActor:UndressSlot(mainHandSlotID);
+	playerActor:UndressSlot(offHandSlotID);
+end 
+
+function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
+	if(self.ShowMountCheckButton:GetChecked()) then
+		DressUpMount(self.mountID);
+	else
+		local sources = C_TransmogSets.GetAllSourceIDs(self.transmogSetID);
+		DressUpTransmogSet(sources);
+	
+		if(self.removeWeapons) then 
+			self:RemoveWeapons(); 
+		end 
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end

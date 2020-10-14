@@ -12,7 +12,6 @@ function PixelUtil.GetNearestPixelSize(uiUnitSize, layoutScale, minPixels)
 
 	local uiUnitFactor = PixelUtil.GetPixelToUIUnitFactor();
 	local numPixels = Round((uiUnitSize * layoutScale) / uiUnitFactor);
-	local rawNumPixels = numPixels;
 	if minPixels then
 		if uiUnitSize < 0.0 then
 			if numPixels > -minPixels then
@@ -42,8 +41,8 @@ function PixelUtil.SetSize(region, width, height, minWidthPixels, minHeightPixel
 end
 
 function PixelUtil.SetPoint(region, point, relativeTo, relativePoint, offsetX, offsetY, minOffsetXPixels, minOffsetYPixels)
-	region:SetPoint(point, relativeTo, relativePoint, 
-		PixelUtil.GetNearestPixelSize(offsetX, region:GetEffectiveScale(), minOffsetXPixels), 
+	region:SetPoint(point, relativeTo, relativePoint,
+		PixelUtil.GetNearestPixelSize(offsetX, region:GetEffectiveScale(), minOffsetXPixels),
 		PixelUtil.GetNearestPixelSize(offsetY, region:GetEffectiveScale(), minOffsetYPixels)
 	);
 end

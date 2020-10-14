@@ -218,8 +218,8 @@ function OverrideActionBar_Setup(skin, barIndex)
 	
 	for k=1,MAX_ALT_SPELLBUTTONS do
 		local button = OverrideActionBar["SpellButton"..k];
-		ActionButton_UpdateAction(button);
-		ActionButton_Update(button);
+		button:UpdateAction();
+		button:Update();
 		local _, spellID = GetActionInfo(button.action);
 		if spellID and spellID > 0 then
 			button:SetAttribute("statehidden", false);

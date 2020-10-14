@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeCraftingTooltip.lua"/>
+
+	<GameTooltip name="RunforgeFrameTooltipTemplate" mixin="RunforgeFrameTooltipMixin" inherits="GameTooltipTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="PulseOverlay" inherits="TooltipBorderBackdropTemplate" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="10">
+						<Texture parentKey="TopOverlay">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</GameTooltip>
+</Ui>

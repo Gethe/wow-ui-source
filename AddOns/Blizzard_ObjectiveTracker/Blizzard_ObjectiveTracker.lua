@@ -71,12 +71,13 @@ blockTemplate:		template for the blocks - a quest would be a single block
 blockType:			type of object
 lineTemplate:		template for the lines - a quest objective would be a single line (even if it wordwraps); only FRAME supported
 lineSpacing:		spacing between lines; for the first line it'll be the distance from the top of its block
-blockOffsetX:		offset from the left edge of the blocksframe
-blockOffsetY:		offset from the block above
+blockOffsetX:		offset from the left edge of the blocksframe 	\__These are both added to a table indexed by blockTemplate.
+blockOffsetY:		offset from the block above 					/
 fromHeaderOffsetY:	offset from the header for the first block, if there's a header; used instead of blockOffsetY
 fromModuleOffsetY:	offset from the previous module
-freeBlocks:			table of free blocks; a module needs it own if not using default block template
-usedBlocks:			table of used blocks; a module should always have its own
+poolCollection:		pool of (potentially) multiple frame types for use in a module
+usedBlocks:			table of used blocks; a module should always have its own, this table uses template type so that GetBlock(id) ALWAYS returns
+					the correct frame that already exists (for animation purposes)
 freelines:			table of free lines; a module needs it own if not using default line template
 					there's no table of used lines, that's per block
 updateReasonModule:	the update for this module alone
@@ -91,33 +92,39 @@ oldContentsHeight:	the previous height on the last update
 hasSkippedBlocks:	if the module couldn't display all its blocks because of not enough space
 --]]
 
-DEFAULT_OBJECTIVE_TRACKER_MODULE = {
-	blockTemplate = "ObjectiveTrackerBlockTemplate",
-	blockType = "Frame",
-	lineTemplate = "ObjectiveTrackerLineTemplate",
-	lineSpacing = 2,
-	freeBlocks = { },
-	usedBlocks = { },
-	freeLines = { },
-	blockOffsetX = 0,
-	blockOffsetY = -6,
-	fromHeaderOffsetY = -10,
-	fromModuleOffsetY = -10,
-	contentsHeight = 0,
-	contentsAnimHeight = 0,
-	oldContentsHeight = 0,
-	hasSkippedBlocks = false,
-	usedTimerBars = { },
-	freeTimerBars = { },
-	usedProgressBars = { },
-	freeProgressBars = { },
-	updateReasonModule = 0,
-	updateReasonEvents = 0,
-};
+DEFAULT_OBJECTIVE_TRACKER_MODULE = {};
 
-function ObjectiveTracker_GetModuleInfoTable()
-	local info = {};
-	setmetatable(info, { __index = DEFAULT_OBJECTIVE_TRACKER_MODULE; });
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName, defaultTemplate)
+	self.friendlyName = friendlyName or "UnnamedTrackerModule";
+	self.blockTemplate = defaultTemplate or "ObjectiveTrackerBlockTemplate";
+	self.blockType = "Frame";
+	self.lineTemplate = "ObjectiveTrackerLineTemplate";
+	self.lineSpacing = 2;
+	self.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH;
+	self.poolCollection = CreateFramePoolCollection();
+	self.usedBlocks = { };
+	self.freeLines = { };
+	self.fromHeaderOffsetY = -10;
+	self.fromModuleOffsetY = -10;
+	self.contentsHeight = 0;
+	self.contentsAnimHeight = 0;
+	self.oldContentsHeight = 0;
+	self.hasSkippedBlocks = false;
+	self.usedTimerBars = { };
+	self.freeTimerBars = { };
+	self.usedProgressBars = { };
+	self.freeProgressBars = { };
+	self.updateReasonModule = 0;
+	self.updateReasonEvents = 0;
+
+	self.BlocksFrame = ObjectiveTrackerFrame.BlocksFrame;
+
+	DEFAULT_OBJECTIVE_TRACKER_MODULE.AddBlockOffset(self, self.blockTemplate, 0, -6);
+end
+
+function ObjectiveTracker_GetModuleInfoTable(friendlyName, baseModule, defaultTemplate)
+	local info = CreateFromMixins(baseModule or DEFAULT_OBJECTIVE_TRACKER_MODULE);
+	info:OnLoad(friendlyName, defaultTemplate);
 	return info;
 end
 
@@ -128,9 +135,14 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:BeginLayout(isStaticReanchor)
 	self.oldContentsHeight = self.contentsHeight;
 	self.contentsHeight = 0;
 	self.contentsAnimHeight = 0;
+	self.potentialBlocksAddedThisLayout = 0; -- this isn't a ref count, this is the total number of blocks that the module tried to add.
 	-- if it's not a static reanchor, reset whether we've skipped blocks
 	if ( not isStaticReanchor ) then
 		self.hasSkippedBlocks = false;
+
+		if not self:UsesSharedHeader() and self.Header then
+			self.Header:Hide();
+		end
 	end
 	self:MarkBlocksUnused();
 end
@@ -151,29 +163,48 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetHeader(block, text, animateReason)
 	self.Header = block;
 end
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id)
-	-- first try to return existing block
-	local block = self.usedBlocks[id];
-	if ( not block ) then
-		local numFreeBlocks = #self.freeBlocks;
-		if ( numFreeBlocks > 0 ) then
-			-- get a free block
-			block = self.freeBlocks[numFreeBlocks];
-			tremove(self.freeBlocks, numFreeBlocks);
-		else
-			-- create a new block
-			block = CreateFrame(self.blockType, nil, self.BlocksFrame or ObjectiveTrackerFrame.BlocksFrame, self.blockTemplate);
-			block.lines = { };
-		end
-		self.usedBlocks[id] = block;
-		block.module = self;
-		block.id = id;
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetSharedHeader(block)
+	self.Header = block;
+	self.usesSharedHeader = true;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:UsesSharedHeader()
+	return self.usesSharedHeader;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id, overrideType, overrideTemplate)
+	local blockType = overrideType or self.blockType;
+	local blockTemplate = overrideTemplate or self.blockTemplate;
+
+	if not self.usedBlocks[blockTemplate] then
+		self.usedBlocks[blockTemplate] = {};
 	end
+
+	-- first try to return existing block
+	local block = self.usedBlocks[blockTemplate][id];
+
+	if not block then
+		local pool = self.poolCollection:GetOrCreatePool(blockType, self.BlocksFrame or ObjectiveTrackerFrame.BlocksFrame, blockTemplate);
+
+		local isNewBlock = nil;
+		block, isNewBlock = pool:Acquire(blockTemplate);
+
+		if isNewBlock then
+			block.blockTemplate = blockTemplate; -- stored so we can use it to free from the lookup later
+			block.lines = {};
+		end
+
+		self.usedBlocks[blockTemplate][id] = block;
+		block.id = id;
+		block.module = self;
+	end
+
 	block.used = true;
 	block.height = 0;
 	block.currentLine = nil;
+
 	-- prep lines
-	if ( block.lines ) then
+	if block.lines then
 		for objectiveKey, line in pairs(block.lines) do
 			line.used = nil;
 		end
@@ -182,13 +213,24 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id)
 	return block;
 end
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id)
-	return self.usedBlocks[id];
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id, overrideTemplate)
+	local template = overrideTemplate or self.blockTemplate;
+	assert(template);
+	assert(self.usedBlocks)
+
+	local blocks = self.usedBlocks[template];
+	if blocks then
+		return blocks[id];
+	end
+
+	return nil;
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:MarkBlocksUnused()
-	for _, block in pairs(self.usedBlocks) do
-		block.used = nil;
+	for blockTemplate, blockTable in pairs(self.usedBlocks) do
+		for blockID, block in pairs(blockTable) do
+			block.used = nil;
+		end
 	end
 end
 
@@ -198,10 +240,11 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeBlock(block)
 		self:FreeLine(block, line);
 	end
 	block.lines = { };
+
 	-- free the block
-	tinsert(self.freeBlocks, block);
-	self.usedBlocks[block.id] = nil;
-	block:Hide();
+	self.usedBlocks[block.blockTemplate][block.id] = nil;
+	self.poolCollection:Release(block);
+
 	-- callback
 	if ( self.OnFreeBlock ) then
 		self:OnFreeBlock(block);
@@ -209,11 +252,33 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeBlock(block)
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeUnusedBlocks()
-	for questID, block in pairs(self.usedBlocks) do
-		if ( not block.used ) then
-			self:FreeBlock(block);
+	for blockTemplate, blockTable in pairs(self.usedBlocks) do
+		for blockID, block in pairs(blockTable) do
+			if not block.used then
+				self:FreeBlock(block);
+			end
 		end
 	end
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlockCount()
+	local count = 0;
+	local modules = self:GetRelatedModules();
+	for index, module in ipairs(modules) do
+		count = count + (module.potentialBlocksAddedThisLayout or 0);
+	end
+
+	return count;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetActiveBlocks(blockTemplate)
+	-- By default use the module's preferred block type.
+	blockTemplate = blockTemplate or self.blockTemplate;
+	if not self.usedBlocks[blockTemplate] then
+		self.usedBlocks[blockTemplate] = {};
+	end
+
+	return self.usedBlocks[blockTemplate];
 end
 
 -- ***** LINES
@@ -520,6 +585,92 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
 	end
 end
 
+local function ObjectiveTracker_SetModulesCollapsed(collapsed, modules)
+	for index, module in ipairs(modules) do
+		module.collapsed = collapsed;
+	end
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetRelatedModules()
+	-- Default implementation, most single/shared modules can be found this way
+	-- NOTE: This actually inserts self as well, since the header matches, that's fine.
+	local modules = {};
+	local header = self.Header;
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		if module.Header == header then
+			table.insert(modules, module);
+		end
+	end
+
+	return modules;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetCollapsed(collapsed)
+	ObjectiveTracker_SetModulesCollapsed(collapsed, self:GetRelatedModules());
+
+	if self.Header and self.Header.MinimizeButton then
+		self.Header.MinimizeButton:SetCollapsed(collapsed);
+	end
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:IsCollapsed()
+	return self.collapsed;
+end
+
+-- *****************************************************************************************************
+-- ***** MODULE/BLOCK CUSTOMIZATION
+-- *****************************************************************************************************
+
+local function ObjectiveTracker_AddCustomizationData(module, customizationKey, template, data)
+	if not module[customizationKey] then
+		module[customizationKey] = {};
+	end
+
+	module[customizationKey][template] = data;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddButtonOffsets(template, offsets)
+	ObjectiveTracker_AddCustomizationData(self, "buttonOffsets", template, offsets);
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddBlockOffset(template, x, y)
+	ObjectiveTracker_AddCustomizationData(self, "blockOffset", template, { x or 0, y or 0 });
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddPaddingBetweenButtons(template, padding)
+	ObjectiveTracker_AddCustomizationData(self, "paddingBetweenButtons", template, padding);
+end
+
+local function GetBlockTemplate(block)
+	return block.blockTemplate or block.module.blockTemplate;
+end
+
+function ObjectiveTracker_GetButtonOffsets(block, offsetTag)
+	local offsets = block.module.buttonOffsets;
+	if offsets then
+		return unpack(offsets[GetBlockTemplate(block)][offsetTag]);
+	end
+
+	return 0, 0;
+end
+
+function ObjectiveTracker_GetBlockOffset(block)
+	local offset = block.module.blockOffset;
+	if offset then
+		return unpack(offset[GetBlockTemplate(block)]);
+	end
+
+	return 0, 0;
+end
+
+function ObjectiveTracker_GetPaddingBetweenButtons(block)
+	local padding = block.module.paddingBetweenButtons;
+	if padding then
+		return padding[GetBlockTemplate(block)];
+	end
+
+	return 0;
+end
 
 -- *****************************************************************************************************
 -- ***** BLOCK HEADER HANDLERS
@@ -608,17 +759,17 @@ end
 -- *****************************************************************************************************
 
 function ObjectiveTracker_OnLoad(self)
+	DEFAULT_OBJECTIVE_TRACKER_MODULE.OnLoad(self, "DEFAULT_OBJECTIVE_TRACKER_MODULE");
+
 	-- create a line so we can get some measurements
-	local line = CreateFrame("Frame", nil, self, DEFAULT_OBJECTIVE_TRACKER_MODULE.lineTemplate);
+	local line = CreateFrame("Frame", nil, self, self.lineTemplate);
 	line.Text:SetText("Double line|ntest");
 	-- reuse it
-	tinsert(DEFAULT_OBJECTIVE_TRACKER_MODULE.freeLines, line);
+	tinsert(self.freeLines, line);
 	-- get measurements
 	OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT = math.ceil(line.Text:GetStringHeight());
 	OBJECTIVE_TRACKER_DASH_WIDTH = line.Dash:GetWidth();
 	OBJECTIVE_TRACKER_TEXT_WIDTH = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - 12;
-	DEFAULT_OBJECTIVE_TRACKER_MODULE.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH;
-	DEFAULT_OBJECTIVE_TRACKER_MODULE.BlocksFrame = self.BlocksFrame;
 	line.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
 
 	local frameLevel = self.BlocksFrame:GetFrameLevel();
@@ -633,15 +784,15 @@ end
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
 						UI_WIDGET_TRACKER_MODULE,
-						AUTO_QUEST_POPUP_TRACKER_MODULE,
 						BONUS_OBJECTIVE_TRACKER_MODULE,
 						WORLD_QUEST_TRACKER_MODULE,
+						CAMPAIGN_QUEST_TRACKER_MODULE,
 						QUEST_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
-								AUTO_QUEST_POPUP_TRACKER_MODULE,
+								CAMPAIGN_QUEST_TRACKER_MODULE,
 								QUEST_TRACKER_MODULE,
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
@@ -653,7 +804,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:RegisterEvent("QUEST_ACCEPTED");
-	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 	self:RegisterEvent("SCENARIO_SPELL_UPDATE");
@@ -669,14 +820,16 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("WAYPOINT_UPDATE");
 	self.watchMoneyReasons = 0;
 
-	local function OnFocusedQuestChanged(event, ...)
-		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
-	end
+	WorldMapFrame:RegisterCallback("SetFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
+	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
 
-	WorldMapFrame:RegisterCallback("SetFocusedQuestID", OnFocusedQuestChanged);
-	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", OnFocusedQuestChanged);
+	QuestSuperTracking_Initialize();
 
 	self.initialized = true;
+end
+
+function ObjectiveTracker_OnFocusedQuestChanged(self)
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 end
 
 function ObjectiveTracker_OnEvent(self, event, ...)
@@ -685,17 +838,17 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		AchievementObjectiveTracker_OnAchievementUpdate(...);
 	elseif ( event == "QUEST_ACCEPTED" ) then
-		local questLogIndex, questID = ...;
-		if ( not IsQuestBounty(questID) ) then
-			if ( IsQuestTask(questID) ) then
+		local questID = ...;
+		if ( not C_QuestLog.IsQuestBounty(questID) ) then
+			if ( C_QuestLog.IsQuestTask(questID) ) then
 				if ( QuestUtils_IsQuestWorldQuest(questID) ) then
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED, questID);
 				else
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
 				end
 			else
-				if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
-					AddQuestWatchForQuestID(questID);
+				if ( AUTO_QUEST_WATCH == "1" and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES ) then
+					C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 					QuestSuperTracking_OnQuestTracked(questID);
 				end
 			end
@@ -710,7 +863,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
 		local questID, added = ...;
 		if ( added ) then
-			if ( not IsQuestBounty(questID) or IsQuestComplete(questID) ) then
+			if ( not C_QuestLog.IsQuestBounty(questID) or C_QuestLog.IsComplete(questID) ) then
 				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, questID);
 			end
 		else
@@ -719,9 +872,9 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_POI_UPDATE" ) then
 		QuestPOIUpdateIcons();
 		if ( GetCVar("trackQuestSorting") == "proximity" ) then
-			SortQuestWatches();
+			C_QuestLog.SortQuestWatches();
 		end
-		-- SortQuestWatches might not trigger a QUEST_WATCH_LIST_CHANGED due to unique signals, so force an update
+		-- C_QuestLog.SortQuestWatches might not trigger a QUEST_WATCH_LIST_CHANGED due to unique signals, so force an update
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 		QuestSuperTracking_OnPOIUpdate();
 	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
@@ -730,12 +883,12 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS);
 	elseif ( event == "SCENARIO_BONUS_VISIBILITY_UPDATE") then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
-	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
+	elseif ( event == "SUPER_TRACKING_CHANGED" ) then
 		ObjectiveTracker_UpdateSuperTrackedQuest(self);
 	elseif ( event == "ZONE_CHANGED" ) then
 		local lastMapID = C_Map.GetBestMapForUnit("player");
 		if ( lastMapID ~= self.lastMapID ) then
-			SortQuestWatches();
+			C_QuestLog.SortQuestWatches();
 			self.lastMapID = lastMapID;
 		end
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
@@ -749,10 +902,10 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
-		SortQuestWatches();
+		C_QuestLog.SortQuestWatches();
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID, xp, money = ...;
-		if ( IsQuestTask(questID) and not IsQuestBounty(questID) ) then
+		if ( C_QuestLog.IsQuestTask(questID) and not C_QuestLog.IsQuestBounty(questID) ) then
 			BonusObjectiveTracker_OnTaskCompleted(...);
 		end
 	elseif ( event == "PLAYER_MONEY" and self.watchMoneyReasons > 0 ) then
@@ -792,12 +945,58 @@ end
 
 function ObjectiveTrackerHeader_OnAnimFinished(self)
 	local header = self:GetParent();
-	header.animating = false;
+	header.animating = nil;
+end
+
+ObjectiveTrackerHeaderMixin = {};
+
+function ObjectiveTrackerHeaderMixin:OnLoad()
+	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
+	self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
+end
+
+function ObjectiveTrackerHeaderMixin:PlayAddAnimation()
+	self.animating = true;
+	self.HeaderOpenAnim:Restart();
 end
 
 -- *****************************************************************************************************
 -- ***** BUTTONS
 -- *****************************************************************************************************
+
+ObjectiveTrackerMinimizeButtonMixin = {};
+
+function ObjectiveTrackerMinimizeButtonMixin:OnLoad()
+	local collapsed = false;
+	self:SetAtlases(collapsed);
+end
+
+function ObjectiveTrackerMinimizeButtonMixin:SetAtlases(collapsed)
+	local normalTexture = self:GetNormalTexture();
+	local pushedTexture = self:GetPushedTexture();
+
+	if self.buttonType == "module" then
+		if collapsed then
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Expand-Section", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Expand-Section-Pressed", true);
+		else
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Collapse-Section", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Collapse-Section-Pressed", true);
+		end
+	else
+		if collapsed then
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Expand-All", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Expand-All-Pressed", true);
+		else
+			normalTexture:SetAtlas("UI-QuestTrackerButton-Collapse-All", true);
+			pushedTexture:SetAtlas("UI-QuestTrackerButton-Collapse-All-Pressed", true);
+		end
+	end
+end
+
+function ObjectiveTrackerMinimizeButtonMixin:SetCollapsed(collapsed)
+	self:SetAtlases(collapsed);
+end
 
 function ObjectiveTracker_MinimizeButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -809,19 +1008,24 @@ function ObjectiveTracker_MinimizeButton_OnClick(self)
 	ObjectiveTracker_Update();
 end
 
+function ObjectiveTracker_MinimizeModuleButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local module = self:GetParent().module;
+	module:SetCollapsed(not module:IsCollapsed());
+	ObjectiveTracker_Update(0, nil, module);
+end
+
 function ObjectiveTracker_Collapse()
 	ObjectiveTrackerFrame.collapsed = true;
 	ObjectiveTrackerFrame.BlocksFrame:Hide();
-	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 0.5);
-	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:GetPushedTexture():SetTexCoord(0.5, 1, 0, 0.5);
+	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:SetCollapsed(true);
 	ObjectiveTrackerFrame.HeaderMenu.Title:Show();
 end
 
 function ObjectiveTracker_Expand()
 	ObjectiveTrackerFrame.collapsed = nil;
 	ObjectiveTrackerFrame.BlocksFrame:Show();
-	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:GetNormalTexture():SetTexCoord(0, 0.5, 0.5, 1);
-	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:GetPushedTexture():SetTexCoord(0.5, 1, 0.5, 1);
+	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:SetCollapsed(false);
 	ObjectiveTrackerFrame.HeaderMenu.Title:Hide();
 end
 
@@ -843,7 +1047,7 @@ end
 local function AnchorBlock(block, anchorBlock, checkFit)
 	local module = block.module;
 	local blocksFrame = module.BlocksFrame;
-	local offsetY = module.blockOffsetY;
+	local offsetX, offsetY = ObjectiveTracker_GetBlockOffset(block);
 	block:ClearAllPoints();
 	if ( anchorBlock ) then
 		if ( anchorBlock.isHeader ) then
@@ -857,7 +1061,7 @@ local function AnchorBlock(block, anchorBlock, checkFit)
 			offsetY = offsetY + anchorBlock.module.fromModuleOffsetY;
 			block:SetPoint("LEFT", OBJECTIVE_TRACKER_HEADER_OFFSET_X, 0);
 		else
-			block:SetPoint("LEFT", module.blockOffsetX, 0);
+			block:SetPoint("LEFT", offsetX, 0);
 		end
 		block:SetPoint("TOP", anchorBlock, "BOTTOM", 0, offsetY);
 	else
@@ -870,7 +1074,7 @@ local function AnchorBlock(block, anchorBlock, checkFit)
 		if ( block.isHeader ) then
 			block:SetPoint("TOPLEFT", blocksFrame.ScrollContents or blocksFrame, "TOPLEFT", OBJECTIVE_TRACKER_HEADER_OFFSET_X, offsetY);
 		else
-			block:SetPoint("TOPLEFT", blocksFrame.ScrollContents or blocksFrame, "TOPLEFT", module.blockOffsetX, offsetY);
+			block:SetPoint("TOPLEFT", blocksFrame.ScrollContents or blocksFrame, "TOPLEFT", offsetX, offsetY);
 		end
 	end
 	return offsetY;
@@ -880,6 +1084,18 @@ local function InternalAddBlock(block)
 	local module = block.module or DEFAULT_OBJECTIVE_TRACKER_MODULE;
 	local blocksFrame = module.BlocksFrame;
 	block.nextBlock = nil;
+
+	-- This doesn't take fit into account, it just assumes that there's content to be added, so the potential count
+	-- should increase (this is related to showing the collapse buttons on the headers, see Reorder)
+	-- NOTE: Never count headers as added blocks
+	if not block.isHeader then
+		module.potentialBlocksAddedThisLayout = (module.potentialBlocksAddedThisLayout or 0) + 1;
+	end
+
+	-- Only allow headers to be added if the module is collapsed.
+	if not block.isHeader and module:IsCollapsed() then
+		return false;
+	end
 
 	local offsetY = AnchorBlock(block, blocksFrame.currentBlock, true);
 	if ( not offsetY ) then
@@ -902,32 +1118,34 @@ local function InternalAddBlock(block)
 	return true;
 end
 
-function ObjectiveTracker_AddBlock(block, forceAdd)
+function ObjectiveTracker_AddHeader(header, isStaticReanchor)
+	if InternalAddBlock(header) then
+		header.added = true;
+		header:Show();
+		return true;
+	end
+
+	return false;
+end
+
+function ObjectiveTracker_AddBlock(block)
 	local header = block.module.Header;
 	local blockAdded = false;
+
 	-- if there's no header or it's been added, just add the block...
-	if ( not header or header.added ) then
+	if not header or header.added then
 		blockAdded = InternalAddBlock(block);
-	elseif ( ObjectiveTracker_CanFitBlock(block, header) ) then
+	elseif ObjectiveTracker_CanFitBlock(block, header) then
 		-- try to add header and maybe block
-		if ( InternalAddBlock(header) ) then
-			header.added = true;
-			if ( not header:IsShown() ) then
-				header:Show();
-				if ( header.animateReason and band(OBJECTIVE_TRACKER_UPDATE_REASON, header.animateReason ) > 0 and not header.animating ) then
-					-- animate header
-					header.animating = true;
-					header.HeaderOpenAnim:Stop();
-					header.HeaderOpenAnim:Play();
-				end
-			end
-			-- add the block
+		if ObjectiveTracker_AddHeader(header) then
 			blockAdded = InternalAddBlock(block);
 		end
 	end
-	if ( not blockAdded ) then
+
+	if not blockAdded then
 		block.module.hasSkippedBlocks = true;
 	end
+
 	return blockAdded;
 end
 
@@ -940,11 +1158,11 @@ function ObjectiveTracker_CanFitBlock(block, header)
 	elseif ( blocksFrame.currentBlock.isHeader ) then
 		offsetY = module.fromHeaderOffsetY;
 	else
-		offsetY = block.module.blockOffsetY;
+		offsetY = select(2, ObjectiveTracker_GetBlockOffset(block));
 	end
 
 	local totalHeight;
-	if ( header ) then
+	if header then
 		totalHeight = header.height - offsetY + block.height - module.fromHeaderOffsetY;
 	else
 		totalHeight = block.height - offsetY;
@@ -1023,7 +1241,22 @@ end
 
 -- ***** UPDATE
 
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchorCheckAddHeaderOnly()
+	if self:IsCollapsed() and not self.Header.added and self:GetBlockCount() > 0 then
+		ObjectiveTracker_AddHeader(self.Header, true); -- the header was marked as not being added, make sure to add it again...
+		return true;
+	end
+
+	return false;
+end
+
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
+	-- If this module is collapsed, don't process anything, it will result in the entire module being hidden, since just the header
+	-- is showing, there's nothing to update.
+	if self:StaticReanchorCheckAddHeaderOnly() then
+		return;
+	end
+
 	local block = self.firstBlock;
 	self:BeginLayout(true);
 	while ( block ) do
@@ -1046,13 +1279,50 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	self:EndLayout(true);
 end
 
+local function GetRelatedModulesForUpdate(module)
+	if module then
+		return tInvert(module:GetRelatedModules())
+	end
+
+	return nil;
+end
+
+local function IsRelatedModuleForUpdate(module, moduleLookup)
+	if moduleLookup then
+		return moduleLookup[module] ~= nil;
+	end
+
+	return false;
+end
+
+local function ObjectiveTracker_GetVisibleHeaders()
+	local headers = {};
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		local header = module.Header;
+		if header.added and header:IsVisible() then
+			headers[header] = true;
+		end
+	end
+
+	return headers;
+end
+
+local function ObjectiveTracker_AnimateHeaders(previouslyVisibleHeaders)
+	local currentHeaders = ObjectiveTracker_GetVisibleHeaders();
+	for header, isVisible in pairs(currentHeaders) do
+		if isVisible and not previouslyVisibleHeaders[header] then
+			header:PlayAddAnimation();
+		end
+	end
+end
+
 function ObjectiveTracker_UpdateSuperTrackedQuest(self)
-	local questID = GetSuperTrackedQuestID();
+	local questID = C_SuperTrack.GetSuperTrackedQuestID();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
 	QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
 end
 
-function ObjectiveTracker_Update(reason, id)
+function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 	local tracker = ObjectiveTrackerFrame;
 	if tracker.isUpdating then
 		-- Trying to update while we're already updating, try again next frame
@@ -1080,18 +1350,24 @@ function ObjectiveTracker_Update(reason, id)
 	tracker.BlocksFrame.currentBlock = nil;
 	tracker.BlocksFrame.contentsHeight = 0;
 
+	-- Gather existing headers, only newly added ones will animate
+	local currentHeaders = ObjectiveTracker_GetVisibleHeaders();
+
 	-- mark headers unused
-	for i = 1, #tracker.MODULES do
-		if ( tracker.MODULES[i].Header ) then
-			tracker.MODULES[i].Header.added = nil;
+	for index, module in ipairs(tracker.MODULES) do
+		if module.Header then
+			module.Header.added = nil;
 		end
 	end
+
+	-- These can be nil, it's fine, trust the API.
+	local relatedModules = GetRelatedModulesForUpdate(moduleWhoseCollapseChanged);
 
 	-- run module updates
 	local gotMoreRoomThisPass = false;
 	for i = 1, #tracker.MODULES do
 		local module = tracker.MODULES[i];
-		if ( band(OBJECTIVE_TRACKER_UPDATE_REASON, module.updateReasonModule + module.updateReasonEvents ) > 0 ) then
+		if IsRelatedModuleForUpdate(moduleWhoseCollapseChanged, relatedModules) or (band(OBJECTIVE_TRACKER_UPDATE_REASON, module.updateReasonModule + module.updateReasonEvents) > 0) then
 			-- run a full update on this module
 			module:Update();
 			-- check if it's now taking up less space, using subtraction because of floats
@@ -1110,9 +1386,10 @@ function ObjectiveTracker_Update(reason, id)
 			end
 		end
 	end
-	ObjectiveTracker_ReorderModules();
 
+	ObjectiveTracker_ReorderModules();
 	ObjectiveTracker_UpdatePOIs();
+	ObjectiveTracker_AnimateHeaders(currentHeaders);
 
 	-- hide unused headers
 	for i = 1, #tracker.MODULES do
@@ -1151,29 +1428,61 @@ function ObjectiveTracker_WatchMoney(watchMoney, reason)
 	end
 end
 
-function ObjectiveTracker_ReorderModules()
-	local modules = ObjectiveTrackerFrame.MODULES;
-	local modulesUIOrder = ObjectiveTrackerFrame.MODULES_UI_ORDER;
-	local detachIndex = nil;
-	local anchorBlock = nil;
-	for i = 1, #modules do
-		if ( not detachIndex ) then
-			if ( modules[i] ~= modulesUIOrder[i] ) then
-				detachIndex = i;
-			else
-				anchorBlock = modules[i].lastBlock or anchorBlock;
-			end
-		end
-		if ( detachIndex ) then
-			if ( modules[i].topBlock ) then
-				modules[i].topBlock:ClearAllPoints();
+local function ObjectiveTracker_CountVisibleModules()
+	local count = 0;
+	local seen = {};
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES) do
+		local header = module.Header;
+		if header and not seen[header] then
+			seen[header] = true;
+
+			if header:IsVisible() and module:GetBlockCount() > 0 then -- testing out the whole active block count concept....
+				count = count + 1;
 			end
 		end
 	end
-	for i = detachIndex, #modulesUIOrder do
-		if ( modulesUIOrder[i].topBlock ) then
-			AnchorBlock(modulesUIOrder[i].topBlock, anchorBlock);
-			anchorBlock = modulesUIOrder[i].lastBlock;
+
+	return count;
+end
+
+function ObjectiveTracker_ReorderModules()
+	local visibleCount = ObjectiveTracker_CountVisibleModules();
+	local showAllModuleMinimizeButtons = visibleCount > 1;
+	local detachIndex = nil;
+	local anchorBlock = nil;
+
+	local header = ObjectiveTrackerFrame.HeaderMenu;
+	header:ClearAllPoints();
+
+	for index, module in ipairs(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
+		local topBlock = module.topBlock;
+		if topBlock then
+			if module:UsesSharedHeader() then
+				AnchorBlock(topBlock, module.Header);
+
+				local containingModule = module.Header.module;
+				if containingModule and containingModule.firstBlock then
+					containingModule.firstBlock:ClearAllPoints();
+					AnchorBlock(containingModule.firstBlock, module.lastBlock);
+				end
+			else
+				AnchorBlock(topBlock, anchorBlock);
+				anchorBlock = module.lastBlock;
+			end
+
+			if header then
+				header:SetPoint("RIGHT", module.Header, "RIGHT", 0, 0);
+				header = nil;
+			end
+
+			-- Side-step annoying "uncollapse" issue by allowing a collapsed module to continue showing its minimize button even if
+			-- it's the only remaining visible module
+			local shouldShowThisModuleMinimizeButton = showAllModuleMinimizeButtons or module:IsCollapsed();
+
+			module.Header.MinimizeButton:SetShown(shouldShowThisModuleMinimizeButton);
+			if shouldShowThisModuleMinimizeButton then
+				module.Header.MinimizeButton:SetPoint("RIGHT", module.Header, "RIGHT", -21, 0);
+			end
 		end
 	end
 end
@@ -1192,13 +1501,14 @@ function ObjectiveTracker_UpdatePOIs()
 		return;
 	end
 
+	local numPOINumeric = 0; -- This is tied to the QuestPOI system, it must be maintained across tracker instances.
 	for i, module in ipairs(ObjectiveTrackerFrame.MODULES) do
 		if module.UpdatePOIs then
-			module:UpdatePOIs();
+			numPOINumeric = module:UpdatePOIs(numPOINumeric);
 		end
 	end
 
-	QuestPOI_SelectButtonByQuestID(blocksFrame, GetSuperTrackedQuestID());
+	QuestPOI_SelectButtonByQuestID(blocksFrame, C_SuperTrack.GetSuperTrackedQuestID());
 	QuestPOI_HideUnusedButtons(blocksFrame);
 end
 

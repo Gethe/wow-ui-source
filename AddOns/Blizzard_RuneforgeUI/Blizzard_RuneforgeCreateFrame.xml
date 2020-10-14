@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeCreateFrame.lua"/>
+	
+	<Frame name="RuneforgeCreateFrameTemplate" mixin="RuneforgeCreateFrameMixin" virtual="true">
+		<Size x="350" y="74"/>
+		<Frames>
+			<Frame parentKey="Cost" inherits="CurrencyDisplayTemplate">
+				<KeyValues>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="CraftItemButton" inherits="UIPanelButtonTemplate" mixin="RuneforgeCraftItemButtonMixin" motionScriptsWhileDisabled="true">
+				<Size x="172" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Cost" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer>
+				<FontString parentKey="CraftError" font="GameFontNormal" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.CraftItemButton" relativePoint="BOTTOM" x="0" y="-12"/>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

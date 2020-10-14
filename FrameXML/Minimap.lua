@@ -10,10 +10,13 @@ TOWNSFOLK = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
 GARRISON_ALERT_CONTEXT_MISSION = {
-	[LE_FOLLOWER_TYPE_GARRISON_6_0] = 2,
-	[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4,
-	[LE_FOLLOWER_TYPE_GARRISON_7_0] = 5,
-	[LE_FOLLOWER_TYPE_GARRISON_8_0] = 6,
+	[Enum.GarrisonFollowerType.FollowerType_6_0] = 2,
+	[Enum.GarrisonFollowerType.FollowerType_6_2] = 4,
+	[Enum.GarrisonFollowerType.FollowerType_7_0] = 5,
+	[Enum.GarrisonFollowerType.FollowerType_8_0] = 6,
+
+	-- TODO:: Replace with the correct flash.
+	[Enum.GarrisonFollowerType.FollowerType_9_0] = 6,
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
@@ -27,6 +30,7 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function ToggleMinimap()
@@ -113,6 +117,17 @@ function Minimap_OnEvent(self, event, ...)
 			MinimapZoomIn:Disable();
 		elseif ( zoom == 0 ) then
 			MinimapZoomOut:Disable();
+		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		if C_Minimap.ShouldUseHybridMinimap() then
+			if not HybridMinimap then
+				UIParentLoadAddOn("Blizzard_HybridMinimap");
+			end
+			HybridMinimap:Enable();
+		else
+			if HybridMinimap then
+				HybridMinimap:Disable();
+			end
 		end
 	end
 end
@@ -221,25 +236,10 @@ function ToggleMiniMapRotation()
 end
 
 function MinimapMailFrameUpdate()
-	local sender1,sender2,sender3 = GetLatestThreeSenders();
-	local toolText;
-
-	if( sender1 or sender2 or sender3 ) then
-		toolText = HAVE_MAIL_FROM;
-	else
-		toolText = HAVE_MAIL;
-	end
-
-	if( sender1 ) then
-		toolText = toolText.."\n"..sender1;
-	end
-	if( sender2 ) then
-		toolText = toolText.."\n"..sender2;
-	end
-	if( sender3 ) then
-		toolText = toolText.."\n"..sender3;
-	end
-	GameTooltip:SetText(toolText);
+	local senders = { GetLatestThreeSenders() };
+	local headerText = #senders >= 1 and HAVE_MAIL_FROM or HAVE_MAIL;
+	FormatUnreadMailTooltip(GameTooltip, headerText, senders);
+	GameTooltip:Show();
 end
 
 function MiniMapTracking_Update()
@@ -557,6 +557,7 @@ function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_INDOORS");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
@@ -581,9 +582,9 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 		local followerType = ...;
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[followerType]);
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_SHIPYARD_6_2]);
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[Enum.GarrisonFollowerType.FollowerType_6_2]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
-		if ( C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0 ) then
+		if ( C_Garrison.GetLandingPageGarrisonType() == Enum.GarrisonType.Type_6_0 ) then
 			GarrisonMinimapInvasion_ShowPulse(self);
 		end
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
@@ -592,6 +593,12 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 		local shipmentStarted, isTroop = ...;
 		if (shipmentStarted) then
 			GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop);
+		end
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		self.isInitialLogin = ...;
+		if self.isInitialLogin then
+			EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", GarrisonMinimap_OnCallingsUpdated, self);
+			CovenantCalling_CheckCallings();
 		end
 	end
 end
@@ -604,9 +611,52 @@ local function GetMinimapAtlases_GarrisonType8_0(faction)
 	end
 end
 
+local garrisonTypeAnchors = {
+	["default"] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 32, -118),
+	[Enum.GarrisonType.Type_9_0] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 32, -106),
+}
+
+local function GetGarrisonTypeAnchor(garrisonType)
+	return garrisonTypeAnchors[garrisonType or "default"] or garrisonTypeAnchors["default"];
+end
+
+local function ApplyGarrisonTypeAnchor(self, garrisonType)
+	local anchor = GetGarrisonTypeAnchor(garrisonType);
+	local clearAllPoints = true;
+	anchor:SetPoint(self, clearAllPoints);
+end
+
+local garrisonType9_0AtlasFormats = {
+	"shadowlands-landingbutton-%s-up",
+	"shadowlands-landingbutton-%s-down",
+	"shadowlands-landingbutton-%s-highlight",
+	"shadowlands-landingbutton-%s-glow",
+};
+
+local function GetMinimapAtlases_GarrisonType9_0(covenantData)
+	local kit = covenantData and covenantData.textureKit or "kyrian";
+	if kit then
+		local t = garrisonType9_0AtlasFormats;
+		return t[1]:format(kit), t[2]:format(kit), t[3]:format(kit), t[4]:format(kit);
+	end
+end
+
+local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow)
+	local info = C_Texture.GetAtlasInfo(up);
+	self:SetSize(info and info.width or 0, info and info.height or 0);
+	self:GetNormalTexture():SetAtlas(up, true);
+	self:GetPushedTexture():SetAtlas(down, true);
+	self:GetHighlightTexture():SetAtlas(highlight, true);
+	self.LoopingGlow:SetAtlas(glow, true);
+end
+
 function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
-	if (garrisonType == LE_GARRISON_TYPE_6_0) then
+	self.garrisonType = garrisonType;
+
+	ApplyGarrisonTypeAnchor(self, garrisonType);
+
+	if (garrisonType == Enum.GarrisonType.Type_6_0) then
 		self.faction = UnitFactionGroup("player");
 		if ( self.faction == "Horde" ) then
 			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true);
@@ -617,29 +667,31 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 		end
 		self.title = GARRISON_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP;
-	elseif (garrisonType == LE_GARRISON_TYPE_7_0) then
+	elseif (garrisonType == Enum.GarrisonType.Type_7_0) then
 		local _, className = UnitClass("player");
 		self:GetNormalTexture():SetAtlas("legionmission-landingbutton-"..className.."-up", true);
 		self:GetPushedTexture():SetAtlas("legionmission-landingbutton-"..className.."-down", true);
 		self.title = ORDER_HALL_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
-	elseif (garrisonType == LE_GARRISON_TYPE_8_0) then
+	elseif (garrisonType == Enum.GarrisonType.Type_8_0) then
 		self.faction = UnitFactionGroup("player");
-		local atlasUp, atlasDown, atlasHighlight, atlasGlow = GetMinimapAtlases_GarrisonType8_0(self.faction);
-		local info = C_Texture.GetAtlasInfo(atlasUp);
-		self:SetSize(info and info.width or 0, info and info.height or 0);
-		self:GetNormalTexture():SetAtlas(atlasUp, true);
-		self:GetPushedTexture():SetAtlas(atlasDown, true);
-		self:GetHighlightTexture():SetAtlas(atlasHighlight, true);
-		self.LoopingGlow:SetAtlas(atlasGlow, true);
-
+		SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType8_0(self.faction));
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
+	elseif (garrisonType == Enum.GarrisonType.Type_9_0) then
+		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
+		if covenantData then
+			SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType9_0(covenantData));
+		end
+
+		self.title = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE;
+		self.description = GARRISON_TYPE_9_0_LANDING_PAGE_TOOLTIP;
 	end
 end
 
-function GarrisonLandingPageMinimapButton_OnClick()
+function GarrisonLandingPageMinimapButton_OnClick(self, button)
 	GarrisonLandingPage_Toggle();
+	GarrisonMinimap_HideHelpTip(self);
 end
 
 function GarrisonLandingPage_Toggle()
@@ -723,4 +775,58 @@ function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
 	self.AlertText:SetText(text);
 	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();
+end
+
+function GarrisonMinimap_ShowCovenantCallingsNotification(self)
+	self.AlertText:SetText(COVENANT_CALLINGS_AVAILABLE);
+	GarrisonMinimap_Justify(self.AlertText);
+	self.MinimapAlertAnim:Play();
+	self.MinimapLoopPulseAnim:Play();
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS) then
+		GarrisonMinimap_SetQueuedHelpTip(self, {
+			text = FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 0,
+			useParentStrata = true,
+		});
+	end
+end
+
+function GarrisonMinimap_OnCallingsUpdated(self, callings, completedCount, availableCount)
+	if self.isInitialLogin then
+		if availableCount > 0 then
+			GarrisonMinimap_ShowCovenantCallingsNotification(self);
+		end
+
+		self.isInitialLogin = false;
+	end
+end
+
+function GarrisonMinimap_SetQueuedHelpTip(self, tipInfo)
+	self.queuedHelpTip = tipInfo;
+end
+
+function GarrisonMinimap_CheckQueuedHelpTip(self)
+	if self.queuedHelpTip then
+		local tip = self.queuedHelpTip;
+		self.queuedHelpTip = nil;
+		HelpTip:Show(self, tip);
+	end
+end
+
+function GarrisonMinimap_ClearQueuedHelpTip(self)
+	if self.queuedHelpTip and self.queuedHelpTip.text == FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS then
+		self.queuedHelpTip = nil;
+	end
+end
+
+function GarrisonMinimap_HideHelpTip(self)
+	if self.garrisonType == Enum.GarrisonType.Type_9_0 then
+		HelpTip:Acknowledge(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
+		GarrisonMinimap_ClearQueuedHelpTip(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
+	end
 end

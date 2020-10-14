@@ -1,0 +1,180 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ChromieTimeUI.lua"/>
+
+	<Button name="ChromieTimeExpansionButtonTemplate" motionScriptsWhileDisabled="true" mixin="ChromieTimeExpansionButtonMixin" virtual="true">
+		<Size x="226" y="133"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="9" y="-9"/>
+						<Anchor point="BOTTOMRIGHT" x="-9" y="9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="GameFontNormal">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="18" y="17"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CompletedCheck" atlas="common-icon-checkmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="ChromieTime-Button-Frame"/>
+		<HighlightTexture atlas="ChromieTime-Button-Highlight" useAtlasSize="true" alpha="1" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="ChromieTimeFrame" toplevel="true" mixin="ChromieTimeFrameMixin" enableMouse="true" parent="UIParent" hidden="true">
+		<Size x="1200" y="650"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="WoodenNeutralFrameTemplate" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="BackgroundTile" atlas="UI-Frame-Neutral-BackgroundTile" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Title">
+				<Size x="0" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-25"/>
+					<Anchor point="LEFT" x="30" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="UI-Frame-Neutral-TitleLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="UI-Frame-Neutral-TitleRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Middle" atlas="_UI-Frame-Neutral-TitleMiddle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER" text="CHROMIE_TIME_TITLE_TEXT">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3" y="2" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="UI-Frame-Neutral-ExitButtonBorder" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" mixin="ChromieTimeSelectButtonMixin" text="CHROMIE_TIME_SELECT_EXAPANSION_BUTTON">
+				<Size x="150" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="180" y="30" />
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="CurrentlySelectedExpansionInfoFrame" mixin="CurrentlySelectedExpansionInfoFrameMixin" hidden="false" >
+				<Size x="350" y="377"/>
+				<Anchors>
+					<Anchor point="LEFT" x="45" y="20"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="ChromieTime-Parchment" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PortraitBorder" atlas="ChromieTime-Portrait-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Portrait" atlas="ChromieTime-Portrait-Chrome">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.PortraitBorder" x="9" y="-9"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PortraitBorder" x="-9" y="9"/>
+							</Anchors>
+						</Texture>
+							<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Super_Huge" text="CHROMIE_TIME_PREVIEW_CARD_DEFAULT_TITLE">
+								<Size x="310" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Portrait" relativePoint="BOTTOM" x="0" y="-20"/>
+								</Anchors>
+								<Color r="0.2824" g="0.0157" b="0.0157"/>
+							</FontString>
+							<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med3" text="CHROMIE_TIME_PREVIEW_CARD_DEFAULT_DESCRIPTION">
+								<Size x="310" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+								<Color r="0.2824" g="0.0157" b="0.0157"/>
+							</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="OptionsFrame">
+				<Size x="700" y="500"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CurrentlySelectedExpansionInfoFrame" relativePoint="RIGHT" x="40" y="-65"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

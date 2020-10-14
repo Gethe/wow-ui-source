@@ -1,17 +1,16 @@
 ## Title: Blizzard_Commentator
-## SavedVariables: g_TeamDefinitions, g_TeamDisplaySavedVars
+## SavedVariables: CommentatorSave
 ## LoadOnDemand: 1
-
-UnitFrameTemplates.xml
-
-UnitFrame.lua
-UnitFrameLayoutData.lua
-
-TeamDisplay.xml
-
-CommentatorCooldownDisplay.lua
-CommentatorCooldownDisplay.xml
 
 FadeToBlack.xml
 CommentatorVictoryFanfare.xml
-PvPCommentator.xml
+
+Blizzard_CommentatorConstants.lua
+Blizzard_CommentatorUtil.lua
+Blizzard_CommentatorScoreboard.xml
+Blizzard_commentatorSpell.xml
+Blizzard_CommentatorSpellTray.xml
+Blizzard_CommentatorModelScene.xml
+Blizzard_CommentatorUnitFrame.xml
+Blizzard_CommentatorNamePlate.xml
+Blizzard_Commentator.xml

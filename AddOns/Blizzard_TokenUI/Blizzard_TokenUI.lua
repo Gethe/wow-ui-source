@@ -64,7 +64,7 @@ function TokenFrame_OnShow(self)
 end
 
 function TokenFrame_Update()
-	local numTokenTypes = GetCurrencyListSize();
+	local numTokenTypes = C_CurrencyInfo.GetCurrencyListSize();
 
 	if ( numTokenTypes == 0 ) then
 		CharacterFrameTab3:Hide();
@@ -85,12 +85,19 @@ function TokenFrame_Update()
 	local button, index;
 	for i=1, numButtons do
 		index = offset+i;
-		name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyListInfo(index);
 		button = buttons[i];
 		button.check:Hide();
-		if ( not name or name == "" ) then
+		if ( not currencyInfo or not currencyInfo.name or currencyInfo.name == "" ) then
 			button:Hide();
 		else
+			name = currencyInfo.name;
+			isHeader = currencyInfo.isHeader;
+			isExpanded = currencyInfo.isHeaderExpanded;
+			isUnused = currencyInfo.isTypeUnused;
+			isWatched = currencyInfo.isShowInBackpack;
+			count = currencyInfo.quantity;
+			icon = currencyInfo.iconFileID;
 			if ( isHeader ) then
 				button.categoryLeft:Show();
 				button.categoryRight:Show();
@@ -159,10 +166,10 @@ end
 
 function TokenFramePopup_CloseIfHidden()
 	-- This handles the case where you close a category with the selected token popup shown
-	local numTokenTypes = GetCurrencyListSize();
+	local numTokenTypes = C_CurrencyInfo.GetCurrencyListSize();
 	local selectedFound;
 	for i=1, numTokenTypes do
-		if ( TokenFrame.selectedToken == GetCurrencyListInfo(i) ) then
+		if ( TokenFrame.selectedToken == C_CurrencyInfo.GetCurrencyListInfo(i).name ) then
 			selectedFound = 1;
 		end
 	end
@@ -174,10 +181,11 @@ end
 function BackpackTokenFrame_Update()
 	for i=1, MAX_WATCHED_TOKENS do
 		local watchButton = BackpackTokenFrame.Tokens[i];
-		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+		local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i);
 
-		if name then
-			watchButton.icon:SetTexture(icon);
+		if currencyInfo then
+			local count = currencyInfo.quantity;
+			watchButton.icon:SetTexture(currencyInfo.iconFileID);
 
 			local currencyText = BreakUpLargeNumbers(count);
 			if strlenutf8(currencyText) > 5 then
@@ -185,7 +193,7 @@ function BackpackTokenFrame_Update()
 			end
 
 			watchButton.count:SetText(currencyText);
-			watchButton.currencyID = currencyID;
+			watchButton.currencyID = currencyInfo.currencyTypesID;
 			watchButton:Show();
 
 			BackpackTokenFrame.shouldShow = true;
@@ -234,21 +242,21 @@ end
 function TokenButton_OnClick(self)
 	if ( self.isHeader ) then
 		if ( self.isExpanded ) then
-			ExpandCurrencyList(self.index, 0);
+			C_CurrencyInfo.ExpandCurrencyList(self.index, false);
 		else
-			ExpandCurrencyList(self.index, 1);
+			C_CurrencyInfo.ExpandCurrencyList(self.index, true);
 		end
 	else
 		TokenFrame.selectedToken = self.name:GetText();
 		local linkedToChat = false;
 		if ( IsModifiedClick("CHATLINK") ) then
-			linkedToChat = HandleModifiedItemClick(GetCurrencyListLink(self.index));
+			linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self.index));
 		end
 		if ( not linkedToChat ) then
 			if ( IsModifiedClick("TOKENWATCHTOGGLE") ) then
 				TokenFrame.selectedID = self.index;
 				if ( self.isWatched ) then
-					SetCurrencyBackpack(TokenFrame.selectedID, 0);
+					C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, false);
 					self.isWatched = false;
 				else
 					-- Set an error message if trying to show too many quests
@@ -256,7 +264,7 @@ function TokenButton_OnClick(self)
 						UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
 						return;
 					end
-					SetCurrencyBackpack(TokenFrame.selectedID, 1);
+					C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, true);
 					self.isWatched = true;
 				end
 				if ( TokenFrame.selectedID == self.index ) then
@@ -287,4 +295,69 @@ end
 function TokenFrame_UpdatePopup(button)
 	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
 	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
+end
+
+InactiveCurrencyCheckBoxMixin = {};
+
+function InactiveCurrencyCheckBoxMixin:OnLoad()
+	self.Text:SetText(UNUSED);
+	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+function InactiveCurrencyCheckBoxMixin:OnClick()
+	if ( self:GetChecked() ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, true);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, false);
+	end
+	local numTokens = C_CurrencyInfo.GetCurrencyListSize();
+	for i=1, numTokens do
+		if (  C_CurrencyInfo.GetCurrencyListInfo(i).name == TokenFrame.selectedToken ) then
+			TokenFrame.selectedID = i;
+			break;
+		end
+	end
+	TokenFrame_Update();
+	TokenFramePopup_CloseIfHidden();
+	BackpackTokenFrame_Update();
+	ManageBackpackTokenFrame();
+end
+
+function InactiveCurrencyCheckBoxMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, TOKEN_MOVE_TO_UNUSED);
+	GameTooltip:Show();
+end
+
+BackpackCurrencyCheckBoxMixin = {};
+
+function BackpackCurrencyCheckBoxMixin:OnLoad()
+	self.Text:SetText(SHOW_ON_BACKPACK);
+	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+function BackpackCurrencyCheckBoxMixin:OnClick()
+	if ( self:GetChecked() ) then
+		if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
+			UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
+			self:SetChecked(false);
+			return;
+		end
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, true);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		C_CurrencyInfo.SetCurrencyBackpack(TokenFrame.selectedID, false);
+	end
+	TokenFrame_Update();
+	BackpackTokenFrame_Update();
+	ManageBackpackTokenFrame();
+end
+
+function BackpackCurrencyCheckBoxMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, TOKEN_SHOW_ON_BACKPACK);
+	GameTooltip:Show();
 end

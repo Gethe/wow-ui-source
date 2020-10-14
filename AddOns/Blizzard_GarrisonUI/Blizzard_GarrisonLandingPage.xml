@@ -93,6 +93,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="EncounterIcon" inherits="CovenantLandingPageEncounterIconTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-8"/>
+				</Anchors>
+			</Frame>
 			<Frame parentArray="Rewards" parentKey="Reward1" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" x="-6" y="-2"/>
@@ -474,11 +479,15 @@
 								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="Background">
+						<FontString parentKey="SubTitle" inherits="GameFontHighlightLarge" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Background" alpha="0.8">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="205" y="40"/>
 							</Anchors>
-							<Color r="1" g="1" b="1" a=".8"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -608,7 +617,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BORDER">
-						<FontString inherits="QuestFont_Enormous" text="GARRISON_FOLLOWERS">
+						<FontString parentKey="LandingPageHeader" inherits="QuestFont_Enormous" text="GARRISON_FOLLOWERS">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
@@ -619,6 +628,7 @@
 					<Anchor point="TOPLEFT" x="45" y="-120"/>
 				</Anchors>
 			</Frame>
+
 			<Frame parentKey="FollowerTab" mixin="GarrisonFollowerTabMixin">
 				<Size x="470" y="565"/>
 				<Anchors>
@@ -627,6 +637,7 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isLandingPage" value="true" type="boolean"/>
+					<KeyValue key="autoCombatStatsTemplate" value="CovenantStatLineLandingPageTemplate" type="string"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -711,6 +722,11 @@
 							<Anchor point="TOPLEFT" x="23" y="-10"/>
 						</Anchors>
 					</Frame>
+					<Frame parentKey="CovenantFollowerPortraitFrame" inherits="CovenantPortraitTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="23" y="-10"/>
+						</Anchors>
+					</Frame>
 					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
 						<Size x="370" y="9"/>
 						<Anchors>
@@ -743,6 +759,13 @@
 						</KeyValues>
 						<Layers>
 							<Layer level="ARTWORK">
+								<FontString parentKey="StatsLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COVENANT_MISSIONS_STATS">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="51" type="number"/>
+										<KeyValue key="topPadding" value="10" type="number"/>
+										<KeyValue key="bottomPadding" value="5" type="number"/>
+									</KeyValues>
+								</FontString>
 								<FontString parentKey="SpecializationLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="SPECIALIZATION">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="100" type="number"/>
@@ -1115,7 +1138,7 @@
 							<Anchor point="TOPLEFT" x="340" y="30"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, LE_FOLLOWER_TYPE_SHIPYARD_6_2, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
+							<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, Enum.GarrisonFollowerType.FollowerType_6_2, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
 						</Scripts>
 					</Frame>
 				</Frames>

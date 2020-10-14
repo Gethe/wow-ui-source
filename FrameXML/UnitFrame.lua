@@ -38,6 +38,10 @@ PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
 
+function GetPowerBarColor(powerType)
+	return PowerBarColor[powerType];
+end
+
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
 	This "Initialize" function registers the events to handle.

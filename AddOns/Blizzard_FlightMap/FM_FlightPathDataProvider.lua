@@ -1,8 +1,8 @@
 FlightMap_FlightPathDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-local function IsVindicaarTextureKit(textureKitPrefix)
+local function IsVindicaarTextureKit(textureKit)
 	-- TODO: remove
-	return textureKitPrefix == "FlightMaster_VindicaarArgus" or textureKitPrefix == "FlightMaster_VindicaarStygianWake" or textureKitPrefix == "FlightMaster_VindicaarMacAree";
+	return textureKit == "FlightMaster_VindicaarArgus" or textureKit == "FlightMaster_VindicaarStygianWake" or textureKit == "FlightMaster_VindicaarMacAree";
 end
 
 function FlightMap_FlightPathDataProviderMixin:RemoveAllData()
@@ -139,7 +139,7 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
-	pin:SetFlightPathStyle(taxiNodeData.textureKitPrefix, taxiNodeData.state);
+	pin:SetFlightPathStyle(taxiNodeData.textureKit, taxiNodeData.state);
 	
 	pin:UpdatePinSize(taxiNodeData.state);
 	pin:SetShown(taxiNodeData.state ~= Enum.FlightPathState.Unreachable); -- Only show if part of a route, handled in the route building functions
@@ -229,11 +229,11 @@ function FlightMap_FlightPointPinMixin:GetTaxiNodeState()
 end
 
 function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
-	if IsVindicaarTextureKit(self.textureKitPrefix) then
+	if IsVindicaarTextureKit(self.textureKit) then
 		self:SetSize(39, 42);
-	elseif self.textureKitPrefix == "FlightMaster_Argus" then
+	elseif self.textureKit == "FlightMaster_Argus" then
 		self:SetSize(34, 28);
-	elseif self.textureKitPrefix == "FlightMaster_Ferry" then
+	elseif self.textureKit == "FlightMaster_Ferry" then
 		if pinType == Enum.FlightPathState.Current then
 			self:SetSize(36, 24);
 		elseif pinType == Enum.FlightPathState.Reachable or pinType == Enum.FlightPathState.Unreachable then
@@ -248,17 +248,17 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 	end
 end
 
-function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxiNodeType)
-	self.textureKitPrefix = textureKitPrefix;
+function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKit, taxiNodeType)
+	self.textureKit = textureKit;
 	self:SetNudgeSourceMagnitude(nil, nil);
 	self:SetNudgeSourceRadius(1);
-	if textureKitPrefix then
-		self.atlasFormat = textureKitPrefix.."-%s";
+	if textureKit then
+		self.atlasFormat = textureKit.."-%s";
 		
-		if IsVindicaarTextureKit(self.textureKitPrefix) then
+		if IsVindicaarTextureKit(self.textureKit) then
 			self:SetNudgeSourceRadius(2);
 			self:SetNudgeSourceMagnitude(1.5, 3.65);
-		elseif self.textureKitPrefix == "FlightMaster_Argus" then
+		elseif self.textureKit == "FlightMaster_Argus" then
 			self:SetNudgeSourceRadius(1.5);
 			self:SetNudgeSourceMagnitude(1, 2);
 		end
@@ -279,6 +279,6 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxi
 end
 
 function FlightMap_FlightPointPinMixin:ShouldShowOutgoingFlightPathPreviews()
-	local isArgus = IsVindicaarTextureKit(self.textureKitPrefix) or self.textureKitPrefix == "FlightMaster_Argus";
+	local isArgus = IsVindicaarTextureKit(self.textureKit) or self.textureKit == "FlightMaster_Argus";
 	return not isArgus;
 end

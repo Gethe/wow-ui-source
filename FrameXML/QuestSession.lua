@@ -112,11 +112,44 @@ end
 QuestSessionDialogMixin = {};
 
 function QuestSessionDialogMixin:OnLoad()
-	ResizeLayoutMixin.OnLoad(self); -- TODO: Convert layoutFrames to intrinsics?  this is painful
-
 	self.ButtonContainer.Confirm:SetText(self.confirmText);
 	self.ButtonContainer.Decline:SetText(self.cancelText);
 	self.Divider:SetShown(self.showDivider);
+end
+
+function QuestSessionDialogMixin:BaseOnEvent(event, ...)
+	self:CheckValidateDialog();
+end
+
+function QuestSessionDialogMixin:BaseOnShow()
+	if self:RequiresValidateDialog() then
+		self:RegisterEvent("PLAYER_REGEN_DISABLED");
+		self:RegisterEvent("PLAYER_REGEN_ENABLED");
+
+		self:CheckValidateDialog();
+	end
+end
+
+function QuestSessionDialogMixin:BaseOnHide()
+	if self:RequiresValidateDialog() then
+		self:UnregisterEvent("PLAYER_REGEN_DISABLED");
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+	end
+end
+
+function QuestSessionDialogMixin:CheckValidateDialog()
+	if self:RequiresValidateDialog() and not self:IsDialogValid() then
+		self:StartHideDialog(0.5, ERR_AFFECTING_COMBAT); -- TODO: Add new string
+	end
+end
+
+function QuestSessionDialogMixin:RequiresValidateDialog()
+	-- NOTE: This is set via key/value pairs and should be immutable.
+	return self.requiresValidateDialog;
+end
+
+function QuestSessionDialogMixin:IsDialogValid()
+	return not UnitAffectingCombat("player");
 end
 
 function QuestSessionDialogMixin:GetSessionCommand()
@@ -252,11 +285,14 @@ function QuestSessionDialogMixin:AddParty(excludeUnit)
 	end
 end
 
-function QuestSessionDialogMixin:StartHideDialog(delay)
+function QuestSessionDialogMixin:StartHideDialog(delay, optError)
 	QuestSessionManager:CheckClearMinimizedDialog(self);
 
 	if self:IsShown() then
 		C_Timer.After(delay or 2, function()
+			if optError then
+				UIErrorsFrame:AddMessage(optError, RED_FONT_COLOR:GetRGBA());
+			end
 			self:HideImmediate();
 		end);
 	end
@@ -718,6 +754,7 @@ AddNotification(Enum.QuestSessionResult.Restricted, ERR_QUEST_SESSION_RESULT_RES
 AddNotification(Enum.QuestSessionResult.InPetBattle, ERR_QUEST_SESSION_RESULT_IN_PET_BATTLE);
 AddNotification(Enum.QuestSessionResult.InvalidPublicParty, ERR_QUEST_SESSION_RESULT_UNKNOWN);
 AddNotification(Enum.QuestSessionResult.Unknown, ERR_QUEST_SESSION_RESULT_UNKNOWN);
+AddNotification(Enum.QuestSessionResult.InCombat, ERR_AFFECTING_COMBAT); -- TODO: Add new string for 9.0.2
 
 QuestSessionManagerMixin = {};
 
@@ -924,7 +961,7 @@ function QuestSessionManagerMixin:CheckMutuallyExclusiveDialogs(shownDialog)
 end
 
 function QuestSessionManagerMixin:IsSessionManagementEnabled()
-	return not self:GetActiveDialog() and self:GetSessionCommand() ~= Enum.QuestSessionCommand.None;
+	return not self:GetActiveDialog() and (self:GetSessionCommand() ~= Enum.QuestSessionCommand.None) and not UnitAffectingCombat("player");
 end
 
 function QuestSessionManagerMixin:StartSession()
@@ -980,10 +1017,7 @@ function QuestSessionManagerMixin:ShouldSessionManagementUIBeVisible()
 end
 
 function QuestSessionManagerMixin:GetProposedPlayerLevel()
-	local minLevel = PartyUtil.GetMinLevel();
-
-	local useModernExpansionLevels = true;
-	local proposedSessionLevel = GetMaxLevelForExpansionLevel(GetExpansionForLevel(minLevel), useModernExpansionLevels);
+	local proposedSessionLevel = C_QuestSession.GetProposedMaxLevelForSession();
 	return math.min(UnitLevel("player"), proposedSessionLevel);
 end
 

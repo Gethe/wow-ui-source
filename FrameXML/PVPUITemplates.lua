@@ -1,5 +1,5 @@
 PVPConquestRewardMixin = { };
-function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
+function PVPConquestRewardMixin:LegacySetup(questID, seasonState, tooltipAnchor)
 	self.questID = questID;
 	self.seasonState = seasonState;
 	self.tooltipAnchor = tooltipAnchor;
@@ -8,7 +8,7 @@ function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
 		self.CheckMark:Show();
 		self.CheckMark:SetDesaturated(true);
 	else
-		if IsQuestComplete(questID) then
+		if C_QuestLog.IsComplete(questID) then
 			self.CheckMark:Show();
 			self.CheckMark:SetDesaturated(false);
 		else
@@ -17,9 +17,36 @@ function PVPConquestRewardMixin:Setup(questID, seasonState, tooltipAnchor)
 		local itemTexture;
 		if HaveQuestRewardData(questID) then
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);
-			itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
+			if itemIndex and rewardType then
+				itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
+			end
 		end
 		self:SetTexture(itemTexture, 1);
+	end
+end
+
+function PVPConquestRewardMixin:Setup(seasonState, tooltipAnchor)
+	self.seasonState = seasonState;
+	self.tooltipAnchor = tooltipAnchor;
+
+	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
+	local progress = weeklyProgress.progress;
+	local maxProgress = weeklyProgress.maxProgress;
+	local displayType = weeklyProgress.displayType;
+
+	if progress < maxProgress then
+		if displayType == Enum.ConquestProgressBarDisplayType.Seasonal then
+			self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 1);
+		else
+			self:SetTexture("Interface\\icons\\Inv_trinket_oribos_01_silver", 1);
+		end
+		self.CheckMark:Hide();
+		self.Ring:SetDesaturated(false);
+	else
+		self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 0.2);
+		self.CheckMark:Show();
+		self.CheckMark:SetDesaturated(true);
+		self.Ring:SetDesaturated(true);
 	end
 end
 
@@ -42,7 +69,7 @@ function PVPConquestRewardMixin:SetTooltipAnchor(questTooltipAnchor)
 	self.questTooltipAnchor = questTooltipAnchor;
 end
 
-function PVPConquestRewardMixin:TryShowTooltip()
+function PVPConquestRewardMixin:LegacyTryShowTooltip()
 	local WORD_WRAP = true;
 	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -57,7 +84,7 @@ function PVPConquestRewardMixin:TryShowTooltip()
 	elseif self.questID and self:IsMouseOver() then
 		EmbeddedItemTooltip:SetOwner(self, self.questTooltipAnchor);
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST);
-		if IsQuestComplete(self.questID) then
+		if C_QuestLog.IsComplete(self.questID) then
 			GameTooltip_AddNormalLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_COLLECT, WORD_WRAP);
 			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		end
@@ -73,6 +100,46 @@ function PVPConquestRewardMixin:TryShowTooltip()
 		end
 		EmbeddedItemTooltip:Show();
 	end
+end
+
+function PVPConquestRewardMixin:TryShowTooltip()
+	if PVPUtil.ShouldShowLegacyRewards() then
+		self:LegacyTryShowTooltip();
+		return;
+	end
+
+	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
+	local progress = weeklyProgress.progress;
+	local maxProgress = weeklyProgress.maxProgress;
+	local displayType = weeklyProgress.displayType;
+	local itemLink = weeklyProgress.sampleItemHyperlink;
+	local itemLevel = itemLink and GetDetailedItemLevelInfo(itemLink) or 0;
+
+	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR);
+	else
+		local unlocksCompleted = weeklyProgress.unlocksCompleted;
+		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
+		local message;
+		if itemLevel == 0 and unlocksCompleted == 0 then
+			message = CONQUEST_PVP_WEEK_NO_CONQUEST;
+		elseif progress < maxProgress then
+			if displayType == Enum.ConquestProgressBarDisplayType.FirstChest then
+				message = CONQUEST_PVP_WEEK_FIRST_CHEST:format(maxProgress, itemLevel);
+			elseif displayType == Enum.ConquestProgressBarDisplayType.AdditionalChest then
+				message = CONQUEST_PVP_WEEK_ADDITIONAL_CHEST:format(maxProgress, itemLevel);
+			else
+				message = CONQUEST_PVP_WEEK_ADDITIONAL_CONQUEST;
+			end
+		else
+			message = CONQUEST_PVP_WEEK_CONQUEST_COMPLETE;
+		end
+		GameTooltip_AddColoredLine(EmbeddedItemTooltip, message, NORMAL_FONT_COLOR);
+	end
+	EmbeddedItemTooltip:Show();
 end
 
 function PVPConquestRewardMixin:HideTooltip()
@@ -100,7 +167,7 @@ PVPHonorRewardMixin = {};
 function PVPHonorRewardMixin:OnEnter()
 	local honorLevel = UnitHonorLevel("player");
 	local nextHonorLevelForReward = C_PvP.GetNextHonorLevelForReward(honorLevel);
-	local rewardInfo = C_PvP.GetHonorRewardInfo(nextHonorLevelForReward);
+	local rewardInfo = nextHonorLevelForReward and C_PvP.GetHonorRewardInfo(nextHonorLevelForReward);
 	if rewardInfo then
 		local rewardText = select(11, GetAchievementInfo(rewardInfo.achievementRewardedID));
 		if rewardText and rewardText ~= "" then
@@ -189,7 +256,7 @@ end
 PVPLootMixin = CreateFromMixins(LootItemExtendedMixin);
 function PVPLootMixin:Init(itemLink, quantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer)
 	LootItemExtendedMixin.Init(self, itemLink, quantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer);
-	
+
 	self.link = itemLink;
 end
 function PVPLootMixin:OnEnter()

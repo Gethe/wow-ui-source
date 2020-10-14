@@ -118,7 +118,7 @@ function AuctionHouseItemBuyFrameMixin:OnAuctionSelected(auctionData)
 	if auctionData == nil then
 		self:ResetPrice();
 	else
-		self:SetAuction(auctionData.auctionID, auctionData.minBid, auctionData.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(auctionData));
+		self:SetAuction(auctionData.auctionID, auctionData.minBid, auctionData.buyoutAmount, AuctionHouseUtil.IsOwnedAuction(auctionData), auctionData.bidder);
 	end
 end
 

@@ -7,6 +7,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1;
 CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
+MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
 
 CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
@@ -127,7 +128,7 @@ ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
 	"TIME_PLAYED_MSG",
-	"PLAYER_LEVEL_UP",
+	"PLAYER_LEVEL_CHANGED",
 	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
@@ -692,7 +693,7 @@ ICON_LIST = {
 --Links tags from Global Strings to indicies for entries in ICON_LIST. This way addons can easily replace icons
 ICON_TAG_LIST =
 {
-	 	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
  	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
 	[strlower(ICON_TAG_RAID_TARGET_STAR3)] = 1,
  	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
@@ -1112,10 +1113,6 @@ local function ExecuteCastRandom(actions)
 	end
 	entry.pending = true;
 	return entry.value;
-end
-
-function GetRandomArgument(...)
-	return (select(random(select("#", ...)), ...));
 end
 
 -- Slash commands that are protected from tampering
@@ -1707,7 +1704,7 @@ SecureCmdList["LOGOUT"] = function(msg)
 end
 
 SecureCmdList["QUIT"] = function(msg)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	Quit();
@@ -2114,7 +2111,7 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
-	if (IsKioskModeEnabled()) then
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	if ( msg == "" ) then
@@ -2395,7 +2392,7 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
-	if ( IsKioskModeEnabled() or ScriptsDisallowedForBeta() ) then
+	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
 		return;
 	end
 	if ( not AreDangerousScriptsAllowed() ) then
@@ -2425,7 +2422,7 @@ end
 
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
+	if (not Kiosk.IsEnabled() and not ScriptsDisallowedForBeta()) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -2551,7 +2548,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
 
-	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
+	C_Commentator.AssignPlayersToTeamInCurrentInstance(teamIndex, teamName);
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
@@ -2567,7 +2564,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 	end
 
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
+	C_Commentator.AssignPlayerToTeam(playerName, teamName);
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
@@ -2575,7 +2572,7 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 		return;
 	end
 
-	PvPCommentator:SetDefaultCommentatorSettings();
+	C_Commentator.ResetSettings();
 end
 
 SlashCmdList["VOICECHAT"] = function(msg)
@@ -2651,6 +2648,20 @@ SlashCmdList["COMMUNITY"] = function(msg)
 			loadCommunity();
 			CommunitiesCreateBattleNetDialog();
 		end
+	end
+end
+
+function RegisterNewSlashCommand(callback, command, commandAlias)
+	local name = string.upper(command);
+	_G["SLASH_"..name.."1"] = "/"..command;
+	_G["SLASH_"..name.."2"] = "/"..commandAlias;
+	SlashCmdList[name] = callback;
+end
+
+SlashCmdList["COUNTDOWN"] = function(msg)
+	local num1 = gsub(msg, "(%s*)(%d+)", "%2");
+	if(num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then
+		C_PartyInfo.DoCountdown(num1);
 	end
 end
 
@@ -2756,7 +2767,9 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
-	self.tellTimer = GetTime();
+	self:RegisterEvent("NEWCOMER_GRADUATION");
+	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
+	self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
 	self.channelList = {};
 	self.zoneChannelList = {};
 	self.messageTypeList = {};
@@ -3030,7 +3043,44 @@ function ChatFrame_UpdateColorByID(self, chatTypeID, r, g, b)
 	self:AdjustMessageColors(TransformColorByID);
 end
 
+-- NOTE: The leave channel event happens before the channel info is removed from the client, so excludeChannels that you're leaving if you don't
+-- want to count them.
+local function GetFirstChannelIDOfChannelMatchingRuleset(ruleset, excludeChannel)
+	for i = 1, GetNumDisplayChannels() do
+		local localID, _, active = select(4, GetChannelDisplayInfo(i));
+		if active and localID and localID > 0 and localID ~= excludeChannel then
+			if C_ChatInfo.GetChannelRuleset(localID) == ruleset then
+				return localID;
+			end
+		end
+	end
+
+	return nil;
+end
+
+function GetSlashCommandForChannelOpenChat(localID)
+  	return "/" .. localID;
+end
+
+local function HasNewcomerChannelEnabled(chatFrame)
+	for i, channelID in ipairs(chatFrame.zoneChannelList) do
+		if C_ChatInfo.GetChannelRulesetForChannelID(channelID) == Enum.ChatChannelRuleset.Mentor then
+			return true;
+		end
+	end
+	return false;
+end
+
 function ChatFrame_GetDefaultChatTarget(chatFrame)
+	if IsActivePlayerNewcomer() then
+		if HasNewcomerChannelEnabled(chatFrame) then
+			local localID = GetFirstChannelIDOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor);
+			if localID then
+				return "CHANNEL", localID;
+			end
+		end
+	end
+
 	if #chatFrame.messageTypeList == 1 and #chatFrame.channelList == 0 then
 		return chatFrame.messageTypeList[1], nil;
 	elseif #chatFrame.messageTypeList == 0 and #chatFrame.channelList == 1 then
@@ -3046,10 +3096,39 @@ function ChatFrame_GetDefaultChatTarget(chatFrame)
 	return nil;
 end
 
+function ChatFrame_UpdateDefaultChatTarget(self)
+	local defaultChatType, defaultChannelTarget = ChatFrame_GetDefaultChatTarget(self);
+	if defaultChatType then
+		local editBox = self.editBox;
+		editBox:SetAttribute("chatType", defaultChatType);
+		editBox:SetAttribute("stickyType", defaultChatType);
+		editBox:SetAttribute("channelTarget", defaultChannelTarget);
+		ChatEdit_UpdateHeader(editBox);
+	end
+end
+
 function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.defaultLanguage = GetDefaultLanguage();
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
+
+		if self == DEFAULT_CHAT_FRAME then
+			ChatEdit_UpdateNewcomerEditBoxHint(self.editBox);
+
+			local isInitialLogin, isUIReload = ...;
+			if isInitialLogin then
+				C_Timer.After(3, ChatFrame_CheckShowNewcomerGraduation);
+				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+			end
+		end
+
+		self.chatLevelUP = {};
+		LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+
+		return true;
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+		ChatFrame_CheckRemoveNewcomerChannel();
+		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3057,6 +3136,10 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		return true;
 	elseif ( event == "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED" ) then
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
+		return true;
+	elseif ( event == "NEWCOMER_GRADUATION" ) then
+		local isFromEvent = true;
+		ChatFrame_CheckShowNewcomerGraduation(isFromEvent);
 		return true;
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
 		local name, fontSize, r, g, b, a, shown, locked = FCF_GetChatWindowInfo(self:GetID());
@@ -3071,14 +3154,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		ChatFrame_RegisterForMessages(self, GetChatWindowMessages(self:GetID()));
 		ChatFrame_RegisterForChannels(self, GetChatWindowChannels(self:GetID()));
 
-		local defaultChatType, defaultChannelTarget = ChatFrame_GetDefaultChatTarget(self);
-		if defaultChatType then
-			local editBox = self.editBox;
-			editBox:SetAttribute("chatType", defaultChatType);
-			editBox:SetAttribute("stickyType", defaultChatType);
-			editBox:SetAttribute("channelTarget", defaultChannelTarget);
-			ChatEdit_UpdateHeader(editBox);
-		end
+		ChatFrame_UpdateDefaultChatTarget(self);
 
 		-- GMOTD may have arrived before this frame registered for the event
 		if ( not self.checkedGMOTD and self:IsEventRegistered("GUILD_MOTD") ) then
@@ -3130,14 +3206,28 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 	end
 end
 
+local function GetRegionalChatAvailableString()
+	return DoesActivePlayerHaveMentorStatus() and NPEV2_CHAT_AVAILABLE or NPEV2_REGIONAL_CHAT_AVAILABLE;
+end
+
+local function GetRegionalChatUnavailableString()
+	return DoesActivePlayerHaveMentorStatus() and NPEV2_CHAT_UNAVAILABLE or NPEV2_REGIONAL_CHAT_UNAVAILABLE;
+end
+
 function ChatFrame_SystemEventHandler(self, event, ...)
 	if ( event == "TIME_PLAYED_MSG" ) then
 		local arg1, arg2 = ...;
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
-	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
-		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
+	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
+		local oldLevel, newLevel, real = ...;
+		if real and oldLevel ~= 0 and newLevel ~= 0 then
+			if newLevel > oldLevel then
+				LevelUpDisplay_ChatPrint(self, newLevel, LEVEL_UP_TYPE_CHARACTER)
+			elseif newLevel < oldLevel then
+				LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+			end
+		end
 		return true;
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID, xp, money = ...;
@@ -3145,11 +3235,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 			LevelUpDisplay_ChatPrint(self, nil, TOAST_WORLD_QUESTS_UNLOCKED)
 		end
 		return true;
-	elseif (event == "UNIT_LEVEL" ) then
-		local unit = ...;
-		if LevelUpDisplay_ShouldDisplayPetLevelUpdate(LevelUpDisplay, unit) then
-			LevelUpDisplay_ChatPrint(self, UnitLevel(unit), LEVEL_UP_TYPE_PET);
-		end
 	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
 		local tierIndex = ...;
 		if (tierIndex > 0) then
@@ -3193,6 +3278,19 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		if not suppressNotification then
 			self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
 		end
+	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
+		local isServiceAvailable = ...;
+		local info = ChatTypeInfo["SYSTEM"];
+		if isServiceAvailable then
+			self:AddMessage(GetRegionalChatAvailableString(), info.r, info.g, info.b, info.id);
+		else
+			self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
+		end
+		return true;
+	elseif event == "CHAT_REGIONAL_SEND_FAILED" then
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
+		return true;
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
@@ -3278,6 +3376,74 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 	return false;
 end
 
+function DoesActivePlayerHaveMentorStatus()
+	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) ~= Enum.PlayerMentorshipStatus.None;
+end
+
+function IsActivePlayerMentor()
+	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor;
+end
+
+function IsActivePlayerNewcomer()
+	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Newcomer;
+end
+
+local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
+	-- Renaming for clarity:
+	local specialFlag = arg6;
+	local zoneChannelID = arg7;
+	local localChannelID = arg8;
+
+	if specialFlag ~= "" then
+		if specialFlag == "GM" or specialFlag == "DEV" then
+			-- Add Blizzard Icon if  this was sent by a GM/DEV
+			return "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
+		elseif specialFlag == "GUIDE" then
+			if C_PlayerMentorship.IsActivePlayerConsideredNewcomer() then
+				return NPEV2_CHAT_USER_TAG_GUIDE .. " "; -- possibly unable to save global string with trailing whitespace...
+			end
+		elseif specialFlag == "NEWCOMER" then
+			if IsActivePlayerMentor() then
+				return NPEV2_CHAT_USER_TAG_NEWCOMER;
+			end
+		else
+			return _G["CHAT_FLAG_"..specialFlag];
+		end
+	end
+
+	return "";
+end
+
+function ChatFrame_ShowNewcomerGraduation(s)
+	local localID = C_ChatInfo.GetGeneralChannelLocalID();
+	local slashCmd;
+
+	if localID then
+		slashCmd = GetSlashCommandForChannelOpenChat(localID);
+	else
+		slashCmd = ("%s %s"):format(SLASH_JOIN1, C_ChatInfo.GetChannelShortcutForChannelID(C_ChatInfo.GetGeneralChannelID()));
+	end
+
+	ChatFrame_DisplaySystemMessageInPrimary(s:format(slashCmd));
+end
+
+function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
+	local hasShownGraduation = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION);
+	if not hasShownGraduation and isFromGraduationEvent then
+		ChatFrame_ShowNewcomerGraduation(NPEV2_CHAT_NEWCOMER_GRADUATION);
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION, true);
+	elseif hasShownGraduation and not isFromGraduationEvent and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION_REMINDER) then
+		ChatFrame_ShowNewcomerGraduation(NPEV2_CHAT_NEWCOMER_GRADUATION_REMINDER);
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_NEWCOMER_GRADUATION_REMINDER, true);
+	end
+end
+
+function ChatFrame_CheckRemoveNewcomerChannel()
+	if not IsActivePlayerNewcomer() and not IsActivePlayerMentor() then
+		LeaveChannelByName(C_ChatInfo.GetChannelShortcutForChannelID(C_ChatInfo.GetMentorChannelID()));
+	end
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3288,6 +3454,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
+
+		--If it was a GM whisper, dispatch it to the GMChat addon.
+		if arg6 == "GM" and type == "WHISPER" then
+			return;
+		end
 
 		local filter = false;
 		if ( chatFilters[event] ) then
@@ -3315,12 +3486,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 
-			local found = 0;
+			local found = false;
 			for index, value in pairs(self.channelList) do
 				if ( channelLength > strlen(value) ) then
 					-- arg9 is the channel name without the number in front...
 					if ( ((arg7 > 0) and (self.zoneChannelList[index] == arg7)) or (strupper(value) == strupper(arg9)) ) then
-						found = 1;
+						found = true;
 						infoType = "CHANNEL"..arg8;
 						info = ChatTypeInfo[infoType];
 						if ( (type == "CHANNEL_NOTICE") and (arg1 == "YOU_LEFT") ) then
@@ -3331,8 +3502,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					end
 				end
 			end
-			if ( (found == 0) or not info ) then
-				return true;
+			if not found or not info then
+				if arg1 == "YOU_CHANGED" and C_ChatInfo.IsChannelRegional(arg8) then
+					ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(arg7));
+				else
+					return true;
+				end
 			end
 		end
 
@@ -3464,22 +3639,33 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE") then
-			local globalstring;
-			if ( arg1 == "TRIAL_RESTRICTED" ) then
-				globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
-			else
-				globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
-				if ( not globalstring ) then
-					globalstring = _G["CHAT_"..arg1.."_NOTICE"];
-					if not globalstring then
-						GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE"));
-						return;
-					end
-				end
-			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
-			self:AddMessage(format(globalstring, arg8, ChatFrame_ResolvePrefixedChannelName(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+
+			if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
+				ChatFrame_UpdateDefaultChatTarget(self);
+				ChatEdit_UpdateNewcomerEditBoxHint(self.editBox);
+			else
+				if arg1 == "YOU_LEFT" then
+					ChatEdit_UpdateNewcomerEditBoxHint(self.editBox, arg8);
+				end
+
+				local globalstring;
+				if ( arg1 == "TRIAL_RESTRICTED" ) then
+					globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
+				else
+					globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
+					if ( not globalstring ) then
+						globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+						if not globalstring then
+							GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE"));
+							return;
+						end
+					end
+				end
+
+				self:AddMessage(format(globalstring, arg8, ChatFrame_ResolvePrefixedChannelName(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+			end
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			if not globalstring then
@@ -3534,24 +3720,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			-- Add AFK/DND flags
-			local pflag;
-			if(arg6 ~= "") then
-				if ( arg6 == "GM" ) then
-					--If it was a whisper, dispatch it to the GMChat addon.
-					if ( type == "WHISPER" ) then
-						return;
-					end
-					--Add Blizzard Icon, this was sent by a GM
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-				elseif ( arg6 == "DEV" ) then
-					--Add Blizzard Icon, this was sent by a Dev
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-				else
-					pflag = _G["CHAT_FLAG_"..arg6];
-				end
-			else
-				pflag = "";
-			end
+			local pflag = GetPFlag(...);
+
 			if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
 				return;
 			end
@@ -3654,7 +3824,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( type == "WHISPER" or type == "BN_WHISPER" ) then
 			--BN_WHISPER FIXME
 			ChatEdit_SetLastTellTarget(arg2, type);
-			if ( self.tellTimer and (GetTime() > self.tellTimer) ) then
+
+			if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
 				PlaySound(SOUNDKIT.TELL_MESSAGE);
 			end
 			self.tellTimer = GetTime() + CHAT_TELL_ALERT_TIME;
@@ -4052,10 +4223,15 @@ function ChatEdit_OnLoad(self)
 		self:Show();
 	end
 
-	local function ChatEditAutoComplete(editBox, fullText, nameInfo)
-		if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
-			editBox:SetAttribute("tellTarget", nameInfo.name);
-			editBox:SetAttribute("chatType", "BN_WHISPER");
+	local function ChatEditAutoComplete(editBox, fullText, nameInfo, ambiguatedName)
+		if hash_ChatTypeInfoList[string.upper(editBox.command)] == "SMART_WHISPER" then
+			if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
+				editBox:SetAttribute("tellTarget", nameInfo.name);
+				editBox:SetAttribute("chatType", "BN_WHISPER");
+			else
+				editBox:SetAttribute("tellTarget", ambiguatedName);
+				editBox:SetAttribute("chatType", "WHISPER");
+			end
 			editBox:SetText("");
 			ChatEdit_UpdateHeader(editBox);
 			return true;
@@ -4135,7 +4311,7 @@ end
 
 function ChatEdit_OnEditFocusLost(self)
 	AutoCompleteEditBox_OnEditFocusLost(self);
-	
+
 	if self:GetText() == "" then
 		ChatEdit_DeactivateChat(self);
 	end
@@ -4159,6 +4335,7 @@ function ChatEdit_ActivateChat(editBox)
 	editBox:Raise();
 
 	editBox.header:Show();
+	ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 	editBox.focusLeft:Show();
 	editBox.focusRight:Show();
 	editBox.focusMid:Show();
@@ -4181,6 +4358,7 @@ local function ChatEdit_SetDeactivated(editBox)
 		if ( not editBox.isGM ) then
 			editBox:SetAlpha(0.35);
 		end
+		ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 		editBox:ClearFocus();
 
 		editBox.focusLeft:Hide();
@@ -4493,6 +4671,42 @@ function ChatEdit_UpdateHeader(editBox)
 	editBox.focusLeft:SetVertexColor(info.r, info.g, info.b);
 	editBox.focusRight:SetVertexColor(info.r, info.g, info.b);
 	editBox.focusMid:SetVertexColor(info.r, info.g, info.b);
+end
+
+function ChatEdit_DoesCurrentChannelTargetMatch(editBox, localID)
+	local type = editBox:GetAttribute("chatType");
+	if type == "CHANNEL" then
+		return ChatEdit_GetChannelTarget(editBox) == localID;
+	end
+
+	return false;
+end
+
+function ChatEdit_UpdateNewcomerEditBoxHint(editBox, excludeChannel)
+	local shouldBeShown = not editBox.isGM and not editBox.header:IsShown() and IsActivePlayerNewcomer();
+	if shouldBeShown then
+		local localID = GetFirstChannelIDOfChannelMatchingRuleset(Enum.ChatChannelRuleset.Mentor, excludeChannel);
+		editBox.NewcomerHint:SetShown(localID);
+
+		if localID then
+			editBox:SetAlpha(1.0);
+			if ChatEdit_DoesCurrentChannelTargetMatch(editBox, localID) then
+				editBox.NewcomerHint:SetText(NPEV2_CHAT_HELP_HINT_HERE);
+			else
+				editBox.NewcomerHint:SetFormattedText(NPEV2_CHAT_HELP_HINT_DIFFERENT, GetSlashCommandForChannelOpenChat(localID));
+			end
+		end
+	else
+		editBox.NewcomerHint:Hide();
+	end
+end
+
+function ChatEdit_CheckUpdateNewcomerEditBoxHint()
+	local editBox = ChatEdit_GetActiveWindow() or ChatEdit_GetLastActiveWindow();
+	if editBox then
+		-- No need for an exlcude channel, this should not be called when leaving a channel.
+		ChatEdit_UpdateNewcomerEditBoxHint(editBox);
+	end
 end
 
 function ChatEdit_AddHistory(editBox)
@@ -5026,9 +5240,6 @@ function ChatMenu_OnShow(self)
 	EmoteMenu:Hide();
 	LanguageMenu:Hide();
 	VoiceMacroMenu:Hide();
-
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function EmoteMenu_Click(self)
@@ -5284,9 +5495,11 @@ function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
 end
 
 function Chat_GetChannelShortcutName(index)
-	local _, name = GetChannelName(index);
-	name = strtrim(name:match("([^%-]+)"));
-	return name;
+	if not tonumber(index) and type(index) == "string" then
+		index = GetChannelName(index);
+	end
+
+	return C_ChatInfo.GetChannelShortcut(index);
 end
 
 function ChatChannelDropDown_PopInChat(self, chatType, chatTarget)

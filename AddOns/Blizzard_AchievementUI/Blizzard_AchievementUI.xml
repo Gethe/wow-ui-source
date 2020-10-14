@@ -1,6 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 
+	<Frame name="AchivementGoldBorderBackdrop" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+			<KeyValue key="backdropBorderColor" value="ACHIEVEMENT_GOLD_BORDER_COLOR" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad inherit="prepend" function="AchievementFrameAchievementsBackdrop_OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="AchievementSearchPreviewButton" parentArray="searchPreviews" virtual="true">
 		<Size x="206" y="27"/>
 		<Layers>
@@ -759,13 +769,8 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="AchievementTemplate" virtual="true">
+	<Button name="AchievementTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
 		<Size x="434" y="142"/>
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
@@ -911,9 +916,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				AchievementButton_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="AchievementButton_OnLoad"/>
 			<OnClick>
 				-- this is also called from the shield's OnClick
 				AchievementButton_OnClick(self);
@@ -1061,13 +1064,8 @@
 			</CheckButton>
 		</Frames>
 	</Button>
-	<Frame name="ComparisonPlayerTemplate" virtual="true">
+	<Frame name="ComparisonPlayerTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
 		<Size x="498" y="50"/>
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
@@ -1119,9 +1117,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				AchievementComparisonPlayerButton_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="AchievementComparisonPlayerButton_OnLoad"/>
 		</Scripts>
 		<Frames>
 			<Frame name="$parentIcon" parentKey="icon">
@@ -1196,6 +1192,10 @@
 	</Frame>
 	<Frame name="SummaryAchievementTemplate" inherits="ComparisonPlayerTemplate" virtual="true">
 		<Size x="100" y="48"/>
+		<KeyValues>
+			<KeyValue key="backdropBorderColor" value="ACHIEVEMENT_RED_BORDER_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentHighlight" setAllPoints="true" hidden="true" enableMouse="false" parentKey="highlight">
 				<Layers>
@@ -1261,9 +1261,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AchievementFrameSummaryAchievement_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="AchievementFrameSummaryAchievement_OnLoad"/>
 			<OnClick>
 				AchievementFrameSummaryAchievement_OnClick(self, button, down);
 			</OnClick>
@@ -1287,16 +1285,11 @@
 					<Anchor point="LEFT"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentFriend" parentKey="friend">
+			<Frame name="$parentFriend" parentKey="friend" inherits="TooltipBorderBackdropTemplate">
 				<Size x="120" y="50"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentPlayer" relativePoint="RIGHT"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
@@ -1401,9 +1394,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						AchievementComparisonFriendButton_OnLoad(self);
-					</OnLoad>
+					<OnLoad inherit="prepend" function="AchievementComparisonFriendButton_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1582,22 +1573,14 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true">
+	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true" inherits="BackdropTemplate">
 		<Size x="768" y="500"/>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_ACHIEVEMENTS_0_64" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\AchievementFrame\UI-Achievement-WoodBorder" tile="true">
-			<EdgeSize>
-				<AbsValue val="64"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\TutorialFrame\TutorialFrameBackground">
@@ -1793,25 +1776,14 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentCategories">
+			<Frame name="$parentCategories" inherits="AchivementGoldBorderBackdrop">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="21" y="-19"/>
 					<Anchor point="BOTTOMLEFT" x="21" y="20"/>
 				</Anchors>
 				<Size x="175" y="0"/>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Scripts>
-					<OnLoad function="AchievementFrameCategories_OnLoad"/>
+					<OnLoad inherit="prepend" function="AchievementFrameCategories_OnLoad"/>
 					<OnShow function="AchievementFrameCategories_OnShow"/>
 				</Scripts>
 				<Frames>
@@ -1893,22 +1865,7 @@
 							</Slider>
 						</Frames>
 					</ScrollFrame>
-					<Frame setAllPoints="true">
-						<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
-						</Scripts>
-					</Frame>
+					<Frame setAllPoints="true" inherits="AchivementGoldBorderBackdrop"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentStats" hidden="true">
@@ -1957,22 +1914,7 @@
 							</Slider>
 						</Frames>
 					</ScrollFrame>
-					<Frame setAllPoints="true">
-						<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
-						</Scripts>
-					</Frame>
+					<Frame setAllPoints="true" inherits="AchivementGoldBorderBackdrop"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentSummary" hidden="true">
@@ -1993,22 +1935,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame setAllPoints="true">
-						<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
-						</Scripts>
-					</Frame>
+					<Frame setAllPoints="true" inherits="AchivementGoldBorderBackdrop"/>
 					<Frame name="$parentAchievements">
 						<Size x="0" y="210"/>
 						<Anchors>
@@ -2279,16 +2206,14 @@
 						</Anchors>
 						<Size x="616" y="50"/>
 						<Frames>
-							<Frame name="$parentPlayer">
+							<Frame name="$parentPlayer" inherits="TooltipBorderBackdropTemplate">
 								<Size x="498" y="50"/>
 								<Anchors>
 									<Anchor point="LEFT"/>
 								</Anchors>
-								<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-								</Backdrop>
+								<KeyValues>
+									<KeyValue key="backdropBorderColor" value="ACHIEVEMENT_YELLOW_BORDER_COLOR" type="global"/>
+								</KeyValues>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal">
@@ -2309,22 +2234,15 @@
 										</Anchors>
 									</StatusBar>
 								</Frames>
-								<Scripts>
-									<OnLoad>
-										self:SetBackdropBorderColor(0.4, 0.2, 0, 1);
-									</OnLoad>
-								</Scripts>
 							</Frame>
-							<Frame name="$parentFriend">
+							<Frame name="$parentFriend" inherits="TooltipBorderBackdropTemplate">
 								<Size x="120" y="50"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentPlayer" relativePoint="RIGHT"/>
 								</Anchors>
-								<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-								</Backdrop>
+								<KeyValues>
+									<KeyValue key="backdropBorderColor" value="ACHIEVEMENT_YELLOW_BORDER_COLOR" type="global"/>
+								</KeyValues>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal">
@@ -2342,8 +2260,7 @@
 									</StatusBar>
 								</Frames>
 								<Scripts>
-									<OnLoad>
-										self:SetBackdropBorderColor(0.4, 0.2, 0, 1);
+									<OnLoad inherit="prepend">
 										self.statusBar.title:Hide();
 									</OnLoad>
 								</Scripts>
@@ -2397,22 +2314,7 @@
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>
-					<Frame setAllPoints="true">
-						<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad function="AchievementFrameAchievementsBackdrop_OnLoad"/>
-						</Scripts>
-					</Frame>
+					<Frame setAllPoints="true" inherits="AchivementGoldBorderBackdrop"/>
 				</Frames>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -2918,7 +2820,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="AchievementFrame_OnLoad"/>
+			<OnLoad inherit="prepend" function="AchievementFrame_OnLoad"/>
 			<OnShow function="AchievementFrame_OnShow"/>
 			<OnHide function="AchievementFrame_OnHide"/>
 		</Scripts>

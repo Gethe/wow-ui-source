@@ -21,6 +21,20 @@ local ReportSystem =
 			},
 		},
 		{
+			Name = "CanReportPlayerForLanguage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canReport", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "InitiateReportPlayer",
 			Type = "Function",
 			Documentation = { "Not allowed to be called by addons" },
@@ -50,6 +64,10 @@ local ReportSystem =
 		},
 		{
 			Name = "ReportServerLag",
+			Type = "Function",
+		},
+		{
+			Name = "ReportStuckInCombat",
 			Type = "Function",
 		},
 		{

@@ -1,10 +1,16 @@
 UIWidgetTemplateTooltipFrameMixin = {}
 
+function UIWidgetTemplateTooltipFrameMixin:SetMouse(disableMouse)
+	local useMouse = self.tooltip and self.tooltip ~= "" and not disableMouse;
+	self:EnableMouse(useMouse)
+end
+
 function UIWidgetTemplateTooltipFrameMixin:OnLoad()
 end
 
 function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
-	self:EnableMouse(not widgetContainer.disableWidgetTooltips);
+	local disableMouse = widgetContainer.disableWidgetTooltips;
+	self:SetMouse(disableMouse);
 	self:SetMouseClickEnabled(false);
 end
 
@@ -19,6 +25,7 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	if tooltip then
 		self.tooltipContainsHyperLink, self.preString, self.hyperLinkString, self.postString = ExtractHyperlinkString(tooltip);
 	end
+	self:SetMouse();
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
@@ -41,7 +48,9 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 			if self.postString and self.postString:len() > 0 then
 				GameTooltip_AddColoredLine(EmbeddedItemTooltip, self.postString, self.tooltipColor or HIGHLIGHT_FONT_COLOR, true);
 			end
-			
+
+			self.UpdateTooltip = self.OnEnter;
+
 			EmbeddedItemTooltip:Show();
 		else
 			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(self.tooltip);
@@ -51,6 +60,9 @@ function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 			if nonHeader then
 				GameTooltip_AddColoredLine(EmbeddedItemTooltip, nonHeader, self.tooltipColor or NORMAL_FONT_COLOR, true);
 			end
+
+			self.UpdateTooltip = nil;
+
 			EmbeddedItemTooltip:SetShown(header ~= nil);
 		end
 	end
@@ -60,6 +72,7 @@ end
 function UIWidgetTemplateTooltipFrameMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
 	self.mouseOver = false;
+	self.UpdateTooltip = nil;
 end
 
 local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor)
@@ -159,10 +172,27 @@ function UIWidgetBaseTemplateMixin:AnimOut()
 	end
 end
 
+local widgetScales =
+{
+	[Enum.UIWidgetScale.OneHundred]	= 1,
+	[Enum.UIWidgetScale.Ninty]	 = 0.9,
+	[Enum.UIWidgetScale.Eighty]	 = 0.8,
+	[Enum.UIWidgetScale.Seventy] = 0.7,
+	[Enum.UIWidgetScale.Sixty]	= 0.6,
+	[Enum.UIWidgetScale.Fifty]	= 0.5,
+}
+
+local function GetWidgetScale(widgetScale)
+	return widgetScales[widgetScale] and widgetScales[widgetScale] or widgetScales[Enum.UIWidgetScale.OneHundred];
+end
+
 -- Override with any custom behaviour that you need to perform when this widget is updated. Make sure you still call the base though because it handles animations
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
+	self:SetScale(GetWidgetScale(widgetInfo.widgetScale));
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.widgetContainer = widgetContainer;
+	self.orderIndex = widgetInfo.orderIndex;
+	self.layoutDirection = widgetInfo.layoutDirection; 
 	self:AnimIn();
 end
 
@@ -226,8 +256,25 @@ local function GetIconSize(iconSizeType)
 	return iconSizes[iconSizeType] and iconSizes[iconSizeType] or iconSizes[Enum.SpellDisplayIconSizeType.Large];
 end
 
-function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width)
+local spellTextureKitRegionInfo = {
+	["Border"] = {formatString = "%s-frame", setVisibility = true, useAtlasSize = true},
+	["AmountBorder"] = {formatString = "%s-amount", setVisibility = true, useAtlasSize = true},
+}
+
+function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width, textureKit)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
+
+	local hasAmountBorderTexture = self.AmountBorder:IsShown();
+	local hasBorderTexture = self.Border:IsShown(); 
+
+	self.StackCount:ClearAllPoints();
+	if (hasAmountBorderTexture) then  
+		self.StackCount:SetPoint("CENTER", self.AmountBorder);
+	else 
+		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
+	end 
+
 	local name, _, icon = GetSpellInfo(spellInfo.spellID);
 	self.Icon:SetTexture(icon);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
@@ -235,7 +282,11 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
-	local iconWidth = self.Icon:GetWidth() + 5;
+	if (not hasBorderTexture) then 
+		self.Border:SetAtlas("UI-Frame-IconBorder", false); 
+	end 
+
+	local iconWidth = self.Icon:GetWidth();
 	local textWidth = 0;
 	if width > iconWidth then
 		textWidth = width - iconWidth;
@@ -244,18 +295,22 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Text:SetWidth(textWidth);
 	self.Text:SetHeight(0);
 
-	if spellInfo.text ~= "" then
-		self.Text:SetText(spellInfo.text);
-	else
-		self.Text:SetText(name);
-	end
+	local textShown = spellInfo.textShownState == Enum.SpellDisplayTextShownStateType.Shown;
+	self.Text:SetShown(textShown);
 
-	if textWidth == 0 then
-		textWidth = self.Text:GetWidth();
-	end
-
-	if self.Text:GetHeight() < self.Icon:GetHeight() then
-		self.Text:SetHeight(self.Icon:GetHeight());
+	if textShown then
+		if spellInfo.text ~= "" then
+			self.Text:SetText(spellInfo.text);
+		else
+			self.Text:SetText(name);
+		end
+		if textWidth == 0 then
+			textWidth = self.Text:GetWidth();
+		end
+		if self.Text:GetHeight() < self.Icon:GetHeight() then
+			self.Text:SetHeight(self.Icon:GetHeight());
+		end
+		iconWidth = iconWidth + 5;
 	end
 
 	if spellInfo.stackDisplay > 0 then
@@ -263,13 +318,15 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.StackCount:SetText(spellInfo.stackDisplay);
 	else
 		self.StackCount:Hide();
+		self.AmountBorder:Hide();
 	end
 
-	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff);
+	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff or spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
+	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
+	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
 
 	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
-
 	self:SetEnabledState(enabledState);
 	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);
@@ -286,6 +343,11 @@ function UIWidgetBaseSpellTemplateMixin:OnEnter()
 	else
 		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
 	end
+end
+
+function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
+	local useMouse = ((self.tooltip and self.tooltip ~= "") or self.spellID) and not disableMouse;
+	self:EnableMouse(useMouse)
 end
 
 UIWidgetBaseColoredTextMixin = {};
@@ -369,15 +431,20 @@ function UIWidgetBaseStatusBarTemplateMixin:UpdateBarText()
 	end
 end
 
+function UIWidgetBaseStatusBarTemplateMixin:SetMouse(disableMouse)
+	local useMouse = ((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse;
+	self:EnableMouse(useMouse)
+end
+
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
-function UIWidgetBaseStateIconTemplateMixin:Setup(widgetContainer, textureKitID, textureKitFormatter, captureIconInfo)
+function UIWidgetBaseStateIconTemplateMixin:Setup(widgetContainer, textureKit, textureKitFormatter, captureIconInfo)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	if captureIconInfo.iconState == Enum.IconState.ShowState1 then
-		SetupTextureKitOnFrameByID(textureKitID, self.Icon, "%s-"..textureKitFormatter.."-state1", TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnFrame(textureKit, self.Icon, "%s-"..textureKitFormatter.."-state1", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		self:SetTooltip(captureIconInfo.state1Tooltip);
 	elseif captureIconInfo.iconState == Enum.IconState.ShowState2 then
-		SetupTextureKitOnFrameByID(textureKitID, self.Icon, "%s-"..textureKitFormatter.."-state2", TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnFrame(textureKit, self.Icon, "%s-"..textureKitFormatter.."-state2", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		self:SetTooltip(captureIconInfo.state2Tooltip);
 	else
 		self.Icon:Hide();
@@ -408,11 +475,10 @@ end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self); 
-	self.Text:SetFontObjectsToTry(); 
-end 
+	self.Text:SetFontObjectsToTry();
+end
 
-function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKitID, textureKitID, textSizeType, layoutIndex)
+function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.layoutIndex = layoutIndex;
 
@@ -424,11 +490,11 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 
 	self.Text:SetFontObject(GetTextSizeFont(textSizeType));
 
-	self.Text:SetText(text); 
+	self.Text:SetText(text);
 	self:SetTooltip(tooltip);
 
-	SetupTextureKitOnFrameByID(frameTextureKitID, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
-	SetupTextureKitOnFrameByID(textureKitID, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisiblity, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(frameTextureKit, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end
@@ -437,8 +503,6 @@ UIWidgetBaseControlZoneTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipF
 
 function UIWidgetBaseControlZoneTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
-	ResizeLayoutMixin.OnLoad(self);
-
 	self.Progress:SetFrameLevel(self.UncapturedSection:GetFrameLevel() + 1);
 end
 
@@ -527,9 +591,8 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneIsG
 	end
 end
 
-function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKitID)
+function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKit)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
-	local textureKit = GetUITextureKitInfo(textureKitID);
 	if not textureKit then
 		self:Hide();
 		return;
@@ -633,4 +696,92 @@ function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, 
 	self:SetTooltip(zoneInfo.tooltip);
 
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
+end
+
+UIWidgetBaseScenarioHeaderTemplateMixin = {};
+
+local scenarioHeaderTextureKitRegions = {
+	["Frame"] = "%s-frame",
+}
+
+local scenarioHeaderTextureKitInfo =
+{
+	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
+	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, headerTextHeight = 20},
+}
+
+local scenarioHeaderDefaultFontObjects = {QuestTitleFont, Fancy16Font, SystemFont_Med1};
+local scenarioHeaderDefaultFontColor = SCENARIO_STAGE_COLOR;
+local scenarioHeaderDefaultTextAnchorOffsets = {xOffset = 15, yOffset = -8};
+local scenarioHeaderDefaultHeaderTextHeight = 36;
+local scenarioHeaderStageChangeWaitTime = 1.5;
+
+-- This returns true if we are waiting for the stage header to slide out
+function UIWidgetBaseScenarioHeaderTemplateMixin:Setup(widgetInfo, widgetContainer)
+	self:EnableMouse(false);
+
+	if self.WaitTimer then
+		self.latestWidgetInfo = widgetInfo;
+		return true;
+	end
+
+	local _, currentScenarioStage = C_Scenario.GetInfo();
+	if self.lastScenarioStage and self.lastScenarioStage ~= currentScenarioStage then
+		-- This widget was already showing and the scenario stage changed since the last time Setup was called
+		-- If we update everything now we will be showing the next stage's info
+		-- So instead we want to set a timer to give the current stage's header time to slide out
+
+		if self.WaitTimer then
+			self.WaitTimer:Cancel();
+		end
+
+		self.latestWidgetInfo = widgetInfo;
+		self.WaitTimer = C_Timer.NewTimer(scenarioHeaderStageChangeWaitTime, GenerateClosure(self.OnWaitTimerDone, self));
+		return true;
+	end
+
+	self.lastScenarioStage = currentScenarioStage;
+
+	local textureKitInfo = scenarioHeaderTextureKitInfo[widgetInfo.frameTextureKit];
+
+	local fontObjectsToTry = textureKitInfo and textureKitInfo.fontObjects or scenarioHeaderDefaultFontObjects;
+	self.HeaderText:SetFontObjectsToTry(unpack(fontObjectsToTry));
+
+	local fontColor = textureKitInfo and textureKitInfo.fontColor or scenarioHeaderDefaultFontColor;
+	self.HeaderText:SetTextColor(fontColor:GetRGB());
+
+	local headerTextHeight = textureKitInfo and textureKitInfo.headerTextHeight or scenarioHeaderDefaultHeaderTextHeight;
+	self.HeaderText:SetHeight(headerTextHeight);
+
+	self.HeaderText:SetText(widgetInfo.headerText);
+
+	local textAnchorOffsets = textureKitInfo and textureKitInfo.textAnchorOffsets or scenarioHeaderDefaultTextAnchorOffsets;
+	self.HeaderText:SetPoint("TOPLEFT", self, "TOPLEFT", textAnchorOffsets.xOffset, textAnchorOffsets.yOffset);
+
+	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, scenarioHeaderTextureKitRegions, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+
+	self:SetWidth(self.Frame:GetWidth());
+	self:SetHeight(self.Frame:GetHeight());
+end
+
+function UIWidgetBaseScenarioHeaderTemplateMixin:OnWaitTimerDone()
+	self.WaitTimer = nil;
+	
+	local _, currentScenarioStage = C_Scenario.GetInfo();
+	self.lastScenarioStage = currentScenarioStage;
+
+	self:Setup(self.latestWidgetInfo, self.widgetContainer);
+	self.latestWidgetInfo = nil;
+end
+
+function UIWidgetBaseScenarioHeaderTemplateMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
+
+	if self.WaitTimer then
+		self.WaitTimer:Cancel();
+		self.WaitTimer = nil;
+	end
+
+	self.lastScenarioStage = nil;
+	self.latestWidgetInfo = nil;
 end

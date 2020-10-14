@@ -1,0 +1,210 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventuresPuck.lua"/>
+
+	<Button name="AdventuresPuckAbilityTemplate" mixin="AdventuresPuckAbilityMixin" enableMouse="true" virtual="true">
+		<Size x="28" y="29"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="Adventure_Ability_Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DisabledTexture" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b ="0" a="0.7"/>
+				</Texture>
+
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="DisabledTexture"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="CooldownText" inherits="NumberFontNormal" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="AdventuresPuckTemplate" mixin="AdventuresPuckMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="PuckShadow" atlas="adventurers-frame-shadow">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-9"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SupportColorationBurst"  atlas="Adventures-Buff-Heal-Burst" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-15" y="15"/>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PuckBorder" atlas="Adventurers-Followers-Frame"/>
+				<Texture parentKey="SupportColorationRing" atlas="Adventures-Buff-Heal-Ring" hidden="true" >
+					<Anchor point="TOPLEFT" relativeKey="$parent.PuckBorder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PuckBorder"/>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+						<MaskedTexture childKey="PuckBorder"/>
+						<MaskedTexture childKey="SupportColorationRing"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderOverlay" hidden="true">
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="AbilityTwo" parentArray="AbilityButtons" inherits="AdventuresPuckAbilityTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="-4" y="25"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="AbilityOne" parentArray="AbilityButtons" inherits="AdventuresPuckAbilityTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="-7" y="-5"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="HealthBar" inherits="AdventuresPuckHealthBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SupportColorationAnimator" inherits="SupportColorationAnimatorTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RotateBursts" looping="REPEAT">
+				<Rotation childKey="SupportColorationBurst" order="1" duration="45" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.RotateBursts:Play();
+			</OnShow>
+			<OnHide>
+				self.RotateBursts:Stop();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
+	<Button name="AdventuresPuckAnimatedTemplate" inherits="AdventuresPuckTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="EnemyTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
+				<KeyValues>
+					<KeyValue key="targetingTextureAtlas" type="string" value="Adventures-Target-Indicator"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- Draw over the other subframes -->
+			<Frame parentKey="DeathAnimationFrame" frameLevel="1500" enableMouse="false" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="DeathAnimation" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CovenantFollowerPlacer" inherits="AdventuresPuckTemplate" mixin="AdventuresFollowerPuckMixin" parent="UIParent" frameStrata="DIALOG">
+		<Size x="94" y="96"/>
+	</Frame>
+
+	<Button name="AdventuresFollowerPuckTemplate" mixin="AdventuresFollowerPuckMixin" inherits="AdventuresPuckAnimatedTemplate" virtual="true">
+		<Size x="94" y="96"/>
+	</Button>
+
+	<Button name="AdventuresEnemyPuckTemplate" mixin="AdventuresEnemyPuckMixin" inherits="AdventuresPuckAnimatedTemplate" virtual="true">
+		<Size x="67" y="67"/>
+	</Button>
+	
+	<Button name="AdventuresMissionPageFollowerPuckTemplate" mixin="AdventuresMissionPageFollowerPuckMixin" inherits="AdventuresFollowerPuckTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EmptyPortrait" atlas="GarrMission_PortraitRing_Empty" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Highlight" alpha="0" alphaMode="ADD" atlas="GarrMission_PortraitRing_Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Highlight" duration="0.5" order="1" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="Highlight" startDelay="1" duration="0.5" order="1" fromAlpha="1" toAlpha="0.5"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+</Ui>

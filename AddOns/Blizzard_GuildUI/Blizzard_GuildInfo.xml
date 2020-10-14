@@ -110,21 +110,14 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
-	<Button name="GuildRecruitmentApplicantTemplate" virtual="true">
+	<Button name="GuildRecruitmentApplicantTemplate" inherits="BackdropTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="320" y="84"/>
 		</Size>	
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="12"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="12"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_12_12_4444" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.3" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
@@ -219,7 +212,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropColor(1, 1, 1, 0.3);
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				
 				if ( GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE ) then
@@ -1201,23 +1193,18 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Frame name="GuildTextEditContainer">
+			<Frame name="GuildTextEditContainer" inherits="BackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-36"/>
 					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
 					<Anchor point="BOTTOM" x="0" y="42"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="8"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="1" right="1" top="1" bottom="1"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_12_1111" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
 				<Frames>
 					<ScrollFrame name="GuildTextEditScrollFrame" inherits="MinimalScrollFrameTemplate">
 						<Anchors>
@@ -1252,12 +1239,6 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="90" y="22"/>
@@ -1314,23 +1295,18 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Frame name="GuildLogContainer">
+			<Frame name="GuildLogContainer" inherits="BackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-36"/>
 					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
 					<Anchor point="BOTTOM" x="0" y="42"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="8"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="1" right="1" top="1" bottom="1"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_12_1111" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
 				<Frames>
 					<ScrollFrame name="GuildLogScrollFrame" inherits="MinimalScrollFrameTemplate">
 						<Anchors>
@@ -1354,12 +1330,6 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="90" y="22"/>

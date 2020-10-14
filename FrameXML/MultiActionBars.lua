@@ -12,7 +12,7 @@ function MultiActionButtonDown (bar, id)
 	end
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
+		button:UpdateState();
 	end
 end
 
@@ -22,7 +22,7 @@ function MultiActionButtonUp (bar, id)
 		button:SetButtonState("NORMAL");
 		if(not GetCVarBool("ActionButtonUseKeyDown")) then
 			SecureActionButton_OnClick(button, "LeftButton");
-			ActionButton_UpdateState(button);
+			button:UpdateState();
 		end
 	end
 end
@@ -116,11 +116,11 @@ function MultiActionBar_Update ()
 	UIParent_ManageFramePositions();
 end
 
-function MultiActionBar_ShowAllGrids (reason)
-	MultiActionBar_UpdateGrid("MultiBarBottomLeft", true, reason);
-	MultiActionBar_UpdateGrid("MultiBarBottomRight", true, reason);
-	MultiActionBar_UpdateGrid("MultiBarRight", true, reason);
-	MultiActionBar_UpdateGrid("MultiBarLeft", true, reason);
+function MultiActionBar_ShowAllGrids (reason, force)
+	MultiActionBar_UpdateGrid("MultiBarBottomLeft", true, reason, force);
+	MultiActionBar_UpdateGrid("MultiBarBottomRight", true, reason, force);
+	MultiActionBar_UpdateGrid("MultiBarRight", true, reason, force);
+	MultiActionBar_UpdateGrid("MultiBarLeft", true, reason, force);
 end
 
 function MultiActionBar_HideAllGrids (reason)
@@ -130,13 +130,13 @@ function MultiActionBar_HideAllGrids (reason)
 	MultiActionBar_UpdateGrid("MultiBarLeft", false, reason);
 end
 
-function MultiActionBar_UpdateGrid (barName, show, reason)
+function MultiActionBar_UpdateGrid (barName, show, reason, force)
 	for i = 1, NUM_MULTIBAR_BUTTONS do
 		local button = _G[barName.."Button"..i];
-		if ( show and not button.noGrid) then
-			ActionButton_ShowGrid(button, reason);
+		if ( show and (force or not button.noGrid) ) then
+			button:ShowGrid(reason);
 		else
-			ActionButton_HideGrid(button, reason);
+			button:HideGrid(reason);
 		end
 	end
 end
@@ -147,6 +147,13 @@ function MultiActionBar_UpdateGridVisibility ()
 	else
 		MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	end
+end
+
+function MultiActionBar_SetAllQuickKeybindModeEffectsShown(showEffects)
+	MultiBarBottomLeft.QuickKeybindGlow:SetShown(showEffects);
+	MultiBarBottomRight.QuickKeybindGlow:SetShown(showEffects);
+	MultiBarLeft.QuickKeybindGlow:SetShown(showEffects);
+	MultiBarRight.QuickKeybindGlow:SetShown(showEffects);
 end
 
 function Multibar_EmptyFunc (show)

@@ -212,65 +212,32 @@
 					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
-			<ItemButton parentKey="ItemFrame" name="$parentItemFrame" hidden="true">
-				<Size>
-					<AbsDimension x="37" y="37"/>
-				</Size>
+			<ItemButton parentKey="ItemFrame" name="$parentItemFrame" mixin="StaticPopupItemFrameMixin" hidden="true">
+				<Size x="37" y="37"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parentButton1" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="8"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="82" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" x="0" y="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-							<Size>
-								<AbsDimension x="140" y="62"/>
-							</Size>
+							<Size x="140" y="62"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="30" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="30" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="103" y="38"/>
-							</Size>
+						<FontString parentKey="Text" name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="103" y="38"/>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="8" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						if ( self.link ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetHyperlink(self.link);
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnLoad>
-						self:GetParent().itemFrame = self;
-						self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
-					</OnLoad>
-					<OnEvent function="StaticPopupItemFrame_OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</ItemButton>
 		</Frames>

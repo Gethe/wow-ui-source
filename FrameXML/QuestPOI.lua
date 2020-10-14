@@ -12,7 +12,6 @@ function QuestPOI_Initialize(parent, onCreateFunc)
 	parent.poiOnCreateFunc = onCreateFunc;
 end
 
-
 function QuestPOI_ResetUsage(parent)
 	for _, poiType in pairs(parent.poiTable) do
 		for _, poiButton in pairs(poiType) do
@@ -22,27 +21,270 @@ function QuestPOI_ResetUsage(parent)
 	QuestPOI_ClearSelection(parent);
 end
 
-function QuestPOI_CalculateNumericTexCoords(index, color)
-	color = color or QUEST_POI_COLOR_YELLOW;
-	local iconIndex = index - 1;
-	local yOffset = color + floor(iconIndex / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-	local xOffset = mod(iconIndex, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-	return xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE;
+function QuestPOI_SetPinScale(poiButton, scale)
+	poiButton.pinScale = scale;
+
+	if poiButton.Display then
+		poiButton.Display.pinScale = scale;
+	end
 end
 
-function QuestPOI_GetButton(parent, questID, style, index)
+function QuestPOI_GetPinScale(poiButton)
+	return poiButton.pinScale or 1;
+end
+
+function QuestPOI_CalculateNumericTexCoords(index, color)
+	if index then
+		color = color or QUEST_POI_COLOR_YELLOW;
+		local iconIndex = index - 1;
+		local yOffset = color + floor(iconIndex / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
+		local xOffset = mod(iconIndex, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
+		return xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE;
+	end
+end
+
+-- NOTE: These utility functions for setting a texture are used by other Texture regions on the poiButton.
+-- Nothing should need to call these externally.
+local function QuestPOI_SetTextureSize(texture, width, height)
+	if texture then
+		local scale = QuestPOI_GetPinScale(texture:GetParent());
+		texture:SetSize(scale * width, scale * height);
+	end
+end
+
+local function QuestPOI_SetTexture(texture, width, height, file, texLeft, texRight, texTop, texBottom)
+	if texture then
+		texture:SetTexture(file);
+		texture:SetTexCoord(texLeft or 0, texRight or 1, texTop or 0, texBottom or 1);
+		QuestPOI_SetTextureSize(texture, width, height);
+	end
+end
+
+local function QuestPOI_SetAtlas(texture, width, height, atlas)
+	-- Using this with shared controls that may not have all the same children
+	if texture then
+		local useAtlasSize = not width and not height;
+		texture:SetTexCoord(0, 1, 0, 1);
+		texture:SetAtlas(atlas, useAtlasSize);
+
+		if not useAtlasSize then
+			QuestPOI_SetTextureSize(texture, width, height);
+		end
+	end
+end
+
+QuestPOIDisplayLayerMixin = {};
+
+function QuestPOIDisplayLayerMixin:SetOffset(x, y)
+	self.offsetX = x;
+	self.offsetY = y;
+	self:UpdatePoint(false);
+end
+
+function QuestPOIDisplayLayerMixin:UpdatePoint(isPushed)
+	if self:GetParent():IsEnabled() then
+		local pushedX = isPushed and 1 or 0;
+		local pushedY = isPushed and -1 or 0;
+		local x = (self.offsetX or 0) + pushedX;
+		local y = (self.offsetY or 0) + pushedY;
+		PixelUtil.SetPoint(self, "CENTER", self:GetParent(), "CENTER", x, y, x, y);
+	end
+end
+
+function QuestPOIDisplayLayerMixin:SetNumber(value)
+	local poiButton = self:GetParent();
+	local color = poiButton.selected and QUEST_POI_COLOR_BLACK or QUEST_POI_COLOR_YELLOW;
+	QuestPOI_SetTexture(self.Icon, 32, 32, "Interface/WorldMap/UI-QuestPoi-NumberIcons", QuestPOI_CalculateNumericTexCoords(value, color));
+	self:SetOffset(0, 0);
+end
+
+function QuestPOIDisplayLayerMixin:SetTextureSize(width, height)
+	QuestPOI_SetTextureSize(self.Icon, width, height);
+end
+
+function QuestPOIDisplayLayerMixin:SetTexture(width, height, file, texLeft, texRight, texTop, texBottom)
+	QuestPOI_SetTexture(self.Icon, width, height, file, texLeft, texRight, texTop, texBottom);
+end
+
+function QuestPOIDisplayLayerMixin:SetAtlas(width, height, atlas)
+	QuestPOI_SetAtlas(self.Icon, width, height, atlas);
+end
+
+function QuestPOI_GetStyleFromQuestData(poiButton, isComplete, isWaypoint)
+	if isWaypoint then
+		return "waypoint";
+	elseif isComplete then
+		return "normal";
+	else
+		return "numeric";
+	end
+end
+
+function QuestPOI_GetTextureInfoNormal(poiButton)
+	if poiButton.selected then
+		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.500, 0.625, 0.375, 0.5;
+	else
+		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.500, 0.625, 0.875, 1.0;
+	end
+end
+
+function QuestPOI_GetTextureInfoPushed(poiButton)
+	if poiButton.selected then
+		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.375, 0.500, 0.375, 0.5;
+	else
+		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.375, 0.500, 0.875, 1.0;
+	end
+end
+
+function QuestPOI_GetTextureInfoHighlight(poiButton)
+	return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.625, 0.750, 0.375, 0.5;
+end
+
+function QuestPOI_GetCampaignAtlasInfoNormal(poiButton)
+	if poiButton.selected then
+		return "UI-QuestPoiCampaign-QuestNumber-SuperTracked";
+	else
+		return "UI-QuestPoiCampaign-QuestNumber";
+	end
+end
+
+function QuestPOI_GetCampaignAtlasInfoPushed(poiButton)
+	if poiButton.selected then
+		return "UI-QuestPoiCampaign-QuestNumber-Pressed-SuperTracked";
+	else
+		return "UI-QuestPoiCampaign-QuestNumber-Pressed";
+	end
+end
+
+function QuestPOI_GetButtonAlpha(poiButton)
+	return poiButton.style ~= "disabled" and 1 or 0;
+end
+
+function QuestPOI_GetQuestCompleteAtlas(poiButton)
+	local isLegendaryQuest = C_QuestLog.IsLegendaryQuest(poiButton.questID);
+	return isLegendaryQuest and "UI-QuestIcon-TurnIn-Legendary" or "UI-QuestIcon-TurnIn-Normal";
+end
+
+function QuestPOI_SetNumber(poiButton)
+	poiButton.Display:SetNumber(poiButton.index);
+end
+
+Enum.QuestPOIQuestTypes = {
+	Normal = 1,
+	Campaign = 2,
+	Calling = 3,
+};
+
+local function QuestPOI_GetQuestType(poiButton)
+	local quest = QuestCache:Get(poiButton.questID);
+	if QuestUtil.ShouldQuestIconsUseCampaignAppearance(poiButton.questID) then
+		return Enum.QuestPOIQuestTypes.Campaign;
+	elseif quest:IsCalling() then
+		return Enum.QuestPOIQuestTypes.Calling;
+	else
+		return Enum.QuestPOIQuestTypes.Normal;
+	end
+end
+
+function QuestPOI_UpdateNumericStyleTextures(poiButton)
+	QuestPOI_SetTextureSize(poiButton.Number, 32, 32);
+
+	if QuestPOI_GetQuestType(poiButton) ~= Enum.QuestPOIQuestTypes.Normal then
+		QuestPOI_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");
+		QuestPOI_SetAtlas(poiButton.NormalTexture, 32, 32, QuestPOI_GetCampaignAtlasInfoNormal(poiButton));
+		QuestPOI_SetAtlas(poiButton.PushedTexture, 32, 32, QuestPOI_GetCampaignAtlasInfoPushed(poiButton));
+		QuestPOI_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiCampaign-InnerGlow");
+	else
+		QuestPOI_SetTexture(poiButton.Glow, 50, 50, "Interface/WorldMap/UI-QuestPoi-IconGlow");
+		QuestPOI_SetTexture(poiButton.NormalTexture, 32, 32, QuestPOI_GetTextureInfoNormal(poiButton));
+		QuestPOI_SetTexture(poiButton.PushedTexture, 32, 32, QuestPOI_GetTextureInfoPushed(poiButton));
+		QuestPOI_SetTexture(poiButton.HighlightTexture, 32, 32, QuestPOI_GetTextureInfoHighlight(poiButton));
+	end
+end
+
+function QuestPOI_UpdateNormalStyleTexture(poiButton)
+	-- This may be overridden later
+	poiButton.Display:SetOffset(0, 0);
+
+	local questPOIType = QuestPOI_GetQuestType(poiButton);
+
+	if questPOIType == Enum.QuestPOIQuestTypes.Campaign then
+		poiButton.Display:SetAtlas(32, 32, "UI-QuestPoiCampaign-QuestBangTurnIn");
+	elseif questPOIType == Enum.QuestPOIQuestTypes.Calling then
+		poiButton.Display:SetAtlas(32, 32, "UI-DailyQuestPoiCampaign-QuestBangTurnIn");
+	end
+
+	if questPOIType == Enum.QuestPOIQuestTypes.Normal then
+		poiButton.Display:SetAtlas(24, 24, QuestPOI_GetQuestCompleteAtlas(poiButton));
+		QuestPOI_SetTexture(poiButton.Glow, 50, 50, "Interface/WorldMap/UI-QuestPoi-IconGlow");
+		QuestPOI_SetTexture(poiButton.NormalTexture, 32, 32, QuestPOI_GetTextureInfoNormal(poiButton));
+		QuestPOI_SetTexture(poiButton.PushedTexture, 32, 32, QuestPOI_GetTextureInfoPushed(poiButton));
+		QuestPOI_SetTexture(poiButton.HighlightTexture, 32, 32, QuestPOI_GetTextureInfoHighlight(poiButton));
+	else
+		poiButton.Display:SetOffset(0, 0);
+		QuestPOI_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");
+		QuestPOI_SetAtlas(poiButton.NormalTexture, 32, 32, QuestPOI_GetCampaignAtlasInfoNormal(poiButton));
+		QuestPOI_SetAtlas(poiButton.PushedTexture, 32, 32, QuestPOI_GetCampaignAtlasInfoPushed(poiButton));
+		QuestPOI_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiCampaign-InnerGlow");
+	end
+
+	local buttonAlpha = QuestPOI_GetButtonAlpha(poiButton);
+	poiButton.NormalTexture:SetAlpha(buttonAlpha);
+	poiButton.PushedTexture:SetAlpha(buttonAlpha);
+
+	local style = poiButton.style; -- NOTE: Older unused style of "map"...not sure where it was ever used.
+	if style == "normal" then
+		-- Nothing else to do
+	elseif style == "waypoint" then
+		poiButton.Display:SetAtlas(13, 17, "poi-traveldirections-arrow");
+	elseif style == "disabled" then
+		poiButton.Display:SetAtlas(24, 29, "QuestSharing-QuestLog-Padlock");
+	elseif style == "threat" then
+		poiButton.Display:SetAtlas(14, 14, "worldquest-icon-nzoth");
+		poiButton.Display:SetOffset(0, 0);
+	end
+end
+
+function QuestPOI_UpdateNumericStyle(poiButton)
+	QuestPOI_UpdateNumericStyleTextures(poiButton);
+	QuestPOI_SetNumber(poiButton);
+end
+
+function QuestPOI_UpdateNormalStyle(poiButton)
+	-- Start with the defaults and shared pieces, some of these may change from the other update functions
+	QuestPOI_UpdateNormalStyleTexture(poiButton);
+end
+
+function QuestPOI_UpdateButtonStyle(poiButton)
+	if poiButton.style == "numeric" then
+		QuestPOI_UpdateNumericStyle(poiButton);
+	else
+		QuestPOI_UpdateNormalStyle(poiButton);
+	end
+
+	if poiButton.Glow then
+		poiButton.Glow:SetShown(poiButton.selected);
+	end
+end
+
+local function QuestPOI_CallOnCreateFunction(parent, poiButton)
+	if parent.poiOnCreateFunc then
+		parent.poiOnCreateFunc(poiButton);
+	end
+end
+
+local function QuestPOI_GetButtonInternal(parent, questID, style, index)
 	local poiButton;
-	if ( style == "numeric" ) then
+
+	if style == "numeric" then
 		-- numbered POI
-		poiButton = parent.poiTable["numeric"][index];
+		poiButton = parent.poiTable[style][index];
 		if ( not poiButton ) then
 			poiButton = CreateFrame("Button", nil, parent, "QuestPOINumericTemplate");
 			parent.poiTable["numeric"][index] = poiButton;
-			poiButton.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(index));
 			poiButton.index = index;
-			if ( parent.poiOnCreateFunc ) then
-				parent.poiOnCreateFunc(poiButton);
-			end
+			QuestPOI_SetNumber(poiButton);
+			QuestPOI_CallOnCreateFunction(parent, poiButton);
 		end
 	else
 		-- completed or waypoint POI
@@ -52,73 +294,11 @@ function QuestPOI_GetButton(parent, questID, style, index)
 				break;
 			end
 		end
-		if ( not poiButton ) then
+
+		if not poiButton then
 			poiButton = CreateFrame("Button", nil, parent, "QuestPOICompletedTemplate");
 			tinsert(parent.poiTable["completed"], poiButton);
-			if ( parent.poiOnCreateFunc ) then
-				parent.poiOnCreateFunc(poiButton);
-			end
-		end
-
-		if ( poiButton.style ~= style ) then
-			-- default style is "normal"
-			poiButton.Icon.offsetX = -1;
-			poiButton.Icon.offsetY = 0;
-			if ( style == "normal" ) then
-				poiButton.FullHighlightTexture:Show();
-				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 0.5, 0, 0.5);
-				poiButton.Icon:SetTexture("Interface\\WorldMap\\UI-WorldMap-QuestIcon");
-				poiButton.Icon:SetSize(24, 24);
-				poiButton.NormalTexture:SetAlpha(1);
-				poiButton.PushedTexture:SetAlpha(1);
-				poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.375, 0.5);
-				poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
-			elseif ( style == "map" ) then
-				poiButton.FullHighlightTexture:Hide();
-				poiButton.IconHighlightTexture:Show();
-				poiButton.Icon:SetTexCoord(0, 0.5, 0, 0.5);
-				poiButton.Icon:SetTexture("Interface\\WorldMap\\UI-WorldMap-QuestIcon");
-				poiButton.Icon:SetSize(32, 32);
-				poiButton.NormalTexture:SetAlpha(0);
-				poiButton.PushedTexture:SetAlpha(0);
-			elseif ( style == "remote" ) then
-				poiButton.FullHighlightTexture:Show();
-				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 0.5, 0, 0.5);
-				poiButton.Icon:SetTexture("Interface\\WorldMap\\UI-WorldMap-QuestIcon");
-				poiButton.Icon:SetSize(24, 24);
-				poiButton.NormalTexture:SetAlpha(1);
-				poiButton.PushedTexture:SetAlpha(1);
-				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-				poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-			elseif ( style == "waypoint" ) then
-				poiButton.FullHighlightTexture:Show();
-				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 1, 0, 1);
-				poiButton.Icon:SetAtlas("poi-traveldirections-arrow");
-				poiButton.Icon:SetSize(13, 17);
-				poiButton.NormalTexture:SetAlpha(1);
-				poiButton.PushedTexture:SetAlpha(1);
-				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-				poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-			elseif ( style == "disabled" ) then
-				poiButton.FullHighlightTexture:Hide();
-				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 1, 0, 1);
-				poiButton.Icon:SetAtlas("QuestSharing-QuestLog-Padlock", true);
-				poiButton.NormalTexture:SetAlpha(0);
-				poiButton.PushedTexture:SetAlpha(0);
-			elseif ( style == "threat" ) then
-				poiButton.FullHighlightTexture:Show();
-				poiButton.IconHighlightTexture:Hide();
-				poiButton.Icon:SetTexCoord(0, 1, 0, 1);
-				poiButton.Icon:SetAtlas("worldquest-icon-nzoth", true);
-				poiButton.NormalTexture:SetAlpha(1);
-				poiButton.PushedTexture:SetAlpha(1);
-				poiButton.Icon.offsetX = 0;
-			end
-			poiButton.Icon:SetPoint("CENTER", poiButton.Icon.offsetX, poiButton.Icon.offsetY);
+			QuestPOI_CallOnCreateFunction(parent, poiButton);
 		end
 	end
 
@@ -128,8 +308,18 @@ function QuestPOI_GetButton(parent, questID, style, index)
 	poiButton.used = true;
 	poiButton.poiParent = parent;
 	poiButton.pingWorldMap = false;
-	poiButton:Show();
 
+	return poiButton;
+end
+
+function QuestPOI_GetButton(parent, questID, style, index)
+	if C_QuestLog.IsQuestCalling(questID) then
+		return;
+	end
+
+	local poiButton = QuestPOI_GetButtonInternal(parent, questID, style, index);
+	QuestPOI_UpdateButtonStyle(poiButton);
+	poiButton:Show();
 	return poiButton;
 end
 
@@ -156,68 +346,22 @@ end
 
 function QuestPOI_SelectButton(poiButton)
 	local parent = poiButton.poiParent;
-	if ( parent.poiSelectedButton ) then
-		if ( parent.selectedPOI == poiButton ) then
-			return;
-		else
-			QuestPOI_ClearSelection(parent);
-		end
+	if parent.poiSelectedButton then
+		QuestPOI_ClearSelection(parent);
 	end
 
-	poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
-	poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
-	local style = poiButton.style;
-	if ( style == "numeric" ) then
-		QuestPOI_SetTextColor(poiButton, QUEST_POI_COLOR_BLACK);
-	else
-		if ( style == "map" ) then
-			poiButton.FullHighlightTexture:Show();
-			poiButton.IconHighlightTexture:Hide();
-			poiButton.Icon:SetSize(24, 24);
-			poiButton.NormalTexture:SetAlpha(1);
-			poiButton.PushedTexture:SetAlpha(1);
-		end
-	end
-	poiButton.Glow:Show();
-	poiButton.selected = true;
 	parent.poiSelectedButton = poiButton;
+	poiButton.selected = true;
+	QuestPOI_UpdateButtonStyle(poiButton);
 end
 
 function QuestPOI_ClearSelection(parent)
 	local poiButton = parent.poiSelectedButton;
-	if ( poiButton ) then
-		local style = poiButton.style;
-		if ( style == "numeric" ) then
-			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
-			QuestPOI_SetTextColor(poiButton, QUEST_POI_COLOR_YELLOW);
-		elseif ( style == "normal" ) then
-			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
-		elseif ( style == "remote" ) then
-			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-		elseif ( style == "waypoint" ) then
-			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-		elseif ( style == "map" ) then
-			poiButton.FullHighlightTexture:Hide();
-			poiButton.IconHighlightTexture:Show();
-			poiButton.Icon:SetSize(32, 32);
-			poiButton.NormalTexture:SetAlpha(0);
-			poiButton.PushedTexture:SetAlpha(0);
-		elseif ( style == "threat" ) then
-			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
-		end
-		poiButton.Glow:Hide();
-		poiButton.selected = nil;
+	if poiButton then
 		parent.poiSelectedButton = nil;
+		poiButton.selected = nil;
+		QuestPOI_UpdateButtonStyle(poiButton);
 	end
-end
-
-function QuestPOI_SetTextColor(poiButton, color)
-	poiButton.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(poiButton.index, color));
 end
 
 function QuestPOI_HideUnusedButtons(parent)
@@ -240,23 +384,11 @@ function QuestPOI_HideAllButtons(parent)
 end
 
 function QuestPOIButton_OnMouseDown(self)
-	if self:IsEnabled() then
-		if ( self.style == "numeric" ) then
-			self.Number:SetPoint("CENTER", 1, -1);
-		else
-			self.Icon:SetPoint("CENTER", self.Icon.offsetX + 1, self.Icon.offsetY - 1);
-		end
-	end
+	self.Display:UpdatePoint(true);
 end
 
 function QuestPOIButton_OnMouseUp(self)
-	if self:IsEnabled() then
-		if ( self.style == "numeric" ) then
-			self.Number:SetPoint("CENTER", 0, 0);
-		else
-			self.Icon:SetPoint("CENTER", self.Icon.offsetX, self.Icon.offsetY);
-		end
-	end
+	self.Display:UpdatePoint(false);
 end
 
 function QuestPOIButton_OnClick(self)
@@ -267,17 +399,16 @@ function QuestPOIButton_OnClick(self)
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local questLogIndex = GetQuestLogIndexByID(questID);
-	if ( IsQuestWatched(questLogIndex) ) then
+	if QuestUtils_IsQuestWatched(questID) then
 		if ( IsShiftKeyDown() ) then
 			QuestObjectiveTracker_UntrackQuest(nil, questID);
 			return;
 		end
 	else
-		AddQuestWatch(questLogIndex, true);
+		C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
 	end
 
-	SetSuperTrackedQuestID(questID);
+	C_SuperTrack.SetSuperTrackedQuestID(questID);
 	if self.pingWorldMap then
 		WorldMapPing_StartPingQuest(questID);
 	end

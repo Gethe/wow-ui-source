@@ -363,7 +363,7 @@ local function ChannelListDropDown_Initialize(dropdown)
 	local category = channel:GetCategory();
 
 	if channel:ChannelSupportsText() then
-		if channelFrame:IsCategoryCustom(category) then
+		if ChannelFrame_IsCategoryCustom(category) then
 			-- SET PASSWORD if it is a custom Channel and is owner
 			if IsDisplayChannelOwner() then
 				info = UIDropDownMenu_CreateInfo();
@@ -386,7 +386,7 @@ local function ChannelListDropDown_Initialize(dropdown)
 		end
 
 		-- JOIN if it is a Global Channel
-		if channelFrame:IsCategoryGlobal(category) and not channel:IsActive() then
+		if ChannelFrame_IsCategoryGlobal(category) and not channel:IsActive() then
 			info = UIDropDownMenu_CreateInfo();
 			info.text = CHAT_JOIN;
 			info.notCheckable = 1;
@@ -396,7 +396,7 @@ local function ChannelListDropDown_Initialize(dropdown)
 		end
 
 		-- LEAVE Channel if not a group channel
-		if not channelFrame:IsCategoryGroup(category) and channel:IsActive() then
+		if channel:AllowedToLeave() then
 			info = UIDropDownMenu_CreateInfo();
 			info.text = CHAT_LEAVE;
 			info.notCheckable = 1;

@@ -94,7 +94,7 @@
 	</Font>
 	<Font name="GlueFontNormalLargeLeft" inherits="GlueFontNormalLarge" justifyH="LEFT" virtual="true"/>
 	<Font name="GlueFontNormalLargeLeftTop" inherits="GlueFontNormalLargeLeft" justifyV="TOP" virtual="true"/>
-	<Font name="GlueFontNormalHuge" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
+	<Font name="GlueFontNormalHuge" inherits="SystemFont22_Shadow_Outline" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 	<Font name="GlueFontNormalGigantor" inherits="SystemFont_Shadow_Outline_Gigantor" virtual="true">
@@ -154,9 +154,6 @@
 	<Font name="OptionsFontHighlightSmallLeft" inherits="OptionsFontHighlightSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontHighlightSmallLeftTop" inherits="OptionsFontHighlightSmallLeft" justifyV="TOP" virtual="true"/>
 
-	<Font name="CharacterCreateTooltipFont" inherits="SystemFont_Outline_Med2" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
 	<Font name="QuestFontNormalLarge" inherits="QuestFont_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>
 	</Font>

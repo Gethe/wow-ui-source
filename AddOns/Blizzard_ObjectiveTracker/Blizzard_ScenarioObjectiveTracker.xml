@@ -277,6 +277,10 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+								<KeyValues>
+									<KeyValue key="verticalAnchorPoint" value="TOPRIGHT" type="string"/>
+									<KeyValue key="verticalRelativePoint" value="TOPRIGHT" type="string"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
@@ -519,59 +523,28 @@
 							</StatusBar>
 						</Frames>
 					</Frame>
-					<Frame name="ScenarioWidgetContainerBlock" inherits="UIWidgetContainerTemplate" hidden="true" />
+					<Frame name="ScenarioWidgetContainerBlock" hidden="true">
+						<Frames>
+							<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-15"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
 				</Frames>
 			</Frame>
 		</ScrollChild>
 		<Frames>
-			<Frame parentKey="WarfrontHelpBox" inherits="GlowBoxTemplate" hidden="true">
-				<Size x="220" y="65"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeKey="$parent.ScrollContents.ScenarioStageBlock" x="-29" y="-1"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="BigText" inherits="GameFontHighlight" justifyH="LEFT" text="WARFRONT_TUTORIAL_RESOURCES">
-							<Size x="176" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="-1" y="-12"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="ArrowRight" inherits="HelpPlateArrowDOWN">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlowRight" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
+			<Frame parentKey="MawBuffsBlock">
+				<Size x="243" y="50"/>
 				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+					<Button parentKey="Container" inherits="MawBuffsContainer">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
+							<Anchor point="TOPRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():Hide();
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARFRONT_RESOURCES, true);
-							</OnClick>
-						</Scripts>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						SetClampedTextureRotation(self.ArrowRight, 270);
-						SetClampedTextureRotation(self.ArrowGlowRight, 270);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -709,7 +682,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="100" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
@@ -719,11 +692,6 @@
 			<KeyValue key="rightPadding" value="10" type="number"/>
 			<KeyValue key="spacing" value="8" type="number"/>
 		</KeyValues>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-		</Backdrop>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
@@ -752,12 +720,6 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 
 </Ui>

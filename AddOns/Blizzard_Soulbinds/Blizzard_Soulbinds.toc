@@ -1,0 +1,14 @@
+## Title: Blizzard Soulbinds
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+Blizzard_SoulbindsUtil.lua
+Blizzard_SoulbindsTemplates.xml
+Blizzard_SoulbindsSelectButton.xml
+Blizzard_SoulbindsSelectGroup.xml
+Blizzard_SoulbindsConduit.lua
+Blizzard_SoulbindsConduitList.xml
+Blizzard_SoulbindsNode.xml
+Blizzard_SoulbindsNodeLink.xml
+Blizzard_SoulbindsTree.xml
+Blizzard_SoulbindsViewer.xml
+Blizzard_Soulbinds.xml

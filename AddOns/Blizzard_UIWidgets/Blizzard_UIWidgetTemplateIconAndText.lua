@@ -30,7 +30,7 @@ end
 
 function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
-	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, TextureKitConstants.SetVisiblity);
+	SetupTextureKitOnRegions(widgetInfo.textureKit, self, textureKitRegions, TextureKitConstants.SetVisibility);
 
 	self.Text:SetText(widgetInfo.text);
 	self:SetTooltip(widgetInfo.tooltip);

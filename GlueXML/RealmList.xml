@@ -152,7 +152,7 @@
 				end
 			</OnEnter>
 			<OnLeave>
-				if (GlueTooltip_GetOwner(GlueTooltip) == self) then
+				if GlueTooltip:GetOwner() == self then
 					GlueTooltip:Hide();
 				end
 			</OnLeave>
@@ -358,9 +358,9 @@
 								</Frames>
 							</ScrollFrame>
 							<Button name="RealmListCancelButton" inherits="GlueDialogButtonTemplate" text="CANCEL">
-								<Size x="125" y="35"/>
+								<Size x="125" y="26"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-46" y="13"/>
+									<Anchor point="BOTTOMRIGHT" x="-53" y="19"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -370,9 +370,9 @@
 								</Scripts>
 							</Button>
 							<Button name="RealmListOkButton" inherits="GlueDialogButtonTemplate" text="OKAY">
-								<Size x="125" y="35"/>
+								<Size x="125" y="26"/>
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="RealmListCancelButton" relativePoint="LEFT" x="8" y="0"/>
+									<Anchor point="RIGHT" relativeTo="RealmListCancelButton" relativePoint="LEFT" x="-5" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>

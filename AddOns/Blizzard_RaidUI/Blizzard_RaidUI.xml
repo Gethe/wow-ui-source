@@ -445,7 +445,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="1.0" g="0" b="0"/>
 			</StatusBar>
-			<Frame name="$parentTargetTargetFrame" hidden="true">
+			<Frame name="$parentTargetTargetFrame" hidden="true" inherits="TooltipBackdropTemplate">
 				<Size x="90" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" x="6" y="-15"/>
@@ -460,22 +460,12 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self:SetFrameLevel(self:GetFrameLevel()-1);
-						self:SetBackdropBorderColor(0.5, 0.5, 0.5);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 						self:SetAlpha(0.7);
 					</OnLoad>
 					<OnMouseUp>
@@ -623,25 +613,10 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentMenuBackdrop" setAllPoints="true">
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.5, 0.5, 0.5);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-						self:SetAlpha(0.7);
-					</OnLoad>
-				</Scripts>
+			<Frame name="$parentMenuBackdrop" setAllPoints="true" inherits="TooltipBackdropTemplate" alpha="0.7">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<HitRectInsets>

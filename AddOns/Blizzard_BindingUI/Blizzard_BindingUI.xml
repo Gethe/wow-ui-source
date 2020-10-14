@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_BindingUI.lua"/>
-	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
+	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true" mixin="KeyBindingButtonMixin">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="selectedHighlight" file="Interface\Buttons\UI-Silver-Button-Select" alphaMode="ADD" hidden="true">
@@ -13,12 +13,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				KeyBindingButton_OnClick(self, button, down);
-			</OnClick>
-			<OnLoad>
-				self:RegisterForClicks("AnyUp");
-			</OnLoad>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
@@ -35,7 +31,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Frame name="KeyBindingFrameBindingTemplate" virtual="true">
+	<Frame name="KeyBindingFrameBindingTemplate" virtual="true" mixin="KeyBindingFrameBindingTemplateMixin">
 		<Size x="560" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -67,16 +63,45 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Button name="KeybindingsCategoryListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
+	<Button name="KeybindingsCategoryListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true" mixin="KeybindingsCategoryListButtonMixin">
 		<Scripts>
 			<OnLoad>
 				OptionsListButton_OnLoad(self);
 			</OnLoad>
-			<OnClick function="KeybindingsCategoryListButton_OnClick"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+	<Button name="KeybindsCancelButtonTemplate" inherits="UIPanelButtonTemplate" text="CANCEL" virtual="true" mixin="KeybindingsCancelButtonMixin">
+		<Size x="96" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<CheckButton name="KeybindsCharacterSpecificButtonTemplate" inherits="UICheckButtonTemplate" virtual="true" mixin="KeybindingsCharacterSpecificButtonMixin">
+		<Size x="20" y="20"/>
+		<HitRectInsets left="0" right="-100" top="0" bottom="0"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnHide"/>
+		</Scripts>
+	</CheckButton>
+	<Button name="KeybindingsOkayButtonTemplate" inherits="UIPanelButtonTemplate" text="OKAY" virtual="true" mixin="KeybindingsOkayButtonMixin">
+		<Size x="96" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="KeybindingsDefaultsButtonTemplate" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT" virtual="true" mixin="KeybindingsDefaultsButtonMixin">
+		<Size x="150" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="KeybindingsPhantomFrameTemplate" inherits="QuickKeybindButtonTemplate" registerForClicks="AnyUp" virtual="true"/>
 
-	<Button name="KeyBindingFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true">
+	<Button name="KeyBindingFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true" mixin="KeyBindingFrameMixin">
 		<Size x="858" y="660"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -126,93 +151,68 @@
 					<KeyValue key="textString" value="KEY_BINDINGS" type="global"/>
 				</KeyValues>
 			</Frame>
-			<CheckButton parentKey="characterSpecificButton" inherits="UICheckButtonTemplate">
-				<Size x="20" y="20"/>
+			<CheckButton parentKey="characterSpecificButton" inherits="KeybindsCharacterSpecificButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-245" y="-20"/>
 				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="0" right="-100" top="0" bottom="0"/>
-				</HitRectInsets>
-				<Scripts>
-					<OnLoad function="CharacterSpecificButton_OnLoad"/>
-					<OnClick function="CharacterSpecificButton_OnClick"/>
-					<OnEnter function="CharacterSpecificButton_OnEnter"/>
-					<OnLeave function="CharacterSpecificButton_OnHide"/>
-				</Scripts>
 			</CheckButton>
-			<Button parentKey="unbindButton" inherits="UIPanelButtonTemplate" text="UNBIND">
-				<Size x="130" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-205" y="16"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="UnbindButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="okayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.unbindButton" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="OkayButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.okayButton" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="CancelButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="defaultsButton" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT">
-				<Size x="130" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="16" y="16"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="DefaultsButton_OnClick"/>
-				</Scripts>
-			</Button>
 			<Frame name="$parentCategoryList" parentKey="categoryList" inherits="OptionsFrameListTemplate">
 				<Size x="175" y="569"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = CATEGORY;
-						OptionsList_OnLoad(self, "KeyBindingsCategoryListButtonTemplate");
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="KeyBindingsCategoryListButtonTemplate" type="string"/>
+				</KeyValues>
 			</Frame>
-			<Frame parentKey="bindingsContainer">
+			<Button parentKey="defaultsButton" inherits="KeybindingsDefaultsButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+					<Anchor point="LEFT" relativeKey="$parent.categoryList" relativePoint="LEFT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="bindingsContainer" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.categoryList" relativePoint="TOPRIGHT" x="16" y="0"/>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.categoryList" relativePoint="BOTTOMRIGHT" x="16" y="1"/>
 					<Anchor point="RIGHT" x="-22" y="0"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 			</Frame>
-			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="FauxScrollFrameTemplate">
+			<Button parentKey="cancelButton" inherits="KeybindsCancelButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.defaultsButton" relativePoint="BOTTOM"/>
+					<Anchor point="RIGHT" relativeKey="$parent.bindingsContainer" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="okayButton" inherits="KeybindingsOkayButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.cancelButton" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="unbindButton" inherits="UIPanelButtonTemplate" text="UNBIND" mixin="KeybindingsUnbindButtonMixin">
+				<Size x="130" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.okayButton" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="quickKeybindButton" inherits="UIPanelButtonTemplate" text="QUICK_KEYBIND_MODE_BUTTON" mixin="QuickKeybindButtonMixin">
+				<Size x="200" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.bindingsContainer" relativePoint="LEFT" x="0" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.cancelButton" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="FauxScrollFrameTemplate" mixin="KeyBindingFrameScrollFrameMixin">
 				<Size x="560" y="554"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-51" y="-49"/>
@@ -252,27 +252,115 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, KEY_BINDING_HEIGHT, KeyBindingFrame_Update);
-					</OnVerticalScroll>
-					<OnMouseWheel>
-						if ( not KeyBindingFrame.selected ) then
-							ScrollFrameTemplate_OnMouseWheel(self, delta);
-						else
-							KeyBindingFrame_OnMouseWheel(KeyBindingFrame, delta);
-						end
-					</OnMouseWheel>
+					<OnVerticalScroll method="OnVerticalScroll"/>
+					<OnMouseWheel method="OnMouseWheel"/>
 				</Scripts>
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnClick function="KeyBindingFrame_OnKeyDown"/>
-			<OnKeyDown function="KeyBindingFrame_OnKeyDown"/>
-			<OnShow function="KeyBindingFrame_OnShow"/>
-			<OnHide function="KeyBindingFrame_OnHide"/>
-			<OnLoad function="KeyBindingFrame_OnLoad"/>
-			<OnEvent function="KeyBindingFrame_OnEvent"/>
-			<OnMouseWheel function="KeyBindingFrame_OnMouseWheel"/>
+			<OnClick method="OnKeyDown"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnKeyDown"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="QuickKeybindFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true" mixin="QuickKeybindFrameMixin">
+		<Size x="450" y="250"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="instructionText" inherits="GameFontWhite" text="QUICK_KEYBIND_DESCRIPTION" wordwrap="true">
+					<Size x="400" y="50"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="cancelDescriptionText" inherits="GameFontWhite" text="QUICK_KEYBIND_CANCEL_DESCRIPTION" wordwrap="true">
+					<Size x="400" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.instructionText" relativePoint="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="outputText" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.cancelDescriptionText" relativePoint="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="QUICK_KEYBIND_MODE" type="global"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="characterSpecificButton" inherits="KeybindsCharacterSpecificButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="-82" y="-65"/>
+				</Anchors>
+			</CheckButton>
+			<Button parentKey="defaultsButton" inherits="KeybindingsDefaultsButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-95"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="cancelButton" inherits="KeybindsCancelButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.defaultsButton" relativePoint="BOTTOMRIGHT" x="25" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="okayButton" inherits="KeybindingsOkayButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.defaultsButton" relativePoint="BOTTOMLEFT" x="-25" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="phantomExtraActionButton" inherits="KeybindingsPhantomFrameTemplate" mixin="PhantomExtraActionButtonMixin">
+				<Size x="50" y="50"/>
+				<KeyValues>
+					<KeyValue key="commandName" value="EXTRAACTIONBUTTON1" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM" x="0" y="150"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+							<Size x="36" y="10"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-5" y="-8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="normalTexture" file="Interface\Buttons\UI-Quickslot2">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-16" y="16"/>
+								<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnKeyDown"/>
+			<OnMouseWheel method="OnMouseWheel"/>
 		</Scripts>
 	</Button>
 </Ui>

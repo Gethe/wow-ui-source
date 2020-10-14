@@ -6,16 +6,10 @@
 
 	<Frame name="VideoOptionsFrame" frameLevel="7" inherits="OptionsFrameTemplate">
 		<Frames>
-			<Button name="$parentApply" inherits="GlueButtonSmallTemplateBlue" text="APPLY">
-				<Size>
-					<AbsDimension x="110" y="38"/>
-				</Size>
+			<Button name="$parentApply" inherits="GlueButtonSmallTemplate" text="APPLY">
+				<Size x="100" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-32" y="56"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-39" y="62"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -28,43 +22,28 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancel" inherits="GlueButtonSmallTemplateBlue" text="CANCEL">
-				<Size>
-					<AbsDimension x="110" y="38"/>
-				</Size>
+			<Button name="$parentCancel" inherits="GlueButtonSmallTemplate" text="CANCEL">
+				<Size x="100" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="17"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="VideoOptionsFrameCancel_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentOkay" inherits="GlueButtonSmallTemplateBlue" text="OKAY">
-				<Size>
-					<AbsDimension x="110" y="38"/>
-				</Size>
+			<Button name="$parentOkay" inherits="GlueButtonSmallTemplate" text="OKAY">
+				<Size x="100" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT" x="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="VideoOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentDefault" inherits="GlueButtonSmallTemplateBlue" text="RECOMMENDED">
-				<Size>
-					<AbsDimension x="140" y="38"/>
-				</Size>
+			<Button name="$parentDefault" inherits="GlueButtonSmallTemplate" text="RECOMMENDED">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="16" y="8"/>
-						</Offset>
-					</Anchor>
-			</Anchors>
+					<Anchor point="BOTTOMLEFT" x="23" y="17"/>
+				</Anchors>
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
@@ -72,12 +51,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentReset" inherits="GlueButtonSmallTemplateBlue" text="RESET_SETTINGS">
-				<Size x="220" y="38"/>
+			<Button name="$parentReset" inherits="GlueButtonSmallTemplate" text="RESET_SETTINGS">
+				<Size x="200" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOM">
-						<Offset x="8" y="8"/>
-					</Anchor>
+					<Anchor point="BOTTOM" x="8" y="17"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

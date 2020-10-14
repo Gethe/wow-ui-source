@@ -1,0 +1,434 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_WeeklyRewards.lua"/>
+
+	<Button name="WeeklyRewardActivityItemFrameTemplate" mixin="WeeklyRewardActivityItemMixin" virtual="true">
+		<Size x="155" y="49"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Glow" atlas="services-ring-large-glow" alpha="1" ignoreParentAlpha="true" useAtlasSize="true" scale="0.4">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowSpin" atlas="services-ring-large-glowspin" alpha="1" ignoreParentAlpha="true" alphaMode="ADD" useAtlasSize="true" scale="0.3">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="weeklyrewards-frame-item-epic" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Fontstring parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" maxLines="3">
+					<Size x="92" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="51"/>
+					</Anchors>
+				</Fontstring>
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowSpinAnim" looping="REPEAT">
+				<Rotation childKey="GlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="WeeklyRewardActivityTypeTemplate" virtual="true">
+		<Size x="326" y="131"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="weeklyrewards-frame-mode" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="Fancy24Font">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="28" y="-18"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="WeeklyRewardActivityTemplate" parentArray="Activities" mixin="WeeklyRewardsActivityMixin" virtual="true">
+		<Size x="219" y="126"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border"/>
+				<Texture parentKey="Orb">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ItemGlow" atlas="weeklyrewards-glow-redeem-epic" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="2" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Threshold" inherits="GameFontNormalSmall2" justifyH="LEFT">
+					<Size x="172" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="42" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Progress" inherits="GameFontGreen">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-15" y="15"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="LockIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="9" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="weeklyrewards-frame-reward-selected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ItemFrame" inherits="WeeklyRewardActivityItemFrameTemplate" hidden="true" frameLevel="10">
+				<Anchors>
+					<Anchor point="CENTER" x="2" y="-7"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="UnselectedFrame" setAllPoints="true" frameLevel="11">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="weeklyrewards-shadow-reward-unselected" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WeeklyRewardAlsoItemTemplate" virtual="true">
+		<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" setAllPoints="true" file="Interface\Common\WhiteIconFrame"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetHyperlink(self.itemHyperlink);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WeeklyRewardConfirmSelectionTemplate" mixin="WeeklyRewardConfirmSelectionMixin" virtual="true">
+		<Size x="200" y="98"/>
+		<Frames>
+			<Frame parentKey="CurrencyFrame" inherits="CurrencyHorizontalLayoutFrameTemplate">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="24" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" y="-14"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ItemFrame" inherits="LargeItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-14"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetHyperlink(self.itemHyperlink);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="AlsoItemsFrame" useParentLevel="true" inherits="HorizontalLayoutFrame">
+				<Size x="200" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="6"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="6" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE" text="WEEKLY_REWARDS_ALSO_RECEIVE">
+							<Size y="24"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="0" type="number"/>
+							</KeyValues>
+							<Color color="GREEN_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WeeklyRewardsFrame" mixin="WeeklyRewardsMixin" parent="UIParent" hidden="true" enableMouse="true">
+		<Size x="1165" y="657"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTile" atlas="UI-Frame-Oribos-BackgroundTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="weeklyrewards-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-291"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="weeklyrewards-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-446"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="HeaderFrame">
+				<Size x="1056" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" y="-42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Left" atlas="UI-Frame-Oribos-TitleLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="UI-Frame-Oribos-TitleRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Middle" atlas="_UI-Frame-Oribos-TitleMiddle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER" spacing="2">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RaidFrame" inherits="WeeklyRewardActivityTypeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="56" y="-152"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MythicFrame" inherits="WeeklyRewardActivityTypeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="56" y="-307"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PVPFrame" inherits="WeeklyRewardActivityTypeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="56" y="-462"/>
+				</Anchors>
+			</Frame>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" drawLayer="BACKGROUND"/>
+			<Frame parentKey="ConcessionFrame" parentArray="Activities" mixin="WeeklyRewardsConcessionMixin">
+				<Size x="440" y="45"/>
+				<KeyValues>
+					<KeyValue key="type" value="Enum.WeeklyRewardChestThresholdType.Concession" type="global"/>
+					<KeyValue key="index" value="1" type="number"/>
+					<KeyValue key="hasRewards" value="true" type="boolean"/>	<!-- this is only visible when rewards are present -->
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="63"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="weeklyrewards-background-currency-unlocked" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture atlas="weeklyrewards-frame-currency-unlocked" useAtlasSize="true"/>
+						<Texture atlas="weeklyrewards-divider-currency" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOP" x="-18" y="11"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="weeklyrewards-divider-currency" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOP" x="18" y="11"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString inherits="SystemFont_Shadow_Large2" text="WEEKLY_REWARDS_OR">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="5"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SelectedTexture" atlas="weeklyrewards-frame-currency-selected" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="RewardsFrame" inherits="HorizontalLayoutFrame" frameLevel="10">
+						<KeyValues>
+							<KeyValue key="fixedHeight" value="24" type="number"/>
+							<KeyValue key="spacing" value="4" type="number"/>
+							<KeyValue key="expand" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="WEEKLY_REWARDS_GET_CONCESSION">
+									<Size y="24"/>
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="1" type="number"/>
+									</KeyValues>
+								</FontString>
+								<FontString parentKey="Text" inherits="GameFontHighlight">
+									<Size y="24"/>
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="2" type="number"/>
+									</KeyValues>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="UnselectedFrame" setAllPoints="true" frameLevel="11">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture atlas="weeklyrewards-shadow-currency-unselected" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<Button parentKey="SelectRewardButton" inherits="UIPanelButtonTemplate" text="WEEKLY_REWARDS_SELECT_REWARD" frameLevel="600" hidden="true">
+				<Size x="182" y="23"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture atlas="weeklyrewards-frame-button" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						self:GetParent():SelectReward();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="600">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

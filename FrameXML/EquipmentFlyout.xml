@@ -43,7 +43,7 @@
 		<Size x="43" y="43"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
+				<Texture parentKey="Highlight" name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
 					<Size x="50" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -85,7 +85,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="Test2" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" setAllPoints="true">
+						<Texture parentKey="BottomBackground" inherits="EquipmentFlyoutTexture" hidden="false" setAllPoints="true">
 							<TexCoords left="0" right="0.8359375" top="0.7890625" bottom="0.94921875"/>
 						</Texture>
 					</Layer>

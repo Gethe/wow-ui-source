@@ -7,6 +7,89 @@ local GarrisonInfo =
 	Functions =
 	{
 		{
+			Name = "AddFollowerToMission",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "boardIndex", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "followerAdded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAutoCombatDamageClassValues",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "damageClassStrings", Type = "table", InnerType = "AutoCombatDamageClassString", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAutoMissionBoardState",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAutoMissionTargetingInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAutoTroops",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "followerType", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autoTroopInfo", Type = "table", InnerType = "AutoCombatTroopInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCombatLogSpellInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "autoCombatSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellInfo", Type = "AutoCombatSpellInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentGarrTalentTreeFriendshipFactionID",
 			Type = "Function",
 
@@ -22,6 +105,49 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "currentGarrTalentTreeID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFollowerAutoCombatSpells",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "followerLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellInfo", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFollowerAutoCombatStats",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autoCombatInfo", Type = "FollowerAutoCombatStatsInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFollowerMissionCompleteInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "followerID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "followerMissionCompleteInfo", Type = "FollowerMissionCompleteInfo", Nilable = false },
 			},
 		},
 		{
@@ -67,6 +193,62 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetMissionCompleteEncounters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "encounters", Type = "table", InnerType = "GarrisonEnemyEncounterInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMissionDeploymentInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "missionDeploymentInfo", Type = "MissionDeploymentInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMissionEncounterIconInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "missionEncounterIconInfo", Type = "MissionEncounterIconInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTalentInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "GarrisonTalentInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentPointsSpentInTalentTree",
 			Type = "Function",
 
@@ -96,6 +278,35 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetTalentTreeInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "treeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "GarrisonTalentTreeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTalentTreeResetInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "goldCost", Type = "number", Nilable = false },
+				{ Name = "currencyCosts", Type = "table", InnerType = "GarrisonTalentCurrencyCostInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentTreeTalentPointResearchInfo",
 			Type = "Function",
 
@@ -109,8 +320,7 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "goldCost", Type = "number", Nilable = false },
-				{ Name = "currencyType", Type = "number", Nilable = false },
-				{ Name = "currencyCost", Type = "number", Nilable = false },
+				{ Name = "currencyCosts", Type = "table", InnerType = "GarrisonTalentCurrencyCostInfo", Nilable = false },
 				{ Name = "durationSecs", Type = "number", Nilable = false },
 			},
 		},
@@ -135,6 +345,48 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "environmentCountered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTalentConditionMet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMet", Type = "bool", Nilable = false },
+				{ Name = "failureString", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "RegenerateCombatLog",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RushHealFollower",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAutoCombatSpellFastForward",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "state", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -231,7 +483,7 @@ local GarrisonInfo =
 				{ Name = "followerLevel", Type = "number", Nilable = false },
 				{ Name = "followerQuality", Type = "number", Nilable = false },
 				{ Name = "isUpgraded", Type = "bool", Nilable = false },
-				{ Name = "texturePrefix", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
 			},
 		},
@@ -342,6 +594,7 @@ local GarrisonInfo =
 				{ Name = "success", Type = "bool", Nilable = false },
 				{ Name = "bonusRollSuccess", Type = "bool", Nilable = false },
 				{ Name = "followerDeaths", Type = "table", InnerType = "GarrisonFollowerDeathInfo", Nilable = false },
+				{ Name = "autoCombatResult", Type = "AutoCombatResult", Nilable = true },
 			},
 		},
 		{
@@ -527,6 +780,16 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GarrisonTalentEventUpdate",
+			Type = "Event",
+			LiteralName = "GARRISON_TALENT_EVENT_UPDATE",
+			Payload =
+			{
+				{ Name = "eventType", Type = "number", Nilable = false },
+				{ Name = "eventID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GarrisonTalentNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_NPC_CLOSED",
@@ -539,6 +802,17 @@ local GarrisonInfo =
 			{
 				{ Name = "garrisonTypeID", Type = "number", Nilable = false },
 				{ Name = "garrisonTalentTreeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonTalentResearchStarted",
+			Type = "Event",
+			LiteralName = "GARRISON_TALENT_RESEARCH_STARTED",
+			Payload =
+			{
+				{ Name = "garrTypeID", Type = "number", Nilable = false },
+				{ Name = "garrisonTalentTreeID", Type = "number", Nilable = false },
+				{ Name = "garrTalentID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -621,12 +895,238 @@ local GarrisonInfo =
 	Tables =
 	{
 		{
+			Name = "AutoCombatDamageClassString",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "damageClassValue", Type = "number", Nilable = false },
+				{ Name = "locString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoCombatResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "winner", Type = "bool", Nilable = false },
+				{ Name = "combatLog", Type = "table", InnerType = "AutoMissionRound", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoCombatSpellInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "autoCombatSpellID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "cooldown", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "schoolMask", Type = "number", Nilable = false },
+				{ Name = "previewMask", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoCombatTroopInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "followerTypeID", Type = "number", Nilable = false },
+				{ Name = "displayIDs", Type = "table", InnerType = "FollowerDisplayID", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "levelXP", Type = "number", Nilable = false },
+				{ Name = "maxXP", Type = "number", Nilable = false },
+				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "scale", Type = "number", Nilable = false },
+				{ Name = "displayScale", Type = "number", Nilable = true },
+				{ Name = "displayHeight", Type = "number", Nilable = true },
+				{ Name = "classSpec", Type = "number", Nilable = true },
+				{ Name = "className", Type = "string", Nilable = true },
+				{ Name = "flavorText", Type = "string", Nilable = true },
+				{ Name = "classAtlas", Type = "string", Nilable = false },
+				{ Name = "portraitIconID", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "isTroop", Type = "bool", Nilable = false },
+				{ Name = "raceID", Type = "number", Nilable = false },
+				{ Name = "health", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "role", Type = "number", Nilable = false },
+				{ Name = "isAutoTroop", Type = "bool", Nilable = false },
+				{ Name = "isCollected", Type = "bool", Nilable = false },
+				{ Name = "autoCombatStats", Type = "FollowerAutoCombatStatsInfo", Nilable = false },
+				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoMissionCombatEventInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "boardIndex", Type = "number", Nilable = false },
+				{ Name = "oldHealth", Type = "number", Nilable = false },
+				{ Name = "newHealth", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "points", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "AutoMissionEvent",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "type", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "schoolMask", Type = "number", Nilable = false },
+				{ Name = "effectIndex", Type = "number", Nilable = false },
+				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+				{ Name = "auraType", Type = "number", Nilable = false },
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionCombatEventInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoMissionRound",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "events", Type = "table", InnerType = "AutoMissionEvent", Nilable = false },
+			},
+		},
+		{
+			Name = "AutoMissionTargetingInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "targetIndex", Type = "number", Nilable = false },
+				{ Name = "previewType", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FollowerAutoCombatStatsInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentHealth", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "attack", Type = "number", Nilable = false },
+				{ Name = "healingTimestamp", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FollowerDisplayID",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "followerPageScale", Type = "number", Nilable = false },
+				{ Name = "showWeapon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "FollowerMissionCompleteInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "displayIDs", Type = "table", InnerType = "FollowerDisplayID", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "currentXP", Type = "number", Nilable = false },
+				{ Name = "maxXP", Type = "number", Nilable = false },
+				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "scale", Type = "number", Nilable = false },
+				{ Name = "movementType", Type = "number", Nilable = true },
+				{ Name = "impactDelay", Type = "number", Nilable = true },
+				{ Name = "castID", Type = "number", Nilable = true },
+				{ Name = "castSoundID", Type = "number", Nilable = true },
+				{ Name = "impactID", Type = "number", Nilable = true },
+				{ Name = "impactSoundID", Type = "number", Nilable = true },
+				{ Name = "targetImpactID", Type = "number", Nilable = true },
+				{ Name = "targetImpactSoundID", Type = "number", Nilable = true },
+				{ Name = "className", Type = "string", Nilable = true },
+				{ Name = "classAtlas", Type = "string", Nilable = false },
+				{ Name = "portraitIconID", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "isTroop", Type = "bool", Nilable = false },
+				{ Name = "boardIndex", Type = "number", Nilable = false },
+				{ Name = "health", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "role", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonAbilityCounterInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "factor", Type = "number", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonAbilityInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "isTrait", Type = "bool", Nilable = false },
+				{ Name = "isSpecialization", Type = "bool", Nilable = false },
+				{ Name = "temporary", Type = "bool", Nilable = false },
+				{ Name = "category", Type = "string", Nilable = true },
+				{ Name = "counters", Type = "table", InnerType = "GarrisonAbilityCounterInfo", Nilable = false },
+				{ Name = "isEmptySlot", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonEnemyEncounterInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "displayID", Type = "number", Nilable = false },
+				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "scale", Type = "number", Nilable = false },
+				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "mechanics", Type = "table", InnerType = "GarrisonMechanicInfo", Nilable = false },
+				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+				{ Name = "role", Type = "number", Nilable = false },
+				{ Name = "health", Type = "number", Nilable = false },
+				{ Name = "maxHealth", Type = "number", Nilable = false },
+				{ Name = "attack", Type = "number", Nilable = false },
+				{ Name = "boardIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GarrisonFollowerDeathInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "followerID", Type = "string", Nilable = false },
 				{ Name = "state", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonMechanicInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mechanicTypeID", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "factor", Type = "number", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "ability", Type = "GarrisonAbilityInfo", Nilable = true },
 			},
 		},
 		{
@@ -638,6 +1138,31 @@ local GarrisonInfo =
 				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "MissionDeploymentInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "location", Type = "string", Nilable = false },
+				{ Name = "xp", Type = "number", Nilable = false },
+				{ Name = "environment", Type = "string", Nilable = true },
+				{ Name = "environmentDesc", Type = "string", Nilable = true },
+				{ Name = "environmentTexture", Type = "number", Nilable = false },
+				{ Name = "locTextureKit", Type = "string", Nilable = false },
+				{ Name = "isExhausting", Type = "bool", Nilable = false },
+				{ Name = "enemies", Type = "table", InnerType = "GarrisonEnemyEncounterInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "MissionEncounterIconInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
+				{ Name = "isElite", Type = "bool", Nilable = false },
+				{ Name = "isRare", Type = "bool", Nilable = false },
 			},
 		},
 	},

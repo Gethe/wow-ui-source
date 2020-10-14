@@ -11,6 +11,7 @@ local CONTROL_KEY = "controlkey";
 local SHIFT_KEY = "shiftkey";
 local NO_KEY = "none";
 
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	return securecall(next, elements, key);
@@ -370,6 +371,7 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 					end
 
 					if ( control.type == CONTROLTYPE_SLIDER ) then
+						BackdropTemplateMixin.OnBackdropLoaded(control);
 						BlizzardOptionsPanel_Slider_Enable(control);
 						control:SetMinMaxValues(minValue, maxValue);
 						control:SetValueStep(entry.valueStep);

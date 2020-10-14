@@ -8,4 +8,5 @@ FM_FlightPathDataProvider.xml
 FM_ZoneSummaryDataProvider.xml
 FM_WorldQuestDataProvider.xml
 FM_QuestDataProvider.xml
+FM_VignetteDataProvider.xml
 Blizzard_FlightMap.xml

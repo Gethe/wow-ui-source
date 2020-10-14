@@ -84,6 +84,12 @@ function AreaPOIPinMixin:TryShowTooltip()
 			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
 		end
 
+		if (self.textureKit) then 
+			local backdropStyle = GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES[self.textureKit];
+			if (backdropStyle) then 
+				SharedTooltip_SetBackdropStyle(GameTooltip, backdropStyle);
+			end 
+		end 
 		GameTooltip:Show();
 		return true;
 	end

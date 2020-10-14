@@ -16,6 +16,7 @@ function DeveloperConsoleMixin:OnLoad()
 	self:RegisterEvent("CONSOLE_COLORS_CHANGED");
 	self:RegisterEvent("CONSOLE_FONT_SIZE_CHANGED");
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
+	self:RegisterEvent("SPELL_SCRIPT_ERROR");
 
 	self.MessageFrame:SetMaxLines(MAX_NUM_MESSAGE_HISTORY);
 
@@ -124,6 +125,9 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 		self:SetFontHeight(fontHeight);
 	elseif event == "DEBUG_MENU_TOGGLED" then
 		self:UpdateAnchors();
+	elseif event == "SPELL_SCRIPT_ERROR" then
+		local spellID, scriptID, lastEditUser, errorMessage, callStack = ...;
+		self:AddMessage(errorMessage, Enum.ConsoleColorType.ErrorColor);
 	end
 end
 

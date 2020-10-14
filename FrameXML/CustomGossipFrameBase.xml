@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CustomGossipFrameBase.lua"/>
+	<Button name="CustomGossipOptionButtonBaseTemplate" mixin="CustomGossipOptionButtonBaseMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="CustomGossipFrameBaseTemplate" mixin="CustomGossipFrameBaseMixin" parent="UIParent" topLevel="true" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GossipText" inherits="GameFontNormal" justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CustomGossipFrameBaseGridTemplate" inherits="CustomGossipFrameBaseTemplate" mixin="CustomGossipFrameBaseGridMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="GridLayoutContainer"/>
+		</Frames>
+	</Frame>
+	<Frame name="CustomGossipFrameManager" mixin="CustomGossipManagerMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

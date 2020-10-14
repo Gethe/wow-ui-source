@@ -5,7 +5,7 @@ function WorldMap_WorldQuestDataProviderMixin:GetPinTemplate()
 end
 
 function WorldMap_WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	if self.focusedQuestID or self:IsQuestSuppressed(info.questId) then
+	if not WorldQuestDataProviderMixin.ShouldShowQuest(self, info) then
 		return false;
 	end
 	local mapID = self:GetMap():GetMapID();
@@ -47,7 +47,5 @@ end
 
 function WorldMap_WorldQuestPinMixin:RefreshVisuals()
 	WorldQuestPinMixin.RefreshVisuals(self);
-
-	local effectivelyTracked = IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID);
-	self.TrackedCheck:SetShown(effectivelyTracked);
+	self.TrackedCheck:SetShown(WorldMap_IsWorldQuestEffectivelyTracked(self.questID));
 end

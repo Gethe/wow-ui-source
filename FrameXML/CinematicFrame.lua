@@ -44,6 +44,7 @@ end
 function CinematicFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "CINEMATIC_START" ) then
+		EventRegistry:TriggerEvent("CinematicFrame.CinematicStarting");
 		for i=1, #self.Subtitles do
 			self.Subtitles[i]:SetText("");
 			self.Subtitles[i]:Hide();
@@ -61,6 +62,7 @@ function CinematicFrame_OnEvent(self, event, ...)
 		LowHealthFrame:EvaluateVisibleState();
 
 		MovieFrame_OnCinematicStopped();
+		EventRegistry:TriggerEvent("CinematicFrame.CinematicStopped");
 	elseif ( event == "CHAT_MSG_SAY" or event == "CHAT_MSG_MONSTER_SAY" or
 		event == "CHAT_MSG_YELL" or event == "CHAT_MSG_MONSTER_YELL" ) then
 		local message, sender, lang, channel, target, flag, zone, localid, name, instanceId, lineId, guidString, bnId, isMobile, isSubtitle, hideSenderInLetterbox = ...;

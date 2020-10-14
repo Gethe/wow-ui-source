@@ -23,6 +23,10 @@ ACTION_BUTTON_SHOW_GRID_REASON_CVAR = 1;
 ACTION_BUTTON_SHOW_GRID_REASON_EVENT = 2;
 ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK = 4;
 
+function IsOnPrimaryActionBar(action)
+	return action >= 1 and action <= NUM_ACTIONBAR_BUTTONS;
+end
+
 function MarkNewActionHighlight(action)
 	ACTION_HIGHLIGHT_MARKS[action] = true;
 end
@@ -105,10 +109,10 @@ local function CheckUseActionButton(button, checkingFromDown)
 
 			if GetNewActionHighlightMark(button.action) then
 				ClearNewActionHighlight(button.action);
-				ActionButton_UpdateHighlightMark(button);
+				button:UpdateHighlightMark();
 			end
 		end
-		ActionButton_UpdateState(button);
+		button:UpdateState();
 	end
 end
 
@@ -190,8 +194,10 @@ function ActionBar_PageDown()
 	ChangeActionBarPage(prevPage);
 end
 
-function ActionBarButtonEventsFrame_OnLoad(self)
-	self.frames = { };
+ActionBarButtonEventsFrameMixin = {};
+
+function ActionBarButtonEventsFrameMixin:OnLoad()
+	self.frames = {};
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ACTIONBAR_SHOWGRID");
 	self:RegisterEvent("ACTIONBAR_HIDEGRID");
@@ -205,19 +211,21 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 end
 
-function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
+function ActionBarButtonEventsFrameMixin:OnEvent(event, ...)
 	-- pass event down to the buttons
 	for k, frame in pairs(self.frames) do
-		ActionButton_OnEvent(frame, event, ...);
+		frame:OnEvent(event, ...);
 	end
 end
 
-function ActionBarButtonEventsFrame_RegisterFrame(frame)
-	tinsert(ActionBarButtonEventsFrame.frames, frame);
+function ActionBarButtonEventsFrameMixin:RegisterFrame(frame)
+	tinsert(self.frames, frame);
 end
 
-function ActionBarActionEventsFrame_OnLoad(self)
-	self.frames = { };
+ActionBarActionEventsFrameMixin = {};
+
+function ActionBarActionEventsFrameMixin:OnLoad()
+	self.frames = {};
 	--self:RegisterEvent("ACTIONBAR_UPDATE_STATE");			not updating state from lua anymore, see SetActionUIButton
 	self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");		not updating cooldown from lua anymore, see SetActionUIButton
@@ -246,28 +254,30 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_UPDATE_ICON");
 end
 
-function ActionBarActionEventsFrame_OnEvent(self, event, ...)
+function ActionBarActionEventsFrameMixin:OnEvent(event, ...)
 	if ( event == "UNIT_INVENTORY_CHANGED" ) then
 		local unit = ...;
 		if ( unit == "player" and self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
-			ActionButton_SetTooltip(self.tooltipOwner);
+			self.tooltipOwner:SetTooltip();
 		end
 	else
 		for k, frame in pairs(self.frames) do
-			ActionButton_OnEvent(frame, event, ...);
+			frame:OnEvent(event, ...);
 		end
 	end
 end
 
-function ActionBarActionEventsFrame_RegisterFrame(frame)
-	ActionBarActionEventsFrame.frames[frame] = frame;
+function ActionBarActionEventsFrameMixin:RegisterFrame(frame)
+	self.frames[frame] = frame;
 end
 
-function ActionBarActionEventsFrame_UnregisterFrame(frame)
-	ActionBarActionEventsFrame.frames[frame] = nil;
+function ActionBarActionEventsFrameMixin:UnregisterFrame(frame)
+	self.frames[frame] = nil;
 end
 
-function ActionButton_OnLoad(self)
+ActionBarActionButtonMixin = {};
+
+function ActionBarActionButtonMixin:OnLoad()
 	self.flashing = 0;
 	self.flashtime = 0;
 	self:SetAttribute("showgrid", 0);
@@ -278,12 +288,12 @@ function ActionButton_OnLoad(self)
 	self:SetAttribute("useparent-actionpage", true);
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
-	ActionBarButtonEventsFrame_RegisterFrame(self);
-	ActionButton_UpdateAction(self);
-	ActionButton_UpdateHotkeys(self, self.buttonType);
+	ActionBarButtonEventsFrame:RegisterFrame(self);
+	self:UpdateAction();
+	self:UpdateHotkeys(self.buttonType);
 end
 
-function ActionButton_UpdateHotkeys(self, actionButtonType)
+function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
 	local id;
     if ( not actionButtonType ) then
         actionButtonType = "ACTIONBUTTON";
@@ -310,36 +320,16 @@ function ActionButton_UpdateHotkeys(self, actionButtonType)
     end
 end
 
-function ActionButton_CalculateAction(self, button)
-	if ( not button ) then
-		button = SecureButton_GetEffectiveButton(self);
-	end
-	if ( self:GetID() > 0 ) then
-		local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
-		if ( not page ) then
-			page = GetActionBarPage();
-			if ( self.isExtra ) then
-				page = GetExtraBarIndex();
-			elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
-				page = GetMultiCastBarIndex();
-			end
-		end
-		return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));
-	else
-		return SecureButton_GetModifiedAttribute(self, "action", button) or 1;
-	end
-end
-
-function ActionButton_UpdateAction(self, force)
-	local action = ActionButton_CalculateAction(self);
+function ActionBarActionButtonMixin:UpdateAction(force)
+	local action = self:CalculateAction();
 	if ( action ~= self.action or force ) then
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
-		ActionButton_Update(self);
+		self:Update();
 	end
 end
 
-function ActionButton_Update(self)
+function ActionBarActionButtonMixin:Update()
 	local action = self.action;
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
@@ -348,34 +338,24 @@ function ActionButton_Update(self)
 	self.zoneAbilityDisabled = false;
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
-	if ((type == "spell" or type == "companion") and ZoneAbilityFrame and ZoneAbilityFrame.baseName and not HasZoneAbility()) then
-		local name = GetSpellInfo(ZoneAbilityFrame.baseName);
-		local abilityName = GetSpellInfo(id);
-		if (name == abilityName) then
-			texture = GetLastZoneAbilitySpellTexture();
-			self.zoneAbilityDisabled = true;
-			icon:SetDesaturated(true);
-		end
-	end
-
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
-			ActionBarActionEventsFrame_RegisterFrame(self);
+			ActionBarActionEventsFrame:RegisterFrame(self);
 			self.eventsRegistered = true;
 		end
 
 		if ( not self:GetAttribute("statehidden") ) then
 			self:Show();
 		end
-		ActionButton_UpdateState(self);
-		ActionButton_UpdateUsable(self);
+		self:UpdateState();
+		self:UpdateUsable();
 		ActionButton_UpdateCooldown(self);
-		ActionButton_UpdateFlash(self);
-		ActionButton_UpdateHighlightMark(self);
-		ActionButton_UpdateSpellHighlightMark(self);
+		self:UpdateFlash();
+		self:UpdateHighlightMark();
+		self:UpdateSpellHighlightMark();
 	else
 		if ( self.eventsRegistered ) then
-			ActionBarActionEventsFrame_UnregisterFrame(self);
+			ActionBarActionEventsFrame:UnregisterFrame(self);
 			self.eventsRegistered = nil;
 		end
 
@@ -387,7 +367,7 @@ function ActionButton_Update(self)
 
 		ClearChargeCooldown(self);
 		
-		ActionButton_ClearFlash(self);
+		self:ClearFlash();
 		self:SetChecked(false);
 
 		if self.LevelLinkLockIcon then
@@ -421,7 +401,7 @@ function ActionButton_Update(self)
 		icon:SetTexture(texture);
 		icon:Show();
 		self.rangeTimer = -1;
-		ActionButton_UpdateCount(self);
+		self:UpdateCount();
 	else
 		self.Count:SetText("");
 		icon:Hide();
@@ -438,79 +418,77 @@ function ActionButton_Update(self)
 	-- Update flyout appearance
 	ActionButton_UpdateFlyout(self);
 
-	ActionButton_UpdateOverlayGlow(self);
+	self:UpdateOverlayGlow();
 
 	-- Update tooltip
 	if ( GameTooltip:GetOwner() == self ) then
-		ActionButton_SetTooltip(self);
+		self:SetTooltip();
 	end
 
 	self.feedback_action = action;
 end
 
-function ActionButton_UpdateHighlightMark(self)
+function ActionBarActionButtonMixin:UpdateHighlightMark()
 	if ( self.NewActionTexture ) then
 		self.NewActionTexture:SetShown(GetNewActionHighlightMark(self.action));
 	end
 end
 
 -- Shared between the action bar and the pet bar.
-function SharedActionButton_RefreshSpellHighlight(self, shown)
+function SharedActionButton_RefreshSpellHighlight(button, shown)
 	if ( shown ) then
-		self.SpellHighlightTexture:Show();
-		self.SpellHighlightAnim:Play();
+		button.SpellHighlightTexture:Show();
+		button.SpellHighlightAnim:Play();
 	else
-		self.SpellHighlightTexture:Hide();
-		self.SpellHighlightAnim:Stop();
+		button.SpellHighlightTexture:Hide();
+		button.SpellHighlightAnim:Stop();
 	end
 end
 
-function ActionButton_UpdateSpellHighlightMark(self)
+function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 	if ( self.SpellHighlightTexture and self.SpellHighlightAnim ) then
 		SharedActionButton_RefreshSpellHighlight(self, GetOnBarHighlightMark(self.action));
 	end
 end
 
-function ActionButton_ShowGrid(button, reason)
-	assert(button and reason);
+function ActionBarActionButtonMixin:ShowGrid(reason)
+	assert(reason);
 	if ( issecure() ) then
-		button:SetAttribute("showgrid", bit.bor(button:GetAttribute("showgrid"), reason));
+		self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason));
 	end
 
-	if ( button.NormalTexture ) then
-		button.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
+	if ( self.NormalTexture ) then
+		self.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
 
-	if ( button:GetAttribute("showgrid") > 0 and not button:GetAttribute("statehidden") ) then
-		button:Show();
+	if ( self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") ) then
+		self:Show();
 	end
 end
 
-function ActionButton_HideGrid(button, reason)
-	assert(button and reason);
+function ActionBarActionButtonMixin:HideGrid(reason)
+	assert(reason);
 
-	local showgrid = button:GetAttribute("showgrid");
+	local showgrid = self:GetAttribute("showgrid");
 
 	if ( issecure() ) then
 		if ( showgrid > 0 ) then
-			button:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
+			self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
 		end
 	end
 
-	if ( button:GetAttribute("showgrid") == 0 and not HasAction(button.action) ) then
-		button:Hide();
+	if ( self:GetAttribute("showgrid") == 0 and not HasAction(self.action) ) then
+		self:Hide();
 	end
 end
 
-function ActionButton_UpdateState(button)
-	assert(button);
-
-	local action = button.action;
+function ActionBarActionButtonMixin:UpdateState()
+	local action = self.action;
 	local isChecked = IsCurrentAction(action) or IsAutoRepeatAction(action);
-	button:SetChecked(isChecked);
+	self:SetChecked(isChecked);
 end
 
-function ActionButton_UpdateUsable(self)
+function ActionBarActionButtonMixin:UpdateUsable()
 	local icon = self.icon;
 	local normalTexture = self.NormalTexture;
 	if ( not normalTexture ) then
@@ -539,7 +517,7 @@ function ActionButton_UpdateUsable(self)
 	end
 end
 
-function ActionButton_UpdateCount(self)
+function ActionBarActionButtonMixin:UpdateCount()
 	local text = self.Count;
 	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
@@ -559,6 +537,7 @@ function ActionButton_UpdateCount(self)
 	end
 end
 
+-- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
@@ -593,7 +572,7 @@ function ActionButton_UpdateCooldown(self)
 		end
 
 		if( locStart > 0 ) then
-			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
+			self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone);
 		end
 
 		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
@@ -606,7 +585,7 @@ function ActionButton_UpdateCooldown(self)
 	end
 end
 
-function ActionButton_OnCooldownDone(self)
+function ActionButtonCooldown_OnCooldownDone(self)
 	self:SetScript("OnCooldownDone", nil);
 	ActionButton_UpdateCooldown(self:GetParent());
 end
@@ -656,7 +635,7 @@ function ActionButton_GetOverlayGlow()
 	return overlay;
 end
 
-function ActionButton_UpdateOverlayGlow(self)
+function ActionBarActionButtonMixin:UpdateOverlayGlow()
 	local spellType, id, subType  = GetActionInfo(self.action);
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
 		ActionButton_ShowOverlayGlow(self);
@@ -672,47 +651,84 @@ function ActionButton_UpdateOverlayGlow(self)
 	end
 end
 
-function ActionButton_ShowOverlayGlow(self)
-	if ( self.overlay ) then
-		if ( self.overlay.animOut:IsPlaying() ) then
-			self.overlay.animOut:Stop();
-			self.overlay.animIn:Play();
+-- Shared between action button and MainMenuBarMicroButton
+function ActionButton_ShowOverlayGlow(button)
+	if ( button.overlay ) then
+		if ( button.overlay.animOut:IsPlaying() ) then
+			button.overlay.animOut:Stop();
+			button.overlay.animIn:Play();
 		end
 	else
-		self.overlay = ActionButton_GetOverlayGlow();
-		local frameWidth, frameHeight = self:GetSize();
-		self.overlay:SetParent(self);
-		self.overlay:ClearAllPoints();
+		button.overlay = ActionButton_GetOverlayGlow();
+		local frameWidth, frameHeight = button:GetSize();
+		button.overlay:SetParent(button);
+		button.overlay:ClearAllPoints();
 		--Make the height/width available before the next frame:
-		self.overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4);
-		self.overlay:SetPoint("TOPLEFT", self, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
-		self.overlay:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
-		self.overlay.animIn:Play();
+		button.overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4);
+		button.overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
+		button.overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
+		button.overlay.animIn:Play();
 	end
 end
 
-function ActionButton_HideOverlayGlow(self)
-	if ( self.overlay ) then
-		if ( self.overlay.animIn:IsPlaying() ) then
-			self.overlay.animIn:Stop();
+-- Shared between action button and MainMenuBarMicroButton
+function ActionButton_HideOverlayGlow(button)
+	if ( button.overlay ) then
+		if ( button.overlay.animIn:IsPlaying() ) then
+			button.overlay.animIn:Stop();
 		end
-		if ( self:IsVisible() ) then
-			self.overlay.animOut:Play();
+		if ( button:IsVisible() ) then
+			button.overlay.animOut:Play();
 		else
-			ActionButton_OverlayGlowAnimOutFinished(self.overlay.animOut);	--We aren't shown anyway, so we'll instantly hide it.
+			button.overlay.animOut:OnFinished();	--We aren't shown anyway, so we'll instantly hide it.
 		end
 	end
 end
 
-function ActionButton_OverlayGlowAnimOutFinished(animGroup)
-	local overlay = animGroup:GetParent();
+ActionBarOverlayGlowAnimOutMixin = {};
+
+function ActionBarOverlayGlowAnimOutMixin:OnFinished()
+	local overlay = self:GetParent();
 	local actionButton = overlay:GetParent();
 	overlay:Hide();
 	tinsert(unusedOverlayGlows, overlay);
 	actionButton.overlay = nil;
 end
 
-function ActionButton_OverlayGlowOnUpdate(self, elapsed)
+ActionBarOverlayGlowAnimInMixin = {};
+
+function ActionBarOverlayGlowAnimInMixin:OnPlay()
+	local frame = self:GetParent();
+	local frameWidth, frameHeight = frame:GetSize();
+	frame.spark:SetSize(frameWidth, frameHeight);
+	frame.spark:SetAlpha(0.3);
+	frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2);
+	frame.innerGlow:SetAlpha(1.0);
+	frame.innerGlowOver:SetAlpha(1.0);
+	frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2);
+	frame.outerGlow:SetAlpha(1.0);
+	frame.outerGlowOver:SetAlpha(1.0);
+	frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
+	frame.ants:SetAlpha(0);
+	frame:Show();
+end
+
+function ActionBarOverlayGlowAnimInMixin:OnFinished()
+	local frame = self:GetParent();
+	local frameWidth, frameHeight = frame:GetSize();
+	frame.spark:SetAlpha(0);
+	frame.innerGlow:SetAlpha(0);
+	frame.innerGlow:SetSize(frameWidth, frameHeight);
+	frame.innerGlowOver:SetAlpha(0.0);
+	frame.outerGlow:SetSize(frameWidth, frameHeight);
+	frame.outerGlowOver:SetAlpha(0.0);
+	frame.outerGlowOver:SetSize(frameWidth, frameHeight);
+	frame.ants:SetAlpha(1.0);
+end
+
+ActionBarButtonSpellActivationAlertMixin = {};
+
+function ActionBarButtonSpellActivationAlertMixin:OnUpdate(elapsed)
 	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01);
 	local cooldown = self:GetParent().cooldown;
 	-- we need some threshold to avoid dimming the glow during the gdc
@@ -724,19 +740,26 @@ function ActionButton_OverlayGlowOnUpdate(self, elapsed)
 	end
 end
 
-function ActionButton_OnEvent(self, event, ...)
+function ActionBarButtonSpellActivationAlertMixin:OnHide()
+	if ( self.animOut:IsPlaying() ) then
+		self.animOut:Stop();
+		self.animOut:OnFinished();
+	end
+end
+
+function ActionBarActionButtonMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
 		if ( GameTooltip:GetOwner() == self ) then
-			ActionButton_SetTooltip(self);
+			self:SetTooltip();
 		end
 	elseif ( event == "ACTIONBAR_SLOT_CHANGED" ) then
 		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
 			ClearNewActionHighlight(self.action, true);
-			ActionButton_Update(self);
+			self:Update();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		ActionButton_Update(self);
+		self:Update();
 	elseif ( event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		-- This is NOT intended to update everything about shapeshifting; most stuff should be handled by ActionBar-specific events such as UPDATE_BONUS_ACTIONBAR, UPDATE_USABLE, etc.
@@ -745,52 +768,54 @@ function ActionButton_OnEvent(self, event, ...)
 			self.icon:SetTexture(texture);
 		end
 	elseif ( event == "ACTIONBAR_SHOWGRID" ) then
-		ActionButton_ShowGrid(self, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
-		ActionButton_HideGrid(self, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+		if ( not KeybindFrames_InQuickKeybindMode() ) then
+			self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+		end
 	elseif ( event == "UPDATE_BINDINGS" ) then
-		ActionButton_UpdateHotkeys(self, self.buttonType);
+		self:UpdateHotkeys(self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
 	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
-		ActionButton_UpdateState(self);
-		ActionButton_UpdateFlash(self);
+		self:UpdateState();
+		self:UpdateFlash();
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
-		ActionButton_UpdateState(self);
+		self:UpdateState();
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" or event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
-		ActionButton_UpdateUsable(self);
+		self:UpdateUsable();
 	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		ActionButton_UpdateCooldown(self);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" or event == "LOSS_OF_CONTROL_ADDED" ) then
 		ActionButton_UpdateCooldown(self);
 		-- Update tooltip
 		if ( GameTooltip:GetOwner() == self ) then
-			ActionButton_SetTooltip(self);
+			self:SetTooltip();
 		end
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
-		ActionButton_UpdateState(self);
+		self:UpdateState();
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		if ( IsAttackAction(self.action) ) then
-			ActionButton_StartFlash(self);
+			self:StartFlash();
 		end
 	elseif ( event == "PLAYER_LEAVE_COMBAT" ) then
 		if ( IsAttackAction(self.action) ) then
-			ActionButton_StopFlash(self);
+			self:StopFlash();
 		end
 	elseif ( event == "START_AUTOREPEAT_SPELL" ) then
 		if ( IsAutoRepeatAction(self.action) ) then
-			ActionButton_StartFlash(self);
+			self:StartFlash();
 		end
 	elseif ( event == "STOP_AUTOREPEAT_SPELL" ) then
-		if ( ActionButton_IsFlashing(self) and not IsAttackAction(self.action) ) then
-			ActionButton_StopFlash(self);
+		if ( self:IsFlashing() and not IsAttackAction(self.action) ) then
+			self:StopFlash();
 		end
 	elseif ( event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
 		-- Has to update everything for now, but this event should happen infrequently
-		ActionButton_Update(self);
+		self:Update();
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" ) then
 		local actionType, id, subType = GetActionInfo(self.action);
 		if ( actionType == "spell" and id == arg1 ) then
@@ -816,7 +841,7 @@ function ActionButton_OnEvent(self, event, ...)
 			ActionButton_HideOverlayGlow(self);
 		end
 	elseif ( event == "SPELL_UPDATE_CHARGES" ) then
-		ActionButton_UpdateCount(self);
+		self:UpdateCount();
 	elseif ( event == "UPDATE_SUMMONPETS_ACTION" ) then
 		local actionType, id = GetActionInfo(self.action);
 		if (actionType == "summonpet") then
@@ -826,12 +851,13 @@ function ActionButton_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "SPELL_UPDATE_ICON" ) then
-		ActionButton_Update(self);
+		self:Update();
 	end
 end
 
-function ActionButton_SetTooltip(self)
-	if ( GetCVar("UberTooltips") == "1" ) then
+function ActionBarActionButtonMixin:SetTooltip()
+	local inQuickKeybind = KeybindFrames_InQuickKeybindMode();
+	if ( GetCVar("UberTooltips") == "1" or inQuickKeybind ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
 		local parent = self:GetParent();
@@ -842,14 +868,14 @@ function ActionButton_SetTooltip(self)
 		end
 	end
 	if ( GameTooltip:SetAction(self.action) ) then
-		self.UpdateTooltip = ActionButton_SetTooltip;
+		self.UpdateTooltip = self.SetTooltip;
 	else
 		self.UpdateTooltip = nil;
 	end
 end
 
-function ActionButton_OnUpdate(self, elapsed)
-	if ( ActionButton_IsFlashing(self) ) then
+function ActionBarActionButtonMixin:OnUpdate(elapsed)
+	if ( self:IsFlashing() ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;
 
@@ -888,6 +914,7 @@ function ActionButton_OnUpdate(self, elapsed)
 	end
 end
 
+-- Shared between the action bar and the pet bar.
 function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 	if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
 		if ( checksRange ) then
@@ -909,14 +936,14 @@ function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 	end
 end
 
-function ActionButton_GetPagedID(self)
+function ActionBarActionButtonMixin:GetPagedID()
     return self.action;
 end
 
-function ActionButton_UpdateFlash(self)
+function ActionBarActionButtonMixin:UpdateFlash()
 	local action = self.action;
 	if ( (IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action) ) then
-		ActionButton_StartFlash(self);
+		self:StartFlash();
 		
 		local actionType, actionID, actionSubtype = GetActionInfo(action);
 		if ( actionSubtype == "pet" ) then
@@ -925,7 +952,7 @@ function ActionButton_UpdateFlash(self)
 			self:GetCheckedTexture():SetAlpha(1.0);
 		end
 	else
-		ActionButton_StopFlash(self);
+		self:StopFlash();
 	end
 	
 	if ( self.AutoCastable ) then
@@ -940,7 +967,7 @@ function ActionButton_UpdateFlash(self)
 	end
 end
 
-function ActionButton_ClearFlash(self)
+function ActionBarActionButtonMixin:ClearFlash()
 	if ( self.AutoCastable ) then
 		self.AutoCastable:Hide();
 		self.AutoCastShine:Hide();
@@ -948,19 +975,19 @@ function ActionButton_ClearFlash(self)
 	end
 end
 
-function ActionButton_StartFlash(self)
+function ActionBarActionButtonMixin:StartFlash()
 	self.flashing = 1;
 	self.flashtime = 0;
-	ActionButton_UpdateState(self);
+	self:UpdateState();
 end
 
-function ActionButton_StopFlash(self)
+function ActionBarActionButtonMixin:StopFlash()
 	self.flashing = 0;
 	self.Flash:Hide();
-	ActionButton_UpdateState (self);
+	self:UpdateState();
 end
 
-function ActionButton_IsFlashing(self)
+function ActionBarActionButtonMixin:IsFlashing()
 	if ( self.flashing == 1 ) then
 		return 1;
 	end
@@ -968,6 +995,7 @@ function ActionButton_IsFlashing(self)
 	return nil;
 end
 
+-- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateFlyout(self)
 	if not self.FlyoutArrow then
 		return;
@@ -1009,4 +1037,53 @@ function ActionButton_UpdateFlyout(self)
 		self.FlyoutBorderShadow:Hide();
 		self.FlyoutArrow:Hide();
 	end
+end
+
+function ActionBarActionButtonMixin:OnClick(button, down)
+	if ( KeybindFrames_InQuickKeybindMode() ) then
+		local cursorType = GetCursorInfo();
+		if ( cursorType ) then
+			local slotID = self:CalculateAction(button);
+			C_ActionBar.PutActionInSlot(slotID);
+		end
+	else
+		if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
+			C_ActionBar.ToggleAutoCastPetAction(self.action);
+		elseif (not self.zoneAbilityDisabled) then
+			SecureActionButton_OnClick(self, button);
+		end
+	end
+end
+
+function ActionBarActionButtonMixin:OnDragStart()
+	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
+		SpellFlyout:Hide();
+		PickupAction(self.action);
+		self:UpdateState();
+		self:UpdateFlash();
+	end
+end
+
+function ActionBarActionButtonMixin:OnReceiveDrag()
+	PlaceAction(self.action);
+	self:UpdateState();
+	self:UpdateFlash();
+end
+
+function ActionBarActionButtonMixin:OnEnter()
+	if (self.NewActionTexture) then
+		ClearNewActionHighlight(self.action);
+		self:UpdateAction(true);
+	end
+	self:SetTooltip();
+	ActionBarButtonEventsFrame.tooltipOwner = self;
+	ActionBarActionEventsFrame.tooltipOwner = self;
+	ActionButton_UpdateFlyout(self);
+end
+
+function ActionBarActionButtonMixin:OnLeave()
+	GameTooltip:Hide();
+	ActionBarButtonEventsFrame.tooltipOwner = nil;
+	ActionBarActionEventsFrame.tooltipOwner = nil;
+	ActionButton_UpdateFlyout(self);
 end

@@ -43,15 +43,6 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="MacKeyboardOptionsFrameCheckButton11" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MacKeyboardOptionsFrameCheckButton10" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="MacKeyboardOptionsFrame_OnLoad"/>

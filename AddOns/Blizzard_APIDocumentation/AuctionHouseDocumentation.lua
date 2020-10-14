@@ -267,6 +267,20 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetItemKeyRequiredLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requiredLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemSearchResultInfo",
 			Type = "Function",
 
@@ -691,12 +705,6 @@ local AuctionHouse =
 		{
 			Name = "IsThrottledMessageSystemReady",
 			Type = "Function",
-			Documentation = { "This function is not used in the base UI but is included for AddOn ease-of-use." },
-
-			Arguments =
-			{
-				{ Name = "specificSearch", Type = "bool", Nilable = false, Default = false },
-			},
 
 			Returns =
 			{
@@ -827,6 +835,20 @@ local AuctionHouse =
 			Returns =
 			{
 				{ Name = "hasFullResults", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestOwnedAuctionBidderInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bidderName", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -991,37 +1013,26 @@ local AuctionHouse =
 			Name = "AuctionHouseThrottledMessageDropped",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledMessageQueued",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledMessageResponseReceived",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledMessageSent",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_SENT",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
-		},
-		{
-			Name = "AuctionHouseThrottledSpecificSearchReady",
-			Type = "Event",
-			LiteralName = "AUCTION_HOUSE_THROTTLED_SPECIFIC_SEARCH_READY",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionHouseThrottledSystemReady",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
-			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
 		},
 		{
 			Name = "AuctionMultisellFailure",
@@ -1161,6 +1172,16 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "OwnedAuctionBidderInfoReceived",
+			Type = "Event",
+			LiteralName = "OWNED_AUCTION_BIDDER_INFO_RECEIVED",
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+				{ Name = "bidderName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "OwnedAuctionsUpdated",
 			Type = "Event",
 			LiteralName = "OWNED_AUCTIONS_UPDATED",
@@ -1262,6 +1283,7 @@ local AuctionHouse =
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
 				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = false },
+				{ Name = "minBid", Type = "number", Nilable = true },
 				{ Name = "bidAmount", Type = "number", Nilable = true },
 				{ Name = "buyoutAmount", Type = "number", Nilable = true },
 				{ Name = "bidder", Type = "string", Nilable = true },

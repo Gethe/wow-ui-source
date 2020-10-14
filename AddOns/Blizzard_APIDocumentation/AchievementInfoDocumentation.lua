@@ -35,6 +35,20 @@ local AchievementInfo =
 			},
 		},
 		{
+			Name = "IsValidAchievement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "achievementId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValidAchievement", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 

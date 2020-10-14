@@ -17,6 +17,11 @@ function NamePlateDriverMixin:OnLoad()
 
 	self:SetBaseNamePlateSize(110, 45);
 
+	self.pools = CreateFramePoolCollection();
+	-- Forbidden dictated by namePlateFrameBase.
+	self.pools:CreatePool("BUTTON", self, "ForbiddenNamePlateUnitFrameTemplate");
+	self.pools:CreatePool("BUTTON", self, "NamePlateUnitFrameTemplate");
+
 	self.namePlateSetupFunctions =
 	{
 		["player"] = DefaultCompactNamePlatePlayerFrameSetup,
@@ -73,23 +78,41 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 end
 
 function NamePlateDriverMixin:OnNamePlateCreated(namePlateFrameBase)
-	Mixin(namePlateFrameBase, NamePlateBaseMixin);
-	namePlateFrameBase:SetScript("OnSizeChanged", namePlateFrameBase.OnSizeChanged);
-
-	CreateFrame("BUTTON", "$parentUnitFrame", namePlateFrameBase, "NamePlateUnitFrameTemplate");
-	namePlateFrameBase.UnitFrame:EnableMouse(false);
+	self:OnNamePlateCreatedInternal(namePlateFrameBase, "NamePlateUnitFrameTemplate");
 end
 
 function NamePlateDriverMixin:OnForbiddenNamePlateCreated(namePlateFrameBase)
-	Mixin(namePlateFrameBase, NamePlateBaseMixin);
-	namePlateFrameBase:SetScript("OnSizeChanged", namePlateFrameBase.OnSizeChanged);
+	self:OnNamePlateCreatedInternal(namePlateFrameBase, "ForbiddenNamePlateUnitFrameTemplate");
+end
 
-	CreateFrame("BUTTON", "$parentUnitFrame", namePlateFrameBase, "ForbiddenNamePlateUnitFrameTemplate");
-	namePlateFrameBase.UnitFrame:EnableMouse(false);
+function NamePlateDriverMixin:OnNamePlateCreatedInternal(namePlateFrameBase, template)
+	Mixin(namePlateFrameBase, NamePlateBaseMixin);
+	namePlateFrameBase.template = template;
+end
+
+function NamePlateDriverMixin:AcquireUnitFrame(namePlateFrameBase)
+	local pool = nil;
+	if Commentator and C_Commentator.IsSpectating() then
+		pool = self.pools:GetOrCreatePool("BUTTON", self, Commentator:GetNameplateTemplate());
+	else
+		pool = self.pools:GetPool(namePlateFrameBase.template);
+	end
+
+	local unitFrame = pool:Acquire();
+	namePlateFrameBase.UnitFrame = unitFrame;
+
+	unitFrame:SetParent(namePlateFrameBase);
+	unitFrame:SetPoint("TOPLEFT", namePlateFrameBase, "TOPLEFT");
+	unitFrame:EnableMouse(false);
+
+	namePlateFrameBase:SetScript("OnSizeChanged", namePlateFrameBase.OnSizeChanged);
+	namePlateFrameBase:OnSizeChanged();
 end
 
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
+	self:AcquireUnitFrame(namePlateFrameBase);
+
 	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
 
 	namePlateFrameBase:OnAdded(namePlateUnitToken, self);
@@ -113,8 +136,13 @@ function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUni
 	local namePlateType = self:GetNamePlateTypeFromUnit(namePlateUnitToken);
 	local setupFn = self.namePlateSetupFunctions[namePlateType];
 
+	local unitFrame = namePlateFrameBase.UnitFrame;
 	if setupFn then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, setupFn);
+		CompactUnitFrame_SetUpFrame(unitFrame, setupFn);
+	end
+
+	if unitFrame.SetupOverride then
+		unitFrame:SetupOverride();
 	end
 
 	namePlateFrameBase:OnOptionsUpdated();
@@ -144,6 +172,9 @@ function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
 
 	namePlateFrameBase:OnRemoved();
+
+	self.pools:Release(namePlateFrameBase.UnitFrame);
+	namePlateFrameBase.UnitFrame = nil;
 end
 
 function NamePlateDriverMixin:OnTargetChanged()
@@ -346,6 +377,9 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.hideHealthbar = showOnlyNames;
 	DefaultCompactNamePlateFrameSetUpOptions.hideCastbar = showOnlyNames;
 
+	local personalNamePlateClickThrough = GetCVarBool("NameplatePersonalClickThrough");
+	C_NamePlate.SetNamePlateSelfClickThrough(personalNamePlateClickThrough);
+
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
 	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
@@ -384,19 +418,7 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 
 	self:ApplyOffsets();
 
-	if C_Commentator.IsSpectating() then
-		self.UnitFrame.BuffFrame:SetActive(false);
-		if self.UnitFrame.CommentatorDisplayInfo then
-			self.UnitFrame.CommentatorDisplayInfo:Show();
-		else
-			CreateFrame("FRAME", nil, self.UnitFrame, "NamePlateCommentatorDisplayInfoTemplate");
-		end
-	else
-		self.UnitFrame.BuffFrame:SetActive(true);
-		if self.CommentatorDisplayInfo then
-			self.CommentatorDisplayInfo:Hide();
-		end
-	end
+	self.UnitFrame.BuffFrame:SetActive(not C_Commentator.IsSpectating());
 end
 
 function NamePlateBaseMixin:OnRemoved()
@@ -465,6 +487,12 @@ function NamePlateBaseMixin:OnSizeChanged()
 		local anchorUpdateFunction = self.driverFrame:GetOnSizeChangedFunction(self.namePlateUnitToken);
 		if anchorUpdateFunction then
 			anchorUpdateFunction(self.UnitFrame);
+		end
+
+		-- Occurs after the anchor update function has been called, so any dependant points
+		-- will have their points set.
+		if self.SizeChangedOverride then
+			self:SizeChangedOverride();
 		end
 
 		self.driverFrame:OnNamePlateResized(self);
@@ -571,7 +599,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 
 			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
 				if (not self.buffList[buffIndex]) then
-					self.buffList[buffIndex] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. buffIndex, self, "NameplateBuffButtonTemplate");
+					self.buffList[buffIndex] = CreateFrame("Frame", nil, self, "NameplateBuffButtonTemplate");
 					self.buffList[buffIndex]:SetMouseClickEnabled(false);
 					self.buffList[buffIndex].layoutIndex = buffIndex;
 				end

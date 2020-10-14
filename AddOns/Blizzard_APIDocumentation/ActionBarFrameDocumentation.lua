@@ -49,6 +49,20 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetBonusBarIndexForSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bonusBarIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
 
@@ -147,6 +161,36 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsHarmfulAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "useNeutral", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHarmful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHelpfulAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "useNeutral", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHelpful", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
 
@@ -158,6 +202,15 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "isOnBarOrSpecialBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PutActionInSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "number", Nilable = false },
 			},
 		},
 		{

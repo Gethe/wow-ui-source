@@ -442,6 +442,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -461,7 +462,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 	AlertContainerMixin.OnEvent(self, event, ...);
 
 	if ( event == "ACHIEVEMENT_EARNED" ) then
-		if (IsKioskModeEnabled()) then
+		if (Kiosk.IsEnabled()) then
 			return;
 		end
 
@@ -471,7 +472,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 
 		AchievementAlertSystem:AddAlert(...);
 	elseif ( event == "CRITERIA_EARNED" ) then
-		if (IsKioskModeEnabled()) then
+		if (Kiosk.IsEnabled()) then
 			return;
 		end
 
@@ -565,7 +566,7 @@ function AlertFrameMixin:OnEvent(event, ...)
     	local garrisonType, doAlert = ...;
     	if ( doAlert ) then
 			local talentID = C_Garrison.GetCompleteTalent(garrisonType);
-			local talent = C_Garrison.GetTalent(talentID);
+			local talent = C_Garrison.GetTalentInfo(talentID);
 	        GarrisonTalentAlertSystem:AddAlert(garrisonType, talent);
 		end
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
@@ -584,7 +585,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 
 					local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
 
-					if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+					if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
 						GarrisonShipMissionAlertSystem:AddAlert(missionInfo);
 					else
 						GarrisonMissionAlertSystem:AddAlert(missionInfo);
@@ -593,10 +594,10 @@ function AlertFrameMixin:OnEvent(event, ...)
 			end
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local followerID, name, class, level, quality, isUpgraded, texPrefix, followerType = ...;
+		local followerID, name, class, level, quality, isUpgraded, textureKit, followerType = ...;
 		local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-		if (followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
-			GarrisonShipFollowerAlertSystem:AddAlert(followerID, name, class, texPrefix, level, quality, isUpgraded, followerInfo);
+		if (followerType == Enum.GarrisonFollowerType.FollowerType_6_2) then
+			GarrisonShipFollowerAlertSystem:AddAlert(followerID, name, class, textureKit, level, quality, isUpgraded, followerInfo);
 		else
 			GarrisonFollowerAlertSystem:AddAlert(followerID, name, level, quality, isUpgraded, followerInfo);
 		end
@@ -635,6 +636,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_TOY_ADDED") then
 		local toyID = ...;
 		NewToyAlertSystem:AddAlert(toyID);
+	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
+		local powerID = ...;
+		NewRuneforgePowerAlertSystem:AddAlert(powerID);
 	end
 end
 

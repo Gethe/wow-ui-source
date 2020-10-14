@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="CovenantCelebrationBannerTemplate" mixin="CovenantCelebrationBannerMixin" virtual="true">
+		<Size x="128" y="128"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="GlowLineTop">
+					<Anchors>
+						<Anchor point="TOP" y="-30"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowLineTopAdditive">
+					<Anchors>
+						<Anchor point="TOP" y="-30"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="IconSwirlModelScene" inherits="ScriptAnimatedModelSceneTemplate">
+				<Size x="256" y="256"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" y="-48"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="Icon">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.IconSwirlModelScene" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Tex">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

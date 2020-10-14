@@ -7,8 +7,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="510" y="620"/>
+				<Texture parentKey="Bg" name="$parentBg" atlas="QuestBG-Parchment" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
@@ -134,7 +133,7 @@
 				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon" parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="2"/>
+						<Anchor point="LEFT" x="4" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -1,0 +1,85 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GuideFrame.lua"/>
+
+	<Frame name="GuideFrame" toplevel="true" parent="UIParent" inherits="PortraitFrameTemplate" mixin="GuideFrameMixin" hidden="true">
+		<Size x="359" y="608"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="newplayerchat-signup-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="Fancy30Font" justifyH="CENTER" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size x="246" y="40"/>
+					<Anchors>
+						<Anchor point="TOP" x="-13" y="-39"/>
+					</Anchors>
+					<Color color="PAPER_FRAME_TITLE_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+				<Size x="330" y="520"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-93"/>
+					<Anchor point="BOTTOMRIGHT" x="-26" y="0"/>
+				</Anchors>
+				<ScrollChild>
+					<Frame parentKey="Child">
+						<Size x="275" y="1"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="Text" inherits="QuestFont">
+									<Size x="268" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="27" y="-6"/>
+									</Anchors>
+									<Color color="PAPER_FRAME_TEXT_COLOR"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="ObjectivesFrame" inherits="CriteriaDisplayTemplate">
+								<KeyValues>
+									<KeyValue key="title" type="global" value="NPEV2_CHAT_GUIDE_FRAME_ELIGIBILITY_LABEL"/>
+									<KeyValue key="font" type="global" value="GameFontNormal"/>
+									<KeyValue key="verticalLineOffset" type="number" value="-4"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="1" y="-40"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+				<Frames>
+					<Button parentKey="ConfirmationButton" inherits="UIPanelButtonTemplate">
+						<Size x="200" y="22"/>
+						<Scripts>
+							<OnClick>
+								self:GetParent():GetParent():ConfirmChoice();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Slider parentKey="ScrollBar" inherits="MinimalScrollBarWithBorderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="53"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="21"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

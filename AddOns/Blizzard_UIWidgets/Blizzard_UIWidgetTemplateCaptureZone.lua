@@ -10,8 +10,7 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Cap
 UIWidgetTemplateCaptureZoneMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateCaptureZoneMixin:OnLoad()
-	UIWidgetBaseTemplateMixin.OnLoad(self); 
-	ResizeLayoutMixin.OnLoad(self); 
+	UIWidgetBaseTemplateMixin.OnLoad(self);
 	self.lastVals = {};
 end
 
@@ -20,7 +19,7 @@ function UIWidgetTemplateCaptureZoneMixin:Setup(widgetInfo, widgetContainer)
 
 	local zoneInfo = widgetInfo.zoneInfo;
 	local lastVals = (self.lastVals.state == zoneInfo.state) and self.lastVals or nil;
-	self.Zone:Setup(widgetContainer, 1, widgetInfo.mode, widgetInfo.leadingEdgeType, widgetInfo.dangerFlashType, zoneInfo, lastVals, widgetInfo.textureKitID);
+	self.Zone:Setup(widgetContainer, 1, widgetInfo.mode, widgetInfo.leadingEdgeType, widgetInfo.dangerFlashType, zoneInfo, lastVals, widgetInfo.textureKit);
 	self.lastVals = zoneInfo;
 
 	self:Layout();

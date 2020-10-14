@@ -47,22 +47,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="TooltipFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+			<Frame parentKey="TooltipFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 				<Size x="250" y="60"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="FriendsFont_Small" justifyV="TOP" justifyH="LEFT" nonspacewrap="true">
@@ -75,10 +64,6 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-					</OnLoad>
 					<OnUpdate>
 						-- need to update in case of alternate alphabet
 						self:SetHeight(self.Text:GetHeight() + 20);
@@ -87,7 +72,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnHide method="OnHide"/>
 
@@ -112,7 +97,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>

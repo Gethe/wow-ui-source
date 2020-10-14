@@ -131,9 +131,6 @@ AUTOCOMPLETE_SIMPLE_FORMAT_REGEX = "%1$s";
 
 AUTOCOMPLETE_DEFAULT_Y_OFFSET = 3;
 function AutoComplete_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-	
 	self.maxHeight = AUTOCOMPLETE_MAX_BUTTONS * AutoCompleteButton1:GetHeight();
 	
 	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
@@ -439,7 +436,7 @@ function AutoCompleteButton_OnClick(self)
 	
 	autoComplete:Hide();
 	
-	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo) ) then
+	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo, name) ) then
 		return;
 	end
 	

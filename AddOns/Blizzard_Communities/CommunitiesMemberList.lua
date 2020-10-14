@@ -476,46 +476,39 @@ function CommunitiesMemberListMixin:OnShow()
 
 	self:UpdateMemberList();
 
-	local function StreamSelectedCallback(event, streamId)
-		self:UpdateMemberList();
-	end
-
-	self.streamSelectedCallback = StreamSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
-
-	local function ClubSelectedCallback(event, clubId)
-		self:ResetColumnSort();
-		if clubId == C_Club.GetGuildClubId() then
-			C_GuildInfo.GuildRoster();
-		end
-
-		self:UpdateInvitations();
-		self:UpdateMemberList();
-		self:UpdateWatermark();
-	end
-
-	self.clubSelectedCallback = ClubSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
-
-	local function CommunitiesDisplayModeChangedCallback(event, displayMode)
-		local expandedDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
-		self:SetExpandedDisplay(expandedDisplay);
-	end
-
-	self.displayModeChangedCallback = CommunitiesDisplayModeChangedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
-	
-	local function SelectedClubInfoChangedCallback(clubId)
-		self:UpdateWatermark();
-	end
-
-	self.selectedClubInfoChangedCallback = SelectedClubInfoChangedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.SelectedClubInfoUpdated, self.selectedClubInfoChangedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.OnStreamSelected, self);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.OnClubSelected, self);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.OnCommunitiesDisplayModeChanged, self);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.SelectedClubInfoUpdated, self.OnSelectedClubInfoChanged, self);
 
 	if selectedClubId ~= nil and selectedClubId == C_Club.GetGuildClubId() then
 		C_GuildInfo.GuildRoster();
 		QueryGuildRecipes();
 	end
+end
+
+function CommunitiesMemberListMixin:OnStreamSelected(streamId)
+	self:UpdateMemberList();
+end
+
+function CommunitiesMemberListMixin:OnClubSelected()
+	self:ResetColumnSort();
+	if clubId == C_Club.GetGuildClubId() then
+		C_GuildInfo.GuildRoster();
+	end
+
+	self:UpdateInvitations();
+	self:UpdateMemberList();
+	self:UpdateWatermark();
+end
+
+function CommunitiesMemberListMixin:OnCommunitiesDisplayModeChanged(displayMode)
+	local expandedDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
+	self:SetExpandedDisplay(expandedDisplay);
+end
+
+function CommunitiesMemberListMixin:OnSelectedClubInfoChanged(clubId)
+	self:UpdateWatermark();
 end
 
 function CommunitiesMemberListMixin:OnUpdate()
@@ -679,10 +672,10 @@ end
 
 function CommunitiesMemberListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.selectedClubInfoChangedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self);
 end
 
 function CommunitiesMemberListMixin:GetCommunitiesFrame()
@@ -1474,7 +1467,7 @@ end
 
 function CommunitiesFrameMemberListDropDownMenuMixin:OnHide()
 	local communitiesFrame = self:GetCommunitiesFrame();
-	communitiesFrame:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+	communitiesFrame:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self);
 end
 
 function CommunitiesFrameMemberListDropDownMenuMixin:UpdateNotificationFlash(shouldShowFlash)
@@ -1495,19 +1488,20 @@ function GuildMemberListDropDownMenuMixin:OnShow()
 	local communitiesFrame = self:GetCommunitiesFrame();
 	UIDropDownMenu_SetSelectedValue(self, 1);
 	communitiesFrame.MemberList:SetGuildColumnIndex(1);
-	local function CommunitiesClubSelectedCallback(event, clubId)
-		if clubId and self:IsVisible() then
-			local clubInfo = communitiesFrame:GetSelectedClubInfo();
-			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
-				self:Hide();
-			else 
-				communitiesFrame.CommunityMemberListDropDownMenu:Hide();
-			end
+
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.OnCommunitiesClubSelected, self);
+end
+
+function GuildMemberListDropDownMenuMixin:OnCommunitiesClubSelected(clubId)
+	if clubId and self:IsVisible() then
+		local communitiesFrame = self:GetCommunitiesFrame();
+		local clubInfo = communitiesFrame:GetSelectedClubInfo();
+		if clubInfo and clubInfo.clubType ~= Enum.ClubType.Guild then
+			self:Hide();
+		else 
+			communitiesFrame.CommunityMemberListDropDownMenu:Hide();
 		end
 	end
-
-	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
-	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 end
 
 function GuildMemberListDropDownMenuMixin:ResetDisplayMode()
@@ -1585,20 +1579,19 @@ function CommunityMemberListDropDownMenuMixin:OnShow()
 
 	UIDropDownMenu_SetSelectedValue(self, 1);
 	local communitiesFrame = self:GetCommunitiesFrame();
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.OnCommunitiesClubSelected, self);
+end
 
-	local function CommunitiesClubSelectedCallback(event, clubId)
-		if clubId and self:IsVisible() then
-			local clubInfo = communitiesFrame:GetSelectedClubInfo();
-			if clubInfo and clubInfo.clubType ~= Enum.ClubType.Character then
-				self:Hide();
-			else 
-				communitiesFrame.GuildMemberListDropDownMenu:Hide();
-			end
+function CommunityMemberListDropDownMenuMixin:OnCommunitiesClubSelected(clubId)
+	if clubId and self:IsVisible() then
+		local communitiesFrame = self:GetCommunitiesFrame();
+		local clubInfo = communitiesFrame:GetSelectedClubInfo();
+		if clubInfo and clubInfo.clubType ~= Enum.ClubType.Character then
+			self:Hide();
+		else 
+			communitiesFrame.GuildMemberListDropDownMenu:Hide();
 		end
 	end
-
-	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
-	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 end
 
 function CommunityMemberListDropDownMenuMixin:ResetDisplayMode()

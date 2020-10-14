@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SoulbindsTree.lua"/>
+
+	<Frame name="SoulbindTreeTemplate" mixin="SoulbindTreeMixin" virtual="true">
+		<Size x="244" y="510"/>
+		<Frames>
+			<Frame parentKey="Fx" setAllPoints="true" frameStrata="HIGH"/>
+			<Frame parentKey="LinkContainer" setAllPoints="true" frameLevel="1" frameStrata="MEDIUM"/>
+			<Frame parentKey="NodeContainer" setAllPoints="true" frameLevel="2" frameStrata="MEDIUM"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

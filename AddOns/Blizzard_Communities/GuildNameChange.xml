@@ -34,13 +34,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnClick>
-				self:GetParent().GuildNameAlertFrame.topAnchored = false;
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				self:GetParent():ValidateDisplayMode();
-			</OnClick>
-		</Scripts>
 	</Button>
 
 	<Frame name="ReportedGuildOrCommunityChangeTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">

@@ -392,6 +392,24 @@
 			<Font font="Fonts\ARIALN.TTF" height="15"/>
 		</Member>
 	</FontFamily>
+	
+	<FontFamily name="Number16Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="16"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="15"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_C.TTF" height="15"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\arheiuhk_bd.TTF" height="15"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="16"/>
+		</Member>
+	</FontFamily>
 
 	<FontFamily name="Number18Font" virtual="true">
 		<Member alphabet="roman">
@@ -565,6 +583,15 @@
 			</Font>
 		</Member>
 	</FontFamily>
+
+	<Font name="QuestFont_Shadow_Super_Huge" inherits="QuestFont_Super_Huge" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0.49" g="0.35" b="0.05"/>
+		</Shadow>
+	</Font>
 
 	<FontFamily name="QuestFont_Super_Huge_Outline" virtual="true">
 		<Member alphabet="roman">
@@ -1029,24 +1056,6 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="Game72Font" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.ttf" height="72"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\K_Pagetext.ttf" height="72"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="72"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.ttf" height="72"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\MORPHEUS_CYR.ttf" height="72"/>
-		</Member>
-	</FontFamily>
-	
 	<FontFamily name="Game120Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="120"/>
@@ -1165,6 +1174,15 @@
 		</Member>
 	</FontFamily>
 
+	<Font name="QuestFont_Shadow_Enormous" inherits="QuestFont_Enormous" virtual="true">
+	<Shadow>
+		<Offset>
+			<AbsDimension x="1" y="-1"/>
+		</Offset>
+		<Color r="0.49" g="0.35" b="0.05"/>
+	</Shadow>
+	</Font>
+	
 	<FontFamily name="DestinyFontMed" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="14">

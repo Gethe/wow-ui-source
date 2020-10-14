@@ -90,7 +90,7 @@ end
 function NPE_QuestManager:ReinitializeExistingQuests()
 	self.IsReinitializing = true;
 
-	for i = 1, GetNumQuestLogEntries() do
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
 		self:QUEST_ACCEPTED(i);
 	end
 
@@ -111,14 +111,11 @@ function NPE_QuestManager:AreQuestsPending()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:QUEST_ACCEPTED(questLogIndex)
-	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex);
-
-	if (not isHeader) then
+function NPE_QuestManager:QUEST_ACCEPTED(questID)
+	local title = C_QuestLog.GetTitleForQuestID(questID);
+	if title then
 		local data = QuestData:new(questID, title);
-
 		self.Data[questID] = data;
-
 		self:_DoCallback(self.Events.Quest_Accepted, data);
 	end
 end
@@ -129,7 +126,7 @@ function NPE_QuestManager:QUEST_LOG_UPDATE()
 		if (not questData.IsComplete) then
 			if (not questData.Time_ObjectivesComplete) then
 				-- check to see if the objectives are complete
-				local objectivesComplete = select(6, GetQuestLogTitle(GetQuestLogIndexByID(questID)));
+				local objectivesComplete = C_QuestLog.IsComplete(questID);
 				if (objectivesComplete) then
 					questData:ObjectivesComplete();
 					self:_DoCallback(self.Events.Quest_ObjectivesComplete, questData);

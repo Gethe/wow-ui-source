@@ -78,9 +78,11 @@ function AuctionCategoryMixin:GetDetailColumnStringUnsafe()
 	return nil;
 end
 
-function AuctionCategoryMixin:CreateSubCategory(classID, subClassID, inventoryType)
+function AuctionCategoryMixin:CreateSubCategory(classID, subClassID, inventoryType, implicitFilter)
 	local name = "";
-	if inventoryType then
+	if implicitFilter then
+		name = AUCTION_HOUSE_FILTER_STRINGS[implicitFilter];
+	elseif inventoryType then
 		name = GetItemInventorySlotInfo(inventoryType);
 	elseif classID and subClassID then
 		name = GetItemSubClassInfo(classID, subClassID);
@@ -103,37 +105,59 @@ function AuctionCategoryMixin:CreateNamedSubCategory(name)
 	return subCategory;
 end
 
-function AuctionCategoryMixin:CreateNamedSubCategoryAndFilter(name, classID, subClassID, inventoryType)
+function AuctionCategoryMixin:CreateNamedSubCategoryAndFilter(name, classID, subClassID, inventoryType, implicitFilter, useParentFilters)
 	local category = self:CreateNamedSubCategory(name);
-	category:AddFilter(classID, subClassID, inventoryType);
+
+	if useParentFilters then
+		self.filters = self.filters or {};
+		category:SetFilters(self.filters);
+	else
+		category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
+	end
 
 	return category;
 end
 
-function AuctionCategoryMixin:CreateSubCategoryAndFilter(classID, subClassID, inventoryType)
-	local category = self:CreateSubCategory(classID, subClassID, inventoryType);
-	category:AddFilter(classID, subClassID, inventoryType);
+function AuctionCategoryMixin:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, implicitFilter, useParentFilters)
+	local category = self:CreateSubCategory(classID, subClassID, inventoryType, implicitFilter);
+
+	if useParentFilters then
+		self.filters = self.filters or {};
+		category:SetFilters(self.filters);
+	else
+		category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
+	end
 
 	return category;
 end
 
 function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID, inventoryTypes)
+	local inventoryType = nil;
+	local useParentFilters = true;
+	self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly, useParentFilters);
+
 	for i, inventoryType in ipairs(inventoryTypes) do
 		self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType);
 	end
 end
 
-function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType)
-	if not classID and not subClassID and not inventoryType then
+function AuctionCategoryMixin:AddFilter(classID, subClassID, inventoryType, implicitFilter)
+	if not classID and not subClassID and not inventoryType and not implicitFilter then
 		return;
 	end
 
 	self.filters = self.filters or {};
 	self.filters[#self.filters + 1] = { classID = classID, subClassID = subClassID, inventoryType = inventoryType, };
 
+	self.implicitFilter = implicitFilter;
+
 	if self.parent then
-		self.parent:AddFilter(classID, subClassID, inventoryType);
+		self.parent:AddFilter(classID, subClassID, inventoryType, implicitFilter);
 	end
+end
+
+function AuctionCategoryMixin:SetFilters(filters)
+	self.filters = filters;
 end
 
 do
@@ -223,14 +247,14 @@ end
 
 do -- Armor
 	local ArmorInventoryTypes = {
-		LE_INVENTORY_TYPE_HEAD_TYPE,
-		LE_INVENTORY_TYPE_SHOULDER_TYPE,
-		LE_INVENTORY_TYPE_CHEST_TYPE,
-		LE_INVENTORY_TYPE_WAIST_TYPE,
-		LE_INVENTORY_TYPE_LEGS_TYPE,
-		LE_INVENTORY_TYPE_FEET_TYPE,
-		LE_INVENTORY_TYPE_WRIST_TYPE,
-		LE_INVENTORY_TYPE_HAND_TYPE,
+		Enum.InventoryType.IndexHeadType,
+		Enum.InventoryType.IndexShoulderType,
+		Enum.InventoryType.IndexChestType,
+		Enum.InventoryType.IndexWaistType,
+		Enum.InventoryType.IndexLegsType,
+		Enum.InventoryType.IndexFeetType,
+		Enum.InventoryType.IndexWristType,
+		Enum.InventoryType.IndexHandType,
 	};
 
 	local armorCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ARMOR);
@@ -239,37 +263,41 @@ do -- Armor
 	local plateCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
 	plateCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, ArmorInventoryTypes);
 
-	local plateChestCategory = plateCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
-	plateChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, LE_INVENTORY_TYPE_ROBE_TYPE);
+	local plateChestCategory = plateCategory:FindSubCategoryByName(GetItemInventorySlotInfo(Enum.InventoryType.IndexChestType));
+	plateChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, Enum.InventoryType.IndexRobeType);
 
 	local mailCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL);
 	mailCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, ArmorInventoryTypes);
 	
-	local mailChestCategory = mailCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
-	mailChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, LE_INVENTORY_TYPE_ROBE_TYPE);
+	local mailChestCategory = mailCategory:FindSubCategoryByName(GetItemInventorySlotInfo(Enum.InventoryType.IndexChestType));
+	mailChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, Enum.InventoryType.IndexRobeType);
 
 	local leatherCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER);
 	leatherCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, ArmorInventoryTypes);
 
-	local leatherChestCategory = leatherCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
-	leatherChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, LE_INVENTORY_TYPE_ROBE_TYPE);
+	local leatherChestCategory = leatherCategory:FindSubCategoryByName(GetItemInventorySlotInfo(Enum.InventoryType.IndexChestType));
+	leatherChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, Enum.InventoryType.IndexRobeType);
 
 	local clothCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH);
 	clothCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, ArmorInventoryTypes);
 
-	local clothChestCategory = clothCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
-	clothChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_INVENTORY_TYPE_ROBE_TYPE);
+	local clothChestCategory = clothCategory:FindSubCategoryByName(GetItemInventorySlotInfo(Enum.InventoryType.IndexChestType));
+	clothChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, Enum.InventoryType.IndexRobeType);
 
 	local miscCategory = armorCategory:CreateSubCategory(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_NECK_TYPE);
 
-	miscCategory:CreateNamedSubCategoryAndFilter(AUCTION_SUBCATEGORY_CLOAK, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_INVENTORY_TYPE_CLOAK_TYPE);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_FINGER_TYPE);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_TRINKET_TYPE);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_HOLDABLE_TYPE);
+	local useParentFilters = true;
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, nil, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly, useParentFilters);
+
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexNeckType);
+
+	miscCategory:CreateNamedSubCategoryAndFilter(AUCTION_SUBCATEGORY_CLOAK, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, Enum.InventoryType.IndexCloakType);
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexFingerType);
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexTrinketType);
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexHoldableType);
 	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_SHIELD);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_BODY_TYPE);
-	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_HEAD_TYPE);
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexBodyType);
+	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, Enum.InventoryType.IndexHeadType);
 
 	local cosmeticCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_COSMETIC);
 end
@@ -283,14 +311,12 @@ end
 do -- Gems
 	local gemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GEMS);
 	gemsCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
-	gemsCategory:SetFlag("UNSORTABLE");
 	gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_GEM);
 end
 
 do -- Item Enhancement
 	local itemEnhancementCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ITEM_ENHANCEMENT);
 	itemEnhancementCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
-	itemEnhancementCategory:SetFlag("UNSORTABLE");
 	itemEnhancementCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_ITEM_ENHANCEMENT);
 end
 

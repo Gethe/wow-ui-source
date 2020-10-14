@@ -1,5 +1,5 @@
 NUM_PET_STABLE_SLOTS = 10;
-NUM_PET_STABLE_PAGES = 6;
+NUM_PET_STABLE_PAGES = 20;
 NUM_PET_ACTIVE_SLOTS = 5;
 
 local CALL_PET_SPELL_IDS = {
@@ -85,9 +85,9 @@ function PetStable_UpdateSlot(button, petSlot)
 	button.petSlot = petSlot;
 	SetItemButtonTexture(button, icon);
 
-	if ( icon and level and family and talent) then
+	if ( icon and family and talent) then
 		button.tooltip = name;
-		button.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
+		button.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, family, talent);
 	else
 		button.tooltip = EMPTY_STABLE_SLOT;
 		button.tooltipSubtext = "";
@@ -113,12 +113,6 @@ function PetStable_SetSelectedPetInfo(icon, name, level, family, talent)
 		PetStableTypeText:SetFormattedText(STABLE_PET_INFO_TEXT, family, talent);
 	else
 		PetStableTypeText:SetText("");
-	end
-
-	if (level) then
-		PetStableLevelText:SetFormattedText(UNIT_LEVEL_TEMPLATE, level);
-	else
-		PetStableLevelText:SetText("");
 	end
 
 	if ( name ) then

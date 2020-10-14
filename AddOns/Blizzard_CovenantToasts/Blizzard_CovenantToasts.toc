@@ -1,0 +1,12 @@
+## Title: Blizzard Covenant Toasts
+## Author: Blizzard Entertainment
+## LoadOnDemand: 0
+
+Blizzard_CovenantToasts.lua
+Blizzard_CovenantToasts.xml
+
+Blizzard_CovenantChoiceToast.lua
+Blizzard_CovenantChoiceToast.xml
+
+Blizzard_CovenantRenownToast.lua
+Blizzard_CovenantRenownToast.xml

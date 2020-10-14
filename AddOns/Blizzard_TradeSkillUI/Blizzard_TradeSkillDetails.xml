@@ -24,6 +24,40 @@
 		</Scripts>
 	</Button>
 
+	<Button name="TradeSkillOptionalReagentTemplate" parentArray="OptionalReagents" inherits="OptionalReagentButtonTemplate" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self:GetParent():GetParent():OnOptionalReagentMouseEnter(self);
+			</OnEnter>
+			<OnLeave function="GameTooltip_HideResetCursor" />
+			<OnUpdate function="CursorOnUpdate" />
+			<OnClick>
+				self:GetParent():GetParent():OnOptionalReagentClicked(self, button);
+			</OnClick>
+			<OnLoad>
+				OptionalReagentButtonMixin.OnLoad(self);
+
+				-- Uses in Korean to fix Bug ID: 244689
+				if TRADESKILL_REAGENT_FONT then
+					self.Count:SetFontObject(TRADESKILL_REAGENT_FONT);
+				end
+				if TRADESKILL_FRAME_EXTEND_REAGENT_NAME_FIELD then
+					self.Name:SetWidth(100);
+				end
+			</OnLoad>
+		</Scripts>
+	</Button>
+
 	<Frame name="TradeSkillDetailsStarTemplate" parentArray="Stars" virtual="true">
 		<Size x="16" y="15"/>
 		<Layers>
@@ -168,17 +202,17 @@
 							<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 						</Anchors>
 					</Button>
-					<Frame parentKey="Container">
+					<Frame parentKey="Container" inherits="BackdropTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="14" y="-36"/>
 							<Anchor point="TOPRIGHT" x="-14" y="-36"/>
 							<Anchor point="BOTTOM" x="0" y="14"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize val="12" />
-							<TileSize val="8" />
-							<BackgroundInsets left="1" right="1" top="1" bottom="1" />
-						</Backdrop>
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_12_1111" type="global"/>
+							<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+							<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+						</KeyValues>
 						<Frames>
 							<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
 								<Size x="136" y="160" />
@@ -211,12 +245,6 @@
 								</Scripts>
 							</Frame>
 						</Frames>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -226,7 +254,7 @@
 			</Frame>
 		</Frames>
 		<ScrollChild>
-			<Frame parentKey="Contents" hidden="true" inherits="InlineHyperlinkFrameTemplate">
+			<Frame parentKey="Contents" hidden="true" inherits="InlineHyperlinkFrameTemplate" frameLevel="100">
 				<KeyValues>
 					<KeyValue key="hasIconHyperlinks" value="true" type="boolean"/>
 				</KeyValues>
@@ -262,6 +290,19 @@
 							</Anchors>
 						</FontString>
 
+						<FontString parentKey="ExperienceLabel" inherits="GameFontNormalSmall" text="TRADESKILL_RECIPE_EXPERIENCE_LABEL">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RequirementLabel" relativePoint="LEFT"/>
+								<Anchor point="TOP" relativeKey="$parent.RequirementText" relativePoint="BOTTOM"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ExperienceText" inherits="GameFontHighlightSmall" justifyV="TOP" justifyH="LEFT">
+							<Size x="240" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExperienceLabel" relativePoint="TOPRIGHT" x="4" y="0"/>
+							</Anchors>
+						</FontString>
+
 						<FontString parentKey="RecipeCooldown" inherits="GameFontRedSmall" justifyH="LEFT">
 							<Size x="240" y="0"/>
 							<Anchors>
@@ -273,6 +314,12 @@
 						<FontString parentKey="ReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.RecipeCooldown" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="OptionalReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS_OPTIONAL">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
 							</Anchors>
 						</FontString>
 
@@ -292,6 +339,39 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button parentKey="OptionalReagentInfo">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagentLabel" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<NormalTexture parentKey="I" file="Interface\common\help-i">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</NormalTexture>
+						<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".2"/>
+						</HighlightTexture>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+								local overrideColor = nil;
+								local wrap = true;
+								GameTooltip_SetTitle(GameTooltip, OPTIONAL_REAGENT_TUTORIAL_TOOLTIP_TITLE, overrideColor, wrap)
+								GameTooltip_AddNormalLine(GameTooltip, OPTIONAL_REAGENT_TUTORIAL_TOOLTIP_TEXT, wrap)
+
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+
 					<Button parentKey="ResultIcon" registerForClicks="LeftButtonUp,RightButtonUp">
 						<KeyValues>
 							<KeyValue key="hasItem" value="true" type="boolean"/>
@@ -310,6 +390,11 @@
 								</Texture>
 								<Texture parentKey="ResultBorder" atlas="tradeskills-iconborder">
 									<Size x="51" y="51"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="ModifiedCraftingGlowBorder" atlas="tradeskills-iconborder-glow" useAtlasSize="true" alpha="0">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
@@ -370,6 +455,44 @@
 								self:GetParent():GetParent():OnStarsMouseEnter(self);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide" />
+						</Scripts>
+					</Frame>
+					<StatusBar parentKey="RecipeLevel" mixin="TradeSkillRecipeLevelBarMixin" inherits="TradeSkillStatusBarArtTemplate">
+						<Size x="80" y="14"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMLEFT" x="1" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</StatusBar>
+					<DropDownToggleButton parentKey="RecipeLevelSelector" mixin="TradeSkillRecipeLevelSelectorMixin" inherits="UIMenuButtonStretchTemplate">
+						<Size x="110" y="22"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMRIGHT" x="-1" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+									<Size x="10" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnMouseDown method="OnMouseDown"/>
+						</Scripts>
+					</DropDownToggleButton>
+					<Frame name="TradeSkillRecipeLevelDropDown" parentKey="RecipeLevelDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								self.Text:SetJustifyH("CENTER");
+								self.Button:Show();
+							</OnLoad>
 						</Scripts>
 					</Frame>
 					<Button parentKey="Reagent1" inherits="TradeSkillReagentTemplate">
@@ -436,13 +559,103 @@
 							<Anchor point="LEFT" relativeKey="$parent.Reagent7" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
+					<Button parentKey="OptionalReagent1" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="1"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OptionalReagentLabel" relativePoint="BOTTOMLEFT" x="-5" y="-6"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent2" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="2"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagent1" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent3" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="3"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OptionalReagent1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent4" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="4"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagent3" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent5" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="5"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OptionalReagent3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="OptionalReagent6" inherits="TradeSkillOptionalReagentTemplate">
+						<KeyValues>
+							<KeyValue key="optionalReagentIndex" type="number" value="6"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OptionalReagent5" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
 				</Frames>
 			</Frame>
 		</ScrollChild>
+		<Frames>
+			<Frame parentKey="GlowClipFrame" clipChildren="true" frameLevel="50">
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+					<Anchor point="LEFT" relativeKey="$parent.$parent" relativePoint="LEFT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.$parent" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ModifiedCraftingGlow" atlas="services-ring-large-glow" useAtlasSize="true" alpha="0" scale="0.35">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Contents.ResultIcon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ModifiedCraftingGlowSpin" atlas="services-ring-large-glowspin" alphaMode="ADD" useAtlasSize="true" alpha="0" scale="0.525">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Contents.ResultIcon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="ModifiedCraftingGlowSpinAnim" looping="REPEAT">
+						<Rotation childKey="ModifiedCraftingGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ModifiedCraftingGlowInAnim" setToFinalAlpha="true">
+						<Alpha childKey="ModifiedCraftingGlow" fromAlpha="0" toAlpha="0.8" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ModifiedCraftingGlowBorder" fromAlpha="0" toAlpha="1.0" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ResultBorder" fromAlpha="1.0" toAlpha="0" duration="0.4"/>
+						<Alpha childKey="ModifiedCraftingGlowSpin" fromAlpha="0" toAlpha="0.3" duration="0.4"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ModifiedCraftingGlowOutAnim" setToFinalAlpha="true">
+						<Alpha childKey="ModifiedCraftingGlow" fromAlpha="0.8" toAlpha="0" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ModifiedCraftingGlowBorder" fromAlpha="1.0" toAlpha="0" duration="0.4"/>
+						<Alpha childKey="$parent.Contents.ResultIcon.ResultBorder" fromAlpha="0" toAlpha="1.0" duration="0.4"/>
+						<Alpha childKey="ModifiedCraftingGlowSpin" fromAlpha="0.3" toAlpha="0" duration="0.4"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnUpdate method="OnUpdate" />
 			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 		</Scripts>
 	</ScrollFrame>

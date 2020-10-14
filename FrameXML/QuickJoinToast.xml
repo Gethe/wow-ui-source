@@ -28,8 +28,11 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<ContainedAlertFrame  name="QuickJoinToastButton" frameStrata="LOW" frameLevel="4" parent="UIParent" mixin="QuickJoinToastMixin">
+	<ContainedAlertFrame  name="QuickJoinToastButton" frameStrata="LOW" frameLevel="4" parent="UIParent" inherits="QuickKeybindButtonTemplate" mixin="QuickJoinToastMixin">
 		<Size x="32" y="32"/>
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLESOCIAL" type="string"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Toast" inherits="QuickJoinToastTemplate" frameLevel="3"/>
 			<Frame parentKey="Toast2" inherits="QuickJoinToastTemplate" frameLevel="3"/>
@@ -68,9 +71,9 @@
 			<OnClick method="OnClick"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
-			<OnEnter method="OnEnter"/>
+			<OnEnter method="OnEnter" inherit="append"/>
 			<OnEvent method="OnEvent"/>
-			<OnLeave method="OnLeave"/>
+			<OnLeave method="OnLeave" inherit="append"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

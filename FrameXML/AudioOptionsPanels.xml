@@ -92,9 +92,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
@@ -282,9 +280,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
@@ -412,9 +408,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
@@ -767,7 +761,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -791,11 +785,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
-			
+
 			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />
 				<Anchors>
@@ -814,7 +808,7 @@
 					<OnLoad function="AudioOptionsVoicePanelMicDeviceDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
 			<Slider name="$parentVoiceChatMicVolume" parentKey="VoiceChatMicVolume" inherits="OptionsSliderTemplate">
 				<Size x="185" y="16" />
 				<Anchors>
@@ -830,7 +824,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -850,7 +844,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
+					<OnLoad inherit="prepend" function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -895,12 +889,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.ToggleTest" relativePoint="RIGHT" x="3" y="0"/>
 							<Anchor point="RIGHT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-								self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-							</OnLoad>
-						</Scripts>
 						<Frames>
 							<StatusBar parentKey="Status" inherits="TextStatusBar">
 								<Anchors>
@@ -950,6 +938,38 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
+			</Frame>
+			<Frame name="$parentMacMicrophoneAccessWarning" parentKey="MacMicrophoneAccessWarning" mixin="MacMicrophoneAccessWarningMixin" hidden="true">
+				<Size x="420" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentChatModeDropdown" relativePoint="BOTTOMLEFT" x="45" y="-26"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<Color color="RED_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="OpenAccessButton" inherits="UIPanelButtonTemplate" text="MAC_MIC_PERMISSIONS_OPEN_BUTTON">
+						<Size x="200" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if MacOptions_OpenMicrophoneRequestDialogue then
+									MacOptions_OpenMicrophoneRequestDialogue();
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

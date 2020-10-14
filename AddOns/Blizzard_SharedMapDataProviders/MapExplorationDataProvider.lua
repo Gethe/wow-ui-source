@@ -88,10 +88,11 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 		self:SetAlpha(0);
 	end
 
+	local mapCanvas = self:GetMap();
 	local mapID = self:GetMap():GetMapID();
 	local exploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures(mapID);
 	if exploredMapTextures then
-		self.layerIndex = self:GetMap():GetCanvasContainer():GetCurrentLayerIndex();
+		self.layerIndex = mapCanvas:GetCanvasContainer():GetCurrentLayerIndex();
 		local layers = C_Map.GetMapArtLayers(mapID);
 		local layerInfo = layers[self.layerIndex];
 		local TILE_SIZE_WIDTH = layerInfo.tileWidth;
@@ -117,6 +118,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 				end
 				for k = 1, numTexturesWide do
 					local texture = self.overlayTexturePool:Acquire();
+					mapCanvas:AddMaskableTexture(texture);
 					if ( k < numTexturesWide ) then
 						texturePixelWidth = TILE_SIZE_WIDTH;
 						textureFileWidth = TILE_SIZE_WIDTH;
@@ -141,6 +143,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 						texture:SetDrawLayer("ARTWORK", 1);
 						texture:Hide();
 						local highlightRect = self.highlightRectPool:Acquire();
+						mapCanvas:AddMaskableTexture(highlightRect);
 						highlightRect:SetSize(exploredTextureInfo.hitRect.right - exploredTextureInfo.hitRect.left, exploredTextureInfo.hitRect.bottom - exploredTextureInfo.hitRect.top);
 						highlightRect:SetPoint("TOPLEFT", exploredTextureInfo.hitRect.left, -exploredTextureInfo.hitRect.top);
 						highlightRect.index = i;

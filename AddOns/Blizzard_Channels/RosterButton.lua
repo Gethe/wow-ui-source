@@ -284,15 +284,39 @@ function ChannelRosterButtonMixin:UpdateNameSize()
 	end
 end
 
+function ChannelRosterButtonMixin:GetMemberChannelRank()
+	local channel = ChannelFrame:GetList():GetSelectedChannelButton();
+	if channel then
+		local ruleset, activePlayerRole = channel:GetChannelRuleset();
+		if ruleset == Enum.ChatChannelRuleset.Mentor then
+			return nil;
+		end
+	end
+
+	if self:IsMemberOwner() then
+		return "owner";
+	elseif self:IsMemberModerator() then
+		return "moderator";
+	end
+end
+
+local channelRankImages =
+{
+	owner = { asset = "Interface\\GroupFrame\\UI-Group-LeaderIcon" },
+	moderator = { asset = "Interface\\GroupFrame\\UI-Group-AssistantIcon" },
+}
+
 function ChannelRosterButtonMixin:UpdateRankVisibleState()
-	self.showRank = self:IsMemberLeadership();
+	local channelRank = self:GetMemberChannelRank();
+	self.showRank = channelRank ~= nil;
 	self.Rank:SetShown(self.showRank);
 
 	if self.showRank then
-		if self:IsMemberOwner() then
-			self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
-		elseif self:IsMemberModerator() then
-			self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
+		local rankImage = channelRankImages[channelRank];
+		if rankImage.isAtlas then
+			self.Rank:SetAtlas(rankImage.asset);
+		else
+			self.Rank:SetTexture(rankImage.asset);
 		end
 	end
 end

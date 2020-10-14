@@ -508,48 +508,6 @@
 							<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 						</Anchors>
 					</Frame>
-					<Frame name="VoidStorageHelpBox" inherits="GlowBoxTemplate" hidden="true">
-						<Size x="190" y="200"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="30" y="241"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="$parentBigText" inherits="GameFontHighlight">
-									<Size x="176" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-12"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentSmallText" inherits="GameFontHighlightSmall">
-									<Size x="176" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentBigText" relativePoint="BOTTOM" x="0" y="-12"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentArrow" inherits="GlowBoxArrowTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativePoint="BOTTOM" y="1"/>
-								</Anchors>
-							</Frame>
-							<Button name="$parentButton" inherits="UIPanelButtonTemplate" text="OKAY">
-								<Size x="110" y="22"/>
-								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="12"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										SetCVar("lastVoidStorageTutorial", self.currentTutorial);
-										VoidStorageFrame_Update();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
 					<Frame name="VoidStoragePurchaseFrame" hidden="true">
 						<Size x="418" y="236"/>
 						<Anchors>

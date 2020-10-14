@@ -17,7 +17,7 @@
 		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
-			<OnEnter method="UpdateTooltip"/>
+			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
@@ -446,19 +446,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
-						GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]));
-						GameTooltip:Show();
-					</OnEnter>
+					<OnEnter function="PVPConquestLockTooltipShow"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			 </Frame>
 		</Frames>
-		<BarTexture atlas="_pvpqueue-conquestbar-fill-yellow"/>
+		<BarTexture parentKey="FillTexture" atlas="_pvpqueue-conquestbar-fill-yellow"/>
 		<BarColor r="1" g="1" b="1"/>
 		<Scripts>
-      <OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
@@ -571,17 +567,8 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick function="PVPQueueFrameButton_OnClick"/>
-			<OnEnter>
-				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self, "ANCHOR_TOP");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-				end
-			</OnEnter>
-			<OnLeave>
-				if ( GameTooltip:GetOwner() == self ) then
-					GameTooltip:Hide();
-				end
-			</OnLeave>
+			<OnEnter function="PVPQueueFrameButton_OnEnter"/>
+			<OnLeave function="PVPQueueFrameButton_OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -727,6 +714,55 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+
+	<Frame name="PVPWeeklyChestTemplate" virtual ="true" useParentLevel="true" mixin="PVPWeeklyChestMixin" >
+		<Size x="84" y="70"/>
+		<Anchors>
+			<Anchor point="TOP" y="-48"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FlairTexture" atlas="pvpqueue-chest-background">
+					<Size x="187" y="152"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinTextureBottom" inherits="store-itemicon-border-glowspin" alpha="0.2" alphaMode="ADD">
+					<Size x="202" y="205"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SpinTextureTop" inherits="store-itemicon-border-glowspin" alpha="0.7" alphaMode="ADD">
+					<Size x="202" y="205"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ChestTexture">
+					<Size x="187" y="152"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+				<Rotation childKey="SpinTextureTop" order="1" duration="60" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 
 	<Frame name="PVPUIFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Size x="563" y="428"/>
@@ -973,17 +1009,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame name="PremadeGroupsPvPTutorialAlert" inherits="MicroButtonAlertTemplate" parent="PVPQueueFrameCategoryButton3">
-								<KeyValues>
-									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
-									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
-								</Anchors>
-							</Frame>
-						</Frames>
 					</Button>
 					<!-- Casual  -->
 					<Frame name="HonorFrame">
@@ -1123,8 +1148,8 @@
 										</KeyValues>
 										<Scripts>
 											<OnClick inherit="prepend">
-												if (self:GetParent().BrawlHelpBox:IsShown()) then
-													self:GetParent().BrawlHelpBox:Hide();
+												if HelpTip:IsShowing(self, BRAWL_TUTORIAL) then
+													HelpTip:Hide(self, BRAWL_TUTORIAL);
 													SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL, true);
 												end
 											</OnClick>
@@ -1138,56 +1163,6 @@
 											<KeyValue key="tooltipTableKey" value="SpecialEvent" type="string"/>
 										</KeyValues>
 									</Button>
-									<Frame parentKey="BrawlHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG">
-										<Size x="230" y="65"/>
-										<Anchors>
-											<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.BrawlButton" x="15" y="0"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<FontString parentKey="BigText" inherits="GameFontHighlight" text="BRAWL_TUTORIAL" justifyH="LEFT">
-													<Size x="186" y="0"/>
-													<Anchors>
-														<Anchor point="TOP" x="-10" y="-12"/>
-													</Anchors>
-												</FontString>
-												<Texture parentKey="ArrowLeft" inherits="HelpPlateArrowDOWN">
-													<Size x="53" y="21"/>
-													<Anchors>
-														<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="BORDER">
-												<Texture parentKey="ArrowGlowLeft" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-													<Size x="53" y="21"/>
-													<Anchors>
-														<Anchor point="RIGHT" relativePoint="LEFT" x="-1" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Frames>
-											<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-												<Anchors>
-													<Anchor point="TOPRIGHT" x="6" y="6"/>
-												</Anchors>
-												<Scripts>
-													<OnClick>
-														self:GetParent():Hide();
-														SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL, true);
-													</OnClick>
-												</Scripts>
-											</Button>
-										</Frames>
-										<Scripts>
-											<OnLoad>
-												self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
-												SetClampedTextureRotation(self.ArrowLeft, 90);
-												SetClampedTextureRotation(self.ArrowGlowLeft, 90);
-											</OnLoad>
-										</Scripts>
-									</Frame>
 									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.WorldBattlesTexture" relativePoint="TOPLEFT" x="0" y="0"/>
@@ -1437,7 +1412,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="CasualPanel" setAllPoints="true" hidden="true">
+							<Frame parentKey="CasualPanel" mixin="PVPWeeklyCasualPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="HKLabel" inherits="GameFontNormal" text="HONORABLE_KILLS">
@@ -1454,6 +1429,12 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="WeeklyChest" inherits="PVPWeeklyChestTemplate" useParentLevel="true" hidden="true">
+										<Size x="84" y="70"/>
+										<Anchors>
+											<Anchor point="TOP" y="-48"/>
+										</Anchors>
+									</Frame>
 									<Cooldown parentKey="HonorLevelDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin">
 										<Size x="128" y="128"/>
 										<Anchors>
@@ -1497,11 +1478,11 @@
 										</Layers>
 										<Frames>
 											<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-                      <Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
-                        <Anchors>
-                          <Anchor point="BOTTOM" x="0" y="-1"/>
-                        </Anchors>
-                      </Button>
+											<Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
+												<Anchors>
+													<Anchor point="BOTTOM" x="0" y="-1"/>
+												</Anchors>
+											</Button>
 										</Frames>
 										<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
 										<Scripts>
@@ -1515,8 +1496,11 @@
 										</Scripts>
 									</Cooldown>
 								</Frames>
+								<Scripts>
+									<OnShow method="OnShow"/>
+								</Scripts>
 							</Frame>
-							<Frame parentKey="RatedPanel" setAllPoints="true" hidden="true">
+							<Frame parentKey="RatedPanel" mixin="PVPWeeklyRatedPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Label" inherits="GameFontNormal" text="RATED_PVP_WEEKLY_CHEST">
@@ -1527,53 +1511,11 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="WeeklyChest" mixin="PVPWeeklyChestMixin">
+									<Frame parentKey="WeeklyChest" inherits="PVPWeeklyChestTemplate" useParentLevel="true" >
 										<Size x="84" y="70"/>
 										<Anchors>
 											<Anchor point="TOP" y="-48"/>
 										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<Texture parentKey="FlairTexture" atlas="pvpqueue-chest-background">
-													<Size x="187" y="152"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="SpinTextureBottom" inherits="store-itemicon-border-glowspin" alpha="0.2" alphaMode="ADD">
-													<Size x="202" y="205"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="BORDER">
-												<Texture parentKey="SpinTextureTop" inherits="store-itemicon-border-glowspin" alpha="0.7" alphaMode="ADD">
-													<Size x="202" y="205"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY">
-												<Texture parentKey="ChestTexture">
-													<Size x="187" y="152"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnShow method="OnShow"/>
-											<OnEnter method="OnEnter"/>
-											<OnLeave function="GameTooltip_Hide"/>
-										</Scripts>
-										<Animations>
-											<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
-												<Rotation childKey="SpinTextureTop" order="1" duration="60" degrees="-360"/>
-											</AnimationGroup>
-										</Animations>
 									</Frame>
 									<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
 										<Anchors>
@@ -1654,8 +1596,14 @@
 												</MaskTexture>
 											</Layer>
 										</Layers>
+										<Scripts>
+											<OnMouseDown method="OnMouseDown"/>
+										</Scripts>
 									</Frame>
 								</Frames>
+								<Scripts>
+									<OnShow method="OnShow"/>
+								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>
@@ -1727,20 +1675,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
+	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate">
 		<Size x="200" y="199"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<Color r="0" b="0" g="0"/>
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" parentArray="Content" inherits="GameFontNormalMed3">

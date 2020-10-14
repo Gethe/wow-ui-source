@@ -1,0 +1,64 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TradeSkillOptionalReagentList.lua"/>
+
+	<Button name="OptionalReagentListLineTemplate" inherits="ScrollListLineTemplate, OptionalReagentButtonTemplate" mixin="OptionalReagentListLineMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="auctionhouse-ui-row-select" useAtlasSize="false" alphaMode="ADD" alpha="0.5">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-ui-row-highlight" useAtlasSize="false" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Frame name="OptionalReagentListTemplate" mixin="OptionalReagentListMixin" inherits="SimplePanelTemplate" virtual="true">
+		<Size x="187" y="404"/>
+		<Frames>
+			<CheckButton parentKey="HideUnownedButton" mixin="OptionalReagentListHideUnownedButtonMixin" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</CheckButton>
+			<Button parentKey="CloseButton" mixin="OptionalReagentListCloseButtonMixin" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="100" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ScrollList" inherits="ScrollListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HideUnownedButton" relativePoint="BOTTOMLEFT" x="3" y="5"/>
+					<Anchor point="RIGHT" x="-3"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CloseButton" relativePoint="TOP" x="0" y="-3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

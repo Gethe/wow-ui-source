@@ -46,12 +46,7 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick function="GroupFinderFrameGroupButton_OnClick"/>
-			<OnEnter>
-				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self, "ANCHOR_TOP");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-				end
-			</OnEnter>
+			<OnEnter function="GroupFinderFrameGroupButton_OnEnter"/>
 			<OnLeave>
 				if ( GameTooltip:GetOwner() == self ) then
 					GameTooltip:Hide();
@@ -202,32 +197,18 @@
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-70" />
+							<Anchor point="TOPLEFT" x="10" y="-101" />
 						</Anchors>
 					</Button>
 					<Button name="$parentGroupButton2" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton2" id="2">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentGroupButton1" relativePoint="BOTTOM" x="0" y="-23" />
+							<Anchor point="TOP" relativeTo="$parentGroupButton1" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 					</Button>
 					<Button name="$parentGroupButton3" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton3" id="3">
-						<!-- Anchors set in Lua -->
-					</Button>
-					<Button name="$parentGroupButton4" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton4" id="4">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentGroupButton3" relativePoint="BOTTOM" x="0" y="-23" />
+							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
-						<Frames>
-							<Frame name="PremadeGroupsPvETutorialAlert" inherits="MicroButtonAlertTemplate" parent="GroupFinderFrameGroupButton4">
-								<KeyValues>
-									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
-									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
-								</Anchors>
-							</Frame>
-						</Frames>
 					</Button>
 					<Frame name="LFGListPVEStub" hidden="true">
 						<Size x="338" y="428"/>

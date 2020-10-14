@@ -2,6 +2,14 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AccountLogin.lua"/>
 
+	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -130,7 +138,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320">
+					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="345"/>
@@ -160,17 +168,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
@@ -200,7 +197,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1">
+					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="275"/>
@@ -221,17 +218,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
@@ -248,10 +234,10 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
-						<Size x="220" y="45"/>
+					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="LOG_IN">
+						<Size x="200" y="30"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="170"/>
+							<Anchor point="BOTTOM" x="0" y="185"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AccountLogin_Login"/>
@@ -288,7 +274,7 @@
 						<Scripts>
 							<OnLoad>
 								local width = self.Label:GetWidth();
-								self:SetPoint("TOP", self:GetParent().LoginButton, "BOTTOM", -width / 2, 0);
+								self:SetPoint("TOP", self:GetParent().LoginButton, "BOTTOM", -width / 2, -11);
 								if ( GetSavedAccountName() ~= "" ) then
 									self:SetChecked(true);
 								else
@@ -314,7 +300,7 @@
 					</CheckButton>
 					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="29"/>
+							<Anchor point="BOTTOMRIGHT" x="-12" y="34"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AccountLogin_Exit"/>
@@ -322,7 +308,7 @@
 					</Button>
 					<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="80"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="87"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GlueParent_ShowCreditsScreen"/>
@@ -330,7 +316,7 @@
 					</Button>
 					<Button parentKey="CinematicsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CINEMATICS">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.CreditsButton" relativePoint="TOP" x="0" y="-2"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.CreditsButton" relativePoint="TOP" x="0" y="10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GlueParent_ShowCinematicsScreen"/>
@@ -338,18 +324,15 @@
 					</Button>
 					<Button parentKey="OptionsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="SYSTEMOPTIONS_MENU">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.CinematicsButton" relativePoint="TOP" x="0" y="-2"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.CinematicsButton" relativePoint="TOP" x="0" y="10"/>
 						</Anchors>
 						<Scripts>
-							<OnShow>
-								--JS_TODO - Handle Kiosk Mode
-							</OnShow>
 							<OnClick function="GlueParent_ShowOptionsScreen"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="CommunityButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="COMMUNITY_SITE">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="10" y="84"/>
+							<Anchor point="BOTTOMLEFT" x="17" y="89"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AccountLogin_LaunchCommunitySite"/>
@@ -357,7 +340,7 @@
 					</Button>
 					<Button parentKey="ManageAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="MANAGE_ACCOUNT">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.CommunityButton" relativePoint="TOP"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.CommunityButton" relativePoint="TOP" y="10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AccountLogin_ManageAccount"/>
@@ -365,7 +348,7 @@
 					</Button>
 					<Button parentKey="CreateAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREATE_ACCOUNT">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.ManageAccountButton" relativePoint="TOP"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.ManageAccountButton" relativePoint="TOP" y="10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AccountLogin_ManageAccount"/>
@@ -413,22 +396,14 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<Frame parentKey="Container">
+									<Frame parentKey="Container" inherits="BackdropTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
 											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+										</KeyValues>
 										<Frames>
 											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
 												<Anchors>
@@ -490,16 +465,10 @@
 											</ScrollFrame>
 										</Frames>
 									</Frame>
-									<Button parentKey="AcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT_GLUE">
-										<Size>
-											<AbsDimension x="125" y="37"/>
-										</Size>
+									<Button parentKey="AcceptButton" inherits="GlueButtonTemplate" text="ACCEPT_GLUE">
+										<Size x="110" y="30"/>
 										<Anchors>
-											<Anchor point="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="8" y="6"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="BOTTOMLEFT" x="15" y="12"/>
 										</Anchors>
 										<Scripts>
 											<OnClick>
@@ -508,16 +477,10 @@
 											</OnClick>
 										</Scripts>
 									</Button>
-									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
-										<Size>
-											<AbsDimension x="125" y="37"/>
-										</Size>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplate" text="CANCEL">
+										<Size x="110" y="30"/>
 										<Anchors>
-											<Anchor point="BOTTOMRIGHT">
-												<Offset>
-													<AbsDimension x="-8" y="6"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="BOTTOMRIGHT" x="-15" y="12"/>
 										</Anchors>
 										<Scripts>
 											<OnClick function="WoWAccountSelect_OnCancel">
@@ -575,7 +538,7 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<EditBox parentKey="EditBox" letters="16">
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
@@ -590,17 +553,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Scripts>
 											<OnEscapePressed function="CaptchaEntry_Cancel"/>
 											<OnEnterPressed function="CaptchaEntry_Okay"/>
@@ -616,7 +568,8 @@
 											<AbsInset left="15" bottom="5"/>
 										</TextInsets>
 									</EditBox>
-									<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+									<Button parentKey="OkayButton" inherits="GlueButtonTemplate" text="OKAY">
+										<Size x="150" y="30"/>
 										<Anchors>
 											<Anchor point="TOPRIGHT" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-5" y="-5"/>
 										</Anchors>
@@ -624,7 +577,8 @@
 											<OnClick function="CaptchaEntry_Okay"/>
 										</Scripts>
 									</Button>
-									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplate" text="CANCEL">
+										<Size x="150" y="30"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="5" y="-5"/>
 										</Anchors>
@@ -636,7 +590,6 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="CaptchaEntry_OnLoad"/>
 							<OnShow function="CaptchaEntry_OnShow"/>
 							<OnHide function="CaptchaEntry_OnHide"/>
 							<OnKeyDown function="CaptchaEntry_OnKeyDown"/>
@@ -672,7 +625,7 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<EditBox parentKey="EditBox" letters="16">
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="CENTER"/>
@@ -687,17 +640,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Scripts>
 											<OnEscapePressed function="TokenEntry_Cancel"/>
 											<OnEnterPressed function="TokenEntry_Okay"/>
@@ -713,17 +655,19 @@
 											<AbsInset left="15" bottom="5"/>
 										</TextInsets>
 									</EditBox>
-									<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+									<Button parentKey="OkayButton" inherits="GlueButtonTemplate" text="OKAY">
+										<Size x="150" y="30"/>
 										<Anchors>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="20" y="16"/>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="30" y="30"/>
 										</Anchors>
 										<Scripts>
 											<OnClick function="TokenEntry_Okay"/>
 										</Scripts>
 									</Button>
-									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplate" text="CANCEL">
+										<Size x="150" y="30"/>
 										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.OkayButton" relativePoint="RIGHT"/>
+											<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
 										</Anchors>
 										<Scripts>
 											<OnClick function="TokenEntry_Cancel"/>
@@ -733,13 +677,12 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="TokenEntry_OnLoad"/>
 							<OnShow function="TokenEntry_OnShow"/>
 							<OnHide function="TokenEntry_OnHide"/>
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="GlueDropDownMenuTemplate">
+					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="5"/>
 						</Anchors>

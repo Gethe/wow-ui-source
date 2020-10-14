@@ -4,17 +4,68 @@ end
 
 WorldMap_DebugDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+local function IsTeleportModifierKeyDown()
+	return IsAltKeyDown();
+end
+
 function WorldMap_DebugDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	local pin = self:GetMap():AcquirePin("WorldMap_DebugTeleportPinTemplate");
-	pin:SetPosition(0.5, 0.5);
+	local priority = 100;
+	self.onCanvasClickHandler = self.onCanvasClickHandler or function(mapCanvas, button, cursorX, cursorY) return self:OnCanvasClickHandler(button, cursorX, cursorY) end;
+	mapCanvas:AddCanvasClickHandler(self.onCanvasClickHandler, priority);
+	self.onPinMouseActionHandler = self.onPinMouseActionHandler or function(mapCanvas, mouseAction, button) return self:OnPinMouseActionHandler(mouseAction, button) end;
+	mapCanvas:AddGlobalPinMouseActionHandler(self.onPinMouseActionHandler, priority);
+	self.cursorHandler = self.cursorHandler or
+		function()
+			if IsTeleportModifierKeyDown() then
+				return "TAXI_CURSOR";
+			end
+		end
+	;
+	mapCanvas:AddCursorHandler(self.cursorHandler, priority);
 end
 
-function WorldMap_DebugDataProviderMixin:OnRemoved(mapCanvas)
-	mapCanvas:RemoveAllPinsByTemplate("WorldMap_DebugTeleportPinTemplate");
+function WorldMap_DebugDataProviderMixin:OnCanvasClickHandler(button, cursorX, cursorY)
+	if IsTeleportModifierKeyDown() and button == "LeftButton" then
+		self:Teleport();
+		return true;
+	end
+	return false;
+end
 
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+function WorldMap_DebugDataProviderMixin:OnPinMouseActionHandler(mouseAction, button)
+	if button ~= "LeftButton" or mouseAction == MapCanvasMixin.MouseAction.Up or not IsTeleportModifierKeyDown() then
+		return false;
+	end
+
+	if mouseAction == MapCanvasMixin.MouseAction.Click then
+		self:Teleport();
+	end
+	-- do nothing on MapCanvasMixin.MouseAction.Down
+	return true;
+end
+
+function WorldMap_DebugDataProviderMixin:Teleport()
+	local pinFrameLevel = 0;
+	local pinIndex;
+	for pin in self:GetMap():EnumeratePinsByTemplate("WorldMap_DebugObjectPinTemplate") do
+		if pin:IsMouseOver() then
+			-- there might be overlapping pins, find topmost
+			local frameLevel = pin:GetFrameLevel();
+			if frameLevel > pinFrameLevel then
+				pinFrameLevel = frameLevel;
+				pinIndex = pin:GetDebugObjectIndex();
+			end
+		end
+	end
+	if pinIndex then
+		C_Debug.TeleportToMapDebugObject(pinIndex);
+	else
+		local scrollContainer = self:GetMap().ScrollContainer;
+		local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
+		C_Debug.TeleportToMapLocation(self:GetMap():GetMapID(), cursorX, cursorY);
+	end
 end
 
 local DEBUG_ICON_INFO = {
@@ -110,48 +161,4 @@ end
 
 function WorldMap_DebugObjectPinMixin:OnMouseLeave(motion)
 	GameTooltip:Hide();
-end
-
-WorldMap_DebugPortLocPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DEBUG");
-
-WorldMap_DebugTeleportPinMixin = CreateFromMixins(MapCanvasPinMixin);
-
-function WorldMap_DebugTeleportPinMixin:OnLoad()
-	self:SetIgnoreGlobalPinScale(true);
-end
-
-function WorldMap_DebugTeleportPinMixin:OnCanvasSizeChanged()
-	self:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
-end
-
-function WorldMap_DebugTeleportPinMixin:OnAcquired()
-	self:SetFrameStrata("DIALOG");
-end
-
-function WorldMap_DebugTeleportPinMixin:OnUpdate()
-	self:EnableMouse(IsControlKeyDown());
-end
-
-function WorldMap_DebugTeleportPinMixin:OnMouseDown(button)
-	if button == "LeftButton" then
-		local pinFrameLevel = 0;
-		local pinIndex;
-		for pin in self:GetMap():EnumeratePinsByTemplate("WorldMap_DebugObjectPinTemplate") do
-			if pin:IsMouseOver() then
-				-- there might be overlapping pins, find topmost
-				local frameLevel = pin:GetFrameLevel();
-				if frameLevel > pinFrameLevel then
-					pinFrameLevel = frameLevel;
-					pinIndex = pin:GetDebugObjectIndex();
-				end
-			end
-		end
-		if pinIndex then
-			C_Debug.TeleportToMapDebugObject(pinIndex);
-		else
-			local scrollContainer = self:GetMap().ScrollContainer;
-			local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
-			C_Debug.TeleportToMapLocation(self:GetMap():GetMapID(), cursorX, cursorY);
-		end
-	end
 end

@@ -104,7 +104,7 @@
 	<Button name="PetStableActiveSlotTemplate" inherits="PetStableSlotTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="$parentPetName" inherits="GameFontHighlightSmall" parentKey="PetName">
+				<FontString name="$parentPetName" inherits="GameFontHighlightSmall" parentKey="PetName" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-12" y="7"/>
 						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="12" y="7"/>
@@ -243,14 +243,10 @@
 								<Anchor point="TOPLEFT" x="2" y="-1"/>
 							</Anchors>
 						</Texture>
-						<FontString name="PetStableNameText" inherits="GameFontNormalLeft">
+						<FontString name="PetStableNameText" inherits="GameFontNormalLeft" justifyV="TOP">
+							<Size x="230" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="48" y="-8"/>
-							</Anchors>
-						</FontString>
-						<FontString name="PetStableLevelText" inherits="GameFontHighlightSmallLeft">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="48" y="2"/>
 							</Anchors>
 						</FontString>
 						<FontString name="PetStableTypeText" inherits="GameFontHighlightSmallRight">

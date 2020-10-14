@@ -97,7 +97,8 @@
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString name="PetName" inherits="GameFontNormalSmall">
+								<FontString name="PetName" inherits="GameFontNormalSmall" justifyV="BOTTOM" justifyH="LEFT">
+									<Size x="140" y="0"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" x="52" y="33"/>
 									</Anchors>

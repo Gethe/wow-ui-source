@@ -63,14 +63,14 @@ function WorldFrame_OnUpdate(self, elapsed)
 	if ( StopwatchTicker and not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() ) then
 		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
 	end
-	
+
 	-- need to do some polling for a few tutorials
 	if ( not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH ) then
 		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
-		local questIndex = GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH);
-		if ( (questIndex > 0) and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2)) then
+		local questIndex = C_QuestLog.GetLogIndexForQuestID(TUTORIAL_QUEST_TO_WATCH);
+		if questIndex and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2) then
 			TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
-			local distSq = GetDistanceSqToQuest(questIndex);
+			local distSq = C_QuestLog.GetDistanceSqToQuest(TUTORIAL_QUEST_TO_WATCH);
 			if (distSq and distSq > 0 and distSq < TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ) then
 				TriggerTutorial(4);
 			end
@@ -84,52 +84,3 @@ function WorldFrame_OnUpdate(self, elapsed)
 		end
 	end
 end
-
-ACTION_STATUS_FADETIME = 2.0;
-
-function ActionStatus_OnLoad(self)
-	self:RegisterEvent("SCREENSHOT_STARTED");
-	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
-	self:RegisterEvent("SCREENSHOT_FAILED");
-end
-
-function ActionStatus_OnEvent(self, event, ...)
-	if ( event == "SCREENSHOT_STARTED" ) then
-		self:Hide();
-	else
-		self.startTime = GetTime();
-		self:SetAlpha(1.0);
-		if ( event == "SCREENSHOT_SUCCEEDED" ) then
-			ActionStatus_DisplayMessage(SCREENSHOT_SUCCESS);
-			-- Append [Share] hyperlink
-			if ( C_Social.IsSocialEnabled() ) then
-				local screenshotText = SCREENSHOT_SUCCESS .. " " .. Social_GetShareScreenshotLink();
-				DEFAULT_CHAT_FRAME:AddMessage(screenshotText, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-			end
-		end
-		if ( event == "SCREENSHOT_FAILED" ) then
-			ActionStatus_DisplayMessage(SCREENSHOT_FAILURE);
-		end
-		self:Show();
-	end
-end
-
-function ActionStatus_DisplayMessage(text)
-	local self = ActionStatus;
-	self.startTime = GetTime();
-	self:SetAlpha(1.0);
-	ActionStatusText:SetText(text);
-	self:Show();
-end
-
-function ActionStatus_OnUpdate(self, elapsed)
-	elapsed = GetTime() - self.startTime;
-	if ( elapsed < ACTION_STATUS_FADETIME ) then
-		local alpha = 1.0 - (elapsed / ACTION_STATUS_FADETIME);
-		self:SetAlpha(alpha);
-		return;
-	end
-	self:Hide();
-end
-
-

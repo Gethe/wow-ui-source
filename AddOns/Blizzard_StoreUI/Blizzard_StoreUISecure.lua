@@ -1381,20 +1381,12 @@ local vasErrorData = {
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			local str = "";
-			if (character.level >= 110) then
+			if (character.level >= 50) then
+				-- level 50+: one million gold
 				str = GetSecureMoneyString(1000000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 100) then
-				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level > 80) then
-				str = GetSecureMoneyString(50000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level > 70) then
-				str = GetSecureMoneyString(20000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level > 50) then
-				str = GetSecureMoneyString(5000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level > 30) then
-				str = GetSecureMoneyString(1000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			elseif (character.level >= 10) then
-				str = GetSecureMoneyString(300 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+				-- level 10-49: ten thousand gold
+				str = GetSecureMoneyString(10000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			end
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
@@ -1463,7 +1455,10 @@ local vasErrorData = {
 	},
 	[Enum.VasError.NewLeaderInvalid] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
-	}
+	},
+	[Enum.VasError.NeedsLevelSquish] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
+	},
 };
 
 local factionColors = {
@@ -2167,11 +2162,10 @@ local JustFinishedOrdering = false;
 function StoreFrame_GetDefaultCategory()
 	local productGroups = C_StoreSecure.GetProductGroups();
 	local needsNewCategory = not StoreFrame_GetSelectedCategoryID() or StoreFrame_IsProductGroupDisabled(StoreFrame_GetSelectedCategoryID());
-	local isTrial = IsTrialAccount();
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
 		if not StoreFrame_IsProductGroupDisabled(groupID) then
-			if needsNewCategory or isTrial or groupID == StoreFrame_GetSelectedCategoryID() then
+			if needsNewCategory or groupID == StoreFrame_GetSelectedCategoryID() then
 				return groupID;
 			end
 		end
@@ -2311,6 +2305,8 @@ function StoreFrame_OnShow(self)
 
 	StoreFrame_UpdateCoverState();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_OPEN_BUTTON);
+
+	C_StoreSecure.ClearPreGeneratedExternalTransactionID();
 end
 
 function StoreFrame_OnHide(self)
@@ -2327,6 +2323,8 @@ function StoreFrame_OnHide(self)
 	StoreVASValidationFrame:Hide();
 	SimpleCheckout:Hide();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_CLOSE_BUTTON);
+	
+	C_StoreSecure.ClearPreGeneratedExternalTransactionID();
 end
 
 function StoreFrame_OnMouseWheel(self, value)
@@ -2497,31 +2495,26 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 	elseif ( name == "opengamescategory" ) then
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
-			SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
-
-			if ( not IsOnGlueScreen() and not self:IsShown() ) then
-				--We weren't showing, now we are. We should hide all other panels.
-				Outbound.CloseAllWindows();
-			end
-
 			self:Show();
+			SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 		else
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 			LoadURLIndex(2);
 		end
-
+	elseif ( name == "opengametimecategory" ) then
+		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
+			self:Show();
+			SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
+		else
+			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+			LoadURLIndex(22);
+		end
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 	elseif ( name == "selectboost") then
 		SelectBoostForPurchase(WOW_SERVICES_CATEGORY_ID, value.boostType, value.reason, value.guid);
 	elseif ( name == "selectgametime" ) then
 		SetStoreCategoryFromAttribute(WOW_GAME_TIME_CATEGORY_ID);
-		for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
-			if card and card:IsShown() then
-				local buyButton = card.BuyButton;
-				buyButton:GetScript("OnClick")(buyButton);
-			end
-		end
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);
@@ -3357,13 +3350,13 @@ if (IsOnGlueScreen()) then
 		[Enum.VasQueueStatus.ThreeToSixHours] = "THREE_SIX_HOURS",
 		[Enum.VasQueueStatus.SixToTwelveHours] = "SIX_TWELVE_HOURS",
 		[Enum.VasQueueStatus.OverTwelveHours] = "TWELVE_HOURS",
-		[Enum.VasQueueStatus.Over1Days] = "ONE_DAY",
-		[Enum.VasQueueStatus.Over2Days] = "TWO_DAY",
-		[Enum.VasQueueStatus.Over3Days] = "THREE_DAY",
-		[Enum.VasQueueStatus.Over4Days] = "FOUR_DAY",
-		[Enum.VasQueueStatus.Over5Days] = "FIVE_DAY",
-		[Enum.VasQueueStatus.Over6Days] = "SIX_DAY",
-		[Enum.VasQueueStatus.Over7Days] = "SEVEN_DAY",
+		[Enum.VasQueueStatus.Over_1_Days] = "ONE_DAY",
+		[Enum.VasQueueStatus.Over_2_Days] = "TWO_DAY",
+		[Enum.VasQueueStatus.Over_3_Days] = "THREE_DAY",
+		[Enum.VasQueueStatus.Over_4_Days] = "FOUR_DAY",
+		[Enum.VasQueueStatus.Over_5_Days] = "FIVE_DAY",
+		[Enum.VasQueueStatus.Over_6_Days] = "SIX_DAY",
+		[Enum.VasQueueStatus.Over_7_Days] = "SEVEN_DAY",
 	}
 end
 
@@ -3391,7 +3384,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.UnderAnHour);
 		C_StoreGlue.RequestCurrentVASTransferQueues();
 	elseif IsGuildVasServiceType(VASServiceType) then
-		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.Over1Days);
+		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.Over_1_Days);
 	else
 		UpdateQueueStatusDisclaimer(self, Enum.VasQueueStatus.UnderAnHour);
 	end
@@ -3783,11 +3776,6 @@ function StoreCategory_OnClick(self,button,down)
 end
 
 ----------------------------------
-function StoreTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.9);
-end
-
 function StoreTooltip_Show(name, description, isToken)
 	local self = StoreTooltip;
 	local STORETOOLTIP_MAX_WIDTH = isToken and 300 or 250;

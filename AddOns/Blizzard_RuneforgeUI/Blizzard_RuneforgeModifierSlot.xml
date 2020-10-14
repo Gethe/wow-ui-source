@@ -1,0 +1,107 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RuneforgeModifierSlot.lua"/>
+
+	<ItemButton name="RuneforgeModifierSlotTemplate" mixin="RuneforgeModifierSlotMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Arrow" atlas="runecarving-icon-arrow-open" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-11" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="Mask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-reagent-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ItemButton>
+
+	<ItemButton name="RuneforgeModifierSelectionTemplate" mixin="RuneforgeModifierSelectionMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="StateTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="Mask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ItemButton>
+
+	<Frame name="RuneforgeModifierSelectorFrameTemplate" mixin="RuneforgeModifierSelectorFrameMixin" enableMouse="true" virtual="true">
+		<Size x="77" y="243"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="runecarving-menu-reagent-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="RuneforgeModifierFrameTemplate" mixin="RuneforgeModifierFrameMixin" virtual="true">
+		<Size x="42" y="268"/>
+		<Frames>
+			<ItemButton parentKey="FirstSlot" inherits="RuneforgeModifierSlotTemplate" frameLevel="1000" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-5"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="SecondSlot" inherits="RuneforgeModifierSlotTemplate" frameLevel="1000" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FirstSlot" relativePoint="LEFT" x="1"/>
+					<Anchor point="BOTTOM" x="0" y="4"/>
+				</Anchors>
+			</ItemButton>
+
+			<Frame parentKey="Selector" inherits="RuneforgeModifierSelectorFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

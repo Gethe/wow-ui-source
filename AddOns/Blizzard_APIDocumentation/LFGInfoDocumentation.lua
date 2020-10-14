@@ -7,6 +7,60 @@ local LFGInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerUseGroupFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFD",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFR",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePVP",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePremadeGroup",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ConfirmLfgExpandSearch",
+			Type = "Function",
+		},
+		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
 
@@ -18,6 +72,15 @@ local LFGInfo =
 			Returns =
 			{
 				{ Name = "lfgDungeonIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLFDLockStates",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "lockInfo", Type = "table", InnerType = "LFGLockInfo", Nilable = false },
 			},
 		},
 		{
@@ -57,11 +120,6 @@ local LFGInfo =
 				{ Name = "mapID", Type = "number", Nilable = false },
 				{ Name = "winner", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "LfgBonusFactionIdUpdated",
-			Type = "Event",
-			LiteralName = "LFG_BONUS_FACTION_ID_UPDATED",
 		},
 		{
 			Name = "LfgBootProposalUpdate",
@@ -228,6 +286,11 @@ local LFGInfo =
 			LiteralName = "LFG_UPDATE_RANDOM_INFO",
 		},
 		{
+			Name = "ShowLfgExpandSearchPrompt",
+			Type = "Event",
+			LiteralName = "SHOW_LFG_EXPAND_SEARCH_PROMPT",
+		},
+		{
 			Name = "UpdateLfgList",
 			Type = "Event",
 			LiteralName = "UPDATE_LFG_LIST",
@@ -246,6 +309,16 @@ local LFGInfo =
 
 	Tables =
 	{
+		{
+			Name = "LFGLockInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "lfgID", Type = "number", Nilable = false },
+				{ Name = "reason", Type = "number", Nilable = false },
+				{ Name = "hideEntry", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

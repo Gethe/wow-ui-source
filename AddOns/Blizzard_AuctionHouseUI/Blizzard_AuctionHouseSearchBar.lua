@@ -18,25 +18,6 @@ AUCTION_HOUSE_FILTER_CATEGORY_STRINGS = {
 	[Enum.AuctionHouseFilterCategory.Rarity] = AUCTION_HOUSE_FILTER_CATEGORY_RARITY,
 };
 
-local function GetQualityFilterString(itemQuality)
-	local hex = select(4, GetItemQualityColor(itemQuality));
-	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
-	return "|c"..hex..text.."|r";
-end
-
-AUCTION_HOUSE_FILTER_STRINGS = {
-	[Enum.AuctionHouseFilter.UncollectedOnly] = AUCTION_HOUSE_FILTER_UNCOLLECTED_ONLY,
-	[Enum.AuctionHouseFilter.UsableOnly] = AUCTION_HOUSE_FILTER_USABLE_ONLY,
-	[Enum.AuctionHouseFilter.UpgradesOnly] = AUCTION_HOUSE_FILTER_UPGRADES_ONLY,
-	[Enum.AuctionHouseFilter.PoorQuality] = GetQualityFilterString(LE_ITEM_QUALITY_POOR),
-	[Enum.AuctionHouseFilter.CommonQuality] = GetQualityFilterString(LE_ITEM_QUALITY_COMMON),
-	[Enum.AuctionHouseFilter.UncommonQuality] = GetQualityFilterString(LE_ITEM_QUALITY_UNCOMMON),
-	[Enum.AuctionHouseFilter.RareQuality] = GetQualityFilterString(LE_ITEM_QUALITY_RARE),
-	[Enum.AuctionHouseFilter.EpicQuality] = GetQualityFilterString(LE_ITEM_QUALITY_EPIC),
-	[Enum.AuctionHouseFilter.LegendaryQuality] = GetQualityFilterString(LE_ITEM_QUALITY_LEGENDARY),
-	[Enum.AuctionHouseFilter.ArtifactQuality] = GetQualityFilterString(LE_ITEM_QUALITY_ARTIFACT),
-};
-
 local function GetFilterCategoryName(category)
 	return AUCTION_HOUSE_FILTER_CATEGORY_STRINGS[category] or "";
 end

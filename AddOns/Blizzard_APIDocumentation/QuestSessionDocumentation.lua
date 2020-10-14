@@ -52,6 +52,15 @@ local QuestSession =
 			},
 		},
 		{
+			Name = "GetProposedMaxLevelForSession",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "proposedMaxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSessionBeginDetails",
 			Type = "Function",
 

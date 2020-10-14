@@ -17,7 +17,7 @@
 		</Anchors>
 	</Texture>
 	<Button name="PvpTalentSlotTemplate" virtual="true" mixin="PvpTalentSlotMixin" motionScriptsWhileDisabled="true">
-		<Size x="45" y="45"/>
+		<Size x="58" y="58"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Texture">
@@ -71,11 +71,5 @@
 			<OnDragStart method="OnDragStart"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
-	</Button>
-	<Button name="PvpTalentTrinketSlotTemplate" inherits="PvpTalentSlotTemplate" virtual="true">
-		<Size x="58" y="58"/>
-		<KeyValues>
-			<KeyValue key="isTrinket" value="true" type="boolean"/>
-		</KeyValues>
 	</Button>
 </Ui>

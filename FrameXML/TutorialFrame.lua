@@ -203,14 +203,7 @@ local DISPLAY_DATA = {
 		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
-	
-	[53] = { --TUTORIAL_MOUNT
-		tileHeight = 13, 
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-	
+
 	[58] = { --TUTORIAL_BAG_FULL
 		tileHeight = 22, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
@@ -434,7 +427,7 @@ function TutorialFrame_CheckNextPrevButtons()
 end
 
 function TutorialFrame_Update(currentTutorial)
-	if (IsKioskModeEnabled() and UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT - 1]) then
+	if (Kiosk.IsEnabled() and UnitLevel("player") >= GetMaxLevelForExpansionLevel(LE_EXPANSION_LEVEL_PREVIOUS)) then
 		return;
 	end
 
@@ -742,6 +735,10 @@ function TutorialFrame_ClearTextures()
 end
 
 function TutorialFrame_NewTutorial(tutorialID, forceShow)
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		return;
+	end
+
 	if(forceShow) then
 		TutorialFrame_Update(tutorialID);
 		return;
@@ -897,6 +894,9 @@ function HelpPlateBox_OnLeave(self)
 end
 
 function HelpPlate_ShowTutorialPrompt( self, mainHelpButton )
+	if Kiosk.IsEnabled() then
+		return;
+	end
 	mainHelpButton.initialTutorial = true;
 	Main_HelpPlate_Button_ShowTooltip(mainHelpButton);
 	HelpPlateTooltip.LingerAndFade:Play();

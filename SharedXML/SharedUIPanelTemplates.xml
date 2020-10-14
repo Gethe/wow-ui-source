@@ -134,6 +134,107 @@
 		<Size x="9" y="14"/>
 	</Texture>
 
+	<Texture name="HelpPlateArrowDOWN" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="53" y="21"/>
+		<TexCoords left="0.78515625" right="0.99218750" top="0.54687500" bottom="0.58789063"/>
+	</Texture>
+	<Texture name="HelpPlateArrowUP" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="53" y="21"/>
+		<TexCoords left="0.78515625" right="0.99218750" bottom="0.54687500" top="0.58789063"/>
+	</Texture>
+	<Texture name="HelpPlateArrow-GlowDOWN" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="65" y="28"/>
+		<TexCoords left="0.40625000" right="0.66015625" top="0.77343750" bottom="0.82812500"/>
+	</Texture>
+	<Texture name="HelpPlateArrow-GlowUP" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="65" y="28"/>
+		<TexCoords left="0.40625000" right="0.66015625" bottom="0.77343750" top="0.82812500"/>
+	</Texture>
+	<Texture name="HelpPlateArrow-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="101" y="41"/>
+		<TexCoords left="0.00390625" right="0.39843750" top="0.68359375" bottom="0.76367188"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Glow-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>
+		<TexCoords left="0.94921875" right="0.99218750" top="0.32226563" bottom="0.34375000"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Glow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>
+		<TexCoords left="0.91796875" right="0.96093750" top="0.65625000" bottom="0.67773438"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Glow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>
+		<TexCoords left="0.12890625" right="0.17187500" top="0.96679688" bottom="0.98828125"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Glow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>
+		<TexCoords left="0.30859375" right="0.35156250" top="0.96679688" bottom="0.98828125"/>
+	</Texture>
+	<Texture name="!HelpPlateBox-Glow-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
+		<Size x="11" y="32"/>
+		<TexCoords left="0.20703125" right="0.25000000" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="!HelpPlateBox-Glow-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
+		<Size x="11" y="32"/>
+		<TexCoords left="0.25781250" right="0.30078125" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="_HelpPlateBox-Glow-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
+		<Size x="32" y="11"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.24609375" bottom="0.28906250"/>
+	</Texture>
+	<Texture name="_HelpPlateBox-Glow-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
+		<Size x="32" y="11"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.29687500" bottom="0.33984375"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Shadow-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="25" y="25"/>
+		<TexCoords left="0.89062500" right="0.98828125" top="0.36523438" bottom="0.41406250"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Shadow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="25" y="25"/>
+		<TexCoords left="0.89062500" right="0.98828125" top="0.45703125" bottom="0.50585938"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Shadow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="25" y="25"/>
+		<TexCoords left="0.66796875" right="0.76562500" top="0.77343750" bottom="0.82226563"/>
+	</Texture>
+	<Texture name="HelpPlateBox-Shadow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="25" y="25"/>
+		<TexCoords left="0.77343750" right="0.87109375" top="0.77343750" bottom="0.82226563"/>
+	</Texture>
+	<Texture name="!HelpPlateBox-Shadow-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
+		<Size x="25" y="32"/>
+		<TexCoords left="0.30859375" right="0.40625000" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="!HelpPlateBox-Shadow-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
+		<Size x="25" y="32"/>
+		<TexCoords left="0.41406250" right="0.51171875" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="_HelpPlateBox-Shadow-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
+		<Size x="32" y="25"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.34765625" bottom="0.44531250"/>
+	</Texture>
+	<Texture name="_HelpPlateBox-Shadow-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
+		<Size x="32" y="25"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.45312500" bottom="0.55078125"/>
+	</Texture>
+	<Texture name="!HelpPlateBox-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
+		<Size x="8" y="32"/>
+		<TexCoords left="0.00390625" right="0.03515625" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="!HelpPlateBox-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
+		<Size x="8" y="32"/>
+		<TexCoords left="0.04296875" right="0.07421875" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="_HelpPlateBox-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
+		<Size x="32" y="8"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.00390625" bottom="0.03515625"/>
+	</Texture>
+	<Texture name="_HelpPlateBox-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
+		<Size x="32" y="8"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.04296875" bottom="0.07421875"/>
+	</Texture>
+
 	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
 		<Size x="32" y="32"/>
 		<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
@@ -379,6 +480,162 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
+	<!--
+*******************************************************************************
+    GlowBoxArrowTemplate
+	This is a bright yellow arrow with a glow around it
+*******************************************************************************
+-->
+	<Frame name="GlowBoxArrowTemplate" virtual="true">
+		<Size x="53" y="21"/>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentArrow" parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentGlow" parentKey="Glow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!--
+*******************************************************************************
+    GlowBoxTemplate
+	This is a bright yellow box with a glow around it
+*******************************************************************************
+-->
+	<Frame name="GlowBoxTemplate" virtual="true">
+		<Layers>
+			<!--
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentColorBorder" setAllPoints="true">
+					<Color r="1" g="0.82353" b="0"/>
+				</Texture>
+			</Layer>
+			-->
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0.23" g="0.19" b="0"/>
+						<MaxColor r="0" g="0" b="0"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentGlowTopLeft" inherits="HelpPlateBox-Glow-TopLeft" parentKey="GlowTopLeft" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowTopRight" inherits="HelpPlateBox-Glow-TopRight" parentKey="GlowTopRight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="6" y="6"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentGlowBottomLeft" inherits="HelpPlateBox-Glow-BottomLeft" parentKey="GlowBottomLeft" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-6"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentGlowBottomRight" inherits="HelpPlateBox-Glow-BottomRight" parentKey="GlowBottomRight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentGlowTop" inherits="_HelpPlateBox-Glow-Top" parentKey="GlowTop" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowBottom" inherits="_HelpPlateBox-Glow-Bottom" parentKey="GlowBottom" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowLeft" inherits="!HelpPlateBox-Glow-Left" parentKey="GlowLeft" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowRight" inherits="!HelpPlateBox-Glow-Right" parentKey="GlowRight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture name="$parentShadowTopLeft" inherits="HelpPlateBox-Shadow-TopLeft" parentKey="ShadowTopLeft" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-16" y="16"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentShadowTopRight" inherits="HelpPlateBox-Shadow-TopRight" parentKey="ShadowTopRight" >
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="16" y="16"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentShadowBottomLeft" inherits="HelpPlateBox-Shadow-BottomLeft" parentKey="ShadowBottomLeft" >
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-16" y="-16"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentShadowBottomRight" inherits="HelpPlateBox-Shadow-BottomRight" parentKey="ShadowBottomRight" >
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentShadowTop" inherits="_HelpPlateBox-Shadow-Top" parentKey="ShadowTop" >
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentShadowBottom" inherits="_HelpPlateBox-Shadow-Bottom" parentKey="ShadowBottom" >
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentShadowLeft" inherits="!HelpPlateBox-Shadow-Left" parentKey="ShadowLeft" >
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentShadowRight" inherits="!HelpPlateBox-Shadow-Right" parentKey="ShadowRight" >
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 <!--
 *******************************************************************************
    Frame border element
@@ -964,21 +1221,13 @@
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
 
-	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true" inherits="BackdropTemplate">
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
 		</HitRectInsets>
-		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="6" bottom="6"/>
-			</BackgroundInsets>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+		</KeyValues>
 		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
 			<Size x="32" y="32"/>
 		</ThumbTexture>
@@ -1122,28 +1371,15 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentBorder">
+			<Frame name="$parentBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1204,7 +1440,7 @@
 				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
@@ -1249,74 +1485,35 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="ScrollUpBorder">
+			<Frame parentKey="ScrollUpBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollUpButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
-			<Frame parentKey="ScrollDownBorder">
+			<Frame parentKey="ScrollDownBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollDownButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
-			<Frame parentKey="Border">
+			<Frame parentKey="Border" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1332,27 +1529,29 @@
 	<ScrollFrame name="UIPanelScrollFrameTemplate2" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+				<Texture name="$parentTop" parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Size x="31" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentScrollBarScrollUpButton" relativePoint="TOPLEFT" x="-8" y="5"/>
 					</Anchors>
 					<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+				<Texture name="$parentBottom" parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Size x="31" y="106"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentScrollBarScrollDownButton" relativePoint="BOTTOMLEFT" x="-8" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 				</Texture>
+				<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
+				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				ScrollFrame_OnLoad(self);
-			</OnLoad>
-		</Scripts>
 	</ScrollFrame>
 	<!-- This is a scrollframe with no border and a black texture for a track -->
 	<ScrollFrame name="MinimalScrollFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" virtual="true">
@@ -1444,6 +1643,7 @@
 				<Scripts>
 					<OnMouseDown>
 						if self:IsEnabled() then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							self:GetParent():StartIncrement();
 						end
 					</OnMouseDown>
@@ -1465,6 +1665,7 @@
 				<Scripts>
 					<OnMouseDown>
 						if self:IsEnabled() then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							self:GetParent():StartDecrement();
 						end
 					</OnMouseDown>
@@ -1956,4 +2157,484 @@
 			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
 		</KeyValues>
 	</Button>
+
+	<Button name="ThreeSliceButtonTemplate" mixin="ThreeSliceButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<!--
+		atlasName: The art kit to use for the 3 sections of the button. 
+						* The left textures will be "atlasName-Left", "atlasName-Left-Disabled" and "atlasName-Left-Pressed"
+						* The right textures will be "atlasName-Right", "atlasName-Right-Disabled" and "atlasName-Right-Pressed"
+						* The center textures will be "_atlasName-Center", "_atlasName-Disabled" and "_atlasName-Pressed"
+						* The highlight texture will be "atlasName-Highlight"
+		tooltip: This can be either a string or a function which returns a string
+
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
+			<KeyValue key="tooltip" value="MyTooltipFunction" type="global"/>
+				or
+			<KeyValue key="tooltip" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+		</KeyValues>
+		-->
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Center" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Controller" mixin="ButtonControllerMixin">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnShow method="UpdateButton"/>
+			<OnDisable method="UpdateButton"/>
+			<OnEnable method="UpdateButton"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnSizeChanged method="UpdateScale"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
+		<Size x="441" y="128"/>
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
+		</KeyValues>
+		<PushedTextOffset x="-2" y="-1"/>
+	</Button>
+
+	<Button name="SharedButtonTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedButtonLargeTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="30"/>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+		<DisabledFont style="GameFontDisableMed3"/>
+	</Button>
+
+	
+<Button name="SharedButtonSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="138" y="28"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<!--
+		atlasName: The art kit to use for the  button. 
+						* The normal texture will be "atlasName"
+						* The pressed texture will be "atlasName-Pressed"
+						* The disabled texture will be "atlasName-Disabled"
+						* The highlight texture will be "atlasName-Highlight"
+		tooltip: This can be either a string or a function which returns a string
+		
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
+			<KeyValue key="tooltip" value="MyTooltipFunction" type="global"/>
+				or
+			<KeyValue key="tooltip" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<Frame parentKey="Controller" mixin="ButtonControllerMixin">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+
+	<Button name="BigRedRefreshButtonTemplate" inherits="UIButtonTemplate" virtual="true">
+		<Size x="128" y="128"/>
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-RedButton-Refresh" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
+		<!--
+		labelText: The text to use on the label
+		
+		<KeyValues>
+			<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<CheckButton parentKey="Button">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCheckButtonClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
+		<Size x="258" y="54"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" atlas="common-input-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="common-input-left" useAtlasSize="true">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="common-input-middle" setAllPoints="true" />
+			</Layer>
+		</Layers>
+		<FontString inherits="NumberFont_Shadow_Large"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EditBox>
+
+	<Slider name="SharedHorizontalSliderTemplate" orientation="HORIZONTAL" obeyStepOnDrag="true" virtual="true">
+		<Size x="300" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Track" atlas="common-slider-track" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ThumbTexture parentKey="Thumb" atlas="common-slider-thumb" useAtlasSize="true"/>
+	</Slider>
+	
+	<Frame name="SliderWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SliderWithButtonsAndLabelMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMedium">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider parentKey="Slider" inherits="SharedHorizontalSliderTemplate" scale="0.7">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+					<OnValueChanged>
+						self:GetParent():OnSliderValueChanged(value, userInput);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Slider" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Increment();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="DecrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Slider" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Decrement();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="SelectionPopoutDetails" mixin="SelectionPopoutDetailsMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="SelectionNumber" font="GameFontNormal" justifyH="LEFT">
+					<Size x="25" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT"  maxLines="1" hidden="true">
+					<Size x="25" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ColorSwatch1" atlas="charactercreate-customize-palette" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ColorSwatch2" atlas="charactercreate-customize-palette" useAtlasSize="false" hidden="true">
+					<Size x="36" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT" x="18" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ColorSwatch1Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch1" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ColorSwatch2Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="36" y="8"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch2" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="ColorSelected" atlas="charactercreate-customize-palette-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ColorSwatch1" relativePoint="LEFT" x="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SelectionPopoutEntryTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutEntryMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<ButtonText parentKey="ButtonText" setAllPoints="true"/>
+		<KeyValues>
+			<KeyValue key="widthPadding" value="14" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails">
+				<Size x="144" y="20"/>
+			</Frame>
+			<Frame parentKey="HighlightBGTex" alpha="0" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SelectionPopoutTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="widthPadding" value="6" type="number"/>
+			<KeyValue key="heightPadding" value="32" type="number"/>
+		</KeyValues>
+
+		<Frames>
+			<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="CharacterCreateDropdown" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnMouseWheel function="nop"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="SelectionPopoutButtonTemplate" mixin="SelectionPopoutButtonMixin" virtual="true">
+		<Size x="150" y="38"/>
+		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-dropdownbox"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="charactercreate-customize-dropdownbox-open" alphaMode="ADD" alpha="0"/>
+		<PushedTextOffset x="2" y="-2"/>
+		<ButtonText parentKey="ButtonText">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="10" y="-10"/>
+				<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+			</Anchors>
+		</ButtonText>
+		<Frames>
+			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true">
+				<Size x="1" y="1"/>
+			</Frame>
+			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
+		<Size x="223" y="38"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SelectionPopoutButton" inherits="SelectionPopoutButtonTemplate">
+				<Size x="150" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="RIGHT" x="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Increment();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="DecrementButton" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SelectionPopoutButton" relativePoint="LEFT" x="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Decrement();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<!--The DefaultScaleFrame template is used to allow a frame to appear to be "unscaled"
+		That means that all the textures/fonts used should appear as the same size they do in Photoshop when authored.
+		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.
+		But it can also be used in game in order to attain a consistent look on a panel.
+		If you choose to use it in-game, remember that when you use it, the player will no longer be able to scale that panel up for accessibility reasons.-->
+		
+	<!--IMPORTANT:
+		If you are inheriting from more than 1 frame, inherit this frame LAST (the right-most in the list).
+		If you have your own mixin, use inherit="prepend" for OnLoad & OnEvent if you define them-->
+	<Frame name="DefaultScaleFrame" mixin="DefaultScaleFrameMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnDefaultScaleFrameLoad" inherit="prepend"/>
+			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
+		</Scripts>
+	</Frame>
 </Ui>

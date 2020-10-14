@@ -1,177 +1,281 @@
-ZONE_SPELL_ABILITY_TEXTURES_BASE = {
-	[161676] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksAlliance",
-	[161332] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksHorde",
-	[162075] = "Interface\\ExtraButton\\GarrZoneAbility-Armory",
-	[161767] = "Interface\\ExtraButton\\GarrZoneAbility-MageTower",
-	[170097] = "Interface\\ExtraButton\\GarrZoneAbility-TradingPost",
-	[170108] = "Interface\\ExtraButton\\GarrZoneAbility-TradingPost",
-	[168487] = "Interface\\ExtraButton\\GarrZoneAbility-Inn",
-	[168499] = "Interface\\ExtraButton\\GarrZoneAbility-Inn",
-	[164012] = "Interface\\ExtraButton\\GarrZoneAbility-TrainingPit",
-	[164050] = "Interface\\ExtraButton\\GarrZoneAbility-LumberMill",
-	[165803] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
-	[164222] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
-	[160240] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
-	[160241] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
-	[307870] = "Interface\\ExtraButton\\Championlight",
+
+local ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
+
+-- Include sound information based on texture kit for now.
+local TextureKitToSoundEffects = {
+	["bastion-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_BASTION, };
+	["revendreth-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_REVENDRETH, };
+	["ardenweald-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_ARDENWEALD, };
+	["maldraxxus-zone-ability"] = { shownSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_APPEARS, placedSoundEffect = SOUNDKIT.UI_9_0_COVENANT_ABILITY_ABILITY_BUTTON_PLACED_MALDRAXXUS, };
 };
 
-ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
-
-function ZoneAbilityFrame_OnLoad(self)
-	self:RegisterUnitEvent("UNIT_AURA", "player");
-	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	self:RegisterEvent("SPELL_UPDATE_USABLE");
-	self:RegisterEvent("SPELL_UPDATE_CHARGES");
-	self:RegisterEvent("SPELLS_CHANGED");
-	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
-
-	ZoneAbilityFrame_Update(self);
-end
-
-function ZoneAbilityFrame_OnEvent(self, event, ...)
-	-- Ask for the generic constant spell ID, based on our Aura. Then turn around
-	-- and use that spell's name to look up the correct faction-specific spell ID
-	-- that is relevant for our own player.
-	local spellID, type = GetZoneAbilitySpellInfo();
-	if ((event == "SPELLS_CHANGED" or event=="UNIT_AURA")) then
-		self.spellID = nil;
-		self.baseSpellID = spellID;
-		local baseName = spellID and GetSpellInfo(spellID) or nil;
-		if baseName then
-			self.spellID = select(7, GetSpellInfo(baseName));
+local function GetActiveZoneAbilities()
+	local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
+	for i, zoneAbility in ipairs(zoneAbilities) do
+		local soundEffectData = TextureKitToSoundEffects[zoneAbility.textureKit]
+		if soundEffectData then
+			zoneAbility = Mixin(zoneAbility, soundEffectData);
 		end
 	end
 
-	self.SpellButton.baseSpellID = self.baseSpellID;
-	self.SpellButton.spellID = self.spellID;
-	local lastState = self.buffSeen;
-	self.buffSeen = false;
-
-	if self.spellID and self.spellID ~= 0 then
-		if (not HasZoneAbilitySpellOnBar(self)) then
-			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and type == Enum.ZoneAbilityType.Garrison ) then
-				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
-				ZoneAbilityButtonAlert:Show();
-				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
-			end
-			self.buffSeen = true;
-			self:Show();
-		else
-			ZoneAbilityButtonAlert:Hide();
-			self:Hide();
-		end
-
-		ZoneAbilityFrame_Update(self);
-	else
-		self:Hide();
-	end
-
-	if (lastState ~= self.buffSeen) then
-		UIParent_ManageFramePositions();
-		ActionBarController_UpdateAll(true);
-	end
+	return zoneAbilities;
 end
 
-function ZoneAbilityFrame_OnShow(self)
-	ZoneAbilityFrame_Update(self);
-end
-
-function ZoneAbilityFrame_OnHide(self)
-	ZoneAbilityButtonAlert:Hide();
-end
-
-function ZoneAbilityFrame_Update(self)
-	if (not self.spellID) then
-		return;
-	end
-	local name, _, tex = GetSpellInfo(self.spellID);
-
-	self.CurrentTexture = tex;
-	self.CurrentSpell = name;
-
-	self.SpellButton.Style:SetTexture(ZONE_SPELL_ABILITY_TEXTURES_BASE[self.spellID] or ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK);
-	self.SpellButton.Icon:SetTexture(tex);
-
-	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(self.spellID);
-	local start, duration, enable = GetSpellCooldown(self.spellID);
-	local usesCount = GetSpellCount(self.spellID);
-
-	local showSpellCount = false;
-	local spellCount = 0;
-
-	-- Show Spell Charges, then Spell Uses, then Nothing
-	if (maxCharges and maxCharges > 1) then
-		showSpellCount = true;
-		spellCount = charges;
-
-		if (charges < maxCharges) then
-			StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
-		end
-	elseif (usesCount > 0) then
-		showSpellCount = true;
-		spellCount = usesCount;
-	end
-
-	if showSpellCount then
-		self.SpellButton.Count:SetText(spellCount);
-	else
-		self.SpellButton.Count:SetText("");
-	end
-
-	if (start) then
-		CooldownFrame_Set(self.SpellButton.Cooldown, start, duration, enable);
-	end
-
-	self.SpellButton.spellName = self.CurrentSpell;
-	self.SpellButton.currentSpellID = self.spellID;
-end
-
-function HasZoneAbilitySpellOnBar(self)
-	if (not self.spellID) then
-		return false;
-	end
-
-	local name = GetSpellInfo(self.spellID);
-	for i = 1, (LE_NUM_NORMAL_ACTION_PAGES * LE_NUM_ACTIONS_PER_PAGE) + 1, 1 do
-		local type, id = GetActionInfo(i);
-
-		if (type == "spell" or type == "companion") then
-			if (id == self.spellID) then
-				return true;
-			end
-		end
-	end
-
-	local bonusBarIndex = GetBonusBarIndex();
-	if (HasBonusActionBar() and bonusBarIndex ~= 0) then
-		for i = ((bonusBarIndex - 1) * LE_NUM_ACTIONS_PER_PAGE) + 1, bonusBarIndex * LE_NUM_ACTIONS_PER_PAGE, 1 do
-			local type, id = GetActionInfo(i);
-
-			if (type == "spell" or type == "companion") then
-				if (id == self.spellID) then
-					return true;
-				end
-			end
+local function DoZoneAbilitiesIncludeSpellID(zoneAbilities, spellID)
+	for i, zoneAbility in ipairs(zoneAbilities) do
+		if zoneAbility.spellID == spellID then
+			return true;
 		end
 	end
 
 	return false;
 end
 
-function HasZoneAbility()
-	local spellID, garrisonType = GetZoneAbilitySpellInfo();
-	return (spellID ~= nil);
+local function HasZoneAbilitySpellOnBar(spellID)
+	local slots = C_ActionBar.FindSpellActionButtons(spellID);
+	if slots == nil then
+		return false;
+	end
+
+	local currentBonusBarIndex = GetBonusBarIndex();
+	for i = 1, #slots do
+		local slot = slots[i];
+		local isOnPrimaryActionBar = IsOnPrimaryActionBar(slot);
+		local slotBonusBarIndex = C_ActionBar.GetBonusBarIndexForSlot(slot);
+
+		-- This action is on one of the extra action bars that are always available, or on the primary action bar while it is not being replaced.
+		if not slotBonusBarIndex and (not isOnPrimaryActionBar or (currentBonusBarIndex == 0)) then
+			return true;
+		end
+
+		if slotBonusBarIndex == currentBonusBarIndex then
+			return true;
+		end
+	end
+
+	return false;
 end
 
-function GetLastZoneAbilitySpellTexture()
-	return ZoneAbilityFrame.CurrentTexture;
+local function CheckShowZoneAbilityTutorial(zoneAbilityButton)
+	local zoneAbilityInfo = zoneAbilityButton.zoneAbilityInfo;
+	if HelpTip:IsShowingAny(ZoneAbilityFrame) or GetCVarBitfield("closedExtraAbiltyTutorials", zoneAbilityInfo.zoneAbilityID) or not zoneAbilityInfo.tutorialText then
+		return;
+	end
+
+	local helpTipInfo = {
+		text = zoneAbilityInfo.tutorialText,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedExtraAbiltyTutorials",
+		bitfieldFlag = zoneAbilityInfo.zoneAbilityID,
+		targetPoint = HelpTip.Point.TopEdgeCenter,
+		offsetY = 20,
+	};
+	HelpTip:Show(ZoneAbilityFrame, helpTipInfo, zoneAbilityButton);
 end
 
-function ZoneAbilityFrame_OnClick(self)
-	CastSpellByID(self.baseSpellID);
+local function HideZoneAbilityTutorial()
+	HelpTip:HideAll(ZoneAbilityFrame);
 end
 
-function ZoneAbilityFrame_OnDragStart(self)
-	PickupSpell(self.baseSpellID);
+
+ZoneAbilityFrameMixin = {};
+
+function ZoneAbilityFrameMixin:OnLoad()
+	-- Always registered.
+	self:RegisterUnitEvent("UNIT_AURA", "player");
+	self:RegisterEvent("SPELLS_CHANGED");
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
+
+	self.SpellButtonContainer:SetTemplate("Button", "ZoneAbilityFrameSpellButtonTemplate");
+
+	self:UpdateDisplayedZoneAbilities();
+end
+
+function ZoneAbilityFrameMixin:OnEvent(event, ...)
+	self:UpdateDisplayedZoneAbilities();
+end
+
+local function SortByUIPriority(lhs, rhs)
+	return lhs.uiPriority < rhs.uiPriority;
+end
+
+function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
+	HideZoneAbilityTutorial();
+
+	local zoneAbilities = GetActiveZoneAbilities();
+	table.sort(zoneAbilities, SortByUIPriority);
+	
+	local displayedZoneAbilities = {};
+	local activeAbilityIsDisplayedOnBar = {};
+	local displayedTextureKit = nil;
+	for i, zoneAbilityInfo in ipairs(zoneAbilities) do
+		local spellID = zoneAbilityInfo.spellID;
+		local hasZoneAbilityOnBar = HasZoneAbilitySpellOnBar(spellID);
+		activeAbilityIsDisplayedOnBar[spellID] = hasZoneAbilityOnBar;
+		if not hasZoneAbilityOnBar then
+			if #displayedZoneAbilities == 0 then
+				table.insert(displayedZoneAbilities, zoneAbilityInfo);
+
+				-- If there's no textureKit, only allow one to be displayed.
+				if not zoneAbilityInfo.textureKit then
+					break;
+				end
+
+				displayedTextureKit = zoneAbilityInfo.textureKit;
+			elseif displayedTextureKit and zoneAbilityInfo.textureKit == displayedTextureKit then
+				table.insert(displayedZoneAbilities, zoneAbilityInfo);
+			end
+		end
+	end
+
+	if self.previousZoneAbilities then
+		for i, previousZoneAbility in ipairs(self.previousZoneAbilities) do
+			if previousZoneAbility.placedSoundEffect then
+				local spellID = previousZoneAbility.spellID;
+				if activeAbilityIsDisplayedOnBar[spellID] and not DoZoneAbilitiesIncludeSpellID(displayedZoneAbilities, spellID) then
+					PlaySound(previousZoneAbility.placedSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				end
+			end
+		end
+	end
+
+	for i, displayZoneAbility in ipairs(displayedZoneAbilities) do
+		if displayZoneAbility.shownSoundEffect then
+			local spellID = displayZoneAbility.spellID;
+			if not self.previousZoneAbilities or not DoZoneAbilitiesIncludeSpellID(self.previousZoneAbilities, spellID) then
+				PlaySound(displayZoneAbility.shownSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			end
+		end
+	end
+
+	self.previousZoneAbilities = displayedZoneAbilities;
+
+	local numDisplayedAbilites = #displayedZoneAbilities;
+	if numDisplayedAbilites == 0 then
+		ExtraAbilityContainer:RemoveFrame(self, ZoneAbilityFramePriority);
+		return;
+	end
+
+	ExtraAbilityContainer:AddFrame(self, ZoneAbilityFramePriority);
+
+	self.SpellButtonContainer:SetContents(displayedZoneAbilities);
+
+	local useAtlasSize = true;
+	if displayedTextureKit then
+		if numDisplayedAbilites > 1 then
+			-- Append "-2", "-3", etc to the texture name to accomodate multiple actions at once.
+			local fullAtlasName = displayedTextureKit.."-"..numDisplayedAbilites;
+			if C_Texture.GetAtlasInfo(fullAtlasName) then
+				self.Style:SetAtlas(fullAtlasName, useAtlasSize);
+				return;
+			end
+		end
+
+		if C_Texture.GetAtlasInfo(displayedTextureKit) then
+			self.Style:SetAtlas(displayedTextureKit, useAtlasSize);
+		else
+			self.Style:SetTexture(displayedTextureKit);
+		end
+	else
+		self.Style:SetAtlas(ZoneAbilityFrameAtlasFallback, useAtlasSize);
+	end
+end
+
+function ZoneAbilityFrameMixin:CheckForTutorial()
+	for spellButton in self.SpellButtonContainer:EnumerateActive() do
+		spellButton:CheckForTutorial();
+	end
+end
+
+
+ZoneAbilityFrameSpellButtonMixin = CreateFromMixins(ContentFrameMixin);
+
+local ZoneAbilityFrameSpellButtonEvents = {
+	"SPELL_UPDATE_COOLDOWN",
+	"SPELL_UPDATE_USABLE",
+	"SPELL_UPDATE_CHARGES",
+};
+
+function ZoneAbilityFrameSpellButtonMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, ZoneAbilityFrameSpellButtonEvents);
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, ZoneAbilityFrameSpellButtonEvents);
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnEvent(event, ...)
+	self:Refresh();
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self);
+	GameTooltip:SetSpellByID(self:GetSpellID());
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnClick()
+	CastSpellByID(self:GetSpellID());
+end
+
+function ZoneAbilityFrameSpellButtonMixin:OnDragStart()
+	PickupSpell(self:GetSpellID());
+	SetCVarBitfield("closedExtraAbiltyTutorials", self.zoneAbilityInfo.zoneAbilityID, true);
+	HideZoneAbilityTutorial();
+end
+
+function ZoneAbilityFrameSpellButtonMixin:Refresh()
+	local spellID = self:GetSpellID();
+	spellID = FindSpellOverrideByID(spellID) or spellID;
+
+	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID);
+	local start, duration, enable = GetSpellCooldown(spellID);
+	local usesCount = GetSpellCount(spellID);
+
+	local spellCount = nil;
+	if maxCharges and maxCharges > 1 then
+		spellCount = charges;
+
+		if charges < maxCharges then
+			StartChargeCooldown(self, chargeStart, chargeDuration, enable);
+		end
+	elseif usesCount > 0 then
+		spellCount = usesCount;
+	end
+
+	self.Count:SetText(spellCount and spellCount or "");
+
+	if start then
+		CooldownFrame_Set(self.Cooldown, start, duration, enable);
+	end
+end
+
+function ZoneAbilityFrameSpellButtonMixin:CheckForTutorial()
+	CheckShowZoneAbilityTutorial(self);
+end
+
+function ZoneAbilityFrameSpellButtonMixin:SetSpellID(spellID)
+	self.spellID = spellID;
+
+	local texture = select(3, GetSpellInfo(spellID));
+	self.Icon:SetTexture(texture);
+
+	self:Refresh();
+end
+
+function ZoneAbilityFrameSpellButtonMixin:GetSpellID()
+	return self.spellID;
+end
+
+function ZoneAbilityFrameSpellButtonMixin:SetContent(zoneAbilityInfo)
+	self.zoneAbilityInfo = zoneAbilityInfo;
+	self:SetSpellID(zoneAbilityInfo.spellID);
+	self:CheckForTutorial();
 end

@@ -218,7 +218,7 @@ end
 
 function MountJournal_UpdateEquipmentPalette(self)
 	local effectsSuppressed = C_MountJournal.AreMountEquipmentEffectsSuppressed();
-	local locked = not C_MountJournal.IsMountEquipmentUnlocked();
+	local locked = not C_PlayerInfo.CanPlayerUseMountEquipment();
 	if locked or effectsSuppressed then
 		local desaturation = 1.0;
 		self.BottomLeftInset:DesaturateHierarchy(desaturation);
@@ -330,7 +330,7 @@ function MountJournal_InitializeEquipmentSlot(self, item)
 end
 
 function MountJournal_UpdateEquipment(self)
-	local isUnlocked = C_MountJournal.IsMountEquipmentUnlocked();
+	local isUnlocked = C_PlayerInfo.CanPlayerUseMountEquipment();
 	self.SlotButton:SetShown(isUnlocked);
 	self.SlotLabel:SetShown(isUnlocked);
 	self.SlotRequirementLabel:SetShown(not isUnlocked);
@@ -375,10 +375,12 @@ function MountJournal_OnShow(self)
 	local hasPendingItem = MountJournal_HasPendingMountEquipment(self);
 	self.SlotButton:SetPendingApply(hasPendingItem);
 	self.SlotButton.NewAlert:ValidateIsShown();
+	EventRegistry:TriggerEvent("MountJournal.OnShow");
 end
 
 function MountJournal_OnHide(self)
 	C_MountJournal.ClearRecentFanfares();
+	EventRegistry:TriggerEvent("MountJournal.OnHide");
 end
 
 function MountJournal_UpdateMountList()
@@ -421,6 +423,7 @@ function MountJournal_UpdateMountList()
 
 			button.index = index;
 			button.spellID = spellID;
+			button.mountID = mountID;
 
 			button.active = active;
 			if (active) then
@@ -620,12 +623,44 @@ function MountJournal_SelectByMountID(mountID)
 	MountJournal_SetSelected(mountID, spellID);
 end
 
-function MountJournal_SetSelected(mountID, spellID)
-	MountJournal.selectedSpellID = spellID;
-	MountJournal.selectedMountID = mountID;
+function MountJournal_GetMountButtonHeight()
+	return MOUNT_BUTTON_HEIGHT;
+end
+
+function MountJournal_GetMountButtonByMountID(mountID)
+	local scrollFrame = MountJournal.ListScrollFrame;
+	local buttons = scrollFrame.buttons;
+
+	for i=1, #buttons do
+		local button = buttons[i];
+		if ( button.mountID == mountID ) then
+			return button;
+		end
+	end
+end
+
+local function GetMountDisplayIndexByMountID(mountID)
+	for i = 1, C_MountJournal.GetNumDisplayedMounts() do
+		local creatureName, spellID, icon, active, _, _, _, _, _, _, _, currentMountID = C_MountJournal.GetDisplayedMountInfo(i);
+		if currentMountID == mountID then
+			return i;
+		end
+	end
+	return nil;
+end
+
+function MountJournal_SetSelected(selectedMountID, selectedSpellID)
+	MountJournal.selectedSpellID = selectedSpellID;
+	MountJournal.selectedMountID = selectedMountID;
 	MountJournal_HideMountDropdown();
 	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
+	
+	local inView = MountJournal_GetMountButtonByMountID(selectedMountID) ~= nil;
+	if not inView then
+		local mountIndex = GetMountDisplayIndexByMountID(selectedMountID);
+		HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
+	end
 end
 
 function MountJournalMountButton_UseMount(mountID)

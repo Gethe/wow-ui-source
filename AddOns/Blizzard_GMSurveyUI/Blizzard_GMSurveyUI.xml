@@ -27,7 +27,7 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
-	<Frame name="GMSurveyQuestionTemplate" virtual="true">
+	<Frame name="GMSurveyQuestionTemplate" virtual="true" inherits="TooltipBackdropTemplate">
 		<Size>
 			<AbsDimension x="568" y="80"/>
 		</Size>
@@ -45,17 +45,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+		</KeyValues>
 		<Frames>
 			<CheckButton name="$parentRadioButton0" inherits="GMSurveyRadioButtonTemplate" id="0">
 				<Anchors>
@@ -167,9 +159,7 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GMSurveyQuestion_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="GMSurveyQuestion_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="GMSurveyFrame" toplevel="true" parent="UIParent" hidden="true">
@@ -641,7 +631,7 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
-							<Frame name="GMSurveyCommentFrame">
+							<Frame name="GMSurveyCommentFrame" inherits="TooltipBackdropTemplate">
 								<Size>
 									<AbsDimension x="541" y="85"/>
 								</Size>
@@ -657,17 +647,9 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
-								<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-									<TileSize>
-										<AbsValue val="16"/>
-									</TileSize>
-									<BackgroundInsets>
-										<AbsInset left="5" right="5" top="5" bottom="5"/>
-									</BackgroundInsets>
-								</Backdrop>
+								<KeyValues>
+									<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+								</KeyValues>
 								<Frames>
 									<ScrollFrame name="GMSurveyCommentScrollFrame" inherits="UIPanelScrollFrameTemplate">
 										<Anchors>
@@ -714,12 +696,6 @@
 										</ScrollChild>
 									</ScrollFrame>
 								</Frames>
-								<Scripts>
-									<OnLoad>
-										self:SetBackdropBorderColor(0.5,0.5,0.5);
-										self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-									</OnLoad>
-								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>

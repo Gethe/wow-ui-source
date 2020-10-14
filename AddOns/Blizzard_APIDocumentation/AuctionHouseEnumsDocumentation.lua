@@ -17,9 +17,9 @@ local AuctionHouseEnums =
 		{
 			Name = "AuctionHouseFilter",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "UncollectedOnly", Type = "AuctionHouseFilter", EnumValue = 0 },
@@ -33,6 +33,7 @@ local AuctionHouseEnums =
 				{ Name = "EpicQuality", Type = "AuctionHouseFilter", EnumValue = 8 },
 				{ Name = "LegendaryQuality", Type = "AuctionHouseFilter", EnumValue = 9 },
 				{ Name = "ArtifactQuality", Type = "AuctionHouseFilter", EnumValue = 10 },
+				{ Name = "LegendaryCraftedItemOnly", Type = "AuctionHouseFilter", EnumValue = 11 },
 			},
 		},
 		{
@@ -50,9 +51,9 @@ local AuctionHouseEnums =
 		{
 			Name = "AuctionHouseSortOrder",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Price", Type = "AuctionHouseSortOrder", EnumValue = 0 },
@@ -60,6 +61,7 @@ local AuctionHouseEnums =
 				{ Name = "Level", Type = "AuctionHouseSortOrder", EnumValue = 2 },
 				{ Name = "Bid", Type = "AuctionHouseSortOrder", EnumValue = 3 },
 				{ Name = "Buyout", Type = "AuctionHouseSortOrder", EnumValue = 4 },
+				{ Name = "TimeRemaining", Type = "AuctionHouseSortOrder", EnumValue = 5 },
 			},
 		},
 		{

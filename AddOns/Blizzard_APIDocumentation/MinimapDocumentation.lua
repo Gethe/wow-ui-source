@@ -6,6 +6,69 @@ local Minimap =
 
 	Functions =
 	{
+		{
+			Name = "GetDrawGroundTextures",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "draw", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUiMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetViewRadius",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "yards", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRotateMinimapIgnored",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDrawGroundTextures",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "draw", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetIgnoreRotateMinimap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUseHybridMinimap",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldUse", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

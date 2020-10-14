@@ -22,8 +22,8 @@ do
 			borderPaddingY = 20,
 			Topper = "scoreboard-horde-header",
 			TitleBG = "scoreboard-header-horde",
-			nineSliceLayout = "PartyPoseKit",
-			nineSliceTextureKitName = "horde",
+			nineSliceLayout = "IdenticalCornersLayout",
+			nineSliceTextureKit = "horde",
 			partyCategory = LE_PARTY_CATEGORY_HOME,
 		},
 
@@ -34,8 +34,8 @@ do
 			borderPaddingY = 20,
 			Topper = "scoreboard-alliance-header",
 			TitleBG = "scoreboard-header-alliance",
-			nineSliceLayout = "PartyPoseKit",
-			nineSliceTextureKitName = "alliance",
+			nineSliceLayout = "IdenticalCornersLayout",
+			nineSliceTextureKit = "alliance",
 			partyCategory = LE_PARTY_CATEGORY_HOME,
 		},
 	}
@@ -160,7 +160,10 @@ function WarfrontsPartyPoseMixin:OnEvent(event, ...)
 	elseif (event == "QUEST_CURRENCY_LOOT_RECEIVED") then
 		local questID, currencyId, quantity = ...;
 		if (questID == self.questID) then
-			local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId);
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyId);
+			local name = currencyInfo.name;
+			local texture = currencyInfo.iconFileID;
+			local quality = currencyInfo.quality;
 			local originalQuantity = quantity;
 			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(currencyId, quantity);
 			name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyId, quantity, name, texture, quality);

@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_MawBuffs.lua"/>
+
+	<Button name="MawBuffTemplate" mixin="MawBuffMixin" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Border">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightBorder" hidden="true" atlas="jailerstower-animapowerlist-highlight">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="CountRing" atlas="jailerstower-animapowerlist-rank" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" inherits="GameFontNormalMed3" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CountRing"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="MawBuffsList" mixin="MawBuffsListMixin" virtual="true">
+		<Size x="210" y="159"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopBG" atlas="jailerstower-animapowerlist-topbg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomBG" atlas="jailerstower-animapowerlist-bottombg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleBG" atlas="!jailerstower-animapowerlist-tile" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TopBG" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomBG" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="MawBuffsContainer" mixin="MawBuffsContainerMixin" virtual="true">
+		<Size x="253" y="50"/>
+		<Frames>
+			<Frame parentKey="List" inherits="MawBuffsList" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="15" y="1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalFont style="GameFontHighlight"/>
+		<NormalTexture atlas="jailerstower-animapowerbutton-normal"/>
+		<PushedTexture atlas="jailerstower-animapowerbutton-normalpressed"/>
+		<HighlightTexture atlas="jailerstower-animapowerbutton-highlight" alphaMode="ADD"/>
+		<DisabledTexture atlas="jailerstower-animapowerbutton-normal" desaturated="true"/>
+		<PushedTextOffset x="1.25" y="-1"/>
+	</Button>
+</Ui>

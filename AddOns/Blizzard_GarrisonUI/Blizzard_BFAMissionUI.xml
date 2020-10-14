@@ -9,7 +9,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="followerTypeID" value="LE_FOLLOWER_TYPE_GARRISON_8_0" type="global"/>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_8_0" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoadMainFrame"/>

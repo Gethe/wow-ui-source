@@ -45,9 +45,6 @@ function SharedPetBattleAbilityTooltip_GetInfoTable()
 end
 
 function SharedPetBattleAbilityTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-
 	self.strongAgainstTextures = { self.StrongAgainstType1 };
 	self.weakAgainstTextures = { self.WeakAgainstType1 };
 end

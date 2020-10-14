@@ -4,10 +4,9 @@
 
 	<Frame name="QuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="QuestPinMixin" virtual="true">
 		<Size x="50" y="50"/>
-
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Texture">
+				<Texture parentKey="NormalTexture">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
@@ -18,21 +17,20 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="Number" file="Interface\WorldMap\UI-QuestPoi-NumberIcons">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" alphaMode="ADD">
+				<Texture parentKey="HighlightTexture" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Display" inherits="QuestPOIDisplayLayerTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 </Ui>

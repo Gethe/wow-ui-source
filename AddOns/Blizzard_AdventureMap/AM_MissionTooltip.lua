@@ -171,7 +171,7 @@ function AdventureMap_MissionTooltipMixin:AddRewards(missionInfo)
 			self.Reward:Show();
 			self:AddWidget(self.Reward);
 		elseif reward.currencyID ~= 0 then
-			local _, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
+			local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(reward.currencyID).iconFileID;
 			self.Reward:SetText(reward.quantity .. " |T" .. currencyTexture .. ":0:0:0:0|t");
 			self.Reward:Show();
 			self:AddWidget(self.Reward);

@@ -146,7 +146,7 @@
 						<Anchor point="CENTER" x="0" y="-80"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NoMoreUpgrades" text="ITEM_UPGRADE_NO_MORE_UPGRADES" inherits="GameFontNormalMed3" hidden="true">
+				<FontString parentKey="FeedbackMessage" inherits="GameFontNormalMed3" hidden="true">
 					<Size x="167" y="0"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="-20" y="-60" />

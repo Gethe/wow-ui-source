@@ -30,16 +30,7 @@
 	<Font name="GameFontNormalLeftRed" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.9" g="0.0" b="0.0"/>
 	</Font>
-	<Font name="GameFontDisableMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
 	<Font name="GameFontNormalRight" inherits="GameFontNormal" justifyH="RIGHT" virtual="true"/>
-	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
-	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
-	<Font name="GameFontHighlightLarge2" inherits="GameFontNormalLarge2" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
 	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
@@ -393,7 +384,10 @@
     <Font name="CombatTextFontOutline" inherits="SystemFont_World_ThickOutline" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
-	<Font name="MovieSubtitleFont" inherits="GameFontNormalHugeOutline2" virtual="true">
+    <Font name="MissionCombatTextFontOutline" inherits="SystemFont_Outline_WTF2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="MovieSubtitleFont" inherits="GameFontNormalShadowOutline22" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 
@@ -457,20 +451,14 @@
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
 
-	<Font name="CommentatorDeadFontSmall" inherits="SystemFont_Med1" virtual="true">
+	<Font name="CommentatorFontSmall" inherits="SystemFont_Med1" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
+		<Shadow x="1" y="-1"/>
 	</Font>
 	
-	<Font name="CommentatorDeadFontMedium" inherits="SystemFont_Large" virtual="true">
+	<Font name="CommentatorFontMedium" inherits="SystemFont_Shadow_Large2" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
-	</Font>
-	
-	<Font name="CommentatorDeadFontDefault" inherits="SystemFont_Huge2" virtual="true">
-		<Color r="1" g="1" b="1" a="1"/>
-	</Font>
-	
-	<Font name="CommentatorDeadFontLarge" inherits="SystemFont_OutlineThick_WTF" outline="" virtual="true">
-		<Color r="1" g="1" b="1" a="1"/>
+		<Shadow x="1" y="-1"/>
 	</Font>
 	
 	<Font name="CommentatorVictoryFanfare" inherits="Game120Font" virtual="true">

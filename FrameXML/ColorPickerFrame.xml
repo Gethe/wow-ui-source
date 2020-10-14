@@ -52,22 +52,14 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Slider name="OpacitySliderFrame" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1">
+			<Slider name="OpacitySliderFrame" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1" inherits="BackdropTemplate">
 				<Size x="16" y="128"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ColorSwatch" relativePoint="TOPRIGHT" x="32" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="8"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="8"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="3" right="3" top="6" bottom="6"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontNormalSmall">
@@ -155,22 +147,14 @@
 		</Anchors>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Slider name="OpacityFrameSlider" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1">
+			<Slider name="OpacityFrameSlider" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1" inherits="BackdropTemplate">
 				<Size x="16" y="128"/>
 				<Anchors>
 					<Anchor point="TOP" x="-10" y="-35"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="8"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="8"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="3" right="3" top="6" bottom="6"/>
-					</BackgroundInsets>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontNormalSmall" text="OPACITY">

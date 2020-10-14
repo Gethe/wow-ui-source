@@ -152,43 +152,10 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<StatusBar parentKey="SubSkillRankBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
-				<Size x="58" y="14"/>
+			<StatusBar parentKey="SubSkillRankBar" inherits="TradeSkillStatusBarArtTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 				<Anchors>
 					<Anchor point="RIGHT" x="-4" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="9" y="18"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-2" y="0"/>
-							</Anchors>
-							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
-						</Texture>
-						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="9" y="18"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
-							</Anchors>
-							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
-						</Texture>
-						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
-						</Texture>
-						<FontString parentKey="Rank" inherits="GameFontHighlightSmall">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r=".25" g=".25" b=".75"/>
 			</StatusBar>
 		</Frames>
 

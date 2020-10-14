@@ -1,18 +1,19 @@
-----------------------------------------------------------------------------------------------------
+local tooltip = GetAppropriateTooltip()
+---------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLimit)
-    
+
     local questionFrame
     characterLimit = characterLimit or 255
-    
-    local editboxHeight = (characterLimit / 25 * 14) + 15 -- 25 min number of characters on a line, 14 is line height, 15 is extra pad to allow for the character counter 
+
+    local editboxHeight = (characterLimit / 25 * 14) + 15 -- 25 min number of characters on a line, 14 is line height, 15 is extra pad to allow for the character counter
     local headerHeight = 20
-    
+
     if not (PTR_IssueReporter.Data.UnusedFrameComponents.StandaloneQuestion) then
         PTR_IssueReporter.Data.UnusedFrameComponents.StandaloneQuestion = {}
     end
-    
+
     local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.StandaloneQuestion
-    
+
     if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
         questionFrame = PTR_IssueReporter.Data.UnusedFrameComponents.StandaloneQuestion[numberOfUnusedFrames]
         PTR_IssueReporter.Data.UnusedFrameComponents.StandaloneQuestion[numberOfUnusedFrames] = nil
@@ -22,8 +23,8 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
         questionFrame:SetHeight(headerHeight)
         questionFrame.FrameType = "StandaloneQuestion"
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
-        questionFrame.text:SetWidth(questionFrame:GetWidth())
-        questionFrame.text:SetHeight(questionFrame:GetHeight())
+        --questionFrame.text:SetWidth(questionFrame:GetWidth())
+        --questionFrame.text:SetHeight(questionFrame:GetHeight())
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0)        
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
         questionFrame.text:SetJustifyV("CENTER")
@@ -84,7 +85,7 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
     questionFrame:SetWidth(frame:GetWidth())
     
     if (question) and (string.len(question) > 0) then
-        questionFrame.text:SetText(question)
+        headerHeight = PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
     else
         questionFrame.text:SetText("")
         headerHeight = 0.1
@@ -124,8 +125,6 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
         questionFrame.FrameType = "MultipleChoice"
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
-        questionFrame.text:SetWidth(questionFrame:GetWidth())
-        questionFrame.text:SetHeight(questionFrame:GetHeight())                
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
         questionFrame.text:SetJustifyV("CENTER")
         questionFrame.text:SetJustifyH("CENTER")
@@ -157,23 +156,27 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     questionFrame:SetParent(frame)
     questionFrame:SetPoint("TOP", frame, "TOP", 0, -frame.FrameHeight)
     questionFrame:SetWidth(frame:GetWidth())    
-    questionFrame.text:SetText(question)
+    
+    headerHeight = PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
     questionFrame:Show()
     
+    local numberOfCurrentCheckboxes = #answers
+    local questionFrameWidth = questionFrame.QuestionBackground:GetWidth()
+    local checkBoxMargin = questionFrameWidth/(numberOfCurrentCheckboxes)
+    
     for key, choice in pairs (answers) do
-        PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically)
+        local height = PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically, checkBoxMargin)
+        if (height > verticalCheckboxHeight) then
+            verticalCheckboxHeight = height
+        end
     end
     
-    local numberOfCurrentCheckboxes = #questionFrame.Checkboxes
-    
     for key, checkbox in pairs (questionFrame.Checkboxes) do
-        local questionFrameWidth = questionFrame.QuestionBackground:GetWidth()
-        
         if (displayVertically) then
             checkbox:SetPoint("TOP", questionFrame.QuestionBackground, "TOPLEFT", 20, -((key-1) * verticalCheckboxHeight))
         else
-            local checkBoxMargin = questionFrameWidth/(numberOfCurrentCheckboxes+1)
-            checkbox:SetPoint("TOP", questionFrame.QuestionBackground, "TOPLEFT", key * checkBoxMargin, 0)
+            
+            checkbox:SetPoint("TOP", questionFrame.QuestionBackground, "TOPLEFT", (key * checkBoxMargin)-(checkBoxMargin * 0.5), 0)
         end
         
         checkbox:Show()
@@ -192,6 +195,8 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     
     if (displayVertically) then
         editboxHeight = #questionFrame.Checkboxes * verticalCheckboxHeight
+    else
+        editboxHeight = verticalCheckboxHeight + 2
     end
     questionFrame.QuestionBackground:SetHeight(editboxHeight)
     
@@ -199,7 +204,75 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     table.insert(frame.FrameComponents, questionFrame) 
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical)
+function PTR_IssueReporter.AttachTextBlock(frame, question)
+
+    local questionFrame    
+    local editboxHeight = 50 -- 25 min number of characters on a line, 14 is line height, 15 is extra pad to allow for the character counter 
+    local headerHeight = 20
+    local verticalCheckboxHeight = 30
+    
+    if not (PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock) then
+        PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock = {}
+    end
+    
+    local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock
+    
+    if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
+        questionFrame = PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock[numberOfUnusedFrames]
+        PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock[numberOfUnusedFrames] = nil
+        numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.TextBlock
+    else
+        questionFrame = CreateFrame("Frame", nil, frame)
+        questionFrame:SetHeight(headerHeight)
+        questionFrame.FrameType = "TextBlock"
+        questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
+        questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
+        questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
+        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyH("CENTER")
+
+        PTR_IssueReporter.AddBorder(questionFrame)
+        PTR_IssueReporter.AddBackground(questionFrame, PTR_IssueReporter.Assets.BackgroundTexture)
+        
+        questionFrame.QuestionBackground = CreateFrame("Frame", nil, questionFrame)  
+        questionFrame.QuestionBackground:SetPoint("TOP", questionFrame, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)        
+        questionFrame.QuestionBackground:SetWidth(frame:GetWidth())        
+        PTR_IssueReporter.AddBackground(questionFrame, PTR_IssueReporter.Assets.BackgroundTexture)
+    end
+    
+    questionFrame.Checkboxes = {}
+    questionFrame:SetParent(frame)
+    questionFrame:SetPoint("TOP", frame, "TOP", 0, -frame.FrameHeight)
+    questionFrame:SetWidth(frame:GetWidth())
+    headerHeight = PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
+    questionFrame:Show()
+    
+    frame.FrameHeight = frame.FrameHeight + headerHeight + (PTR_IssueReporter.Data.FrameComponentMargin*1)
+    table.insert(frame.FrameComponents, questionFrame) 
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
+    local headerHeight = 20
+    local margin = 5
+    questionFrame.text:SetText(question)
+    questionFrame.text:SetWidth(questionFrame:GetWidth()-10)
+    questionFrame.text:SetHeight(0)
+    headerHeight = questionFrame.text:GetHeight() + margin
+    if (headerHeight < 20) then
+        headerHeight = 20
+    end
+
+    questionFrame:SetHeight(headerHeight)
+    questionFrame.text:SetHeight(headerHeight)
+    
+    if (questionFrame.QuestionBackground) then
+        questionFrame.QuestionBackground:ClearAllPoints()
+        questionFrame.QuestionBackground:SetPoint("TOP", questionFrame, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)
+    end
+    return headerHeight
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical, checkBoxMargin)
     
     local newCheckBox
     
@@ -215,17 +288,22 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
         numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     else
         newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
-        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
-        newCheckBox.text:SetJustifyH("CENTER")
+        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")    
+        newCheckBox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)        
+        newCheckBox.text:SetJustifyH("CENTER")        
         newCheckBox.text:SetJustifyV("CENTER")
         newCheckBox.text:SetTextColor(1, 1, 1)
     end
     
     newCheckBox.text:ClearAllPoints()
+    
     if (isVertical) then        
         newCheckBox.text:SetPoint("LEFT", newCheckBox, "RIGHT", 0, 0)
+        newCheckBox.text:SetWidth(0)
     else
         newCheckBox.text:SetPoint("TOP", newCheckBox, "BOTTOM", 0, 0)
+
+        newCheckBox.text:SetWidth(checkBoxMargin)
     end
     
     newCheckBox:SetChecked(false)
@@ -234,6 +312,7 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     newCheckBox:Show()
     
     table.insert(questionFrame.Checkboxes, newCheckBox)
+    return newCheckBox:GetHeight() + newCheckBox.text:GetHeight()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
@@ -281,7 +360,10 @@ function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
-    local dataPackageValue = dataPackage[survey.IconViewerData.key]
+    local dataPackageValue = ""
+    if (dataPackage) then
+        dataPackageValue = dataPackage[survey.IconViewerData.key]
+    end
     if (survey.IconViewerData.func) and (type(survey.IconViewerData.func) == "function") then
         dataPackageValue = survey.IconViewerData.func(dataPackageValue) or dataPackageValue
     end
@@ -353,7 +435,7 @@ function PTR_IssueReporter.CleanReportFrame(frame)
     frame.FrameHeight = 0
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.GetStandaloneSurveyFrame()
+function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
     if not (PTR_IssueReporter.StandaloneSurvey) then        
         
         local surveyFrame = PTR_IssueReporter.CreateSurveyFrame()
@@ -366,20 +448,26 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame()
         titleBox.text:SetPoint("CENTER", titleBox, "CENTER", 0, 0)
         titleBox.SurveyFrame = surveyFrame
         
-        surveyFrame:SetParent(titleBox)        
+        surveyFrame:SetParent(titleBox)
         surveyFrame:SetPoint("TOP", titleBox, "BOTTOM", 0, -PTR_IssueReporter.Data.FrameComponentMargin)
         
         function titleBox:SetLabelText(text)
+            local maxWidth = 253
+            
             titleBox.text:SetText(text)
             titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", 12)
             titleBox:SetSize(253, titleBox.text:GetHeight()*2)
             local currentFont = 12
             local currentWidth = titleBox.text:GetWidth()
-            while (currentWidth > 253) and (currentFont > 5) do
+            while (currentWidth > maxWidth) and (currentFont > 5) do
                 currentFont = currentFont - 1
                 titleBox.text:SetFont("Fonts\\FRIZQT__.TTF", currentFont)
                 titleBox.text:SetText(text)
                 currentWidth = titleBox.text:GetWidth()
+            end
+            if (currentWidth > maxWidth) then
+                titleBox:SetHeight(titleBox:GetHeight() * 1.8)
+                titleBox.text:SetHeight(titleBox:GetHeight())
             end
         end
         
@@ -417,11 +505,28 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame()
         submitButton:SetSize(submitButton:GetTextWidth()*1.5, PTR_IssueReporter.Data.SubmitButtonHeight)
         submitButton:SetScript("OnClick", function()
             surveyFrame:SubmitBugReport()
-            PTR_IssueReporter.CheckSurveyQueue()
+            if not(IsOnGlueScreen()) then
+                PTR_IssueReporter.CheckSurveyQueue()
+            end
         end)
         
+        titleBox.submitButton = submitButton
         titleBox:Hide()
         PTR_IssueReporter.StandaloneSurvey = titleBox
+    end
+    if PTR_IssueReporter.InBarbershop then
+        PTR_IssueReporter.StandaloneSurvey:SetParent(CharCustomizeFrame)
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(CharCustomizeFrame)
+	else
+        PTR_IssueReporter.StandaloneSurvey:SetParent(GetAppropriateTopLevelParent())
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(GetAppropriateTopLevelParent())
+	end     
+	PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
+	PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetFrameStrata("HIGH")
+    if (followUpSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.NextText)
+    else
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.SubmitText)
     end
     
     return PTR_IssueReporter.StandaloneSurvey
@@ -437,28 +542,35 @@ function PTR_IssueReporter.CreateSurveyFrame()
     surveyFrame.FrameComponents = {}
     surveyFrame.SurveyString = ""
     surveyFrame:SetFrameStrata("HIGH")
+
+    if(IsOnGlueScreen()) then
+        PTR_IssueReporter:HookScript("OnHide",function() surveyFrame:Hide() end)
+    end
     
     function surveyFrame:SubmitBugReport()
         if (self.SurveyString) and (self.FrameComponents) and (self.SurveyString) and (self:IsShown()) then                
             local userData = {}
-            local hideSentMessage = false
+            local suppressNotification = false
             for key, component in pairs (self.FrameComponents) do
                 if (component.GetReportString) then
                     local componentString = component:GetReportString()
                     table.insert(userData, componentString)
                     if (componentString == "") then
-                        hideSentMessage = true
+                        suppressNotification = true
                     end
                 end
             end
             
-            local surveyString = string.format(self.SurveyString, unpack(userData))    
-            GMSubmitBug(surveyString)
-            if (hideSentMessage) then
-                UIErrorsFrame:Clear() -- Only hide the send bug message if we think they didn't send any form data
-            end
+            local surveyString = string.format(self.SurveyString, unpack(userData))
+            C_UserFeedback.SubmitBug(surveyString, suppressNotification)            
             self:Hide()
             PTR_IssueReporter.CleanReportFrame(self)
+            
+            if (self.CurrentSurvey) and (self.CurrentSurvey.OnSubmitPoppedSurvey) then
+                local survey = self.CurrentSurvey.OnSubmitPoppedSurvey
+                self.OnSubmitPoppedSurvey = nil
+                PTR_IssueReporter.PopStandaloneSurvey(survey)
+            end
         end    
     end
 
@@ -480,7 +592,7 @@ function PTR_IssueReporter.Reminder(enable, ...)
     end
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.CreateIssueButton(name, icon, tooltip, func)
+function PTR_IssueReporter.CreateIssueButton(name, icon, buttonTooltip, func)
     local scalar = PTR_IssueReporter.Body:GetHeight()
     local newbutton = CreateFrame("Button", name, PTR_IssueReporter)
     newbutton:SetSize(scalar, scalar)
@@ -489,15 +601,15 @@ function PTR_IssueReporter.CreateIssueButton(name, icon, tooltip, func)
     newbutton:SetPushedTexture(PTR_IssueReporter.Assets.PushedTexture)
     PTR_IssueReporter.AddBorder(newbutton)
     newbutton:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-        GameTooltip:SetText(name, 1, 1, 1, true);
-        GameTooltip:AddLine(tooltip, nil, nil, nil, true);
-        GameTooltip:SetMinimumWidth(100);
-        GameTooltip:Show()
+        tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+        tooltip:SetText(name, 1, 1, 1, true);
+        tooltip:AddLine(buttonTooltip, nil, nil, nil, true);
+        tooltip:SetMinimumWidth(100);
+        tooltip:Show()
     end)
     newbutton:SetScript("OnLeave", function(self)
         self:SetButtonState("NORMAL")
-        GameTooltip:Hide()
+        tooltip:Hide()
     end)
     if (func) then
         newbutton:SetScript("OnClick", function(self, button, down)
@@ -512,31 +624,112 @@ end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetBugButtonContext(context, buttonTooltip, bugIcon)
     context = context or PTR_IssueReporter.Data.DefaultBugButtonContext
-    
+
     if (PTR_IssueReporterPTR_IssueReporter ~= context) then
         PTR_IssueReporter.Data.CurrentBugButtonContext = context
-    
+
         if (PTR_IssueReporter.ReportBug) then
             PTR_IssueReporter.ReportBug:SetNormalTexture(bugIcon or PTR_IssueReporter.Assets.BugReportIcon)
             PTR_IssueReporter.ReportBug:SetHighlightTexture(bugIcon or PTR_IssueReporter.Assets.BugReportIcon, "ADD")
-            
+
             PTR_IssueReporter.ReportBug:SetScript("OnEnter", function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-                GameTooltip:SetText(PTR_IssueReporter.Data.CurrentBugButtonContext, 1, 1, 1, true);
-                GameTooltip:AddLine(buttonTooltip or PTR_IssueReporter.Data.BugReportString, nil, nil, nil, true);
-                GameTooltip:SetMinimumWidth(100);
-                GameTooltip:Show()
-                ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug)
+                tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+                tooltip:SetText(PTR_IssueReporter.Data.CurrentBugButtonContext, 1, 1, 1, true);
+                tooltip:AddLine(buttonTooltip or PTR_IssueReporter.Data.BugReportString, nil, nil, nil, true);
+                tooltip:SetMinimumWidth(100);
+                tooltip:Show()
+                if not(IsOnGlueScreen()) then
+                    ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug)
+                end
             end)
-            
+
             if (context ~= PTR_IssueReporter.Data.DefaultBugButtonContext) then
                 ActionButton_ShowOverlayGlow(PTR_IssueReporter.ReportBug) -- Highlights the fact that the button has changed purpose
             end
         end
     end
 end
+
+function PTR_IssueReporter.CreateGlueView()
+    --information button
+    PTR_IssueReporter.AddInfoButton(PTR_IssueReporter)
+    PTR_IssueReporter.AddTooltip(PTR_IssueReporter.InfoButton,
+        "How Can I Help?",
+        "|cffFFFFFFPlease Provide:|r\n-What you expected\n-What you observed\n\n|cffFFFFFFAutomatically Collected:|r\n-Your character customizations\n-Your character information")
+
+    --create buttons
+    PTR_IssueReporter.ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
+        PTR_IssueReporter.Assets.BugReportIcon,
+        PTR_IssueReporter.Data.bugMouseoverText)
+
+    PTR_IssueReporter.ReportBug:SetScript("OnClick", function(self, button, down)
+        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, PTR_IssueReporter.Data.CurrentBugButtonContext, PTR_IssueReporter.Data.ButtonDataPackage)
+        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+    end)
+
+    PTR_IssueReporter.SetBugButtonContext()
+    PTR_IssueReporter.ReportBug:SetPoint("TOPLEFT", PTR_IssueReporter.Body, "TOP", -(PTR_IssueReporter.Body:GetWidth()/4), -6)
+    PTR_IssueReporter.ReportBug:SetWidth(PTR_IssueReporter.Body:GetWidth()/2)
+    PTR_IssueReporter.ReportBug:SetHeight(PTR_IssueReporter.Body:GetWidth()/2)
+    PTR_IssueReporter.Body.Texture = PTR_IssueReporter.Body:CreateTexture()
+    PTR_IssueReporter.Body.Texture:SetTexture(PTR_IssueReporter.Assets.BackgroundTexture)
+    PTR_IssueReporter.Body.Texture:SetPoint("BOTTOMRIGHT", PTR_IssueReporter.ReportBug, "BOTTOMRIGHT")
+    PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.ReportBug, "TOPLEFT")
+
+    PTR_IssueReporter.Body.Texture:SetDrawLayer("BACKGROUND")
+end
+
+function PTR_IssueReporter.CreateInGameMenu()
+    PTR_IssueReporter:SetScript("OnEnter", function(self)
+        SetCursor("Interface\\CURSOR\\UI-Cursor-Move.blp")
+    end)
+    PTR_IssueReporter:SetScript("OnLeave", function(self)
+        ResetCursor()
+    end)
+
+   --information button
+   PTR_IssueReporter.AddInfoButton(PTR_IssueReporter)
+   PTR_IssueReporter.AddTooltip(PTR_IssueReporter.InfoButton,
+       "How Can I Help?",
+       "|cffFFFFFFPlease Provide:|r\n-What you were doing\n-What you observed\n\n|cffFFFFFFAutomatically Collected:|r\n-Your world location\n-Your character information")
+
+   --create buttons
+   PTR_IssueReporter.Confused = PTR_IssueReporter.CreateIssueButton("Confused",
+       PTR_IssueReporter.Assets.ConfusedIcon,
+       "I'm not sure what I should do\nand/or where I should go.")
+   PTR_IssueReporter.ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
+       PTR_IssueReporter.Assets.BugReportIcon,
+       PTR_IssueReporter.Data.bugMouseoverText)
+
+   PTR_IssueReporter.Confused:SetScript("OnClick", function(self, button, down)
+       PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, "Confused")
+       PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+   end)
+
+   PTR_IssueReporter.ReportBug:SetScript("OnClick", function(self, button, down)
+       PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, PTR_IssueReporter.Data.CurrentBugButtonContext, PTR_IssueReporter.Data.ButtonDataPackage)
+       PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+   end)
+
+    PTR_IssueReporter.Confused:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
+    PTR_IssueReporter.ReportBug:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
+
+   PTR_IssueReporter.SetBugButtonContext()
+   PTR_IssueReporter.ReportBug:SetPoint("TOPLEFT", PTR_IssueReporter.Body, "TOP", 2, -6)
+   PTR_IssueReporter.Confused:SetPoint("TOPRIGHT", PTR_IssueReporter.Body, "TOP", -2, -6)
+   PTR_IssueReporter.Body.Texture = PTR_IssueReporter.Body:CreateTexture()
+   PTR_IssueReporter.Body.Texture:SetTexture(PTR_IssueReporter.Assets.BackgroundTexture)
+   PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.Confused, "TOPLEFT")
+   PTR_IssueReporter.Body.Texture:SetPoint("BOTTOMRIGHT", PTR_IssueReporter.ReportBug, "BOTTOMRIGHT")
+   PTR_IssueReporter.Body.Texture:SetDrawLayer("BACKGROUND")
+   PTR_IssueReporter:SetClampRectInsets(0,0,0, -(PTR_IssueReporter.Confused:GetHeight()))
+
+    --timers/reminders/notifications, only one time ever on login
+    C_Timer.After(1, function(self) PTR_IssueReporter.Reminder(true, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
+end
+
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.CreateMainView()    
+function PTR_IssueReporter.CreateMainView()
     local SetFrameLocation = function(self)
         PTR_IssueReporter:ClearAllPoints()
         if (Blizzard_PTRIssueReporter_Saved.x and Blizzard_PTRIssueReporter_Saved.y) then
@@ -561,13 +754,6 @@ function PTR_IssueReporter.CreateMainView()
     PTR_IssueReporter.Body:SetPoint("TOP", PTR_IssueReporter, "BOTTOM", 0, PTR_IssueReporter:GetHeight()*0.05)
     PTR_IssueReporter.AddBackground(PTR_IssueReporter, PTR_IssueReporter.Assets.BackgroundTexture)
 
-    PTR_IssueReporter:SetScript("OnEnter", function(self)
-        SetCursor("Interface\\CURSOR\\UI-Cursor-Move.blp")
-    end)
-    PTR_IssueReporter:SetScript("OnLeave", function(self)
-        ResetCursor()
-    end)
-
     PTR_IssueReporter:SetScript("OnUpdate", function(self, elapsed)
         PTR_IssueReporter.Data.lastSubmitTime = PTR_IssueReporter.Data.lastSubmitTime or 0
         if (PTR_IssueReporter.Data.lastSubmitTime > 0) then
@@ -575,41 +761,12 @@ function PTR_IssueReporter.CreateMainView()
         end
     end)
 
-    --information button
-    PTR_IssueReporter.AddInfoButton(PTR_IssueReporter)
-    PTR_IssueReporter.AddTooltip(PTR_IssueReporter.InfoButton,
-        "How Can I Help?",
-        "|cffFFFFFFPlease Provide:|r\n-What you were doing\n-What you observed\n\n|cffFFFFFFAutomatically Collected:|r\n-Your world location\n-Your character information")
+    if IsOnGlueScreen() then
+        PTR_IssueReporter.CreateGlueView()
+    else
+        PTR_IssueReporter.CreateInGameMenu()
+    end
 
-    --create buttons
-    PTR_IssueReporter.Confused = PTR_IssueReporter.CreateIssueButton("Confused",
-        PTR_IssueReporter.Assets.ConfusedIcon,
-        "I'm not sure what I should do\nand/or where I should go.")
-    PTR_IssueReporter.ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
-        PTR_IssueReporter.Assets.BugReportIcon,
-        PTR_IssueReporter.Data.bugMouseoverText)    
-
-    PTR_IssueReporter.Confused:SetScript("OnClick", function(self, button, down)
-        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, "Confused")
-        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-    end)
-    
-    PTR_IssueReporter.ReportBug:SetScript("OnClick", function(self, button, down)
-        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, PTR_IssueReporter.Data.CurrentBugButtonContext, PTR_IssueReporter.Data.ButtonDataPackage)
-        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-    end)
-
-    PTR_IssueReporter.Confused:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
-    PTR_IssueReporter.ReportBug:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
-    PTR_IssueReporter.SetBugButtonContext()
-    PTR_IssueReporter.ReportBug:SetPoint("TOPLEFT", PTR_IssueReporter.Body, "TOP", 2, -6)
-    PTR_IssueReporter.Confused:SetPoint("TOPRIGHT", PTR_IssueReporter.Body, "TOP", -2, -6)
-    PTR_IssueReporter.Body.Texture = PTR_IssueReporter.Body:CreateTexture()
-    PTR_IssueReporter.Body.Texture:SetTexture(PTR_IssueReporter.Assets.BackgroundTexture)
-    PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.Confused, "TOPLEFT")
-    PTR_IssueReporter.Body.Texture:SetPoint("BOTTOMRIGHT", PTR_IssueReporter.ReportBug, "BOTTOMRIGHT")
-    PTR_IssueReporter.Body.Texture:SetDrawLayer("BACKGROUND")
-    PTR_IssueReporter:SetClampRectInsets(0,0,0, -(PTR_IssueReporter.Confused:GetHeight()))
     --behaviors
     PTR_IssueReporter.AddDrag(PTR_IssueReporter)
     PTR_IssueReporter:SetScript("OnDragStop", function(self)
@@ -617,34 +774,30 @@ function PTR_IssueReporter.CreateMainView()
         local left, bottom = self:GetRect()
         Blizzard_PTRIssueReporter_Saved.x = left
         Blizzard_PTRIssueReporter_Saved.y = bottom
-        PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug)
+        if not(IsOnGlueScreen()) then
+            PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug)
+        end
     end)
-    PTR_IssueReporter:SetScript("OnHide", function(self)
-        self:Show()
-    end)
-
-    --timers/reminders/notifications, only one time ever on login
-    C_Timer.After(1, function(self) PTR_IssueReporter.Reminder(true, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AddBorder(frame)
-    frame.Border = CreateFrame("Frame", nil, frame)
+    frame.Border = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.Border:SetFrameStrata(frame:GetFrameStrata(), frame:GetFrameLevel() + 1)
     frame.Border:SetPoint("TOPLEFT", frame, "TOPLEFT", -4, 4)
     frame.Border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 4, -4)
-    frame.Border:SetBackdrop({edgeFile = PTR_IssueReporter.Assets.TestBorder, edgeSize = 16})
+    frame.Border:SetBackdrop(BACKDROP_WATERMARK_DIALOG_0_16)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AddTooltip(frame, title, text, anchor, minWidth, owner, x, y)
     frame:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(owner or self, anchor or "ANCHOR_RIGHT", x or 0, y or 0);
-        GameTooltip:SetText(title, 1, 1, 1, true);
-        GameTooltip:AddLine(text, nil, nil, nil, true);
-        GameTooltip:SetMinimumWidth(minWidth or 100);
-        GameTooltip:Show()
+        tooltip:SetOwner(owner or self, anchor or "ANCHOR_RIGHT", x or 0, y or 0);
+        tooltip:SetText(title, 1, 1, 1, true);
+        tooltip:AddLine(text, nil, nil, nil, true);
+        tooltip:SetMinimumWidth(minWidth or 100);
+        tooltip:Show()
     end)
     frame:SetScript("OnLeave", function(self)
-        GameTooltip:Hide()
+        tooltip:Hide()
     end)
 end
 ----------------------------------------------------------------------------------------------------

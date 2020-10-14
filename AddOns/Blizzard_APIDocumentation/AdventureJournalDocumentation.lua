@@ -76,6 +76,10 @@ local AdventureJournal =
 			Name = "AjRefreshDisplay",
 			Type = "Event",
 			LiteralName = "AJ_REFRESH_DISPLAY",
+			Payload =
+			{
+				{ Name = "newAdventureNotice", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "AjRewardDataReceived",

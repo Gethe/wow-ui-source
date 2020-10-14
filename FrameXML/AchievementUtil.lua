@@ -3,7 +3,7 @@ AchievementUtil = {};
 
 local CRITERIA_TYPE_ACHIEVEMENT_EARNED = 8;
 local CRITERIA_TYPE_REPUTATION_GAINED = 46;
-local COUNT_HIDDEN_CRITERIA = true;	
+local COUNT_HIDDEN_CRITERIA = true;
 
 function AchievementUtil.IsCriteriaAchievementEarned(achievementID, criteriaIndex)
 	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, criteriaIndex);
@@ -24,4 +24,21 @@ function AchievementUtil.IsCriteriaReputationGained(achievementID, criteriaIndex
 		end
 	end
 	return false;
+end
+
+local FEAT_OF_STRENGTH_ID = 81;
+local GUILD_FEAT_OF_STRENGTH_ID = 15093;
+
+function AchievementUtil.IsCategoryFeatOfStrength(category)
+	if category == FEAT_OF_STRENGTH_ID or category == GUILD_FEAT_OF_STRENGTH_ID then
+		return true;
+	end
+
+	local _, parentCategory = GetCategoryInfo(category);
+	return parentCategory and AchievementUtil.IsCategoryFeatOfStrength(parentCategory) or false;
+end
+
+function AchievementUtil.IsFeatOfStrength(achievementID)
+	local category = GetAchievementCategory(achievementID);
+	return category and AchievementUtil.IsCategoryFeatOfStrength(category) or false;
 end

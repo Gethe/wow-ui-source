@@ -547,6 +547,8 @@
 					<OnClick>
 						PlayerTalentFrame_ToggleTutorial();
 					</OnClick>
+					<!-- Empty OnEnter handler to override inherited behavior. -->
+					<OnEnter/>
 				</Scripts>
 			</Button>
 			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" parentKey="learnButton">
@@ -599,6 +601,11 @@
 			<Button name="$parentSpecButton4" inherits="PlayerSpecButtonTemplate" id="4" parentKey="specButton4" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentSpecButton3" relativePoint="BOTTOM" x="0" y="-30" />
+				</Anchors>
+			</Button>
+			<Button name="$parentSpecButton5" inherits="PlayerSpecButtonTemplate" id="5" parentKey="specButton5" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentSpecButton4" relativePoint="BOTTOM" x="0" y="-30" />
 				</Anchors>
 			</Button>
 			<!-- raised frame for shadows to be on top of the spec buttons -->
@@ -1166,29 +1173,19 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
-					<Button parentKey="TrinketSlot" parentArray="Slots" inherits="PvpTalentTrinketSlotTemplate">
-						<Anchors>
-							<Anchor point="TOP" x="-.5" y="-15"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="prepend">
-								HelpTip:Acknowledge(self, PVP_TALENT_FIRST_TALENT);
-							</OnClick>
-						</Scripts>
-					</Button>
 					<Button parentKey="TalentSlot1" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-9"/>
+							<Anchor point="TOP" x="-.5" y="-15"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="TalentSlot2" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TalentSlot1" relativePoint="BOTTOM" x="0" y="-10"/>
+							<Anchor point="TOP" relativeKey="$parent.TalentSlot1" relativePoint="BOTTOM" x="0" y="-20"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="TalentSlot3" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="-10"/>
+							<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="-20"/>
 						</Anchors>
 					</Button>
 					<Frame name="$parentTalentList" parentKey="TalentList" mixin="PvpTalentListMixin" inherits="SimplePanelTemplate" hidden="true">

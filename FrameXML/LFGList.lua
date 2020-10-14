@@ -35,6 +35,7 @@ LFG_LIST_CATEGORY_TEXTURES = {
 	[9] = "ratedbgs",
 	[10] = "ashran",
 	[111] = "islands",
+	[113] = "torghast",
 };
 
 LFG_LIST_PER_EXPANSION_TEXTURES = {
@@ -46,6 +47,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[5] = "warlords",
 	[6] = "legion",
 	[7] = "battleforazeroth",
+	[8] = "shadowlands",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -113,8 +115,6 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 	self:RegisterEvent("LFG_LIST_APPLICATION_STATUS_UPDATED");
-	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("UNIT_CONNECTION");
 	self:RegisterEvent("LFG_GROUP_DELISTED_LEADERSHIP_CHANGE");
 
@@ -195,13 +195,6 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local chatMessage = LFGListFrame_GetChatMessageForSearchStatusChange(newStatus);
 		if ( chatMessage ) then
 			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
-		end
-	elseif ( event == "VARIABLES_LOADED" or event == "ADDON_LOADED" ) then
-		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 ) then
-			PremadeGroupsPvETutorialAlert:Show();
-			if ( PremadeGroupsPvPTutorialAlert ) then
-				PremadeGroupsPvPTutorialAlert:Show();
-			end
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
@@ -2768,15 +2761,9 @@ function LFGListUtil_ValidateHonorLevelReq(self, text)
 	end
 end
 
+-- TODO: Fix for Level Squish
 function LFGListUtil_GetCurrentExpansion()
-	for i=0, #MAX_PLAYER_LEVEL_TABLE do
-		if ( UnitLevel("player") <= MAX_PLAYER_LEVEL_TABLE[i] ) then
-			return i;
-		end
-	end
-
-	--We're higher than the highest level. Weird.
-	return #MAX_PLAYER_LEVEL_TABLE;
+	return GetExpansionForLevel(UnitLevel("player")) or LE_EXPANSION_LEVEL_CURRENT;
 end
 
 function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)

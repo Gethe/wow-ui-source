@@ -25,6 +25,62 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetChannelRuleset",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ruleset", Type = "ChatChannelRuleset", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChannelRulesetForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ruleset", Type = "ChatChannelRuleset", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChannelShortcut",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChannelShortcutForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetClubStreamIDs",
 			Type = "Function",
 
@@ -36,6 +92,33 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "ids", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGeneralChannelID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGeneralChannelLocalID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "localID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetMentorChannelID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -71,6 +154,34 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsChannelRegional",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegional", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChannelRegionalForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegional", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyChannelType",
 			Type = "Function",
 
@@ -82,6 +193,15 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isPartyChannelType", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRegionalServiceAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "available", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -720,6 +840,15 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
 				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatMsgChannelLeavePrevented",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_CHANNEL_LEAVE_PREVENTED",
+			Payload =
+			{
+				{ Name = "channelName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1895,6 +2024,20 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
 				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatRegionalSendFailed",
+			Type = "Event",
+			LiteralName = "CHAT_REGIONAL_SEND_FAILED",
+		},
+		{
+			Name = "ChatRegionalStatusChanged",
+			Type = "Event",
+			LiteralName = "CHAT_REGIONAL_STATUS_CHANGED",
+			Payload =
+			{
+				{ Name = "isServiceAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{

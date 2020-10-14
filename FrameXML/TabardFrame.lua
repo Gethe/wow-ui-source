@@ -8,8 +8,6 @@ function TabardFrame_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 
-	TabardFrameCostFrame:SetBackdropBorderColor(0.4, 0.4, 0.4);
-	TabardFrameCostFrame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	MoneyFrame_Update("TabardFrameCostMoneyFrame",GetTabardCreationCost());
 
 	local backgroundAlpha = 0.40;
