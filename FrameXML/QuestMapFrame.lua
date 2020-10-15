@@ -1563,13 +1563,15 @@ end
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
 	local info = C_QuestLog.GetInfo(self.questLogIndex);
-	local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID));
-	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
+	if info then
+		local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID));
+		self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 
-	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(info.questID);
-	for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
-		if ( line.questID == info.questID ) then
-			SetupObjectiveTextColor(line.Text, isDisabledQuest, false);
+		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(info.questID);
+		for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
+			if ( line.questID == info.questID ) then
+				SetupObjectiveTextColor(line.Text, isDisabledQuest, false);
+			end
 		end
 	end
 

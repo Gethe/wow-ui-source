@@ -157,5 +157,5 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GlueAnnouncementDialog" parent="GlueParent" inherits="BaseNineSliceDialog"/>
+	<Frame name="GlueAnnouncementDialog" parent="GlueParent" inherits="BaseNineSliceDialog" mixin="GlueAnnouncementDialogMixin"/>
 </Ui>

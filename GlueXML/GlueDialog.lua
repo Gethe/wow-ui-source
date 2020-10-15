@@ -657,3 +657,10 @@ function GlueDialog_OnKeyDown(self, key)
 		end
 	end
 end
+
+GlueAnnouncementDialogMixin = {}
+
+function GlueAnnouncementDialogMixin:OnCloseClick()
+	BaseNineSliceDialogMixin.OnCloseClick(self);
+	CharacterSelect_CheckDialogStates();
+end
