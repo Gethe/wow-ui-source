@@ -400,10 +400,8 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.HordeRaces" relativePoint="TOPLEFT" x="-18" y="-68"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="Classes" inherits="HorizontalLayoutFrame">
-						<KeyValues>
-							<KeyValue key="spacing" value="15" type="number"/>
-						</KeyValues>
+					<Frame parentKey="Classes">
+						<Size x="969" y="67" />
 						<Anchors>
 							<Anchor point="BOTTOM" y="62"/>
 						</Anchors>

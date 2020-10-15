@@ -76,6 +76,7 @@ end
 function CovenantPreviewFrameMixin:OnShow()
 	self:RegisterEvent("COVENANT_PREVIEW_CLOSE");
 	self:RegisterEvent("PLAYER_CHOICE_CLOSE");
+	UpdateScaleForFit(self); 
 end
 
 function CovenantPreviewFrameMixin:OnHide()
@@ -91,7 +92,7 @@ end
 
 function CovenantPreviewFrameMixin:OnEvent(event, ...) 
 	if (event == "COVENANT_PREVIEW_CLOSE" or event =="PLAYER_CHOICE_CLOSE") then
-		HideUIPanel(self);
+		self:Hide();
 	end 
 end 
 
@@ -99,7 +100,7 @@ function CovenantPreviewFrameMixin:HandleEscape()
 	if (self.showingFromPlayerChoice and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then 
 		HideUIPanel(PlayerChoiceFrame);
 	end 
-	HideUIPanel(self);
+	self:Hide();
 end 
 
 function CovenantPreviewFrameMixin:Reset()
@@ -146,7 +147,7 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 end
 
 local function CovenantPreviewSortFunction(firstValue, secondValue)
-	return firstValue > secondValue;
+	return firstValue < secondValue;
 end
 
 function CovenantPreviewFrameMixin:TryShow(covenantInfo)
@@ -172,7 +173,7 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 	self:SetupSoulbindButtons(covenantInfo.covenantSoulbinds);
 	self:SetupCovenantInfoPanel(covenantInfo); 
 	self:SetupCovenantFeature(covenantInfo.featureInfo) 
-	ShowUIPanel(self); 
+	self:Show();
 end 
 
 function CovenantPreviewFrameMixin:SetupCovenantFeature(covenantFeatureInfo) 
@@ -231,11 +232,11 @@ end
 
 function CovenantPreviewFrameMixin:SetupModelSceneFrame(transmogSetID, mountID)
 	self:SetupTextureKits(self.ModelSceneContainer, modelSceneContainerTextureKitRegions);
+
 	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0, true); 
 	local sources = C_TransmogSets.GetAllSourceIDs(transmogSetID);
-	DressUpTransmogSet(sources);
-
-	TransmogAndMountDressupFrame:RemoveWeapons(); 
+	DressUpTransmogSet(sources, TransmogAndMountDressupFrame);
+	TransmogAndMountDressupFrame:RemoveWeapons();
 end 
 
 function CovenantPreviewFrameMixin:SetupCovenantInfoPanel(covenantInfo) 
@@ -309,4 +310,9 @@ end
 
 function CovenantSoulbindButtonMixin:OnLeave() 
 	EmbeddedItemTooltip:Hide();
+end
+
+CovenantPreviewModelSceneContainerMixin = { };
+function CovenantPreviewModelSceneContainerMixin:ShouldAcceptDressUp()
+	return false;
 end

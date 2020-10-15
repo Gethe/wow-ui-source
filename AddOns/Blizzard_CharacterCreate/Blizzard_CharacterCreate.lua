@@ -1346,7 +1346,6 @@ function CharacterCreateRaceAndClassMixin:LayoutButtons()
 	self.AllianceAlliedRaces:MarkDirty();
 	self.HordeRaces:MarkDirty();
 	self.HordeAlliedRaces:MarkDirty();
-	self.Classes:MarkDirty();
 end
 
 function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
@@ -1441,15 +1440,31 @@ function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
 	end
 end
 
+local function SortClasses(classData1, classData2)
+	return classLayoutIndices[classData1.fileName] < classLayoutIndices[classData2.fileName];
+end
+
 function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 	if releaseButtons then
 		self.buttonPool:ReleaseAllByTemplate("CharacterCreateClassButtonTemplate");
 	end
 
 	local classes = C_CharacterCreation.GetAvailableClasses();
-	for _, classData in pairs(classes) do
+	table.sort(classes, SortClasses);
+
+	local lastButton;
+	for i, classData in ipairs(classes) do
 		local button = self.buttonPool:Acquire("CharacterCreateClassButtonTemplate");
 		button:SetClass(classData, self.selectedClassID);
+
+		if i == 1 then
+			button:SetPoint("TOPLEFT", self.Classes, "TOPLEFT", 0, 0);
+		else
+			button:SetPoint("TOPLEFT", lastButton, "TOPRIGHT", 15, 0);
+		end
+
+		lastButton = button;
+
 		button:Show();
 	end
 end

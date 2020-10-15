@@ -725,13 +725,14 @@ function NPE_LoadUI()
 	if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
 		return;
 	end
+	local NPE_AchievementID = 14287;
+	local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
 	local tutEnabled = GetTutorialsEnabled();
-	local isEligible = C_PlayerInfo.IsPlayerEligibleForNPEv2();
-	if ( tutEnabled and isEligible ) then
+	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
+	if  not completed or (tutEnabled and isRestricted) then
 		UIParentLoadAddOn("Blizzard_NewPlayerExperience");
 	end
 end
-
 
 function BoostTutorial_AttemptLoad()
 	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
@@ -790,9 +791,7 @@ function NPETutorial_AttemptToBegin(event)
 		varsLoaded = true;
 	end
 	if ( playerEnteredWorld and varsLoaded ) then
-		if C_PlayerInfo.IsPlayerNPERestricted() then
-			NPE_LoadUI();
-		end
+		NPE_LoadUI();
 	end
 end
 
@@ -3070,13 +3069,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 end
 
 function FramePositionDelegate:UpdateScaleForFit(frame)
-	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
-	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
-	if ( horizRatio < 1 or vertRatio < 1 ) then
-		frame:SetScale(min(horizRatio, vertRatio));
-	else
-		frame:SetScale(1);
-	end
+	UpdateScaleForFit(frame); 
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()
@@ -4211,7 +4204,9 @@ function getglobal(varr)
 	return _G[varr];
 end
 
+local forceinsecure = forceinsecure;
 function setglobal(varr,value)
+	forceinsecure();
 	_G[varr] = value;
 end
 
@@ -4299,6 +4294,8 @@ function ToggleGameMenu()
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
+	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then 
+		CovenantPreviewFrame:HandleEscape(); 
 	elseif ( LootFrame:IsShown() ) then
 		-- if we're here, LootFrame was opened under the mouse (cvar "lootUnderMouse") so it didn't get closed by CloseAllWindows
 		LootFrame:Hide();
@@ -4309,8 +4306,6 @@ function ToggleGameMenu()
 		SplashFrame:Close();
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
-	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then 
-		CovenantPreviewFrame:HandleEscape(); 
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
 	else

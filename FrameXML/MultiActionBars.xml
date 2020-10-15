@@ -283,7 +283,7 @@
 			<Attribute name="actionpage" type="number" value="3"/>
 		</Attributes>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="-7">
 				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_SideBar_Glow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>

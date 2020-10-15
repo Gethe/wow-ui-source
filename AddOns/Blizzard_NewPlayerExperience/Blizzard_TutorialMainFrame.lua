@@ -288,9 +288,18 @@ function NPE_TutorialWalkMixin:SetKeybindings()
 		local container = self.ContainerFrame[v];
 		if container then
 			local fontString = container.KeyBind;
-			local text = GetBindingKey(v);
-			if (text and (text ~= "")) then
-				fontString:SetText(text);
+			local key = GetBindingKey(v);
+			local bindingText;
+			if key == "LEFT" then
+				bindingText = NPEV2_LEFT_ARROW;
+			elseif key == "RIGHT" then
+				bindingText = NPEV2_RIGHT_ARROW;
+			else
+				bindingText = GetBindingText(key, 1);
+			end
+
+			if (bindingText and (bindingText ~= "")) then
+				fontString:SetText(bindingText);
 			end
 		end
 	end

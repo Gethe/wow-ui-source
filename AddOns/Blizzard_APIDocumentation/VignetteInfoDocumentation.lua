@@ -105,6 +105,7 @@ local VignetteInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "isDead", Type = "bool", Nilable = false },
 				{ Name = "onWorldMap", Type = "bool", Nilable = false },
+				{ Name = "zoneInfiniteAOI", Type = "bool", Nilable = false },
 				{ Name = "onMinimap", Type = "bool", Nilable = false },
 				{ Name = "isUnique", Type = "bool", Nilable = false },
 				{ Name = "inFogOfWar", Type = "bool", Nilable = false },

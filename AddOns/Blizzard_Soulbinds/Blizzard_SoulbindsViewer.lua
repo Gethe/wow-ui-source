@@ -1,17 +1,9 @@
-local ResetConduitsFormatter = CreateFromMixins(SecondsFormatterMixin);
-ResetConduitsFormatter:Init(SECONDS_PER_HOUR, SecondsFormatter.Abbreviation.None, true, true);
-
-function ResetConduitsFormatter:GetDesiredUnitCount(seconds)
-	return 1;
-end
-
 local SoulbindViewerEvents =
 {
 	"SOULBIND_FORGE_INTERACTION_ENDED",
 	"SOULBIND_ACTIVATED",
 	"SOULBIND_PENDING_CONDUIT_CHANGED",
 	"SOULBIND_CONDUIT_INSTALLED",
-	"SOULBIND_CONDUITS_RESET"
 };
 
 SoulbindViewerMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -31,9 +23,6 @@ function SoulbindViewerMixin:OnLoad()
 	self.ActivateSoulbindButton:SetScript("OnEnter", GenerateClosure(self.OnActivateSoulbindEnter, self));
 	self.ActivateSoulbindButton:SetScript("OnLeave", GenerateClosure(self.OnActivateSoulbindLeave, self));
 	self.CommitConduitsButton:SetScript("OnClick", GenerateClosure(self.OnCommitConduitsClicked, self));
-	self.ResetConduitsButton:SetScript("OnClick", GenerateClosure(self.OnResetConduitsClicked, self));
-	self.ResetConduitsButton:SetScript("OnEnter", GenerateClosure(self.OnResetConduitsButtonEnter, self));
-	self.ResetConduitsButton:SetScript("OnLeave", GenerateClosure(self.OnResetConduitsButtonLeave, self));
 	self.CloseButton:SetScript("OnClick", GenerateClosure(self.OnCloseButtonClicked, self));
 
 	self.Tree:RegisterCallback(SoulbindTreeMixin.Event.OnNodeChanged, self.OnNodeChanged, self);
@@ -67,58 +56,20 @@ function SoulbindViewerMixin:OnEvent(event, ...)
 		local soulbindID = ...;
 		self:OnSoulbindActivated(...);
 	elseif event == "SOULBIND_PENDING_CONDUIT_CHANGED" then
-		local nodeID, conduitID, pending = ...;
+		local nodeID = ...;
 		self:OnConduitChanged();
 	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
 		Soulbinds.SetConduitInstallPending(false);
 		self:UpdateButtons();
-	elseif event == "SOULBIND_CONDUITS_RESET" then
-		Soulbinds.SetConduitResetPending(false);
-		self:UpdateResetConduitsButton();
 	end
 end
 
 function SoulbindViewerMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SoulbindViewerEvents);
 
-	self.ResetConduitsButton:SetShown(C_Soulbinds.CanModifySoulbind());
-
 	self:UpdateButtons();
 
 	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
-end
-
-function SoulbindViewerMixin:OnResetConduitsButtonLeave()
-	GameTooltip:Hide();
-end
-
-function SoulbindViewerMixin:OnResetConduitsButtonEnter()
-	GameTooltip:SetOwner(self.ResetConduitsButton, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, CONDUIT_RESET_BUTTON_HEADER);
-
-	local soulbindID = self.soulbindData.ID;
-	local hideNoConduitWarning = false;
-	if C_Soulbinds.CanResetConduitsInSoulbind(soulbindID) then
-		GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_AVAILABLE);
-	else 
-		local seconds = C_DateAndTime.GetSecondsUntilWeeklyReset();
-		local time = ResetConduitsFormatter:Format(C_DateAndTime.GetSecondsUntilWeeklyReset())
-		GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_AVAILABLE_IN:format(time));
-
-		hideNoConduitWarning = true;
-	end
-
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, CONDUIT_RESET_INSTRUCTION);
-	
-	-- No Socketed Conduits Warning
-	if not hideNoConduitWarning then
-		if not C_Soulbinds.HasAnyInstalledConduitInSoulbind(self.soulbindData.ID) then
-			GameTooltip_AddErrorLine(GameTooltip, CONDUIT_RESET_INELIGIBLE);
-		end
-	end
-
-	GameTooltip:Show();
 end
 
 function SoulbindViewerMixin:OnHide()
@@ -129,7 +80,6 @@ function SoulbindViewerMixin:OnHide()
 end
 
 function SoulbindViewerMixin:UpdateButtons()
-	self:UpdateResetConduitsButton();
 	self:UpdateActivateSoulbindButton();
 	self:UpdateCommitConduitsButton();
 end
@@ -147,17 +97,6 @@ end
 
 function SoulbindViewerMixin:OnNodeChanged()
 	self:UpdateButtons();
-end
-
-function SoulbindViewerMixin:UpdateResetConduitsButton()
-	local shown = C_Soulbinds.CanModifySoulbind();
-	self.ResetConduitsButton:SetShown(shown);
-	if shown then
-		local soulbindID = self.soulbindData.ID;
-		local enabled = C_Soulbinds.HasAnyInstalledConduitInSoulbind(soulbindID) and C_Soulbinds.CanResetConduitsInSoulbind(soulbindID);
-		self.ResetConduitsButton:SetEnabled(enabled);
-		self.ResetConduitsButton:SetAlpha(enabled and 1 or .6);
-	end
 end
 
 function SoulbindViewerMixin:Open()
@@ -295,44 +234,35 @@ function SoulbindViewerMixin:OnActivateSoulbindLeave()
 end
 
 function SoulbindViewerMixin:OnCommitConduitsClicked()
+	local conduitCharges = C_Soulbinds.GetConduitCharges();
+	if conduitCharges <= 0 then
+		return;
+	end
+	
+	local soulbindID = self:GetOpenSoulbindID();
 	local onConfirm = function()
 		Soulbinds.SetConduitInstallPending(true);
-		C_Soulbinds.CommitPendingConduitsInSoulbind(self:GetOpenSoulbindID());
+		C_Soulbinds.CommitPendingConduitsInSoulbind(soulbindID);
 		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
-	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", nil, nil, onConfirm);
+
+	local total = C_Soulbinds.GetTotalConduitChargesPendingInSoulbind(soulbindID);
+	local iconMarkup = CreateAtlasMarkup("soulbinds_collection_charge_dialog", 12, 12, 0, 0);
+	local text = CONDUIT_CHARGE_CONFIRM:format(total, iconMarkup);
+	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", text, nil, onConfirm);
 end
 
-function SoulbindViewerMixin:OnResetConduitsClicked()
-	local onConfirm = function()
-		Soulbinds.SetConduitResetPending(true);
-		C_Soulbinds.ResetSoulbindConduits(self:GetOpenSoulbindID());
-		PlaySound(SOUNDKIT.SOULBINDS_RESET_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
-	end
-	StaticPopup_Show("SOULBIND_RESET_TREE", nil, nil, onConfirm);
+function SoulbindViewerMixin:OnCollectionConduitClick(conduitID)
+	self.Tree:OnCollectionConduitClick(conduitID);
 end
 
-function SoulbindViewerMixin:OnCollectionConduitEnter(conduitType)
-	self.Tree:OnCollectionConduitEnter(conduitType);
+function SoulbindViewerMixin:OnCollectionConduitEnter(conduitType, conduitID)
+	self.Tree:OnCollectionConduitEnter(conduitType, conduitID);
 end
 
 function SoulbindViewerMixin:OnCollectionConduitLeave()
 	self.Tree:OnCollectionConduitLeave();
 end
-
-StaticPopupDialogs["SOULBIND_RESET_TREE"] = {
-	text = SOULBIND_RESET_TREE,
-	button1 = RESET,
-	button2 = CANCEL,
-	enterClicksFirstButton = true,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
-
-	OnButton1 = function(self, callback)
-		callback();
-	end,
-};
 
 StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
 	text = CONDUIT_NO_CHANGES_CONFIRMATION,
@@ -349,7 +279,7 @@ StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
 };
 
 StaticPopupDialogs["SOULBIND_CONDUIT_INSTALL_CONFIRM"] = {
-	text = CONDUIT_INSTALL_CONFIRM,
+	text = "%s",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	enterClicksFirstButton = true,

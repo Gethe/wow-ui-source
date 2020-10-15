@@ -170,7 +170,10 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.timerWidgets = {};
 	self.numTimers = 0;
 	self.numWidgetsShowing = 0;
-	self.widgetSetLayoutDirection = C_UIWidgetManager.GetWidgetLayoutDirectionFromWidgetSetID(widgetSetID);
+
+	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
+	self.widgetSetLayoutDirection = widgetSetInfo.layoutDirection;
+	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
 
 	if self.attachedToUnit then
 		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedToUnit);

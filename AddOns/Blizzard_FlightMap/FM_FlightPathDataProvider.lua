@@ -233,6 +233,12 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 		self:SetSize(39, 42);
 	elseif self.textureKit == "FlightMaster_Argus" then
 		self:SetSize(34, 28);
+	elseif self.textureKit == "FlightMaster_Bastion" then
+		if pinType == Enum.FlightPathState.Current then
+			self:SetSize(26, 26);
+		elseif pinType == Enum.FlightPathState.Reachable or pinType == Enum.FlightPathState.Unreachable then
+			self:SetSize(24, 24);
+		end
 	elseif self.textureKit == "FlightMaster_Ferry" then
 		if pinType == Enum.FlightPathState.Current then
 			self:SetSize(36, 24);

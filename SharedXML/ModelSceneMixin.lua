@@ -212,6 +212,9 @@ function ModelSceneMixin:GetPlayerActor(overrideActorName)
 			actor = self:GetActorByTag(playerRaceName);
 			if not actor then
 				actor = self:GetActorByTag("player");
+				if not actor then
+					actor = self:GetActorByTag("player-rider");
+				end
 			end
 		end
 	end

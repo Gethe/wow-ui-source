@@ -115,7 +115,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ModelSceneContainer">
+			<Frame parentKey="ModelSceneContainer" mixin="CovenantPreviewModelSceneContainerMixin">
 				<Size x="414" y="432"/>
 				<Anchors>
 					<Anchor point="LEFT" x="65" y="-40"/>
@@ -163,7 +163,7 @@
 						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="Fancy32Font">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Crest" relativePoint="RIGHT" x="15" y="13"/>
+								<Anchor point="TOPLEFT" x="100" y="-40"/>
 							</Anchors>
 							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
@@ -175,9 +175,9 @@
 							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med3">
-							<Size x="495" y="0"/>
+							<Size x="490" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="18" y="-45"/>
+								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="30" y="-38"/>
 							</Anchors>
 							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
@@ -279,10 +279,16 @@
           </Frame>
 				</Frames>
 			</Frame>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" frameLevel="510">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="3" y="2" />
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" frameLevel="510" hidden="true" text="BACK">
 				<Size x="150" y="25"/>
@@ -291,7 +297,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(CovenantPreviewFrame);
+						self:GetParent():Hide();
 						PlaySound(SOUNDKIT.UI_COVENANT_CHOICE_CLICK_BACK_BUTTON);
 					</OnClick>
 				</Scripts>

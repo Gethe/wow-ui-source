@@ -58,7 +58,7 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 	local vignetteGUIDs = C_VignetteInfo.GetVignettes();
 	for i, vignetteGUID in ipairs(vignetteGUIDs) do
 		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
-		if vignetteInfo and vignetteInfo.onWorldMap then
+		if self:ShouldShowVignette(vignetteInfo) then
 			local existingPin = pinsToRemove[vignetteGUID];
 			if existingPin then
 				pinsToRemove[vignetteGUID] = nil;
@@ -81,6 +81,10 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 		self:GetMap():RemovePin(pin);
 		self.vignetteGuidsToPins[vignetteGUID] = nil;
 	end
+end
+
+function VignetteDataProviderMixin:ShouldShowVignette(vignetteInfo)
+	return vignetteInfo and vignetteInfo.onWorldMap;
 end
 
 function VignetteDataProviderMixin:OnSuperTrackingChanged()

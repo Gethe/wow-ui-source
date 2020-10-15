@@ -21,7 +21,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Texture">
-					<Size x="33" y="33"/>
+					<Size x="45" y="45"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

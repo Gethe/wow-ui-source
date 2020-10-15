@@ -186,8 +186,8 @@ local GarrisonConstants =
 				{ Name = "Generic", Type = "GarrTalentFeatureSubtype", EnumValue = 0 },
 				{ Name = "Bastion", Type = "GarrTalentFeatureSubtype", EnumValue = 1 },
 				{ Name = "Revendreth", Type = "GarrTalentFeatureSubtype", EnumValue = 2 },
-				{ Name = "Maldraxxus", Type = "GarrTalentFeatureSubtype", EnumValue = 3 },
-				{ Name = "Ardenweald", Type = "GarrTalentFeatureSubtype", EnumValue = 4 },
+				{ Name = "Ardenweald", Type = "GarrTalentFeatureSubtype", EnumValue = 3 },
+				{ Name = "Maldraxxus", Type = "GarrTalentFeatureSubtype", EnumValue = 4 },
 			},
 		},
 		{

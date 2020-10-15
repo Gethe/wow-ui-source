@@ -8,9 +8,13 @@ end
 function UIWidgetTemplateTooltipFrameMixin:OnLoad()
 end
 
+function UIWidgetTemplateTooltipFrameMixin:UpdateMouseEnabled()
+	self:SetMouse(self.disableTooltip);
+end
+
 function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
-	local disableMouse = widgetContainer.disableWidgetTooltips;
-	self:SetMouse(disableMouse);
+	self.disableTooltip = widgetContainer.disableWidgetTooltips;
+	self:UpdateMouseEnabled();
 	self:SetMouseClickEnabled(false);
 end
 
@@ -25,7 +29,7 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	if tooltip then
 		self.tooltipContainsHyperLink, self.preString, self.hyperLinkString, self.postString = ExtractHyperlinkString(tooltip);
 	end
-	self:SetMouse();
+	self:UpdateMouseEnabled();
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()

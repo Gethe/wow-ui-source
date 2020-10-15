@@ -187,6 +187,9 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality)
 	elseif IsCorruptedItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
 		button.IconOverlay:Show();
+	elseif IsCosmeticItem(itemIDOrLink) then
+		button.IconOverlay:SetAtlas("CosmeticIconFrame");
+		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
 		if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
 			quality = Enum.ItemQuality.Common;

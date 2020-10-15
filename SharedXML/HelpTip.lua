@@ -19,6 +19,7 @@
 		useParentStrata	= false,				-- whether to use parent framestrata
 		system = ""								-- reference string
 		systemPriority = 0,						-- if a system and a priority is specified, higher priority helptips will close another helptip in that system
+		extraRightMarginPadding = 0,			--  extra padding on the right side of the helptip
 	}
 ]]--
 
@@ -160,6 +161,8 @@ function HelpTip:Show(parent, info, relativeRegion)
 	end
 
 	local frame = self.framePool:Acquire();
+	frame.width = HelpTip.width + (info.extraRightMarginPadding or 0);
+	frame:SetWidth(frame.width);
 	frame:Init(parent, info, relativeRegion or parent);
 	frame:Show();
 
@@ -351,7 +354,7 @@ function HelpTipTemplateMixin:OnUpdate()
 	if self.info.autoHorizontalSlide then
 		-- check right edge first
 		local rightEdge = UIParent:GetRight();
-		local canFitOnRight = rx + HelpTip.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Right][1] < rightEdge;
+		local canFitOnRight = rx + self.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Right][1] < rightEdge;
 		if not canFitOnRight then
 			if rx + HelpTip.halfWidth < rightEdge then
 				targetAlignment = HelpTip.Alignment.Center;
@@ -361,7 +364,7 @@ function HelpTipTemplateMixin:OnUpdate()
 		else
 			-- left edge
 			local leftEdge = UIParent:GetLeft();
-			local canFitOnLeft = rx - HelpTip.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Left][1] > leftEdge;
+			local canFitOnLeft = rx - self.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Left][1] > leftEdge;
 			if not canFitOnLeft then
 				if rx - HelpTip.halfWidth > leftEdge then
 					targetAlignment = HelpTip.Alignment.Center;

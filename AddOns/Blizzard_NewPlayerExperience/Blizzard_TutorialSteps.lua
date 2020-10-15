@@ -1052,6 +1052,7 @@ end
 -- on their action bar
 Class_SpellChecker = class("SpellChecker", Class_TutorialBase);
 function Class_SpellChecker:OnBegin()
+	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_ENTERING_WORLD", self);
 end
 
@@ -1072,6 +1073,13 @@ end
 function Class_SpellChecker:PLAYER_ENTERING_WORLD()
 	Dispatcher:UnregisterEvent("PLAYER_ENTERING_WORLD", self);
 	self:CheckSpells();
+end
+
+function Class_SpellChecker:ACTIONBAR_SLOT_CHANGED(slot)
+	if slot == 0 then
+		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+		self:CheckSpells();
+	end
 end
 
 function Class_SpellChecker:OnInterrupt(interruptedBy)

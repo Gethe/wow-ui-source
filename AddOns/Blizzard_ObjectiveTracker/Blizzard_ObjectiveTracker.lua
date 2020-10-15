@@ -93,9 +93,9 @@ hasSkippedBlocks:	if the module couldn't display all its blocks because of not e
 
 DEFAULT_OBJECTIVE_TRACKER_MODULE = {};
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName, defaultTemplate)
 	self.friendlyName = friendlyName or "UnnamedTrackerModule";
-	self.blockTemplate = "ObjectiveTrackerBlockTemplate";
+	self.blockTemplate = defaultTemplate or "ObjectiveTrackerBlockTemplate";
 	self.blockType = "Frame";
 	self.lineTemplate = "ObjectiveTrackerLineTemplate";
 	self.lineSpacing = 2;
@@ -121,9 +121,9 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnLoad(friendlyName)
 	DEFAULT_OBJECTIVE_TRACKER_MODULE.AddBlockOffset(self, self.blockTemplate, 0, -6);
 end
 
-function ObjectiveTracker_GetModuleInfoTable(friendlyName, baseModule)
+function ObjectiveTracker_GetModuleInfoTable(friendlyName, baseModule, defaultTemplate)
 	local info = CreateFromMixins(baseModule or DEFAULT_OBJECTIVE_TRACKER_MODULE);
-	info:OnLoad(friendlyName);
+	info:OnLoad(friendlyName, defaultTemplate);
 	return info;
 end
 

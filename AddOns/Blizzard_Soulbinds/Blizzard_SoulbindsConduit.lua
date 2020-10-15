@@ -1,8 +1,14 @@
 SoulbindConduitMixin = CreateFromMixins(SpellMixin)
 
-function SoulbindConduitMixin:Init(conduitID, conduitRank)
+function SoulbindConduitMixin:Init(conduitID)
 	self.conduitID = conduitID;
-	self:SetSpellID(C_Soulbinds.GetConduitSpellID(conduitID, conduitRank));
+	if self:IsValid() then
+		self:SetSpellID(C_Soulbinds.GetConduitSpellID(conduitID, self:GetConduitRank()));
+	end
+end
+
+function SoulbindConduitMixin:IsValid()
+	return self.conduitID > 0;
 end
 
 function SoulbindConduitMixin:GetConduitID()
@@ -10,13 +16,18 @@ function SoulbindConduitMixin:GetConduitID()
 end
 
 function SoulbindConduitMixin:GetConduitRank()
-	return C_Soulbinds.GetConduitRankFromCollection(self.conduitID);
+	local rank = C_Soulbinds.GetConduitRankFromCollection(self:GetConduitID());
+	return self:IsValid() and math.max(rank, 1) or 1;
 end
 
 function SoulbindConduitMixin:Matches(conduit)
-	return conduit and self:GetConduitID() == conduit:GetConduitID() and self:GetConduitRank() == conduit:GetConduitRank();
+	return conduit and self:GetConduitID() == conduit:GetConduitID();
 end
 
-function SoulbindConduitMixin_Create(conduitID, conduitRank)
-	return CreateAndInitFromMixin(SoulbindConduitMixin, conduitID, conduitRank);
+function SoulbindConduitMixin:GetHyperlink()
+	return C_Soulbinds.GetConduitHyperlink(self:GetConduitID(), self:GetConduitRank());
+end
+
+function SoulbindConduitMixin_Create(conduitID)
+	return CreateAndInitFromMixin(SoulbindConduitMixin, conduitID);
 end

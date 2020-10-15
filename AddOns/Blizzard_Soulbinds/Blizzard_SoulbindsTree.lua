@@ -144,7 +144,15 @@ function SoulbindTreeMixin:OnConduitClicked(button, buttonName)
 	end
 
 	if buttonName == "RightButton" then
-		C_Soulbinds.RemovePendingConduit(button:GetID());
+		local nodeID = button:GetID();
+		if C_Soulbinds.IsNodePendingModify(nodeID) then
+			C_Soulbinds.UnmodifyNode(button:GetID());
+		else
+			local conduitID = C_Soulbinds.GetInstalledConduitID(nodeID);
+			if conduitID > 0 then
+				C_Soulbinds.ModifyNode(nodeID, conduitID, Enum.SoulbindConduitTransactionType.Uninstall);
+			end
+		end
  	elseif Soulbinds.HasConduitAtCursor() then
 		if not button:IsUnavailable() then
 			self:TryInstallConduitAtCursor(button);
@@ -153,8 +161,7 @@ function SoulbindTreeMixin:OnConduitClicked(button, buttonName)
 		local linked = false;
 		local conduit = button:GetConduit();
 		if conduit and IsModifiedClick("CHATLINK") then
-			local link = C_Soulbinds.GetConduitHyperlink(conduit:GetConduitID(), conduit:GetConduitRank());
-			linked = HandleModifiedItemClick(link);
+			linked = HandleModifiedItemClick(conduit:GetHyperlink());
 		end
 
 		if not linked then
@@ -180,14 +187,10 @@ local function GetConduitMismatchString(conduitType)
 end
 
 function SoulbindTreeMixin:TryInstallConduitAtCursor(button)
-	if C_Soulbinds.IsConduitInstalled(button:GetID()) then
-		return;
-	end
-
 	local conduitData = C_Soulbinds.GetConduitCollectionDataAtCursor();
 	if conduitData then
 		if button:IsConduitType(conduitData.conduitType) then
-		local nodeID = button:GetID();
+			local nodeID = button:GetID();
 			self:TryInstallConduitInSlot(nodeID, conduitData.conduitID);
 		else
 			UIErrorsFrame:AddMessage(GetConduitMismatchString(button:GetConduitType()), RED_FONT_COLOR:GetRGBA());	
@@ -202,7 +205,7 @@ function SoulbindTreeMixin:StopNodeAnimations()
 end
 
 local function AreConduitsResettingOrIsUninstalled(nodeFrame)
-	return Soulbinds.IsConduitResetPending() or not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID());
+	return Soulbinds.IsConduitResetPending() or (C_Soulbinds.GetConduitCharges() > 0 or not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID()));
 end
 
 local function IsInstallingConduitsOrNotPending(soulbindID, nodeFrame)
@@ -214,7 +217,7 @@ local function IsInstallingConduitsOrNotPending(soulbindID, nodeFrame)
 	return not conduit or conduit:GetConduitID() == 0;
 end
 
-function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
+function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType, conduitID)
 	if not C_Soulbinds.CanModifySoulbind() then
 		return;
 	end
@@ -243,12 +246,24 @@ function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
 
 	for _, nodeFrame in pairs(self.nodeFrames) do
 		if canAnimateConduit(nodeFrame, conduitType) then
-			nodeFrame:SetConduitPickupAnimShown(true);
+			nodeFrame:SetConduitPickupAnimShown(true, conduitID);
 		end
 	end
 end
 
-function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
+function SoulbindTreeMixin:EvaluateAnimOverrides(conduitID)
+	for _, nodeFrame in pairs(self.nodeFrames) do
+		if nodeFrame:IsConduit() then
+			nodeFrame:EvaluateAnimOverride(conduitID);
+		end
+	end
+end
+
+function SoulbindTreeMixin:OnCollectionConduitClick(conduitID)
+	self:EvaluateAnimOverrides(conduitID);
+end
+
+function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType, conduitID)
 	if not C_Soulbinds.CanModifySoulbind() then
 		return;
 	end
@@ -262,9 +277,11 @@ function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
 	if not Soulbinds.HasConduitAtCursor() then
 		if self.mouseOverConduit ~= conduitType or not oldTimer then
 			self:StopNodeAnimations();
-			self:ApplyConduitEnterAnim(conduitType);
+			self:ApplyConduitEnterAnim(conduitType, conduitID);
 		end
 	end
+
+	self:EvaluateAnimOverrides(conduitID);
 
 	self.mouseOverConduit = conduitType;
 end
@@ -279,10 +296,14 @@ function SoulbindTreeMixin:OnCollectionConduitLeave()
 			self.mouseOverTimer:Cancel();
 		end
 
-		self.mouseOverTimer = C_Timer.NewTicker(.1, function()
+		local time = .1;
+		local frequency = 1;
+		self.mouseOverTimer = C_Timer.NewTicker(time, function()
 			self:StopThenApplyAttentionAnims();
+			self:EvaluateAnimOverrides(nil);
 			self.mouseOverTimer = nil;
-		end, 1);
+			
+		end, frequency);
 	end
 end
 
@@ -294,6 +315,7 @@ function SoulbindTreeMixin:OnCursorChanged(isDefault, newCursorType, oldCursorTy
 			self:ApplyConduitEnterAnim(previewConduitType);
 		else
 			self:StopThenApplyAttentionAnims();
+			self:EvaluateAnimOverrides(nil);
 		end
 		self.handleCursor = false;
 	end
@@ -330,27 +352,49 @@ function SoulbindTreeMixin:StopThenApplyAttentionAnims()
 end
 
 function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, conduitID)
-	if C_Soulbinds.IsConduitInstalled(nodeID) then
+	if C_Soulbinds.GetTotalConduitChargesPending() >= C_Soulbinds.GetConduitCharges() then
+		UIErrorsFrame:AddExternalErrorMessage(CONDUIT_CHARGE_ERROR);	
 		return;
 	end
 
-	if C_Soulbinds.IsConduitInstalledInSoulbind(self.soulbindID, conduitID) then
+	local pendingInstallConduitID = C_Soulbinds.GetConduitIDPendingInstall(nodeID);
+	if pendingInstallConduitID and pendingInstallConduitID == conduitID then
 		return;
 	end
 
-	local pendingConduitID = C_Soulbinds.GetPendingConduitID(nodeID);
-	if pendingConduitID and pendingConduitID == conduitID then
-		return;
+	local pendingUninstallNodeID = C_Soulbinds.FindNodeIDPendingUninstall(self.soulbindID, conduitID);
+	local pendingInstallNodeID = C_Soulbinds.FindNodeIDPendingInstall(self.soulbindID, conduitID);
+	local appearInstalledNodeID = C_Soulbinds.FindNodeIDAppearingInstalled(self.soulbindID, conduitID);
+	local pending = pendingUninstallNodeID > 0 or pendingInstallNodeID > 0;
+
+	local isPendingInstall = pendingInstallNodeID > 0;
+	local isPendingUninstall = pendingUninstallNodeID > 0;
+	if isPendingInstall then
+		C_Soulbinds.UnmodifyNode(pendingInstallNodeID);
+	elseif isPendingUninstall then
+		C_Soulbinds.UnmodifyNode(pendingUninstallNodeID);
 	end
 
-	local pendingNodeID = C_Soulbinds.GetPendingNodeIDInSoulbind(self.soulbindID, conduitID);
-	if pendingNodeID > 0 then
-		C_Soulbinds.RemovePendingConduit(pendingNodeID);
+	local consumeInstall = false;
+	local actualConduitID = C_Soulbinds.GetInstalledConduitID(nodeID);
+	if actualConduitID == conduitID then
+		if pendingUninstallNodeID == 0 then
+			return;
+		elseif pendingUninstallNodeID == nodeID then
+			consumeInstall = true;
+			C_Soulbinds.UnmodifyNode(nodeID);
+		end
+	end
+
+	local actuallyInstalledNodeID = C_Soulbinds.FindNodeIDActuallyInstalled(self.soulbindID, nodeID);
+	if ((actuallyInstalledNodeID > 0) or isPendingInstall) and (actuallyInstalledNodeID ~= nodeID) then
 		StaticPopup_Show("SOULBIND_DIALOG_MOVE_CONDUIT", nil, nil);
+	end 
+
+	if not consumeInstall then
+		C_Soulbinds.ModifyNode(nodeID, conduitID, Enum.SoulbindConduitTransactionType.Install);
 	end
-
-	C_Soulbinds.AddPendingConduit(nodeID, conduitID);
-
+	
 	ClearCursor();
 end
 
@@ -450,11 +494,17 @@ function SoulbindTreeMixin:Init(soulbindData)
 
 	local canModifySoulbind = C_Soulbinds.CanModifySoulbind();
 	local animDuration = canModifySoulbind and .6 or .8;
-	for _, node in ipairs(nodes) do
-		local nodeID = node.ID;
-		local nodeFrame = self.nodeFrames[nodeID];
-		nodeFrame:Init(node);
-		nodeFrame:SetAnimDuration(animDuration);
+	if reconstructTree then
+		for _, node in ipairs(nodes) do
+			local nodeFrame = self.nodeFrames[node.ID];
+			nodeFrame:SetAnimDuration(animDuration);
+		end
+	else
+		for _, node in ipairs(nodes) do
+			local nodeFrame = self.nodeFrames[node.ID];
+			nodeFrame:Init(node);
+			nodeFrame:SetAnimDuration(animDuration);
+		end
 	end
 
 	for _, nodeFrame in pairs(self.nodeFrames) do

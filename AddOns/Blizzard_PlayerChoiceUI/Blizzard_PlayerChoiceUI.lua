@@ -825,6 +825,7 @@ function PlayerChoiceFrameMixin:AlignOptionHeights()
 	self.optionsAligned = true;
 
 	self:Layout(); -- Note that we call Layout here and not MarkDirty. Otherwise the Layout won't happen until the next frame and you will see a pop as things get adjsuted
+	UpdateScaleForFit(self);
 end
 
 function PlayerChoiceFrameMixin:GetNumOptions()

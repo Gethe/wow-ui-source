@@ -144,10 +144,10 @@ end
 
 function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
 	if(self.ShowMountCheckButton:GetChecked()) then
-		DressUpMount(self.mountID);
+		DressUpMount(self.mountID, self);
 	else
 		local sources = C_TransmogSets.GetAllSourceIDs(self.transmogSetID);
-		DressUpTransmogSet(sources);
+		DressUpTransmogSet(sources, self);
 	end
 
 	if(self.removeWeapons) then 

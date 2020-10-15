@@ -333,8 +333,7 @@ function AnimaDiversionFrameMixin:SetupCurrencyFrame()
 	local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo()
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(animaCurrencyID);
 	if(currencyInfo) then 
-		self.AnimaDiversionCurrencyFrame.CurrencyFrame.Quantity:SetText(currencyInfo.quantity);	
-		self.AnimaDiversionCurrencyFrame.CurrencyFrame.CurrencyIcon:SetTexture(currencyInfo.iconFileID);
+		self.AnimaDiversionCurrencyFrame.CurrencyFrame.Quantity:SetText(ANIMA_DIVERSION_CURRENCY_DISPLAY:format(currencyInfo.quantity, currencyInfo.iconFileID));
 	end 
 end 
 
@@ -420,7 +419,7 @@ function AnimaDiversionSelectionInfoMixin:SetupCosts(CurrencyCosts)
 		end 
 	end
 	self.SelectButton:ClearAllPoints(); 
-	self.SelectButton:SetPoint("TOP", self.lastCurrency, "BOTTOM", 10, -20);
+	self.SelectButton:SetPoint("TOP", self.lastCurrency, "BOTTOM", 10, -10);
 	self.AlreadySelected:ClearAllPoints(); 
 	self.AlreadySelected:SetPoint("CENTER", self.SelectButton); 
 	return playerCanAfford; 
@@ -429,15 +428,15 @@ end
 function AnimaDiversionSelectionInfoMixin:SetupSingleCurrency(index, costInfo)
 	local currency = self.currencyPool:Acquire(); 
 	if(index == 1) then 
-		currency:SetPoint("TOP", self.Description, "BOTTOM", -15, 8);
+		currency:SetPoint("TOP", self.Description, "BOTTOM", -15, -10);
 	else 
 		currency:SetPoint("TOP", self.lastCurrency, "BOTTOM", 0, -10);	
 	end
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(costInfo.currencyID);
 	if(currencyInfo) then 
-		currency.Quantity:SetText(costInfo.quantity);	
-		currency.CurrencyIcon:SetTexture(currencyInfo.iconFileID);
+		currency.Quantity:SetJustifyH("LEFT");
+		currency.Quantity:SetText(ANIMA_DIVERSION_CURRENCY_DISPLAY:format(costInfo.quantity, currencyInfo.iconFileID));	
 	end 
 
 	currency.currencyInfo = currencyInfo; 

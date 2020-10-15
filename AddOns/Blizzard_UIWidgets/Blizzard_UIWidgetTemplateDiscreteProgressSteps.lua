@@ -54,6 +54,21 @@ function UIWidgetTemplateDiscreteProgressStepsMixin:OnLoad()
 	self.wasActivated = {};
 end
 
+function UIWidgetTemplateDiscreteProgressStepsMixin:EvaluateTutorials(textureKit)
+	if ( (textureKit == "eyeofthejailer") and (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EYE_OF_JAILER)) ) then
+		local helpTipInfo = {
+			text = EYE_OF_JAILER_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_EYE_OF_JAILER,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			offsetY = -20,
+			extraRightMarginPadding = 12, 
+		};
+		HelpTip:Show(self, helpTipInfo);
+	end
+end 
+
 function UIWidgetTemplateDiscreteProgressStepsMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
@@ -98,6 +113,7 @@ function UIWidgetTemplateDiscreteProgressStepsMixin:Setup(widgetInfo, widgetCont
 		self.wasDeactivated[i] = true;
 		self.wasActivated[i] = false;
 	end
+	self:EvaluateTutorials(textureKit);
 end
 
 function UIWidgetTemplateDiscreteProgressStepsMixin:OnReset()

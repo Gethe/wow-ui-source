@@ -16,20 +16,12 @@
 	</Frame>
 
 	<Frame name="AnimaDiversionCurrencyCostFrameTemplate" virtual="true">
-		<Size x="200" y="20"/>
+		<Size x="200" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Quantity" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontHighlight">
-					<Anchors>
-						<Anchor point="LEFT" x="0" y="-15"/>
-					</Anchors>
+				<FontString parentKey="Quantity" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight">
+					<Size x="200" y="18"/>
 				</FontString>
-				<Texture parentKey="CurrencyIcon">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Quantity" relativePoint="RIGHT" x="5"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -61,6 +53,15 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="3" y="3" />
 				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="UI-Frame-Oribos-ExitButtonBorder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnClick>
 						C_AnimaDiversion.CloseUI();
@@ -81,7 +82,7 @@
 				<Frames>
 					<Frame parentKey="CurrencyFrame" inherits="AnimaDiversionCurrencyCostFrameTemplate">
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Background" x="85" y="15"/>
+							<Anchor point="CENTER" relativeKey="$parent.Background" x="0" y="0"/>
 						</Anchors>
 					</Frame>
 				</Frames>
