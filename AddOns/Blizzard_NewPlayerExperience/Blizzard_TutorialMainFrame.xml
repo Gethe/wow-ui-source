@@ -63,7 +63,7 @@
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="KeyBind" text="F" inherits="Number16Font">
+				<FontString parentKey="KeyBind" inherits="Number16Font">
 					<Color color="BLACK_FONT_COLOR"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.KeyIcon" />
@@ -109,8 +109,8 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
-	
-	
+
+
 	<Frame name="NPE_TutorialWalk_Frame" mixin="NPE_TutorialWalkMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
@@ -162,5 +162,4 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
-
 </Ui>

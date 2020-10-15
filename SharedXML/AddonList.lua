@@ -36,6 +36,7 @@ if ( InGlue() ) then
 		button2 = CANCEL,
 		OnAccept = function()
 			SetAddonVersionCheck(false);
+			CharacterSelect_CheckDialogStates();
 		end,
 		OnCancel = function()
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
@@ -48,6 +49,7 @@ if ( InGlue() ) then
 		button2 = CANCEL,
 		OnAccept = function()
 			AddonList_DisableOutOfDate();
+			CharacterSelect_CheckDialogStates();
 		end,
 		OnCancel = function()
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
@@ -117,13 +119,19 @@ if ( InGlue() ) then
 
 	AddonTooltip = GlueTooltip
 
-	function UpdateAddonButton(checkVersion)
+	function TryShowAddonDialog()
+		-- Check to see if any of them are out of date and not disabled
+		if not GlueAnnouncementDialog:IsShown() and IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog then
+			AddonDialog_Show("ADDONS_OUT_OF_DATE");
+			HasShownAddonOutOfDateDialog = true;
+			return true;
+		end
+
+		return false;
+	end
+
+	function UpdateAddonButton()
 		if ( GetNumAddOns() > 0 ) then
-			-- Check to see if any of them are out of date and not disabled
-			if ( checkVersion and IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
-				AddonDialog_Show("ADDONS_OUT_OF_DATE");
-				HasShownAddonOutOfDateDialog = true;
-			end
 			CharacterSelectAddonsButton:Show();
 		else
 			CharacterSelectAddonsButton:Hide();
