@@ -770,6 +770,9 @@ function UpdateCharacterList(skipSelect)
 		for _, button in pairs(CharacterSelectCharacterFrame.CharacterButtons) do
 			button:Hide();
 		end
+		for _, button in pairs(CharacterSelectCharacterFrame.PaidServiceButtons) do
+			button:Hide();
+		end
 		CharSelectCreateCharacterButton:Hide();
 		CharSelectUndeleteCharacterButton:Hide();
 		CharacterTemplatesFrame.CreateTemplateButton:Hide();
