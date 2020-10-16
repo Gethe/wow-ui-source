@@ -274,7 +274,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow inherit="append" method="OnShow"/>
+			<OnShow inherit="append" method="OnShowCollection"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
