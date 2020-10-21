@@ -83,7 +83,19 @@ function SubscriptionInterstitialFrameMixin:OnLoad()
 	self.Inset.Bg:Hide();
 end
 
+function SubscriptionInterstitialFrameMixin:OnShow()
+	self.cinematicIsShowing = nil;
+	EventRegistry:RegisterCallback("CinematicFrame.CinematicStarting", self.OnCinematicStarting, self);
+end
+
 function SubscriptionInterstitialFrameMixin:OnHide()
+	if self.cinematicIsShowing then
+		return;
+	end
+
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStarting", self);
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStopped", self);
+
 	if not self.SubscribeButton:WasClicked() and not self.UpgradeButton:WasClicked() then
 		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Closed);
 
@@ -98,6 +110,19 @@ function SubscriptionInterstitialFrameMixin:OnEvent(event, ...)
 		self:SetInterstitialType(interstitialType);
 		ShowUIPanel(self);
 	end
+end
+
+function SubscriptionInterstitialFrameMixin:OnCinematicStarting()
+	self.cinematicIsShowing = true;
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStarting", self);
+	EventRegistry:RegisterCallback("CinematicFrame.CinematicStopped", self.OnCinematicStopped, self);
+end
+
+function SubscriptionInterstitialFrameMixin:OnCinematicStopped()
+	self.cinematicIsShowing = nil;
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStopped", self);
+
+	ShowUIPanel(self);
 end
 
 function SubscriptionInterstitialFrameMixin:SetInterstitialType(interstitialType)

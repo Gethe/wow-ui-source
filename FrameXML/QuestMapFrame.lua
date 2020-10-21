@@ -1189,8 +1189,12 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	displayState.prevButtonInfo = info;
 end
 
+local function QuestLogQuests_GetPreviousButtonInfo(displayState)
+	return displayState.prevButtonInfo;
+end
+
 local function QuestLogQuests_IsPreviousButtonCollapsed(displayState)
-	local info = displayState.prevButtonInfo;
+	local info = QuestLogQuests_GetPreviousButtonInfo(displayState);
 	if info then
 		return info.isHeader and info.isCollapsed;
 	end
@@ -1274,6 +1278,13 @@ local function QuestLogQuests_AddStandardHeaderButton(displayState, info)
 	local button = QuestScrollFrame.headerFramePool:Acquire();
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
 	button:SetText(info.title);
+
+	-- Handle the case where there's nothing above this quest header
+	button.topPadding = 0;
+	if not QuestLogQuests_GetPreviousButtonInfo(displayState) then
+		button.topPadding = 8;
+	end
+
 	return button;
 end
 
@@ -1570,13 +1581,15 @@ end
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
 	local info = C_QuestLog.GetInfo(self.questLogIndex);
-	local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID));
-	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
+	if info then
+		local difficultyColor = info.isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID));
+		self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 
-	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(info.questID);
-	for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
-		if ( line.questID == info.questID ) then
-			SetupObjectiveTextColor(line.Text, isDisabledQuest, false);
+		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(info.questID);
+		for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
+			if ( line.questID == info.questID ) then
+				SetupObjectiveTextColor(line.Text, isDisabledQuest, false);
+			end
 		end
 	end
 

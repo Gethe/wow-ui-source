@@ -62,6 +62,7 @@ local Cursor =
 				{ Name = "isDefault", Type = "bool", Nilable = false },
 				{ Name = "newCursorType", Type = "UICursorType", Nilable = false },
 				{ Name = "oldCursorType", Type = "UICursorType", Nilable = false },
+				{ Name = "oldCursorVirtualID", Type = "number", Nilable = false },
 			},
 		},
 		{

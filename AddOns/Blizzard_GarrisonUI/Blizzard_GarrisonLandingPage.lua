@@ -36,6 +36,7 @@ function GarrisonLandingPageMixin:UpdateTabs()
 	else
 		self.FleetTab:Hide();
 	end
+
 	PanelTemplates_SetNumTabs(self, numTabs);
 	PanelTemplates_UpdateTabs(self);
 
@@ -66,6 +67,8 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	end
 
 	self.Report.SubTitle:Hide(); -- May be shown later.
+	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0) or C_Garrison.HasAdventures();
+	self.FollowerTabButton:SetShown(shouldShowFollowerTab);
 
 	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
 		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
@@ -94,7 +97,7 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSION_FOLLOWER_CATEGORY);
 		self.FollowerTab.FollowerText:Hide();
 		self.FollowerTab.PortraitFrame:Hide();
-		self.FollowerTab.CovenantFollowerPortraitFrame:Show();
+		self.FollowerTab.CovenantFollowerPortraitFrame:Show();	
 
 		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		local textureKit = covenantData and covenantData.textureKit;
@@ -446,7 +449,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 			for talentIndex, talent in ipairs(treeInfo.talents) do
 				if talent.isBeingResearched or talent.id == completeTalentID then
 					local shipment = self.shipmentsPool:Acquire();
-					SetupShipment(shipment, talent.icon, true, talent.name, nil, nil, nil, talent.isBeingResearched and 0 or 1, 1, talent.researchStartTime, talent.researchDuration, SHIPMENT_TYPE_TALENT, shipmentIndex);
+					SetupShipment(shipment, talent.icon, true, talent.name, nil, nil, nil, talent.isBeingResearched and 0 or 1, 1, talent.startTime, talent.researchDuration, SHIPMENT_TYPE_TALENT, shipmentIndex);
 					shipment.talent = talent;
 					shipmentIndex = shipmentIndex + 1;
 				end
@@ -515,7 +518,7 @@ function GarrisonLandingPageReportShipment_OnEnter(self)
 
 		if talent.isBeingResearched then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.researchTimeRemaining), 1, 1, 1);
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.timeRemaining), 1, 1, 1);
 		end
 		GameTooltip:Show();
 	end

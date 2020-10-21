@@ -396,6 +396,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");
 	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
 	self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED");	
+	self:RegisterEvent("COVENANT_RENOWN_INTERACTION_STARTED");
 
 	-- Shop (for Asia promotion)
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
@@ -705,6 +706,10 @@ function CovenantSanctum_LoadUI()
 	UIParentLoadAddOn("Blizzard_CovenantSanctum");
 end
 
+function CovenantRenown_LoadUI()
+	UIParentLoadAddOn("Blizzard_CovenantRenown");
+end
+
 function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
 end
@@ -721,15 +726,21 @@ function Tutorial_LoadUI()
 	end
 end
 
+function NPE_CheckTutorials()
+	if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
+		-- Hacky 9.0.1 fix for WOW9-58485...just force tutorials to on if they are entering Exile's Reach on a level 1 character
+		SetCVar("showTutorials", 1);
+	end
+
+	NPE_LoadUI();
+end
+
 function NPE_LoadUI()
-	if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
+	if ( not GetTutorialsEnabled() or IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
 		return;
 	end
-	local NPE_AchievementID = 14287;
-	local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
-	local tutEnabled = GetTutorialsEnabled();
 	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
-	if  not completed or (tutEnabled and isRestricted) then
+	if  isRestricted then
 		UIParentLoadAddOn("Blizzard_NewPlayerExperience");
 	end
 end
@@ -791,7 +802,7 @@ function NPETutorial_AttemptToBegin(event)
 		varsLoaded = true;
 	end
 	if ( playerEnteredWorld and varsLoaded ) then
-		NPE_LoadUI();
+		NPE_CheckTutorials();
 	end
 end
 
@@ -1154,6 +1165,13 @@ function ToggleOrderHallTalentUI()
 		OrderHall_LoadUI();
 	end
 	OrderHallTalentFrame_ToggleFrame();
+end
+
+function ToggleCovenantRenown()
+	if (not CovenantRenownFrame) then
+		CovenantRenown_LoadUI();
+	end
+	ToggleFrame(CovenantRenownFrame);
 end
 
 function OpenDeathRecapUI(id)
@@ -2212,6 +2230,12 @@ function UIParent_OnEvent(self, event, ...)
 			CovenantSanctum_LoadUI();
 		end
 		CovenantSanctumFrame:OnEvent(event, ...);
+	elseif ( event == "COVENANT_RENOWN_INTERACTION_STARTED" ) then
+		self:UnregisterEvent(event);
+		if not CovenantRenownFrame then
+			CovenantRenown_LoadUI();
+		end
+		ShowUIPanel(CovenantRenownFrame);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -4293,6 +4317,7 @@ function ToggleGameMenu()
 	elseif ( securecall("BFAMissionFrame_EscapePressed") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
+	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then 
 	elseif ( securecall("CloseAllWindows") ) then
 	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then 
 		CovenantPreviewFrame:HandleEscape(); 

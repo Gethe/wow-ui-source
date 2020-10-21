@@ -238,7 +238,7 @@
 		<NormalFont style="GlueFontNormal"/>
 		<HighlightFont style="GlueFontHighlight"/>
 	</Button>
-	<Button name="CharSelectPaidServiceTemplate" virtual="true" hidden="true" motionScriptsWhileDisabled="true">
+	<Button name="CharSelectPaidServiceTemplate" parentArray="PaidServiceButtons" virtual="true" hidden="true" motionScriptsWhileDisabled="true">
 		<Size x="64" y="64"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1157,6 +1157,9 @@
 								</Scripts>
 							</Button>
 							<Button name="CharSelectUndeleteCharacterButton" inherits="BigRedRefreshButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
+								<KeyValues>
+									<KeyValue key="tooltip" value="UNDELETE_TOOLTIP_DISABLED" type="global"/>
+								</KeyValues>
 								<Size x="28" y="28"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CharSelectCreateCharacterButton" relativePoint="RIGHT" x="10" y="0"/>

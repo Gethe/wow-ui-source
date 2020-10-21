@@ -39,6 +39,11 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="HealthValue" inherits="TextStatusBarText" setAllPoints="true" justifyH="CENTER" justifyV="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="14" y="3"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

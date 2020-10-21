@@ -1026,7 +1026,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()

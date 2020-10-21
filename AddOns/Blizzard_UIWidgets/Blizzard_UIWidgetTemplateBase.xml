@@ -289,4 +289,19 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="UIWidgetBaseCircularStatusBarTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseCircularStatusBarTemplateMixin" virtual="true">
+		<Size x="128" y="128" />
+		<Frames>
+			<Cooldown parentKey="Progress" hideCountdownNumbers="true" useCircularEdge="true">
+				<Size x="128" y="128" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<SwipeTexture>
+					<Color r="1" g="1" b="1" a="1"/>
+				</SwipeTexture>
+			</Cooldown>
+		</Frames>
+	</Frame>
 </Ui>

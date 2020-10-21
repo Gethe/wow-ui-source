@@ -793,3 +793,32 @@ function UIWidgetBaseScenarioHeaderTemplateMixin:OnReset()
 	self.lastScenarioStage = nil;
 	self.latestWidgetInfo = nil;
 end
+
+UIWidgetBaseCircularStatusBarTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+
+local circularBarSwipeTextureFormatString = "Interface\\UnitPowerBarAlt\\%s-fill";
+
+function UIWidgetBaseCircularStatusBarTemplateMixin:Setup(widgetContainer, barMin, barMax, barValue, deadZonePercentage, textureKit)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+
+	barValue = Clamp(barValue, barMin, barMax);
+
+	local currentPercent = ClampedPercentageBetween(barValue, barMin, barMax);
+
+	if deadZonePercentage then
+		deadZonePercentage = deadZonePercentage / 2;
+
+		local range = barMax - barMin;
+		local newMin = range * deadZonePercentage;
+		local newMax = range * (1 - deadZonePercentage);
+		local newRange = newMax - newMin;
+		local newValue = newMin + newRange * currentPercent;
+
+		currentPercent = newValue / range;
+	end
+
+	local swipeTextureName = circularBarSwipeTextureFormatString:format(textureKit);
+	self.Progress:SetSwipeTexture(swipeTextureName);
+
+	CooldownFrame_SetDisplayAsPercentage(self.Progress, 1 - currentPercent);
+end

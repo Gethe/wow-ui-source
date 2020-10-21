@@ -1708,3 +1708,21 @@ function ContainerFrameUtil_IteratePlayerInventory(callback)
 		end
 	end
 end
+
+function ContainerFrameUtil_GetItemButtonAndContainer(bag, slot)
+	local containerFrame = _G["ContainerFrame"..(bag + 1)];
+	return _G[containerFrame:GetName().."Item"..slot], containerFrame;
+end
+
+function ContainerFrameUtil_FindFirstItemButtonAndItemLocation(predicate)
+	for bag = 0, NUM_BAG_FRAMES do
+		for slot = MAX_CONTAINER_ITEMS, 1, -1 do
+			local itemButton, containerFrame = ContainerFrameUtil_GetItemButtonAndContainer(bag, slot);
+			local itemLocation = ItemLocation:CreateFromBagAndSlot(containerFrame:GetID(), itemButton:GetID());
+			if itemLocation:IsValid() and predicate(itemLocation) then
+				return itemButton, itemLocation;
+			end
+		end
+	end
+	return nil;
+end

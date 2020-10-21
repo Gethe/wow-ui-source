@@ -413,6 +413,7 @@ function ChallengeModeLegacyWeeklyChestMixin:Update(bestMapID)
 
 		self.RunStatus:SetPoint("TOP", 0, 87);
 		self.RunStatus:SetText(MYTHIC_PLUS_CLAIM_REWARD_MESSAGE);
+		self:GetParent():GetParent():HideAffixes();
 	elseif self.level > 0 then
 		chestState = CHEST_STATE_COMPLETE;
 

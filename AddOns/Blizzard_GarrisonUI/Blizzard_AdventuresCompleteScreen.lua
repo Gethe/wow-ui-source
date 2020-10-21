@@ -6,18 +6,8 @@ local FastSpeed = 2 * SlowSpeed;
 AdventuresCompleteScreenContinueButtonMixin = {};
 
 function AdventuresCompleteScreenContinueButtonMixin:OnClick()
-	local completeScreen = self:GetParent():GetParent();
-	if completeScreen.replayFinished then 
-		if completeScreen:ShouldShowRewardsScreen() then
-			completeScreen:ShowRewardsScreen();
-		else
-			completeScreen:CloseMissionComplete();
-		end
-	else
-		completeScreen:SkipToTheEndOfMission();
-	end
+	self:GetParent():GetParent():AdvanceStage();
 end
-
 
 AdventuresCompleteScreenSpeedButtonMixin = {};
 
@@ -143,6 +133,10 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 	self.RewardsScreen:Reset();
 	self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_SKIP_TO_END);
 	self.replayFinished = false;
+
+	local shouldShowCompleteFrame = not mission.isTutorialMission; -- Tutorial Missions can't be skipped or fast forwarded through.
+	self:SetCompleteFrameState(shouldShowCompleteFrame);
+
 	self:EnableCompleteFrameButtons();
 end
 
@@ -423,6 +417,7 @@ function AdventuresCompleteScreenMixin:FinishReplay()
 	self:SetScript("OnUpdate", nil);
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
 	self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
+	C_Timer.After(2.5, function() if self.RewardsScreen.CombatCompleteSuccessFrame:IsShown() then self:ShowRewardsScreen(); end end);
 	self.replayFinished = true;
 	self:UpdateButtonTextToState();
 end
@@ -435,12 +430,16 @@ function AdventuresCompleteScreenMixin:SkipToTheEndOfMission()
 	--Previous eventIndex already printed
 	for eventIndex = self.replayEventIndex + 1, #currentRound.events do
 		self.AdventuresCombatLog:AddCombatEvent(currentRound.events[eventIndex]);
+		self.Board:AddCombatEventText(currentRound.events[eventIndex]);
 	end
 
 	--dump the rest
 	for roundIndex = self.replayRoundIndex + 1, self:GetNumReplayRounds() do 
 		local round = self:GetReplayRound(roundIndex);
 		self.AdventuresCombatLog:AddCombatRound(roundIndex, round, self:GetNumReplayRounds());
+		for eventIndex = 1, #round.events do 
+			self.Board:AddCombatEventText(round.events[eventIndex]);
+		end	
 	end
 
 	self:FinishReplay();
@@ -471,10 +470,35 @@ function AdventuresCompleteScreenMixin:DisableCompleteFrameButtons()
 	completeFrame.SpeedButton:Disable();
 end
 
+function AdventuresCompleteScreenMixin:SetCompleteFrameState(shouldShow)
+	local completeFrame = self.CompleteFrame;
+	completeFrame:SetShown(shouldShow);
+end 
 
 function AdventuresCompleteScreenMixin:EnableCompleteFrameButtons()
 	local completeFrame = self.CompleteFrame;
 
 	completeFrame.ContinueButton:Enable();
 	completeFrame.SpeedButton:Enable();
+end
+
+function AdventuresCompleteScreenMixin:AdvanceStage()
+	if self.replayFinished then 
+		if self:ShouldShowRewardsScreen() then
+			self:ShowRewardsScreen();
+		else
+			self:CloseMissionComplete();
+		end
+	else
+		self:SkipToTheEndOfMission();
+	end
+end
+
+function AdventuresCompleteScreenMixin:OnSkipKeyPressed(key)
+	if ( key == "SPACE" ) then
+		-- Tutorial mission playback can't be skipped
+		if (self.currentMission and not self.currentMission.isTutorialMission) then 
+			self:AdvanceStage(); 
+		end
+	end
 end

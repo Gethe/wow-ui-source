@@ -861,6 +861,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitAreaChanged",
+			Type = "Event",
+			LiteralName = "UNIT_AREA_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitAttack",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK",

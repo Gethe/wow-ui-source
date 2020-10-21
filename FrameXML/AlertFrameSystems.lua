@@ -1177,5 +1177,7 @@ function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	-- No left-click behavior.
+	if self:OnSelected() then
+		return;
+	end
 end

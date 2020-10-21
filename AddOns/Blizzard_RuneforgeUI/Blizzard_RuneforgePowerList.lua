@@ -8,10 +8,9 @@ function RuneforgePowerButtonMixin:OnPowerSet(oldPowerID, powerID)
 		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
 
 		local isAvailable = self.powerInfo.state == Enum.RuneforgePowerState.Available;
-		local isActive = isAvailable and self:IsEnabled();
+		local isActive = isAvailable and self:IsSelectionActive();
 		self.Icon:SetDesaturated(not isAvailable);
 		self.Icon:SetAlpha(isActive and 1.0 or 0.5);
-		self:SetEnabled(isActive);
 	end
 end
 
@@ -20,6 +19,14 @@ function RuneforgePowerButtonMixin:OnEnter()
 	if powerInfo ~= nil then
 		RuneforgePowerBaseMixin.OnEnter(self);
 	end
+end
+
+function RuneforgePowerButtonMixin:SetSelectionActive(selectionActive)
+	self.selectionActive = selectionActive;
+end
+
+function RuneforgePowerButtonMixin:IsSelectionActive()
+	return self.selectionActive;
 end
 
 
@@ -50,6 +57,10 @@ function RuneforgePowerSlotMixin:OnClick(buttonName)
 	else
 		self:GetRuneforgeFrame():TogglePowerList();
 	end
+end
+
+function RuneforgePowerSlotMixin:IsSelectionActive()
+	return self:IsEnabled();
 end
 
 function RuneforgePowerSlotMixin:Reset()
@@ -136,17 +147,23 @@ function RuneforgePowerMixin:UpdateDisplay()
 	local powerIndex = self:GetListIndex();
 
 	local powerList = self:GetPowerList();
-	self:SetEnabled(powerList:GetRuneforgeFrame():HasItem());
+	self:SetSelectionActive(powerList:GetRuneforgeFrame():HasItem());
 
 	local powerID, isSelected = powerList:GetPower(powerIndex);
 	self:SetPowerID(powerID);
 	self.SelectedTexture:SetShown(isSelected);
 
-	self:SetAlpha(self:IsEnabled() and 1.0 or 0.5);
+	self:SetAlpha(self:IsSelectionActive() and 1.0 or 0.5);
 end
 
 function RuneforgePowerMixin:ShouldHideSource()
 	return self:GetPowerInfo().state == Enum.RuneforgePowerState.Available;
+end
+
+function RuneforgePowerMixin:OnSelected()
+	if not RuneforgePowerButtonMixin.OnSelected(self) and self.selectionActive then
+		self:GetPowerList():OnPowerSelected(self:GetListIndex());
+	end
 end
 
 
@@ -156,7 +173,6 @@ function RuneforgePowerListMixin:OnLoad()
 	PagedListMixin.OnLoad(self);
 	
 	self:SetGetNumResultsFunction(GenerateClosure(self.GetNumPowers, self));
-	self:SetSelectionCallback(GenerateClosure(self.OnPowerSelected, self));
 	self:SetElementTemplate("RuneforgePowerTemplate", self);
 
 	local stride = 4;

@@ -271,9 +271,6 @@ end
 NPE_TutorialWalkMixin = CreateFromMixins(NPE_TutorialMainFrameMixin);
 function NPE_TutorialWalkMixin:OnLoad()
 	NPE_TutorialMainFrameMixin.OnLoad(self);
-
-	self:SetKeybindings();
-	self:MarkDirty();
 end
 
 function NPE_TutorialWalkMixin:SetKeybindings()
@@ -294,8 +291,10 @@ function NPE_TutorialWalkMixin:SetKeybindings()
 				bindingText = NPEV2_LEFT_ARROW;
 			elseif key == "RIGHT" then
 				bindingText = NPEV2_RIGHT_ARROW;
-			else
+			elseif key ~= "" then
 				bindingText = GetBindingText(key, 1);
+			else
+				fontString:SetText("");
 			end
 
 			if (bindingText and (bindingText ~= "")) then
@@ -306,6 +305,8 @@ function NPE_TutorialWalkMixin:SetKeybindings()
 end
 
 function NPE_TutorialWalkMixin:_SetContent(content)
+	self:SetKeybindings();
+	self:MarkDirty();
 	self.ContainerFrame:MarkDirty();
 	self:_AnimateIn();
 end

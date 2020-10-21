@@ -298,14 +298,6 @@ function CharacterSelect_OnShow(self)
         GlueDialog_Hide();
         C_Login.DisconnectFromServer();
     end
-
-    if (not HasCheckedSystemRequirements()) then
-        CheckSystemRequirements();
-        SetCheckedSystemRequirements(true);
-    end
-
-	local includeSeenWarnings = true;
-	CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
 end
 
 function CharacterSelect_OnHide(self)
@@ -535,7 +527,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 
 		self.waitingforCharacterList = false;
         UpdateCharacterList();
-        UpdateAddonButton(true);
+        UpdateAddonButton();
         CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
         KioskMode_CheckAutoRealm();
         KioskMode_CheckEnterWorld();
@@ -761,9 +753,24 @@ function UpdateCharacterSelection(self)
     end
 end
 
+function CharacterSelect_CheckDialogStates()
+	if not TryShowAddonDialog() then
+		if not HasCheckedSystemRequirements() then
+			CheckSystemRequirements();
+			SetCheckedSystemRequirements(true);
+		end
+
+		local includeSeenWarnings = true;
+		CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
+	end
+end
+
 function UpdateCharacterList(skipSelect)
 	if CharacterSelect.waitingforCharacterList then
 		for _, button in pairs(CharacterSelectCharacterFrame.CharacterButtons) do
+			button:Hide();
+		end
+		for _, button in pairs(CharacterSelectCharacterFrame.PaidServiceButtons) do
 			button:Hide();
 		end
 		CharSelectCreateCharacterButton:Hide();
@@ -776,6 +783,8 @@ function UpdateCharacterList(skipSelect)
 
 	if ShouldShowLevelSquishDialog() then
 		GlueAnnouncementDialog:Display(CHAR_LEVELS_SQUISHED_TITLE, CHAR_LEVELS_SQUISHED_DESCRIPTION, "seenLevelSquishPopup");
+	else
+		CharacterSelect_CheckDialogStates();
 	end
 
     local numChars = GetNumCharacters();

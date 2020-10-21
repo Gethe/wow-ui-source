@@ -63,12 +63,32 @@ local function GetEffectID(index)
 	return effectList and effectList[index];
 end
 
-local uniqueUpgradeGlobalStrings = {
-	["Venthyr"] = COVENANT_SANCTUM_UNIQUE_VENTHYR,
-	["Kyrian"] = COVENANT_SANCTUM_UNIQUE_KYRIAN,
-	["NightFae"] = COVENANT_SANCTUM_UNIQUE_NIGHTFAE,
-	["Necrolord"] = COVENANT_SANCTUM_UNIQUE_NECROLORD,
-}
+ covenantSanctumFeatureDescription = {
+	[Enum.GarrTalentFeatureType.AnimaDiversion] = {
+		["Venthyr"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_VENTHYR,
+		["Kyrian"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_KYRIAN,
+		["NightFae"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_NIGHTFAE,
+		["Necrolord"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_NECROLORD,
+	},
+	[Enum.GarrTalentFeatureType.TravelPortals] = {
+		["Venthyr"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_VENTHYR,
+		["Kyrian"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_KYRIAN,
+		["NightFae"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_NIGHTFAE,
+		["Necrolord"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_NECROLORD,
+	},
+	[Enum.GarrTalentFeatureType.Adventures] = {
+		["Venthyr"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_VENTHYR,
+		["Kyrian"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_KYRIAN,
+		["NightFae"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_NIGHTFAE,
+		["Necrolord"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_NECROLORD,
+	},
+	[Enum.GarrTalentFeatureType.SanctumUnique] = {
+		["Venthyr"] = COVENANT_SANCTUM_UNIQUE_VENTHYR,
+		["Kyrian"] = COVENANT_SANCTUM_UNIQUE_KYRIAN,
+		["NightFae"] = COVENANT_SANCTUM_UNIQUE_NIGHTFAE,
+		["Necrolord"] = COVENANT_SANCTUM_UNIQUE_NECROLORD,
+	},
+};
 
 CovenantSanctumUpgradesTabMixin = {};
 
@@ -280,14 +300,19 @@ function CovenantSanctumUpgradesTabMixin:SetUpUpgrades()
 	for i, featureInfo in ipairs(features) do
 		if featureInfo.featureType == Enum.GarrTalentFeatureType.ReservoirUpgrades then
 			self.ReservoirUpgrade.treeID = featureInfo.garrTalentTreeID;
+			self.ReservoirUpgrade.featureType = featureInfo.featureType;
 		elseif featureInfo.featureType == Enum.GarrTalentFeatureType.AnimaDiversion then
 			self.DiversionUpgrade.treeID = featureInfo.garrTalentTreeID;
+			self.DiversionUpgrade.featureType = featureInfo.featureType;
 		elseif featureInfo.featureType == Enum.GarrTalentFeatureType.TravelPortals then
 			self.TravelUpgrade.treeID = featureInfo.garrTalentTreeID;
+			self.TravelUpgrade.featureType = featureInfo.featureType;
 		elseif featureInfo.featureType == Enum.GarrTalentFeatureType.Adventures then
 			self.AdventureUpgrade.treeID = featureInfo.garrTalentTreeID;
+			self.AdventureUpgrade.featureType = featureInfo.featureType;
 		elseif featureInfo.featureType == Enum.GarrTalentFeatureType.SanctumUnique then
 			self.UniqueUpgrade.treeID = featureInfo.garrTalentTreeID;
+			self.UniqueUpgrade.featureType = featureInfo.featureType;
 		end
 	end
 end
@@ -665,11 +690,10 @@ function CovenantSanctumUpgradeBaseMixin:GetTier()
 end
 
 function CovenantSanctumUpgradeBaseMixin:GetDescriptionText()
-	if self.description then
-		return self.description;
-	else
-		return uniqueUpgradeGlobalStrings[g_sanctumTextureKit];
+	if self.featureType and covenantSanctumFeatureDescription[self.featureType] and covenantSanctumFeatureDescription[self.featureType][g_sanctumTextureKit] then
+		return covenantSanctumFeatureDescription[self.featureType][g_sanctumTextureKit];
 	end
+	return "";
 end
 
 function CovenantSanctumUpgradeBaseMixin:OnMouseDown()

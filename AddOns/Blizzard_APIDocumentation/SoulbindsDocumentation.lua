@@ -55,6 +55,15 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "CanSwitchActiveSoulbindTreeBranch",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseUI",
 			Type = "Function",
 		},
@@ -169,6 +178,15 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetConduitCollectionCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConduitCollectionData",
 			Type = "Function",
 
@@ -185,6 +203,20 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollectionDataAtCursor",
 			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "collectionData", Type = "ConduitCollectionData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetConduitCollectionDataByVirtualID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "virtualID", Type = "number", Nilable = false },
+			},
 
 			Returns =
 			{

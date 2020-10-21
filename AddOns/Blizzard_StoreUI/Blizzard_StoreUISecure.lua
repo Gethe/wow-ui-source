@@ -1385,6 +1385,9 @@ local vasErrorData = {
 			if (character.level >= 50) then
 				-- level 50+: one million gold
 				str = GetSecureMoneyString(1000000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level >= 40) then
+				-- level 10-49: two hundred fifty thousand gold
+				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			elseif (character.level >= 10) then
 				-- level 10-49: ten thousand gold
 				str = GetSecureMoneyString(10000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);

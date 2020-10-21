@@ -212,6 +212,10 @@ function UIWidgetContainerMixin:UnregisterForWidgetSet()
 	end
 
 	if self.attachedToUnit then
+		if UIWidgetManager.processingUnit == self.attachedToUnit then
+			UIWidgetManager.processingUnit = nil;
+		end
+
 		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedToUnit);
 		self.attachedToUnit = nil;
 	end

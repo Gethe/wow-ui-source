@@ -10,8 +10,8 @@ local TORGHAST_LEVEL_PICKER_EVENTS = {
 	"PARTY_LEADER_CHANGED",
 	"GOSSIP_OPTIONS_REFRESHED",
 	"GROUP_ROSTER_UPDATE",
-	"PARTY_MEMBER_ENABLE",
-	"PARTY_MEMBER_DISABLE",
+	"UNIT_AREA_CHANGED",
+	"UNIT_PHASE", 
 	"GROUP_FORMED",
 };
 
@@ -27,7 +27,7 @@ function TorghastLevelPickerFrameMixin:OnEvent(event, ...)
 		C_GossipInfo.RefreshOptions(); 
 		local inParty = UnitInParty("player"); 
 		self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
-	elseif(event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE") then 
+	elseif(event == "UNIT_AREA_CHANGED" or event == "UNIT_PHASE") then 
 		C_GossipInfo.RefreshOptions(); 
 	elseif (event == "GOSSIP_OPTIONS_REFRESHED") then 
 		self:SetupOptions();

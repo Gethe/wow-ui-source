@@ -273,6 +273,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemConduit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isConduit", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemCorrupted",
 			Type = "Function",
 

@@ -2,25 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CovenantSanctum.lua"/>
 	
-	<Button name="CovenantSanctumFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" frameStrata="LOW" virtual="true">
-		<Scripts>
-			<OnEnter>
-				if self.tooltipText then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -16, -10);
-					GameTooltip_SetTitle(GameTooltip, self.tooltipText, NORMAL_FONT_COLOR);
-				end
-			</OnEnter>
-			<OnClick>
-				PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_TAB_CLICK, nil, SOUNDKIT_ALLOW_DUPLICATES);
-				self:GetParent():SetTab(self:GetID());
-			</OnClick>
-		</Scripts>
-	</Button>
-	
 	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true" toplevel="true">
-		<KeyValues>
-			<KeyValue key="maxTabWidth" value="220" type="number"/>
-		</KeyValues>
 		<Size x="980" y="637"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -34,16 +16,6 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
-			<Button parentKey="UpgradesTabButton" name="$parentTab1" inherits="CovenantSanctumFrameTabButtonTemplate" id="1" text="COVENANT_SANCTUM_TAB_UPGRADES">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="23" y="9" />
-				</Anchors>
-			</Button>
-			<Button parentKey="RenownTabButton" name="$parentTab2" inherits="CovenantSanctumFrameTabButtonTemplate" id="2" text="COVENANT_SANCTUM_TAB_RENOWN">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
-				</Anchors>
-			</Button>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-3" y="-3"/>

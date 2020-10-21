@@ -114,7 +114,7 @@
 					<Button parentKey="ContinueButton" mixin="AdventuresCompleteScreenContinueButtonMixin" inherits="UIPanelButtonTemplate" text="CONTINUE">
 						<Size x="160" y="22"/>
 						<Anchors>
-							<Anchor point="CENTER" x="0" y="1"/>
+							<Anchor point="CENTER" x="18" y="1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick method="OnClick"/>
@@ -176,6 +176,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnKeyDown method="OnSkipKeyPressed"/>
 		</Scripts>
 	</Frame>
 </Ui>

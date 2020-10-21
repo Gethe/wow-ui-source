@@ -297,7 +297,6 @@ function TalkingHeadFrame_IdleAnim(self)
 	if (self.animLoop and self.shouldLoop) then
 		self:SetAnimation(self.animLoop, 0);
 	else
-		self:SetAnimation(0, 0);
 		self:SetScript("OnAnimFinished", nil);
 		self.lineAnimDone = true;
 	end

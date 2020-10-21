@@ -55,6 +55,20 @@ function RuneforgePowerBaseMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
+function RuneforgePowerBaseMixin:OnSelected()
+	if IsModifiedClick("CHATLINK") then
+		local powerInfo = self:GetPowerInfo();
+		if powerInfo == nil then
+			return false;
+		end
+
+		ChatEdit_InsertLink(GetSpellLink(powerInfo.descriptionSpellID));
+		return true;
+	end
+
+	return false;
+end
+
 function RuneforgePowerBaseMixin:SetPowerID(powerID)
 	local oldPowerID = self.powerID;
 

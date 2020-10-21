@@ -93,7 +93,7 @@
 				<Texture parentKey="IconOverlay" hidden="true">
 					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

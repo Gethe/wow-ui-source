@@ -106,15 +106,6 @@ local CovenantSanctumEvents = {
 function CovenantSanctumMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CovenantSanctumEvents);
 
-	if C_CovenantSanctumUI.CanAccessReservoir() then
-		PanelTemplates_EnableTab(self, TAB_UPGRADES);
-		self.UpgradesTabButton.tooltipText = nil;
-		self:SetTab(TAB_UPGRADES);
-	else
-		PanelTemplates_DisableTab(self, TAB_UPGRADES);
-		self.UpgradesTabButton.tooltipText = COVENANT_SANCTUM_RESERVOIR_INACTIVE;
-		self:SetTab(TAB_RENOWN);
-	end
 	self:RefreshLevel();
 
 	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
@@ -143,15 +134,6 @@ function CovenantSanctumMixin:RefreshLevel()
 	self.LevelFrame.Level:SetFormattedText(COVENANT_SANCTUM_LEVEL, C_CovenantSanctumUI.GetRenownLevel());
 end
 
-function CovenantSanctumMixin:SetTab(tabID)
-	PanelTemplates_SetTab(self, tabID);
-
-	self.UpgradesTab:SetShown(tabID == TAB_UPGRADES);
-	self.RenownTab:SetShown(tabID == TAB_RENOWN);
-
-	self:CheckTutorial();
-end
-
 function CovenantSanctumMixin:SetCovenantInfo()
 	local treeID = C_CovenantSanctumUI.GetCurrentTalentTreeID();
 	if treeID ~= self.treeID then
@@ -175,15 +157,6 @@ end
 
 function CovenantSanctumMixin:GetTextureKit()
 	return self.textureKit;
-end
-
-function CovenantSanctumMixin:GetTabFrame(tabIndex)
-	if tabIndex == TAB_UPGRADES then
-		return self.UpgradesTab;
-	elseif tabIndex == TAB_RENOWN then
-		return self.RenownTab;
-	end
-	return nil;
 end
 
 function CovenantSanctumMixin:HasAnySoulCurrencies()
@@ -213,6 +186,15 @@ function CovenantSanctumMixin:AcknowledgeTutorial(index)
 	if HelpTip:IsShowing(frame, tutorial.text) then
 		self:OnAcknowledgeTutorial();
 	end
+end
+
+function CovenantSanctumMixin:GetTabFrame(tabIndex)
+	if tabIndex == TAB_UPGRADES then
+		return self.UpgradesTab;
+	elseif tabIndex == TAB_RENOWN then
+		return CovenantRenownFrame;
+	end
+	return nil;
 end
 
 function CovenantSanctumMixin:OnAcknowledgeTutorial()

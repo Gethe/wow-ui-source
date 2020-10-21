@@ -105,6 +105,7 @@ ObjectAPI\CovenantCalling.lua
 
 ## add new modules below here
 ..\SharedXML\Backdrop.xml
+ChatBubbleTemplates.xml
 WorldFrame.xml
 UIParent.xml
 ..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua

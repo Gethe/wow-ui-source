@@ -72,7 +72,7 @@ function ConduitChargesTrayMixin:OnHide()
 end
 
 function ConduitChargesTrayMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -4);
 	GameTooltip_SetTitle(GameTooltip, CONDUIT_CHARGE_HEADER);
 	GameTooltip_AddNormalLine(GameTooltip, CONDUIT_CHARGE_DESCRIPTION);
 
@@ -238,7 +238,7 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 		self.ConduitName:SetText(item:GetItemName());
 		self.ConduitName:SetHeight(self.ConduitName:GetStringHeight());
 		
-		local yOffset = self.ConduitName:GetNumLines() > 1 and -7 or 0;
+		local yOffset = self.ConduitName:GetNumLines() > 1 and -6 or 0;
 		self.ConduitName:ClearAllPoints();
 		self.ConduitName:SetPoint("BOTTOMLEFT", self.Icon, "RIGHT", 10, yOffset);
 		self.ConduitName:SetWidth(150);
@@ -251,6 +251,7 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	local icon = item:GetItemIcon();
 	self.Icon:SetTexture(icon);
 	self.Icon2:SetTexture(icon);
+	self.IconPulse:SetTexture(icon);
 
 	local conduitQuality = C_Soulbinds.GetConduitQuality(conduitData.conduitID, conduitData.conduitRank);
 	local color = ITEM_QUALITY_COLORS[conduitQuality];
@@ -445,7 +446,8 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 	end
 
 	local conduitType = self.conduitData.conduitType;
-	Soulbinds.SetPreviewConduitType(conduitType);
+	local conduitID = self.conduitData.conduitID;
+	Soulbinds.SetPreviewConduit(conduitType, conduitID);
 	SoulbindViewer:OnCollectionConduitEnter(conduitType, self.conduit:GetConduitID());
 end
 
@@ -461,8 +463,13 @@ function ConduitListConduitButtonMixin:OnLeave(collectionData)
 		element:Hide();
 	end
 	
-	Soulbinds.SetPreviewConduitType(nil);
+	Soulbinds.ClearPreviewConduit();
 	SoulbindViewer:OnCollectionConduitLeave();
+end
+
+function ConduitListConduitButtonMixin:SetConduitPulsePlaying(playing)
+	self.IconOverlayPulse.Anim:SetPlaying(playing);
+	self.IconPulse.Anim:SetPlaying(playing);
 end
 
 ConduitListSectionMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -489,6 +496,12 @@ end
 function ConduitListSectionMixin:Update()
 	for conduitButton in self.pool:EnumerateActive() do
 		conduitButton:Update();
+	end
+end
+
+function ConduitListSectionMixin:SetConduitPulsePlaying(playing)
+	for conduitButton in self.pool:EnumerateActive() do
+		conduitButton:SetConduitPulsePlaying(playing);
 	end
 end
 
@@ -606,6 +619,20 @@ function ConduitListMixin:SetConduitPreview(preview)
 	self.preview = preview;
 end
 
+function ConduitListMixin:SetConduitListConduitsPulsePlaying(conduitType, playing)
+	local section = self:FindListSection(conduitType);
+	if section then
+		section:SetConduitPulsePlaying(playing);
+	end
+end
+
+function ConduitListMixin:FindListSection(conduitType)
+	local _, section = FindInTableIf(self:GetLists(), function(section)
+		return section.conduitType == conduitType;
+	end);
+	return section;
+end
+
 function ConduitListMixin:Init()
 	local anyShown = false;
 	local parsed = 0;
@@ -666,6 +693,11 @@ function ConduitListMixin:Init()
 				self.ScrollBox.ScrollTarget:Layout();
 				self.ScrollBox.BottomShadowContainer.BottomShadow:SetShown(anyShown);
 				self.preview:SetShown(not anyShown);
+				
+				if anyShown then
+					self.Charges:Init();
+				end
+				self.Charges:SetShown(anyShown);
 
 				local scrollValue = 0;
 				local elementExtent = 41;
@@ -673,8 +705,6 @@ function ConduitListMixin:Init()
 			end
 		end);
 	end
-
-	self.Charges:Init();
 end
 
 function ConduitListMixin:Update()

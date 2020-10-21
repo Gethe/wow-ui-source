@@ -216,11 +216,11 @@ function HelpTip:ForceHideAll()
 	self:SetHelpTipsEnabled("ForceHideAll", true);
 end
 
-function HelpTip:HideAllSystem(system)
+function HelpTip:HideAllSystem(system, text)
 	local framesToClose = { };
 
 	for frame in self.framePool:EnumerateActive() do
-		if frame.info.system == system then
+		if frame:MatchesSystem(system, text) then
 			tinsert(framesToClose, frame);
 		end
 	end
@@ -285,6 +285,14 @@ function HelpTip:Acknowledge(parent, text)
 		if frame:Matches(parent, text) then
 			frame:Acknowledge();
 			break;
+		end
+	end
+end
+
+function HelpTip:AcknowledgeSystem(system, text)
+	for frame in self.framePool:EnumerateActive() do
+		if frame:MatchesSystem(system, text) then
+			frame:Acknowledge();
 		end
 	end
 end
@@ -572,4 +580,12 @@ function HelpTipTemplateMixin:Matches(parent, text)
 	end
 	local textMatched = not text or self.info.text == text;
 	return textMatched and self:GetParent() == parent;
+end
+
+function HelpTipTemplateMixin:MatchesSystem(system, text)
+	if self.closed then
+		return false;
+	end
+	local textMatched = not text or self.info.text == text;
+	return textMatched and self.info.system == system;
 end

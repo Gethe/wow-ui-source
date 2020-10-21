@@ -18,12 +18,19 @@ function Soulbinds.HasConduitAtCursor()
 end
 
 local previewConduitType = nil;
-function Soulbinds.SetPreviewConduitType(conduitType)
+local previewConduitID = nil;
+function Soulbinds.SetPreviewConduit(conduitType, conduitID)
 	previewConduitType = conduitType;
+	previewConduitID = conduitID;
 end
 
-function Soulbinds.GetPreviewConduitType()
-	return previewConduitType;
+function Soulbinds.ClearPreviewConduit()
+	previewConduitType = nil;
+	previewConduitID = nil;
+end
+
+function Soulbinds.GetPreviewConduit()
+	return previewConduitType, previewConduitID;
 end
 
 function Soulbinds.GetOpenSoulbindID()

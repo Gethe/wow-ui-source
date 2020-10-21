@@ -20,31 +20,4 @@
 			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
-
-	<!-- Just a test -->
-	<Frame name="ChatBubbleTemplate" inherits="BackdropTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_CHAT_BUBBLE_16_16" type="global"/>
-			<KeyValue key="inset" value="16" type="number"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Tail" file="Interface/Tooltips/ChatBubble-Tail">
-					<Size x="16" y="16"/>
-				</Texture>
-
-				<FontString parentKey="String" inherits="ChatBubbleFont"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				BackdropTemplateMixin.OnBackdropLoaded(self);
-				self.String:SetNonSpaceWrap(true);
-				self:ClearAllPoints();
-				self.String:ClearAllPoints();
-				self:SetPoint("TOPLEFT", self.String, "TOPLEFT", -self.inset, self.inset);
-				self:SetPoint("BOTTOMRIGHT", self.String, "BOTTOMRIGHT", self.inset, -self.inset);
-			</OnLoad>
-		</Scripts>
-	</Frame>
 </Ui>

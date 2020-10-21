@@ -50,6 +50,115 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="ForgeSheen" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Translation childKey="Sheen" order="1" offsetX="-1022" offsetY="0"/>
+							<Translation childKey="Sheen" order="1" offsetX="1941" offsetY="0" duration="5.9" />
+							<Translation childKey="Sheen" order="1" offsetX="-1022" offsetY="0" startDelay="5.9" duration="0.1"/>
+							<Alpha childKey="Sheen" order="1" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
+							<Alpha childKey="Sheen" order="1" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+
+				<Texture parentKey="BackgroundSheen1" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Translation childKey="Sheen2" order="1" offsetX="-1022" offsetY="0"/>
+							<Translation childKey="Sheen2" order="1" offsetX="1941" offsetY="0" duration="5.9" />
+							<Translation childKey="Sheen2" order="1" offsetX="-1022" offsetY="0" startDelay="5.9" duration="0.1"/>
+							<Alpha childKey="Sheen2" order="1" fromAlpha="0" toAlpha="0.01" startDelay="0" duration="0.1"/>
+							<Alpha childKey="Sheen2" order="1" fromAlpha="0.01" toAlpha="0" startDelay="1.8" duration="0.4"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<Texture parentKey="BackgroundSheen2" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Translation childKey="Sheen3" order="1" offsetX="941" offsetY="0"/>
+							<Translation childKey="Sheen3" order="1" offsetX="-2140" offsetY="0" startDelay="0" duration="40.9" />
+							<Translation childKey="Sheen3" order="1" offsetX="941" offsetY="0" startDelay="40.9" duration="0.1"/>
+							<Alpha childKey="Sheen3" order="1" fromAlpha="0" toAlpha=".03" startDelay="0" duration="0.1"/>
+							<Alpha childKey="Sheen3" order="1" fromAlpha="0.3" toAlpha="0" startDelay="40.8" duration="0.1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<Texture parentKey="RotationSheen" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="false" alpha="0.05" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="2219" y="1120"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Rotation childKey="RotationSheen" order="1" duration="25" degrees="360" />
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<Texture parentKey="ChargeSheen" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Translation childKey="ChargeSheen" order="1" offsetX="-1022" offsetY="0"/>
+							<Translation childKey="ChargeSheen" order="1" offsetX="1941" offsetY="0" duration="5.9" />
+							<Translation childKey="ChargeSheen" order="1" offsetX="-1022" offsetY="0" startDelay="5.9" duration="0.1"/>
+							<Alpha childKey="ChargeSheen" order="1" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
+							<Alpha childKey="ChargeSheen" order="1" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				
+				<MaskTexture parentKey="ForgeMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_forge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ForgeSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="BackgroundMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="BackgroundSheen1"/>
+						<MaskedTexture childKey="RotationSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="FullMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_full">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="BackgroundSheen2"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="ChargeMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_charge">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" y="10"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ChargeSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+				
 				<Texture parentKey="ShadowTop" atlas="_Soulbinds_ShadowHorizontal" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-20"/>

@@ -8,6 +8,7 @@
 			<KeyValue key="fixedWidth" value="212" type="number"/>
 		</KeyValues>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

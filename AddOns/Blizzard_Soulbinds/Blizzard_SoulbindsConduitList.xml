@@ -127,6 +127,35 @@
 				</Texture>
 			</Layer>
 
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="IconPulse" alphaMode="ADD">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" x="22"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconOverlayPulse" atlas="Soulbinds_Collection_Conduit_Border" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			
 			<Layer level="OVERLAY" textureSubLevel="3">
 				<Texture parentKey="IconOverlay2" atlas="Soulbinds_Collection_Conduit_Border" parentArray="Hovers" hidden="true" alphaMode="ADD" alpha=".3">
 					<Size x="32" y="32"/>
@@ -166,6 +195,7 @@
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon"/>
 						<MaskedTexture childKey="Icon2"/>
+						<MaskedTexture childKey="IconPulse"/>
 						<MaskedTexture childKey="IconDark"/>
 					</MaskedTextures>
 				</MaskTexture>
@@ -438,17 +468,17 @@
 						<Frames>
 							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
 								<KeyValues>
-									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Potency" type="global"/>
-								</KeyValues>
-							</Frame>
-							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
-								<KeyValues>
 									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Endurance" type="global"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
 								<KeyValues>
 									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Finesse" type="global"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
+								<KeyValues>
+									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Potency" type="global"/>
 								</KeyValues>
 							</Frame>
 						</Frames>

@@ -263,7 +263,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame parentKey="UpgradesTab" mixin="CovenantSanctumUpgradesTabMixin" parent="CovenantSanctumFrame" hidden="true" setAllPoints="true">
+	<Frame parentKey="UpgradesTab" mixin="CovenantSanctumUpgradesTabMixin" parent="CovenantSanctumFrame" setAllPoints="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background">
@@ -382,33 +382,21 @@
 			</Frame>
 
 			<Frame parentKey="TravelUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
-				<KeyValues>
-					<KeyValue key="description" value="COVENANT_SANCTUM_FEATURE_TRAVELNETWORK" type="global"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="147" y="-140"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="DiversionUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
-				<KeyValues>
-					<KeyValue key="description" value="COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR" type="global"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="374" y="-151"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="AdventureUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
-				<KeyValues>
-					<KeyValue key="description" value="COVENANT_SANCTUM_FEATURE_ADVENTURES" type="global"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="558" y="-250"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="UniqueUpgrade" parentArray="Upgrades" inherits="CovenantSanctumUpgradeTreeTemplate" frameLevel="100">
-				<KeyValues>
-					<KeyValue key="uniqueUpgrade" value="true" type="boolean"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPLEFT" x="512" y="-430"/>
 				</Anchors>

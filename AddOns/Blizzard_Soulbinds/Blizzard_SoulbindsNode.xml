@@ -196,7 +196,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="AvailableOverlay" parentArray="AttentionAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+				<Texture parentKey="UnsocketedWarning" parentArray="UnsocketedWarningTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
 					<Size x="56" y="57"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -208,7 +208,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="AvailableOverlay2" parentArray="AttentionAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+				<Texture parentKey="UnsocketedWarning2" parentArray="UnsocketedWarningTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
 					<Size x="56" y="57"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -349,6 +349,8 @@
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnReceiveDrag method="OnReceiveDrag"/>
 		</Scripts>
 	</Button>

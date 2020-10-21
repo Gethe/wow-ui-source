@@ -353,6 +353,15 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "HasAdventures",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAdventures", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAtGarrisonMissionNPC",
 			Type = "Function",
 
@@ -978,6 +987,7 @@ local GarrisonInfo =
 				{ Name = "schoolMask", Type = "number", Nilable = false },
 				{ Name = "previewMask", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "spellTutorialFlag", Type = "number", Nilable = false },
 			},
 		},
 		{

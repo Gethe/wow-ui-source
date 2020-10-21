@@ -70,18 +70,17 @@ local CovenantSanctum =
 			},
 		},
 		{
-			Name = "GetRenownMilestones",
+			Name = "GetRenownLevels",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "covenantID", Type = "number", Nilable = false },
-				{ Name = "renownLevel", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "milestones", Type = "table", InnerType = "CovenantSanctumRenownMilestoneInfo", Nilable = false },
+				{ Name = "levels", Type = "table", InnerType = "CovenantSanctumRenownLevelInfo", Nilable = false },
 			},
 		},
 		{
@@ -122,6 +121,16 @@ local CovenantSanctum =
 	Events =
 	{
 		{
+			Name = "CovenantRenownInteractionEnded",
+			Type = "Event",
+			LiteralName = "COVENANT_RENOWN_INTERACTION_ENDED",
+		},
+		{
+			Name = "CovenantRenownInteractionStarted",
+			Type = "Event",
+			LiteralName = "COVENANT_RENOWN_INTERACTION_STARTED",
+		},
+		{
 			Name = "CovenantSanctumInteractionEnded",
 			Type = "Event",
 			LiteralName = "COVENANT_SANCTUM_INTERACTION_ENDED",
@@ -156,12 +165,13 @@ local CovenantSanctum =
 			},
 		},
 		{
-			Name = "CovenantSanctumRenownMilestoneInfo",
+			Name = "CovenantSanctumRenownLevelInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "locked", Type = "bool", Nilable = false },
+				{ Name = "isMilestone", Type = "bool", Nilable = false },
 				{ Name = "isCapstone", Type = "bool", Nilable = false },
 			},
 		},
