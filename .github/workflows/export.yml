@@ -2,6 +2,11 @@ name: Extract interface files from CDN
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Release branch"
+        required: true
+        default: "live"
 
 jobs:
   build:
@@ -31,7 +36,7 @@ jobs:
       env:
         LUA_PATH: "./InterfaceExport/libs/?.lua;./InterfaceExport/libs/?/init.lua"
       run: |
-        lua InterfaceExport/export.lua classic code
+        lua InterfaceExport/export.lua classic ${{ github.event.inputs.branch }} code
 
     - name: Get build version
       id: version
