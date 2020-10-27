@@ -411,7 +411,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 			for talentIndex, talent in ipairs(treeInfo.talents) do
 				if talent.isBeingResearched or talent.id == completeTalentID then
 					local shipment = self.shipmentsPool:Acquire();
-					SetupShipment(shipment, talent.icon, true, talent.name, nil, nil, nil, talent.isBeingResearched and 0 or 1, 1, talent.researchStartTime, talent.researchDuration, SHIPMENT_TYPE_TALENT, shipmentIndex);
+					SetupShipment(shipment, talent.icon, true, talent.name, nil, nil, nil, talent.isBeingResearched and 0 or 1, 1, talent.startTime, talent.researchDuration, SHIPMENT_TYPE_TALENT, shipmentIndex);
 					shipment.talent = talent;
 					shipmentIndex = shipmentIndex + 1;
 				end
@@ -480,7 +480,7 @@ function GarrisonLandingPageReportShipment_OnEnter(self)
 
 		if talent.isBeingResearched then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.researchTimeRemaining), 1, 1, 1);
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.timeRemaining), 1, 1, 1);
 		end
 		GameTooltip:Show();
 	end
