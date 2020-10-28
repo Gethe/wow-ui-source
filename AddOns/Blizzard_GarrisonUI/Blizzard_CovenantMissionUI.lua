@@ -77,7 +77,7 @@ local function SetupBorder(self, styleData)
 
 	self.CloseButton:ClearAllPoints();
 	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", styleData.closeButtonX, styleData.closeButtonY);
-	self.CloseButton:SetFrameLevel(self.GarrCorners:GetFrameLevel() + 2);
+	self.CloseButton:SetFrameLevel(self.RaisedBorder:GetFrameLevel() + 2);
 
 	self.OverlayElements.CloseButtonBorder:SetAtlas(styleData.closeButtonBorder, true);
 	self.OverlayElements.CloseButtonBorder:SetParent(self.CloseButton);

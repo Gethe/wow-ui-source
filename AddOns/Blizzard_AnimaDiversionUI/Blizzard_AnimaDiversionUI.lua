@@ -52,7 +52,6 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
 		self.timeleft = C_DateAndTime.GetSecondsUntilDailyReset();
 	end,
 	OnHide = function(self, selectedNode)
-		AnimaDiversionFrame.SelectPinInfoFrame:ClearSelectedNode();
 		AnimaDiversionFrame:ClearExclusiveSelectionNode();
 	end,
 	hideOnEscape = 1,
@@ -84,7 +83,6 @@ function AnimaDiversionFrameMixin:OnLoad()
 	self:SetShouldPanOnClick(false);
 	self:AddStandardDataProviders();
 	self.bolsterProgressGemPool = CreateFramePool("FRAME", self.ReinforceProgressFrame, "AnimaDiversionBolsterProgressGemTemplate");
-	self.SelectPinInfoFrame.currencyPool = CreateFramePool("FRAME", self.SelectPinInfoFrame, "AnimaDiversionCurrencyCostFrameTemplate");
 
 	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-Oribos-ExitButtonBorder", -1, 1);
 end 
@@ -108,7 +106,6 @@ end
 function AnimaDiversionFrameMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
-	self.SelectPinInfoFrame:Hide();
 	self.ReinforceInfoFrame:Hide();
 	self:StopGemsFullSound();
 	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLOSE, nil, SOUNDKIT_ALLOW_DUPLICATES);
@@ -120,7 +117,6 @@ function AnimaDiversionFrameMixin:OnEvent(event, ...)
 	elseif (event == "CURRENCY_DISPLAY_UPDATE") then 
 		self:SetupBolsterProgressBar();
 		self:SetupCurrencyFrame(); 
-		self.SelectPinInfoFrame:CurrencyUpdate();
 	elseif(event == "ANIMA_DIVERSION_TALENT_UPDATED") then 
 		self:SetupBolsterProgressBar();
 	end 
@@ -336,125 +332,6 @@ function AnimaDiversionFrameMixin:SetupCurrencyFrame()
 		self.AnimaDiversionCurrencyFrame.CurrencyFrame.Quantity:SetText(ANIMA_DIVERSION_CURRENCY_DISPLAY:format(currencyInfo.quantity, currencyInfo.iconFileID));
 	end 
 end 
-
-
-AnimaDiversionSelectionInfoMixin = { }; 
-
-function AnimaDiversionSelectionInfoMixin:IsSelectionInfoShowingForNode(node)
-	if (not self:IsShown() or not self.currentlySelectedNode) then 
-		return false;
-	end 
-
-	if(self.currentlySelectedNode == node) then 
-		return true; 
-	end 
-	return false; 
-end
-
-function AnimaDiversionSelectionInfoMixin:CurrencyUpdate()
-	if( not self:IsShown()) then 
-		return;
-	end 
-
-	if(self.currentlySelectedNode) then 
-		self:SetupAndShow(self.currentlySelectedNode);
-	end		
-end 
-
-function AnimaDiversionSelectionInfoMixin:ClearSelectedNode()
-	if self.currentlySelectedNode then
-		self:GetParent():RefreshAllDataProviders();
-	end
-
-	self.currentlySelectedNode = nil;
-end 
-
-function AnimaDiversionSelectionInfoMixin:SetupAndShow(node)
-	if self.currentlySelectedNode then
-		self.currentlySelectedNode:SetSelectedState(false);
-	end
-
-	node:SetSelectedState(true);
-
-	self.currentlySelectedNode = node; 
-	self:ClearAllPoints(); 
-	self:SetPoint("LEFT", node, "RIGHT", 20, 0);
-
-	local nodeInfo = node.nodeData; 
-	self.Title:SetText(nodeInfo.name);
-	self.Description:SetText(nodeInfo.description);
-
-	local canAffordAnimaSelection = self:SetupCosts(nodeInfo.costs);
-
-	local nodeAvailableForSelection = nodeInfo.state == Enum.AnimaDiversionNodeState.Available and canAffordAnimaSelection;
-	self.SelectButton:SetShown(nodeAvailableForSelection);
-	self.AlreadySelected:SetShown(not nodeAvailableForSelection);
-
-	if	(not nodeAvailableForSelection) then 
-		if (nodeInfo.state == Enum.AnimaDiversionNodeState.SelectedTemporary or nodeInfo.state == Enum.AnimaDiversionNodeState.SelectedPermanent) then 
-			self.AlreadySelected:SetText(ANIMA_DIVERSION_NODE_SELECTED);
-		elseif(not canAffordAnimaSelection) then 
-			self.AlreadySelected:SetText(ANIMA_DIVERSION_NOT_ENOUGH_CURRENCY);
-		else 
-			self.AlreadySelected:SetText(ANIMA_DIVERSION_NODE_UNAVAILABLE);
-		end 
-	end 
-
-	self:Layout(); 
-	self:Show();
-	PlaySound(AnimaDiversionFrame.covenantData.animaChannelSelectSoundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
-end 
-
-function AnimaDiversionSelectionInfoMixin:GetSelectedNode()
-	return self.currentlySelectedNode;
-end 
-
-function AnimaDiversionSelectionInfoMixin:SetupCosts(CurrencyCosts)
-	local playerCanAfford = true; 
-	self.currencyPool:ReleaseAll(); 
-	for i, costInfo in ipairs(CurrencyCosts) do 
-		self.lastCurrency = self:SetupSingleCurrency(i, costInfo); 
-		if(not self.lastCurrency.canAfford) then 
-			playerCanAfford = false; 
-		end 
-	end
-	self.SelectButton:ClearAllPoints(); 
-	self.SelectButton:SetPoint("TOP", self.lastCurrency, "BOTTOM", 10, -10);
-	self.AlreadySelected:ClearAllPoints(); 
-	self.AlreadySelected:SetPoint("CENTER", self.SelectButton); 
-	return playerCanAfford; 
-end 
-
-function AnimaDiversionSelectionInfoMixin:SetupSingleCurrency(index, costInfo)
-	local currency = self.currencyPool:Acquire(); 
-	if(index == 1) then 
-		currency:SetPoint("TOP", self.Description, "BOTTOM", -15, -10);
-	else 
-		currency:SetPoint("TOP", self.lastCurrency, "BOTTOM", 0, -10);	
-	end
-
-	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(costInfo.currencyID);
-	if(currencyInfo) then 
-		currency.Quantity:SetJustifyH("LEFT");
-		currency.Quantity:SetText(ANIMA_DIVERSION_CURRENCY_DISPLAY:format(costInfo.quantity, currencyInfo.iconFileID));	
-	end 
-
-	currency.currencyInfo = currencyInfo; 
-	currency.canAfford = currencyInfo.quantity >= costInfo.quantity;
-	currency:Show(); 
-	return currency;
-end 
-
-AnimaDiversionSelectButtonMixin = { }; 
-
-function AnimaDiversionSelectButtonMixin:OnClick() 
-	local selectedNode = self:GetParent():GetSelectedNode();
-	if selectedNode then 
-		PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLICK_CHANNEL_BUTTON, nil, SOUNDKIT_ALLOW_DUPLICATES);
-		StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", selectedNode.nodeData.name, nil, selectedNode);
-		self:GetParent():Hide(); 
-	end		
-end
 
 AnimaDiversionCurrencyFrameMixin = { }; 
 

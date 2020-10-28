@@ -1,4 +1,8 @@
 
+local RuneforgePowerListRowSize = 4;
+local RuneforgePowerListNumRows = 3;
+
+
 RuneforgePowerButtonMixin = CreateFromMixins(RuneforgePowerBaseMixin);
 
 function RuneforgePowerButtonMixin:OnPowerSet(oldPowerID, powerID)
@@ -10,7 +14,6 @@ function RuneforgePowerButtonMixin:OnPowerSet(oldPowerID, powerID)
 		local isAvailable = self.powerInfo.state == Enum.RuneforgePowerState.Available;
 		local isActive = isAvailable and self:IsSelectionActive();
 		self.Icon:SetDesaturated(not isAvailable);
-		self.Icon:SetAlpha(isActive and 1.0 or 0.5);
 	end
 end
 
@@ -128,10 +131,6 @@ function RuneforgePowerSlotMixin:OnBaseItemChanged()
 	end
 end
 
-function RuneforgePowerSlotMixin:ShouldHideSource()
-	return self:GetPowerInfo().state == Enum.RuneforgePowerState.Available;
-end
-
 
 RuneforgePowerMixin = {};
 
@@ -152,17 +151,32 @@ function RuneforgePowerMixin:UpdateDisplay()
 	local powerID, isSelected = powerList:GetPower(powerIndex);
 	self:SetPowerID(powerID);
 	self.SelectedTexture:SetShown(isSelected);
-
-	self:SetAlpha(self:IsSelectionActive() and 1.0 or 0.5);
 end
 
-function RuneforgePowerMixin:ShouldHideSource()
+function RuneforgePowerMixin:IsAvailable()
 	return self:GetPowerInfo().state == Enum.RuneforgePowerState.Available;
 end
 
 function RuneforgePowerMixin:OnSelected()
-	if not RuneforgePowerButtonMixin.OnSelected(self) and self.selectionActive then
+	if not RuneforgePowerButtonMixin.OnSelected(self) and self:IsSelectionActive() and self:IsAvailable() then
 		self:GetPowerList():OnPowerSelected(self:GetListIndex());
+	end
+end
+
+function RuneforgePowerMixin:OnPowerSet(oldPowerID, powerID)
+	RuneforgePowerButtonMixin.OnPowerSet(self, oldPowerID, powerID);
+
+	local hasPower = powerID ~= nil;
+	self.Border:SetShown(hasPower);
+
+	if hasPower then
+		local isAvailable = self:IsAvailable();
+		self.UnavailableOverlay:SetShown(not isAvailable);
+
+		local isActive = isAvailable and self:IsSelectionActive();
+		self:SetAlpha(isActive and 1.0 or 0.5);
+	else
+		self.UnavailableOverlay:Hide();
 	end
 end
 
@@ -174,11 +188,14 @@ function RuneforgePowerListMixin:OnLoad()
 	
 	self:SetGetNumResultsFunction(GenerateClosure(self.GetNumPowers, self));
 	self:SetElementTemplate("RuneforgePowerTemplate", self);
+	self:SetRefreshCallback(GenerateClosure(self.OnPowerListRefreshed, self))
 
-	local stride = 4;
+	local stride = RuneforgePowerListRowSize;
 	local padding = -4;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, padding, padding);
-	local numDisplayedElements = 12;
+	layout:SetCustomOffsetFunction(GenerateClosure(self.GetCustomOffsetForPower, self));
+
+	local numDisplayedElements = RuneforgePowerListRowSize * RuneforgePowerListNumRows;
 	self:SetLayout(layout, numDisplayedElements);
 end
 
@@ -186,22 +203,77 @@ function RuneforgePowerListMixin:OnHide()
 	self:SetPage(1);
 end
 
-function RuneforgePowerListMixin:OpenPowerList(powers)
-	self.powers = powers;
+function RuneforgePowerListMixin:OpenPowerList(specPowers, offspecPowers)
+	self.specPowers = specPowers;
+	self.offspecPowers = offspecPowers;
+	self.numSpecRows = math.ceil(#self.specPowers / RuneforgePowerListRowSize);
+
+	if #offspecPowers > 0 then
+		local numSpecOnlyPages = math.floor(self.numSpecRows / RuneforgePowerListNumRows);
+		self.combinedSpecPageIndex = numSpecOnlyPages + 1;
+	else
+		self.combinedSpecPageIndex = nil;
+	end
+
 	self:RefreshListDisplay();
 end
 
+function RuneforgePowerListMixin:GetNumSpecRows()
+	return self.numSpecRows or 0;
+end
+
 function RuneforgePowerListMixin:GetNumPowers()
-	return self.powers and #self.powers or 0;
+	if self.specPowers == nil then
+		return 0;
+	end
+
+	return (self:GetNumSpecRows() * RuneforgePowerListRowSize) + #self.offspecPowers;
 end
 
 function RuneforgePowerListMixin:GetPower(index)
-	local powerID = self.powers[index];
-	return powerID, self:GetParent():GetPowerID() == powerID;
+	local numSpecElements = self:GetNumSpecRows() * RuneforgePowerListRowSize;
+	if index <= numSpecElements then
+		return self.specPowers[index];
+	else
+		return self.offspecPowers[index - numSpecElements];
+	end
 end
 
 function RuneforgePowerListMixin:OnPowerSelected(index)
 	self:GetParent():SelectPowerID(self:GetPower(index));
+end
+
+function RuneforgePowerListMixin:OnPowerListRefreshed()
+	self:LayoutList();
+
+	local otherSpecRow = self:GetOtherSpecializationRow();
+	local hasOtherSpecRow = otherSpecRow ~= nil;
+	self.OtherSpecializationsLabel:SetShown(hasOtherSpecRow);
+	if hasOtherSpecRow then
+		local elementFrame = self:GetElementFrame(otherSpecRow * RuneforgePowerListRowSize);
+		self.OtherSpecializationsLabel:SetPoint("BOTTOM", elementFrame, "TOP", 0, 2);
+	end
+end
+
+function RuneforgePowerListMixin:IsOnCombinedSpecPage()
+	return self:GetPage() == self.combinedSpecPageIndex;
+end
+
+function RuneforgePowerListMixin:GetOtherSpecializationRow()
+	if self:IsOnCombinedSpecPage() then
+		return self:GetNumSpecRows() % RuneforgePowerListNumRows + 1;
+	end
+
+	return nil;
+end
+
+function RuneforgePowerListMixin:GetCustomOffsetForPower(row, col)
+	local otherSpecRow = self:GetOtherSpecializationRow();
+	if (otherSpecRow ~= nil) and (row >= otherSpecRow) then
+		return 0, -30;
+	end
+
+	return 0, 0;
 end
 
 function RuneforgePowerListMixin:GetRuneforgeFrame()
@@ -219,8 +291,8 @@ function RuneforgePowerFrameMixin:OnMouseWheel(...)
 	self.PowerList:OnMouseWheel(...);
 end
 
-function RuneforgePowerFrameMixin:OpenPowerList(powers)
-	self.PowerList:OpenPowerList(powers);
+function RuneforgePowerFrameMixin:OpenPowerList(specPowers, offspecPowers)
+	self.PowerList:OpenPowerList(specPowers, offspecPowers);
 end
 
 function RuneforgePowerFrameMixin:SelectPowerID(powerID)

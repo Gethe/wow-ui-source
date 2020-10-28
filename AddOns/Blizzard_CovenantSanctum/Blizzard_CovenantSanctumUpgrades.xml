@@ -99,6 +99,13 @@
 	<Frame name="CovenantSanctumUpgradeReservoirTemplate" mixin="CovenantSanctumUpgradeReservoirMixin" virtual="true">
 		<Size x="224" y="224"/>
 		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Shadow" atlas="CovenantSanctum-Reservoir-Shadow" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
@@ -181,8 +188,11 @@
 				<Alpha childKey="SparkGlow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.5"/>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</Frame>
-	
+
 	<Frame name="CovenantSanctumUpgradeTalentTemplate" mixin="CovenantSanctumUpgradeTalentMixin" virtual="true">
 		<Size x="257" y="56"/>
 		<Layers>
@@ -221,7 +231,7 @@
 				<Texture parentKey="IconBorder">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>	
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
@@ -364,15 +374,13 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="COVENANT_SANCTUM_UNLOCK_UPGRADE">
+					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" mixin="CovenantSanctumUpgradeButtonMixin" text="COVENANT_SANCTUM_UNLOCK_UPGRADE">
 						<Size x="153" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOM" y="30"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								self:GetParent():Upgrade();
-							</OnClick>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>

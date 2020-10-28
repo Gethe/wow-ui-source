@@ -32,12 +32,22 @@ function AdventuresRewardsScreenMixin:ShowAdventureVictoryStateScreen(combatWon)
 		successFrame.CovenantCrest:SetPoint("BOTTOM", successFrame.CombatCompleteLineTop, "TOP", 0, -71);
 		PlaySound(CovenantVictorySoundKits[kit]);
 		self:ShowCombatCompleteSuccessPanel();
+
+		local successColor = WHITE_FONT_COLOR;
+		successFrame.CombatCompleteLineTop:SetVertexColor(successColor:GetRGBA());
+		successFrame.CombatCompleteLineBottom:SetVertexColor(successColor:GetRGBA());
+		successFrame.TextCenter:SetTextColor(DARKYELLOW_FONT_COLOR:GetRGBA());
 	else
 		successFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format("Fail"), true);
 		successFrame.CovenantCrest:ClearAllPoints();
 		successFrame.CovenantCrest:SetPoint("BOTTOM", successFrame.CombatCompleteLineTop, "TOP", 0, -5);
 		PlaySound(self:HasExperienceRewards() and SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_PARTIAL or SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_COMPLETE);
 		self:ShowCombatCompleteSuccessPanel();
+
+		local failureColor = RED_FONT_COLOR;
+		successFrame.CombatCompleteLineTop:SetVertexColor(failureColor:GetRGBA());
+		successFrame.CombatCompleteLineBottom:SetVertexColor(failureColor:GetRGBA());
+		successFrame.TextCenter:SetTextColor(failureColor:GetRGBA());
 	end
 
 	self:Show();

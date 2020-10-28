@@ -234,7 +234,6 @@ function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
 		end
 
 		AnchorUtil.GridLayout(frames, AnchorUtil.CreateAnchor("LEFT", self.Decor, "LEFT", -42, 0), self.layout);
-		self:Layout();
 		self:CheckDisplayHelpTip();
 	end
 end

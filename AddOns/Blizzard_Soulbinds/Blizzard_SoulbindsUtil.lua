@@ -68,6 +68,19 @@ function Soulbinds.IsConduitCommitPending()
 	return conduitInstallPending;
 end
 
+local soulbindIDActivationPending;
+function Soulbinds.SetSoulbindIDActivationPending(soulbindID)
+	soulbindIDActivationPending = soulbindID;
+end
+
+function Soulbinds.GetSoulbindIDActivationPending()
+	return soulbindIDActivationPending;
+end
+
+function Soulbinds.GetSoulbindAppearingActive()
+	return Soulbinds.GetSoulbindIDActivationPending() or C_Soulbinds.GetActiveSoulbindID();
+end
+
 function Soulbinds.GetConduitName(conduitType)
 	if conduitType == Enum.SoulbindConduitType.Potency then
 		return CONDUIT_POTENCY;

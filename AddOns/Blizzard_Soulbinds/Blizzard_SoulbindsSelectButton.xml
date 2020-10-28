@@ -105,7 +105,7 @@
 							<Layer>
 								<Texture parentKey="Diamond" atlas="Soulbinds_Portrait_Active" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER"/>
+										<Anchor point="CENTER" y="-2"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -114,7 +114,7 @@
 				</Frames>
 			</ModelScene>
 			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="101">
-				<Size x="150" y="150"/>
+				<Size x="350" y="350"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>
 				</Anchors>

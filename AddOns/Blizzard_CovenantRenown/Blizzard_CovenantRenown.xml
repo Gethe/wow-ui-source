@@ -20,22 +20,15 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="LevelBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true" parentArray="Textures">
-					<Anchors>
-						<Anchor point="BOTTOM" y="-5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark" useAtlasSize="true" parentArray="Textures">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Level" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
+						<Anchor point="BOTTOM" y="-1"/>
 					</Anchors>
 				</FontString>
 				<MaskTexture parentKey="HexMask" atlas="CovenantSanctum-Renown-Hexagon-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -59,7 +52,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CovenantRenownRewardTemplate" mixin="CovenantRenownRewardMixin" virtual="true">
+	<Frame name="CovenantRenownRewardTemplate" mixin="CovenantRenownRewardMixin" frameLevel="10" virtual="true">
 		<Size x="415" y="136"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -166,16 +159,27 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="11"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="CelebrationModelSceneTarget">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="168"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectedLevelGlow">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TitleDivider">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Background" y="-102"/>
+						<Anchor point="TOP" y="-128"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Divider">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Background" y="-183"/>
+						<Anchor point="TOP" x="0" y="-209"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Anima">
@@ -188,17 +192,12 @@
 						<Color r="0" g="0" b="0"/>
 					</Shadow>
 					<Anchors>
-						<Anchor point="TOP" y="-65"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="CovenantName" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-4"/>
+						<Anchor point="TOP" y="-71"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="PreviewText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-9"/>
+						<Anchor point="CENTER" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -213,7 +212,7 @@
 			<Frame parentKey="HeaderFrame" frameLevel="510">
 				<Size x="176" y="76"/>
 				<Anchors>
-					<Anchor point="TOP" y="21"/>
+					<Anchor point="TOP" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -235,11 +234,16 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<ModelScene parentKey="CelebrationModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false"/>
+			<ModelScene parentKey="CelebrationModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="500" y="500"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="26"/>
+				</Anchors>
+			</ModelScene>
 			<Frame parentKey="TrackFrame" mixin="CovenantRenownTrackFrameMixin">
 				<Size x="570" y="72"/>
 				<Anchors>
-					<Anchor point="TOP" y="-140"/>
+					<Anchor point="TOP" y="-135"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true">
@@ -272,9 +276,16 @@
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
 					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
+			<ModelScene parentKey="LevelModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="100">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.TrackFrame"/>
+				</Anchors>
+			</ModelScene>
 			<Frame parentKey="FinalToast" inherits="CovenantCelebrationBannerTemplate" frameLevel="500" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" y="-317"/>

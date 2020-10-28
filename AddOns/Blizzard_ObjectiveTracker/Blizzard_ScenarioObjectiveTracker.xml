@@ -69,7 +69,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="BarFrame" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame" atlas="bonusobjectives-bar-frame-5" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" x="-8" y="-1"/>
 							</Anchors>
@@ -86,14 +86,14 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="BarFrame2" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame2" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame-5" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="BarFrame3" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame3" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame-5" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>

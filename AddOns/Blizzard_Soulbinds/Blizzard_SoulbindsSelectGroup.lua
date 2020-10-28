@@ -73,7 +73,7 @@ function SoulbindSelectGroupMixin:OnSoulbindActivated(soulbindID)
 end
 
 function SoulbindSelectGroupMixin:UpdateActivations()
-	self:SetActiveMarkers(C_Soulbinds.GetActiveSoulbindID());
+	self:SetActiveMarkers(Soulbinds.GetSoulbindAppearingActive());
 end
 
 function SoulbindSelectGroupMixin:SetActiveMarkers(soulbindID)

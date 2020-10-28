@@ -691,12 +691,13 @@ function ConduitListMixin:Init()
 			parsed = parsed + 1;
 			if parsed == #lists then
 				self.ScrollBox.ScrollTarget:Layout();
-				self.ScrollBox.BottomShadowContainer.BottomShadow:SetShown(anyShown);
+				self.BottomShadowContainer.BottomShadow:SetShown(anyShown);
 				self.preview:SetShown(not anyShown);
-				
+
 				if anyShown then
 					self.Charges:Init();
 				end
+				self.Fx:SetShown(anyShown);
 				self.Charges:SetShown(anyShown);
 
 				local scrollValue = 0;

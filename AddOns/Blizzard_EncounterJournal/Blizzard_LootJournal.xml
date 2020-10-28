@@ -5,7 +5,7 @@
 	<Button name="RuneforgeLegendaryPowerLootJournalTemplate" mixin="RuneforgeLegendaryPowerLootJournalMixin" inherits="GridListElementTemplate" virtual="true">
 		<Size x="326" y="80"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BORDER">
 				<Texture parentKey="Icon">
 					<Size x="64" y="64"/>
 					<Anchors>
@@ -13,7 +13,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
+			<!-- Layers are not in order here. UnavailableBackground is anchored to Icon, but displayed behind it. -->
+			<Layer level="BACKGROUND">
+				<Texture parentKey="UnavailableBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
 				<MaskTexture parentKey="CircleMask" file="Interface/CharacterFrame/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="4" y="-4"/>
@@ -21,6 +31,7 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="UnavailableBackground"/>
 					</MaskedTextures>
 				</MaskTexture>
 
@@ -30,13 +41,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY">
 				<FontString parentKey="Name" inherits="GameFontNormalMed2" maxLines="2" justifyH="LEFT">
 					<Size x="250" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="12" y="0"/>
-					</Anchors>
 					<Color color="LEGENDARY_ORANGE_COLOR"/>
+				</FontString>
+				<FontString parentKey="SpecName" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+					<Color color="RUNEFORGE_LEGEDARY_SPEC_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -79,13 +94,29 @@
 				</Scripts>
 			</DropDownToggleButton>
 
+			<Frame name="LootJournalRuneforgePowerFilterDropDown" parentKey="RuneforgePowerFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Scripts>
+					<OnLoad function="LootJournalRuneforgePowerFilterDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<DropDownToggleButton parentKey="RuneforgePowerFilterDropDownButton" inherits="EJButtonTemplate" mixin="LootJournalRuneforgePowerFilterDropDownButtonMixin">
+				<Size x="114" y="26"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ClassDropDownButton" relativePoint="LEFT" x="-40" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+				</Scripts>
+			</DropDownToggleButton>
+
 			<ScrollFrame parentKey="PowersFrame" inherits="GridListTemplate">
 				<Size x="747" y="333"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="35" y="3"/>
 				</Anchors>
 				<Frames>
-					<Slider inherits="EncounterJournalScrollBarTemplate">
+					<Slider parentKey="ScrollBar" inherits="EncounterJournalScrollBarTemplate">
 						<KeyValues>
 							<KeyValue key="scrollStep" value="20" type="number"/>
 						</KeyValues>
@@ -95,6 +126,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

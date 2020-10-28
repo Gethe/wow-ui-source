@@ -485,6 +485,21 @@ function GarrisonFollowerList_SetButtonMode(followerList, button, mode)
 	button.Category:SetShown(mode == "CATEGORY");
 end
 
+function GarrisonFollowerList:UpdateMissionRemainingTime(follower, fontString)
+	if follower.status == GARRISON_FOLLOWER_ON_MISSION then
+		local missionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft(follower.followerID);
+		if missionTimeLeft then
+			if follower.isMaxLevel then
+				fontString:SetText(missionTimeLeft);
+			else
+				fontString:SetFormattedText(GarrisonFollowerOptions[follower.followerTypeID].strings.OUT_WITH_DURATION, missionTimeLeft);
+			end
+		else
+			fontString:SetText("");
+		end
+	end
+end
+
 function GarrisonFollowerList:UpdateData()
 	local followerFrame = self:GetParent();
 	local followers = self.followers;
@@ -555,13 +570,7 @@ function GarrisonFollowerList:UpdateData()
 					button.Follower.BusyFrame:Show();
 					button.Follower.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
 					-- get time remaining for follower
-					if ( follower.status == GARRISON_FOLLOWER_ON_MISSION ) then
-						if (follower.isMaxLevel) then
-							button.Follower.Status:SetText(C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
-						else
-							button.Follower.Status:SetFormattedText(GarrisonFollowerOptions[follower.followerTypeID].strings.OUT_WITH_DURATION, C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
-						end
-					end
+					self:UpdateMissionRemainingTime(follower, button.Follower.Status);
 				else
 					button.Follower.PortraitFrame.PortraitRingCover:Hide();
 					button.Follower.BusyFrame:Hide();

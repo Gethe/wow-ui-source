@@ -5,6 +5,7 @@ local mainTextureKitRegions = {
 	["Divider"] = "CovenantSanctum-Renown-Divider-%s",	
 	["Anima"] = "CovenantSanctum-Renown-Anima-%s",
 	["FinalToastSlabTexture"] = "CovenantSanctum-Renown-FinalToast-%s",
+	["SelectedLevelGlow"] = "CovenantSanctum-Renown-Next-Glow-%s",
 }
 local rewardTextureKitRegions = {
 	["Toast"] = "CovenantSanctum-Renown-Toast-%s",
@@ -16,25 +17,26 @@ local milestonesTextureKitRegions = {
 	["Middle"] = "_UI-Frame-%s-TitleMiddle",
 };
 
-local finalToastSwirlEffects = 
-{
-	Kyrian = {119},
-	Venthyr = {120},
-	NightFae = {121, 123},
-	Necrolord = {122},
-}
+local finalToastSwirlEffects = {
+	[Enum.CovenantType.Kyrian] = {119},
+	[Enum.CovenantType.Venthyr] = {120},
+	[Enum.CovenantType.NightFae] = {121, 123},
+	[Enum.CovenantType.Necrolord] = {122},
+};
 
-local finalToastSounds =
-{
-	Kyrian = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_KYRIAN,
-	Venthyr = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_VENTHYR,
-	NightFae = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_NIGHTFAE,
-	Necrolord = SOUNDKIT.UI_COVENANT_SANCTUM_RENOWN_MAX_NECROLORD,
-}
+local levelEffects = {
+	[Enum.CovenantType.Kyrian] = 125,
+	[Enum.CovenantType.Venthyr] = 124,
+	[Enum.CovenantType.NightFae] = 126,
+	[Enum.CovenantType.Necrolord] = 127,
+};
+local levelEffectDelay = 0.5;
 
-local g_sanctumTextureKit;
+local g_covenantID;
+local g_covenantData;
+
 local function SetupTextureKit(frame, regions)
-	SetupTextureKitOnRegions(g_sanctumTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(g_covenantData.textureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 local CovenantRenownEvents = {
@@ -63,19 +65,24 @@ function CovenantRenownMixin:OnLoad()
 end
 
 function CovenantRenownMixin:OnShow()
-	self:SetUpTextureKits();
-	self:Refresh();
-	self.TrackFrame:Init();
+	self:SetUpCovenantData();
+	self:GetLevels();
+	local fromOnShow = true;
+	self:Refresh(fromOnShow);
+	self:CheckTutorials();
 	FrameUtil.RegisterFrameForEvents(self, CovenantRenownEvents);
-	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_RENOWN_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function CovenantRenownMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CovenantRenownEvents);
 	self:SetCelebrationSwirlEffects(nil);
-	self:CancelFinalToastSound();
+	self:CancelLevelEffect();
 	C_CovenantSanctumUI.EndInteraction();
-	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_CLOSE_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_RENOWN_CLOSE_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+
+	local cvarName = "lastRenownForCovenant"..g_covenantID;
+	SetCVar(cvarName, self.actualLevel);
 end
 
 function CovenantRenownMixin:OnEvent(event, ...)
@@ -90,17 +97,19 @@ end
 
 function CovenantRenownMixin:OnMouseWheel(direction)
 	local track = self.TrackFrame;
-	track:StartScroll(direction * -1);
-	-- stop immediately so it only moves by 1 in direction
-	track:StopScroll();
+	local centerIndex = track:GetCenterIndex();
+	centerIndex = centerIndex + (direction * -1);
+	track:SetSelection(centerIndex);
 end
 
-function CovenantRenownMixin:SetUpTextureKits()
+function CovenantRenownMixin:SetUpCovenantData()
 	local covenantID = C_Covenants.GetActiveCovenantID();
 	local covenantData = C_Covenants.GetCovenantData(covenantID);
-	local textureKit = covenantData.textureKit;
-	if g_sanctumTextureKit ~= textureKit then
-		g_sanctumTextureKit = textureKit;
+	if g_covenantID ~= covenantID then
+		g_covenantID = covenantID;
+		g_covenantData = covenantData;
+
+		local textureKit = covenantData.textureKit;
 
 		NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, textureKit);
 		NineSliceUtil.DisableSharpening(self.NineSlice);
@@ -111,40 +120,141 @@ function CovenantRenownMixin:SetUpTextureKits()
 		UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", -1, 1, textureKit);
 		
 		SetupTextureKit(self, mainTextureKitRegions);
+
+		-- the track
+		local levels = C_CovenantSanctumUI.GetRenownLevels(covenantID);
+		self.TrackFrame:Init(#levels);
+		local elements = self.TrackFrame:GetElements();
+		for i, levelInfo in ipairs(levels) do
+			elements[i]:SetInfo(levels[i]);
+		end
+		self.maxLevel = levels[#levels].level;
 	end
 end
 
-function CovenantRenownMixin:Refresh()
+function CovenantRenownMixin:GetLevels()
 	local renownLevel = C_CovenantSanctumUI.GetRenownLevel();
-	self.HeaderFrame.Level:SetText(renownLevel);
+	self.actualLevel = renownLevel;	
+	local cvarName = "lastRenownForCovenant"..g_covenantID;
+	local lastRenownLevel = tonumber(GetCVar(cvarName));
+	if lastRenownLevel < renownLevel then
+		renownLevel = lastRenownLevel;
+	end
+	self.displayLevel = renownLevel;
+end
 
-	local covenantID = C_Covenants.GetActiveCovenantID();
-	local covenantData = C_Covenants.GetCovenantData(covenantID);
-	self.CovenantName:SetText(covenantData.name);
+function CovenantRenownMixin:Refresh(fromOnShow)
+	self.HeaderFrame.Level:SetText(self.actualLevel);
+	local displayLevel = math.min(self.displayLevel + 1, self.maxLevel);
+	self:SetRewards(displayLevel);
+	self:SelectLevel(displayLevel, fromOnShow);
+	if self.displayLevel < self.actualLevel then
+		self.levelEffectTimer = C_Timer.NewTimer(levelEffectDelay, function()
+			self:PlayLevelEffect();
+		end);
+	end
+	self:CheckTutorials();
+end
 
-	self:SetRewards(renownLevel + 1);
+function CovenantRenownMixin:SelectLevel(level, fromOnShow)
+	local selectionIndex;
+	local elements = self.TrackFrame:GetElements();
+	for i, frame in ipairs(elements) do
+		if frame:GetLevel() == level then
+			selectionIndex = i;
+			break;
+		end
+	end
+	local forceRefresh = false;
+	local skipSound = fromOnShow;
+	self.TrackFrame:SetSelection(selectionIndex, forceRefresh, skipSound);
+end
+
+function CovenantRenownMixin:OnTrackUpdate(leftIndex, centerIndex, rightIndex, isMoving)
+	local track = self.TrackFrame;
+	local elements = track:GetElements();
+	local selectedElement = elements[centerIndex];
+	local selectedLevel = selectedElement:GetLevel();
+	if self.displayLevel ~= self.actualLevel and selectedLevel ~= self.displayLevel + 1 then
+		self:CancelLevelEffect();
+		self:Refresh();
+		return;
+	end
+	local elements = track:GetElements();
+	for i = leftIndex, rightIndex do
+		local selected = not self.moving and centerIndex == i;
+		local frame = elements[i];
+		frame:Refresh(self.actualLevel, self.displayLevel, selected);
+		local alpha = track:GetDesiredAlphaForIndex(i);
+		frame:ApplyAlpha(alpha);
+	end
+	if not isMoving then
+		self:SetRewards(selectedLevel);
+		self.SelectedLevelGlow:SetPoint("CENTER", elements[centerIndex]);
+		self.SelectedLevelGlow:Show();
+	else
+		self.SelectedLevelGlow:Hide();
+	end
+end
+
+function CovenantRenownMixin:OnLevelEffectFinished()
+	self.levelEffect = nil;
+	self.displayLevel = self.displayLevel + 1;
+	self:Refresh();
+end
+
+function CovenantRenownMixin:PlayLevelEffect()
+	local effectID = levelEffects[g_covenantID];
+	local target, onEffectFinish = nil, nil;
+	local onEffectResolution = GenerateClosure(self.OnLevelEffectFinished, self);
+	self.levelEffect = self.LevelModelScene:AddEffect(effectID, self.TrackFrame, self.TrackFrame, onEffectFinish, onEffectResolution);
+
+	local centerIndex = self.TrackFrame:GetCenterIndex();
+	local elements = self.TrackFrame:GetElements();
+	local frame = elements[centerIndex];
+	local selected = true;
+	frame:Refresh(self.actualLevel, self.displayLevel + 1, selected);
+
+	local fanfareSound = g_covenantData.renownFanfareSoundKitID;
+	if fanfareSound then
+		PlaySound(fanfareSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	end
+end
+
+function CovenantRenownMixin:CancelLevelEffect()
+	if self.displayLevel ~= self.actualLevel then
+		self.displayLevel = self.actualLevel;
+		if self.levelEffect then
+			self.levelEffect:CancelEffect();
+			self.levelEffect = nil;
+		end
+		if self.levelEffectTimer then
+			self.levelEffectTimer:Cancel();
+			self.levelEffectTimer = nil;
+		end
+		self.displayLevel = self.actualLevel;
+	end
 end
 
 function CovenantRenownMixin:SetCelebrationSwirlEffects(swirlEffects)
 	if swirlEffects == nil then
 		self.CelebrationModelScene:ClearEffects();
-	else
+	elseif not self.CelebrationModelScene:HasActiveEffects() then
 		for i, swirlEffect in ipairs(swirlEffects) do
-			self.CelebrationModelScene:AddEffect(swirlEffect, self.FinalToast.SlabTexture);
+			self.CelebrationModelScene:AddEffect(swirlEffect, self.CelebrationModelSceneTarget);
 		end
 	end
 end
 
 function CovenantRenownMixin:SetRewards(level)
 	self.rewardsPool:ReleaseAll();
-	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(C_Covenants.GetActiveCovenantID(), level);
+	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(g_covenantID, level);
 	local numRewards = #rewards;
 
 	local renownLevel = C_CovenantSanctumUI.GetRenownLevel();
 	local rewardUnlocked = level <= renownLevel;
-		
+
 	for i, rewardInfo in ipairs(rewards) do
-		if i <= 2 then	-- TODO: remove
 		local rewardFrame = self.rewardsPool:Acquire();
 		if numRewards == 1 then
 			rewardFrame:SetPoint("TOP", 0, -299);
@@ -156,45 +266,49 @@ function CovenantRenownMixin:SetRewards(level)
 			end
 		end
 		rewardFrame:SetReward(rewardInfo, rewardUnlocked);
-		end
 	end
 
-	if numRewards > 0 then
-		--self.Header:SetText(COVENANT_SANCTUM_TAB_RENOWN);
-		self.FinalToast:Hide();
-		self:SetCelebrationSwirlEffects(nil);
-		self:CancelFinalToastSound()
-	else
-		-- TODO: Remove this block
-		self.Header:SetText(COVENANT_SANCTUM_RENOWN_REWARD_TITLE_COMPLETE);
-
-		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
-		self.PreviewText:SetFormattedText(COVENANT_SANCTUM_RENOWN_REWARD_DESC_COMPLETE, covenantData and covenantData.name or "");
-
-		self.FinalToast:Show();
-		self.FinalToast:SetCovenantTextureKit(covenantData.textureKit);
-		self:SetCelebrationSwirlEffects(finalToastSwirlEffects[covenantData.textureKit]);
-
-		if not self.finalToastSoundHandle then
-			local soundKitID = finalToastSounds[covenantData.textureKit];
-			local _, soundHandle = PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
-			self.finalToastSoundHandle = soundHandle;
-		end
-	end
-	
 	if level <= renownLevel then
 		self.PreviewText:SetFormattedText(COVENANT_SANCTUM_RENOWN_LEVEL_UNLOCKED, level);
 		self.PreviewText:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+		self:SetCelebrationSwirlEffects(finalToastSwirlEffects[g_covenantID]);
 	else
 		self.PreviewText:SetFormattedText(COVENANT_SANCTUM_RENOWN_LEVEL_LOCKED, level);
 		self.PreviewText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self:SetCelebrationSwirlEffects(nil);
 	end
 end
 
-function CovenantRenownMixin:CancelFinalToastSound()
-	if self.finalToastSoundHandle then
-		StopSound(self.finalToastSoundHandle);
-		self.finalToastSoundHandle = nil;
+function CovenantRenownMixin:CheckTutorials()
+	-- using acknowledgeOnHide so need to check this
+	if not self:IsShown() then
+		return;
+	end
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_COVENANT_RENOWN_REWARDS) then
+		if self.displayLevel == self.actualLevel then
+			local helpTipInfo = {
+				text = COVENANT_RENOWN_TUTORIAL_REWARDS,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_COVENANT_RENOWN_REWARDS,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = 94,
+				acknowledgeOnHide = true,
+				onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
+			};
+			HelpTip:Show(self, helpTipInfo, self.TrackFrame);
+		end
+	elseif not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_COVENANT_RENOWN_PROGRESS) then
+		local helpTipInfo = {
+			text = COVENANT_RENOWN_TUTORIAL_PROGRESS,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_COVENANT_RENOWN_PROGRESS,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			offsetY = 22,
+			acknowledgeOnHide = true,
+		};
+		HelpTip:Show(self, helpTipInfo, self.HeaderFrame);
 	end
 end
 
@@ -230,16 +344,17 @@ function CovenantRenownLevelMixin:TryInit()
 		texture:AddMaskTexture(maskTexture);
 	end
 
-	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(C_Covenants.GetActiveCovenantID(), self:GetLevel());
+	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(g_covenantID, self:GetLevel());
 	-- use first reward for icon
 	self.rewardInfo = rewards[1];
 	self:SetIcon();
 end
 
-function CovenantRenownLevelMixin:Refresh(level, selected)
+function CovenantRenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 	self:TryInit();
 
-	local earned = self:GetLevel() <= level;
+	local level = self:GetLevel();
+	local earned = level <= displayLevel;
 	local borderAtlas;
 	if selected then
 		borderAtlas = "CovenantSanctum-Renown-Next-Border-%s";
@@ -263,17 +378,16 @@ function CovenantRenownLevelMixin:Refresh(level, selected)
 			borderAtlas = "CovenantSanctum-Renown-Special-Disabled-Border-%s";
 		end
 	end
-	self.IconBorder:SetAtlas(borderAtlas:format(g_sanctumTextureKit), TextureKitConstants.UseAtlasSize);
+	self.IconBorder:SetAtlas(borderAtlas:format(g_covenantData.textureKit), TextureKitConstants.UseAtlasSize);
 
 	if earned then
 		self.Icon:SetDesaturated(false);
 		self.Level:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		self.Check:Show();
 	else
 		self.Icon:SetDesaturated(true);
 		self.Level:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		self.Check:Hide();
 	end
+	self.Check:SetShown(level <= actualLevel);
 end
 
 function CovenantRenownLevelMixin:SetIcon()
@@ -281,8 +395,14 @@ function CovenantRenownLevelMixin:SetIcon()
 	self.Icon:SetTexture(icon);
 end
 
+function CovenantRenownLevelMixin:ApplyAlpha(alpha)
+	self.Level:SetAlpha(alpha);
+end
+
 function CovenantRenownLevelMixin:OnMouseUp()
-	self:GetParent():GetParent():SelectLevel(self.info.level);
+	local track = self:GetParent():GetParent();
+	track:GetParent():CancelLevelEffect();
+	track:SetSelection(self.index);
 end
 
 function CovenantRenownLevelMixin:OnEnter()
@@ -296,7 +416,7 @@ function CovenantRenownLevelMixin:RefreshTooltip()
 	end
 
 	local onItemUpdateCallback = GenerateClosure(self.RefreshTooltip, self);
-	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(C_Covenants.GetActiveCovenantID(), self:GetLevel());
+	local rewards = C_CovenantSanctumUI.GetRenownRewardsForLevel(g_covenantID, self:GetLevel());
 	local addRewards = true;
 	if self.isCapstone then
 		GameTooltip_SetTitle(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_TITLE);
@@ -358,10 +478,16 @@ CovenantRenownTrackFrameMixin = {
 	fullAlphaRadius = 94,	-- distance from Center where full alpha is applied to text
 	
 	scrollSpeeds = {
-		{ timeAfter = 0.6, speed = 1 },
-		{ timeAfter = 1, speed = 2 },
+		{ timeAfter = 0.6, speed = 2 },
+		{ timeAfter = 1, speed = 3 },
 		{ timeAfter = 1, speed = 4 },
 	},
+
+	elementTemplate = "CovenantRenownLevelTemplate",
+
+	scrollStartSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START,
+	scrollLoopSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_LOOP,
+	scrollStopSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_STOP,
 };
 
 function CovenantRenownTrackFrameMixin:OnLoad()
@@ -370,23 +496,20 @@ function CovenantRenownTrackFrameMixin:OnLoad()
 	self.numElementsPerHalf = math.ceil(self.visibleRadius / self.calculationWidth);
 end
 
-function CovenantRenownTrackFrameMixin:Init()
-	-- TODO: level up treatment
-	
-	local covenantID = C_Covenants.GetActiveCovenantID();
-
-	-- get level data if first time or covenant changed
-	local levels;
-	if not self.covenantID or self.covenantID ~= covenantID then
-		levels = C_CovenantSanctumUI.GetRenownLevels(covenantID);
+function CovenantRenownTrackFrameMixin:OnHide()
+	if self.scrollTime then
+		self:StopScroll();
 	end
+end
 
-	-- create the frames if first time
-	if not self.covenantID then
+function CovenantRenownTrackFrameMixin:Init(numElements)
+	if not self.headElement then
+		self.numElements = numElements;
 		self.Elements = { };
 		local lastFrame;
-		for i, levelInfo in ipairs(levels) do
-			local frame = CreateFrame("FRAME", nil, self.ClipFrame, "CovenantRenownLevelTemplate");
+		for i = 1, numElements do
+			local frame = CreateFrame("FRAME", nil, self.ClipFrame, self.elementTemplate);
+			frame.index = i;
 			tinsert(self.Elements, frame);
 			if lastFrame then
 				frame:SetPoint("LEFT", lastFrame, "RIGHT", self.elementSpacing, 0);
@@ -397,17 +520,10 @@ function CovenantRenownTrackFrameMixin:Init()
 			lastFrame = frame;
 		end
 	end
+end
 
-	-- change the data if covenant is different (or first time)
-	if self.covenantID ~= covenantID then
-		self.covenantID = covenantID;
-		for i, frame in ipairs(self.Elements) do
-			frame:SetInfo(levels[i]);
-		end
-	end
-
-	local nextLevel = C_CovenantSanctumUI.GetRenownLevel() + 1;
-	self:SelectLevel(nextLevel);
+function CovenantRenownTrackFrameMixin:GetElements()
+	return self.Elements;
 end
 
 function CovenantRenownTrackFrameMixin:OnUpdate(elapsed)
@@ -436,59 +552,61 @@ function CovenantRenownTrackFrameMixin:OnUpdate(elapsed)
 		offset = Clamp(offset, 0, self:GetMaxOffset());
 		self.offset = offset;
 		self.headElement:SetPoint("CENTER", -offset, 0);
-		self:RefreshVisibleElements();
+		self:RefreshView();
+
+		if not self.loopingSoundHandle and self.scrollLoopSound then
+			self.loopingSoundHandle = select(2, PlaySound(self.scrollLoopSound, nil, SOUNDKIT_ALLOW_DUPLICATES));
+		end
 	end	
 end
 
-function CovenantRenownTrackFrameMixin:SelectLevel(level)
-	local selectionIndex;
-	for i, frame in ipairs(self.Elements) do
-		if frame:GetLevel() == level then
-			selectionIndex = i;
-			break;
-		end
+function CovenantRenownTrackFrameMixin:SetSelection(index, forceRefresh, skipSound)
+	-- stops other sources (like parent's mousewheel) from interfering during movement
+	if self.scrollTime then
+		return;
 	end
-	self:SetSelection(selectionIndex);
-end
 
-function CovenantRenownTrackFrameMixin:SetSelection(index)
-	local numElements = #self.Elements;
-	index = index or numElements;
-	index = Clamp(index, 1, numElements);
+	index = index or self.numElements;
+	index = Clamp(index, 1, self.numElements);
+	if self.selectedIndex ~= index and not skipSound and self.scrollStopSound then
+		PlaySound(self.scrollStopSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	end
 	self.selectedIndex = index;
 	local offset = self:GetAbsoluteOffsetForIndex(index);
 	self.headElement:SetPoint("CENTER", -offset, 0);
 	self.offset = offset;
-	self:RefreshVisibleElements();
+	if forceRefresh then
+		self.centerIndex = nil;
+	end
+	self:RefreshView();
 end
 
-function CovenantRenownTrackFrameMixin:RefreshVisibleElements()
-	local level = C_CovenantSanctumUI.GetRenownLevel();
+function CovenantRenownTrackFrameMixin:RefreshView()
 	local centerIndex = self:GetClosestIndexToCenter();
-
-	for i = centerIndex - self.numElementsPerHalf, centerIndex + self.numElementsPerHalf do
-		local frame = self.Elements[i];
-		if frame then
-			local selected = not self.moving and centerIndex == i;
-			frame:Refresh(level, selected);
-
-			local alpha = 0;
-			local distance = math.abs(self:GetDistanceFromCenterForIndex(i));
-			if distance <= self.fullAlphaRadius then
-				alpha = 1;
-			elseif distance <= self.visibleRadius then
-				alpha = Lerp(1, 0, distance/self.visibleRadius);
-			end
-			frame.Level:SetAlpha(alpha);
-		end
+	if self.centerIndex ~= centerIndex then
+		self.centerIndex = centerIndex;
+		local leftIndex = math.max(1, centerIndex - self.numElementsPerHalf);
+		local rightIndex = math.min(centerIndex + self.numElementsPerHalf, self.numElements);
+		self:GetParent():OnTrackUpdate(leftIndex, centerIndex, rightIndex, self.moving);
 	end
 
 	self.LeftButton:SetEnabled(self.offset > 0);
-	self.RightButton:SetEnabled(self.offset < self:GetMaxOffset());
-	
-	if not self.moving then
-		self:GetParent():SetRewards(self.Elements[centerIndex]:GetLevel());
+	self.RightButton:SetEnabled(self.offset < self:GetMaxOffset());	
+end
+
+function CovenantRenownTrackFrameMixin:GetCenterIndex()
+	return self.centerIndex;
+end
+
+function CovenantRenownTrackFrameMixin:GetDesiredAlphaForIndex(index)
+	local alpha = 0;
+	local distance = math.abs(self:GetDistanceFromCenterForIndex(index));
+	if distance <= self.fullAlphaRadius then
+		alpha = 1;
+	elseif distance <= self.visibleRadius then
+		alpha = Lerp(1, 0, distance/self.visibleRadius);
 	end
+	return alpha;
 end
 
 function CovenantRenownTrackFrameMixin:GetAbsoluteOffsetForIndex(index)
@@ -497,7 +615,7 @@ end
 
 function CovenantRenownTrackFrameMixin:GetMaxOffset()
 	if not self.maxOffset then
-		self.maxOffset = self:GetAbsoluteOffsetForIndex(#self.Elements);
+		self.maxOffset = self:GetAbsoluteOffsetForIndex(self.numElements);
 	end
 	return self.maxOffset;
 end
@@ -513,28 +631,37 @@ function CovenantRenownTrackFrameMixin:GetDistanceFromCenterForIndex(index)
 end
 
 function CovenantRenownTrackFrameMixin:StartScroll(direction)
-	self:SetSelection(self.selectedIndex + direction);
 	self.scrollTime = 0;
 	self.direction = direction;
 end
 
 function CovenantRenownTrackFrameMixin:StopScroll(direction)
 	self.scrollTime = nil;
+	if not self.moving and self.direction then
+		self:SetSelection(self.selectedIndex + self.direction);
+	end
 	self.moving = false;
 	self.stopRequested = false;
+	if self.loopingSoundHandle then
+		StopSound(self.loopingSoundHandle);
+		self.loopingSoundHandle = nil;
+	end
 	-- figure out next based on offset
 	local centerIndex = self:GetClosestIndexToCenter();
 	local offset = self:GetAbsoluteOffsetForIndex(centerIndex);
 	local delta = self.offset - offset;
+	local forceRefresh = true;
 	if delta < 1 or self.direction == -1 then
-		self:SetSelection(centerIndex);
+		self:SetSelection(centerIndex, forceRefresh);
 	else
-		self:SetSelection(centerIndex + 1);
+		self:SetSelection(centerIndex + 1, forceRefresh);
 	end
 end
 
 function CovenantRenownTrackFrameMixin:RequestStop()
-	self.stopRequested = true;
+	if self.scrollTime then
+		self.stopRequested = true;
+	end
 end
 
 CovenantRenownTrackButtonMixin = { };
@@ -552,7 +679,9 @@ function CovenantRenownTrackButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
 		local track = self:GetParent();
 		track:StartScroll(self.direction);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		if track.scrollStartSound then
+			PlaySound(track.scrollStartSound);
+		end
 	end
 end
 
@@ -560,7 +689,6 @@ function CovenantRenownTrackButtonMixin:OnMouseUp()
 	if self:IsEnabled() then
 		local track = self:GetParent();
 		track:StopScroll();
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 

@@ -167,11 +167,11 @@ end
 function CharacterCreateMixin:OnShow()
 	C_CharacterCreation.SetInCharacterCreate(true);
 
-	local selectedFaction;
+	local _, selectedFaction;
 	if self.paidServiceType then
 		C_CharacterCreation.CustomizeExistingCharacter(self.paidServiceCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
-		selectedFaction = C_PaidServices.GetCurrentFaction();
+		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
 	else
 		self.currentPaidServiceName = nil;
@@ -1360,14 +1360,14 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 	if CharacterCreateFrame.paidServiceType == PAID_CHARACTER_CUSTOMIZATION then
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
-		local currentFaction = C_PaidServices.GetCurrentFaction();
+		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		return (currentRace == raceData.raceID and currentFaction == faction);
 	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE then
-		local currentFaction = C_PaidServices.GetCurrentFaction();
+		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
 	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE then
-		local currentFaction = C_PaidServices.GetCurrentFaction();
+		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
 		local currentClass = C_PaidServices.GetCurrentClassID();

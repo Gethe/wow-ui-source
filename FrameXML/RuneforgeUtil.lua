@@ -25,6 +25,8 @@ function RuneforgePowerBaseMixin:OnEnter()
 
 		GameTooltip_SetTitle(GameTooltip, powerInfo.name, LEGENDARY_ORANGE_COLOR);
 	
+		GameTooltip_AddColoredLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_LABEL, BRIGHTBLUE_FONT_COLOR);
+
 		GameTooltip_AddColoredLine(GameTooltip, powerInfo.description, GREEN_FONT_COLOR);
 	
 		if not self.slotNames then
@@ -33,19 +35,36 @@ function RuneforgePowerBaseMixin:OnEnter()
 
 		if #self.slotNames > 0 then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddHighlightLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER);
-			GameTooltip_AddNormalLine(GameTooltip, table.concat(self.slotNames, LIST_DELIMITER));
+
+			local slotNames = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(table.concat(self.slotNames, LIST_DELIMITER));
+			GameTooltip_AddNormalLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_SLOT_HEADER:format(slotNames));
 		end
 
 		if not self:ShouldHideSource() and powerInfo.source then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddNormalLine(GameTooltip, powerInfo.source);
+
+			local sourceText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(powerInfo.source);
+			GameTooltip_AddNormalLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_SOURCE_FORMAT:format(sourceText));
 		end
 
 		if self:ShouldShowUnavailableError() and (powerInfo.state ~= Enum.RuneforgePowerState.Available) then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddErrorLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_NOT_COLLECTED);
 		end
+
+		local powerInfo = self:GetPowerInfo();
+		local specName = powerInfo and powerInfo.specName or nil;
+		if specName ~= nil then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+			if powerInfo.matchesSpec then
+				local requiresText = RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(specName));
+				GameTooltip_AddNormalLine(GameTooltip, requiresText);
+			else
+				GameTooltip_AddErrorLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(specName));
+			end
+		end
+
 
 		GameTooltip:Show();
 	end
@@ -86,6 +105,11 @@ function RuneforgePowerBaseMixin:SetPowerID(powerID)
 	self:OnPowerSet(oldPowerID, powerID);
 end
 
+function RuneforgePowerBaseMixin:ShouldHideSource()
+	local powerInfo = self:GetPowerInfo();
+	return (powerInfo == nil) or (powerInfo.state == Enum.RuneforgePowerState.Available);
+end
+
 function RuneforgePowerBaseMixin:GetPowerID()
 	return self.powerID;
 end
@@ -96,11 +120,6 @@ end
 
 function RuneforgePowerBaseMixin:OnPowerSet(oldPowerID, newPowerID)
 	-- override in your mixin.
-end
-
-function RuneforgePowerBaseMixin:ShouldHideSource()
-	-- override in your mixin.
-	return false;
 end
 
 function RuneforgePowerBaseMixin:ShouldShowUnavailableError()
@@ -236,9 +255,35 @@ function RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation)
 	return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and not C_LegendaryCrafting.IsRuneforgeLegendaryMaxLevel(itemLocation);
 end
 
+function RuneforgeUtil.GetRuneforgeFilterText(filter)
+	if filter == Enum.RuneforgePowerFilter.All then
+		return RUNEFORGE_POWER_FILTER_ALL;
+	elseif filter == Enum.RuneforgePowerFilter.Available then
+		return RUNEFORGE_POWER_FILTER_AVAILABLE;
+	elseif filter == Enum.RuneforgePowerFilter.Unavailable then
+		return RUNEFORGE_POWER_FILTER_UNAVAILABLE;
+	end
+
+	return nil;
+end
+
+function RuneforgeUtil.GetPreviewClassAndSpec()
+	local classID = select(3, UnitClass("player"));
+	local spec = GetSpecialization();
+	local specID = spec and GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")) or nil;
+	return classID, specID;
+end
+
 Enum.RuneforgePowerState =
 {
 	Available = 0,
 	Unavailable = 1,
 	Invalid = 2,
+};
+
+Enum.RuneforgePowerFilter =
+{
+	All = 0,
+	Available = 1,
+	Unavailable = 2,
 };

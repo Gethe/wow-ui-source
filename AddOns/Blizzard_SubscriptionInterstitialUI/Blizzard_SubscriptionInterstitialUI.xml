@@ -22,7 +22,7 @@
 		</Layers>
 	</Frame>
 
-	<Button name="SubscriptionInterstitialSubscribeButtonTemplate" mixin="SubscriptionInterstitialSubscribeButtonMixin" virtual="true">
+	<Button name="SubscriptionInterstitialSubscribeButtonTemplate" mixin="SubscriptionInterstitialSubscribeButtonBaseMixin" virtual="true">
 		<Size x="800" y="480"/>
 		<Anchors>
 			<Anchor point="CENTER" x="-1" y="-1"/>
@@ -63,31 +63,36 @@
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="SubscribeButton" inherits="SubscriptionInterstitialSubscribeButtonTemplate" hidden="true">
+			<Button parentKey="SubscribeButton" mixin="SubscriptionInterstitialSubscribeButtonMixin" inherits="SubscriptionInterstitialSubscribeButtonTemplate" hidden="true">
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="interstitial-newplayerexperience-subscribe" type="string"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="FirstLine" font="Game58Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
+						<FontString parentKey="FirstLine" mixin="ShrinkUntilTruncateFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
+							<Size x="410" y="60"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-142"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="SecondLine" font="Game52Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
-							<Anchors>
-								<Anchor point="TOP" x="-152" y="-203"/>
-							</Anchors>
-							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
-						</FontString>
-						<FontString parentKey="ThirdLine" font="Game69Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
+						<FontString parentKey="ThirdLine" mixin="ShrinkUntilTruncateFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
+							<Size x="480" y="70"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-256"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="ButtonText" font="SystemFont_Large" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_BUTTON">
+						<FontString parentKey="SecondLine" mixin="ShrinkUntilTruncateFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
+							<Size x="360" y="54"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.FirstLine" relativePoint="BOTTOM" x="0" y="-1"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.ThirdLine" relativePoint="TOP" x="0" y="3"/>
+							</Anchors>
+							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
+						</FontString>
+						<FontString parentKey="ButtonText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_BUTTON">
+							<Size x="140" y="16"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="-154" y="68"/>
 							</Anchors>
@@ -103,19 +108,22 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="TitleLine" font="Game40Font_Shadow2" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE">
+						<FontString parentKey="TitleLine" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE">
+							<Size x="355" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-82"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="TitleSubText" font="Game17Font_Shadow" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE_SUBTEXT">
+						<FontString parentKey="TitleSubText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE_SUBTEXT">
+							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-122"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="ButtonText" font="SystemFont_Med3" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_BUTTON">
+						<FontString parentKey="ButtonText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_BUTTON">
+							<Size x="140" y="16"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="-152" y="91"/>
 							</Anchors>

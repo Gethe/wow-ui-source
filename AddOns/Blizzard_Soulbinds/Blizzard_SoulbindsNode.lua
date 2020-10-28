@@ -176,7 +176,17 @@ function SoulbindTreeNodeMixin:GetConduitRank()
 end
 
 function SoulbindTreeNodeMixin:GetUnavailableReason()
-	return self.node.playerConditionReason;
+
+	if self.node.failureRenownRequirement then
+
+		local renownLevel = C_CovenantSanctumUI.GetRenownLevel();
+		local renownRequirement = self.node.failureRenownRequirement;
+
+		return SOULBIND_NODE_RENOWN_ERROR_FORMAT:format(renownRequirement, renownLevel);
+		
+	elseif self.node.playerConditionReason then
+		return self.node.playerConditionReason;
+	end
 end
 
 function SoulbindTreeNodeMixin:SetSelectableAnimShown(shown, editable, canSelectMultiple)

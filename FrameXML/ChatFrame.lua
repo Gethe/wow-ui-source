@@ -2131,11 +2131,16 @@ SlashCmdList["CHANNEL"] = function(msg, editBox)
 end
 
 SlashCmdList["FRIENDS"] = function(msg)
-	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-	if ( player ~= "" or UnitIsPlayer("target") ) then
-		C_FriendList.AddOrRemoveFriend(player, note);
-	else
+	if msg == "" and UnitIsPlayer("target") then
+		msg = GetUnitName("target", true)
+	end
+	if not msg or msg == "" then
 		ToggleFriendsPanel();
+	else 
+		local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if player then
+			C_FriendList.AddOrRemoveFriend(player, note);
+		end
 	end
 end
 

@@ -259,6 +259,15 @@
 						<Anchor point="LEFT" relativeKey="$parent.IconButton" relativePoint="RIGHT" x="8"/>
 					</Anchors>
 				</FontString>
+				<MaskTexture parentKey="IconMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTKWORK" textureSubLevel="1">
 				<Texture parentKey="SpellBorder" atlas="adventures-spell-border" useAtlasSize="true">

@@ -1172,6 +1172,18 @@ function NewRuneforgePowerAlertFrameMixin:OnPowerSet(oldPowerID, newPowerID)
 	self:SetUpDisplay(powerInfo.iconFileID, Enum.ItemQuality.Legendary, powerInfo.name, YOU_EARNED_LABEL);
 end
 
+function NewRuneforgePowerAlertFrameMixin:OnEnter()
+	RuneforgePowerBaseMixin.OnEnter(self);
+
+	AlertFrame_PauseOutAnimation(self);
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnLeave()
+	RuneforgePowerBaseMixin.OnLeave(self);
+
+	AlertFrame_ResumeOutAnimation(self);
+end
+
 function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
 		return;
@@ -1180,4 +1192,7 @@ function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 	if self:OnSelected() then
 		return;
 	end
+
+	EncounterJournal_LoadUI();
+	EncounterJournal_OpenToPowerID(self:GetPowerID());
 end

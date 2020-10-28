@@ -8,6 +8,19 @@ local function GetCurrentTier(talents)
 	return currentTier;
 end
 
+local function GetCovenantID()
+	return CovenantSanctumFrame:GetCovenantID();
+end
+
+local function GetCovenantData()
+	return CovenantSanctumFrame:GetCovenantData();
+end
+
+local function GetCovenantTextureKit()
+	local data = CovenantSanctumFrame:GetCovenantData();
+	return data.textureKit;
+end
+
 local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.Truncate, false);
 
@@ -41,9 +54,8 @@ local bagsGlowTextureKitRegions = {
 	["Glow"] = "CovenantSanctum-Bag-Glow-%s",
 }
 
-local g_sanctumTextureKit;
 local function SetupTextureKit(frame, regions)
-	SetupTextureKitOnRegions(g_sanctumTextureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(GetCovenantTextureKit(), frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 local EFFECT_MISSILE = 1;
@@ -52,41 +64,41 @@ local EFFECT_ANIMA_FULL = 3;
 local EFFECT_RESEARCH = 4;
 
 local covenantSanctumEffectList = {
-	["Venthyr"] = { 103, 107, 111, 115 },
-	["Kyrian"] = { 104, 108, 112, 116 },
-	["NightFae"] = { 105, 109, 113, 117 },
-	["Necrolord"] = { 106, 110, 114, 118 },
+	[Enum.CovenantType.Venthyr] = { 103, 107, 111, 115 },
+	[Enum.CovenantType.Kyrian] = { 104, 108, 112, 116 },
+	[Enum.CovenantType.NightFae] = { 105, 109, 113, 117 },
+	[Enum.CovenantType.Necrolord] = { 106, 110, 114, 118 },
 }
 
 local function GetEffectID(index)
-	local effectList = covenantSanctumEffectList[g_sanctumTextureKit];
+	local effectList = covenantSanctumEffectList[GetCovenantID()];
 	return effectList and effectList[index];
 end
 
- covenantSanctumFeatureDescription = {
+local covenantSanctumFeatureDescription = {
 	[Enum.GarrTalentFeatureType.AnimaDiversion] = {
-		["Venthyr"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_VENTHYR,
-		["Kyrian"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_KYRIAN,
-		["NightFae"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_NIGHTFAE,
-		["Necrolord"] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_NECROLORD,
+		[Enum.CovenantType.Venthyr] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_VENTHYR,
+		[Enum.CovenantType.Kyrian] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_KYRIAN,
+		[Enum.CovenantType.NightFae] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_NIGHTFAE,
+		[Enum.CovenantType.Necrolord] = COVENANT_SANCTUM_FEATURE_ANIMACONDUCTOR_NECROLORD,
 	},
 	[Enum.GarrTalentFeatureType.TravelPortals] = {
-		["Venthyr"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_VENTHYR,
-		["Kyrian"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_KYRIAN,
-		["NightFae"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_NIGHTFAE,
-		["Necrolord"] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_NECROLORD,
+		[Enum.CovenantType.Venthyr] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_VENTHYR,
+		[Enum.CovenantType.Kyrian] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_KYRIAN,
+		[Enum.CovenantType.NightFae] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_NIGHTFAE,
+		[Enum.CovenantType.Necrolord] = COVENANT_SANCTUM_FEATURE_TRAVELNETWORK_NECROLORD,
 	},
 	[Enum.GarrTalentFeatureType.Adventures] = {
-		["Venthyr"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_VENTHYR,
-		["Kyrian"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_KYRIAN,
-		["NightFae"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_NIGHTFAE,
-		["Necrolord"] = COVENANT_SANCTUM_FEATURE_ADVENTURES_NECROLORD,
+		[Enum.CovenantType.Venthyr] = COVENANT_SANCTUM_FEATURE_ADVENTURES_VENTHYR,
+		[Enum.CovenantType.Kyrian] = COVENANT_SANCTUM_FEATURE_ADVENTURES_KYRIAN,
+		[Enum.CovenantType.NightFae] = COVENANT_SANCTUM_FEATURE_ADVENTURES_NIGHTFAE,
+		[Enum.CovenantType.Necrolord] = COVENANT_SANCTUM_FEATURE_ADVENTURES_NECROLORD,
 	},
 	[Enum.GarrTalentFeatureType.SanctumUnique] = {
-		["Venthyr"] = COVENANT_SANCTUM_UNIQUE_VENTHYR,
-		["Kyrian"] = COVENANT_SANCTUM_UNIQUE_KYRIAN,
-		["NightFae"] = COVENANT_SANCTUM_UNIQUE_NIGHTFAE,
-		["Necrolord"] = COVENANT_SANCTUM_UNIQUE_NECROLORD,
+		[Enum.CovenantType.Venthyr] = COVENANT_SANCTUM_UNIQUE_VENTHYR,
+		[Enum.CovenantType.Kyrian] = COVENANT_SANCTUM_UNIQUE_KYRIAN,
+		[Enum.CovenantType.NightFae] = COVENANT_SANCTUM_UNIQUE_NIGHTFAE,
+		[Enum.CovenantType.Necrolord] = COVENANT_SANCTUM_UNIQUE_NECROLORD,
 	},
 };
 
@@ -126,6 +138,7 @@ function CovenantSanctumUpgradesTabMixin:OnShow()
 
 	self.ReservoirUpgrade:UpdateAnima();
 	self:UpdateCurrencies();
+	self:CheckTutorials();
 end
 
 function CovenantSanctumUpgradesTabMixin:OnHide()
@@ -183,7 +196,7 @@ function CovenantSanctumUpgradesTabMixin:OnResearchStarted(talentTreeID)
 			end
 			break;
 		end
-	end	
+	end
 end
 
 function CovenantSanctumUpgradesTabMixin:OnAnimaGained()
@@ -267,7 +280,7 @@ function CovenantSanctumUpgradesTabMixin:GetSelectedTreeDescriptionText()
 end
 
 function CovenantSanctumUpgradesTabMixin:DepositAnima()
-	self:GetParent():AcknowledgeDepositTutorial();
+	HelpTip:Acknowledge(self, COVENANT_SANCTUM_TUTORIAL4);
 	C_CovenantSanctumUI.DepositAnima();
 end
 
@@ -318,9 +331,9 @@ function CovenantSanctumUpgradesTabMixin:SetUpUpgrades()
 end
 
 function CovenantSanctumUpgradesTabMixin:SetUpTextureKits()
-	local textureKit = self:GetParent():GetTextureKit();
-	if g_sanctumTextureKit ~= textureKit then
-		g_sanctumTextureKit = textureKit;
+	local covenantID = GetCovenantID();
+	if self.covenantID ~= covenantID then
+		self.covenantID = covenantID;
 
 		SetupTextureKit(self, mainTextureKitRegions);
 		SetupTextureKit(self.TalentsList, listTextureKitRegions);
@@ -347,6 +360,42 @@ function CovenantSanctumUpgradesTabMixin:GetSortedResearchCurrencyCosts(currency
 		end
 	end
 	return outputTable;
+end
+
+function CovenantSanctumUpgradesTabMixin:CheckTutorials()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_COVENANT_RESERVOIR_DEPOSIT) and C_CovenantSanctumUI.CanDepositAnima() then
+		local helpTipInfo = {
+			text = COVENANT_SANCTUM_TUTORIAL4,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_COVENANT_RESERVOIR_DEPOSIT,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
+		};
+		HelpTip:Show(self, helpTipInfo, self.DepositButton);
+	elseif not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_COVENANT_RESERVOIR_FEATURES) and self:HasAnySoulCurrencies() then
+		local helpTipInfo = {
+			text = COVENANT_SANCTUM_TUTORIAL5,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_COVENANT_RESERVOIR_FEATURES,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 59,
+			offsetY = 179,
+		};
+		HelpTip:Show(self, helpTipInfo);
+	end
+end
+
+function CovenantSanctumUpgradesTabMixin:HasAnySoulCurrencies()
+	local currencies = C_CovenantSanctumUI.GetSoulCurrencies();
+	for i, currencyID in ipairs(currencies) do
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+		if currencyInfo.quantity > 0 then
+			return true;
+		end
+	end
+	return false;
 end
 
 --=============================================================================================
@@ -439,7 +488,7 @@ function CovenantSanctumIntroBoxMixin:SetTalent(talentID)
 	local panel = list:GetParent();
 	self.Description:SetText(panel:GetSelectedTreeDescriptionText());
 
-	local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.IntroBoxBackground, g_sanctumTextureKit);
+	local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.IntroBoxBackground, GetCovenantTextureKit());
 	self.Background:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
 	self:SetStatusText();
@@ -544,14 +593,14 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo, inIntroMode)
 	if disabled then
 		self.IconBorder:SetAtlas("CovenantSanctum-Upgrade-Icon-Border-Disabled", TextureKitConstants.UseAtlasSize);
 	else
-		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.IconBorder, g_sanctumTextureKit);
+		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.IconBorder, GetCovenantTextureKit());
 		self.IconBorder:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	end
 
 	if talentInfo.talentAvailability == Enum.GarrisonTalentAvailability.Available then
 		self.Border:SetAtlas("CovenantSanctum-Upgrade-Border-Available");
 	else
-		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, g_sanctumTextureKit);
+		local atlas = GetFinalNameFromTextureKit(upgradeTextureKitRegions.Border, GetCovenantTextureKit());
 		self.Border:SetAtlas(atlas);
 	end
 
@@ -599,7 +648,7 @@ function CovenantSanctumUpgradeTalentMixin:RefreshTooltip()
 			GameTooltip_AddColoredLine(GameTooltip, TOOLTIP_TALENT_NEXT_RANK, HIGHLIGHT_FONT_COLOR);
 			GameTooltip:AddLine(talent.researchDescription, nil, nil, nil, true);
 		end
-	else 
+	else
 		GameTooltip:AddLine(talent.name, 1, 1, 1);
 		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
 	end
@@ -690,8 +739,9 @@ function CovenantSanctumUpgradeBaseMixin:GetTier()
 end
 
 function CovenantSanctumUpgradeBaseMixin:GetDescriptionText()
-	if self.featureType and covenantSanctumFeatureDescription[self.featureType] and covenantSanctumFeatureDescription[self.featureType][g_sanctumTextureKit] then
-		return covenantSanctumFeatureDescription[self.featureType][g_sanctumTextureKit];
+	local covenantID = GetCovenantID();
+	if self.featureType and covenantSanctumFeatureDescription[self.featureType] and covenantSanctumFeatureDescription[self.featureType][covenantID] then
+		return covenantSanctumFeatureDescription[self.featureType][covenantID];
 	end
 	return "";
 end
@@ -699,10 +749,11 @@ end
 function CovenantSanctumUpgradeBaseMixin:OnMouseDown()
 	local parent = self:GetParent();
 	if parent:GetSelectedTree() ~= self.treeID then
-		local uiPanel = parent:GetParent();
-		uiPanel:AcknowledgeFeaturesTutorial();
+		HelpTip:Acknowledge(parent, COVENANT_SANCTUM_TUTORIAL5);
 		parent:SetSelectedTree(self.treeID);
-		PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_SELECT_BUILDING, nil, SOUNDKIT_ALLOW_DUPLICATES);
+
+		local covenantData = GetCovenantData();
+		PlaySound(covenantData.upgradeTabSelectSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 
@@ -720,7 +771,7 @@ function CovenantSanctumUpgradeBaseMixin:RefreshTooltip()
 				timeRemaining = talentInfo.timeRemaining;
 				break;
 			end
-		end	
+		end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, treeInfo.title);
 		GameTooltip_AddNormalLine(GameTooltip, self:GetDescriptionText());
@@ -754,6 +805,11 @@ CovenantSanctumUpgradeTreeMixin = CreateFromMixins(CovenantSanctumUpgradeBaseMix
 
 --=============================================================================================
 CovenantSanctumUpgradeReservoirMixin = CreateFromMixins(CovenantSanctumUpgradeBaseMixin);
+
+function CovenantSanctumUpgradeReservoirMixin:OnHide()
+	local isFull = false;
+	self:UpdateFullSound(isFull);
+end
 
 function CovenantSanctumUpgradeReservoirMixin:SetUpTextureKit()
 	SetupTextureKit(self, reservoirTextureKitRegions);
@@ -808,7 +864,20 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 			modelScene.effect = modelScene:AddEffect(effectID, self);
 		end
 	end
+
+	self:UpdateFullSound(isFull);
 end
+
+function CovenantSanctumUpgradeReservoirMixin:UpdateFullSound(isFull)
+	local covenantData = GetCovenantData();
+	if isFull and not self.fullAnimaSoundHandle then
+		self.fullAnimaSoundHandle = select(2, PlaySound(covenantData.reservoirFullSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES));
+	elseif not isFull and self.fullAnimaSoundHandle then
+		StopSound(self.fullAnimaSoundHandle);
+		self.fullAnimaSoundHandle = nil;
+	end
+end
+
 
 function CovenantSanctumUpgradeReservoirMixin:GetAnimaAmount()
 	return self.value;
@@ -824,4 +893,13 @@ function CovenantSanctumUpgradeReservoirMixin:CancelAnimaGainEffect()
 	self.SparkGlow:SetAlpha(0);
 	self.GlowAnim:Stop();
 	self.Glow:SetAlpha(0);
+end
+
+CovenantSanctumUpgradeButtonMixin = {};
+
+function CovenantSanctumUpgradeButtonMixin:OnClick(button)
+	self:GetParent():Upgrade();
+
+	local covenantData = GetCovenantData();
+	PlaySound(covenantData.beginResearchSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end

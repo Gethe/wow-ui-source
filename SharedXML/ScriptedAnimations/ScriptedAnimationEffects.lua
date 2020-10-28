@@ -260,6 +260,10 @@ local TrajectoryToCallback = {
 -- (5) Starting alpha
 -- An additional column to support an override for the effect actor's starting alpha.
 -- startingAlpha: the effect actor's starting alpha.
+--
+-- (6) Playing Effect at Target without pitching from source 
+-- A flag to allow an effect to play at a target without augmenting it's yaw by the source->target vector
+-- useTargetAsSource: set to true for readability, anything nonfalse will evaluate to use the default angles. 
 
 Enum.ScriptedAnimationTransformation = {};
 Enum.ScriptedAnimationTransformation.Alpha = 1;
@@ -373,6 +377,10 @@ local ScriptAnimationTableExtension = {
 
 	[98] = {
 		animation = 158,
+	},
+
+	[99] = {
+		useTargetAsSource = true,
 	},
 
 	[119] = {

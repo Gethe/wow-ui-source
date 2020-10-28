@@ -274,10 +274,6 @@ function AnimaDiversionPinMixin:SetSelectedState(selected, leaveOtherSelections)
 end 
 
 function AnimaDiversionPinMixin:OnMouseEnter() 
-	if AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self) then 
-		return;
-	end 
-
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	self:RefreshTooltip();
 end
@@ -309,6 +305,7 @@ function AnimaDiversionPinMixin:RefreshTooltip()
 					GameTooltip_AddHighlightLine(GameTooltip, costString);
 				end
 			end
+			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_CLICK_CHANNEL, GREEN_FONT_COLOR);
 		end
 		local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
 		if worldQuestID then
@@ -343,13 +340,8 @@ function AnimaDiversionPinMixin:OnClick(button)
 
 		AnimaDiversionFrame.ReinforceInfoFrame:SelectNodeToReinforce(self);
 	else
-		if self.nodeData.state ~= Enum.AnimaDiversionNodeState.Available then 
-			return;
-		end
-
-		AnimaDiversionFrame.SelectPinInfoFrame:SetupAndShow(self);
-		if AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self) then 
-			GameTooltip:Hide();
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+			StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", self.nodeData.name, nil, self);
 		end
 	end
 end

@@ -253,7 +253,10 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 			local itemID, textureName, quality = GetVoidTransferDepositInfo(i);
 			button = _G["VoidStorageDepositButton"..i];
 			button.icon:SetTexture(textureName);
-			SetItemButtonQuality(button, quality, itemID);
+
+			local doNotSuppressOverlays = false;
+			local isBound = true;
+			SetItemButtonQuality(button, quality, itemID, doNotSuppressOverlays, isBound);
 
 			if ( itemID ) then
 				button.hasItem = true;
@@ -268,7 +271,10 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 			local itemID, textureName, quality = GetVoidTransferWithdrawalInfo(i);
 			button = _G["VoidStorageWithdrawButton"..i];
 			button.icon:SetTexture(textureName);
-			SetItemButtonQuality(button, quality, itemID);
+
+			local doNotSuppressOverlays = false;
+			local isBound = true;
+			SetItemButtonQuality(button, quality, itemID, doNotSuppressOverlays, isBound);
 			if ( itemID ) then
 				button.hasItem = true;
 			else
@@ -308,7 +314,9 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 				button.searchOverlay:Hide();
 			end
 
-			SetItemButtonQuality(button, quality, itemID);
+			local doNotSuppressOverlays = false;
+			local isBound = true;
+			SetItemButtonQuality(button, quality, itemID, doNotSuppressOverlays, isBound);
 		end
 	end
 	if ( VoidStorageFrame.mousedOverButton ) then

@@ -115,7 +115,7 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
 end
 
-function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound)
 	if button.useCircularIconBorder then
 		button.IconBorder:Show();
 
@@ -157,7 +157,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 		end
 		
 		if not suppressOverlays then
-			SetItemButtonOverlay(button, itemIDOrLink, quality);
+			SetItemButtonOverlay(button, itemIDOrLink, quality, isBound);
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
@@ -175,7 +175,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 	end
 end
 
-function SetItemButtonOverlay(button, itemIDOrLink, quality)
+function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	button.IconOverlay:SetVertexColor(1,1,1);
 	if button.IconOverlay2 then
 		button.IconOverlay2:Hide();
@@ -187,7 +187,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality)
 	elseif IsCorruptedItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
 		button.IconOverlay:Show();
-	elseif IsCosmeticItem(itemIDOrLink) then
+	elseif IsCosmeticItem(itemIDOrLink) and not isBound then
 		button.IconOverlay:SetAtlas("CosmeticIconFrame");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then

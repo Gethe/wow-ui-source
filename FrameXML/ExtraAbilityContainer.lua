@@ -10,6 +10,7 @@ function ExtraAbilityContainerMixin:OnLoad()
 end
 
 function ExtraAbilityContainerMixin:OnShow()
+	ExtraActionBar_Update();
 	UIParent_ManageFramePositions();
 end
 

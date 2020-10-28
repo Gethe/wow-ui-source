@@ -354,7 +354,12 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 
-	if EncounterJournal.instanceSelect:IsShown() then
+	local shouldShowPowerTab, powerID = EJMicroButton:ShouldShowPowerTab();
+	if shouldShowPowerTab then
+		self.LootJournal:SetPendingPowerID(powerID);
+		EJ_ContentTab_Select(instanceSelect.LootJournalTab.id);
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_RUNEFORGE_LEGENDARY_POWER, true);
+	elseif EncounterJournal.instanceSelect:IsShown() then
 		EJ_ContentTab_Select(self.selectedTab);
 	end
 
@@ -2398,6 +2403,12 @@ function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
 	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
 end
 
+function EncounterJournal_OpenToPowerID(powerID)
+	ShowUIPanel(EncounterJournal);
+	EJ_ContentTab_Select(EncounterJournal.instanceSelect.LootJournalTab.id);
+	EncounterJournal.LootJournal:OpenToPowerID(powerID);
+end
+
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	EJ_HideNonInstancePanels();
 	ShowUIPanel(EncounterJournal);
@@ -2832,10 +2843,12 @@ end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
-		EJSuggestFrame_RefreshDisplay();
-		local newAdventureNotice = ...;
-		if ( newAdventureNotice ) then
-			EJMicroButton:UpdateNewAdventureNotice();
+		if self:GetParent().selectedTab == self.id then
+			EJSuggestFrame_RefreshDisplay();
+			local newAdventureNotice = ...;
+			if ( newAdventureNotice ) then
+				EJMicroButton:UpdateNewAdventureNotice();
+			end
 		end
 	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()

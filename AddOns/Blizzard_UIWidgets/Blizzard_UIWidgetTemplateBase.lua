@@ -33,7 +33,7 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
-	EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor);
+	EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
 end
 
 function UIWidgetTemplateTooltipFrameMixin:OnEnter()

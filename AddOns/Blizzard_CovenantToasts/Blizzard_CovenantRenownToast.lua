@@ -30,6 +30,9 @@ end
 function CovenantRenownToastMixin:ShowRenownLevelUpToast(covenantID, renownLevel)
 	local covenantData = C_Covenants.GetCovenantData(covenantID);
 	if covenantData then
+		if CovenantRenownFrame then
+			HideUIPanel(CovenantRenownFrame);
+		end
 		TopBannerManager_Show(self, { 
 			covenantID = covenantID,
 			name = covenantData.name, 

@@ -1785,6 +1785,82 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="Game32Font_Shadow2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="32">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="32">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="32">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="32">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="32">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game36Font_Shadow2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="36">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="36">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="36">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="36">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="36">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="Game40Font_Shadow2" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="40">
@@ -1816,6 +1892,44 @@
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="40">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game46Font_Shadow2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="46">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="46">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="46">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="46">
+				<Shadow x="2" y="-2">
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="46">
 				<Shadow x="2" y="-2">
 					<Color r="0" g="0" b="0"/>
 				</Shadow>

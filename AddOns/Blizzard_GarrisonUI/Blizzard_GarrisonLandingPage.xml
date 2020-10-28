@@ -479,11 +479,6 @@
 								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="SubTitle" inherits="GameFontHighlightLarge" justifyH="LEFT" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
-							</Anchors>
-						</FontString>
 						<Texture parentKey="Background" alpha="0.8">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="205" y="40"/>
@@ -494,10 +489,10 @@
 				<Frames>
 					<Frame parentKey="Sections" inherits="VerticalLayoutFrame">
 						<KeyValues>
-							<KeyValue key="spacing" value="-34" type="number"/>
+							<KeyValue key="spacing" value="20" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SubTitle" relativePoint="BOTTOMLEFT" x="-44" y="-10"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-44" y="-10"/>
 							<Anchor point="BOTTOMLEFT" x="300"/>
 						</Anchors>
 					</Frame>

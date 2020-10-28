@@ -83,7 +83,7 @@ function BankFrameItemButton_Update (button)
 	local texture = button.icon;
 	local inventoryID = button:GetInventorySlot();
 	local textureName = GetInventoryItemTexture("player",inventoryID);
-	local _, _, _, quality, _, _, _, isFiltered, _, itemID = GetContainerItemInfo(container, buttonID);
+	local _, _, _, quality, _, _, _, isFiltered, _, itemID, isBound = GetContainerItemInfo(container, buttonID);
 	local slotName = button:GetName();
 	local id;
 	local slotTextureName;
@@ -122,7 +122,8 @@ function BankFrameItemButton_Update (button)
 	button:UpdateItemContextMatching();
 	button:SetMatchesSearch(not isFiltered);
 
-	SetItemButtonQuality(button, quality, itemID);
+	local doNotSuppressOverlays = false;
+	SetItemButtonQuality(button, quality, itemID, doNotSuppressOverlays, isBound);
 
 	BankFrameItemButton_UpdateLocked(button);
 	BankFrame_UpdateCooldown(container, button);

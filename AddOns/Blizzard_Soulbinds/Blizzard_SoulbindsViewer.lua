@@ -63,6 +63,7 @@ function SoulbindViewerMixin:OnEvent(event, ...)
 	elseif event == "SOULBIND_FORGE_INTERACTION_ENDED" then
 		HideUIPanel(self);
 	elseif event == "SOULBIND_ACTIVATED" then
+		Soulbinds.SetSoulbindIDActivationPending(nil);
 		local soulbindID = ...;
 		self:OnSoulbindActivated(...);
 	elseif event == "SOULBIND_PENDING_CONDUIT_CHANGED" then
@@ -88,17 +89,13 @@ function SoulbindViewerMixin:OnShow()
 
 	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	
+	self:UpdateBackgrounds();
+
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	OpenAllBagsMatchingContext(self);
 
 	self.openedBags = IsAnyBagOpen();
 	self:CheckTutorials();
-
-	self.ForgeSheen.Anim:Play();
-	self.BackgroundSheen1.Anim:Play();
-	self.BackgroundSheen2.Anim:Play();
-	self.RotationSheen.Anim:Play();
-	self.ChargeSheen.Anim:Play();
 end
 
 function SoulbindViewerMixin:OnHide()
@@ -121,6 +118,19 @@ function SoulbindViewerMixin:OnHide()
 		CloseAllBags(self, forceUpdate);
 		self.openedBags = nil;
 	end
+	
+	StaticPopup_Hide("SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION");
+	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
+end
+
+function SoulbindViewerMixin:SetSheenAnimationsPlaying(playing)
+	self.ForgeSheen.Anim:SetPlaying(playing);
+	self.BackgroundSheen1.Anim:SetPlaying(playing);
+	self.BackgroundSheen2.Anim:SetPlaying(playing);
+	self.GridSheen.Anim:SetPlaying(playing);
+	self.BackgroundRuneLeft.Anim:SetPlaying(playing);
+	self.BackgroundRuneRight.Anim:SetPlaying(playing);
+	self.ConduitList.Fx.ChargeSheen.Anim:SetPlaying(playing);
 end
 
 function SoulbindViewerMixin:UpdateButtons()
@@ -129,9 +139,15 @@ function SoulbindViewerMixin:UpdateButtons()
 end
 
 function SoulbindViewerMixin:UpdateBackgrounds()
-	local open = self:IsActiveSoulbindOpen();
-	self.Background:SetDesaturated(not open);
-	self.Background2:SetDesaturated(not open);
+	self:SetBackgroundStateActive(self:IsActiveSoulbindOpen());
+end
+
+function SoulbindViewerMixin:SetBackgroundStateActive(active)
+	self.Background:SetDesaturated(not active);
+	self.Background2:SetDesaturated(not active);
+	self.BackgroundBlackOverlay:SetShown(not active);
+	self.ConduitPreview:SetDesaturated(not active);
+	self:SetSheenAnimationsPlaying(active);
 end
 
 function SoulbindViewerMixin:OnPendingConduitChanged(nodeID)
@@ -190,8 +206,9 @@ function SoulbindViewerMixin:Init(covenantData, soulbindData)
 	self.covenantData = covenantData;
 
 	local background = "Soulbinds_Background";
+	local background2 = "Soulbinds_Background_Activate";
 	self.Background:SetAtlas(background, true);
-	self.Background2:SetAtlas(background, true);
+	self.Background2:SetAtlas(background2, true);
 	self:UpdateBackgrounds();
 
 	self.Tree:Init(soulbindData);
@@ -221,17 +238,6 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
-	local open = self:IsActiveSoulbindOpen();
-	self.Background:SetDesaturated(not open);
-	self.Background2:SetDesaturated(not open);
-	self.Background2.ActivateAnim:Play();
-	self.ActivateFX.ActivateAnim:Play();
-	self.Fx.ActivateFXLensFlare1.ActivateAnim:Play();
-	self.Fx.ActivateFXLensFlare2.ActivateAnim:Play();
-	self.Fx.ActivateFXRunes1.ActivateAnim:Play();
-	self.Fx.ActivateFXRunes2.ActivateAnim:Play();
-	self.SelectGroup:OnSoulbindActivated(soulbindID);
-
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
 	self.Tree:Init(soulbindData);
 	self:UpdateButtons();
@@ -284,13 +290,50 @@ end
 
 function SoulbindViewerMixin:OnActivateSoulbindClicked()
 	self.ActivateSoulbindButton:SetEnabled(false);
-	C_Soulbinds.ActivateSoulbind(self:GetOpenSoulbindID());
+
+	local openSoulbindID = self:GetOpenSoulbindID();
+	Soulbinds.SetSoulbindIDActivationPending(openSoulbindID);
+	self.SelectGroup:OnSoulbindActivated(openSoulbindID);
+
+	C_Soulbinds.ActivateSoulbind(openSoulbindID);
+
 	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	
+	self.Background2.ActivateAnim:Play();
+	self.ActivateFX.ActivateAnim:Play();
+	self.ActivateFX2.ActivateAnim:Play();
+	self.Fx.ActivateFXLensFlare1.ActivateAnim:Play();
+	self.Fx.ActivateFXLensFlare2.ActivateAnim:Play();
+	self.Fx.ActivateFXRunes1.ActivateAnim:Play();
+	self.Fx.ActivateFXRunes2.ActivateAnim:Play();
+	self.Fx.ActivateFXDiamond.ActivateAnim:Play();
+	self.Fx.ActivateFXDiamondArrows.ActivateAnim:Play();
+	self.Fx.ActivateFXDiamondFlipped.ActivateAnim:Play();
+	self.Fx.ActivateFXStarfield.ActivateAnim:Play();
+	self.Fx.ActivateFXRingLarge.ActivateAnim:Play();
+	self.Fx.ActivateFXRingSmall.ActivateAnim:Play();
+	self:Shake();
+
+	self:SetBackgroundStateActive(true);
 
 	if Soulbinds.HasNewSoulbindTutorial(self.soulbindData.ID) then
 		GlowEmitterFactory:Hide(self.ActivateSoulbindButton);
 	end
 	SetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex, true);
+end
+
+function SoulbindViewerMixin:Shake()
+	if self:IsShown() then
+		local SHAKE = { { x = 0, y = -10}, { x = 0, y = 10}, { x = 0, y = -10}, { x = 0, y = 10}, { x = -6, y = -4}, { x = 4, y = 4}, { x = -2, y = -4}, { x = 6, y = 4}, { x = -4, y = -2}, { x = 2, y = 2}, { x = -2, y = -4}, { x = -2, y = -2}, { x = 4, y = 2}, { x = 4, y = 4}, { x = -4, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 2}, { x = -4, y = -2}, { x = 2, y = 2}, { x = -2, y = -4}, { x = -2, y = -2}, { x = 4, y = 2}, { x = 4, y = 4}, { x = -4, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 2}, { x = -4, y = -2}, { x = 2, y = 2}, { x = -2, y = -4}, { x = -2, y = -2}, { x = 4, y = 2}, { x = 4, y = 4}, { x = -4, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 2}, { x = -4, y = -2}, { x = 2, y = 2}, { x = -2, y = -4}, { x = -2, y = -2}, { x = 4, y = 2}, { x = 4, y = 4}, { x = -4, y = 4}, { x = 4, y = -4}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, { x = -2, y = -1}, { x = 1, y = 1}, { x = -1, y = -2}, { x = -1, y = -1}, { x = 2, y = 1}, { x = 2, y = 2}, { x = -2, y = 2}, { x = 2, y = -2}, { x = -2, y = 1}, { x = -1, y = 1}, };
+		local SHAKE_DURATION = 0.1;
+		local SHAKE_FREQUENCY = 0.001;
+		local SHAKE_DELAY = 0.28;
+		C_Timer.After(SHAKE_DELAY,
+			function()
+				ScriptAnimationUtil.ShakeFrame(UIParent, SHAKE, SHAKE_DURATION, SHAKE_FREQUENCY)
+			end
+		);
+	end
 end
 
 function SoulbindViewerMixin:OnActivateSoulbindEnter()

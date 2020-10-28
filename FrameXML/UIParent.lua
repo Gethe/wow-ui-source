@@ -146,7 +146,7 @@ function GetOffsetForDebugMenu()
 	return debugMenuOffset + revealTimeTrackOffset;
 end
 
-function UpdateUIParentRelativeToDebugMenu() 
+function UpdateUIParentRelativeToDebugMenu()
 	local topOffset = GetOffsetForDebugMenu();
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
 end
@@ -395,7 +395,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
 	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");
 	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
-	self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED");	
+	self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED");
 	self:RegisterEvent("COVENANT_RENOWN_INTERACTION_STARTED");
 
 	-- Shop (for Asia promotion)
@@ -455,20 +455,20 @@ function UIParent_OnLoad(self)
 	-- Event(s) for Item Interaction
     self:RegisterEvent("ITEM_INTERACTION_OPEN");
 
-	-- Event(s) for Chromie Time UI 
+	-- Event(s) for Chromie Time UI
 	self:RegisterEvent("CHROMIE_TIME_OPEN");
 
-	-- Event(s) for Covenant Preview UI 
-	self:RegisterEvent("COVENANT_PREVIEW_OPEN"); 
+	-- Event(s) for Covenant Preview UI
+	self:RegisterEvent("COVENANT_PREVIEW_OPEN");
 
-	-- Event(s) for Anima Diversion UI 
+	-- Event(s) for Anima Diversion UI
 	self:RegisterEvent("ANIMA_DIVERSION_OPEN");
 
-	-- Event(s) for Runeforge UI 
+	-- Event(s) for Runeforge UI
 	self:RegisterEvent("RUNEFORGE_LEGENDARY_CRAFTING_OPENED");
 
-	-- Event(s) for Weekly Rewards UI 
-	self:RegisterEvent("WEEKLY_REWARDS_SHOW");	
+	-- Event(s) for Weekly Rewards UI
+	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
 end
 
 function UIParent_OnShow(self)
@@ -480,11 +480,19 @@ function UIParent_OnShow(self)
 	if ( LowHealthFrame ) then
 		LowHealthFrame:EvaluateVisibleState();
 	end
+
+	if ActionStatus then
+		ActionStatus:UpdateParent();
+	end
 end
 
 function UIParent_OnHide(self)
 	if ( LowHealthFrame ) then
 		LowHealthFrame:EvaluateVisibleState();
+	end
+
+	if ActionStatus then
+		ActionStatus:UpdateParent();
 	end
 end
 
@@ -672,7 +680,7 @@ end
 
 function PlayerChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_PlayerChoiceUI");
-end 
+end
 
 function Store_LoadUI()
 	UIParentLoadAddOn("Blizzard_StoreUI");
@@ -775,23 +783,23 @@ end
 
 function ChromieTimeFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ChromieTimeUI");
-end 
+end
 
 function CovenantPreviewFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_CovenantPreviewUI");
-end 
+end
 
 function AnimaDiversionFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_AnimaDiversionUI");
-end 
+end
 
 function RuneforgeFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_RuneforgeUI");
-end 
+end
 
 function SubscriptionInterstitial_LoadUI()
 	LoadAddOn("Blizzard_SubscriptionInterstitialUI");
-end 
+end
 
 local playerEnteredWorld = false;
 local varsLoaded = false;
@@ -918,23 +926,23 @@ local function ToggleClubFinderBasedOnType(isGuildType)
 	ToggleCommunitiesFrame();
 	local communitiesFrame = CommunitiesFrame;
 
-	if( not communitiesFrame:IsShown()) then 
+	if( not communitiesFrame:IsShown()) then
 		return;
-	end 
+	end
 
-	if (isGuildType) then 
+	if (isGuildType) then
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
-	else 
+	else
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
 	end
 
 	communitiesFrame.GuildFinderFrame.isGuildType = isGuildType;
 	communitiesFrame.GuildFinderFrame.selectedTab = 1;
-	communitiesFrame.GuildFinderFrame:UpdateType(); 
+	communitiesFrame.GuildFinderFrame:UpdateType();
 
 	communitiesFrame:SelectClub(nil);
 	communitiesFrame.Inset:Hide();
-end 
+end
 
 function ToggleGuildFinder()
 	if (Kiosk.IsEnabled()) then
@@ -1574,11 +1582,11 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
-			if(not PlayerChoiceFrame) then 
+			if(not PlayerChoiceFrame) then
 				PlayerChoice_LoadUI();
 			end
 			PlayerChoiceToggleButton:TryShow();
-		end 
+		end
 
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
@@ -1948,7 +1956,7 @@ function UIParent_OnEvent(self, event, ...)
 			ShowUIPanel(BFAMissionFrame);
 		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 ) then
 			ShowUIPanel(CovenantMissionFrame);
-		end	
+		end
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then
@@ -2332,14 +2340,14 @@ function UIParent_OnEvent(self, event, ...)
 		ChromieTimeFrame_LoadUI();
 		ShowUIPanel(ChromieTimeFrame);
 	elseif (event == "ANIMA_DIVERSION_OPEN") then
-		AnimaDiversionFrame_LoadUI(); 
+		AnimaDiversionFrame_LoadUI();
 		AnimaDiversionFrame:TryShow(...);
 	elseif (event == "RUNEFORGE_LEGENDARY_CRAFTING_OPENED") then
 		RuneforgeFrame_LoadUI();
-		
+
 		local isUpgrade = ...;
 		RuneforgeFrame:SetRuneforgeState(isUpgrade and RuneforgeUtil.RuneforgeState.Upgrade or RuneforgeUtil.RuneforgeState.Craft);
-		
+
 		ShowUIPanel(RuneforgeFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
@@ -2367,7 +2375,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- Clear keyboard focus.
 		local autoCompleteBoxList = { AutoCompleteBox }
-		if LFGListFrame and LFGListFrame.SearchPanel and LFGListFrame.SearchPanel.AutoCompleteFrame then 
+		if LFGListFrame and LFGListFrame.SearchPanel and LFGListFrame.SearchPanel.AutoCompleteFrame then
 			tinsert(autoCompleteBoxList, LFGListFrame.SearchPanel.AutoCompleteFrame);
 		end
 
@@ -3093,7 +3101,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 end
 
 function FramePositionDelegate:UpdateScaleForFit(frame)
-	UpdateScaleForFit(frame); 
+	UpdateScaleForFit(frame);
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()
@@ -4317,10 +4325,10 @@ function ToggleGameMenu()
 	elseif ( securecall("BFAMissionFrame_EscapePressed") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
-	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then 
+	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then
 	elseif ( securecall("CloseAllWindows") ) then
-	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then 
-		CovenantPreviewFrame:HandleEscape(); 
+	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then
+		CovenantPreviewFrame:HandleEscape();
 	elseif ( LootFrame:IsShown() ) then
 		-- if we're here, LootFrame was opened under the mouse (cvar "lootUnderMouse") so it didn't get closed by CloseAllWindows
 		LootFrame:Hide();
@@ -4418,7 +4426,7 @@ function GetBindingFromClick(input)
 	if ( IsShiftKeyDown() ) then
 		fullInput = fullInput.."SHIFT-"
 	end
- 
+
 	 if ( IsMetaKeyDown() ) then
 		 fullInput = fullInput.."META-"
 	 end
@@ -4837,15 +4845,15 @@ end
 -- local difficulty = C_PlayerInfo.GetContentDifficultyCreatureForPlayer(self.unit)
 -- local color = GetDifficultyColor(difficulty);
 function GetDifficultyColor(difficulty)
-	if (difficulty == Enum.RelativeContentDifficulty.Trivial) then 
+	if (difficulty == Enum.RelativeContentDifficulty.Trivial) then
 		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"]; -- Grey
-	elseif (difficulty == Enum.RelativeContentDifficulty.Easy) then 
+	elseif (difficulty == Enum.RelativeContentDifficulty.Easy) then
 		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"]; -- Green
-	elseif (difficulty == Enum.RelativeContentDifficulty.Fair) then 
+	elseif (difficulty == Enum.RelativeContentDifficulty.Fair) then
 		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"]; -- Yellow
-	elseif (difficulty == Enum.RelativeContentDifficulty.Difficult) then 
+	elseif (difficulty == Enum.RelativeContentDifficulty.Difficult) then
 		return QuestDifficultyColors["verydifficult"], QuestDifficultyHighlightColors["verydifficult"]; -- Orange
-	elseif (difficulty == Enum.RelativeContentDifficulty.Impossible) then 
+	elseif (difficulty == Enum.RelativeContentDifficulty.Impossible) then
 		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"]; -- Red
 	else
 		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"]; -- Yellow

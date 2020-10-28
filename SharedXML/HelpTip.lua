@@ -20,6 +20,7 @@
 		system = ""								-- reference string
 		systemPriority = 0,						-- if a system and a priority is specified, higher priority helptips will close another helptip in that system
 		extraRightMarginPadding = 0,			--  extra padding on the right side of the helptip
+		acknowledgeOnHide = false,				-- whether to treat a hide as an acknowledge
 	}
 ]]--
 
@@ -338,6 +339,9 @@ function HelpTipTemplateMixin:OnHide()
 	if info.onHideCallback then
 		info.onHideCallback(self.acknowledged, info.callbackArg);
 	end
+	if not self.acknowledged and info.acknowledgeOnHide then
+		self:HandleAcknowledge();
+	end
 	if self.acknowledged and info.onAcknowledgeCallback then
 		info.onAcknowledgeCallback(info.callbackArg);
 	end
@@ -549,6 +553,11 @@ function HelpTipTemplateMixin:RotateArrow(rotation)
 end
 
 function HelpTipTemplateMixin:Acknowledge()
+	self:HandleAcknowledge();
+	self:Close();
+end
+
+function HelpTipTemplateMixin:HandleAcknowledge()
 	local info = self.info;
 	if info.cvar then
 		SetCVar(info.cvar, info.cvarValue);
@@ -557,7 +566,6 @@ function HelpTipTemplateMixin:Acknowledge()
 		SetCVarBitfield(info.cvarBitfield, info.bitfieldFlag, true);
 	end
 	self.acknowledged = true;
-	self:Close();
 end
 
 function HelpTipTemplateMixin:Reset()

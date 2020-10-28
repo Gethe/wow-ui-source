@@ -113,8 +113,10 @@ end
 
 function SoulbindTreeMixin:SelectNode(button)
 	if button:IsSelectable() then
-		self:PlayNodeSelectionAnim(button);
-		C_Soulbinds.SelectNode(button:GetID());
+		if C_Soulbinds.CanModifySoulbind() then
+			self:PlayNodeSelectionAnim(button);
+			C_Soulbinds.SelectNode(button:GetID());
+		end
 	elseif button:IsUnselected() then
 		if C_Soulbinds.CanSwitchActiveSoulbindTreeBranch() then
 			C_Soulbinds.SelectNode(button:GetID());
@@ -164,7 +166,13 @@ function SoulbindTreeMixin:OnConduitClicked(button, buttonName)
 		end
  	elseif buttonName == "LeftButton" then
 		if Soulbinds.HasConduitAtCursor() then
-			self:TryInstallConduitAtCursor(button);
+			if not (button:IsSelected() or button:IsUnselected()) then
+				if SOULBIND_SELECT_BEFORE_INSTALL then
+					UIErrorsFrame:AddMessage(SOULBIND_SELECT_BEFORE_INSTALL, RED_FONT_COLOR:GetRGBA());	
+				end
+			else
+				self:TryInstallConduitAtCursor(button);
+			end
 		else
 			local linked = false;
 			local conduit = button:GetConduit();

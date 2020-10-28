@@ -158,11 +158,13 @@ local LegendaryCrafting =
 			Arguments =
 			{
 				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "filter", Type = "RuneforgePowerFilter", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "runeforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "specRuneforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "otherSpecRuneforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -173,6 +175,7 @@ local LegendaryCrafting =
 			{
 				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "specID", Type = "number", Nilable = true },
+				{ Name = "filter", Type = "RuneforgePowerFilter", Nilable = true },
 			},
 
 			Returns =

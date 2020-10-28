@@ -94,9 +94,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 46,
+			NumValues = 49,
 			MinValue = 0,
-			MaxValue = 45,
+			MaxValue = 48,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -144,7 +144,10 @@ local CurrencyConstants =
 				{ Name = "AccountCopy", Type = "CurrencySource", EnumValue = 42 },
 				{ Name = "WeeklyRewardChest", Type = "CurrencySource", EnumValue = 43 },
 				{ Name = "GarrisonTalentTreeReset", Type = "CurrencySource", EnumValue = 44 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 45 },
+				{ Name = "DailyReset", Type = "CurrencySource", EnumValue = 45 },
+				{ Name = "AddConduitToCollection", Type = "CurrencySource", EnumValue = 46 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 47 },
+				{ Name = "Barbershop", Type = "CurrencySource", EnumValue = 48 },
 			},
 		},
 		{
@@ -193,7 +196,7 @@ local CurrencyConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "PLAYER_CURRENCY_CLIENT_FLAGS", Type = "number", Value = PLAYER_CURRENCY_PDB_IN_BACKPACK|PLAYER_CURRENCY_PDB_UNUSED_IN_UI },
+				{ Name = "PLAYER_CURRENCY_CLIENT_FLAGS", Type = "number", Value = Enum.PlayerCurrencyFlagsDbFlags.InBackpack + Enum.PlayerCurrencyFlagsDbFlags.UnusedInUI },
 				{ Name = "MAX_CURRENCY_QUANTITY", Type = "number", Value = 100000000 },
 				{ Name = "CONQUEST_ARENA_AND_BG_META_CURRENCY_ID", Type = "number", Value = 483 },
 				{ Name = "CONQUEST_RATED_BG_META_CURRENCY_ID", Type = "number", Value = 484 },

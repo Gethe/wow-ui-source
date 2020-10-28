@@ -35,7 +35,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Level" inherits="GameFontNormal">
+						<FontString parentKey="Level" inherits="GameFontNormal" text="COVENANT_SANCTUM_TAB_UPGRADES">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

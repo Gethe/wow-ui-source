@@ -123,16 +123,6 @@
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0.0"/>
 						</FontString>
-						<FontString parentKey="TextLeft" text="COMBAT" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
-							<Anchors>
-								<Anchor point="" relativeKey="$parent.CovenantCrest" relativePoint="LEFT"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="TextRight" text="COMPLETE" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.CovenantCrest" relativePoint="RIGHT"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>

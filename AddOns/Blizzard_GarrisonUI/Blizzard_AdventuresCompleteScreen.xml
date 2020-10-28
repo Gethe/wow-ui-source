@@ -13,7 +13,7 @@
 
 			<Frame parentKey="RewardsScreen" inherits="AdventuresRewardsScreenTemplate" frameLevel="2000" setAllPoints="true" />
 			
-			<Frame name="CombatLog" parentKey="AdventuresCombatLog" inherits="CombatLogTemplate" frameStrata="HIGH">
+			<Frame name="CombatLog" parentKey="AdventuresCombatLog" inherits="CombatLogTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-14" y="-4"/>
 				</Anchors>

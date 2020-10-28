@@ -5,18 +5,20 @@ local MaximumBulletPoints = 10;
 UIPanelWindows["SubscriptionInterstitialFrame"] = { area = "center", pushable = 0, whileDead = 1 };
 
 
-SubscriptionInterstitialSubscribeButtonMixin = {};
+SubscriptionInterstitialSubscribeButtonBaseMixin = {};
 
-function SubscriptionInterstitialSubscribeButtonMixin:OnLoad()
+function SubscriptionInterstitialSubscribeButtonBaseMixin:OnLoad()
 	local useAtlasSize = true;
 	self.Background:SetAtlas(self.backgroundAtlas, useAtlasSize);
+
+	self.ButtonText:SetFontObjectsToTry("SystemFont_Med3", "SystemFont_Med2", "SystemFont_Small2", "SystemFont_Small", "SystemFont_Tiny");
 end
 
-function SubscriptionInterstitialSubscribeButtonMixin:OnShow()
+function SubscriptionInterstitialSubscribeButtonBaseMixin:OnShow()
 	self:ClearClickState();
 end
 
-function SubscriptionInterstitialSubscribeButtonMixin:OnClick()
+function SubscriptionInterstitialSubscribeButtonBaseMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	self.wasClicked = true;
@@ -30,19 +32,41 @@ function SubscriptionInterstitialSubscribeButtonMixin:OnClick()
 	HideUIPanel(self:GetParent());
 end
 
-function SubscriptionInterstitialSubscribeButtonMixin:WasClicked()
+function SubscriptionInterstitialSubscribeButtonBaseMixin:WasClicked()
 	return self.wasClicked;
 end
 
-function SubscriptionInterstitialSubscribeButtonMixin:ClearClickState()
+function SubscriptionInterstitialSubscribeButtonBaseMixin:ClearClickState()
 	self.wasClicked = false;
+end
+
+
+SubscriptionInterstitialSubscribeButtonMixin = {};
+
+function SubscriptionInterstitialSubscribeButtonMixin:OnLoad()
+	SubscriptionInterstitialSubscribeButtonBaseMixin.OnLoad(self);
+
+	self.FirstLine:SetFontObjectsToTry("Game58Font_Shadow2", "Game52Font_Shadow2", "Game46Font_Shadow2", "Game40Font_Shadow2");
+	self.SecondLine:SetFontObjectsToTry("Game52Font_Shadow2", "Game46Font_Shadow2", "Game40Font_Shadow2");
+	self.ThirdLine:SetFontObjectsToTry("Game69Font_Shadow2", "Game58Font_Shadow2", "Game52Font_Shadow2", "Game46Font_Shadow2", "Game40Font_Shadow2");
+
+	if self.SecondLine:GetStringHeight() > self.FirstLine:GetStringHeight() then
+		self.SecondLine:SetFontObject(self.FirstLine:GetFontObject());
+	end
+
+	if self.SecondLine:GetStringHeight() > self.ThirdLine:GetStringHeight() then
+		self.SecondLine:SetFontObject(self.FirstLine:GetFontObject());
+	end
 end
 
 
 SubscriptionInterstitialUpgradeButtonMixin = {};
 
 function SubscriptionInterstitialUpgradeButtonMixin:OnLoad()
-	SubscriptionInterstitialSubscribeButtonMixin.OnLoad(self);
+	SubscriptionInterstitialSubscribeButtonBaseMixin.OnLoad(self);
+
+	self.TitleLine:SetFontObjectsToTry("Game40Font_Shadow2", "Game36Font_Shadow2", "Game32Font_Shadow2");
+	self.TitleSubText:SetFontObjectsToTry("Game17Font_Shadow", "Game13FontShadow", "Game11Font_Shadow");
 
 	self.bulletPointPool = CreateFramePool("FRAME", self, "SubscriptionInterstitialBulletPointTemplate");
 

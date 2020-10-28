@@ -416,8 +416,17 @@ end
 function AdventuresCompleteScreenMixin:FinishReplay()
 	self:SetScript("OnUpdate", nil);
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
-	self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
-	C_Timer.After(2.5, function() if self.RewardsScreen.CombatCompleteSuccessFrame:IsShown() then self:ShowRewardsScreen(); end end);
+	C_Timer.After(1.0, function ()
+		if not self.RewardsScreen.CombatCompleteSuccessFrame:IsShown() then 
+			self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
+		end
+
+		C_Timer.After(2.5, function() 
+			if self.RewardsScreen.CombatCompleteSuccessFrame:IsShown() then 
+				self:AdvanceStage(); 
+			end
+		end);
+	end);
 	self.replayFinished = true;
 	self:UpdateButtonTextToState();
 end

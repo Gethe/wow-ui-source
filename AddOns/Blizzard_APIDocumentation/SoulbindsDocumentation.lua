@@ -729,6 +729,7 @@ local Soulbinds =
 				{ Name = "state", Type = "SoulbindNodeState", Nilable = false },
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "failureRenownRequirement", Type = "number", Nilable = true },
 			},
 		},
 		{

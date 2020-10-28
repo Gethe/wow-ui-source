@@ -889,8 +889,18 @@ function MapCanvasMixin:SetGlobalAlpha(globalAlpha)
 end
 
 function MapCanvasMixin:SetMaskTexture(maskTexture)
+	if self.maskTexture then
+		for texture, value in pairs(self.maskableTextures) do
+			self.maskableTextures[texture] = false;
+			texture:RemoveMaskTexture(self.maskTexture);
+		end
+	end
 	self.maskTexture = maskTexture;
-	self.maskableTextures = { };
+	if self.maskableTextures then
+		self:RefreshMaskableTextures();
+	else
+		self.maskableTextures = { };
+	end
 end
 
 function MapCanvasMixin:GetMaskTexture()

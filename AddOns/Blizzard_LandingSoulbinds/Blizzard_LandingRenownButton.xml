@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_LandingRenownButton.lua"/>
+	<Button name="LandingPageRenownButtonTemplate" mixin="LandingPageRenownButtonMixin" enableMouse="true" virtual="true">
+		<Size x="241" y="63"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="SystemFont_Shadow_Med3" text="LANDING_PAGE_RENOWN_LABEL">
+					<Anchors>
+						<Anchor point="LEFT" x="24"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="Renown" inherits="SystemFont_Shadow_Huge1">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="RIGHT" x="-50" y="0"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="PushedImage" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="shadowlands-landingpage-soulbindsbutton-highlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp  method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+</Ui>

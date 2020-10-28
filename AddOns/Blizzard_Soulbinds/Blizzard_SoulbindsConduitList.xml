@@ -336,11 +336,56 @@
 	<Frame name="ConduitListTemplate" mixin="ConduitListMixin" virtual="true">
 		<Size x="268"/>
 		<Frames>
-			<Frame parentKey="Charges" inherits="ConduitChargeTrayTemplate" frameStrata="HIGH">
+			<Frame parentKey="Charges" inherits="ConduitChargeTrayTemplate" frameStrata="HIGH" frameLevel="3">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="12" y="-39"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="BottomShadowContainer" frameStrata="HIGH">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<Texture parentKey="BottomShadow" atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Fx" frameStrata="HIGH" frameLevel="20">
+				<Layers>
+					<Layer level="FULLSCREEN" textureSubLevel="100">
+						<Texture parentKey="ChargeSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.Charges" relativePoint="LEFT"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
+									<Translation childKey="ChargeSheen" order="1" offsetX="-100" offsetY="0" startDelay="10" duration="0"/>
+									<Translation childKey="ChargeSheen" order="2" offsetX="300" offsetY="0" duration="4.9" />
+									<Translation childKey="ChargeSheen" order="2" offsetX="-100" offsetY="0" startDelay="4.9" duration="0.1"/>
+									<Alpha childKey="ChargeSheen" order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
+									<Alpha childKey="ChargeSheen" order="2" fromAlpha="1" toAlpha="0" startDelay="4.8" duration="0.1"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+
+						<MaskTexture parentKey="ChargeMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_charge">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.Background" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="ChargeSheen"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
 			<Frame parentKey="ScrollBar" inherits="ScrollBarTemplate" frameStrata="HIGH">
 				<Size x="10" y="560"/>
 				<KeyValues>
@@ -456,7 +501,7 @@
 			<Frame parentKey="ScrollBox" inherits="ScrollBoxTemplate" frameStrata="MEDIUM">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="BOTTOMRIGHT" y="1"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="LEFT" x="-10"/>
 				</Anchors>
 				<Frames>
@@ -482,21 +527,6 @@
 								</KeyValues>
 							</Frame>
 						</Frames>
-					</Frame>
-					<Frame parentKey="BottomShadowContainer" frameStrata="HIGH">
-						<Size x="1" y="1"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT"/>
-						</Anchors>
-						<Layers>
-							<Layer>
-								<Texture parentKey="BottomShadow" atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Frame>
 				</Frames>
 			</Frame>

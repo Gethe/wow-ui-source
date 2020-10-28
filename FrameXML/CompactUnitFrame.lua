@@ -100,6 +100,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdatePowerColor(self);
 			elseif ( event == "UNIT_NAME_UPDATE" ) then
 				CompactUnitFrame_UpdateName(self);
+				CompactUnitFrame_UpdateHealth(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_AURA" ) then
 				CompactUnitFrame_UpdateAuras(self);

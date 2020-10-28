@@ -144,7 +144,7 @@ function MerchantFrame_Update()
 	
 end
 
-function MerchantFrameItem_UpdateQuality(self, link)
+function MerchantFrameItem_UpdateQuality(self, link, isBound)
 	local quality = link and select(3, GetItemInfo(link)) or nil;
 	if ( quality ) then
 		self.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
@@ -153,7 +153,8 @@ function MerchantFrameItem_UpdateQuality(self, link)
 		MerchantFrame_RegisterForQualityUpdates();
 	end
 	
-	SetItemButtonQuality(self.ItemButton, quality, link);
+	local doNotSuppressOverlays = false;
+	SetItemButtonQuality(self.ItemButton, quality, link, doNotSuppressOverlays, isBound);
 end
 
 function MerchantFrame_RegisterForQualityUpdates()
@@ -327,13 +328,13 @@ function MerchantFrame_UpdateMerchantInfo()
 
 	-- Handle vendor buy back item
 	local numBuybackItems = GetNumBuybackItems();
-	local buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable = GetBuybackItemInfo(numBuybackItems);
+	local buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable, buybackIsBound = GetBuybackItemInfo(numBuybackItems);
 	if ( buybackName ) then
 		MerchantBuyBackItemName:SetText(buybackName);
 		SetItemButtonCount(MerchantBuyBackItemItemButton, buybackQuantity);
 		SetItemButtonStock(MerchantBuyBackItemItemButton, buybackNumAvailable);
 		SetItemButtonTexture(MerchantBuyBackItemItemButton, buybackTexture);
-		MerchantFrameItem_UpdateQuality(MerchantBuyBackItem, GetBuybackItemLink(numBuybackItems));
+		MerchantFrameItem_UpdateQuality(MerchantBuyBackItem, GetBuybackItemLink(numBuybackItems), buybackIsBound);
 		MerchantBuyBackItemMoneyFrame:Show();
 		MoneyFrame_Update("MerchantBuyBackItemMoneyFrame", buybackPrice);
 		MerchantBuyBackItem:Show();
@@ -441,14 +442,14 @@ function MerchantFrame_UpdateBuybackInfo()
 	
 	local numBuybackItems = GetNumBuybackItems();
 	local itemButton, buybackButton;
-	local buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable;
+	local buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable, buybackIsBound;
 	local buybackItemLink;
 	for i=1, BUYBACK_ITEMS_PER_PAGE do
 		itemButton = _G["MerchantItem"..i.."ItemButton"];
 		buybackButton = _G["MerchantItem"..i];
 		_G["MerchantItem"..i.."AltCurrencyFrame"]:Hide();
 		if ( i <= numBuybackItems ) then
-			buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable = GetBuybackItemInfo(i);
+			buybackName, buybackTexture, buybackPrice, buybackQuantity, buybackNumAvailable, buybackIsUsable, buybackIsBound = GetBuybackItemInfo(i);
 			_G["MerchantItem"..i.."Name"]:SetText(buybackName);
 			SetItemButtonCount(itemButton, buybackQuantity);
 			SetItemButtonStock(itemButton, buybackNumAvailable);
@@ -456,7 +457,7 @@ function MerchantFrame_UpdateBuybackInfo()
 			_G["MerchantItem"..i.."MoneyFrame"]:Show();
 			MoneyFrame_Update("MerchantItem"..i.."MoneyFrame", buybackPrice);
 			buybackItemLink = GetBuybackItemLink(i);
-			MerchantFrameItem_UpdateQuality(buybackButton, buybackItemLink);
+			MerchantFrameItem_UpdateQuality(buybackButton, buybackItemLink, buybackIsBound);
 			itemButton:SetID(i);
 			itemButton:Show();
 			if ( not buybackIsUsable ) then

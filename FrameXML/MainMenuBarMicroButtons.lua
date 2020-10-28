@@ -1059,6 +1059,10 @@ end
 -- Encounter Journal
 EJMicroButtonMixin = {};
 
+local EJMicroButtonEvents = {
+	"NEW_RUNEFORGE_POWER_ADDED",
+};
+
 function EJMicroButtonMixin:OnLoad()
 	LoadMicroButtonTextures(self, "EJ");
 	SetDesaturation(self:GetDisabledTexture(), true);
@@ -1095,6 +1099,14 @@ function EJMicroButtonMixin:EvaluateAlertVisibility()
 			self:UpdateLastEvaluations();
 		end
 	end
+
+	if not alertShown and self.runeforgePowerAdded and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_RUNEFORGE_LEGENDARY_POWER) then
+		alertShown = MainMenuMicroButton_ShowAlert(self, FIRST_RUNEFORGE_LEGENDARY_POWER_TUTORIAL, LE_FRAME_TUTORIAL_FIRST_RUNEFORGE_LEGENDARY_POWER);
+		if alertShown then
+			MicroButtonPulse(EJMicroButton);
+		end
+	end
+
 	return alertShown;
 end
 
@@ -1110,6 +1122,16 @@ function EJMicroButtonMixin:UpdateLastEvaluations()
 		self.lastEvaluatedSpec = spec;
 		self.lastEvaluatedIlvl = ilvl;
 	end
+end
+
+function EJMicroButtonMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, EJMicroButtonEvents);
+
+	MicroButton_KioskModeDisable(self);
+end
+
+function EJMicroButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, EJMicroButtonEvents);
 end
 
 function EJMicroButtonMixin:OnEvent(event, ...)
@@ -1146,6 +1168,10 @@ function EJMicroButtonMixin:OnEvent(event, ...)
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		self.zoneEntered = true;
+	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED" ) then
+		local powerID = ...;
+		self.runeforgePowerAdded = powerID;
+		self:EvaluateAlertVisibility();
 	end
 
 	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "ZONE_CHANGED_NEW_AREA" ) then
@@ -1208,6 +1234,10 @@ function EJMicroButtonMixin:OnClick(button, down)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleEncounterJournal();
 	end
+end
+
+function EJMicroButtonMixin:ShouldShowPowerTab(button, down)
+	return (self.runeforgePowerAdded ~= nil) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_RUNEFORGE_LEGENDARY_POWER), self.runeforgePowerAdded;
 end
 
 StoreMicroButtonMixin = {};

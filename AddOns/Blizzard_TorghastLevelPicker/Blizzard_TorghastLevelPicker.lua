@@ -77,6 +77,7 @@ function TorghastLevelPickerFrameMixin:TryShow(textureKit)
 	self.backgroundEffectController = GlobalFXBackgroundModelScene:AddDynamicEffect(smokeEffectDescription, self);
 
 	self:SetupOptions();
+	self:ScrollAndSelectHighestAvailableLayer();
 	ShowUIPanel(self); 
 end 
 
@@ -138,6 +139,40 @@ end
 
 function TorghastLevelPickerFrameMixin:SetupBackground()
 	SetupTextureKitOnRegions(self.textureKit, self, gossipBackgroundTextureKitRegion, true, TextureKitConstants.UseAtlasSize);
+end
+
+function TorghastLevelPickerFrameMixin:ScrollAndSelectHighestAvailableLayer()
+	local highestAvailableLayerIndex = nil
+
+	--First get the highest unlocked layer. 
+	for i = 1, #self.gossipOptions do 
+		local optionInfo = self.gossipOptions[i];
+		local optionCanBeSelected = optionInfo.status == Enum.GossipOptionStatus.Available or optionInfo.status == Enum.GossipOptionStatus.AlreadyComplete; 
+		if (optionCanBeSelected and (not highestAvailableLayerIndex or (highestAvailableLayerIndex < i))) then 
+			highestAvailableLayerIndex = i;
+		end 
+	end 
+
+	-- If there is none which there shouldn't be.. return
+	if(not highestAvailableLayerIndex) then 
+		return;
+	end 
+
+	-- Go to the page that has this layer
+	local page = math.ceil(highestAvailableLayerIndex / self.maxOptionsPerPage);  
+	self:SetStartingPage(page); 
+
+	local startingIndex = ((page - 1) * self.maxOptionsPerPage) + 1;
+	self:SetupOptionsByStartingIndex(startingIndex);
+
+	-- Select the option that is the highest available layer. 
+	for layer in self.gossipOptionsPool:EnumerateActive() do 
+		if (layer.index == highestAvailableLayerIndex) then 
+			self:SelectLevel(layer);
+			layer:SetState(self.gossipOptions[highestAvailableLayerIndex].status)
+			return; 
+		end 
+	end 
 end 
 
 TorghastLevelPickerOptionButtonMixin = {}; 
@@ -360,7 +395,10 @@ function TorghastLevelPickerRewardCircleMixin:RefreshTooltip()
 
 	if (self.lockedState) then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		if (UnitInParty("player")) then 
+		local timeLockedError = IsJailersTowerLayerTimeLocked(self.index);
+		if (timeLockedError) then
+			GameTooltip_AddErrorLine(EmbeddedItemTooltip, timeLockedError, true);
+		elseif (UnitInParty("player")) then 
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_LEVEL_PICKER_PARTY_LOCK, true);
 		else 
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_LOCKED, true);
