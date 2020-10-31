@@ -120,6 +120,15 @@ function AdventuresPuckMixin:GetHealth()
 	return self.HealthBar:GetHealth();
 end
 
+function AdventuresPuckMixin:ShowHealthValues()
+	self.HealthBar.HealthValue:Show();
+end
+
+function AdventuresPuckMixin:HideHealthValues()
+	self.HealthBar.HealthValue:Hide();
+end
+
+
 function AdventuresPuckMixin:SetPuckDesaturation(desaturation)
 	local function DesaturateRegions(...)
 		for i = 1, select("#", ...) do
@@ -161,10 +170,16 @@ function AdventuresPuckMixin:OnEnter()
 		end
 		GameTooltip:Show();
 	end
+	self:GetBoard():ShowHealthValues();
 end
 
 function AdventuresPuckMixin:OnLeave()
 	GameTooltip_Hide();
+	self:GetBoard():HideHealthValues();
+end
+
+function AdventuresPuckMixin:GetBoard()
+	return self:GetParent():GetParent();
 end
 
 -- Overwrite in your derived Mixin
@@ -275,6 +290,8 @@ function AdventuresEnemyPuckMixin:OnLoad()
 	self.PuckShadow:SetPoint("TOPLEFT", 0, 0);
 	self.PuckShadow:SetPoint("BOTTOMRIGHT", 0, 0);
 	self.HealthBar:SetScale(0.7);
+	self.HealthBar.HealthValue:SetScale(1/.7);
+	self.HealthBar.HealthValue:SetPoint("CENTER", 10, 1);
 
 	self.PuckBorder:SetAtlas("Adventures-Enemy-Frame");
 	self.deathSound = SOUNDKIT.UI_ADVENTURES_DEATH_ENEMY;
@@ -327,11 +344,13 @@ function AdventuresMissionPageFollowerPuckMixin:OnEnter()
 	local followerID = self:GetFollowerGUID();
 	if followerID then
 		GarrisonMissionPageFollowerFrame_OnEnter(self);
+		self:GetBoard():ShowHealthValues();
 	end
 end
 
 function AdventuresMissionPageFollowerPuckMixin:OnLeave()
 	GarrisonFollowerTooltip:Hide();
+	self:GetBoard():HideHealthValues();
 end
 
 function AdventuresMissionPageFollowerPuckMixin:SetEmpty()

@@ -18,14 +18,27 @@ function DressUpTransmogLink(link)
 	return DressUpVisual(link);
 end
 
+local function ShouldAcceptDressUp(frame)
+	local parentFrame = frame.parentFrame;
+	if parentFrame == nil then
+		return;
+	end
+
+	if parentFrame.ShouldAcceptDressUp then
+		return parentFrame:ShouldAcceptDressUp();
+	end
+
+	return parentFrame:IsShown();
+end
+
 local function GetFrameAndSetBackground(raceFilename, classFilename)
 	local frame;
-	if SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() then
+	if ShouldAcceptDressUp(SideDressUpFrame) then
 		frame = SideDressUpFrame;
 		if not raceFilename then
 			raceFilename = select(2, UnitRace("player"));
 		end
-	elseif( TransmogAndMountDressupFrame.parentFrame and TransmogAndMountDressupFrame.parentFrame:IsShown()) then 
+	elseif ShouldAcceptDressUp(TransmogAndMountDressupFrame) then
 		frame = TransmogAndMountDressupFrame;
 		if not raceFilename then
 			raceFilename = select(2, UnitRace("player"));
@@ -59,8 +72,8 @@ function DressUpVisual(...)
 	return true;
 end
 
-function DressUpTransmogSet(itemModifiedAppearanceIDs)
-	local frame = GetFrameAndSetBackground();
+function DressUpTransmogSet(itemModifiedAppearanceIDs, forcedFrame)
+	local frame = forcedFrame or GetFrameAndSetBackground();
 	DressUpFrame_Show(frame);
 	DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs);
 end
@@ -134,12 +147,12 @@ function DressUpMountLink(link)
 	return false
 end
 
-function DressUpMount(mountID)
+function DressUpMount(mountID, forcedFrame)
 	if ( not mountID or mountID == 0 ) then
 		return false;
 	end
 
-	local frame = GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
+	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
 	if ( not frame:IsShown() or frame.mode ~= "mount" ) then
@@ -217,7 +230,7 @@ function DressUpFrame_Show(frame)
 		frame.ResetButton:SetShown(frame ~= TransmogAndMountDressupFrame);
 
 		-- If there's not enough space as-is, try minimizing.
-		if not CanShowRightUIPanel(frame) and not frame.MaximizeMinimizeFrame:IsMinimized() then
+		if not CanShowRightUIPanel(frame) and frame.MaximizeMinimizeFrame and not frame.MaximizeMinimizeFrame:IsMinimized() then
 			local isAutomaticAction = true;
 			frame.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
 

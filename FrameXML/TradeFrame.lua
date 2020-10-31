@@ -77,7 +77,7 @@ function TradeFrame_Update(self)
 end
 
 function TradeFrame_UpdatePlayerItem(id)
-	local name, texture, numItems, quality, enchantment, canLoseTransmog = GetTradePlayerItemInfo(id);
+	local name, texture, numItems, quality, enchantment, canLoseTransmog, isBound = GetTradePlayerItemInfo(id);
 	local buttonText = _G["TradePlayerItem"..id.."Name"];
 
 	-- See if its the enchant slot
@@ -102,7 +102,10 @@ function TradeFrame_UpdatePlayerItem(id)
 	local tradeItemButton = _G["TradePlayerItem"..id.."ItemButton"];
 	SetItemButtonTexture(tradeItemButton, texture);
 	SetItemButtonCount(tradeItemButton, numItems);
-	SetItemButtonQuality(tradeItemButton, quality, GetTradePlayerItemLink(id));
+
+	local doNotSuppressOverlays = false;
+	SetItemButtonQuality(tradeItemButton, quality, GetTradePlayerItemLink(id), doNotSuppressOverlays, isBound);
+
 	if ( texture ) then
 		tradeItemButton.hasItem = 1;
 	else

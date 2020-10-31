@@ -113,30 +113,30 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="6">
-				<FontString parentKey="NewSeason" inherits="Game42Font" text="NEW_SEASON_YAY">
+				<FontString parentKey="NewSeason" inherits="Game40Font" text="NEW_SEASON_YAY">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-50"/>
+						<Anchor point="TOP" x="0" y="-67"/>
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
 				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC1">
-					<Size x="300" y="30"/>
+					<Size x="380" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-110"/>
+						<Anchor point="TOP" relativeKey="$parent.NewSeason" relativePoint="BOTTOM" y="-14"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
 				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC2">
-					<Size x="300" y="30"/>
+					<Size x="380" y="0"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" x="0" y="-35"/>
+						<Anchor point="TOP" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" x="0" y="-14"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
 				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
-					<Size x="300" y="30"/>
+					<Size x="380" y="0"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" x="0" y="-35"/>
+						<Anchor point="TOP" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" x="0" y="-14"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
@@ -170,7 +170,7 @@
 			<Button parentKey="Leave" inherits="UIPanelButtonNoTooltipTemplate" text="CLOSE">
 				<Size x="125" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Background" y="25"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.Background" y="21"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

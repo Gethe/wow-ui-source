@@ -23,8 +23,8 @@ local function GetChromieTimeLocationString(unitToken)
 	end
 end
 
-local function GetChromieTimeInstructionString(unitToken, inChromieTime)
-	local factionGroup = UnitFactionGroup(unitToken);
+local function GetChromieTimeInstructionString(inChromieTime)
+	local factionGroup = UnitFactionGroup("player");
 	if factionGroup == "Horde" then
 		if inChromieTime then
 			return PARTY_PLAYER_CHROMIE_TIME_SELF_HORDE;
@@ -47,7 +47,7 @@ local function GetChromieTimeString(unitToken)
 		return PARTY_PLAYER_CHROMIE_TIME_FMT:format(location, PARTY_PLAYER_CHROMIE_TIME_INELIGIBLE);
 	else
 		local location = GetChromieTimeLocationString(inChromieTime and "player" or unitToken);
-		local instruction = GetChromieTimeInstructionString(unitToken, inChromieTime);
+		local instruction = GetChromieTimeInstructionString(inChromieTime);
 		return PARTY_PLAYER_CHROMIE_TIME_FMT:format(location, instruction);
 	end
 end

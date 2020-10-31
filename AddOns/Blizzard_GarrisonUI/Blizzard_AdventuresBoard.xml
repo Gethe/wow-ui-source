@@ -40,6 +40,9 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="SocketTexture" useAtlasSize="true"/>
 			</Layer>
+			<Layer level="Overlay">
+				<Texture parentKey="TutorialRing" atlas="adventures-mission-follower-tutorial-ring" useAtlasSize="true" hidden="true"/>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="EnemyTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">

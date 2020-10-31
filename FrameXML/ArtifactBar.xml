@@ -5,7 +5,7 @@
 	<Frame name="ArtifactStatusBarTemplate" inherits="StatusTrackingBarTemplate" mixin="ArtifactBarMixin" virtual="true">
 		<Size x="804" y="11"/>
 		<Frames>
-			<Button parentKey="Tick" hidden="true" frameStrata="HIGH" mixin="ArtifactTickMixin">
+			<Button parentKey="Tick" hidden="true" frameStrata="MEDIUM" mixin="ArtifactTickMixin">
 				<Size x="32" y="32"/>
 				<Scripts>
 					<OnEnter method="OnEnter"/>

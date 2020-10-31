@@ -116,6 +116,27 @@ function ZoneLabelDataProviderMixin:CalculateAnchorsForAreaTrigger(areaTrigger)
 	end
 
 	local x, y = areaTrigger:GetCenter();
+
+	local mapID = self:GetMap():GetMapID();
+	local helpTextPosition = C_Map.GetMapArtHelpTextPosition(mapID);
+
+	local helpTextOnBottom = (helpTextPosition == Enum.MapCanvasPosition.BottomLeft) or (helpTextPosition == Enum.MapCanvasPosition.BottomRight);
+	local helpTextOnTop = (helpTextPosition == Enum.MapCanvasPosition.TopLeft) or (helpTextPosition == Enum.MapCanvasPosition.TopRight);
+
+	if helpTextOnBottom and (y > .5) then
+		if helpTextPosition == Enum.MapCanvasPosition.BottomLeft then
+			x = 1.0;
+		else
+			x = 0;
+		end
+	elseif helpTextOnTop and (y <= .5) then
+		if helpTextPosition == Enum.MapCanvasPosition.TopLeft then
+			x = 1.0;
+		else
+			x = 0;
+		end
+	end
+
 	if x < .5 then
 		if x > .45 then
 			if y > .5 then

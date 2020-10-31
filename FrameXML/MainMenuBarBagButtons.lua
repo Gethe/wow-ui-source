@@ -10,7 +10,7 @@ function BagSlotMixin:GetBagID()
 	if ( self:GetID() == 0 ) then
 		return 0;
 	end
-	
+
 	return (self:GetID() - CharacterBag0Slot:GetID()) + 1;
 end
 
@@ -78,7 +78,9 @@ function BagSlotButton_OnEnter(self)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		if ( GameTooltip:SetInventoryItem("player", self:GetID()) ) then
-			local bindingKey = GetBindingKey("TOGGLEBAG"..(3 - self:GetBagID()));
+			local bagID = self:GetBagID();
+			local bindingID = 4 - bagID + 1;
+			local bindingKey = GetBindingKey("TOGGLEBAG"..bindingID);
 			if ( bindingKey ) then
 				GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
 			end
@@ -252,7 +254,7 @@ function CalculateTotalNumberOfFreeBagSlots()
 			totalFree = totalFree + freeSlots;
 		end
 	end
-	
+
 	return totalFree;
 end
 
@@ -266,6 +268,6 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 	end
 
 	MainMenuBarBackpackButton.freeSlots = totalFree;
-	
+
 	MainMenuBarBackpackButtonCount:SetText(string.format(BACKPACK_FREESLOTS_FORMAT, totalFree));
 end

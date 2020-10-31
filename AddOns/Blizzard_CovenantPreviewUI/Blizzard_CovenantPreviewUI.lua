@@ -1,4 +1,3 @@
-local MAX_ABILITIES_IN_ROW = 2; 
 local PLAYER_CHOICE_TEXTURE_KIT = "Oribos";
 
 
@@ -40,9 +39,18 @@ local titleTextureKitRegions = {
 };
 
 local abilityButtonTextureKitRegions = { 
-	["Background"] = "CovenantChoice-Offering-Ability-Frame-%s",
-	["IconBorder"] = "CovenantChoice-Offering-Ability-Ring-%s",
+	["IconBorder"] = "CovenantSanctum-Upgrade-Icon-Border-%s",
 };
+
+local abilityFrameTextureKitRegions = { 
+	["Border"] = "covenantchoice-offering-ability-frame-%s",
+}
+
+local featureButtonTextureKitRegions = {
+	["NormalTexture"] = "covenantsanctum-icon-border-%s",
+};
+
+local soulbindAtlasTexture = "covenantchoice-offering-portrait-%s-%s";
 
 local infoPanelTextureKitRegions = {
 	["Parchment"] = "CovenantChoice-Offering-Parchment-%s",
@@ -62,11 +70,13 @@ local abilityTypeText = {
 CovenantPreviewFrameMixin = { }; 
 function CovenantPreviewFrameMixin:OnLoad() 
 	self.AbilityButtonsPool = CreateFramePool("BUTTON", self.InfoPanel, "CovenantAbilityButtonTemplate");
+	self.SoulbindButtonsPool = CreateFramePool("BUTTON", self.InfoPanel, "CovenantSoulbindButtonTemplate");
 end 
 
 function CovenantPreviewFrameMixin:OnShow()
 	self:RegisterEvent("COVENANT_PREVIEW_CLOSE");
 	self:RegisterEvent("PLAYER_CHOICE_CLOSE");
+	UpdateScaleForFit(self); 
 end
 
 function CovenantPreviewFrameMixin:OnHide()
@@ -82,7 +92,7 @@ end
 
 function CovenantPreviewFrameMixin:OnEvent(event, ...) 
 	if (event == "COVENANT_PREVIEW_CLOSE" or event =="PLAYER_CHOICE_CLOSE") then
-		HideUIPanel(self);
+		self:Hide();
 	end 
 end 
 
@@ -90,12 +100,11 @@ function CovenantPreviewFrameMixin:HandleEscape()
 	if (self.showingFromPlayerChoice and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then 
 		HideUIPanel(PlayerChoiceFrame);
 	end 
-	HideUIPanel(self);
+	self:Hide();
 end 
 
 function CovenantPreviewFrameMixin:Reset()
 	self.lastAbility = nil;
-	self.previousRowOption = nil; 
 	self.uiTextureKit = nil; 
 	self.showingFromPlayerChoice = nil;
 end 
@@ -138,7 +147,7 @@ function CovenantPreviewFrameMixin:SetupFramesWithTextureKit()
 end
 
 local function CovenantPreviewSortFunction(firstValue, secondValue)
-	return firstValue > secondValue;
+	return firstValue < secondValue;
 end
 
 function CovenantPreviewFrameMixin:TryShow(covenantInfo)
@@ -161,11 +170,20 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 	end 
 
 	self:SetupAbilityButtons(covenantInfo.covenantAbilities);
+	self:SetupSoulbindButtons(covenantInfo.covenantSoulbinds);
 	self:SetupCovenantInfoPanel(covenantInfo); 
-	ShowUIPanel(self); 
+	self:SetupCovenantFeature(covenantInfo.featureInfo) 
+	self:Show();
+end 
+
+function CovenantPreviewFrameMixin:SetupCovenantFeature(covenantFeatureInfo) 
+	local featureButton = self.InfoPanel.CovenantFeatureFrame.CovenantFeatureButton
+	self:SetupTextureKits(featureButton, featureButtonTextureKitRegions);
+	featureButton:Setup(covenantFeatureInfo); 
 end 
 
 function CovenantPreviewFrameMixin:SetupAbilityButtons(covenantAbilities)
+	self:SetupTextureKits(self.InfoPanel.AbilitiesFrame, abilityFrameTextureKitRegions);
 	self.lastAbility = nil;
 	self.AbilityButtonsPool:ReleaseAll(); 
 	for abilityIndex, ability in ipairs(covenantAbilities) do 
@@ -177,13 +195,9 @@ function CovenantPreviewFrameMixin:SetupAndGetAbilityButton(index, abilityInfo)
 	local abilityButton = self.AbilityButtonsPool:Acquire(); 
 
 	if(not self.lastAbility) then 
-		abilityButton:SetPoint("TOPLEFT", self.InfoPanel.AbilitiesLabel, "BOTTOMLEFT", -5, -15); 
-		self.previousRowOption = abilityButton; 
-	elseif (mod(index - 1, MAX_ABILITIES_IN_ROW) == 0) then
-		abilityButton:SetPoint("TOP", self.previousRowOption, "BOTTOM", 0, -20);
-		self.previousRowOption = abilityButton; 
+		abilityButton:SetPoint("TOP", self.InfoPanel.AbilitiesFrame.Border, "TOP", 0, -23); 
 	else 
-		abilityButton:SetPoint("LEFT", self.lastAbility, "RIGHT", 30, 0);
+		abilityButton:SetPoint("TOP", self.lastAbility, "BOTTOM", 0, -3);
 	end		
 
 	self:SetupTextureKits(abilityButton, abilityButtonTextureKitRegions);
@@ -191,13 +205,38 @@ function CovenantPreviewFrameMixin:SetupAndGetAbilityButton(index, abilityInfo)
 	return abilityButton;
 end 
 
+
+function CovenantPreviewFrameMixin:SetupSoulbindButtons(soulbinds)
+	self.lastSoulbind = nil;
+	self.SoulbindButtonsPool:ReleaseAll(); 
+	for soulbindIndex, soulbind in ipairs(soulbinds) do 
+		self.lastSoulbind = self:SetupAndGetSoulbindButton(soulbindIndex, soulbind);
+	end 
+end 
+
+function CovenantPreviewFrameMixin:SetupAndGetSoulbindButton(index, soulbindInfo)
+	local soulbindButton = self.SoulbindButtonsPool:Acquire(); 
+
+	if(not self.lastSoulbind) then 
+		soulbindButton:SetPoint("LEFT", self.InfoPanel.SoulbindsFrame, "LEFT", 0, 10); 
+	else 
+		soulbindButton:SetPoint("LEFT", self.lastSoulbind, "RIGHT", -20, 0);
+	end		
+	local soulbindButtonAtlas = soulbindAtlasTexture:format(self.uiTextureKit, soulbindInfo.uiTextureKit); 
+	if(soulbindButtonAtlas) then 
+		soulbindButton.Icon:SetAtlas(soulbindAtlasTexture:format(self.uiTextureKit, soulbindInfo.uiTextureKit))
+	end 
+	soulbindButton:SetupButton(soulbindInfo);
+	return soulbindButton;
+end 
+
 function CovenantPreviewFrameMixin:SetupModelSceneFrame(transmogSetID, mountID)
 	self:SetupTextureKits(self.ModelSceneContainer, modelSceneContainerTextureKitRegions);
+
 	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0, true); 
 	local sources = C_TransmogSets.GetAllSourceIDs(transmogSetID);
-	DressUpTransmogSet(sources);
-
-	TransmogAndMountDressupFrame:RemoveWeapons(); 
+	DressUpTransmogSet(sources, TransmogAndMountDressupFrame);
+	TransmogAndMountDressupFrame:RemoveWeapons();
 end 
 
 function CovenantPreviewFrameMixin:SetupCovenantInfoPanel(covenantInfo) 
@@ -222,8 +261,58 @@ function CovenantAbilityButtonMixin:SetupButton(abilityInfo)
 	self.spellID = abilityInfo.spellID; 
 	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
 
-	self.Name:SetText(spellName); 
 	self.Icon:SetTexture(spellIcon);
-	self.Type:SetText(abilityTypeText[abilityInfo.type]); 
 	self:Show();
 end 
+
+CovenantFeatureButtonMixin = { };
+
+function CovenantFeatureButtonMixin:Setup(covenantFeatureInfo)
+	self.Icon:SetTexture(covenantFeatureInfo.texture);
+	self.name = covenantFeatureInfo.name; 
+	self.description = covenantFeatureInfo.description;
+end 
+
+function CovenantFeatureButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -30, -30);
+	GameTooltip_AddHighlightLine(GameTooltip, self.name); 
+	GameTooltip_AddNormalLine(GameTooltip, self.description);
+	GameTooltip:Show(); 
+end 
+
+function CovenantFeatureButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 
+
+CovenantSoulbindButtonMixin = { };
+function CovenantSoulbindButtonMixin:SetupButton(soulbindInfo) 
+	self.spellID = soulbindInfo.spellID; 
+	self.name = soulbindInfo.name
+	self:Show();
+end 
+
+function CovenantSoulbindButtonMixin:OnEnter() 
+	if(not self:IsMouseOver()) then 
+		return; 
+	end
+
+	local spell = Spell:CreateFromSpellID(self.spellID);
+	spell:ContinueOnSpellLoad(function()
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -10);
+		GameTooltip_AddHighlightLine(EmbeddedItemTooltip, self.name);
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip); 
+		GameTooltip_AddNormalLine(EmbeddedItemTooltip, COVENANT_PREVIEW_SOULBIND_SPELL_INTRO);
+		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip); 
+		EmbeddedItemTooltip_SetSpellWithTextureByID(EmbeddedItemTooltip.ItemTooltip, self.spellID, spell:GetSpellTexture());
+		EmbeddedItemTooltip:Show();
+	end);
+end
+
+function CovenantSoulbindButtonMixin:OnLeave() 
+	EmbeddedItemTooltip:Hide();
+end
+
+CovenantPreviewModelSceneContainerMixin = { };
+function CovenantPreviewModelSceneContainerMixin:ShouldAcceptDressUp()
+	return false;
+end

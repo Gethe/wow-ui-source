@@ -100,6 +100,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdatePowerColor(self);
 			elseif ( event == "UNIT_NAME_UPDATE" ) then
 				CompactUnitFrame_UpdateName(self);
+				CompactUnitFrame_UpdateHealth(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_AURA" ) then
 				CompactUnitFrame_UpdateAuras(self);
@@ -1148,7 +1149,7 @@ do
 				local debuffFrame = debuffFrames[frameNum];
 				local index, name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellId = aura[1], aura[2], aura[3], aura[4], aura[5], aura[6], aura[7], aura[8], aura[9], aura[10], aura[11];
 				local unit = nil;
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, "HARMFUL", isBossAura, isBossBuff, name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellId);
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff, name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellId);
 				frameNum = frameNum + 1;
 
 				if isBossAura then
@@ -1180,7 +1181,7 @@ do
 		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
 
 		-- The following is the priority order for debuffs
-		local bossDebuffs, bossBuffs, priorityDebuffs, nonBossDebuffs;
+		local bossDebuffs, bossBuffs, priorityDebuffs, nonBossDebuffs, nonBossRaidDebuffs;
 		local index = 1;
 		local batchCount = frame.maxDebuffs;
 
@@ -1265,10 +1266,10 @@ do
 			AuraUtil.ForEachAura(frame.displayedUnit, "HARMFUL|RAID", batchCount, function(...)
 				if not doneWithDebuffs and displayOnlyDispellableDebuffs then
 					if CompactUnitFrame_Util_ShouldDisplayDebuff(...) and not CompactUnitFrame_Util_IsBossAura(...) and not CompactUnitFrame_Util_IsPriorityDebuff(...) then
-						if not nonBossDebuffs then
-							nonBossDebuffs = {};
+						if not nonBossRaidDebuffs then
+							nonBossRaidDebuffs = {};
 						end
-						tinsert(nonBossDebuffs, {index, ...});
+						tinsert(nonBossRaidDebuffs, {index, ...});
 						numUsedDebuffs = numUsedDebuffs + 1;
 						if numUsedDebuffs == frame.maxDebuffs then
 							doneWithDebuffs = true;
@@ -1313,7 +1314,12 @@ do
 		do
 			local isBossAura = false;
 			local isBossBuff = false;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL|RAID", isBossAura, isBossBuff, nonBossDebuffs);
+			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL|RAID", isBossAura, isBossBuff, nonBossRaidDebuffs);
+		end
+		do
+			local isBossAura = false;
+			local isBossBuff = false;
+			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL", isBossAura, isBossBuff, nonBossDebuffs);
 		end
 		numUsedDebuffs = frameNum - 1;
 

@@ -114,6 +114,7 @@ function AccountLogin_UpdateSavedData(self)
 end
 
 function AccountLogin_Login()
+	C_Login.ClearLastError();
 	PlaySound(SOUNDKIT.GS_LOGIN);
 
 	if ( AccountLogin.UI.AccountEditBox:GetText() == "" ) then

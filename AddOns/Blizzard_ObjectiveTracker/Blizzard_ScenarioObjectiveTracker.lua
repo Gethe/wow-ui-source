@@ -3,6 +3,7 @@ SCENARIO_CONTENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("SCENARIO_
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO;
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS;
 SCENARIO_CONTENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader, TRACKER_HEADER_SCENARIO, nil);	-- never anim-in the header
+SCENARIO_CONTENT_TRACKER_MODULE:AddBlockOffset(SCENARIO_CONTENT_TRACKER_MODULE.blockTemplate, -20, 0);
 SCENARIO_CONTENT_TRACKER_MODULE.fromHeaderOffsetY = -2;
 SCENARIO_CONTENT_TRACKER_MODULE.ShowCriteria = C_Scenario.ShouldShowCriteria();
 
@@ -135,12 +136,22 @@ function ScenarioBlocksFrame_SlideOut()
 	ObjectiveTracker_SlideBlock(SCENARIO_TRACKER_MODULE.BlocksFrame, SLIDE_OUT_DATA);
 end
 
+local showingEmberCourtHelpTip = false;
+
+local function AcknowledgeEmberCourtHelpTip()
+	if showingEmberCourtHelpTip then
+		HelpTip:Acknowledge(UIParent, EMBER_COURT_MAP_HELPTIP);
+		WorldMapFrame:UnregisterCallback("WorldMapOnShow", ScenarioStageBlock);
+	end
+end
+
 function ScenarioBlocksFrame_Hide()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.currentStage = nil;
 	SCENARIO_TRACKER_MODULE.BlocksFrame.scenarioName = nil;
 	SCENARIO_TRACKER_MODULE.BlocksFrame.stageName = nil;
 	SCENARIO_TRACKER_MODULE.BlocksFrame:SetVerticalScroll(0);
 	SCENARIO_TRACKER_MODULE.BlocksFrame:Hide();
+	AcknowledgeEmberCourtHelpTip();
 end
 
 -- *****************************************************************************************************
@@ -841,6 +852,20 @@ function SCENARIO_CONTENT_TRACKER_MODULE:StaticReanchor()
 	end
 end
 
+local emberCourtMapHelpTipInfo = {
+	text = EMBER_COURT_MAP_HELPTIP,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	cvarBitfield = "closedInfoFrames",
+	bitfieldFlag = LE_FRAME_TUTORIAL_EMBER_COURT_MAP,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	offsetX = 0,
+	offsetY = 400,
+	hideArrow = true,
+	checkCVars = true,
+};
+
+local EMBER_COURT_TUTORIAL_WIDGET_SET_ID = 461;
+
 function ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID)
 	stageBlock.WidgetContainer:RegisterForWidgetSet(widgetSetID);
 	if widgetSetID then
@@ -851,6 +876,15 @@ function ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID)
 		ScenarioStageBlock.Name:Show();
 		ScenarioStageBlock.Stage:Show();
 		ScenarioStageBlock.NormalBG:Show();
+	end
+
+	if widgetSetID == EMBER_COURT_TUTORIAL_WIDGET_SET_ID then
+		if HelpTip:Show(UIParent, emberCourtMapHelpTipInfo) then
+			showingEmberCourtHelpTip = true;
+			WorldMapFrame:RegisterCallback("WorldMapOnShow", AcknowledgeEmberCourtHelpTip, ScenarioStageBlock);
+		end
+	else
+		AcknowledgeEmberCourtHelpTip();
 	end
 end
 

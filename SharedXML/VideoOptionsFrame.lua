@@ -1,11 +1,5 @@
--- if you change something here you probably want to change the frame version too
-
 function VideoOptionsFrame_Toggle ()
-	if ( VideoOptionsFrame:IsShown() ) then
-		GlueParent_CloseSecondaryScreen();
-	else
-		VideoOptionsFrame:Show();
-	end
+	ToggleFrame(VideoOptionsFrame);
 end
 
 function VideoOptionsFrame_SetAllToDefaults ()
@@ -26,17 +20,25 @@ end
 function VideoOptionsFrame_OnHide (self)
 	OptionsFrame_OnHide(self);
 	VideoOptionsFrameApply:Disable();
-	
 	if ( VideoOptionsFrame.gameRestart ) then
-		GlueDialog_Show("CLIENT_RESTART_ALERT");
+		StaticPopup_Show("CLIENT_RESTART_ALERT");
 		VideoOptionsFrame.gameRestart = nil;
+	elseif ( VideoOptionsFrame.logout ) then
+		StaticPopup_Show("CLIENT_LOGOUT_ALERT");
+		VideoOptionsFrame.logout = nil;
+	end
+
+	if (not self.ignoreCancelOnHide) then
+		OptionsFrameCancel_OnClick(VideoOptionsFrame);
 	end
 end
 
 function VideoOptionsFrameOkay_OnClick (self, button, down, apply)
 	OptionsFrameOkay_OnClick(VideoOptionsFrame, apply);
 	if ( not apply ) then
+		VideoOptionsFrame.ignoreCancelOnHide = true;
 		VideoOptionsFrame_Toggle();
+		VideoOptionsFrame.ignoreCancelOnHide = nil;
 	end
 end
 
@@ -44,21 +46,12 @@ function VideoOptionsFrameCancel_OnClick (self, button)
 	if ( VideoOptionsFrameApply:IsEnabled() ) then
 		OptionsFrameCancel_OnClick(VideoOptionsFrame);
 	end
+	VideoOptionsFrame.logout = nil;
 	VideoOptionsFrame_Toggle();
 end
 
 function VideoOptionsFrameDefault_OnClick (self, button)
 	OptionsFrameDefault_OnClick(VideoOptionsFrame);
 
-	GlueDialog_Show("CONFIRM_RESET_VIDEO_SETTINGS");
-end
-
-function VideoOptionsFrameReset_OnClick_Reset(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	GlueDialog_Show("RESET_SERVER_SETTINGS");
-end
-
-function VideoOptionsFrameReset_OnClick_Cancel(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	GlueDialog_Show("CANCEL_RESET_SETTINGS");
+	StaticPopup_Show("CONFIRM_RESET_VIDEO_SETTINGS");
 end

@@ -368,7 +368,23 @@ end
 
 function RuneforgeFrameMixin:GetPowers()
 	local item = self.CraftingFrame:GetItem();
-	return C_LegendaryCrafting.GetRuneforgePowers(item);
+	if item then
+		return C_LegendaryCrafting.GetRuneforgePowers(item);
+	else
+		local classID, specID = RuneforgeUtil.GetPreviewClassAndSpec();
+		local specPowers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID, specID);
+		local otherSpecPowers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID);
+
+		local invertedSpecPowers = tInvert(specPowers);
+		local function FilterPredicate(powerID)
+			return invertedSpecPowers[powerID] == nil;
+		end
+
+		local isIndexTable = true;
+		otherSpecPowers = tFilter(otherSpecPowers, FilterPredicate, isIndexTable);
+
+		return specPowers, otherSpecPowers;
+	end
 end
 
 function RuneforgeFrameMixin:GetCraftDescription()
@@ -406,16 +422,18 @@ function RuneforgeFrameMixin:HasAnyItem(filterFunction)
 	return next(results) ~= nil;
 end
 
-function RuneforgeFrameMixin:IsAnyPowerAvailable()
-	local powers = self:GetPowers();
-	for i, powerID in ipairs(powers) do
+local function IsAnyPowerAvailable(powerList)
+	for i, powerID in ipairs(powerList) do
 		local powerInfo = C_LegendaryCrafting.GetRuneforgePowerInfo(powerID);
 		if powerInfo.state == Enum.RuneforgePowerState.Available then
 			return true;
 		end
 	end
+end
 
-	return false;
+function RuneforgeFrameMixin:IsAnyPowerAvailable()
+	local specPowers, otherSpecPowers = self:GetPowers();
+	return IsAnyPowerAvailable(specPowers) or (otherSpecPowers and IsAnyPowerAvailable(otherSpecPowers));
 end
 
 function RuneforgeFrameMixin:GetNumAvailableModifierTypes()
@@ -446,9 +464,7 @@ function RuneforgeFrameMixin:CanCraftRuneforgeLegendary()
 		end
 
 		local availableModifierTypes = self:GetNumAvailableModifierTypes();
-		if availableModifierTypes == 0 then
-			return false, RUNEFORGE_LEGENDARY_ERROR_NO_MODIFIERS;
-		elseif availableModifierTypes == 1 then
+		if availableModifierTypes <= 1 then
 			return false, RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_MODIFIERS;
 		end
 	end

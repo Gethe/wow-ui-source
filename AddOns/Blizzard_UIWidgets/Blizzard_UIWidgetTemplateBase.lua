@@ -8,9 +8,13 @@ end
 function UIWidgetTemplateTooltipFrameMixin:OnLoad()
 end
 
+function UIWidgetTemplateTooltipFrameMixin:UpdateMouseEnabled()
+	self:SetMouse(self.disableTooltip);
+end
+
 function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
-	local disableMouse = widgetContainer.disableWidgetTooltips;
-	self:SetMouse(disableMouse);
+	self.disableTooltip = widgetContainer.disableWidgetTooltips;
+	self:UpdateMouseEnabled();
 	self:SetMouseClickEnabled(false);
 end
 
@@ -25,16 +29,20 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	if tooltip then
 		self.tooltipContainsHyperLink, self.preString, self.hyperLinkString, self.postString = ExtractHyperlinkString(tooltip);
 	end
-	self:SetMouse();
+	self:UpdateMouseEnabled();
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
-	EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor);
+	EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
 end
 
 function UIWidgetTemplateTooltipFrameMixin:OnEnter()
 	if self.tooltip and self.tooltip ~= "" then
 		self:SetTooltipOwner();
+
+		if self.tooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(EmbeddedItemTooltip, self.tooltipBackdropStyle);
+		end
 
 		if self.tooltipContainsHyperLink then
 			local clearTooltip = true;
@@ -784,4 +792,33 @@ function UIWidgetBaseScenarioHeaderTemplateMixin:OnReset()
 
 	self.lastScenarioStage = nil;
 	self.latestWidgetInfo = nil;
+end
+
+UIWidgetBaseCircularStatusBarTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+
+local circularBarSwipeTextureFormatString = "Interface\\UnitPowerBarAlt\\%s-fill";
+
+function UIWidgetBaseCircularStatusBarTemplateMixin:Setup(widgetContainer, barMin, barMax, barValue, deadZonePercentage, textureKit)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+
+	barValue = Clamp(barValue, barMin, barMax);
+
+	local currentPercent = ClampedPercentageBetween(barValue, barMin, barMax);
+
+	if deadZonePercentage then
+		deadZonePercentage = deadZonePercentage / 2;
+
+		local range = barMax - barMin;
+		local newMin = range * deadZonePercentage;
+		local newMax = range * (1 - deadZonePercentage);
+		local newRange = newMax - newMin;
+		local newValue = newMin + newRange * currentPercent;
+
+		currentPercent = newValue / range;
+	end
+
+	local swipeTextureName = circularBarSwipeTextureFormatString:format(textureKit);
+	self.Progress:SetSwipeTexture(swipeTextureName);
+
+	CooldownFrame_SetDisplayAsPercentage(self.Progress, 1 - currentPercent);
 end

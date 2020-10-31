@@ -203,7 +203,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>

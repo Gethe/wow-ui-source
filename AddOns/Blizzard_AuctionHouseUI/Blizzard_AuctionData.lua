@@ -124,6 +124,7 @@ function AuctionCategoryMixin:CreateSubCategoryAndFilter(classID, subClassID, in
 	if useParentFilters then
 		self.filters = self.filters or {};
 		category:SetFilters(self.filters);
+		category.implicitFilter = implicitFilter;
 	else
 		category:AddFilter(classID, subClassID, inventoryType, implicitFilter);
 	end

@@ -659,7 +659,9 @@ function MountJournal_SetSelected(selectedMountID, selectedSpellID)
 	local inView = MountJournal_GetMountButtonByMountID(selectedMountID) ~= nil;
 	if not inView then
 		local mountIndex = GetMountDisplayIndexByMountID(selectedMountID);
-		HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
+		if mountIndex then
+			HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
+		end
 	end
 end
 

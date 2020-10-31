@@ -341,6 +341,19 @@ local layouts =
 		Center = { atlas = "CharacterCreateDropdown-NineSlice-Center", },
 	},
 
+	ChatBubble =
+	{
+		TopLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomRight", },
+		TopEdge = { atlas = "_ChatBubble-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_ChatBubble-NineSlice-EdgeBottom", },
+		LeftEdge = { atlas = "!ChatBubble-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!ChatBubble-NineSlice-EdgeRight", },
+		Center = { atlas = "ChatBubble-NineSlice-Center", },
+	},
+
 	UniqueCornersLayout =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },

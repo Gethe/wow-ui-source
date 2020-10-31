@@ -6,6 +6,15 @@ local gossipButtonTextureKitRegions = {
 	["Background"] = "jailerstower-wayfinder-tierbackground-%s",
 }
 
+local TORGHAST_LEVEL_PICKER_EVENTS = {
+	"PARTY_LEADER_CHANGED",
+	"GOSSIP_OPTIONS_REFRESHED",
+	"GROUP_ROSTER_UPDATE",
+	"UNIT_AREA_CHANGED",
+	"UNIT_PHASE", 
+	"GROUP_FORMED",
+};
+
 TorghastLevelPickerFrameMixin = {};
 
 function TorghastLevelPickerFrameMixin:OnLoad()
@@ -14,13 +23,20 @@ function TorghastLevelPickerFrameMixin:OnLoad()
 end
 
 function TorghastLevelPickerFrameMixin:OnEvent(event, ...)
-	if (event == "PARTY_LEADER_CHANGED") then 
+	if (event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" or event == "GROUP_FORMED") then 
+		C_GossipInfo.RefreshOptions(); 
+		local inParty = UnitInParty("player"); 
+		self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
+	elseif(event == "UNIT_AREA_CHANGED" or event == "UNIT_PHASE") then 
+		C_GossipInfo.RefreshOptions(); 
+	elseif (event == "GOSSIP_OPTIONS_REFRESHED") then 
+		self:SetupOptions();
 		self:UpdatePortalButtonState();
 	end 
 end 
 
 function TorghastLevelPickerFrameMixin:OnShow()
-	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	FrameUtil.RegisterFrameForEvents(self, TORGHAST_LEVEL_PICKER_EVENTS);
 	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES); 
 end 
 
@@ -32,34 +48,41 @@ function TorghastLevelPickerFrameMixin:CancelEffects()
 end 
 
 function TorghastLevelPickerFrameMixin:UpdatePortalButtonState(startingIndex)
-	local inParty = UnitInParty("player"); 
-	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 	local enabled = true; 
-
+	local isPartyInTorghast = C_PartyInfo.IsPartyInJailersTower(); 
 	if	(startingIndex and self.currentSelectedButtonIndex) then 
-		enabled = startingIndex <= self.currentSelectedButtonIndex;
+		local maxIndexPerPage = (self.maxOptionsPerPage + startingIndex) - 1; 
+		enabled = self.currentSelectedButtonIndex >= startingIndex and self.currentSelectedButtonIndex <= maxIndexPerPage;
 	end 
 
-	self.OpenPortalButton:SetEnabled(self.isPartyLeader and self.currentSelectedButton and enabled)
+	self.OpenPortalButton:SetEnabled(self.isPartyLeader and self.currentSelectedButton and enabled and isPartyInTorghast)
+end
+
+function TorghastLevelPickerFrameMixin:SetupOptions()
+	self:BuildOptionList();
+	self:SetupGrid();
+	self:SetupLevelButtons(); 
 end 
 
 function TorghastLevelPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
 
+	local inParty = UnitInParty("player"); 
+	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
+
 	self:CancelEffects(); 
 
 	local smokeEffectDescription = { effectID = TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_ID, offsetY = TORGHAST_LEVEL_PICKER_SMOKE_EFFECT_OFFSET, };
 	self.backgroundEffectController = GlobalFXBackgroundModelScene:AddDynamicEffect(smokeEffectDescription, self);
 
-	self:BuildOptionList();
-	self:SetupGrid();
-	self:SetupLevelButtons(); 
+	self:SetupOptions();
+	self:ScrollAndSelectHighestAvailableLayer();
 	ShowUIPanel(self); 
 end 
 
 function TorghastLevelPickerFrameMixin:OnHide()
-	self:UnregisterEvent("PARTY_LEADER_CHANGED");
+	FrameUtil.UnregisterFrameForEvents(self, TORGHAST_LEVEL_PICKER_EVENTS);
 	self:ClearLevelSelection(); 
 
 	self.textureKit = nil; 
@@ -116,6 +139,40 @@ end
 
 function TorghastLevelPickerFrameMixin:SetupBackground()
 	SetupTextureKitOnRegions(self.textureKit, self, gossipBackgroundTextureKitRegion, true, TextureKitConstants.UseAtlasSize);
+end
+
+function TorghastLevelPickerFrameMixin:ScrollAndSelectHighestAvailableLayer()
+	local highestAvailableLayerIndex = nil
+
+	--First get the highest unlocked layer. 
+	for i = 1, #self.gossipOptions do 
+		local optionInfo = self.gossipOptions[i];
+		local optionCanBeSelected = optionInfo.status == Enum.GossipOptionStatus.Available or optionInfo.status == Enum.GossipOptionStatus.AlreadyComplete; 
+		if (optionCanBeSelected and (not highestAvailableLayerIndex or (highestAvailableLayerIndex < i))) then 
+			highestAvailableLayerIndex = i;
+		end 
+	end 
+
+	-- If there is none which there shouldn't be.. return
+	if(not highestAvailableLayerIndex) then 
+		return;
+	end 
+
+	-- Go to the page that has this layer
+	local page = math.ceil(highestAvailableLayerIndex / self.maxOptionsPerPage);  
+	self:SetStartingPage(page); 
+
+	local startingIndex = ((page - 1) * self.maxOptionsPerPage) + 1;
+	self:SetupOptionsByStartingIndex(startingIndex);
+
+	-- Select the option that is the highest available layer. 
+	for layer in self.gossipOptionsPool:EnumerateActive() do 
+		if (layer.index == highestAvailableLayerIndex) then 
+			self:SelectLevel(layer);
+			layer:SetState(self.gossipOptions[highestAvailableLayerIndex].status)
+			return; 
+		end 
+	end 
 end 
 
 TorghastLevelPickerOptionButtonMixin = {}; 
@@ -157,6 +214,12 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 	self.Icon:SetDesaturated(lockedState); 
 	local parent = self:GetParent():GetParent(); 
 	local isChecked = (self == parent.currentSelectedButton) and (self.index == parent.currentSelectedButtonIndex);
+
+	-- We never want the locked icon to be checked.  
+	if(isChecked and lockedState) then
+		isChecked = false; 
+		self:GetParent():GetParent():SelectLevel(self);
+	end 
 	self:SetChecked(isChecked); 
 	self.SelectedBorder:SetShown(self:GetChecked());
 	local fontColor = HIGHLIGHT_FONT_COLOR; 
@@ -332,7 +395,10 @@ function TorghastLevelPickerRewardCircleMixin:RefreshTooltip()
 
 	if (self.lockedState) then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		if (UnitInParty("player")) then 
+		local timeLockedError = IsJailersTowerLayerTimeLocked(self.index);
+		if (timeLockedError) then
+			GameTooltip_AddErrorLine(EmbeddedItemTooltip, timeLockedError, true);
+		elseif (UnitInParty("player")) then 
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_LEVEL_PICKER_PARTY_LOCK, true);
 		else 
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_LOCKED, true);
@@ -395,6 +461,10 @@ function TorghastLevelPickerOpenPortalButtonMixin:OnEnter()
 	if (not self:GetParent().isPartyLeader) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
 		GameTooltip_AddNormalLine(GameTooltip, TORGHAST_LEVEL_PICKER_LEADER_ERROR); 
+		GameTooltip:Show(); 
+	elseif(not C_PartyInfo.IsPartyInJailersTower()) then 
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
+		GameTooltip_AddNormalLine(GameTooltip, TORGHAST_WAYFINDER_GATHER_PARTY); 
 		GameTooltip:Show(); 
 	end 
 end 

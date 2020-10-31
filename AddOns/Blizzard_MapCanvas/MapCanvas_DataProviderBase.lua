@@ -196,6 +196,15 @@ function MapCanvasPinMixin:OnMapInsetMouseLeave(mapInsetIndex)
 	-- Optionally override in your mixin, called when a map inset loses mouse focus
 end
 
+function MapCanvasPinMixin:ClearNudgeSettings()
+	self.nudgeTargetFactor = nil;
+	self.nudgeSourceRadius = nil;
+	self.nudgeSourceZoomedOutMagnitude = nil;
+	self.nudgeSourceZoomedInMagnitude = nil;
+	self.zoomedInNudge = nil;
+	self.zoomedOutNudge = nil;
+end
+
 function MapCanvasPinMixin:SetNudgeTargetFactor(newFactor)
 	self.nudgeTargetFactor = newFactor;
 end

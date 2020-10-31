@@ -41,12 +41,6 @@ function ScrollBarMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	ScrollControllerMixin.OnLoad(self);
 
-	-- disabled awaiting fixes.
-	self.isHorizontal = false;
-	--if self.isHorizontal then
-	--
-	--end
-
 	if not self.stepRepeatTime then
 		self.stepRepeatTime = .1;
 	end

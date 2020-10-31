@@ -132,7 +132,9 @@ function TimerTracker_OnEvent(self, event, ...)
 		StartTimer_SetGoTexture(timer);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
-			FreeTimerTrackerTimer(timer);
+			if(timer.type == "TIMER_TYPE_PVP") then 
+				FreeTimerTrackerTimer(timer);
+			end
 		end
 	end
 end

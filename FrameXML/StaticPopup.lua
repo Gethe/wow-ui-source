@@ -582,23 +582,6 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	hideOnEscape = 1,
 };
 
-StaticPopupDialogs["TAKE_GM_SURVEY"] = {
-	text = TAKE_GM_SURVEY,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		GMSurveyFrame_LoadUI();
-		ShowUIPanel(GMSurveyFrame);
-		TicketStatusFrame:Hide();
-	end,
-	OnCancel = function(self)
-		TicketStatusFrame.hasGMSurvey = false;
-		TicketStatusFrame:Hide();
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
-};
-
 StaticPopupDialogs["CONFIRM_RESET_INSTANCES"] = {
 	text = CONFIRM_RESET_INSTANCES,
 	button1 = YES,
@@ -1193,87 +1176,6 @@ StaticPopupDialogs["RESET_CHAT"] = {
 	end,
 	hideOnEscape = 1,
 	exclusive = 1,
-};
-
-StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
-	text = HELP_TICKET_ABANDON_CONFIRM,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self, prevFrame)
-		DeleteGMTicket();
-	end,
-	OnCancel = function(self, prevFrame)
-	end,
-	OnShow = function(self)
-		HideUIPanel(HelpFrame);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["HELP_TICKET"] = {
-	text = HELP_TICKET_EDIT_ABANDON,
-	button1 = HELP_TICKET_EDIT,
-	button2 = HELP_TICKET_ABANDON,
-	OnAccept = function(self)
-		if ( HelpFrame_IsGMTicketQueueActive() ) then
-			HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
-		else
-			HideUIPanel(HelpFrame);
-			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
-		end
-	end,
-	OnCancel = function(self)
-		local currentFrame = self:GetParent();
-		local dialogFrame = StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");
-		dialogFrame.data = currentFrame;
-	end,
-	timeout = 0,
-	whileDead = 1,
-	closeButton = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_NEED_MORE_HELP"] = {
-	text = GM_RESPONSE_POPUP_NEED_MORE_HELP_WARNING,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		HelpFrame_GMResponse_Acknowledge();
-	end,
-	OnCancel = function(self)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_RESOLVE_CONFIRM"] = {
-	text = GM_RESPONSE_POPUP_RESOLVE_CONFIRM,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		HelpFrame_GMResponse_Acknowledge(true);
-	end,
-	OnCancel = function(self)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_MUST_RESOLVE_RESPONSE"] = {
-	text = GM_RESPONSE_POPUP_MUST_RESOLVE_RESPONSE,
-	button1 = GM_RESPONSE_POPUP_VIEW_RESPONSE,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		HelpFrame_ShowFrame(HELPFRAME_GM_RESPONSE);
-	end,
-	OnCancel = function(self)
-	end,
-	OnShow = function(self)
-		HideUIPanel(HelpFrame);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
 };
 StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	text = PET_RENAME_CONFIRMATION,
@@ -4393,8 +4295,6 @@ function StaticPopup_Resize(dialog, which)
 			width = 420;
 		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
 			width = width + (info.editBoxWidth - 260);
-		elseif ( which == "HELP_TICKET" ) then
-			width = 350;
 		elseif ( which == "GUILD_IMPEACH" ) then
 			width = 375;
 		end
@@ -4581,7 +4481,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
 		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
-		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT")) then 
+		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT") or
+		 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then 
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -4920,7 +4821,8 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT") or 
-			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING")) then
+			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") or
+			 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
@@ -4946,6 +4848,10 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				text:SetText(StaticPopupDialogs[which].text .. " " ..TIME_REMAINING .. " " .. time);
 			elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then 
 				dialog.SubText:SetText(StaticPopupDialogs[which].subText:format(SecondsToTime(timeleft)));
+			elseif (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL") then
+				local formatterOutput = WorldQuestsSecondsFormatter:Format(timeleft);
+				local formattedTime = BONUS_OBJECTIVE_TIME_LEFT:format(formatterOutput);
+				text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, formattedTime);
 			else
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);

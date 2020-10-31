@@ -374,6 +374,11 @@ function WorldMapTutorialMixin:CheckAndHideHelpInfo()
 	if HelpPlate_IsShowing(self.helpInfo) then
 		HelpPlate_Hide();
 	end
+
+	if HelpPlateTooltip_IsShowing(self.helpInfo) then
+		HelpPlate_TooltipHide();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, false);
+	end
 end
 
 function WorldMapTutorialMixin:ToggleHelpInfo()

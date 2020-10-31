@@ -256,13 +256,6 @@ function RecruitAFriendFrameMixin:OnUnwrapFlashBegun()
 	end
 end
 
-local function GetTitleNameFromTitleID(titleID)
-	local titleName = GetTitleName(titleID);
-	if titleName then
-		return strtrim(titleName);
-	end
-end
-
 function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 	if self.RewardClaiming.NextRewardButton:WaitingForFlash() then
 		-- The next reward button is animating, cache off the next reward and call again when we are done
@@ -304,7 +297,7 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 			self:SetNextRewardName(self.RewardClaiming.NextRewardButton.item:GetItemName(), nextReward.repeatableClaimCount, nextReward.rewardType);
 		end);
 	elseif nextReward.titleInfo then
-		local titleName = GetTitleNameFromTitleID(nextReward.titleInfo.titleID);
+		local titleName = TitleUtil.GetNameFromTitleMaskID(nextReward.titleInfo.titleMaskID);
 		if titleName then
 			self:SetNextRewardName(RAF_REWARD_TITLE:format(titleName), nextReward.repeatableClaimCount, nextReward.rewardType);
 		end
@@ -849,7 +842,7 @@ function RecruitAFriendRewardButtonMixin:Setup(rewardInfo, tooltipRightAligned)
 	elseif self.rewardInfo.mountInfo then
 		self.dressupReward = self.rewardInfo.mountInfo.mountID > 0;
 	elseif self.rewardInfo.titleInfo then
-		self.titleName = GetTitleNameFromTitleID(self.rewardInfo.titleInfo.titleID);
+		self.titleName = TitleUtil.GetNameFromTitleMaskID(self.rewardInfo.titleInfo.titleMaskID);
 	elseif self.rewardInfo.appearanceInfo or self.rewardInfo.appearanceSetInfo or self.rewardInfo.illusionInfo then
 		self.dressupReward = true;
 	end

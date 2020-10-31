@@ -1,92 +1,37 @@
--- if you change something here you probably want to change the frame version too
-
 -- [[ Generic Audio Options Panel ]] --
 
 function AudioOptionsPanel_CheckButton_OnClick (checkButton)
-	local setting = "0";
-	if ( checkButton:GetChecked() ) then
-		if ( not checkButton.invert ) then
-			setting = "1"
-		end
-	elseif ( checkButton.invert ) then
-		setting = "1"
-	end
+	BlizzardOptionsPanel_CheckButton_OnClick(checkButton);
 
-	local prevValue = checkButton:GetValue();
-
-	checkButton:SetValue(setting);
-
-	if ( checkButton.restart and prevValue ~= setting ) then
+	if checkButton.restart then
 		AudioOptionsFrame_AudioRestart();
-	end
-
-	if ( checkButton.dependentControls ) then
-		if ( checkButton:GetChecked() ) then
-			for _, control in next, checkButton.dependentControls do
-				control:Enable();
-			end
-		else
-			for _, control in next, checkButton.dependentControls do
-				control:Disable();
-			end
-		end
-	end
-
-	if ( checkButton.setFunc ) then
-		checkButton.setFunc(setting);
 	end
 end
 
+local function AudioOptionsPanel_RequiresRestartCallback(self, control)
+	if control.restart then
+		AudioOptionsFrame.audioRestart = true;
+	end
+end
+
+local function AudioOptionsPanel_RefreshControlCallback(self, control)
+	control.oldValue = control.value;
+end
 
 local function AudioOptionsPanel_Okay (self)
-	for _, control in next, self.controls do
-		if ( control.value and control:GetValue() ~= control.value ) then
-			if ( control.restart ) then
-				AudioOptionsFrame.audioRestart = true;
-			end
-			control:SetValue(control.value);
-		end
-	end
+	BlizzardOptionsPanel_Okay(self, AudioOptionsPanel_RequiresRestartCallback);
 end
 
 local function AudioOptionsPanel_Cancel (self)
-	for _, control in next, self.controls do
-		if ( control.oldValue ) then
-			if ( control.value and control.value ~= control.oldValue ) then
-				if ( control.restart ) then
-					AudioOptionsFrame.audioRestart = true;
-				end
-				control:SetValue(control.oldValue);
-			end
-		elseif ( control.value ) then
-			if ( control:GetValue() ~= control.value ) then
-				if ( control.restart ) then
-					AudioOptionsFrame.audioRestart = true;
-				end
-				control:SetValue(control.value);
-			end
-		end
-	end
+	BlizzardOptionsPanel_Cancel(self, AudioOptionsPanel_RequiresRestartCallback);
 end
 
 local function AudioOptionsPanel_Default (self)
-	for _, control in next, self.controls do
-		if ( control.defaultValue and control.value ~= control.defaultValue ) then
-			if ( control.restart ) then
-				AudioOptionsFrame.audioRestart = true;
-			end
-			control:SetValue(control.defaultValue);
-			control.value = control.defaultValue;
-		end
-	end
+	BlizzardOptionsPanel_Default(self, AudioOptionsPanel_RequiresRestartCallback);
 end
 
 local function AudioOptionsPanel_Refresh (self)
-	for _, control in next, self.controls do
-		BlizzardOptionsPanel_RefreshControlSingle(control);
-		-- record values so we can cancel back to this state
-		control.oldValue = control.value;
-	end
+	BlizzardOptionsPanel_Refresh(self, AudioOptionsPanel_RefreshControlCallback);
 end
 
 
@@ -113,7 +58,6 @@ SoundPanelOptions = {
 	Sound_AmbienceVolume = { text = "AMBIENCE_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_DialogVolume = { text = "DIALOG_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_MasterVolume = { text = "MASTER_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.001, },
-	Sound_NumChannels = { text = "SOUND_CHANNELS", minValue = 32, maxValue = 64, valueStep = 32, },
 	--Sound_OutputQuality = { text = "SOUND_QUALITY", minValue = 0, maxValue = 2, valueStep = 1 },
 }
 
@@ -128,49 +72,44 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 	self.cvar = "Sound_OutputDriverIndex";
 
 	local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-
+	local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(selectedDriverIndex);
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
 	self.value = selectedDriverIndex;
-	self.newValue = selectedDriverIndex;
 	self.restart = true;
 
-	UIDropDownMenu_SetWidth(self, 136)
+	UIDropDownMenu_SetWidth(self, 136);
 	UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 
-	self.SetValue =
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-			local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(selectedDriverIndex);
-			self.value = selectedDriverIndex;
-			self.newValue = selectedDriverIndex;
+	self.SetValue = function (self, value)
+		self.newValue = value;
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 
-			UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
-			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
-		end
+	self.GetValue = function (self)
+		return self.newValue or self.value;
+	end
+
+	self.RefreshValue =	function (self)
+		local selectedDriverIndex = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		local deviceName = Sound_GameSystem_GetOutputDriverNameByIndex(selectedDriverIndex);
+		self.newValue = selectedDriverIndex;
+
+		UIDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
+		UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
+	end
 end
 
-function AudioOptionsSoundPanelHardwareDropDown_Initialize()
-	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
-	local selectedValue = UIDropDownMenu_GetSelectedValue(dropdown);
+function AudioOptionsSoundPanelHardwareDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local num = Sound_GameSystem_GetNumOutputDrivers();
-
 	local info = UIDropDownMenu_CreateInfo();
 	for index=0,num-1,1 do
 		info.text = Sound_GameSystem_GetOutputDriverNameByIndex(index);
 		info.value = index;
 		info.checked = nil;
 		if (selectedValue and index == selectedValue) then
-			UIDropDownMenu_SetText(dropdown, info.text);
+			UIDropDownMenu_SetText(self, info.text);
 			info.checked = 1;
 		else
 			info.checked = nil;
@@ -185,7 +124,6 @@ function AudioOptionsSoundPanelHardwareDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
-	UIDropDownMenu_SetText(dropdown, Sound_GameSystem_GetOutputDriverNameByIndex(value));
 
 	local prevValue = dropdown:GetValue();
 	dropdown:SetValue(value);
@@ -200,32 +138,28 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 	local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
 	self.value = selected;
-	self.newValue = selected;
 	self.restart = true;
 
 	UIDropDownMenu_SetWidth(self, 136);
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, selected);
 
-	self.SetValue =
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			UIDropDownMenu_SetSelectedValue(self, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-			self.value = selected;
-			self.newValue = selected;
+	self.SetValue = function (self, value)
+		self.newValue = value;
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 
-			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, selected);
-		end
+	self.GetValue = function (self)
+		return self.newValue or self.value;
+	end
+
+	self.RefreshValue =	function (self)
+		local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.newValue = selected;
+
+		UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, selected);
+	end
 end
 
 local soundChannelValues = { 24, 48, 64 };
@@ -266,32 +200,28 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
 	local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
 	self.value = selected;
-	self.newValue = selected;
 	self.restart = true;
 
 	UIDropDownMenu_SetWidth(self, 136);
 	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(self, selected);
 
-	self.SetValue =
-		function (self, value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			UIDropDownMenu_SetSelectedValue(self, value);
-		end
-	self.GetValue =
-		function (self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end
-	self.RefreshValue =
-		function (self)
-			local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-			self.value = selected;
-			self.newValue = selected;
+	self.SetValue = function (self, value)
+		self.newValue = value;
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 
-			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, selected);
-		end
+	self.GetValue = function (self)
+		return self.newValue or self.value;
+	end
+
+	self.RefreshValue =	function (self)
+		local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.newValue = selected;
+
+		UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, selected);
+	end
 end
 
 local soundCacheSizeValues = { 67108864, 134217728 }; --value in bytes, displayed in MB
@@ -322,4 +252,3 @@ function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick(self)
 	local prevValue = dropdown:GetValue();
 	dropdown:SetValue(value);
 end
-

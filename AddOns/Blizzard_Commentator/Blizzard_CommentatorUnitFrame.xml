@@ -141,8 +141,8 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown parentKey="Cooldown" useParentLevel="false" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
-						<Size x="50" y="50"/>
+					<Cooldown parentKey="Cooldown" useParentLevel="true" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
+						<Size x="70" y="70"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
 						</Anchors>

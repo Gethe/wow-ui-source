@@ -46,6 +46,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetAutoMissionEnvironmentEffect",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autoMissionEnvEffect", Type = "AutoMissionEnvironmentEffect", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAutoMissionTargetingInfo",
 			Type = "Function",
 
@@ -325,6 +339,29 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetTalentUnlockWorldQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "worldQuestID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HasAdventures",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAdventures", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAtGarrisonMissionNPC",
 			Type = "Function",
 
@@ -369,6 +406,26 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveFollowerFromMission",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "boardIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "RushHealAllFollowers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "followerType", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -816,6 +873,11 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GarrisonTalentUnlocksResult",
+			Type = "Event",
+			LiteralName = "GARRISON_TALENT_UNLOCKS_RESULT",
+		},
+		{
 			Name = "GarrisonTalentUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_UPDATE",
@@ -925,6 +987,7 @@ local GarrisonInfo =
 				{ Name = "schoolMask", Type = "number", Nilable = false },
 				{ Name = "previewMask", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "spellTutorialFlag", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -972,6 +1035,15 @@ local GarrisonInfo =
 				{ Name = "newHealth", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "points", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "AutoMissionEnvironmentEffect",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "autoCombatSpellInfo", Type = "AutoCombatSpellInfo", Nilable = false },
 			},
 		},
 		{

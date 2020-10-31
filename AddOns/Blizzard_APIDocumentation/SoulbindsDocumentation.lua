@@ -16,21 +16,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "AddPendingConduit",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "nodeID", Type = "number", Nilable = false },
-				{ Name = "conduitID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanActivateSoulbind",
 			Type = "Function",
 
@@ -70,6 +55,15 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "CanSwitchActiveSoulbindTreeBranch",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseUI",
 			Type = "Function",
 		},
@@ -83,12 +77,90 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "FindNodeIDActuallyInstalled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FindNodeIDAppearingInstalled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FindNodeIDPendingInstall",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FindNodeIDPendingUninstall",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveSoulbindID",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConduitCharges",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "charges", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConduitChargesCapacity",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "charges", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -103,6 +175,15 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "collectionData", Type = "table", InnerType = "ConduitCollectionData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConduitCollectionCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -129,6 +210,34 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetConduitCollectionDataByVirtualID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "virtualID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "collectionData", Type = "ConduitCollectionData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetConduitDisplayed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConduitHyperlink",
 			Type = "Function",
 
@@ -141,6 +250,20 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConduitIDPendingInstall",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -174,6 +297,20 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetConduitRankFromCollection",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conduitRank", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConduitSpellID",
 			Type = "Function",
 
@@ -186,6 +323,20 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInstalledConduitID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conduitID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -203,35 +354,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetPendingConduitID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "nodeID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "conduitID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetPendingNodeIDInSoulbind",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "soulbindID", Type = "number", Nilable = false },
-				{ Name = "conduitID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "nodeID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSoulbindData",
 			Type = "Function",
 
@@ -243,6 +365,29 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "data", Type = "SoulbindData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalConduitChargesPending",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalConduitChargesPendingInSoulbind",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -276,21 +421,6 @@ local Soulbinds =
 		{
 			Name = "HasAnyPendingConduits",
 			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "HasPendingConduitInSoulbind",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "soulbindID", Type = "number", Nilable = false },
-				{ Name = "conduitID", Type = "number", Nilable = false },
-			},
 
 			Returns =
 			{
@@ -355,6 +485,20 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "IsNodePendingModify",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUnselectedConduitPendingInSoulbind",
 			Type = "Function",
 
@@ -369,21 +513,18 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "MatchesCurrentSpecSet",
+			Name = "ModifyNode",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "specSetID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "matches", Type = "bool", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "conduitID", Type = "number", Nilable = false },
+				{ Name = "type", Type = "SoulbindConduitTransactionType", Nilable = false },
 			},
 		},
 		{
-			Name = "RemovePendingConduit",
+			Name = "SelectNode",
 			Type = "Function",
 
 			Arguments =
@@ -392,16 +533,7 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "ResetSoulbindConduits",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "soulbindID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SelectNode",
+			Name = "UnmodifyNode",
 			Type = "Function",
 
 			Arguments =
@@ -420,6 +552,15 @@ local Soulbinds =
 			Payload =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SoulbindConduitChargesUpdated",
+			Type = "Event",
+			LiteralName = "SOULBIND_CONDUIT_CHARGES_UPDATED",
+			Payload =
+			{
+				{ Name = "charges", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -464,11 +605,6 @@ local Soulbinds =
 				{ Name = "nodeID", Type = "number", Nilable = false },
 				{ Name = "data", Type = "SoulbindConduitData", Nilable = false },
 			},
-		},
-		{
-			Name = "SoulbindConduitsReset",
-			Type = "Event",
-			LiteralName = "SOULBIND_CONDUITS_RESET",
 		},
 		{
 			Name = "SoulbindForgeInteractionEnded",
@@ -520,7 +656,6 @@ local Soulbinds =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
 				{ Name = "conduitID", Type = "number", Nilable = false },
-				{ Name = "pending", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -534,8 +669,10 @@ local Soulbinds =
 			{
 				{ Name = "conduitID", Type = "number", Nilable = false },
 				{ Name = "conduitRank", Type = "number", Nilable = false },
+				{ Name = "conduitItemLevel", Type = "number", Nilable = false },
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = false },
 				{ Name = "conduitSpecSetID", Type = "number", Nilable = false },
+				{ Name = "conduitSpecIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "conduitSpecName", Type = "string", Nilable = true },
 				{ Name = "covenantID", Type = "number", Nilable = true },
 				{ Name = "conduitItemID", Type = "number", Nilable = false },
@@ -564,6 +701,7 @@ local Soulbinds =
 				{ Name = "cvarIndex", Type = "number", Nilable = false },
 				{ Name = "tree", Type = "SoulbindTree", Nilable = false },
 				{ Name = "modelSceneData", Type = "SoulbindModelSceneData", Nilable = false },
+				{ Name = "activationSoundKitID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -591,6 +729,7 @@ local Soulbinds =
 				{ Name = "state", Type = "SoulbindNodeState", Nilable = false },
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "failureRenownRequirement", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -17,6 +17,15 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
+				<Texture parentKey="UnavailableOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<MaskTexture parentKey="CircleMask" file="Interface/CharacterFrame/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="4" y="-4"/>
@@ -24,6 +33,7 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="UnavailableOverlay"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -94,6 +104,17 @@
 
 	<Frame name="RuneforgePowerListTemplate" mixin="RuneforgePowerListMixin" inherits="PagedListTemplate" virtual="true">
 		<Size x="286" y="222"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="OtherSpecializationsLabel" inherits="GameFontNormal" text="RUNEFORGE_LEGENDARY_POWER_LIST_OTHER_SPEC_LABEL" hidde="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
@@ -128,7 +149,7 @@
 
 			<Frame parentKey="PageControl" inherits="PagedListHorizontalControlTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="50"/>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="20"/>
 				</Anchors>
 			</Frame>
 		</Frames>

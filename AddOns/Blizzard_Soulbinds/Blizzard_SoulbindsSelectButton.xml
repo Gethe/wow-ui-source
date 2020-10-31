@@ -84,8 +84,17 @@
 					<Frame parentKey="NewAlert" inherits="NewFeatureLabelTemplate" frameLevel="100" hidden="true">
 						<Size x="1" y="1"/>
 						<Anchors>
-							<Anchor point="CENTER" x="1" y="-40"/>
+							<Anchor point="CENTER" x="1" y="-43"/>
 						</Anchors>
+						<Layers>
+							<Layer>
+								<Texture parentKey="Diamond" atlas="Soulbinds_Portrait_NewLabel_Shadow" useAtlasSize="true" alpha="1">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 					</Frame>
 					<Frame parentKey="Active" frameLevel="100">
 						<Size x="40" y="40"/>
@@ -96,7 +105,7 @@
 							<Layer>
 								<Texture parentKey="Diamond" atlas="Soulbinds_Portrait_Active" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER"/>
+										<Anchor point="CENTER" y="-2"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -105,7 +114,7 @@
 				</Frames>
 			</ModelScene>
 			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="101">
-				<Size x="150" y="150"/>
+				<Size x="350" y="350"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>
 				</Anchors>

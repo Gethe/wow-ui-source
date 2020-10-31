@@ -357,7 +357,7 @@ end
 function CampaignLoreButtonMixin:OnClick()
 	if self.mode == "overview" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_OPEN_LORE_BOOK);
-		HelpTip:Hide(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
+		HelpTip:Acknowledge(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
 		EventRegistry:TriggerEvent("QuestLog.ShowCampaignOverview", self:GetParent():GetCampaign():GetID());
 	elseif self.mode == "questlog" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_CLOSE_LORE_BOOK);

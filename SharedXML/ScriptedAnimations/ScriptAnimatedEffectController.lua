@@ -4,6 +4,7 @@ ScriptAnimatedEffectControllerMixin = {};
 function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution)
 	self.modelScene = modelScene;
 	self.effectID = effectID;
+	self.initialEffectID = effectID;
 	self.source = source;
 	self.target = target;
 	self.onEffectFinish = onEffectFinish;
@@ -13,10 +14,27 @@ function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, 
 	self.effectCount = 0;
 
 	self.loopingSoundEmitter = nil;
+	self.soundEnabled = true;
 end
 
 function ScriptAnimatedEffectControllerMixin:GetEffect()
 	return ScriptedAnimationEffectsUtil.GetEffectByID(self.effectID);
+end
+
+function ScriptAnimatedEffectControllerMixin:GetCurrentEffectID()
+	return self.effectID;
+end
+
+function ScriptAnimatedEffectControllerMixin:GetInitialEffectID()
+	return self.initialEffectID;
+end
+
+function ScriptAnimatedEffectControllerMixin:IsSoundEnabled()
+	return self.soundEnabled;
+end
+
+function ScriptAnimatedEffectControllerMixin:SetSoundEnabled(enabled)
+	self.soundEnabled = enabled;
 end
 
 function ScriptAnimatedEffectControllerMixin:StartEffect()
@@ -36,7 +54,7 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 		self:BeginBehavior(effect.startBehavior);
 	end
 
-	if effect.loopingSoundKitID then
+	if self:IsSoundEnabled() and effect.loopingSoundKitID then
 		local startingSound = nil;
 		local loopingSound = effect.loopingSoundKitID;
 
@@ -48,9 +66,11 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 		self.loopingSoundEmitter:StartLoopingSound();
 	end
 	
-	if effect.startSoundKitID then
+	if self:IsSoundEnabled() and effect.startSoundKitID then
 		PlaySound(effect.startSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
+
+	self:UpdateActorDynamicOffsets()
 end
 
 function ScriptAnimatedEffectControllerMixin:DeltaUpdate(elapsedTime)
@@ -102,7 +122,7 @@ function ScriptAnimatedEffectControllerMixin:FinishEffect()
 		self:BeginBehavior(effect.finishBehavior);
 	end
 
-	if effect.finishSoundKitID then
+	if self:IsSoundEnabled() and effect.finishSoundKitID then
 		PlaySound(effect.finishSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 
@@ -118,7 +138,6 @@ function ScriptAnimatedEffectControllerMixin:FinishEffect()
 	if effect.finishEffectID then
 		self.effectID = effect.finishEffectID;
 		self:StartEffect();
-		self:UpdateActorDynamicOffsets();
 		self.actor:DeltaUpdate(0);
 	end
 
@@ -153,7 +172,9 @@ function ScriptAnimatedEffectControllerMixin:SetDynamicOffsets(pixelX, pixelY, p
 end
 
 function ScriptAnimatedEffectControllerMixin:UpdateActorDynamicOffsets()
-	self.actor:SetDynamicOffsets(self.dynamicPixelX, self.dynamicPixelY, self.dynamicPixelZ);
+	if self.actor then
+		self.actor:SetDynamicOffsets(self.dynamicPixelX, self.dynamicPixelY, self.dynamicPixelZ);
+	end
 end
 
 function ScriptAnimatedEffectControllerMixin:CancelEffect()

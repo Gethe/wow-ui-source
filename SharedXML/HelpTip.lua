@@ -19,6 +19,8 @@
 		useParentStrata	= false,				-- whether to use parent framestrata
 		system = ""								-- reference string
 		systemPriority = 0,						-- if a system and a priority is specified, higher priority helptips will close another helptip in that system
+		extraRightMarginPadding = 0,			--  extra padding on the right side of the helptip
+		acknowledgeOnHide = false,				-- whether to treat a hide as an acknowledge
 	}
 ]]--
 
@@ -160,6 +162,8 @@ function HelpTip:Show(parent, info, relativeRegion)
 	end
 
 	local frame = self.framePool:Acquire();
+	frame.width = HelpTip.width + (info.extraRightMarginPadding or 0);
+	frame:SetWidth(frame.width);
 	frame:Init(parent, info, relativeRegion or parent);
 	frame:Show();
 
@@ -213,11 +217,11 @@ function HelpTip:ForceHideAll()
 	self:SetHelpTipsEnabled("ForceHideAll", true);
 end
 
-function HelpTip:HideAllSystem(system)
+function HelpTip:HideAllSystem(system, text)
 	local framesToClose = { };
 
 	for frame in self.framePool:EnumerateActive() do
-		if frame.info.system == system then
+		if frame:MatchesSystem(system, text) then
 			tinsert(framesToClose, frame);
 		end
 	end
@@ -286,6 +290,14 @@ function HelpTip:Acknowledge(parent, text)
 	end
 end
 
+function HelpTip:AcknowledgeSystem(system, text)
+	for frame in self.framePool:EnumerateActive() do
+		if frame:MatchesSystem(system, text) then
+			frame:Acknowledge();
+		end
+	end
+end
+
 function HelpTip:Release(helpTip)
 	self.framePool:Release(helpTip);
 end
@@ -314,15 +326,30 @@ function HelpTipTemplateMixin:OnLoad()
 	self.acknowledged = false;
 end
 
+function HelpTipTemplateMixin:OnShow()
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
 function HelpTipTemplateMixin:OnHide()
+	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+
 	local info = self.info;
 	if info.onHideCallback then
 		info.onHideCallback(self.acknowledged, info.callbackArg);
+	end
+	if not self.acknowledged and info.acknowledgeOnHide then
+		self:HandleAcknowledge();
 	end
 	if self.acknowledged and info.onAcknowledgeCallback then
 		info.onAcknowledgeCallback(info.callbackArg);
 	end
 	HelpTip:Release(self);
+end
+
+function HelpTipTemplateMixin:OnEvent()
+	self:Layout();
 end
 
 -- this exists because OnHide can be deferred
@@ -339,7 +366,7 @@ function HelpTipTemplateMixin:OnUpdate()
 	if self.info.autoHorizontalSlide then
 		-- check right edge first
 		local rightEdge = UIParent:GetRight();
-		local canFitOnRight = rx + HelpTip.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Right][1] < rightEdge;
+		local canFitOnRight = rx + self.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Right][1] < rightEdge;
 		if not canFitOnRight then
 			if rx + HelpTip.halfWidth < rightEdge then
 				targetAlignment = HelpTip.Alignment.Center;
@@ -349,7 +376,7 @@ function HelpTipTemplateMixin:OnUpdate()
 		else
 			-- left edge
 			local leftEdge = UIParent:GetLeft();
-			local canFitOnLeft = rx - HelpTip.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Left][1] > leftEdge;
+			local canFitOnLeft = rx - self.width + HelpTip.ArrowOffsets[HelpTip.Alignment.Left][1] > leftEdge;
 			if not canFitOnLeft then
 				if rx - HelpTip.halfWidth > leftEdge then
 					targetAlignment = HelpTip.Alignment.Center;
@@ -526,6 +553,11 @@ function HelpTipTemplateMixin:RotateArrow(rotation)
 end
 
 function HelpTipTemplateMixin:Acknowledge()
+	self:HandleAcknowledge();
+	self:Close();
+end
+
+function HelpTipTemplateMixin:HandleAcknowledge()
 	local info = self.info;
 	if info.cvar then
 		SetCVar(info.cvar, info.cvarValue);
@@ -534,7 +566,6 @@ function HelpTipTemplateMixin:Acknowledge()
 		SetCVarBitfield(info.cvarBitfield, info.bitfieldFlag, true);
 	end
 	self.acknowledged = true;
-	self:Close();
 end
 
 function HelpTipTemplateMixin:Reset()
@@ -557,4 +588,12 @@ function HelpTipTemplateMixin:Matches(parent, text)
 	end
 	local textMatched = not text or self.info.text == text;
 	return textMatched and self:GetParent() == parent;
+end
+
+function HelpTipTemplateMixin:MatchesSystem(system, text)
+	if self.closed then
+		return false;
+	end
+	local textMatched = not text or self.info.text == text;
+	return textMatched and self.info.system == system;
 end

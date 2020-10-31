@@ -10,6 +10,9 @@
 -- Globals: DEVTOOLS_USE_TABLE_CACHE, DEVTOOLS_USE_FUNCTION_CACHE
 -- Globals: DEVTOOLS_USE_USERDATA_CACHE
 ---------------------------------------------------------------------------
+
+local forceinsecure = forceinsecure;
+
 local DT = {};
 
 DEVTOOLS_MAX_ENTRY_CUTOFF = 30;    -- Maximum table entries shown

@@ -17,8 +17,8 @@ function CovenantUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallbac
 	elseif rewardInfo.spellID then
 		local name, _, icon = GetSpellInfo(rewardInfo.spellID);
 		return icon, name, RENOWN_REWARD_SPELL_NAME_FORMAT, RENOWN_REWARD_SPELL_DESCRIPTION;
-	elseif rewardInfo.titleID then
-		local name = GetTitleName(rewardInfo.titleID);
+	elseif rewardInfo.titleMaskID then
+		local name = TitleUtil.GetNameFromTitleMaskID(rewardInfo.titleMaskID);
 		return nil, name, RENOWN_REWARD_TITLE_NAME_FORMAT, RENOWN_REWARD_TITLE_DESCRIPTION;
 	elseif rewardInfo.transmogID then
 		local itemID = C_Transmog.GetItemIDForSource(rewardInfo.transmogID);

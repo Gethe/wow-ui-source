@@ -18,12 +18,19 @@ function Soulbinds.HasConduitAtCursor()
 end
 
 local previewConduitType = nil;
-function Soulbinds.SetPreviewConduitType(conduitType)
+local previewConduitID = nil;
+function Soulbinds.SetPreviewConduit(conduitType, conduitID)
 	previewConduitType = conduitType;
+	previewConduitID = conduitID;
 end
 
-function Soulbinds.GetPreviewConduitType()
-	return previewConduitType;
+function Soulbinds.ClearPreviewConduit()
+	previewConduitType = nil;
+	previewConduitID = nil;
+end
+
+function Soulbinds.GetPreviewConduit()
+	return previewConduitType, previewConduitID;
 end
 
 function Soulbinds.GetOpenSoulbindID()
@@ -41,6 +48,37 @@ end
 
 function Soulbinds.GetDefaultSoulbindID(covenantID)
 	return soulbindDefaultIDs[covenantID];
+end
+
+local conduitResetPending;
+function Soulbinds.SetConduitResetPending(pending)
+	conduitResetPending = pending;
+end
+
+function Soulbinds.IsConduitResetPending()
+	return conduitResetPending;
+end
+
+local conduitInstallPending;
+function Soulbinds.SetConduitInstallPending(pending)
+	conduitInstallPending = pending;
+end
+
+function Soulbinds.IsConduitCommitPending()
+	return conduitInstallPending;
+end
+
+local soulbindIDActivationPending;
+function Soulbinds.SetSoulbindIDActivationPending(soulbindID)
+	soulbindIDActivationPending = soulbindID;
+end
+
+function Soulbinds.GetSoulbindIDActivationPending()
+	return soulbindIDActivationPending;
+end
+
+function Soulbinds.GetSoulbindAppearingActive()
+	return Soulbinds.GetSoulbindIDActivationPending() or C_Soulbinds.GetActiveSoulbindID();
 end
 
 function Soulbinds.GetConduitName(conduitType)

@@ -49,13 +49,14 @@ local CovenantPreview =
 		{
 			Name = "CovenantAbilityType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Class", Type = "CovenantAbilityType", EnumValue = 0 },
 				{ Name = "Signature", Type = "CovenantAbilityType", EnumValue = 1 },
+				{ Name = "Soulbind", Type = "CovenantAbilityType", EnumValue = 2 },
 			},
 		},
 		{
@@ -65,6 +66,16 @@ local CovenantPreview =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "type", Type = "CovenantAbilityType", Nilable = false },
+			},
+		},
+		{
+			Name = "CovenantFeatureInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "texture", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -81,6 +92,19 @@ local CovenantPreview =
 				{ Name = "covenantCrest", Type = "string", Nilable = false },
 				{ Name = "covenantAbilities", Type = "table", InnerType = "CovenantAbilityInfo", Nilable = false },
 				{ Name = "fromPlayerChoice", Type = "bool", Nilable = false },
+				{ Name = "covenantSoulbinds", Type = "table", InnerType = "CovenantSoulbindInfo", Nilable = false },
+				{ Name = "featureInfo", Type = "CovenantFeatureInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "CovenantSoulbindInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "uiTextureKit", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},
 	},

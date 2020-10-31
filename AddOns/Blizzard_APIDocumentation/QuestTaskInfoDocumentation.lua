@@ -133,6 +133,20 @@ local QuestTaskInfo =
 			},
 		},
 		{
+			Name = "GetUIWidgetSetIDFromQuestID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "UiWidgetSetID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsActive",
 			Type = "Function",
 

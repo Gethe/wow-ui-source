@@ -1,5 +1,3 @@
--- if you change something here you probably want to change the frame version too
-
 function AudioOptionsFrame_Toggle ()
 	if ( AudioOptionsFrame:IsShown() ) then
 		AudioOptionsFrame:Hide();
@@ -34,7 +32,10 @@ function AudioOptionsFrame_OnLoad (self)
 
 	AudioOptionsFrame:SetHeight(540);
 	AudioOptionsFrameCategoryFrame:SetHeight(449);
-	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function AudioOptionsFrame_OnEvent (self, event, ...)
 	self.Header:Setup(SOUND);
 end
 
@@ -42,8 +43,11 @@ function AudioOptionsFrame_OnHide (self)
 	OptionsFrame_OnHide(self);
 
 	if ( AudioOptionsFrame.gameRestart ) then
-		GlueDialog_Show("CLIENT_RESTART_ALERT");
+		StaticPopup_Show("CLIENT_RESTART_ALERT");
 		AudioOptionsFrame.gameRestart = nil;
+	elseif ( AudioOptionsFrame.logout ) then
+		StaticPopup_Show("CLIENT_LOGOUT_ALERT");
+		AudioOptionsFrame.logout = nil;
 	end
 end
 
@@ -55,24 +59,23 @@ function AudioOptionsFrameCancel_OnClick (self, button)
 	end
 
 	AudioOptionsFrame.gameRestart = nil;
+	AudioOptionsFrame.logout = nil;
 
 	AudioOptionsFrame_Toggle();
 end
 
-function AudioOptionsFrameOkay_OnClick (self, button, down, apply)
-	OptionsFrameOkay_OnClick(AudioOptionsFrame, apply);
+function AudioOptionsFrameOkay_OnClick (self, button)
+	OptionsFrameOkay_OnClick(AudioOptionsFrame);
 
 	if ( AudioOptionsFrame.audioRestart ) then
 		AudioOptionsFrame_AudioRestart();
 	end
 
-	if ( not apply ) then
-		AudioOptionsFrame_Toggle();
-	end
+	AudioOptionsFrame_Toggle();
 end
 
 function AudioOptionsFrameDefault_OnClick ()
 	OptionsFrameDefault_OnClick(AudioOptionsFrame);
 
-	GlueDialog_Show("CONFIRM_RESET_AUDIO_SETTINGS");
+	StaticPopup_Show("CONFIRM_RESET_AUDIO_SETTINGS");
 end

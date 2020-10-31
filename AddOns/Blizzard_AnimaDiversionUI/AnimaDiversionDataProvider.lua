@@ -23,6 +23,7 @@ local ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"GARRISON_TALENT_COMPLETE",
 	"GARRISON_TALENT_EVENT_UPDATE",
+	"GARRISON_TALENT_UNLOCKS_RESULT",
 };
 
 local ANIMA_DIVERSION_ORIGIN_PIN_BORDER = "AnimaChannel-Icon-Device-%s-Border";
@@ -133,13 +134,13 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:AddOrigin(originPosition);
 
+	local hasAnyChanneledNodes = false;
 	for _, nodeData in ipairs(animaNodes) do
-		if AnimaDiversionFrame:HasIntroTutorialShowing() then
-			-- if one of the 2 intro tutorials is showing, we want to pretend that all nodes are unavailable.
-			nodeData.state = Enum.AnimaDiversionNodeState.Unavailable;
-		end
+		local wasChanneled = self:AddNode(nodeData);
 
-		self:AddNode(nodeData);
+		if wasChanneled then
+			hasAnyChanneledNodes = true;
+		end
 	end
 end
 
@@ -155,6 +156,7 @@ function AnimaDiversionDataProviderMixin:AddNode(nodeData)
 
 	if pin:IsConnected() then
 		self:SetupConnectionOnPin(pin);
+		return true;
 	end
 end
 
@@ -204,7 +206,7 @@ function AnimaDiversionPinMixin:SetupOrigin()
 end 
 
 function AnimaDiversionPinMixin:IsConnected() 
-	return (self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedTemporary) or (self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent);
+	return AnimaDiversionUtil.IsNodeActive(self.nodeData.state);
 end 
 
 function AnimaDiversionPinMixin:SetupNode()
@@ -220,6 +222,12 @@ function AnimaDiversionPinMixin:SetupNode()
 		end
 	elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then
 		self:SetSelectedState(true, true);
+	end
+
+	local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
+	if worldQuestID then
+		-- prime the data;
+		HaveQuestRewardData(worldQuestID);
 	end
 
 	self:SetVisualState(useState);
@@ -266,15 +274,17 @@ function AnimaDiversionPinMixin:SetSelectedState(selected, leaveOtherSelections)
 end 
 
 function AnimaDiversionPinMixin:OnMouseEnter() 
-	if AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self) then 
-		return;
-	end 
-
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:RefreshTooltip();
+end
+
+function AnimaDiversionPinMixin:RefreshTooltip()
+	GameTooltip:ClearLines();
+	self.UpdateTooltip = nil;
 
 	if not self.nodeData then -- If we are the origin pin we want to show a special tooltip. 
 		GameTooltip_AddHighlightLine(GameTooltip, ANIMA_DIVERSION_ORIGIN_TOOLTIP);
-	else 
+	else
 		GameTooltip_AddNormalLine(GameTooltip, self.nodeData.name);
 		GameTooltip_AddHighlightLine(GameTooltip, self.nodeData.description);
 		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable then 
@@ -286,6 +296,24 @@ function AnimaDiversionPinMixin:OnMouseEnter()
 		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then 
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_POI_REINFORCED, GREEN_FONT_COLOR);
+		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+			local talentInfo = C_Garrison.GetTalentInfo(self.nodeData.talentID);
+			if talentInfo then
+				local costString = GetGarrisonTalentCostString(talentInfo);
+				if costString then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddHighlightLine(GameTooltip, costString);
+				end
+			end
+			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_CLICK_CHANNEL, GREEN_FONT_COLOR);
+		end
+		local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
+		if worldQuestID then
+			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, worldQuestID);
+			GameTooltip.recalculatePadding = true;
+			if not HaveQuestRewardData(worldQuestID) then
+				self.UpdateTooltip = self.RefreshTooltip;
+			end
 		end
 	end 
 
@@ -312,13 +340,8 @@ function AnimaDiversionPinMixin:OnClick(button)
 
 		AnimaDiversionFrame.ReinforceInfoFrame:SelectNodeToReinforce(self);
 	else
-		if self.nodeData.state ~= Enum.AnimaDiversionNodeState.Available then 
-			return;
-		end
-
-		AnimaDiversionFrame.SelectPinInfoFrame:SetupAndShow(self);
-		if AnimaDiversionFrame.SelectPinInfoFrame:IsSelectionInfoShowingForNode(self) then 
-			GameTooltip:Hide();
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+			StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", self.nodeData.name, nil, self);
 		end
 	end
 end

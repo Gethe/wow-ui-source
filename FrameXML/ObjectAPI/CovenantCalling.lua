@@ -85,16 +85,19 @@ CallingsUpdater:RegisterEvent("QUEST_TURNED_IN");
 function CallingsUpdater:OnCallingsUpdated(callings)
 	self.completedCount = 0;
 	self.availableCount = 0;
+	self.callingsUnlocked = C_CovenantCallings.AreCallingsUnlocked();
 	self.callings = callings;
 
-	for index = 1, Constants.Callings.MaxCallings do
-		local calling = callings[index];
-		if calling then
-			if not C_QuestLog.IsOnQuest(calling.questID) then
-				self.availableCount = self.availableCount + 1;
+	if self.callingsUnlocked then
+		for index = 1, Constants.Callings.MaxCallings do
+			local calling = callings[index];
+			if calling then
+				if not C_QuestLog.IsOnQuest(calling.questID) then
+					self.availableCount = self.availableCount + 1;
+				end
+			else
+				self.completedCount = self.completedCount + 1;
 			end
-		else
-			self.completedCount = self.completedCount + 1;
 		end
 	end
 
@@ -119,4 +122,8 @@ end
 
 function CovenantCalling_GetAvailableCount()
 	return CallingsUpdater.availableCount or 0;
+end
+
+function CovenantCalling_AreCallingsUnlocked()
+	return CallingsUpdater.callingsUnlocked;
 end

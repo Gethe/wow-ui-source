@@ -361,6 +361,12 @@ function OptionalReagentListMixin:RefreshListedItems()
 		self.listedOptions[i] = { itemID = itemID, bonusText = bonusText, };
 	end
 
+	if #self.listedOptions == 0 then
+		HelpTip:HideAll(self:GetTradeSkillUI().DetailsFrame);
+	else
+		self:GetTradeSkillUI().DetailsFrame:CheckOptionalReagentTutorial();
+	end
+
 	local skipUpdates = true;
 	self:RefreshSelectedListIndex(skipUpdates);
 

@@ -1,0 +1,312 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantRenown.lua"/>
+
+	<Frame name="CovenantRenownLevelTemplate" mixin="CovenantRenownLevelMixin" virtual="true">
+		<Size x="55" y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" parentArray="Textures">
+					<Size x="40" y="39"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="IconBorder" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-1"/>
+					</Anchors>
+				</FontString>
+				<MaskTexture parentKey="HexMask" atlas="CovenantSanctum-Renown-Hexagon-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</MaskTexture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightTexture" parentArray="Textures" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CovenantRenownRewardTemplate" mixin="CovenantRenownRewardMixin" frameLevel="10" virtual="true">
+		<Size x="415" y="136"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Toast">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" x="44"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Name" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="226" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="134" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark-Large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="-13" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="CovenantSanctum-Renown-Toast-Hover" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CovenantRenownTrackButtonTemplate" mixin="CovenantRenownTrackButtonMixin" virtual="true">
+		<Size x="22" y="39"/>
+		<NormalTexture atlas="CovenantSanctum-Renown-Arrow" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="CovenantSanctum-Renown-Arrow-Depressed" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</PushedTexture>	
+		<DisabledTexture atlas="CovenantSanctum-Renown-Arrow-Disabled" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</DisabledTexture>
+		<HighlightTexture atlas="CovenantSanctum-Renown-Arrow-Hover" useAtlasSize="true" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CovenantRenownFrame" mixin="CovenantRenownMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
+		<Size x="755" y="540"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-26"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BackgroundShadow" atlas="CovenantSanctum-Renown-Background-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CelebrationModelSceneTarget">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="168"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectedLevelGlow">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TitleDivider">
+					<Anchors>
+						<Anchor point="TOP" y="-128"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-209"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Anima">
+					<Anchors>
+						<Anchor point="BOTTOM" y="99"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Header" inherits="Fancy32Font" text="COVENANT_SANCTUM_TAB_RENOWN">
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOP" y="-71"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PreviewText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="HeaderFrame" frameLevel="510">
+				<Size x="176" y="76"/>
+				<Anchors>
+					<Anchor point="TOP" y="12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Level" inherits="Game32Font">
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ModelScene parentKey="CelebrationModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="500" y="500"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="26"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="TrackFrame" mixin="CovenantRenownTrackFrameMixin">
+				<Size x="570" y="72"/>
+				<Anchors>
+					<Anchor point="TOP" y="-135"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<MaskTexture parentKey="Mask" atlas="CovenantSanctum-Renown-Scroll-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</MaskTexture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="LeftButton" inherits="CovenantRenownTrackButtonTemplate">
+						<KeyValues>
+							<KeyValue key="direction" value="-1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-4"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="RightButton" inherits="CovenantRenownTrackButtonTemplate">
+						<KeyValues>
+							<KeyValue key="direction" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" x="4"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Frame>
+			<ModelScene parentKey="LevelModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="100">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.TrackFrame"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="FinalToast" inherits="CovenantCelebrationBannerTemplate" frameLevel="500" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" y="-317"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="SlabTexture">
+							<Anchors>
+								<Anchor point="CENTER" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+</Ui>

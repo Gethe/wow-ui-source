@@ -132,6 +132,22 @@ function WorldMap_AddQuestTimeToTooltip(questID)
 	end
 end
 
+function CallingPOI_OnEnter(self)
+	local noWrap = false;
+	GameTooltip_SetTitle(GameTooltip, QuestUtils_GetQuestName(self.questID), nil, noWrap);
+	WorldMap_AddQuestTimeToTooltip(self.questID);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
+
+	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
+	if (widgetSetID) then 
+		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
+	end 
+
+	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD);
+	GameTooltip.recalculatePadding = true;
+end
+
 function TaskPOI_OnEnter(self, skipSetOwner)
 	if not skipSetOwner then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -142,6 +158,15 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		GameTooltip:Show();
 		return;
 	end
+
+	if C_QuestLog.IsQuestCalling(self.questID) then
+		CallingPOI_OnEnter(self);
+		GameTooltip:Show();
+		return;
+	end
+
+	local widgetSetAdded = false; 
+	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
@@ -206,12 +231,22 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		if ( percent  and showObjective ) then
 			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 		end
+		
+		if (widgetSetID) then
+			widgetSetAdded = true;
+			GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
+		end
 
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, self.questRewardTooltipStyle);
 
 		if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
 			GameTooltip:AddDebugWorldQuestInfo(self.questID);
 		end
+	end
+
+			
+	if (not widgetSetAdded and widgetSetID) then
+		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end
 
 	GameTooltip:Show();

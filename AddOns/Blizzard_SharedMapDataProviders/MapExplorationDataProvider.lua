@@ -3,7 +3,7 @@ MapExplorationDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 function MapExplorationDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	-- a single permanent pin
-	local pin = self:GetMap():AcquirePin("MapExplorationPinTemplate");
+	local pin = self:GetMap():AcquirePin("MapExplorationPinTemplate", self);
 	pin:SetPosition(0.5, 0.5);
 	self.pin = pin;
 end
@@ -47,15 +47,28 @@ function MapExplorationDataProviderMixin:OnGlobalAlphaChanged()
 	end
 end
 
+function MapExplorationDataProviderMixin:SetDrawLayer(drawLayer, subLevel)
+	self.drawLayer = drawLayer;
+	self.subLevel = subLevel;
+end
+
+function MapExplorationDataProviderMixin:GetDrawLayer()
+	return self.drawLayer or "ARTWORK", self.subLevel or 0;
+end
+
 --[[ THE Pin ]]--
 MapExplorationPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
-function MapExplorationPinMixin:OnLoad()
-	self:SetIgnoreGlobalPinScale(true);
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_MAP_EXPLORATION");
-	self.overlayTexturePool = CreateTexturePool(self, "ARTWORK", 0);
-	self.highlightRectPool = CreateTexturePool(self, "ARTWORK", 0);		-- could be frames, but textures are lighter
-	self.textureLoadGroup = CreateFromMixins(TextureLoadingGroupMixin);
+function MapExplorationPinMixin:OnAcquired(dataProvider)
+	if not self.overlayTexturePool then
+		self:SetIgnoreGlobalPinScale(true);
+		self:UseFrameLevelType("PIN_FRAME_LEVEL_MAP_EXPLORATION");
+		self.dataProvider = dataProvider;
+		local drawLayer, subLevel = dataProvider:GetDrawLayer();
+		self.overlayTexturePool = CreateTexturePool(self, drawLayer, subLevel);
+		self.highlightRectPool = CreateTexturePool(self, drawLayer, subLevel);		-- could be frames, but textures are lighter
+		self.textureLoadGroup = CreateFromMixins(TextureLoadingGroupMixin);
+	end
 end
 
 function MapExplorationPinMixin:RemoveAllData()
@@ -87,6 +100,8 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 		self.isWaitingForLoad = true;
 		self:SetAlpha(0);
 	end
+
+	local drawLayer, subLevel = self.dataProvider:GetDrawLayer();
 
 	local mapCanvas = self:GetMap();
 	local mapID = self:GetMap():GetMapID();
@@ -140,7 +155,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 
 					if exploredTextureInfo.isShownByMouseOver then
 						-- keep track of the textures to show by mouseover
-						texture:SetDrawLayer("ARTWORK", 1);
+						texture:SetDrawLayer(drawLayer, subLevel + 1);
 						texture:Hide();
 						local highlightRect = self.highlightRectPool:Acquire();
 						mapCanvas:AddMaskableTexture(highlightRect);
@@ -149,7 +164,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 						highlightRect.index = i;
 						highlightRect.texture = texture;
 					else
-						texture:SetDrawLayer("ARTWORK", 0);
+						texture:SetDrawLayer(drawLayer, subLevel);
 						texture:Show();
 
 						if fullUpdate then

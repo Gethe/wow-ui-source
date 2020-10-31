@@ -6,6 +6,11 @@ QUESTINFO_FADE_IN = 0.5;
 
 local QUEST_FRAME_MODEL_SCENE_ID = 309;
 
+-- A temporary solution for solving troublesome models.
+local QUEST_FRAME_CREATURE_DISPLAY_ID_TO_CUSTOM_MODEL_SCENES = {
+	[92797] = 366,
+};
+
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -457,7 +462,7 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortr
 	QuestModelScene:ClearAllPoints();
 	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:ClearScene();
-	QuestModelScene:TransitionToModelSceneID(QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+	QuestModelScene:TransitionToModelSceneID(QUEST_FRAME_CREATURE_DISPLAY_ID_TO_CUSTOM_MODEL_SCENES[portraitDisplayID] or QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	QuestModelScene:Show();
 	QuestFrame_UpdatePortraitText(text);
 

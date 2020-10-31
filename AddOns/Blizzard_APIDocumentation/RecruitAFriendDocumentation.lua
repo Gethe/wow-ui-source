@@ -352,7 +352,7 @@ local RecruitAFriend =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "titleID", Type = "number", Nilable = false },
+				{ Name = "titleMaskID", Type = "number", Nilable = false },
 			},
 		},
 	},

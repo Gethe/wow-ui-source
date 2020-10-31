@@ -23,7 +23,7 @@ function ScrollListMixin:GetNumElementFrames()
 	return #self.ScrollFrame.buttons;
 end
 
-function TemplatedListMixin:GetElementFrame(frameIndex)
+function ScrollListMixin:GetElementFrame(frameIndex)
 	return self.ScrollFrame.buttons[frameIndex];
 end
 

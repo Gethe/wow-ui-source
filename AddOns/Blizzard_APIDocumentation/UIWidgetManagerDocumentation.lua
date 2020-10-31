@@ -337,7 +337,7 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "GetWidgetLayoutDirectionFromWidgetSetID",
+			Name = "GetWidgetSetInfo",
 			Type = "Function",
 
 			Arguments =
@@ -347,7 +347,7 @@ local UIWidgetManager =
 
 			Returns =
 			{
-				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "widgetSetInfo", Type = "UIWidgetSetInfo", Nilable = false },
 			},
 		},
 		{
@@ -1186,6 +1186,15 @@ local UIWidgetManager =
 				{ Name = "widgetSetID", Type = "number", Nilable = false },
 				{ Name = "widgetType", Type = "UIWidgetVisualizationType", Nilable = false },
 				{ Name = "unitToken", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "UIWidgetSetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "layoutDirection", Type = "UIWidgetSetLayoutDirection", Nilable = false },
+				{ Name = "verticalPadding", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -15,12 +15,12 @@ function PagedListMixin:OnMouseWheel(delta)
 end
 
 function PagedListMixin:SetLayout(layout, numElements)
-	if self.layout ~= nil then
-		return;
-	end
-
 	self.layout = layout;
 	self.numElements = numElements;
+
+	if self:IsInitialized() then
+		self:LayoutList();
+	end
 end
 
 function PagedListMixin:CanInitialize()
@@ -30,9 +30,16 @@ end
 function PagedListMixin:InitializeList()
 	self.page = 1;
 	self.elements = {};
+	self:LayoutList();
+end
 
+function PagedListMixin:LayoutList()
 	local template = self:GetElementTemplate();
 	local function PagedListFactoryFunction(index)
+		if index <= #self.elements then
+			return self.elements[index];
+		end
+
 		local newFrame = CreateFrame("BUTTON", nil, self, template);
 		table.insert(self.elements, newFrame);
 		return newFrame;

@@ -103,14 +103,14 @@ LEVEL_UP_TYPES = {
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=SPECIALIZATION,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_SPECIALIZATION_LINK
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_SPECIALIZATION_LINK
 									},
 
 	["TalentsUnlocked"] 		= 	{	icon="Interface\\Icons\\Ability_Marksmanship",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=TALENT_POINTS,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_TALENTS_LINK
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_TALENTS_LINK
 									},
 
 	["MountEquipmentUnlocked"] 	= 	{	icon="Interface\\Icons\\inv_blacksmith_leystonehoofplates_orange",
@@ -124,21 +124,21 @@ LEVEL_UP_TYPES = {
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=BATTLEFIELDS,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_BG_LINK
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_BG_LINK
 									},
 
 	["LFDUnlocked"] 			= 	{	icon="Interface\\Icons\\LevelUpIcon-LFD",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=LOOKING_FOR_DUNGEON,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_LFD_LINK
 									},
 
 	["PvpTalentsUnlocked"] 		= 	{	icon="Interface\\Icons\\Ability_DualWield",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=PVP_TALENTS,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_HONOR_LINK
+										link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_HONOR_LINK
 									},
 
 	["AreaLootUnlocked"] 		= 	{	icon="Interface\\Icons\\ability_priest_holybolts01",
@@ -214,6 +214,10 @@ local JAILERS_TOWER_LEVEL_TYPE_STRINGS = {
 	[Enum.JailersTowerType.Coldheart] = JAILERS_TOWER_LEVEL_TOAST_COLDHEART,
 	[Enum.JailersTowerType.Mortregar] = JAILERS_TOWER_LEVEL_TOAST_MORTREGAR,
 	[Enum.JailersTowerType.UpperReaches] = JAILERS_TOWER_LEVEL_TOAST_UPPER_REACHES,
+	[Enum.JailersTowerType.ArkobanHall] = JAILERS_TOWER_LEVEL_TOAST_ARKOBAN_HALL,
+	[Enum.JailersTowerType.TormentChamberJaina] = JAILERS_TOWER_LEVEL_TOAST_TORMENTCHAMBER_JAINA,
+	[Enum.JailersTowerType.TormentChamberThrall] = JAILERS_TOWER_LEVEL_TOAST_TORMENTCHAMBER_THRALL,
+	[Enum.JailersTowerType.TormentChamberAnduin] = JAILERS_TOWER_LEVEL_TOAST_TORMENTCHAMBER_ANDUIN,
 }
 
 LEVEL_UP_TRAP_LEVELS = {427, 77, 135}

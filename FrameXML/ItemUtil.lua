@@ -8,6 +8,7 @@ ItemButtonUtil.ItemContextEnum = {
 	ReplaceBonusTree = 4,
 	SelectRuneforgeItem = 5,
 	SelectRuneforgeUpgradeItem = 6,
+	Soulbinds = 7,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -46,8 +47,9 @@ function ItemButtonUtil.GetItemContext()
 		return RuneforgeFrame:GetItemContext();
 	elseif TargetSpellReplacesBonusTree() then
 		return ItemButtonUtil.ItemContextEnum.ReplaceBonusTree;
+	elseif SoulbindViewer and SoulbindViewer:IsShown() then
+		return ItemButtonUtil.ItemContextEnum.Soulbinds;
 	end
-	
 	return nil;
 end
 
@@ -75,6 +77,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then 
 			return RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.Soulbinds then
+			return C_Item.IsItemConduit(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end

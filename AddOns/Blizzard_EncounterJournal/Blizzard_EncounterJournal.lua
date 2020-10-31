@@ -230,10 +230,10 @@ function EncounterJournal_OnLoad(self)
 	local homeData = {
 		name = HOME,
 		OnClick = function()
-			if ( not EncounterJournal.instanceSelect.suggestTab:IsEnabled() ) then
-				EJSuggestFrame_OpenFrame();
+			if self.selectedTab then
+				EJ_ContentTab_Select(self.selectedTab);
 			else
-				EncounterJournal_ListInstances();
+				EJSuggestFrame_OpenFrame();
 			end
 		end,
 	}
@@ -354,7 +354,12 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 
-	if EncounterJournal.instanceSelect:IsShown() then
+	local shouldShowPowerTab, powerID = EJMicroButton:ShouldShowPowerTab();
+	if shouldShowPowerTab then
+		self.LootJournal:SetPendingPowerID(powerID);
+		EJ_ContentTab_Select(instanceSelect.LootJournalTab.id);
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_RUNEFORGE_LEGENDARY_POWER, true);
+	elseif EncounterJournal.instanceSelect:IsShown() then
 		EJ_ContentTab_Select(self.selectedTab);
 	end
 
@@ -703,7 +708,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.instance.title:SetText(instanceName);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
 	self.instance.loreBG:SetTexture(loreImage);
-	
+
 	self.info.instanceTitle:ClearAllPoints();
 	local iconIndex = GetIconIndexForDifficultyID(difficultyID);
 	local hasDifficultyIcon = iconIndex ~= nil;
@@ -718,13 +723,15 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.instanceTitle:SetText(instanceName);
 	self.instance.mapButton:SetShown(dungeonAreaMapID and dungeonAreaMapID > 0);
 
+	self.instance.loreScroll.ScrollBar:Hide();
+	self.instance.loreScroll.child.lore:SetWidth(335);
 	self.instance.loreScroll.child.lore:SetText(description);
+
 	local loreHeight = self.instance.loreScroll.child.lore:GetHeight();
 	self.instance.loreScroll.ScrollBar:SetValue(0);
-	if loreHeight <= EJ_LORE_MAX_HEIGHT then
-		self.instance.loreScroll.ScrollBar:Hide();
-	else
+	if loreHeight > EJ_LORE_MAX_HEIGHT then
 		self.instance.loreScroll.ScrollBar:Show();
+		self.instance.loreScroll.child.lore:SetWidth(313);
 	end
 
 	self.info.instanceButton.instanceID = instanceID;
@@ -760,9 +767,9 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 		bossButton.creature:SetTexture(bossImage);
 		bossButton:UnlockHighlight();
-		
+
 		EncounterJournalBossButton_UpdateDifficultyOverlay(bossButton);
-		
+
 		if ( not hasBossAbilities ) then
 			hasBossAbilities = rootSectionID > 0;
 		end
@@ -842,7 +849,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.encounterTitle:SetText(ename);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
-	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());	
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.lootTab, C_EncounterJournal.InstanceHasLoot());
 
 	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
 
@@ -2396,6 +2403,12 @@ function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
 	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
 end
 
+function EncounterJournal_OpenToPowerID(powerID)
+	ShowUIPanel(EncounterJournal);
+	EJ_ContentTab_Select(EncounterJournal.instanceSelect.LootJournalTab.id);
+	EncounterJournal.LootJournal:OpenToPowerID(powerID);
+end
+
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	EJ_HideNonInstancePanels();
 	ShowUIPanel(EncounterJournal);
@@ -2830,10 +2843,12 @@ end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
-		EJSuggestFrame_RefreshDisplay();
-		local newAdventureNotice = ...;
-		if ( newAdventureNotice ) then
-			EJMicroButton:UpdateNewAdventureNotice();
+		if self:GetParent().selectedTab == self.id then
+			EJSuggestFrame_RefreshDisplay();
+			local newAdventureNotice = ...;
+			if ( newAdventureNotice ) then
+				EJMicroButton:UpdateNewAdventureNotice();
+			end
 		end
 	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()
@@ -3372,7 +3387,7 @@ end
 function EncounterJournalBossButtonDefeatedOverlay_OnEnter(self)
 	if self.tooltipText then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		
+
 		local wrap = true;
 		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
 		GameTooltip:Show();

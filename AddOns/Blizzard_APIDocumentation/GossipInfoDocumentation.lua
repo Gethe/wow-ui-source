@@ -112,6 +112,10 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "RefreshOptions",
+			Type = "Function",
+		},
+		{
 			Name = "SelectActiveQuest",
 			Type = "Function",
 
@@ -180,6 +184,11 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "GossipOptionsRefreshed",
+			Type = "Event",
+			LiteralName = "GOSSIP_OPTIONS_REFRESHED",
+		},
+		{
 			Name = "GossipShow",
 			Type = "Event",
 			LiteralName = "GOSSIP_SHOW",
@@ -237,6 +246,7 @@ local GossipInfo =
 				{ Name = "type", Type = "string", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "GossipOptionRewardInfo", Nilable = false },
 				{ Name = "status", Type = "GossipOptionStatus", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
 			},
 		},
 		{

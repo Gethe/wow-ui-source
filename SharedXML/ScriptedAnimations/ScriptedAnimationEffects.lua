@@ -260,6 +260,10 @@ local TrajectoryToCallback = {
 -- (5) Starting alpha
 -- An additional column to support an override for the effect actor's starting alpha.
 -- startingAlpha: the effect actor's starting alpha.
+--
+-- (6) Playing Effect at Target without pitching from source 
+-- A flag to allow an effect to play at a target without augmenting it's yaw by the source->target vector
+-- useTargetAsSource: set to true for readability, anything nonfalse will evaluate to use the default angles. 
 
 Enum.ScriptedAnimationTransformation = {};
 Enum.ScriptedAnimationTransformation.Alpha = 1;
@@ -316,6 +320,10 @@ local ScriptAnimationTableExtension = {
 	[31] = AnimaDiversionHoldAnimation,
 	[33] = AnimaDiversionHoldAnimation,
 
+	[41] = {
+		animation = 158,
+	},
+
 	[52] = {
 		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_MAIN_WINDOW_OPEN_LOOP,
 	},
@@ -355,23 +363,24 @@ local ScriptAnimationTableExtension = {
 
 	-- Covenant Toast Looping Sounds. 
 	[91] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_BASTION,
 	},
 	[92] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_REVENDRETH,
 	},
 	[93] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_ARDENWEALD,
 	},
 	[94] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
-	},
-	[96] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION,
+		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_MALDRAXXUS,
 	},
 
 	[98] = {
 		animation = 158,
+	},
+
+	[99] = {
+		useTargetAsSource = true,
 	},
 
 	[119] = {

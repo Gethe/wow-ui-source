@@ -47,30 +47,25 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CovenantCallingsTemplate" inherits="ResizeLayoutFrame" mixin="CovenantCallingsMixin" virtual="true">
+	<Frame name="CovenantCallingsTemplate" mixin="CovenantCallingsMixin" virtual="true">
+		<Size x="361" y="105"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSublevel="-1">
 				<Texture parentKey="Background" atlas="shadowlands-landingpage-divider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Decor">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOP" x="0" y="-50"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlightLarge" text="CALLINGS_QUESTS">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="45" y="-14"/>
 					</Anchors>

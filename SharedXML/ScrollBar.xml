@@ -3,14 +3,4 @@
 	<Script file="ScrollBar.lua"/>
 
 	<Frame name="ScrollBarTemplate" mixin="ScrollBarMixin" inherits="ScrollControllerTemplate" virtual="true"/>
-
-	<Button name="ScrollBarButton" mixin="ScrollBarButtonMixin" enableMouse="true" intrinsic="true">
-		<Scripts>
-			<OnLoad method="OnLoad_Intrinsic"/>
-			<OnMouseUp method="OnMouseUp_Intrinsic"/>
-			<OnMouseDown method="OnMouseDown_Intrinsic"/>
-			<OnEnter method="OnEnter_Intrinsic"/>
-			<OnLeave method="OnLeave_Intrinsic"/>
-		</Scripts>
-	</Button>
 </Ui>

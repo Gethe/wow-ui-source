@@ -23,7 +23,7 @@ local textureKitRegionInfo = {
 	["CenterEffect4"] = {formatString = "%s-centereffect4", setVisibility = true, useAtlasSize = true},
 	["CenterEffect5"] = {formatString = "%s-centereffect5", setVisibility = true, useAtlasSize = true},
 	["Border"] = {formatString = "%s-border", setVisibility = true, useAtlasSize = true},
-}
+};
 
 UIWidgetTemplateTextureWithAnimationMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
@@ -65,11 +65,19 @@ function UIWidgetTemplateTextureWithAnimationMixin:StartAnimations()
 	end
 end
 
+local textureKitTooltipBackdropStyles = {
+	["eyeofthejailer"] = GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY,
+};
+
 function UIWidgetTemplateTextureWithAnimationMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
 	local textureKit = widgetInfo.textureKit;
 	SetupTextureKitsFromRegionInfo(textureKit, self, textureKitRegionInfo);
+
+	local tooltipTextureKit = strsub(textureKit, 1, 14);
+	self.tooltipBackdropStyle = textureKitTooltipBackdropStyles[tooltipTextureKit];
+
 	self:SetTooltip(widgetInfo.tooltip);
 	self:StartAnimations();
 end

@@ -6,8 +6,9 @@ local SELECT_ANIM_TEMPLATE = "PowerSwirlTemplate";
 local SoulbindTreeEvents =
 {
 	"SOULBIND_NODE_LEARNED",
-	"SOULBIND_NODE_UNLEARNED",
 	"SOULBIND_PATH_CHANGED",
+	"SOULBIND_CONDUIT_COLLECTION_UPDATED",
+	"SOULBIND_PENDING_CONDUIT_CHANGED",
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURSOR_CHANGED",
 };
@@ -39,14 +40,13 @@ function SoulbindTreeMixin:OnEvent(event, ...)
 	if event == "SOULBIND_NODE_LEARNED" then
 		local nodeID = ...;
 		self:OnNodeLearned(nodeID);
-	elseif event == "SOULBIND_NODE_UNLEARNED" then
-		local nodeID = ...;
-		self:OnNodeUnlearned(nodeID);
 	elseif event == "SOULBIND_PATH_CHANGED" then
 		self:OnPathChanged();
+	elseif event == "SOULBIND_CONDUIT_COLLECTION_UPDATED" then
+		self:OnConduitCollectionUpdated();
 	elseif event == "CURSOR_CHANGED" then
-		local isDefault, newCursorType, oldCursorType = ...;
-		self:OnCursorChanged(isDefault, oldCursorType);
+		local isDefault, newCursorType, oldCursorType, oldCursorVirtualID = ...;
+		self:OnCursorChanged(isDefault, newCursorType, oldCursorType, oldCursorVirtualID);
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
 		local currencyID = ...;
 		if currencyID == SOULBINDS_RENOWN_CURRENCY_ID then
@@ -66,7 +66,7 @@ function SoulbindTreeMixin:Reset()
 end
 
 function SoulbindTreeMixin:OnShow()
-	self:StopThenApplyAttentionAnims();
+	self:StopThenApplySelectableAndUnsocketedAnims();
 
 	if self.constructed then
 		FrameUtil.RegisterFrameForEvents(self, SoulbindTreeEvents);
@@ -85,13 +85,18 @@ function SoulbindTreeMixin:HasSelectedNodes()
 	end);
 end
 
+function SoulbindTreeMixin:GetNodes()
+	return self.nodeFrames;
+end
+
 function SoulbindTreeMixin:OnNodeLearned(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
 	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
-function SoulbindTreeMixin:OnNodeUnlearned(nodeID)
+function SoulbindTreeMixin:OnNodeSwitched(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
 end
@@ -99,16 +104,23 @@ end
 function SoulbindTreeMixin:OnPathChanged()
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
-function SoulbindTreeMixin:SelectNode(button, buttonName)
-	if buttonName == "LeftButton" and (button:IsUnselected() or button:IsSelectable()) then
-		if button:IsSelectable() then
-			self:PlayNodeSelectionAnim(button);
-		end
+function SoulbindTreeMixin:OnConduitCollectionUpdated()
+	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
+end
 
-		C_Soulbinds.SelectNode(button:GetID());
+function SoulbindTreeMixin:SelectNode(button)
+	if button:IsSelectable() then
+		if C_Soulbinds.CanModifySoulbind() then
+			self:PlayNodeSelectionAnim(button);
+			C_Soulbinds.SelectNode(button:GetID());
+		end
+	elseif button:IsUnselected() then
+		if C_Soulbinds.CanSwitchActiveSoulbindTreeBranch() then
+			C_Soulbinds.SelectNode(button:GetID());
+		end
 	end
 end
 
@@ -126,50 +138,57 @@ function SoulbindTreeMixin:OnSelectAnimFinished(frame, anim)
 end
 
 function SoulbindTreeMixin:OnNodeClicked(button, buttonName)
-	if not C_Soulbinds.CanModifySoulbind() then
-		return;
-	end
-
-	local linked = false;
-	if IsModifiedClick("CHATLINK") then
-		local link = GetSpellLink(button:GetSpellID());
-		linked = HandleModifiedItemClick(link);
-	end
-
-	if not linked then
-		self:SelectNode(button, buttonName);
-	end
-end
-
-function SoulbindTreeMixin:OnConduitClicked(button, buttonName)
-	if not C_Soulbinds.CanModifySoulbind() then
-		return;
-	end
-
-	if buttonName == "RightButton" then
-		C_Soulbinds.RemovePendingConduit(button:GetID());
- 	elseif Soulbinds.HasConduitAtCursor() then
-		if not button:IsUnavailable() then
-			self:TryInstallConduitAtCursor(button);
-		end
-	else
+	if buttonName == "LeftButton" then
 		local linked = false;
-		local conduit = button:GetConduit();
-		if conduit and IsModifiedClick("CHATLINK") then
-			local link = C_Soulbinds.GetConduitHyperlink(conduit:GetConduitID(), conduit:GetConduitRank());
+		if IsModifiedClick("CHATLINK") then
+			local link = GetSpellLink(button:GetSpellID());
 			linked = HandleModifiedItemClick(link);
 		end
 
 		if not linked then
-			self:SelectNode(button, buttonName);
+			self:SelectNode(button);
+		end
+	end
+end
+
+function SoulbindTreeMixin:OnConduitClicked(button, buttonName)
+	if buttonName == "RightButton" then
+		if C_Soulbinds.CanModifySoulbind() then
+			local nodeID = button:GetID();
+			if C_Soulbinds.IsNodePendingModify(nodeID) then
+				C_Soulbinds.UnmodifyNode(nodeID);
+			else
+				local conduitID = C_Soulbinds.GetInstalledConduitID(nodeID);
+				if conduitID > 0 then
+					C_Soulbinds.ModifyNode(nodeID, conduitID, Enum.SoulbindConduitTransactionType.Uninstall);
+				end
+			end
+		end
+ 	elseif buttonName == "LeftButton" then
+		if Soulbinds.HasConduitAtCursor() then
+			if not (button:IsSelected() or button:IsUnselected()) then
+				if SOULBIND_SELECT_BEFORE_INSTALL then
+					UIErrorsFrame:AddMessage(SOULBIND_SELECT_BEFORE_INSTALL, RED_FONT_COLOR:GetRGBA());	
+				end
+			else
+				self:TryInstallConduitAtCursor(button);
+			end
+		else
+			local linked = false;
+			local conduit = button:GetConduit();
+			if conduit and IsModifiedClick("CHATLINK") then
+				linked = HandleModifiedItemClick(conduit:GetHyperlink());
+			end
+
+			if not linked then
+				self:SelectNode(button);
+			end
 		end
 	end
 end
 
 function SoulbindTreeMixin:OnConduitReceiveDrag(button)
-	if C_Soulbinds.CanModifySoulbind() and not button:IsUnavailable() then
-		self:TryInstallConduitAtCursor(button);
-	end
+	self:TryInstallConduitAtCursor(button);
 end
 
 local function GetConduitMismatchString(conduitType)
@@ -183,17 +202,29 @@ local function GetConduitMismatchString(conduitType)
 end
 
 function SoulbindTreeMixin:TryInstallConduitAtCursor(button)
-	if C_Soulbinds.IsConduitInstalled(button:GetID()) then
+	if not (button:IsSelected() or button:IsUnselected()) then
+		return;
+	end
+
+	if not C_Soulbinds.CanModifySoulbind() then
 		return;
 	end
 
 	local conduitData = C_Soulbinds.GetConduitCollectionDataAtCursor();
 	if conduitData then
 		if button:IsConduitType(conduitData.conduitType) then
-		local nodeID = button:GetID();
+			local nodeID = button:GetID();
 			self:TryInstallConduitInSlot(nodeID, conduitData.conduitID);
 		else
 			UIErrorsFrame:AddMessage(GetConduitMismatchString(button:GetConduitType()), RED_FONT_COLOR:GetRGBA());	
+		end
+	end
+end
+
+function SoulbindTreeMixin:StopNodeAnimationsIf(predicate)
+	for _, nodeFrame in pairs(self.nodeFrames) do
+		if predicate(nodeFrame) then
+			nodeFrame:StopAnimations();
 		end
 	end
 end
@@ -204,14 +235,33 @@ function SoulbindTreeMixin:StopNodeAnimations()
 	end
 end
 
-function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
+local function AreConduitsResettingOrIsUninstalled(nodeFrame)
+	return Soulbinds.IsConduitResetPending() or (C_Soulbinds.GetConduitCharges() > 0 or not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID()));
+end
+
+local function IsInstallingConduitsOrNotPending(soulbindID, nodeFrame)
+	if not Soulbinds.IsConduitCommitPending() then
+		return true;
+	end
+
+	local conduit = nodeFrame:GetConduit();
+	return not conduit or conduit:GetConduitID() == 0;
+end
+
+function SoulbindTreeMixin:ApplyConduitPickupAnim(conduitType, conduitID)
 	if not C_Soulbinds.CanModifySoulbind() then
 		return;
 	end
 
 	local canAnimateConduit = (function()
 		local canAnimate = function(nodeFrame, conduitType)
-			return nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) and not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID());
+			-- If a conduit reset or install is pending, the animation conditions won't be accurately
+			-- evaluable in the sense that their actual state would not match their expected state. 
+			-- For example a commit is in flight, entering the collection would incorrectly animate
+			-- a conduit that is about to be installed. Similarly, if conduits are being reset, entering the 
+			-- collection would incorrect disallow animation because it would still appear installed. 
+			return nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) and 
+				AreConduitsResettingOrIsUninstalled(nodeFrame) and IsInstallingConduitsOrNotPending(self.soulbindID, nodeFrame);
 		end
 
 		if C_Soulbinds.IsUnselectedConduitPendingInSoulbind(self.soulbindID) then
@@ -227,12 +277,38 @@ function SoulbindTreeMixin:ApplyConduitEnterAnim(conduitType)
 
 	for _, nodeFrame in pairs(self.nodeFrames) do
 		if canAnimateConduit(nodeFrame, conduitType) then
-			nodeFrame:SetConduitPickupAnimShown(true);
+			nodeFrame:SetConduitPickupAnimShown(true, conduitID);
 		end
 	end
 end
 
-function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
+function SoulbindTreeMixin:EvaluatePickupAnimOverrides(conduitID)
+	for _, nodeFrame in pairs(self.nodeFrames) do
+		if nodeFrame:IsConduit() then
+			nodeFrame:EvaluatePickupAnimOverride(conduitID);
+		end
+	end
+end
+
+function SoulbindTreeMixin:OnCollectionConduitClick(conduitID)
+	self:EvaluatePickupAnimOverrides(conduitID);
+end
+
+function SoulbindTreeMixin:EvaluateSelectableAnim(conduitType)
+	local canModifySoulbind = C_Soulbinds.CanModifySoulbind();
+	local canSelectMultiple = self:GetSelectableCount() > 1;
+	for _, nodeFrame in pairs(self.nodeFrames) do
+		local unfiltered = nodeFrame:IsConduit() and (not conduitType or nodeFrame:GetConduitType() == conduitType);
+		local shown = unfiltered and nodeFrame:IsSelectable();
+		nodeFrame:SetSelectableAnimShown(shown, canModifySoulbind, canSelectMultiple);
+	end
+end
+
+function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType, conduitID)
+	if not C_Soulbinds.CanModifySoulbind() or Soulbinds.HasConduitAtCursor() then
+		return;
+	end
+
 	local oldTimer = self.mouseOverTimer;
 	if oldTimer then
 		self.mouseOverTimer:Cancel();
@@ -241,86 +317,148 @@ function SoulbindTreeMixin:OnCollectionConduitEnter(conduitType)
 
 	if not Soulbinds.HasConduitAtCursor() then
 		if self.mouseOverConduit ~= conduitType or not oldTimer then
-			self:StopNodeAnimations();
-			self:ApplyConduitEnterAnim(conduitType);
+			self:StopNodeAnimationsIf(function(nodeFrame)
+				return not (nodeFrame:IsConduit() and nodeFrame:GetConduitType() == conduitType and nodeFrame:IsSelectable());
+			end);
+			self:ApplyConduitPickupAnim(conduitType, conduitID);
 		end
 	end
+
+	self:EvaluateSelectableAnim(conduitType);
+	self:EvaluatePickupAnimOverrides(conduitID);
 
 	self.mouseOverConduit = conduitType;
 end
 
 function SoulbindTreeMixin:OnCollectionConduitLeave()
+	if not C_Soulbinds.CanModifySoulbind() then
+		return;
+	end
+
 	if not Soulbinds.HasConduitAtCursor() then
 		if self.mouseOverTimer then
 			self.mouseOverTimer:Cancel();
 		end
 
-		self.mouseOverTimer = C_Timer.NewTicker(.1, function()
-			self:StopThenApplyAttentionAnims();
+		local time = .1;
+		local frequency = 1;
+		local func = function()
+			self:StopThenApplySelectableAndUnsocketedAnims();
+			self:EvaluatePickupAnimOverrides(nil);
 			self.mouseOverTimer = nil;
-		end, 1);
+		end;
+		self.mouseOverTimer = C_Timer.NewTicker(time, func, frequency);
 	end
 end
 
-function SoulbindTreeMixin:OnCursorChanged(isDefault, oldCursorType)
+function SoulbindTreeMixin:OnCursorChanged(isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
 	if isDefault and oldCursorType == Enum.UICursorType.ConduitCollectionItem then
-		local previewConduitType = Soulbinds.GetPreviewConduitType();
+		local previewConduitType, previewConduitID = Soulbinds.GetPreviewConduit();
+		
+		if previewConduitID and oldCursorVirtualID > 0 then
+			local conduitData = C_Soulbinds.GetConduitCollectionDataByVirtualID(oldCursorVirtualID);
+			if conduitData.conduitID == previewConduitID then
+				return;
+			end
+		end
+
+		self:EvaluatePickupAnimOverrides(previewConduitID);
+
 		if previewConduitType then
 			self:StopNodeAnimations();
-			self:ApplyConduitEnterAnim(previewConduitType);
+			self:ApplyConduitPickupAnim(previewConduitType, previewConduitID);
 		else
-			self:StopThenApplyAttentionAnims();
+			self:StopThenApplySelectableAndUnsocketedAnims();
 		end
+
+		self:EvaluateSelectableAnim(previewConduitType);
+
 		self.handleCursor = false;
+	end
+
+	if newCursorType == Enum.UICursorType.ConduitCollectionItem then
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_BEGIN, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	elseif oldCursorType == Enum.UICursorType.ConduitCollectionItem then
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_END, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 end
 
-function SoulbindTreeMixin:StopThenApplyAttentionAnims()
-	self:StopNodeAnimations();
-	
-	local selectableCount = AccumulateIf(self.nodeFrames, 
+function SoulbindTreeMixin:GetSelectableCount()
+	return AccumulateIf(self.nodeFrames, 
 		function(nodeFrame)
 			return nodeFrame:IsSelectable();
 		end
 	);
+end
+
+function SoulbindTreeMixin:StopThenApplySelectableAndUnsocketedAnims()
+	self:StopNodeAnimations();
+	
+	local selectableCount = self:GetSelectableCount();
 
 	local canModifySoulbind = C_Soulbinds.CanModifySoulbind();
 	local multipleSelectable = selectableCount > 1;
 	for _, nodeFrame in pairs(self.nodeFrames) do
-		nodeFrame:SetActivationOverlayShown(nodeFrame:IsSelectable(), canModifySoulbind, multipleSelectable);
+		nodeFrame:SetSelectableAnimShown(nodeFrame:IsSelectable(), canModifySoulbind, multipleSelectable);
 	end
 
+	-- Appears only once there are no selections possible.
 	if selectableCount == 0 then
 		for _, nodeFrame in pairs(self.nodeFrames) do
-			if nodeFrame:IsSelected() and nodeFrame:IsConduit() and not nodeFrame:GetConduit() then
-				nodeFrame:SetAttentionAnimShown(canModifySoulbind);
+			if nodeFrame:IsSelected() and nodeFrame:IsConduit() then
+				local conduit = nodeFrame:GetConduit();
+				if conduit and conduit:GetConduitID() == 0 then
+					nodeFrame:SetUnsocketedWarningAnimShown(canModifySoulbind);
+				end
 			end
 		end
 	end
 end
 
 function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, conduitID)
-	if C_Soulbinds.IsConduitInstalled(nodeID) then
+	if C_Soulbinds.GetTotalConduitChargesPending() >= C_Soulbinds.GetConduitCharges() then
+		UIErrorsFrame:AddExternalErrorMessage(CONDUIT_CHARGE_ERROR);	
 		return;
 	end
 
-	if C_Soulbinds.IsConduitInstalledInSoulbind(self.soulbindID, conduitID) then
+	local pendingInstallConduitID = C_Soulbinds.GetConduitIDPendingInstall(nodeID);
+	if pendingInstallConduitID and pendingInstallConduitID == conduitID then
 		return;
 	end
 
-	local pendingConduitID = C_Soulbinds.GetPendingConduitID(nodeID);
-	if pendingConduitID and pendingConduitID == conduitID then
-		return;
+	local pendingUninstallNodeID = C_Soulbinds.FindNodeIDPendingUninstall(self.soulbindID, conduitID);
+	local pendingInstallNodeID = C_Soulbinds.FindNodeIDPendingInstall(self.soulbindID, conduitID);
+	local appearInstalledNodeID = C_Soulbinds.FindNodeIDAppearingInstalled(self.soulbindID, conduitID);
+	local pending = pendingUninstallNodeID > 0 or pendingInstallNodeID > 0;
+
+	local isPendingInstall = pendingInstallNodeID > 0;
+	local isPendingUninstall = pendingUninstallNodeID > 0;
+	if isPendingInstall then
+		C_Soulbinds.UnmodifyNode(pendingInstallNodeID);
+	elseif isPendingUninstall then
+		C_Soulbinds.UnmodifyNode(pendingUninstallNodeID);
 	end
 
-	local pendingNodeID = C_Soulbinds.GetPendingNodeIDInSoulbind(self.soulbindID, conduitID);
-	if pendingNodeID > 0 then
-		C_Soulbinds.RemovePendingConduit(pendingNodeID);
+	local consumeInstall = false;
+	local actualConduitID = C_Soulbinds.GetInstalledConduitID(nodeID);
+	if actualConduitID == conduitID then
+		if pendingUninstallNodeID == 0 then
+			return;
+		elseif pendingUninstallNodeID == nodeID then
+			consumeInstall = true;
+			C_Soulbinds.UnmodifyNode(nodeID);
+		end
+	end
+
+	local actuallyInstalledNodeID = C_Soulbinds.FindNodeIDActuallyInstalled(self.soulbindID, nodeID);
+	if ((actuallyInstalledNodeID > 0) or isPendingInstall) and (actuallyInstalledNodeID ~= nodeID) then
 		StaticPopup_Show("SOULBIND_DIALOG_MOVE_CONDUIT", nil, nil);
+	end 
+
+	if not consumeInstall then
+		C_Soulbinds.ModifyNode(nodeID, conduitID, Enum.SoulbindConduitTransactionType.Install);
 	end
-
-	C_Soulbinds.AddPendingConduit(nodeID, conduitID);
-
+	
 	ClearCursor();
 end
 
@@ -420,11 +558,17 @@ function SoulbindTreeMixin:Init(soulbindData)
 
 	local canModifySoulbind = C_Soulbinds.CanModifySoulbind();
 	local animDuration = canModifySoulbind and .6 or .8;
-	for _, node in ipairs(nodes) do
-		local nodeID = node.ID;
-		local nodeFrame = self.nodeFrames[nodeID];
-		nodeFrame:Init(node);
-		nodeFrame:SetAnimDuration(animDuration);
+	if reconstructTree then
+		for _, node in ipairs(nodes) do
+			local nodeFrame = self.nodeFrames[node.ID];
+			nodeFrame:SetAnimDuration(animDuration);
+		end
+	else
+		for _, node in ipairs(nodes) do
+			local nodeFrame = self.nodeFrames[node.ID];
+			nodeFrame:Init(node);
+			nodeFrame:SetAnimDuration(animDuration);
+		end
 	end
 
 	for _, nodeFrame in pairs(self.nodeFrames) do
@@ -436,7 +580,7 @@ function SoulbindTreeMixin:Init(soulbindData)
 		end
 	end
 
-	self:StopThenApplyAttentionAnims();
+	self:StopThenApplySelectableAndUnsocketedAnims();
 end
 
 StaticPopupDialogs["SOULBIND_DIALOG_MOVE_CONDUIT"] = {

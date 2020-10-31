@@ -1575,6 +1575,22 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HiddenVisualCover" atlas="transmog-frame-blackcover" hidden="true" alpha="0.6">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="HiddenVisualIcon" atlas="transmog-icon-hidden" hidden="true" alpha="0.7">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="UndoIcon" atlas="transmog-icon-revert-small" useAtlasSize="true" hidden="true">
 					<Anchors>

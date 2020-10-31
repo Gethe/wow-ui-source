@@ -68,6 +68,18 @@ function GridLayoutMixin:Init(direction, stride, paddingX, paddingY, horizontalS
 	self.verticalSpacing = verticalSpacing;
 end
 
+function GridLayoutMixin:SetCustomOffsetFunction(func)
+	self.customOffsetFunction = func;
+end
+
+function GridLayoutMixin:GetCustomOffset(row, col)
+	if self.customOffsetFunction then
+		return self.customOffsetFunction(row, col);
+	end
+
+	return 0, 0;
+end
+
 
 AnchorUtil = {};
 
@@ -102,8 +114,9 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 			col = tempRow;
 		end
 		local clearAllPoints = true;
-		local extraOffsetX = (col - 1) * (width + paddingX) * direction.x;
-		local extraOffsetY = (row - 1) * (height + paddingY) * direction.y;
+		local customOffsetX, customOffsetY = layout:GetCustomOffset(row, col);
+		local extraOffsetX = (col - 1) * (width + paddingX) * direction.x + customOffsetX;
+		local extraOffsetY = (row - 1) * (height + paddingY) * direction.y + customOffsetY;
 		initialAnchor:SetPointWithExtraOffset(frame, clearAllPoints, extraOffsetX, extraOffsetY);
 	end
 end

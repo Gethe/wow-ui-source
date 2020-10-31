@@ -152,6 +152,7 @@ function BattlefieldMapMixin:OnLoad()
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("NEW_WMO_CHUNK");
 end
 
 function BattlefieldMapMixin:OnShow()
@@ -190,7 +191,7 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 			self:UpdateUnitsVisibility();
 			self:UnregisterEvent("ADDON_LOADED");
 		end
-	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
+	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" then
 		if GetCVar("showBattlefieldMinimap") == "1" then
 			local mapID = MapUtil.GetDisplayableMapForPlayer();
 			self:SetMapID(mapID);

@@ -67,6 +67,42 @@ local GarrisonConstants =
 			},
 		},
 		{
+			Name = "GarrAutoCombatSpellTutorialFlag",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "GarrAutoCombatSpellTutorialFlag", EnumValue = 0 },
+				{ Name = "Single", Type = "GarrAutoCombatSpellTutorialFlag", EnumValue = 1 },
+				{ Name = "Column", Type = "GarrAutoCombatSpellTutorialFlag", EnumValue = 2 },
+				{ Name = "Row", Type = "GarrAutoCombatSpellTutorialFlag", EnumValue = 3 },
+				{ Name = "All", Type = "GarrAutoCombatSpellTutorialFlag", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "GarrAutoCombatTutorial",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 1,
+			MaxValue = 1024,
+			Fields =
+			{
+				{ Name = "SelectMission", Type = "GarrAutoCombatTutorial", EnumValue = 1 },
+				{ Name = "PlaceCompanion", Type = "GarrAutoCombatTutorial", EnumValue = 2 },
+				{ Name = "HealCompanion", Type = "GarrAutoCombatTutorial", EnumValue = 4 },
+				{ Name = "LevelHeal", Type = "GarrAutoCombatTutorial", EnumValue = 8 },
+				{ Name = "BeneficialEffect", Type = "GarrAutoCombatTutorial", EnumValue = 16 },
+				{ Name = "AttackSingle", Type = "GarrAutoCombatTutorial", EnumValue = 32 },
+				{ Name = "AttackColumn", Type = "GarrAutoCombatTutorial", EnumValue = 64 },
+				{ Name = "AttackRow", Type = "GarrAutoCombatTutorial", EnumValue = 128 },
+				{ Name = "AttackAll", Type = "GarrAutoCombatTutorial", EnumValue = 256 },
+				{ Name = "TroopTutorial", Type = "GarrAutoCombatTutorial", EnumValue = 512 },
+				{ Name = "EnvironmentalEffect", Type = "GarrAutoCombatTutorial", EnumValue = 1024 },
+			},
+		},
+		{
 			Name = "GarrAutoCombatantRole",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -186,8 +222,8 @@ local GarrisonConstants =
 				{ Name = "Generic", Type = "GarrTalentFeatureSubtype", EnumValue = 0 },
 				{ Name = "Bastion", Type = "GarrTalentFeatureSubtype", EnumValue = 1 },
 				{ Name = "Revendreth", Type = "GarrTalentFeatureSubtype", EnumValue = 2 },
-				{ Name = "Maldraxxus", Type = "GarrTalentFeatureSubtype", EnumValue = 3 },
-				{ Name = "Ardenweald", Type = "GarrTalentFeatureSubtype", EnumValue = 4 },
+				{ Name = "Ardenweald", Type = "GarrTalentFeatureSubtype", EnumValue = 3 },
+				{ Name = "Maldraxxus", Type = "GarrTalentFeatureSubtype", EnumValue = 4 },
 			},
 		},
 		{
