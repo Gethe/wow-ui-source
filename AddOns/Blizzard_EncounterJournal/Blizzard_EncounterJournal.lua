@@ -1806,7 +1806,7 @@ function EncounterJournal_SetLootButton(item)
 		if itemInfo.weaponTypeError then
 			item.armorType:SetText(INVALID_EQUIPMENT_COLOR:WrapTextInColorCode(itemInfo.armorType));
 		else
-			item.armorType:SetText(itemInfo.slot);
+			item.armorType:SetText(itemInfo.armorType);
 		end
 
 		local numEncounters = EJ_GetNumEncountersForLootByIndex(item.index);
@@ -2843,7 +2843,7 @@ end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
-		if self:GetParent().selectedTab == self.id then
+		if self:GetParent().selectedTab == EncounterJournal.instanceSelect.suggestTab.id then
 			EJSuggestFrame_RefreshDisplay();
 			local newAdventureNotice = ...;
 			if ( newAdventureNotice ) then

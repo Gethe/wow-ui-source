@@ -56,9 +56,16 @@ function RuneforgeItemSlotMixin:OnReceiveDrag()
 	end
 
 	local cursorItem = C_Cursor.GetCursorItem();
-	if cursorItem and C_LegendaryCrafting.IsValidRuneforgeBaseItem(cursorItem) then
-		self:SetItem(cursorItem);
-		ClearCursor();
+	if self:IsRuneforgeUpgrading() then
+		if RuneforgeUtil.IsUpgradeableRuneforgeLegendary(cursorItem) then
+			self:SetItem(cursorItem);
+			ClearCursor();
+		end
+	else
+		if cursorItem and C_LegendaryCrafting.IsValidRuneforgeBaseItem(cursorItem) then
+			self:SetItem(cursorItem);
+			ClearCursor();
+		end
 	end
 end
 

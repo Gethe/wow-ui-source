@@ -149,7 +149,7 @@ function GarrisonMission:ShowMission(missionInfo)
 
 	self:SetEnvironmentTexture(missionDeploymentInfo.environmentTexture)
 
-	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(environmentTexture);
+	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(missionDeploymentInfo.environmentTexture);
 
 	local locTextureKit = missionDeploymentInfo.locTextureKit;
 	if ( locTextureKit ) then
@@ -621,6 +621,10 @@ function GarrisonMission:UpdateStartButton(missionPage)
 		end
 	end
 
+	if (not disableError) then
+		disableError = self:GetSystemSpecificStartMissionFailureMessage();
+	end
+
 	local startButton = missionPage.StartMissionButton;
 	if ( disableError ) then
 		startButton:SetEnabled(false);
@@ -633,6 +637,9 @@ function GarrisonMission:UpdateStartButton(missionPage)
 		startButton.FlashAnim:Play();
 		startButton.tooltip = nil;
 	end
+end
+
+function GarrisonMission:GetSystemSpecificStartMissionFailureMessage()
 end
 
 function GarrisonMission:CloseMission()

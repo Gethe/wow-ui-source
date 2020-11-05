@@ -86,10 +86,10 @@ end
 
 local SOUND_KIT_BY_TEXTURE_KIT = 
 {
-	Kyrian = { default = 172612, [20] = 172613, [40] = 172614, },
-	Venthyr = { default = 172642, [20] = 172645, [40] = 172649, },
-	NightFae = { default = 172643, [20] = 172646, [40] = 172650, },
-	Necrolord = { default = 172644, [20] = 172648, [40] = 172651, },
+	Kyrian = { default = 172612, milestone = 172613, final = 172614, },
+	Venthyr = { default = 172642, milestone = 172645, final = 172649, },
+	NightFae = { default = 172643, milestone = 172646, final = 172650, },
+	Necrolord = { default = 172644, milestone = 172648, final = 172651, },
 };
 
 function CovenantRenownToastMixin:PlayBanner(data)
@@ -118,7 +118,15 @@ function CovenantRenownToastMixin:PlayBanner(data)
 	self:SetupRewardVisuals(data.covenantID, data.renownLevel);
 
 	local soundKitData = SOUND_KIT_BY_TEXTURE_KIT[data.textureKit]
-	PlaySound(soundKitData[data.renownLevel] or soundKitData.default)
+	local levels = C_CovenantSanctumUI.GetRenownLevels(data.covenantID);
+	local levelInfo = levels[data.renownLevel];
+	local soundID = soundKitData.default;
+	if data.renownLevel == #levels then
+		soundID = soundKitData.final;
+	elseif levelInfo.isMilestone then
+		soundID = soundKitData.milestone;
+	end
+	PlaySound(soundID);
 
 	self.bannerData = data;
 

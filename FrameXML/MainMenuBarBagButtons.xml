@@ -50,10 +50,10 @@
 				self:RegisterForClicks("AnyUp");
       		</OnLoad>
 			<OnEvent function="BagSlotButton_OnEvent"/>
-			<OnShow>
+			<OnShow inherit="append">
 				PaperDollItemSlotButton_OnShow(self, true);
 			</OnShow>
-			<OnHide>
+			<OnHide inherit="append">
 				PaperDollItemSlotButton_OnHide(self);
 			</OnHide>
 			<OnClick inherit="append">

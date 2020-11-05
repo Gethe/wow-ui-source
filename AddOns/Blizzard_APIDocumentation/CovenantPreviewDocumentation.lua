@@ -105,6 +105,7 @@ local CovenantPreview =
 				{ Name = "uiTextureKit", Type = "string", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "sortOrder", Type = "number", Nilable = false },
 			},
 		},
 	},

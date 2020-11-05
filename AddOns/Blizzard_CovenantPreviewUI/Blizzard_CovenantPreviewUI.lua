@@ -169,6 +169,13 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 		end);
 	end 
 
+	
+	if (covenantInfo.covenantSoulbinds and #covenantInfo.covenantSoulbinds > 1) then
+		table.sort(covenantInfo.covenantSoulbinds, function(a, b) 
+			return CovenantPreviewSortFunction(a.sortOrder, b.sortOrder); 
+		end);
+	end 
+
 	self:SetupAbilityButtons(covenantInfo.covenantAbilities);
 	self:SetupSoulbindButtons(covenantInfo.covenantSoulbinds);
 	self:SetupCovenantInfoPanel(covenantInfo); 
@@ -248,6 +255,7 @@ end
 
 CovenantAbilityButtonMixin = { }; 
 function CovenantAbilityButtonMixin:OnEnter() 
+	EmbeddedItemTooltip:Hide();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetSpellByID(self.spellID);
 	GameTooltip:Show(); 
@@ -274,6 +282,7 @@ function CovenantFeatureButtonMixin:Setup(covenantFeatureInfo)
 end 
 
 function CovenantFeatureButtonMixin:OnEnter()
+	EmbeddedItemTooltip:Hide();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -30, -30);
 	GameTooltip_AddHighlightLine(GameTooltip, self.name); 
 	GameTooltip_AddNormalLine(GameTooltip, self.description);
@@ -295,6 +304,8 @@ function CovenantSoulbindButtonMixin:OnEnter()
 	if(not self:IsMouseOver()) then 
 		return; 
 	end
+
+	GameTooltip:Hide(); 
 
 	local spell = Spell:CreateFromSpellID(self.spellID);
 	spell:ContinueOnSpellLoad(function()

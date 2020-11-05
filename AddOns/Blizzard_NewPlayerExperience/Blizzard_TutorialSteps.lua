@@ -997,6 +997,13 @@ function Class_QueueSystem:QueueMountTutorial()
 	self:CheckQueue();
 end
 
+function Class_QueueSystem:QueueLFDTutorial()
+	local value = {};
+	value.type = "LFD_TUTORIAL";
+	self.tutorialQueue:Push(value);
+	self:CheckQueue();
+end
+
 function Class_QueueSystem:QueueSpecTutorial()
 	local value = {};
 	value.type = "SPEC_TUTORIAL";
@@ -1041,6 +1048,9 @@ function Class_QueueSystem:CheckQueue()
 		elseif value.type == "MOUNT_TUTORIAL" then
 			self.inProgress = true;
 			Tutorials.MountAddedWatcher:ForceBegin();
+		elseif value.type == "LFD_TUTORIAL" then
+			self.inProgress = true;
+			Tutorials.LFGStatusWatcher:ForceBegin();
 		elseif value.type == "SPEC_TUTORIAL" then
 			self.inProgress = true;
 			Tutorials.SpecTutorial:StartTutorial();
@@ -1731,8 +1741,14 @@ function Class_EquipFirstItemWatcher:GetBestItemUpgrades()
 
 		for i = 1, #items do
 			itemLink = items[i].ItemLink;
+			local itemQuality = select(3, GetItemInfo(itemLink));
 			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
-			if (ilvl > highestIlvl) then
+			if (itemQuality == Enum.ItemQuality.Heirloom) then
+				-- always recommend heirlooms, regardless of iLevel
+				highest = items[i];
+				highestIlvl = ilvl;
+				break;
+			elseif (ilvl > highestIlvl) then
 				highest = items[i];
 				highestIlvl = ilvl;
 			end
@@ -1760,7 +1776,7 @@ end
 
 local function IsDagger(itemInfo)
 	local subClassType = ITEMSUBCLASSTYPES["DAGGER"];
-	return ((itemInfo[12] == subClassType.classID) or (itemInfo[13] == subClassType.subClassID));
+	return ((itemInfo[12] == subClassType.classID) and (itemInfo[13] == subClassType.subClassID));
 end
 
 -- Walk all the character item slots and create a list of items in the player's inventory
@@ -1776,8 +1792,10 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		local existingItemWeaponType;
 
 		local existingItemLink = GetInventoryItemLink("player", i);
+		local existingItemQuality;
 		if (existingItemLink ~= nil) then
 			existingItemIlvl = GetDetailedItemLevelInfo(existingItemLink) or 0;
+			existingItemQuality = select(3, GetItemInfo(existingItemLink));
 
 			if (i == INVSLOT_MAINHAND) then
 				local existingItemID = GetInventoryItemID("player", i);
@@ -1792,9 +1810,8 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 			local itemInfo = {GetItemInfo(itemLink)};
 			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
 
-			if (ilvl ~= nil) then
+			if (ilvl ~= nil) and (existingItemQuality ~= Enum.ItemQuality.Heirloom) then
 				if (ilvl > existingItemIlvl) then
-
 					-- why can't I just have a continue statement?
 					local match = true;
 
@@ -2938,7 +2955,7 @@ function Class_LFGStatusWatcher:OnBegin()
 	self.onShowID = Dispatcher:RegisterScript(PVEFrame, "OnShow", 
 		function()
 			C_Timer.After(0.1, function()
-				self:ShowLFG() 
+				self:ShowLFG()
 			end);
 		end, 
 		false);
@@ -2956,8 +2973,12 @@ function Class_LFGStatusWatcher:QUEST_REMOVED(questIDRemoved)
 end
 
 function Class_LFGStatusWatcher:Restart()
-	ActionButton_ShowOverlayGlow(LFDMicroButton);
-	self:ShowPointerTutorial(NPEV2_LFD_INTRO, "DOWN", LFDMicroButton, 0, 10, nil, "DOWN");
+	if PVEFrame:IsVisible() then
+		self:ShowLFG();
+	else
+		ActionButton_ShowOverlayGlow(LFDMicroButton);
+		self:ShowPointerTutorial(NPEV2_LFD_INTRO, "DOWN", LFDMicroButton, 0, 10, nil, "DOWN");
+	end
 end
 
 function Class_LFGStatusWatcher:ShowLFG()
@@ -3098,6 +3119,7 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 end
 
 function Class_LookingForGroup:LFG_PROPOSAL_SHOW()
+	GlowEmitterFactory:Hide(LFDQueueFrameFindGroupButton);
 	self:HidePointerTutorials();
 end
 
@@ -3133,8 +3155,14 @@ function Class_LookingForGroup:OnComplete()
 	Dispatcher:UnregisterEvent("LFG_PROPOSAL_FAILED", self);
 	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 
+	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self);
+	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self);
+	EventRegistry:UnregisterCallback("LFGDungeonList.DungeonEnabled", self);
+	EventRegistry:UnregisterCallback("LFGDungeonList.DungeonDisabled", self);
+
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
+	Tutorials.QueueSystem:TutorialFinished();
 end
 
 
@@ -3648,7 +3676,6 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_MountAddedWatcher = class("MountAddedWatcher", Class_TutorialBase);
 function Class_MountAddedWatcher:OnBegin()
-	--Tutorials.QueueSystem:QueueMountTutorial();
 	self:StartTutorial();
 end
 

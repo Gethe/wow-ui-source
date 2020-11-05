@@ -88,7 +88,6 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
    	end
 
    	self:ResetMissionDisplay();
-	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, mission);
 	self.MissionInfo.EncounterIcon:SetEncounterInfo(mission.encounterIconInfo);
 	self.AdventuresCombatLog.environmentEffect = C_Garrison.GetAutoMissionEnvironmentEffect(mission.missionID);
 
@@ -156,6 +155,7 @@ function AdventuresCompleteScreenMixin:StartMissionReplay()
 	self.replayTimeElapsed = 0;
 	self.replayRoundIndex = 1;
 	self:SetScript("OnUpdate", AdventuresCompleteScreenMixin.UpdateMissionReplay);
+	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, self.currentMission, self.autoCombatResult.winner);
 
 	local roundIndex = 1;
 	self:StartReplayRound(roundIndex);

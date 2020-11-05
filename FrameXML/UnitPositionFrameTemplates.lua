@@ -1,8 +1,6 @@
-UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
-UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
-UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
-UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
-UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+
+local type = type;
+local setmetatable = setmetatable;
 
 -- NOTE: This is only using a single set of PVPQuery timers.  There's no reason to have a different set per-instance.
 PVPAFK_QUERY_DELAY_SECONDS = 5;
@@ -10,10 +8,20 @@ local pvpAFKQueryTimers = {}
 
 
 local Private_UnitAppearanceData = {};
+setmetatable(Private_UnitAppearanceData, { __metatable = false });
 
 local function GetOrCreateUnitAppearanceData(frame, unitType)
+	-- Global access should be avoided to expose as few attack vectors as possible.
+	local UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
+	local UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
+	local UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
+	local UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
+	local UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+
 	if Private_UnitAppearanceData[frame] == nil then
-		Private_UnitAppearanceData[frame] = {};
+		local newUnitAppearanceData = {};
+		setmetatable(newUnitAppearanceData, { __metatable = false });
+		Private_UnitAppearanceData[frame] = newUnitAppearanceData;
 	end
 
 	local data = Private_UnitAppearanceData[frame][unitType];
@@ -28,6 +36,8 @@ local function GetOrCreateUnitAppearanceData(frame, unitType)
 			useClassColor = unitType ~= "player", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
 			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
 		};
+
+		setmetatable(data, { __metatable = false });
 
 		Private_UnitAppearanceData[frame][unitType] = data;
 	end

@@ -199,7 +199,9 @@ function AdventuresBoardMixin:GetAnimFrameByAuraType(frame, previewType)
 	if bit.band(previewType, Enum.GarrAutoPreviewTargetType.Damage) == Enum.GarrAutoPreviewTargetType.Damage then
 		return frame.EnemyTargetingIndicatorFrame;
 	elseif bit.band(previewType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff or bit.band(previewType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
-		frame.FriendlyTargetingIndicatorFrame.SupportColorationAnimator:SetPreviewTargets(previewType, {frame.FriendlyTargetingIndicatorFrame.TargetMarker});
+		if frame.FriendlyTargetingIndicatorFrame then
+			frame.FriendlyTargetingIndicatorFrame.SupportColorationAnimator:SetPreviewTargets(previewType, {frame.FriendlyTargetingIndicatorFrame.TargetMarker});
+		end
 		return frame.FriendlyTargetingIndicatorFrame;
 	end
 
@@ -305,6 +307,15 @@ function AdventuresBoardMixin:HideHealthValues()
 
 	for followerFrame in self.followerFramePool:EnumerateActive() do
 		followerFrame:HideHealthValues();
+	end
+end
+
+function AdventuresBoardMixin:UpdateHealedFollower(followerID)
+	for followerFrame in self.followerFramePool:EnumerateActive() do
+		if followerFrame:GetFollowerGUID() == followerID then
+			followerFrame:UpdateStats();
+			return;
+		end
 	end
 end
 
@@ -512,8 +523,8 @@ function AdventuresSocketMixin:SetBoardPreviewState(auraType)
 			onHideCallback = function(acknowledged, closeFlag) self:GetBoard():GetMainFrame():ProcessTutorials(); end;
 			checkCVars = true,
 		}
-
-		self:GetBoard():GetMainFrame():QueueTutorial(self.AuraContainer, helpTipInfo);
+		local mainFrame = self:GetBoard():GetMainFrame();
+		mainFrame:QueueTutorial(mainFrame, helpTipInfo, self.AuraContainer);
 	end
 
 	self:UpdateAuraVisibility();

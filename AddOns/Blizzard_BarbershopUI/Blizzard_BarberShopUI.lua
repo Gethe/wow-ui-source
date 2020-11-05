@@ -173,11 +173,13 @@ function BarberShopMixin:ResetCharacterRotation()
 end
 
 function BarberShopMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
+	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingAlteredForm(viewingAlteredForm);
 	self:UpdateCharCustomizationFrame(resetCategory);
 end
 
 function BarberShopMixin:SetViewingShapeshiftForm(formID)
+	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingShapeshiftForm(formID);
 	self.Sexes:SetShown(formID == nil);
 end

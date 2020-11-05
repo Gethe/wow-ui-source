@@ -1592,7 +1592,7 @@ function PlayerChoiceOptionFrameMixin:OnButtonClick(button)
 				self:GetParent():EnableMouse(false);
 				self:GetParent():HideOptions(self);
 				PlayerChoiceToggleButton:Hide(); 
-				C_Timer.After(1.25, function() self:CancelEffects() end);
+				C_Timer.After(1.25, function() if(self.FadeoutSelected:IsPlaying()) then self:CancelEffects() end end);
 				self.FadeoutSelected:Restart();
 				if (optionLayout.fadeOutSoundKitID) then 
 					PlaySound(optionLayout.fadeOutSoundKitID)

@@ -431,7 +431,7 @@ function PVPMatchResultsMixin:InitConquestFrame(currency)
 	if PVPUtil.ShouldShowLegacyRewards() then
 		local questID = select(3, PVPGetConquestLevelInfo());
 		if questID and IsPlayerAtEffectiveMaxLevel() then
-			self.legacyConquestButton:LegacySetup(questID, nil);
+			self.legacyConquestButton:LegacySetup(questID);
 		else
 			self.legacyConquestButton:Clear();
 		end

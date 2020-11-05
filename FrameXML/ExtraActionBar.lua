@@ -20,11 +20,9 @@ function ExtraActionBar_Update()
 	elseif( bar:IsShown() ) then
 		bar.intro:Stop();
 		bar.outro:Play();
+	else
+		ExtraAbilityContainer:RemoveFrame(self);
 	end
-end
-
-function ExtraActionBar_OnHide (self)
-	ExtraAbilityContainer:RemoveFrame(self);
 end
 
 

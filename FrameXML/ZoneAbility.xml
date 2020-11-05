@@ -59,7 +59,7 @@
 		</Scripts>
 		<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Anchors>
-				<Anchor point="TOPLEFT" x="-17" y="17"/>
+				<Anchor point="TOPLEFT" x="-16" y="16"/>
 				<Anchor point="BOTTOMRIGHT" x="17" y="-17"/>
 			</Anchors>
 		</NormalTexture>
