@@ -82,7 +82,7 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
@@ -147,7 +147,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
@@ -160,7 +160,7 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad" />
-			<OnShow function="MicroButton_KioskModeDisable"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
@@ -176,7 +176,7 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 			<OnClick method="OnClick" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
@@ -203,8 +203,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnHide method="OnHide" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>

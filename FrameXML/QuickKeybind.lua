@@ -1,6 +1,18 @@
 -- All funcions here need a fully qualified name for event handler inheritance to work properly.
 QuickKeybindButtonTemplateMixin = {};
 
+function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnShow(button, down)
+	EventRegistry:RegisterCallback("QuickKeybindFrame.QuickKeybindModeEnabled", self.UpdateMouseWheelHandler, self);
+	EventRegistry:RegisterCallback("QuickKeybindFrame.QuickKeybindModeDisabled", self.UpdateMouseWheelHandler, self);
+
+	self:UpdateMouseWheelHandler();
+end
+
+function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnHide(button, down)
+	EventRegistry:UnregisterCallback("QuickKeybindFrame.QuickKeybindModeEnabled", self.UpdateMouseWheelHandler);
+	EventRegistry:UnregisterCallback("QuickKeybindFrame.QuickKeybindModeDisabled", self.UpdateMouseWheelHandler);
+end
+
 function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnClick(button, down)
 	if ( KeybindFrames_InQuickKeybindMode() and button ~= "LeftButton" and button ~= "RightButton") then
 		QuickKeybindFrame:OnKeyDown(button);
@@ -48,7 +60,7 @@ function QuickKeybindButtonTemplateMixin:QuickKeybindButtonSetTooltip(anchorToGa
 			QuickKeybindTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		end
 		GameTooltip_AddHighlightLine(QuickKeybindTooltip, GetBindingName(self.commandName));
-		local key1, key2 = GetBindingKey(self.commandName);
+		local key1 = GetBindingKeyForAction(self.commandName);
 		if ( key1 ) then
 			GameTooltip_AddInstructionLine(QuickKeybindTooltip, key1);
 			GameTooltip_AddNormalLine(QuickKeybindTooltip, ESCAPE_TO_UNBIND);
@@ -68,5 +80,14 @@ function QuickKeybindButtonTemplateMixin:QuickKeybindButtonOnUpdate(elapsed)
 			local anchorToGameTooltip = true;
 			self:QuickKeybindButtonSetTooltip(anchorToGameTooltip);
 		end
+	end
+end
+
+function QuickKeybindButtonTemplateMixin:UpdateMouseWheelHandler()
+	local quickKeybindEnabled = KeybindFrames_InQuickKeybindMode();
+	if quickKeybindEnabled and (self:GetScript("OnMouseWheel") == nil) then
+		self:SetScript("OnMouseWheel", self.QuickKeybindButtonOnMouseWheel);
+	elseif not quickKeybindEnabled and (self:GetScript("OnMouseWheel") == self.QuickKeybindButtonOnMouseWheel) then
+		self:SetScript("OnMouseWheel", nil);
 	end
 end

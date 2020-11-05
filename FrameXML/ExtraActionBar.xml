@@ -72,6 +72,7 @@
 					<OnFinished>
 						self:GetParent():SetAlpha(0.0);
 						self:GetParent():Hide();
+						ExtraAbilityContainer:RemoveFrame(self:GetParent());
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -85,7 +86,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="ExtraActionBar_OnLoad"/>
-			<OnHide function="ExtraActionBar_OnHide"/>
 		</Scripts>
 	</Frame>	
 </Ui>

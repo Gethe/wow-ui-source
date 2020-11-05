@@ -13,10 +13,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnShow method="QuickKeybindButtonOnShow"/>
+			<OnHide method="QuickKeybindButtonOnHide"/>
 			<OnClick method="QuickKeybindButtonOnClick"/>
 			<OnEnter method="QuickKeybindButtonOnEnter"/>
 			<OnLeave method="QuickKeybindButtonOnLeave"/>
-			<OnMouseWheel method="QuickKeybindButtonOnMouseWheel"/>
 		</Scripts>
 	</Button>
 	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" inherits="SharedTooltipTemplate"/>

@@ -149,6 +149,7 @@ local COVENANT_MISSION_EVENTS = {
 	"CURRENT_SPELL_CAST_CHANGED",
 	"GARRISON_FOLLOWER_XP_CHANGED",
 	"ADVENTURE_MAP_CLOSE",
+	"GARRISON_FOLLOWER_HEALED",
 };
 
 local COVENANT_MISSION_STATIC_POPUPS = {
@@ -160,6 +161,10 @@ local COVENANT_MISSION_STATIC_POPUPS = {
 function CovenantMission:OnEventMainFrame(event, ...)
 	if event == "ADVENTURE_MAP_CLOSE" then
 		self.CloseButton:Click();
+	elseif event == "GARRISON_FOLLOWER_HEALED" then
+		local followerID = ...;
+		local missionPage = self:GetMissionPage();
+		missionPage.Board:UpdateHealedFollower(followerID);
 	else
 		GarrisonFollowerMission.OnEventMainFrame(self, event, ...);
 	end
@@ -215,6 +220,7 @@ function CovenantMission:SelectTab(id)
 	GarrisonFollowerMission.SelectTab(self, id);
 	self.BackgroundTile:SetShown(id ~= 3);
 	self:HideStaticPopups();
+	self:ClearQueuedTutorials();
 end
 
 function CovenantMission:CloseMission()
@@ -922,6 +928,14 @@ function CovenantMission:ClearStrategicPositioningTutorials()
 	HelpTip:Acknowledge(self, COVENANT_MISSIONS_TUTORIAL_STRATEGY1);
 	HelpTip:Acknowledge(self, COVENANT_MISSIONS_TUTORIAL_STRATEGY2);
 end
+
+function CovenantMission:GetSystemSpecificStartMissionFailureMessage()
+	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
+		if followerFrame.info and followerFrame.info.autoCombatantStats.currentHealth == 0 then
+			return COVENANT_MISSIONS_COMPANIONS_MISSING_HEALTH;
+		end
+	end
+end
 ---------------------------------------------------------------------------------
 --- Mission Page Follower Mixin                                               ---
 ---------------------------------------------------------------------------------
@@ -1044,8 +1058,12 @@ function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 
 	for _, follower in ipairs(self.followers) do
 		if follower.status ~= GARRISON_FOLLOWER_ON_MISSION then
-			local followerStats = follower.autoCombatantStats;
-			healAllCost = healAllCost + math.ceil(((followerStats.maxHealth - followerStats.currentHealth) / followerStats.maxHealth) * Constants.GarrisonConstsExposed.GARRISON_AUTO_COMBATANT_FULL_HEAL_COST);
+			--Get the most recent status
+			if (follower.autoCombatantStats.maxHealth ~= follower.autoCombatantStats.currentHealth) then
+				follower.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(follower.followerID);
+			end
+				
+			healAllCost = healAllCost + follower.autoCombatantStats.healCost;
 		end
 	end
 

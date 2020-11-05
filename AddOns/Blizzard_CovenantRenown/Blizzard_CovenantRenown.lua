@@ -486,8 +486,8 @@ CovenantRenownTrackFrameMixin = {
 	elementTemplate = "CovenantRenownLevelTemplate",
 
 	scrollStartSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START,
-	scrollLoopSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_LOOP,
 	scrollStopSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_STOP,
+	scrollCenterChangeSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START,
 };
 
 function CovenantRenownTrackFrameMixin:OnLoad()
@@ -588,6 +588,9 @@ function CovenantRenownTrackFrameMixin:RefreshView()
 		local leftIndex = math.max(1, centerIndex - self.numElementsPerHalf);
 		local rightIndex = math.min(centerIndex + self.numElementsPerHalf, self.numElements);
 		self:GetParent():OnTrackUpdate(leftIndex, centerIndex, rightIndex, self.moving);
+		if self.moving and self.scrollCenterChangeSound then
+			PlaySound(self.scrollCenterChangeSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		end
 	end
 
 	self.LeftButton:SetEnabled(self.offset > 0);
@@ -680,7 +683,7 @@ function CovenantRenownTrackButtonMixin:OnMouseDown()
 		local track = self:GetParent();
 		track:StartScroll(self.direction);
 		if track.scrollStartSound then
-			PlaySound(track.scrollStartSound);
+			PlaySound(track.scrollStartSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
 		end
 	end
 end

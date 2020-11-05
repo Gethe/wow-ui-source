@@ -1051,7 +1051,11 @@ end
 function GarrisonMissionButtonRewards_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (self.itemID) then
-		GameTooltip:SetItemByID(self.itemID);
+		if(self.itemLink) then
+			GameTooltip:SetHyperlink(self.itemLink);
+		else
+			GameTooltip:SetItemByID(self.itemID);
+		end
 		return;
 	end
 	if (self.currencyID and self.currencyID ~= 0 and self.currencyQuantity) then
@@ -1076,6 +1080,7 @@ function GarrisonMissionButton_SetReward(frame, reward, currencyMultipliers)
 	frame.tooltip = nil;
 	if (reward.itemID) then
 		frame.itemID = reward.itemID;
+		frame.itemLink = reward.itemLink;
 		GarrisonMissionFrame_SetItemRewardDetails(frame);
 		if ( reward.quantity > 1 ) then
 			frame.Quantity:SetText(reward.quantity);

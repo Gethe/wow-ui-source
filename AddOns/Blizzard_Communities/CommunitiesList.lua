@@ -362,8 +362,9 @@ function CommunitiesListMixin:OnCommunitiesFrameDisplayModeChanged()
 end
 
 function CommunitiesListMixin:OnCommunityInviteDeclined(invitationId, clubId)
+	local communitiesFrame = self:GetCommunitiesFrame(); 
 	self.declinedInvitationIds[#self.declinedInvitationIds + 1] = invitationId;
-	communitiesFrame:UpdateClubSelection();
+	self:GetCommunitiesFrame():UpdateClubSelection();
 	self:UpdateInvitations();
 	self:Update();
 end

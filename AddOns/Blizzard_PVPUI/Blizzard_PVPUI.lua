@@ -264,7 +264,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 		end
 	end
 
-	if currencyID or itemID then
+	if currencyID or itemID or honor > 0 or experience > 0 then
 		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
 		rewardFrame.honor = honor;
 		rewardFrame.experience = experience;
@@ -398,7 +398,7 @@ end
 
 function PVPQueueFrame_UpdateTitle()
 	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_PRE_SEASON);
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
@@ -1131,6 +1131,10 @@ function ConquestFrame_EvaluateSeasonState(self)
 	end
 end
 
+function ConquestFrame_HasActiveSeason()
+	return ConquestFrame.seasonState == SEASON_STATE_ACTIVE;
+end
+
 function ConquestFrame_UpdateSeasonFrames(self)
 	PVPQueueFrame_UpdateTitle();
 	PVPQueueFrame.HonorInset:Update();
@@ -1302,7 +1306,7 @@ function ConquestFrame_UpdateJoinButton()
 	local button = ConquestFrame.JoinButton;
 	local groupSize = GetNumGroupMembers();
 
-	if ConquestFrame.seasonState == SEASON_STATE_DISABLED or ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
+	if not ConquestFrame_HasActiveSeason() then
 		button:Disable();
 		button.tooltip = nil;
 		return;
@@ -1911,7 +1915,7 @@ function PVPConquestBarMixin:OnLeave()
 end
 
 function PVPConquestBarMixin:LegacyUpdate()
-	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
+	local inactiveSeason = not ConquestFrame_HasActiveSeason();
 	local currentValue, maxValue, questID = PVPGetConquestLevelInfo();
 	local questDone = questID and questID == 0;
 	if self.locked or inactiveSeason or questDone or maxValue == 0 then
@@ -1925,7 +1929,7 @@ function PVPConquestBarMixin:LegacyUpdate()
 	if self.locked or inactiveSeason or not questID then
 		self.Reward:Clear();
 	else
-		self.Reward:LegacySetup(questID, ConquestFrame.seasonState);
+		self.Reward:LegacySetup(questID);
 	end
 	self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
 end
@@ -1951,7 +1955,6 @@ function PVPConquestBarMixin:Update()
 	local displayType = weeklyProgress.displayType;
 
 	local isAtMax = progress >= maxProgress;
-	self.Border:SetDesaturated(isAtMax);
 	if not isAtMax then
 		if displayType == Enum.ConquestProgressBarDisplayType.Seasonal then
 			self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
@@ -1962,7 +1965,7 @@ function PVPConquestBarMixin:Update()
 		self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-disabled");
 	end
 
-	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
+	local inactiveSeason = not ConquestFrame_HasActiveSeason();
 	if self.locked or inactiveSeason or maxProgress == 0 then
 		self:SetValue(0);
 	else
@@ -1971,12 +1974,14 @@ function PVPConquestBarMixin:Update()
 	end
 
 	self:SetDisabled(inactiveSeason or self.locked);
+	self.Border:SetDesaturated(isAtMax or self.disabled);
+
 	self.Label:SetFormattedText(CONQUEST_BAR, progress, maxProgress);
 
 	if self.locked or inactiveSeason then
 		self.Reward:Clear();
 	else
-		self.Reward:Setup(ConquestFrame.seasonState);
+		self.Reward:Setup();
 	end
 end
 
@@ -2051,6 +2056,7 @@ function PVPWeeklyChestMixin:LegacyOnShow()
 		atlas = "pvpqueue-chest-alliance-"..state;
 	end
 	self.ChestTexture:SetAtlas(atlas);
+	self.ChestTexture:SetDesaturated(not ConquestFrame_HasActiveSeason());
 
 	if state == "collect" then
 		self.SpinTextureBottom:Show();
@@ -2073,6 +2079,7 @@ function PVPWeeklyChestMixin:OnShow()
 	local atlas = "pvpqueue-chest-greatvault-"..state;
 	local useAtlasSize = true;
 	self.ChestTexture:SetAtlas(atlas, useAtlasSize);
+	self.ChestTexture:SetDesaturated(not ConquestFrame_HasActiveSeason());
 
 	self.SpinTextureBottom:Hide();
 	self.SpinTextureTop:Hide();
@@ -2082,6 +2089,15 @@ end
 function PVPWeeklyChestMixin:OnEnter()
 	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyOnEnter();
+		return;
+	end
+
+	if not ConquestFrame_HasActiveSeason() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
+		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
+		GameTooltip_AddNormalLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON);
+		GameTooltip:Show();
 		return;
 	end
 

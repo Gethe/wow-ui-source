@@ -278,6 +278,17 @@ function AdventuresFollowerPuckMixin:GetSupportPreviewTypeForPuck()
 	return previewType;
 end
 
+function AdventuresFollowerPuckMixin:UpdateStats()
+	local followerID = self:GetFollowerGUID();
+
+	if followerID and self.info then
+		self.info.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
+
+		self.HealthBar:SetMaxHealth(self.info.autoCombatantStats.maxHealth);
+		self.HealthBar:SetHealth(self.info.autoCombatantStats.currentHealth);
+	end
+end
+
 AdventuresEnemyPuckMixin = {};
 
 function AdventuresEnemyPuckMixin:OnLoad()

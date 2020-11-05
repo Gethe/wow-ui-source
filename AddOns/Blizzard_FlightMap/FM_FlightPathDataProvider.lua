@@ -7,6 +7,7 @@ end
 
 function FlightMap_FlightPathDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("FlightMap_FlightPointPinTemplate");
+	self:GetMap():ResetTitleAndPortraitIcon();
 	if self.highlightLinePool then
 		self.highlightLinePool:ReleaseAll();
 	end
@@ -22,10 +23,19 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:CalculateLineThickness();
 
+	local bastionNodeFound = false;
 	local mapID = self:GetMap():GetMapID();
 	local taxiNodes = C_TaxiMap.GetAllTaxiNodes(mapID);
 	for i, taxiNodeData in ipairs(taxiNodes) do
 		self:AddFlightNode(taxiNodeData);
+
+		if taxiNodeData.textureKit == "FlightMaster_Bastion" then
+			bastionNodeFound = true;
+		end
+	end
+
+	if bastionNodeFound then
+		self:GetMap():UpdateTitleAndPortraitIcon(FLIGHT_MAP_BASTION, [[Interface/Icons/achievement_guildperk_havegroup willtravel]]);
 	end
 
 	self:ShowBackgroundRoutesFromCurrent();
@@ -171,9 +181,6 @@ FlightMap_FlightPointPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function FlightMap_FlightPointPinMixin:OnLoad()
 	self:SetScalingLimits(1.25, 0.9625, 1.275);
 
-	-- Flight points nudge other pins away.
-	self:SetNudgeSourceRadius(1);
-
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_FLIGHT_POINT");
 end
 
@@ -256,8 +263,8 @@ end
 
 function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKit, taxiNodeType)
 	self.textureKit = textureKit;
-	self:SetNudgeSourceMagnitude(nil, nil);
 	self:SetNudgeSourceRadius(1);
+	self:SetNudgeSourceMagnitude(1, 2);
 	if textureKit then
 		self.atlasFormat = textureKit.."-%s";
 		

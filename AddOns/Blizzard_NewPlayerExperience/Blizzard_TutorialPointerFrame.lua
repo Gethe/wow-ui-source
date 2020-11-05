@@ -92,6 +92,9 @@ function NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, of
 	-- Set the content
 	frame.Content:ClearAllPoints();
 	frame.Content:SetPoint(directionData.Anchor, frame, directionData.RelativePoint, directionData.ContentOffsetX or 0, directionData.ContentOffsetY or 0);
+	if not frame.Content:IsAnchoringRestricted() then
+		frame.Content:SetClampedToScreen(true);
+	end
 	frame.Content.Text:SetText(content);
 
 	local contentHeight = frame.Content.Text:GetHeight() + 40;

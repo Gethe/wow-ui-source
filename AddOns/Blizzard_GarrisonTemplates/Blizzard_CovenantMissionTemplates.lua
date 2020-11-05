@@ -100,11 +100,6 @@ end
 function CovenantFollowerTabMixin:UpdateValidSpellHighlightOnAbilityFrame()
 end
 
-function CovenantFollowerTabMixin:CalculateHealCost()
-	local followerStats = self.followerInfo.autoCombatantStats;
-	return math.ceil(((followerStats.maxHealth - followerStats.currentHealth) / followerStats.maxHealth) * Constants.GarrisonConstsExposed.GARRISON_AUTO_COMBATANT_FULL_HEAL_COST);
-end
-
 function CovenantFollowerTabMixin:UpdateHealCost()	
 	self.HealFollowerFrame.HealFollowerButton.tooltip = nil;
 	self:HideHealFollowerTutorial();
@@ -114,16 +109,23 @@ function CovenantFollowerTabMixin:UpdateHealCost()
 		return;
 	end
 
-	local buttonCost = self:CalculateHealCost();
-	self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
+	local buttonCost = self.followerInfo.autoCombatantStats.healCost;
 	
 	if (buttonCost == 0) then
+		self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
 		self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 		self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_FULL_HEALTH;
 		StaticPopup_Hide("COVENANT_MISSIONS_HEAL_CONFIRMATION");
 	else 
 		local _, secondaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency);
+
+		if (currencyInfo.quantity < buttonCost) then
+			self.HealFollowerFrame.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..buttonCost..FONT_COLOR_CODE_CLOSE);
+		else
+			self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
+		end 
+
 		if (buttonCost > currencyInfo.quantity) then 
 			self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 			self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
@@ -703,8 +705,8 @@ function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	self.HealthBar:Show();
 	self.HealthBar:SetScale(0.7);
 	self.LevelText:SetText(followerInfo.level);
-	self.HealthBar:SetMaxHealth(followerInfo.autoCombatantStats.maxHealth);
-	self.HealthBar:SetHealth(followerInfo.autoCombatantStats.currentHealth);
+	self.HealthBar:SetMaxHealth(followerInfo.autoCombatantStats and followerInfo.autoCombatantStats.maxHealth or 1);
+	self.HealthBar:SetHealth(followerInfo.autoCombatantStats and followerInfo.autoCombatantStats.currentHealth or 1);
 	self.HealthBar:SetRole(followerInfo.role);
 	local puckBorderAtlas = followerInfo.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
 	self.PuckBorder:SetAtlas(puckBorderAtlas);

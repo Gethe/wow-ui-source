@@ -3,12 +3,19 @@ UIPanelWindows["FlightMapFrame"] = { area = "center", pushable = 1, showFailedFu
 FlightMapMixin = {};
 
 function FlightMapMixin:SetupTitle()
-	self.BorderFrame.TitleText:SetText(FLIGHT_MAP);
 	self.BorderFrame.Bg:SetColorTexture(0, 0, 0, 1);
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
+	self:ResetTitleAndPortraitIcon();
+end
 
-	self.BorderFrame:SetPortraitToAsset([[Interface/Icons/icon_petfamily_flying]]);
+function FlightMapMixin:ResetTitleAndPortraitIcon()
+	self:UpdateTitleAndPortraitIcon(FLIGHT_MAP, [[Interface/Icons/icon_petfamily_flying]]);
+end
+
+function FlightMapMixin:UpdateTitleAndPortraitIcon(titleText, portraitIcon)
+	self.BorderFrame.TitleText:SetText(titleText);
+	self.BorderFrame:SetPortraitToAsset(portraitIcon);
 end
 
 function FlightMapMixin:OnLoad()

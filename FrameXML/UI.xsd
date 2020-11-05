@@ -698,6 +698,8 @@
 				<xs:attribute name="clipChildren" type="xs:boolean" default="false"/>
 				<xs:attribute name="propagateHyperlinksToParent" type="xs:boolean" default="false"/>
 				<xs:attribute name="hyperlinksEnabled" type="xs:boolean" default="false"/>
+				<xs:attribute name="fixedFrameStrata" type="xs:boolean" default="false"/>
+				<xs:attribute name="fixedFrameLevel" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

@@ -1231,7 +1231,7 @@ end
 
 function CardRightClickOptionsMenuInitialize(self, level)
 
-	if(self:GetParent():IsReported()) then 
+	if(self:GetParent():IsReported() or not self:GetParent().cardInfo) then 
 		return; 
 	end
 

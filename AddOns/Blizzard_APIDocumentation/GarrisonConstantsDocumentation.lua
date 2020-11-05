@@ -357,14 +357,6 @@ local GarrisonConstants =
 				{ Name = "Type_9_0", Type = "GarrisonType", EnumValue = 111 },
 			},
 		},
-		{
-			Name = "GarrisonConstsExposed",
-			Type = "Constants",
-			Values =
-			{
-				{ Name = "GARRISON_AUTO_COMBATANT_FULL_HEAL_COST", Type = "number", Value = 100 },
-			},
-		},
 	},
 };
 

@@ -28,7 +28,7 @@ function AdventureMap_MissionDataProviderMixin:OnEvent(event, ...)
 		end
 	elseif event == "GARRISON_MISSION_LIST_UPDATE" then
 		local followerType = ...;
-		if followerType == Enum.GarrisonFollowerType.FollowerType_7_0 then
+		if followerType == Enum.GarrisonFollowerType.FollowerType_7_0 or followerType == Enum.GarrisonFollowerType.FollowerType_9_0 then
 			self:RefreshAllData();
 		end
 	elseif event == "GARRISON_MISSION_FINISHED" then

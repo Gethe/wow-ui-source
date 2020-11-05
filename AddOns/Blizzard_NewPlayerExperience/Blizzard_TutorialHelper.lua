@@ -186,7 +186,7 @@ function TutorialHelper:DoQuestsInBundleNeedPickup(questBundle)
 	return false;
 end
 
-local actionBars = {"ActionButton", "MultiBarBottomLeftButton"}
+local actionBars = {"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton", "MultiBarLeftButton", "MultiBarRightButton"}
 function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
 	if optionalPreferredActionBar then
 		for i = 1, 12 do
@@ -216,10 +216,10 @@ end
 function TutorialHelper:GetActionButtonBySpellID(spellID)
 	if (type(spellID) ~= "number") then return nil; end
 
-	for i, actionBar in pairs(actionBars) do
+	for actionBarIndex, actionBar in pairs(actionBars) do
 		for i = 1, 12 do
 			local btn = _G[actionBar .. i];
-			if btn  and btn:IsVisible() then
+			if btn and btn.action then
 				local actionType, sID, subType = GetActionInfo(btn.action);
 
 				if (sID == spellID) then

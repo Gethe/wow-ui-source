@@ -166,6 +166,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:MarkDirty("UpdateChannelList");
 	elseif event == "CHAT_MSG_CHANNEL_NOTICE" then
 		self:OnChannelNotice(...);
+	elseif event == "MENTORSHIP_STATUS_CHANGED" then
+		self:OnMentorshipStatusChanged();
 	end
 end
 
@@ -638,16 +640,33 @@ function ChannelFrameMixin:OnChannelNotice(...)
 	local channelIndex = select(8, ...);
 
 	if eventType == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(channelIndex) == Enum.ChatChannelRuleset.Mentor then
-		local channelSlashCommand = GetSlashCommandForChannelOpenChat(channelIndex);
-		if IsActivePlayerNewcomer() then
-			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
-			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
-			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
-		else
-			-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
-			-- then if you're not a newcomer, you must be a guide.
-			ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
-		end
+		self:CheckNewcomerChannelJoin(channelIndex);
+	end
+end
+
+function ChannelFrameMixin:OnMentorshipStatusChanged()
+	if self.pendingNewcomerChannelIndex then
+		local channelIndex = self.pendingNewcomerChannelIndex;
+		self.pendingNewcomerChannelIndex = nil;
+		self:UnregisterEvent("MENTORSHIP_STATUS_CHANGED");
+		self:CheckNewcomerChannelJoin(channelIndex);
+	end
+end
+
+function ChannelFrameMixin:CheckNewcomerChannelJoin(channelIndex)
+	local channelSlashCommand = GetSlashCommandForChannelOpenChat(channelIndex);
+
+	if IsActivePlayerNewcomer() then
+		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
+		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
+		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
+	elseif IsActivePlayerMentor() then
+		-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
+		-- then if you're not a newcomer, you must be a guide.
+		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
+	else
+		self.pendingNewcomerChannelIndex = channelIndex;
+		self:RegisterEvent("MENTORSHIP_STATUS_CHANGED");
 	end
 end
 

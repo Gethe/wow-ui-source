@@ -198,7 +198,7 @@ function GarrisonFollowerList:OnEvent(event, ...)
 				self:ShowFollower(self.followerTab.followerID);
 			end
 
-			if (self:IsVisible()) then
+			if (self:IsVisible() or event == "GARRISON_FOLLOWER_LIST_UPDATE") then
 				self:DirtyList();
 				self:UpdateFollowers();
 			end

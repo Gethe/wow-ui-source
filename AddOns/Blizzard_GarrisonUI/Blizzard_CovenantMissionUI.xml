@@ -461,7 +461,7 @@
 							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
 						</Anchors>
 					</Frame>
-					<Button parentKey="HealAllButton" framelevel="10" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_HEAL_ALL">
+					<Button parentKey="HealAllButton" framelevel="10" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="COVENANT_MISSIONS_HEAL_ALL">
 						<Size x="200" y="22"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.MaterialFrame" relativePoint="BOTTOM" y="-6"/>

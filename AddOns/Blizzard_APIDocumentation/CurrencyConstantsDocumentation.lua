@@ -146,8 +146,8 @@ local CurrencyConstants =
 				{ Name = "GarrisonTalentTreeReset", Type = "CurrencySource", EnumValue = 44 },
 				{ Name = "DailyReset", Type = "CurrencySource", EnumValue = 45 },
 				{ Name = "AddConduitToCollection", Type = "CurrencySource", EnumValue = 46 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 47 },
-				{ Name = "Barbershop", Type = "CurrencySource", EnumValue = 48 },
+				{ Name = "Barbershop", Type = "CurrencySource", EnumValue = 47 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 48 },
 			},
 		},
 		{

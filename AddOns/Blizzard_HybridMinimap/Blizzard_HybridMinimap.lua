@@ -11,9 +11,7 @@ function HybridMinimapMixin:OnLoad()
 	mapCanvas:SetMaskTexture(self.CircleMask);
 	mapCanvas:SetUseMaskTexture(true);
 
-	local explorationDataProvider = CreateFromMixins(MapExplorationDataProviderMixin);
-	explorationDataProvider:SetDrawLayer("BACKGROUND", -6);
-	mapCanvas:AddDataProvider(explorationDataProvider);
+	mapCanvas:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 
 	local pinFrameLevelsManager = mapCanvas:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");

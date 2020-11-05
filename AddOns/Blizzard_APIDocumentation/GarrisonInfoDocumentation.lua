@@ -561,6 +561,15 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GarrisonFollowerHealed",
+			Type = "Event",
+			LiteralName = "GARRISON_FOLLOWER_HEALED",
+			Payload =
+			{
+				{ Name = "followerID", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GarrisonFollowerListUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_LIST_UPDATE",
@@ -1086,6 +1095,7 @@ local GarrisonInfo =
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "attack", Type = "number", Nilable = false },
 				{ Name = "healingTimestamp", Type = "number", Nilable = false },
+				{ Name = "healCost", Type = "number", Nilable = false },
 			},
 		},
 		{
