@@ -1,4 +1,0 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard ClassTrial
-## LoadOnDemand: 1
-Blizzard_ClassTrial.xml
