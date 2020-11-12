@@ -259,6 +259,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsAnimaItemByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAnimaItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBound",
 			Type = "Function",
 

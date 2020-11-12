@@ -94,7 +94,8 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 		SetCVar(value, checked and "1" or "0");
 	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
 			value == "worldQuestFilterProfessionMaterials" or value == "worldQuestFilterGold" or
-			value == "worldQuestFilterEquipment" or value == "worldQuestFilterReputation") then
+			value == "worldQuestFilterEquipment" or value == "worldQuestFilterReputation" or
+			value == "worldQuestFilterAnima") then
 		-- World quest reward filter cvars
 		SetCVar(value, checked and "1" or "0");
 	end
@@ -147,7 +148,7 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 
 	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.
 	local mapID = self:GetParent():GetMapID();
-	if not mapID or not MapUtil.MapHasEmissaries(mapID) then
+	if not mapID or not MapUtil.MapShouldShowWorldQuestFilters(mapID) then
 		return;
 	end
 
@@ -181,15 +182,23 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.keepShownOnClick = true;
 	info.func = OnSelection;
 
-	info.text = WORLD_QUEST_REWARD_FILTERS_RESOURCES;
-	info.value = "worldQuestFilterResources";
-	info.checked = GetCVarBool("worldQuestFilterResources");
-	UIDropDownMenu_AddButton(info);
+	-- TODO:: Further adjustments to more cleanly determine filters per map and make this future-proof.
+	if MapUtil.IsShadowlandsZoneMap(mapID) then
+		info.text = WORLD_QUEST_REWARD_FILTERS_ANIMA;
+		info.value = "worldQuestFilterAnima";
+		info.checked = GetCVarBool("worldQuestFilterAnima");
+		UIDropDownMenu_AddButton(info);
+	else
+		info.text = WORLD_QUEST_REWARD_FILTERS_RESOURCES;
+		info.value = "worldQuestFilterResources";
+		info.checked = GetCVarBool("worldQuestFilterResources");
+		UIDropDownMenu_AddButton(info);
 
-	info.text = WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER;
-	info.value = "worldQuestFilterArtifactPower";
-	info.checked = GetCVarBool("worldQuestFilterArtifactPower");
-	UIDropDownMenu_AddButton(info);
+		info.text = WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER;
+		info.value = "worldQuestFilterArtifactPower";
+		info.checked = GetCVarBool("worldQuestFilterArtifactPower");
+		UIDropDownMenu_AddButton(info);
+	end
 
 	info.text = WORLD_QUEST_REWARD_FILTERS_PROFESSION_MATERIALS;
 	info.value = "worldQuestFilterProfessionMaterials";

@@ -308,7 +308,7 @@ function CovenantSoulbindButtonMixin:OnEnter()
 	GameTooltip:Hide(); 
 
 	local spell = Spell:CreateFromSpellID(self.spellID);
-	spell:ContinueOnSpellLoad(function()
+	self.spellDataLoadedCancelCallback = spell:ContinueWithCancelOnSpellLoad(function()
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -10);
 		GameTooltip_AddHighlightLine(EmbeddedItemTooltip, self.name);
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip); 
@@ -316,11 +316,16 @@ function CovenantSoulbindButtonMixin:OnEnter()
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip); 
 		EmbeddedItemTooltip_SetSpellWithTextureByID(EmbeddedItemTooltip.ItemTooltip, self.spellID, spell:GetSpellTexture());
 		EmbeddedItemTooltip:Show();
+		self.spellDataLoadedCancelCallback = nil;
 	end);
 end
 
 function CovenantSoulbindButtonMixin:OnLeave() 
 	EmbeddedItemTooltip:Hide();
+	if self.spellDataLoadedCancelCallback then
+		self.spellDataLoadedCancelCallback();
+		self.spellDataLoadedCancelCallback = nil;
+	end
 end
 
 CovenantPreviewModelSceneContainerMixin = { };
