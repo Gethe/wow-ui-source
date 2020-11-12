@@ -250,6 +250,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 					rewardQuantity = reward.quantity;
 				elseif reward.id == Constants.CurrencyConsts.CONQUEST_CURRENCY_ID then
 					rewardFrame.conquestAmount = reward.quantity;
+					rewardTexture = rewardTexture or texture;
 				end
 			end
 		end
@@ -264,7 +265,18 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 		end
 	end
 
-	if currencyID or itemID or honor > 0 or experience > 0 then
+	if not rewardTexture then
+		if honor > 0 then
+			local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(Constants.CurrencyConsts.HONOR_CURRENCY_ID, honor);
+			if currencyInfo then
+				rewardTexture = currencyInfo.icon;
+			end
+		elseif experience > 0 then
+			rewardTexture = "Interface\\Icons\\xp_icon"
+		end
+	end
+
+	if rewardTexture then
 		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
 		rewardFrame.honor = honor;
 		rewardFrame.experience = experience;

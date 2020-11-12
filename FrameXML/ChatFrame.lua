@@ -2136,7 +2136,7 @@ SlashCmdList["FRIENDS"] = function(msg)
 	end
 	if not msg or msg == "" then
 		ToggleFriendsPanel();
-	else 
+	else
 		local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 		if player then
 			C_FriendList.AddOrRemoveFriend(player, note);
@@ -2934,6 +2934,30 @@ function ChatFrame_AddChannel(chatFrame, channel)
 	return channelIndex;
 end
 
+local function ChatFrame_CheckAddChannel(chatFrame, eventType, channelID)
+	-- This is called in the event that a user receives chat events for a channel that isn't enabled for any chat frames.
+	-- Minor hack, because chat channel filtering is backed by the client, but driven entirely from Lua.
+	-- This solves the issue of Guides abdicating their status, and then re-applying in the same game session, unless ChatFrame_AddChannel
+	-- is called, the channel filter will be off even though it's still enabled in the client, since abdication removes the chat channel and its config.
+
+	-- Only add to default (since multiple chat frames receive the event and we don't want to add to others)
+	if chatFrame ~= DEFAULT_CHAT_FRAME then
+		return false;
+	end
+
+	-- Only add if the user is joining a channel
+	if eventType ~= "YOU_CHANGED" then
+		return false;
+	end
+
+	-- Only add regional channels
+	 if not C_ChatInfo.IsChannelRegionalForChannelID(channelID) then
+	 	return false;
+	 end
+
+	return ChatFrame_AddChannel(chatFrame, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil;
+end
+
 function ChatFrame_GetCommunitiesChannelLocalID(clubId, streamId)
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	local localID = GetChannelName(channelName);
@@ -3126,17 +3150,12 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 			local isInitialLogin, isUIReload = ...;
 			if isInitialLogin then
 				C_Timer.After(3, ChatFrame_CheckShowNewcomerGraduation);
-				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 			end
 		end
 
 		self.chatLevelUP = {};
 		LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
 
-		return true;
-	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
-		ChatFrame_CheckRemoveNewcomerChannel();
-		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3446,12 +3465,6 @@ function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
 	end
 end
 
-function ChatFrame_CheckRemoveNewcomerChannel()
-	if not IsActivePlayerNewcomer() and not IsActivePlayerMentor() then
-		LeaveChannelByName(C_ChatInfo.GetChannelShortcutForChannelID(C_ChatInfo.GetMentorChannelID()));
-	end
-end
-
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3511,9 +3524,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 			if not found or not info then
-				if arg1 == "YOU_CHANGED" and C_ChatInfo.IsChannelRegional(arg8) then
-					ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(arg7));
-				else
+				local eventType, channelID = arg1, arg7;
+				if not ChatFrame_CheckAddChannel(self, eventType, channelID) then
 					return true;
 				end
 			end

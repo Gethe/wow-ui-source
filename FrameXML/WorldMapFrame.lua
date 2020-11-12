@@ -12,6 +12,7 @@ WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER = 0x0004;
 WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS = 0x0008;
 WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT = 0x0010;
 WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION = 0x0020;
+WORLD_QUEST_REWARD_TYPE_FLAG_ANIMA = 0x0040;
 function WorldMap_GetWorldQuestRewardType(questID)
 	if ( not HaveQuestRewardData(questID) ) then
 		C_TaskQuest.RequestPreloadRewardData(questID);
@@ -53,6 +54,10 @@ function WorldMap_GetWorldQuestRewardType(questID)
 
 			if ( classID == LE_ITEM_CLASS_TRADEGOODS ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS);
+			end
+
+			if ( C_Item.IsAnimaItemByID(itemID) ) then
+				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ANIMA);
 			end
 		end
 	end
@@ -102,6 +107,8 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 			elseif ( GetCVarBool("worldQuestFilterEquipment") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT) ~= 0 ) then
 				typeMatchesFilters = true;
 			elseif ( GetCVarBool("worldQuestFilterReputation") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION) ~= 0 ) then
+				typeMatchesFilters = true;
+			elseif ( GetCVarBool("worldQuestFilterAnima") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ANIMA) ~= 0 ) then
 				typeMatchesFilters = true;
 			end
 

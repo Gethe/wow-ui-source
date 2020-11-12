@@ -935,8 +935,9 @@ KEY_PADBACK_REV			= "GamePad -";
 -- "Shapes" label style specializations
 KEY_PAD1_SHP			= "GamePad X";
 KEY_PAD2_SHP			= "GamePad O";
-KEY_PAD3_SHP			= "GamePad S";
-KEY_PAD4_SHP			= "GamePad T";
+KEY_PAD3_SHP			= "GamePad Square";
+KEY_PAD4_SHP			= "GamePad Triangle";
+KEY_PAD5_SHP			= "GamePad Mute";
 KEY_PADLSTICK_SHP		= "GamePad L3";
 KEY_PADRSTICK_SHP		= "GamePad R3";
 KEY_PADLSHOULDER_SHP	= "GamePad L1";

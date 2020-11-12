@@ -1,4 +1,8 @@
 
+local SHADOWLANDS_CONTINENT_MAP_ID = 1550;
+local ORIBOS_UI_MAP_IDS = { 1670, 1671, 1672, 1673 };
+
+
 MapUtil = {};
 
 function MapUtil.IsMapTypeZone(mapID)
@@ -96,4 +100,38 @@ function MapUtil.GetMapCenterOnMap(mapID, topMapID)
 	local centerX = left + (right - left) * .5;
 	local centerY = top + (bottom - top) * .5;
 	return centerX, centerY;
+end
+
+function MapUtil.IsChildMap(mapID, ancestorMapID)
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	while (mapInfo ~= nil) and (mapInfo.parentMapID ~= nil) do
+		if mapInfo.parentMapID == ancestorMapID then
+			return true;
+		end
+
+		mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID);
+	end
+
+	return false;
+end
+
+function MapUtil.IsOribosMap(mapID)
+	return tContains(ORIBOS_UI_MAP_IDS, mapID);
+end
+
+function MapUtil.IsShadowlandsZoneMap(mapID)
+	if mapID == SHADOWLANDS_CONTINENT_MAP_ID or MapUtil.IsOribosMap(mapID) then
+		return true;
+	end
+
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if (mapInfo.mapType ~= Enum.UIMapType.Zone) and (mapInfo.mapType ~= Enum.UIMapType.Continent) then
+		return false;
+	end
+
+	return MapUtil.IsChildMap(mapID, SHADOWLANDS_CONTINENT_MAP_ID);
+end
+
+function MapUtil.MapShouldShowWorldQuestFilters(mapID)
+	return MapUtil.MapHasEmissaries(mapID) or MapUtil.IsShadowlandsZoneMap(mapID);
 end
