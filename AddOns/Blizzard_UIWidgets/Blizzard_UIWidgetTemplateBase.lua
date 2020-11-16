@@ -3,6 +3,7 @@ UIWidgetTemplateTooltipFrameMixin = {}
 function UIWidgetTemplateTooltipFrameMixin:SetMouse(disableMouse)
 	local useMouse = self.tooltip and self.tooltip ~= "" and not disableMouse;
 	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(false);
 end
 
 function UIWidgetTemplateTooltipFrameMixin:OnLoad()
@@ -356,6 +357,7 @@ end
 function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
 	local useMouse = ((self.tooltip and self.tooltip ~= "") or self.spellID) and not disableMouse;
 	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(false);
 end
 
 UIWidgetBaseColoredTextMixin = {};
@@ -442,6 +444,7 @@ end
 function UIWidgetBaseStatusBarTemplateMixin:SetMouse(disableMouse)
 	local useMouse = ((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse;
 	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(false);
 end
 
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);

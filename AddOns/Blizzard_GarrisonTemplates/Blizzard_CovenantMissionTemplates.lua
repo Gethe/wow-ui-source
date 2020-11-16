@@ -475,7 +475,7 @@ function CovenantMissionButton_OnEnter(self)
 				GameTooltip_AddNormalLine(GameTooltip, C_Garrison.GetFollowerName(missionInfo.followers[i]));
 			end
 		end
-	elseif (missionInfo.isRare and missionInfo.offerTimeRemaining) then
+	elseif (missionInfo.offerTimeRemaining) then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddHighlightLine(GameTooltip, COVENANT_MISSIONS_AVAILABILITY);
 		GameTooltip_AddNormalLine(GameTooltip, missionInfo.offerTimeRemaining);

@@ -50,6 +50,8 @@ function VideoOptionsFrameCancel_OnClick (self, button)
 	VideoOptionsFrame_Toggle();
 end
 
+local StaticPopup_Show = StaticPopup_Show or GlueDialog_Show;
+
 function VideoOptionsFrameDefault_OnClick (self, button)
 	OptionsFrameDefault_OnClick(VideoOptionsFrame);
 

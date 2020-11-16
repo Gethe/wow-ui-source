@@ -1,0 +1,12 @@
+## Title: PTR Bug Reporter Glue
+## OnlyBetaAndPTR: 1
+## AllowLoad: Glue
+## Notes: Tool for gathering bugs from PTR
+## SavedVariables: Blizzard_PTRIssueReporter_Saved
+
+..\Blizzard_PTRFeedback\Blizzard_PTRFeedback.lua
+..\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Frames.lua
+..\Blizzard_PTRFeedback\Blizzard_Reports.lua
+
+Blizzard_Reports_Glue.lua
+Blizzard_PTRFeedback_Events_Glue.lua

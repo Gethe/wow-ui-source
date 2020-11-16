@@ -191,10 +191,7 @@ local function QuestFrameProgressPanel_SetupBG(self)
 		end
 	end
 
-	local defaultXSize = 510;
-	local defaultYSize = 620;
-	self.Bg:SetSize(defaultXSize, defaultYSize);
-	self.Bg:SetTexture("Interface/QuestFrame/QuestBG");
+	self.Bg:SetAtlas("QuestBG-Parchment", true);
 	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	return material;
 end

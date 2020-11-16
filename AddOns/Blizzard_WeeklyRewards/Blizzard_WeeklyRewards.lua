@@ -530,6 +530,8 @@ function WeeklyRewardActivityItemMixin:SetDisplayedItem()
 			-- want highest item level of highest quality
 			-- this comparison is not really needed now since the rewards are 1 equippable and 1 non-equippable item
 			if itemQuality > bestItemQuality or (itemQuality == bestItemQuality and itemLevel > bestItemLevel) then
+				bestItemQuality = itemQuality;
+				bestItemLevel = itemLevel;
 				self.displayedItemDBID = rewardInfo.itemDBID;
 				self.Name:SetText(itemName);
 				self.Icon:SetTexture(itemIcon);
