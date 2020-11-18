@@ -30,6 +30,10 @@ local function EventHasPoints(eventType)
 end
 
 local function GetCombatLogEntryForEventType(spellName, eventType, caster, target, amount, element) 
+	if element == nil then
+		element = STRING_SCHOOL_UNKNOWN
+	end
+
 	if eventType == Enum.GarrAutoMissionEventType.MeleeDamage then
 		return COVENANT_MISSIONS_COMBAT_LOG_MELEE_DAMAGE:format(caster, target, amount);
 	elseif  eventType == Enum.GarrAutoMissionEventType.RangeDamage then
@@ -50,8 +54,8 @@ local function GetCombatLogEntryForEventType(spellName, eventType, caster, targe
 		return COVENANT_MISSIONS_COMBAT_LOG_DIED:format(caster, target);
 	elseif  eventType == Enum.GarrAutoMissionEventType.RemoveAura then
 		return COVENANT_MISSIONS_COMBAT_LOG_REMOVE_AURA:format(caster, spellName, target);
-	else
-		return COVENANT_MISSIONS_COMBAT_LOG_SPELL_RANGE_DAMAGE:format(caster, spellName, target, amount, element);
+	else 
+		return COVENANT_MISSIONS_COMBAT_LOG_RANGE_DAMAGE:format(caster, target, amount);
 	end
 end
 

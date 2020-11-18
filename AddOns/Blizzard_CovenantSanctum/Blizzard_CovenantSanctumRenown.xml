@@ -1,0 +1,190 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CovenantSanctumRenown.lua"/>
+
+	<Frame name="CovenantSanctumRenownMilestoneTemplate" mixin="CovenantSanctumRenownMilestoneMixin" virtual="true">
+		<Size x="42" y="42"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="LevelBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Level" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CovenantSanctumRenownRewardTemplate" mixin="CovenantSanctumRenownRewardMixin" virtual="true">
+		<Size x="415" y="136"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Toast">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" x="44"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Name" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="226" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="134" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame parentKey="RenownTab" mixin="CovenantSanctumRenownTabMixin" parent="CovenantSanctumFrame" hidden="true" setAllPoints="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="26" y="-26"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Background" relativePoint="BOTTOM" y="12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Anima">
+					<Anchors>
+						<Anchor point="CENTER" y="79"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Header" inherits="QuestFont_Super_Huge" text="COVENANT_SANCTUM_RENOWN_REWARD_TITLE">
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOP" y="-74"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="CelebrationModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false"/>
+
+			<Frame parentKey="MilestonesFrame">
+				<Size x="835" y="85"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="60"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" horizTile="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Header" inherits="GameFontNormalHuge" text="COVENANT_SANCTUM_RENOWN_MILESTONES_TITLE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" y="34"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" inherits="GameFontHighlight" text="COVENANT_SANCTUM_RENOWN_MILESTONES_DESC">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" y="-4"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="FinalToast" inherits="CovenantCelebrationBannerTemplate" frameLevel="500" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" y="-185"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="SlabTexture">
+							<Anchors>
+								<Anchor point="CENTER" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>
