@@ -7,6 +7,24 @@ local CovenantSanctum =
 	Functions =
 	{
 		{
+			Name = "CanAccessReservoir",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canAccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanDepositAnima",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDeposit", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DepositAnima",
 			Type = "Function",
 		},
@@ -22,6 +40,15 @@ local CovenantSanctum =
 			{
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "maxDisplayableValue", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentTalentTreeID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currentTalentTreeID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -43,18 +70,17 @@ local CovenantSanctum =
 			},
 		},
 		{
-			Name = "GetRenownMilestones",
+			Name = "GetRenownLevels",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "covenantID", Type = "number", Nilable = false },
-				{ Name = "renownLevel", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "milestones", Type = "table", InnerType = "CovenantSanctumRenownMilestoneInfo", Nilable = false },
+				{ Name = "levels", Type = "table", InnerType = "CovenantSanctumRenownLevelInfo", Nilable = false },
 			},
 		},
 		{
@@ -95,6 +121,16 @@ local CovenantSanctum =
 	Events =
 	{
 		{
+			Name = "CovenantRenownInteractionEnded",
+			Type = "Event",
+			LiteralName = "COVENANT_RENOWN_INTERACTION_ENDED",
+		},
+		{
+			Name = "CovenantRenownInteractionStarted",
+			Type = "Event",
+			LiteralName = "COVENANT_RENOWN_INTERACTION_STARTED",
+		},
+		{
 			Name = "CovenantSanctumInteractionEnded",
 			Type = "Event",
 			LiteralName = "COVENANT_SANCTUM_INTERACTION_ENDED",
@@ -129,12 +165,13 @@ local CovenantSanctum =
 			},
 		},
 		{
-			Name = "CovenantSanctumRenownMilestoneInfo",
+			Name = "CovenantSanctumRenownLevelInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "locked", Type = "bool", Nilable = false },
+				{ Name = "isMilestone", Type = "bool", Nilable = false },
 				{ Name = "isCapstone", Type = "bool", Nilable = false },
 			},
 		},
@@ -149,7 +186,7 @@ local CovenantSanctum =
 				{ Name = "mountID", Type = "number", Nilable = true },
 				{ Name = "transmogID", Type = "number", Nilable = true },
 				{ Name = "transmogSetID", Type = "number", Nilable = true },
-				{ Name = "titleID", Type = "number", Nilable = true },
+				{ Name = "titleMaskID", Type = "number", Nilable = true },
 				{ Name = "garrFollowerID", Type = "number", Nilable = true },
 				{ Name = "transmogIllusionSourceID", Type = "number", Nilable = true },
 				{ Name = "icon", Type = "number", Nilable = true },

@@ -13,6 +13,8 @@ local CHEST_STATE_INCOMPLETE = 2;
 local CHEST_STATE_COMPLETE = 3;
 local CHEST_STATE_COLLECT = 4;
 
+local SHADOWLANDS_FIRST_SEASON = 5;
+
 local function GetRunQualityBasedOnLevel(level)
 	if (level >= LEGENDARY_COMPLETION_LEVEL) then
 		return Enum.ItemQuality.Legendary; 
@@ -138,6 +140,7 @@ end
 function ChallengesFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
+	self:RegisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");
 
     PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
@@ -158,6 +161,7 @@ function ChallengesFrame_OnHide(self)
     PVEFrame_ShowLeftInset();
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
+	self:UnregisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");
 end
 
 function ChallengesFrame_Update(self)
@@ -264,13 +268,24 @@ function ChallengesFrame_Update(self)
 	local lastSeasonNumber = tonumber(GetCVar("newMythicPlusSeason"));
 	local currentSeason = C_MythicPlus.GetCurrentSeason(); 
 	if (currentSeason and lastSeasonNumber < currentSeason) then 
+		local noticeFrame = self.SeasonChangeNoticeFrame;
+		if (currentSeason == SHADOWLANDS_FIRST_SEASON) then
+			noticeFrame.SeasonDescription:SetText(MYTHIC_PLUS_FIRST_SEASON);
+			noticeFrame.SeasonDescription2:SetText(nil);
+			noticeFrame.SeasonDescription3:SetPoint("TOP", noticeFrame.SeasonDescription, "BOTTOM", 0, -14);
+		else
+			noticeFrame.SeasonDescription:SetText(MYTHIC_PLUS_SEASON_DESC1);
+			noticeFrame.SeasonDescription2:SetText(MYTHIC_PLUS_SEASON_DESC2);
+			noticeFrame.SeasonDescription3:SetPoint("TOP", noticeFrame.SeasonDescription2, "BOTTOM", 0, -14);
+		end
+		noticeFrame.Affix:Hide();
 		local affixes = C_MythicPlus.GetCurrentAffixes();
 		if (affixes) then
 			for i, affix in ipairs(affixes) do
 				if(affix.seasonID == currentSeason) then 
-					self.SeasonChangeNoticeFrame.Affix:SetUp(affix.id);
+					noticeFrame.Affix:SetUp(affix.id);
 					local affixName = C_ChallengeMode.GetAffixInfo(affix.id);
-					self.SeasonChangeNoticeFrame.SeasonDescription3:SetText(MYTHIC_PLUS_SEASON_DESC3:format(affixName));
+					noticeFrame.SeasonDescription3:SetText(MYTHIC_PLUS_SEASON_DESC3:format(affixName));
 					break; 
 				end
 			end

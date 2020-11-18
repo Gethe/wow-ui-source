@@ -5,6 +5,11 @@ function FlightMap_VignetteDataProviderMixin:GetPinTemplate()
 	return "FlightMap_VignettePinTemplate";
 end
 
+-- Only show vignettes on the flight map if they are flagged as zoneInfiniteAOI
+function FlightMap_VignetteDataProviderMixin:ShouldShowVignette(vignetteInfo)
+	return vignetteInfo and vignetteInfo.onWorldMap and vignetteInfo.zoneInfiniteAOI;
+end
+
 FlightMap_VignettePinMixin = CreateFromMixins(VignettePinMixin);
 
 function FlightMap_VignettePinMixin:OnLoad()

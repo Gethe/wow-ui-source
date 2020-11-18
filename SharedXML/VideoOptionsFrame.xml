@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="VideoOptionsFrame.lua"/>
+
+	<Frame name="VideoOptionsFrame" inherits="OptionsFrameTemplate">
+		<Frames>
+			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY" hidden="true">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-32" y="64"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Disable();
+					</OnLoad>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						VideoOptionsFrameOkay_OnClick(self, button, down, true);
+						self:Disable();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="VideoOptionsFrameCancel_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="VideoOptionsFrameOkay_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="RECOMMENDED">
+				<Size>
+					<AbsDimension x="126" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						VideoOptionsFrameDefault_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="VideoOptionsFrame_OnLoad"/>
+			<OnHide function="VideoOptionsFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

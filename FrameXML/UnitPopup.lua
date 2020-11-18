@@ -340,7 +340,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	dropdownMenu.which = which;
 	dropdownMenu.unit = unit;
 	if ( unit ) then
-		name, server = UnitName(unit);
+		name, server = UnitNameUnmodified(unit);
 	elseif ( name ) then
 		local n, s = strmatch(name, "^([^-]+)-(.*)");
 		if ( n ) then
@@ -636,7 +636,7 @@ function UnitPopup_AddDropDownTitle(unit, name, userData)
 
 		local titleText = name;
 		if not titleText and unit then
-			titleText = UnitName(unit);
+			titleText = UnitNameUnmodified(unit);
 		end
 
 		info.text = titleText or UNKNOWN;
@@ -958,7 +958,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "ADD_FRIEND" ) then
-			if ( haveBattleTag or not canCoop or not isPlayer or not isSameServer or C_FriendList.GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
+			if ( haveBattleTag or not canCoop or not isPlayer or not isSameServer or C_FriendList.GetFriendInfo(UnitNameUnmodified(dropdownMenu.unit)) ) then
 				shown = false;
 			end
 		elseif ( value == "ADD_FRIEND_MENU" ) then
@@ -1014,7 +1014,7 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "WHISPER" ) then
 			local whisperIsLocalPlayer = isLocalPlayer;
 			if not whisperIsLocalPlayer then
-				local playerName, playerServer = UnitName("player");
+				local playerName, playerServer = UnitNameUnmodified("player");
 				whisperIsLocalPlayer = (dropdownMenu.name == playerName and dropdownMenu.server == playerServer);
 			end
 
@@ -1038,7 +1038,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "IGNORE" ) then
-			if ( dropdownMenu.name == UnitName("player") or ( dropdownMenu.unit and not isPlayer ) ) then
+			if ( dropdownMenu.name == UnitNameUnmodified("player") or ( dropdownMenu.unit and not isPlayer ) ) then
 				shown = false;
 			end
 		elseif ( value == "REMOVE_FRIEND" ) then
@@ -1086,7 +1086,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "POP_OUT_CHAT" ) then
-			if ( (dropdownMenu.chatType ~= "WHISPER" and dropdownMenu.chatType ~= "BN_WHISPER") or dropdownMenu.chatTarget == UnitName("player") or
+			if ( (dropdownMenu.chatType ~= "WHISPER" and dropdownMenu.chatType ~= "BN_WHISPER") or dropdownMenu.chatTarget == UnitNameUnmodified("player") or
 				FCFManager_GetNumDedicatedFrames(dropdownMenu.chatType, dropdownMenu.chatTarget) > 0 ) then
 				shown = false;
 			end
@@ -1111,11 +1111,11 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "GUILD_PROMOTE" ) then
-			if ( not IsGuildLeader() or dropdownMenu.name == UnitName("player") ) then
+			if ( not IsGuildLeader() or dropdownMenu.name == UnitNameUnmodified("player") ) then
 				shown = false;
 			end
 		elseif ( value == "GUILD_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") ) then
+			if ( dropdownMenu.name ~= UnitNameUnmodified("player") ) then
 				shown = false;
 			end
 		elseif ( value == "UNINVITE" ) then
@@ -1254,7 +1254,7 @@ function UnitPopup_HideButtons ()
 					shown = false;
 				end
 			elseif ( dropdownMenu.name ) then
-				if ( dropdownMenu.name == UnitName("player") ) then
+				if ( dropdownMenu.name == UnitNameUnmodified("player") ) then
 					shown = false;
 				elseif ( not UnitInBattleground(dropdownMenu.name) and not IsInActiveWorldPVP(dropdownMenu.name) ) then
 					shown = false;
@@ -1297,7 +1297,7 @@ function UnitPopup_HideButtons ()
 			if ( dropdownMenu.channelType ~= Enum.ChatChannelType.Custom ) then
 				shown = false;
 			else
-				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or dropdownMenu.moderator or dropdownMenu.name == UnitName("player") ) then -- TODO: Name matching is wrong here, needs full name comparison
+				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or dropdownMenu.moderator or dropdownMenu.name == UnitNameUnmodified("player") ) then -- TODO: Name matching is wrong here, needs full name comparison
 					shown = false;
 				end
 			end
@@ -1305,7 +1305,7 @@ function UnitPopup_HideButtons ()
 			if ( dropdownMenu.channelType ~= Enum.ChatChannelType.Custom ) then
 				shown = false;
 			else
-				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or not dropdownMenu.moderator or dropdownMenu.name == UnitName("player") ) then -- TODO: Name matching is wrong here, needs full name comparison
+				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or not dropdownMenu.moderator or dropdownMenu.name == UnitNameUnmodified("player") ) then -- TODO: Name matching is wrong here, needs full name comparison
 					shown = false;
 				end
 			end
@@ -1313,7 +1313,7 @@ function UnitPopup_HideButtons ()
 			if ( dropdownMenu.channelType ~= Enum.ChatChannelType.Custom ) then
 				shown = false;
 			else
-				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or dropdownMenu.name == UnitName("player") ) then -- TODO: Name matching needs full name comparison
+				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or dropdownMenu.name == UnitNameUnmodified("player") ) then -- TODO: Name matching needs full name comparison
 					shown = false;
 				end
 			end
@@ -1457,9 +1457,9 @@ function UnitPopup_HideButtons ()
 				if not C_ClubFinder.IsEnabled() or C_ClubFinder.GetClubFinderDisableReason() ~= nil or (not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer()) or isPostingBanned then
 					shown = false;
 				end
-			else 
+			else
 				shown = false;
-			end 
+			end
 		elseif commandToRoleId[value] ~= nil then
 			if not dropdownMenu.clubAssignableRoles or not tContains(dropdownMenu.clubAssignableRoles, commandToRoleId[value]) then
 				shown = false;
@@ -1665,7 +1665,7 @@ function UnitPopup_OnUpdate (elapsed)
 								enable = false;
 							else
 								-- disable if player is from another realm or already on friends list
-								if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or C_FriendList.GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+								if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or C_FriendList.GetFriendInfo(UnitNameUnmodified(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
 									enable = false;
 								end
 							end

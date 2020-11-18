@@ -4,12 +4,11 @@
 local NO_SPEC_FILTER = 0;
 local NO_CLASS_FILTER = 0;
 
-local function LootJournal_GetPreviewClassAndSpec()
-	local classID = select(3, UnitClass("player"));
-	local spec = GetSpecialization();
-	local specID = spec and GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")) or -1;
-	return classID, specID;
-end
+local RuneforgePowerFilterOrder = {
+	Enum.RuneforgePowerFilter.All,
+	Enum.RuneforgePowerFilter.Available,
+	Enum.RuneforgePowerFilter.Unavailable,
+};
 
 
 RuneforgeLegendaryPowerLootJournalMixin = CreateFromMixins(RuneforgePowerBaseMixin);
@@ -27,9 +26,25 @@ function RuneforgeLegendaryPowerLootJournalMixin:OnPowerSet(oldPowerID, newPower
 	self.Icon:SetTexture(powerInfo.iconFileID);
 
 	local isAvailable = powerInfo.state == Enum.RuneforgePowerState.Available;
-	self.Icon:SetDesaturation(isAvailable and 0 or 0.8);
-	self.Icon:SetAlpha(isAvailable and 1.0 or 0.7);
+	self.Icon:SetDesaturation(isAvailable and 0 or 1);
+	self.UnavailableBackground:SetShown(not isAvailable);
 	self.Name:SetText(powerInfo.name);
+	self.Name:SetTextColor(LEGENDARY_ORANGE_COLOR:GetRGBA());
+	
+	local alpha = isAvailable and 1.0 or 0.5;
+	self.Icon:SetAlpha(alpha);
+	self.Name:SetAlpha(alpha);
+	self.SpecName:SetAlpha(alpha);
+
+	local hasSpecName = powerInfo.specName ~= nil;
+	
+	local yOffset = not hasSpecName and 0 or ((self.Name:GetNumLines() == 2) and 7 or 8);
+	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 12, yOffset);
+
+	self.SpecName:SetShown(hasSpecName);
+	if hasSpecName then
+		self.SpecName:SetText(powerInfo.specName);
+	end
 end
 
 function RuneforgeLegendaryPowerLootJournalMixin:ShouldShowUnavailableError()
@@ -39,8 +54,13 @@ end
 
 LootJournalMixin = {};
 
+local LootJournalEvents = {
+	"NEW_RUNEFORGE_POWER_ADDED",
+};
+
 function LootJournalMixin:OnLoad()
-	self:SetClassAndSpecFilters(LootJournal_GetPreviewClassAndSpec());
+	self:SetClassAndSpecFilters(RuneforgeUtil.GetPreviewClassAndSpec());
+	self:UpdateRuneforgePowerFilterButtonText();
 
 	self.PowersFrame:SetElementTemplate("RuneforgeLegendaryPowerLootJournalTemplate", self);
 
@@ -51,6 +71,64 @@ function LootJournalMixin:OnLoad()
 	local yPadding = 0;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, xPadding, yPadding);
 	self.PowersFrame:SetLayout(layout);
+end
+
+function LootJournalMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, LootJournalEvents);
+
+	self:UpdatePowers();
+
+	local pendingPowerID = self:GetPendingPowerID();
+	if pendingPowerID then
+		self:OpenToPowerID(pendingPowerID);
+	end
+end
+
+function LootJournalMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, LootJournalEvents);
+end
+
+function LootJournalMixin:OnEvent()
+	self:UpdatePowers();
+end
+
+function LootJournalMixin:SetPendingPowerID(powerID)
+	self.pendingPowerID = powerID;
+end
+
+function LootJournalMixin:GetPendingPowerID()
+	return self.pendingPowerID;
+end
+
+function LootJournalMixin:OpenToPowerID(powerID)
+	if not self:ScrollToPowerID(powerID) then
+		self:SetRuneforgePowerFilter(Enum.RuneforgePowerFilter.All);
+		if not self:ScrollToPowerID(powerID) then
+			local classID = RuneforgeUtil.GetPreviewClassAndSpec();
+			self:SetClassAndSpecFilters(classID, NO_SPEC_FILTER);
+			self:ScrollToPowerID(powerID);
+		end
+	end
+end
+
+function LootJournalMixin:ScrollToPowerID(powerID)
+	for elementFrame in self.PowersFrame:EnumerateElementFrames() do
+		if elementFrame:GetPowerID() == powerID then
+			-- Scroll to the frame that has a matching power.
+			local yOffset = select(5, elementFrame:GetPoint());
+			local function UpdateScrollBar()
+				self.PowersFrame.ScrollBar:SetValue(-yOffset);
+			end
+
+			-- We have to delay the update until the scroll bar has been properly initialized.
+			-- Unforunately there's no easy way to force this to happen and we just have to wait
+			-- until OnLayerUpdate refreshes the scroll bar.
+			C_Timer.After(0, UpdateScrollBar);
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function LootJournalMixin:GetNumPowers()
@@ -87,6 +165,15 @@ function LootJournalMixin:UpdateClassButtonText()
 	self.ClassDropDownButton:SetText(self:GetClassButtonText());
 end
 
+function LootJournalMixin:GetRuneforgePowerFilterButtonText()
+	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
+	return RuneforgeUtil.GetRuneforgeFilterText(runeforgePowerFilter);
+end
+
+function LootJournalMixin:UpdateRuneforgePowerFilterButtonText()
+	self.RuneforgePowerFilterDropDownButton:SetText(self:GetRuneforgePowerFilterButtonText());
+end
+
 function LootJournalMixin:GetClassFilter()
 	return self.classFilter or NO_CLASS_FILTER;
 end
@@ -95,19 +182,38 @@ function LootJournalMixin:GetSpecFilter()
 	return self.specFilter or NO_SPEC_FILTER;
 end
 
+function LootJournalMixin:UpdatePowers()
+	local classFilter = self:GetClassFilter();
+	local specFilter = self:GetSpecFilter();
+	local classID = (classFilter ~= NO_CLASS_FILTER) and classFilter or nil;
+	local specID = (specFilter ~= NO_SPEC_FILTER) and specFilter or nil;
+	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
+	self.powers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID, specID, runeforgePowerFilter);
+	self:Refresh();
+end
+
 function LootJournalMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilter)
 	if self.classFilter ~= newClassFilter or self.specFilter ~= newSpecFilter then
 		local classID = (newClassFilter ~= NO_CLASS_FILTER) and newClassFilter or nil;
 		local specID = (newSpecFilter ~= NO_SPEC_FILTER) and newSpecFilter or nil;
-		self.powers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID, specID);
 
 		self.classFilter = newClassFilter;
 		self.specFilter = newSpecFilter;
 		self:UpdateClassButtonText();
-		self:Refresh();
+		self:UpdatePowers();
 	end
 
 	CloseDropDownMenus(1);
+end
+
+function LootJournalMixin:SetRuneforgePowerFilter(runeforgePowerFilter)
+	self.runeforgePowerFilter = runeforgePowerFilter;
+	self:UpdateRuneforgePowerFilterButtonText();
+	self:UpdatePowers();
+end
+
+function LootJournalMixin:GetRuneforgePowerFilter()
+	return self.runeforgePowerFilter or Enum.RuneforgePowerFilter.All;
 end
 
 function LootJournalMixin:GetClassAndSpecFilters()
@@ -116,6 +222,45 @@ end
 
 function LootJournalMixin:ToggleClassDropDown()
 	ToggleDropDownMenu(1, nil, self.ClassDropDown, self.ClassDropDownButton, 5, 0);
+end
+
+function LootJournalMixin:ToggleRuneforgePowerFilterDropDown()
+	ToggleDropDownMenu(1, nil, self.RuneforgePowerFilterDropDown, self.RuneforgePowerFilterDropDownButton, 5, 0);
+end
+
+function LootJournalMixin:OpenRuneforgePowerFilterDropDown()
+	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
+
+	local function SetRuneforgePowerFilter(_, runeforgePowerFilter)
+		self:SetRuneforgePowerFilter(runeforgePowerFilter);
+	end
+
+	for i, filter in ipairs(RuneforgePowerFilterOrder) do
+		local info = UIDropDownMenu_CreateInfo();
+		info.leftPadding = 10;
+		info.text = RuneforgeUtil.GetRuneforgeFilterText(filter);
+		info.checked = filter == runeforgePowerFilter;
+		info.func = SetRuneforgePowerFilter;
+		info.arg1 = filter;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+
+LootJournalRuneforgePowerFilterDropDownButtonMixin = {};
+
+function LootJournalRuneforgePowerFilterDropDownButtonMixin:OnMouseDown(...)
+	EJButtonMixin.OnMouseDown(self, ...);
+	self:GetParent():ToggleRuneforgePowerFilterDropDown();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+local function OpenRuneforgePowerFilterDropDown(self)
+	self:GetParent():OpenRuneforgePowerFilterDropDown();
+end
+
+function LootJournalRuneforgePowerFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, OpenRuneforgePowerFilterDropDown, "MENU");
 end
 
 -- Class and spec filter stuff. TODO: This should be factored out with the other class-and-spec filter buttons/dropdowns.

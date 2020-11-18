@@ -28,10 +28,6 @@ function StoreFrame_OpenGamesCategory()
 	StoreFrame:SetAttribute("opengamescategory");
 end
 
-function StoreFrame_OpenGameTimeCategory()
-	StoreFrame:SetAttribute("opengametimecategory");
-end
-
 function StoreFrame_SetGamesCategory()
 	StoreFrame:SetAttribute("setgamescategory");
 end
@@ -46,6 +42,10 @@ function StoreFrame_SelectBoost(boostType, reason, guid)
 	data.reason = reason;
 	data.guid = guid;
 	StoreFrame:SetAttribute("selectboost", data);
+end
+
+function StoreFrame_SelectSubscriptionProduct()
+	StoreFrame:SetAttribute("selectsubscription", true);
 end
 
 function StoreFrame_SelectGameTimeProduct()

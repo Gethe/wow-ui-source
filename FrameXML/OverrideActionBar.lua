@@ -70,9 +70,9 @@ function OverrideActionBar_OnLoad(self)
 	self["PitchDownDown"] = self.PitchDownButton:GetPushedTexture();
 	self["PitchDownHighlight"] = self.PitchDownButton:GetHighlightTexture();
 	self:RegisterEvent("VEHICLE_ANGLE_UPDATE");
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
-	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player");
+	self:RegisterUnitEvent("UNIT_ENTERING_VEHICLE", "player");
+	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
 end
 
 

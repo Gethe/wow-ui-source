@@ -343,6 +343,7 @@ end
 
 function QuestSessionManagementMixin:UpdateExecuteSessionCommandState()
 	self.ExecuteSessionCommand:SetEnabled(QuestSessionManager:IsSessionManagementEnabled());
+	self:UpdateTooltip();
 end
 
 function QuestSessionManagementMixin:UpdateExecuteCommandAtlases(command)
@@ -372,6 +373,12 @@ function QuestSessionManagementMixin:ShowTooltip()
 
 		local wrap = true;
 		GameTooltip_AddNormalLine(GameTooltip, text, wrap);
+
+		local failureReason = QuestSessionManager:GetSessionManagementFailureReason();
+		if failureReason == "inCombat" then
+			GameTooltip_AddErrorLine(GameTooltip, QUEST_SESSION_TOOLTIP_START_SESSION_NOT_IN_COMBAT);
+		end
+
 		GameTooltip:Show();
 	end
 end
@@ -914,10 +921,10 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign; -- Always display campaign headers, the rest start as hidden
 	else
-		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);  -- TOOD: Do this in QuestLog? Either way, cached for later use
+		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);
 
 		if lastHeader and not lastHeader.shouldDisplay then
-			lastHeader.shouldDisplay = info.isCalling or QuestLogQuests_ShouldShowQuestButton(info);
+			lastHeader.shouldDisplay = QuestLogQuests_ShouldShowQuestButton(info);
 		end
 
 		-- Make it easy for a quest to look up its header
@@ -1182,8 +1189,12 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	displayState.prevButtonInfo = info;
 end
 
+local function QuestLogQuests_GetPreviousButtonInfo(displayState)
+	return displayState.prevButtonInfo;
+end
+
 local function QuestLogQuests_IsPreviousButtonCollapsed(displayState)
-	local info = displayState.prevButtonInfo;
+	local info = QuestLogQuests_GetPreviousButtonInfo(displayState);
 	if info then
 		return info.isHeader and info.isCollapsed;
 	end
@@ -1244,7 +1255,6 @@ function CovenantCallingsHeaderMixin:UpdateBG()
 end
 
 function CovenantCallingsHeaderMixin:UpdateText()
-	CovenantCalling_CheckCallings();
 	self:SetText(QUEST_LOG_COVENANT_CALLINGS_HEADER:format(CovenantCalling_GetCompletedCount(), Constants.Callings.MaxCallings));
 end
 
@@ -1252,6 +1262,7 @@ local function QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info
 	local button = QuestScrollFrame.covenantCallingsHeaderFramePool:Acquire();
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
 	button.SelectedTexture:SetShown(not info.isCollapsed);
+	CovenantCalling_CheckCallings();
 	button:UpdateText();
 	button:UpdateBG();
 
@@ -1267,6 +1278,13 @@ local function QuestLogQuests_AddStandardHeaderButton(displayState, info)
 	local button = QuestScrollFrame.headerFramePool:Acquire();
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
 	button:SetText(info.title);
+
+	-- Handle the case where there's nothing above this quest header
+	button.topPadding = 0;
+	if not QuestLogQuests_GetPreviousButtonInfo(displayState) then
+		button.topPadding = 8;
+	end
+
 	return button;
 end
 

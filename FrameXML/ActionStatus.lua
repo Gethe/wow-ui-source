@@ -46,3 +46,18 @@ function ActionStatusMixin:OnUpdate(elapsed)
 	end
 	self:Hide();
 end
+
+function ActionStatusMixin:UpdateParent()
+	self:ClearAllPoints();
+
+	if UIParent:IsVisible() then
+		self:SetParent(UIParent);
+		self:SetFrameStrata("TOOLTIP");
+		self:SetScale(1);
+	else
+		self:SetParent(WorldFrame);
+		self:SetScale(UIParent:GetEffectiveScale());
+	end
+
+	self:SetAllPoints(self:GetParent());
+end

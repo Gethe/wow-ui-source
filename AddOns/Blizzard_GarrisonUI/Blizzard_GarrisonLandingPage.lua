@@ -36,6 +36,7 @@ function GarrisonLandingPageMixin:UpdateTabs()
 	else
 		self.FleetTab:Hide();
 	end
+
 	PanelTemplates_SetNumTabs(self, numTabs);
 	PanelTemplates_UpdateTabs(self);
 
@@ -65,7 +66,8 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.InvasionBadge:Hide();
 	end
 
-	self.Report.SubTitle:Hide(); -- May be shown later.
+	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0) or C_Garrison.HasAdventures();
+	self.FollowerTabButton:SetShown(shouldShowFollowerTab);
 
 	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
 		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
@@ -82,11 +84,14 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
 		self.Report.Background:SetAtlas(("BfAMissionsLandingPage-Background-%s"):format(UnitFactionGroup("player")));
 	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
-		self:SetupCovenantRenownLevel();
+		self:ResetSectionLayoutIndex();
+		self:SetupCovenantTopPanel();
 		self:SetupCovenantCallings();
-		self:SetupSoulbind();
-		self.FollowerTabButton:SetText(COVENANT_MISSIONS_FOLLOWERS);
-		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSIONS_FOLLOWERS);
+		self:SetupGardenweald();
+		self:LayoutSection();
+
+		self.FollowerTabButton:SetText(COVENANT_MISSION_FOLLOWER_CATEGORY);
+		self.FollowerList.LandingPageHeader:SetText(COVENANT_MISSION_FOLLOWER_CATEGORY);
 		self.FollowerTab.FollowerText:Hide();
 		self.FollowerTab.PortraitFrame:Hide();
 		self.FollowerTab.CovenantFollowerPortraitFrame:Show();
@@ -104,23 +109,27 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
 	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
-
-	self:UpdateCovenantCallings();
 end
 
 function GarrisonLandingPageMixin:OnShow()
 	self:UpdateUIToGarrisonType();
-	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
-
-	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
 
 	if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
-		self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	    PlaySound(SOUNDKIT.UI_GARRISON_9_0_OPEN_LANDING_PAGE);
+	else
+	    PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
 	end
+
+	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
 end
 
 function GarrisonLandingPageMixin:OnHide()
-	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_CLOSE);
+    if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+        PlaySound(SOUNDKIT.UI_GARRISON_9_0_CLOSE_LANDING_PAGE);
+    else
+        PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_CLOSE);
+    end
+
 	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
@@ -128,10 +137,6 @@ function GarrisonLandingPageMixin:OnHide()
 	self.abilityCountersForMechanicTypes = nil;
 
 	self:UnregisterEvent("GARRISON_HIDE_LANDING_PAGE");
-
-	if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
-		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
-	end
 end
 
 function GarrisonLandingPageMixin:GetFollowerList()
@@ -142,54 +147,60 @@ function GarrisonLandingPageMixin:GetShipFollowerList()
 	return self.ShipFollowerList;
 end
 
-function GarrisonLandingPageMixin:SetupCovenantRenownLevel()
-	local activeCovenantID = C_Covenants.GetActiveCovenantID();
-	local displayRenownLevel = (self.garrTypeID == Enum.GarrisonType.Type_9_0) and (activeCovenantID ~= 0);
-	self.Report.SubTitle:SetShown(displayRenownLevel);
-	if displayRenownLevel then
-		self.Report.SubTitle:SetText(GARRISON_TYPE_9_0_LANDING_PAGE_RENOWN_LEVEL:format(C_CovenantSanctumUI.GetRenownLevel()));
-		self.Report.SubTitle:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+function GarrisonLandingPageMixin:ResetSectionLayoutIndex()
+	self.sectionsLayoutIndex = 1;
+end
+
+function GarrisonLandingPageMixin:SetSectionLayoutIndex(frame)
+	if frame then
+		frame.layoutIndex = self.sectionsLayoutIndex or 1;
+		self.sectionsLayoutIndex = frame.layoutIndex + 1;
 	end
+end
+
+function GarrisonLandingPageMixin:LayoutSection()
+	self.Report.Sections:Layout();
 end
 
 function GarrisonLandingPageMixin:SetupCovenantCallings()
 	if not self.CovenantCallings then
 		if UIParentLoadAddOn("Blizzard_CovenantCallings") then
-			self.CovenantCallings = CovenantCallings.Create(self.Report);
-			self.CovenantCallings:SetPoint("TOPLEFT", self.Report.Title, "BOTTOMLEFT", -46, -55);
+			self.CovenantCallings = CovenantCallings.Create(self.Report.Sections);
+			self.CovenantCallings.topPadding = -10;
 		end
 	end
+
+	self:SetSectionLayoutIndex(self.CovenantCallings);
+	self.CovenantCallings:Update();
 end
 
-function GarrisonLandingPageMixin:SetupSoulbind()
-	if self.SoulbindPanel then
-		local soulbindID = C_Soulbinds.GetActiveSoulbindID();
-		self.SoulbindPanel:SetShown(soulbindID > 0);
-	else
-		local soulbindID = C_Soulbinds.GetActiveSoulbindID();
-		if soulbindID > 0 and UIParentLoadAddOn("Blizzard_LandingSoulbinds") then
-			local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
-			self.SoulbindPanel = LandingSoulbind.Create(self.Report);
-			self.SoulbindPanel:SetPoint("TOPLEFT", self.Report.Title, "TOPLEFT", -46, -250);
-		end
+function GarrisonLandingPageMixin:SetupCovenantTopPanel()
+	if not self.SoulbindPanel then
+		UIParentLoadAddOn("Blizzard_LandingSoulbinds");
+		self.SoulbindPanel = LandingSoulbind.Create(self.Report.Sections);
 	end
+
+	self:SetSectionLayoutIndex(self.SoulbindPanel);
+	self.SoulbindPanel:Update();
 end
 
-function GarrisonLandingPageMixin:UpdateCovenantCallings()
-	if self.CovenantCallings then
-		local hasCallings = (self.garrTypeID == Enum.GarrisonType.Type_9_0);
-		self.CovenantCallings:SetShown(hasCallings);
-		if hasCallings then
-			self.CovenantCallings:Update();
+function GarrisonLandingPageMixin:SetupGardenweald()
+	if C_ArdenwealdGardening.IsGardenAccessible() then
+		if self.ArdenwealdGardeningPanel then
+			self.ArdenwealdGardeningPanel:Show();
+		elseif UIParentLoadAddOn("Blizzard_ArdenwealdGardening") then
+			self.ArdenwealdGardeningPanel = ArdenwealdGardening.Create(self.Report.Sections);
 		end
+	elseif self.ArdenwealdGardeningPanel then
+		self.ArdenwealdGardeningPanel:Hide();
 	end
+
+	self:SetSectionLayoutIndex(self.ArdenwealdGardeningPanel);
 end
 
 function GarrisonLandingPageMixin:OnEvent(event)
 	if (event == "GARRISON_HIDE_LANDING_PAGE") then
 		HideUIPanel(self);
-	elseif (event == "CURRENCY_DISPLAY_UPDATE") then
-		self:SetupCovenantRenownLevel();
 	end
 end
 

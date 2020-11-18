@@ -291,7 +291,7 @@ function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
 			local max = nextThreshold - threshold;
 			GameTooltip:AddLine(reaction.." ("..current.." / "..max..")" , 1, 1, 1, true);
 		else
-			GameTooltip:AddLine(reaction);
+			GameTooltip:AddLine(reaction, 1, 1, 1, true);
 		end
 		GameTooltip:Show();
 	end

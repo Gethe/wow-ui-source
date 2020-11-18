@@ -182,7 +182,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		end
 
 		FriendsDropDown.displayMode = "MENU";
-		FriendsDropDown.name = name;
+		FriendsDropDown.friendsDropDownName = name;
 		FriendsDropDown.friendsList = friendsList;
 		FriendsDropDown.lineID = lineID;
 		FriendsDropDown.communityClubID = communityClubID;
@@ -207,7 +207,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 			FriendsDropDown.initialize = FriendsFrameBNOfflineDropDown_Initialize;
 		end
 		FriendsDropDown.displayMode = "MENU";
-		FriendsDropDown.name = name;
+		FriendsDropDown.friendsDropDownName = name;
 		FriendsDropDown.friendsList = friendsList;
 		FriendsDropDown.lineID = lineID;
 		FriendsDropDown.communityClubID = communityClubID;
@@ -224,19 +224,19 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 end
 
 function FriendsFrameDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND", nil, FriendsDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND", nil, FriendsDropDown.friendsDropDownName);
 end
 
 function FriendsFrameOfflineDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND_OFFLINE", nil, FriendsDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND_OFFLINE", nil, FriendsDropDown.friendsDropDownName);
 end
 
 function FriendsFrameBNDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "BN_FRIEND", nil, FriendsDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "BN_FRIEND", nil, FriendsDropDown.friendsDropDownName);
 end
 
 function FriendsFrameBNOfflineDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "BN_FRIEND_OFFLINE", nil, FriendsDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "BN_FRIEND_OFFLINE", nil, FriendsDropDown.friendsDropDownName);
 end
 
 function FriendsFrame_OnLoad(self)

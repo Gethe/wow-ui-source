@@ -780,7 +780,6 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 		self.widgetContainer = self.widgetFrame.WidgetContainer; 
 		self.widgetContainer.verticalAnchorPoint = "TOPLEFT"; 
 		self.widgetContainer.verticalRelativePoint = "BOTTOMLEFT"; 
-		self.widgetContainer.verticalAnchorYOffset = -10;
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
 		self.widgetContainer.disableWidgetTooltips = true;
 		self.widgetContainer:Hide();
@@ -855,7 +854,7 @@ function EmbeddedItemTooltip_PrepareForFollower(self)
 	self.FollowerTooltip:Show();
 end
 
-function EmbeddedItemTooltip_SetItemByID(self, id)
+function EmbeddedItemTooltip_SetItemByID(self, id, count)
 	self.itemID = id;
 	self.spellID = nil;
 	local itemName, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(id);
@@ -864,7 +863,7 @@ function EmbeddedItemTooltip_SetItemByID(self, id)
 	self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 	self.Tooltip:SetItemByID(id);
 	SetItemButtonQuality(self, quality, id);
-	SetItemButtonCount(self, 1);
+	SetItemButtonCount(self, count or 1);
 	self.Icon:SetTexture(itemTexture);
 	self.itemTextureSet = (itemTexture ~= nil);
 	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
@@ -923,6 +922,25 @@ function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
 		EmbeddedItemTooltip_PrepareForSpell(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
+		SetItemButtonQuality(self, Enum.ItemQuality.Common);
+		SetItemButtonCount(self, 0);
+		self.Icon:SetTexture(texture);
+		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
+		EmbeddedItemTooltip_UpdateSize(self);
+		return true;
+	end
+	return false;
+end
+
+function EmbeddedItemTooltip_SetSpellWithTextureByID(self, spellID, texture)
+	if texture then
+		self.itemID = nil;
+		self.spellID = spellID;
+
+		self:Show();
+		EmbeddedItemTooltip_PrepareForSpell(self);
+		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+		self.Tooltip:AddSpellByID(spellID);
 		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
 		self.Icon:SetTexture(texture);

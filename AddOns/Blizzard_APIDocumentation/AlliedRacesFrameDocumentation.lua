@@ -68,7 +68,7 @@ local AlliedRacesFrame =
 				{ Name = "raceID", Type = "number", Nilable = false },
 				{ Name = "maleModelID", Type = "number", Nilable = false },
 				{ Name = "femaleModelID", Type = "number", Nilable = false },
-				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "achievementIds", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "maleName", Type = "string", Nilable = false },
 				{ Name = "femaleName", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },

@@ -33,6 +33,10 @@ function CovenantCelebrationBannerMixin:SetCovenantTextureKit(covenantTextureKit
 
 	self:CancelIconSwirlEffects();
 
+	self:AddSwirlEffects(covenantTextureKit);
+end
+
+function CovenantCelebrationBannerMixin:AddSwirlEffects(covenantTextureKit)
 	local swirlEffects = CovenantChoiceToasts.GetSwirlEffectsByTextureKit(covenantTextureKit);
 	for i, effect in ipairs(swirlEffects) do
 		self.IconSwirlModelScene:AddEffect(effect, self);

@@ -16,7 +16,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="HIGH">
+			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>

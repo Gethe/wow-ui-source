@@ -533,7 +533,7 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="ExecuteSessionCommand" hidden="true">
+					<Button parentKey="ExecuteSessionCommand" motionScriptsWhileDisabled="true" hidden="true">
 						<Size x="44" y="44"/>
 						<Anchors>
 							<Anchor point="LEFT" x="14"/>

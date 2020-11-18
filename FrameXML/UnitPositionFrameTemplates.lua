@@ -1,12 +1,50 @@
-UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
-UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
-UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
-UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
-UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+
+local type = type;
+local setmetatable = setmetatable;
 
 -- NOTE: This is only using a single set of PVPQuery timers.  There's no reason to have a different set per-instance.
 PVPAFK_QUERY_DELAY_SECONDS = 5;
 local pvpAFKQueryTimers = {}
+
+
+local Private_UnitAppearanceData = {};
+setmetatable(Private_UnitAppearanceData, { __metatable = false });
+
+local function GetOrCreateUnitAppearanceData(frame, unitType)
+	-- Global access should be avoided to expose as few attack vectors as possible.
+	local UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
+	local UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
+	local UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
+	local UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
+	local UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+
+	if Private_UnitAppearanceData[frame] == nil then
+		local newUnitAppearanceData = {};
+		setmetatable(newUnitAppearanceData, { __metatable = false });
+		Private_UnitAppearanceData[frame] = newUnitAppearanceData;
+	end
+
+	local data = Private_UnitAppearanceData[frame][unitType];
+	if data == nil then
+		-- Note: We only allow changes to existing keys with values that match the type of the default value.
+		-- We should not add any function or table values to this default set.
+		data = {
+			size = UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE,
+			sublevel = UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL,
+			texture = UNIT_POSITION_FRAME_DEFAULT_TEXTURE,
+			shouldShow = UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS,
+			useClassColor = unitType ~= "player", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
+			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
+		};
+
+		setmetatable(data, { __metatable = false });
+
+		Private_UnitAppearanceData[frame][unitType] = data;
+	end
+
+	return data;
+end
+
 
 function SetPVPAFKQueryDelaySeconds(seconds)
 	PVPAFK_QUERY_DELAY_SECONDS = seconds;
@@ -230,12 +268,12 @@ end
 function UnitPositionFrameMixin:UpdateFull(timeNow)
 	assert(self:NeedsFullUpdate());
 	self:ClearUnits();
-	self:AddUnitInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
+	self:AddUnitInternal(timeNow, "player", GetOrCreateUnitAppearanceData(self, "player"));
 
 	local memberCount, unitBase = self:GetMemberCountAndUnitTokenPrefix();
 	local overridePartyType = (C_PvP.IsActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
-	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
-	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
+	local partyAppearance = GetOrCreateUnitAppearanceData(self, "party");
+	local raidAppearance = GetOrCreateUnitAppearanceData(self, "raid");
 
 	for i = 1, memberCount do
 		local unit = unitBase..i;
@@ -250,12 +288,12 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 end
 
 function UnitPositionFrameMixin:UpdatePeriodic(timeNow)
-	self:SetUnitAppearanceInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
+	self:SetUnitAppearanceInternal(timeNow, "player", GetOrCreateUnitAppearanceData(self, "player"));
 
 	local memberCount, unitBase = self:GetMemberCountAndUnitTokenPrefix();
 	local overridePartyType = (C_PvP.IsActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
-	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
-	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
+	local partyAppearance = GetOrCreateUnitAppearanceData(self, "party");
+	local raidAppearance = GetOrCreateUnitAppearanceData(self, "raid");
 
 	for i = 1, memberCount do
 		local unit = unitBase..i;
@@ -296,26 +334,12 @@ function UnitPositionFrameUpdateSecureMixin:UpdatePlayerPins()
 	end
 end
 
-function UnitPositionFrameUpdateSecureMixin:GetOrCreateUnitAppearanceData(unitType)
-	local data = self.unitAppearanceData[unitType];
-	if not data then
-		data = {
-			size = UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE,
-			sublevel = UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL,
-			texture = UNIT_POSITION_FRAME_DEFAULT_TEXTURE,
-			shouldShow = UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS,
-			useClassColor = unitType ~= "player", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
-			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
-
-		};
-
-		self.unitAppearanceData[unitType] = data;
+function UnitPositionFrameUpdateSecureMixin:SetAppearanceField(unitType, fieldName, fieldValue)
+	local data = GetOrCreateUnitAppearanceData(self, unitType);
+	if type(data[fieldName]) ~= type(fieldValue) then
+		return;
 	end
 
-	return data;
-end
-
-function UnitPositionFrameUpdateSecureMixin:SetAppearanceField(unitType, fieldName, fieldValue)
-	self:GetOrCreateUnitAppearanceData(unitType)[fieldName] = fieldValue;
+	data[fieldName] = fieldValue;
 	self:SetNeedsFullUpdate();
 end

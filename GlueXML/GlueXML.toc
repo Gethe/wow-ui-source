@@ -38,6 +38,7 @@
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\Dump.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -97,13 +98,12 @@ KioskModeSplash.xml
 CharacterServices.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
-GlueOptions.xml
-OptionsFrameTemplates.xml
-OptionsPanelTemplates.xml
-VideoOptionsFrame.xml
+..\SharedXML\OptionsFrameTemplates.xml
+..\SharedXML\OptionsPanelTemplates.xml
+..\SharedXML\VideoOptionsFrame.xml
 ..\SharedXML\VideoOptionsPanels.xml
-AudioOptionsFrame.xml
-AudioOptionsPanels.xml
+..\SharedXML\AudioOptionsFrame.xml
+..\SharedXML\AudioOptionsPanels.xml
 MovieFrame.xml
 CinematicsFrame.xml
 CreditsFrame.xml

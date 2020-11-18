@@ -79,6 +79,10 @@ function TemplatedListMixin:OnShow()
 	self:RefreshListDisplay();
 end
 
+function TemplatedListMixin:IsInitialized()
+	return self.isInitialized;
+end
+
 function TemplatedListMixin:CheckListInitialization()
 	if self.isInitialized or (self:GetElementTemplate() == nil) or not self:CanInitialize() then
 		return;
@@ -213,6 +217,22 @@ function TemplatedListMixin:DisplayList(numResults)
 	end
 	
 	return lastDisplayedOffset;
+end
+
+function TemplatedListMixin:EnumerateElementFrames()
+	local numElementFrames = self:GetNumElementFrames();
+	local elementFrameIndex = 0;
+	local function ElementFrameIterator()
+		elementFrameIndex = elementFrameIndex + 1;
+
+		if elementFrameIndex > numElementFrames then
+			return nil;
+		end
+
+		return self:GetElementFrame(elementFrameIndex);
+	end
+
+	return ElementFrameIterator;
 end
 
 function TemplatedListMixin:CanInitialize()

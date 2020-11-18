@@ -74,8 +74,8 @@
 			<OnEnter method="OnEnter" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnLeave method="OnLeave" inherit="append"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 		<Animations>

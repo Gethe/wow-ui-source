@@ -89,7 +89,7 @@ function Tutorials:Begin()
 	local questID = tutorialData.LookingForGroupQuest;
 	if C_QuestLog.GetLogIndexForQuestID(questID) and not C_QuestLog.ReadyForTurnIn(questID) then
 		-- Looking For Group Quest is Active
-		self.LFGStatusWatcher:ForceBegin();
+		Tutorials.QueueSystem:QueueLFDTutorial();
 	end
 
 	-- Use Quest Item Quest
@@ -205,7 +205,7 @@ function Tutorials:Quest_Accepted(questData)
 		self.UseQuestItemTutorial:Begin(tutorialData.RemindUseQuestItemData);
 	elseif (questID == tutorialData.LookingForGroupQuest) then
 		-- Looking For Group Quest
-		self.LFGStatusWatcher:ForceBegin();
+		Tutorials.QueueSystem:QueueLFDTutorial();
 	elseif (questID == vendorQuestID) then
 		-- Use Vendor Quest
 		self.Vendor_Watcher:Begin();

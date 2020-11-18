@@ -41,9 +41,9 @@ end
 -- If not, and the player has an offhand equipped that can have an illusion applied to it, uses that
 -- Otherwise uses the fallback weapon in the mainhand
 function TransmogUtil.GetBestWeaponInfoForIllusionDressup()
-	local mainHandTransmogLocation = TransmogUtil.GetMainHandTransmogLocation();
+	local mainHandTransmogLocation = TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.None);
 	local mainHandVisualID = C_Transmog.GetSlotVisualInfo(mainHandTransmogLocation);
-	local offHandTransmogLocation = TransmogUtil.GetOffHandTransmogLocation();
+	local offHandTransmogLocation = TransmogUtil.GetTransmogLocation("SECONDARYHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.None);
 	local offHandVisualID = C_Transmog.GetSlotVisualInfo(offHandTransmogLocation);
 
 	local transmogLocation = ((mainHandVisualID == NO_TRANSMOG_VISUAL_ID) and (offHandVisualID ~= NO_TRANSMOG_VISUAL_ID)) and offHandTransmogLocation or mainHandTransmogLocation;

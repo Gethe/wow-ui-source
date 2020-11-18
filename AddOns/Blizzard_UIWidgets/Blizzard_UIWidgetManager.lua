@@ -170,7 +170,10 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.timerWidgets = {};
 	self.numTimers = 0;
 	self.numWidgetsShowing = 0;
-	self.widgetSetLayoutDirection = C_UIWidgetManager.GetWidgetLayoutDirectionFromWidgetSetID(widgetSetID);
+
+	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
+	self.widgetSetLayoutDirection = widgetSetInfo.layoutDirection;
+	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
 
 	if self.attachedToUnit then
 		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedToUnit);
@@ -209,6 +212,10 @@ function UIWidgetContainerMixin:UnregisterForWidgetSet()
 	end
 
 	if self.attachedToUnit then
+		if UIWidgetManager.processingUnit == self.attachedToUnit then
+			UIWidgetManager.processingUnit = nil;
+		end
+
 		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedToUnit);
 		self.attachedToUnit = nil;
 	end
@@ -458,7 +465,7 @@ local function SortWidgets(a, b)
 end
 
 function UIWidgetContainerMixin:GetNumWidgetsShowing()
-	return self.numWidgetsShowing;
+	return self.numWidgetsShowing or 0;
 end
 
 function UIWidgetContainerMixin:UpdateWidgetLayout()

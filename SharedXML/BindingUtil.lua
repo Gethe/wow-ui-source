@@ -122,10 +122,10 @@ function CreateKeyChordStringUsingMetaKeyState(key)
 	if IsShiftKeyDown() then
 		table.insert(chord, "SHIFT");
 	end
- 
-	 if IsMetaKeyDown() then
-		 table.insert(chord, "META");
-	 end
+
+	if IsMetaKeyDown() then
+		table.insert(chord, "META");
+	end
 
 	if not IsMetaKey(key) then
 		table.insert(chord, key);

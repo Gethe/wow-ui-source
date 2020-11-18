@@ -18,7 +18,6 @@
 			<KeyValue key="showAndHideOnWidgetSetRegistration" value="true" type="boolean"/>
 			<KeyValue key="verticalAnchorPoint" value="TOP" type="string"/>
 			<KeyValue key="verticalRelativePoint" value="BOTTOM" type="string"/>
-			<KeyValue key="verticalAnchorYOffset" value="0" type="number"/>
 			<KeyValue key="horizontalAnchorPoint" value="LEFT" type="string"/>
 			<KeyValue key="horizontalRelativePoint" value="RIGHT" type="string"/>
 			<KeyValue key="horizontalAnchorXOffset" value="2" type="number"/>

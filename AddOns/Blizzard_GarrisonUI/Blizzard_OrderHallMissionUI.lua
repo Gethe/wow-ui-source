@@ -30,6 +30,7 @@ function OrderHallMission:UpdateTextures()
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
 	local currencyTexture = C_CurrencyInfo.GetCurrencyInfo(primaryCurrency).iconFileID;
 
+	self.MissionTab.MissionPage.CostFrame:SetCurrency(primaryCurrency);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
 	self.MissionTab.MissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.MissionPage.CostFrame.CostIcon, "LEFT", -8, -1);

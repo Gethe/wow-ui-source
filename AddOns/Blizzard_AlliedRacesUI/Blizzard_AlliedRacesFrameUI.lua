@@ -70,7 +70,7 @@ function AlliedRacesFrameMixin:LoadRaceData(raceID)
 	self:SetPortraitAtlasRaw(raceInfo.crestAtlas);
 	self:UpdatedBannerColor(raceInfo.bannerColor);
 	self:RacialAbilitiesData(raceID);
-	self.RaceInfoFrame.ScrollFrame.Child.ObjectivesFrame:SetAchievement(raceInfo.achievementID);
+	self.RaceInfoFrame.ScrollFrame.Child.ObjectivesFrame:SetAchievements(raceInfo.achievementIds);
 end
 
 function AlliedRacesFrameMixin:SetRaceNameForGender(gender)

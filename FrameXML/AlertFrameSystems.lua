@@ -153,15 +153,18 @@ function DungeonCompletionAlertFrame_SetUp(frame, rewardData)
 	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
 	local isRaid = rewardData.subtypeID == LFG_SUBTYPEID_RAID;
 	frame.raidArt:SetShown(isRaid);
-	frame.dungeonArt1:SetShown(not isRaid);
-	frame.dungeonArt2:SetShown(not isRaid);
-	frame.dungeonArt3:SetShown(not isRaid);
-	frame.dungeonArt4:SetShown(not isRaid);
+	frame.dungeonArt:SetShown(not isRaid);
 
 	if ( isRaid ) then
-		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 26, 18);
+		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 26, 15);
+		frame.completionText:SetPoint("TOP", 25, -28);
+		frame.glowFrame.glow:SetPoint("CENTER", 0, -2);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 1);
 	else
-		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 13, 13);
+		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 13, 18);
+		frame.completionText:SetPoint("TOP", 25, -25);
+		frame.glowFrame.glow:SetPoint("CENTER", 0, 1);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 4);
 	end
 
 	--Set up the rewards
@@ -183,12 +186,14 @@ function DungeonCompletionAlertFrame_SetUp(frame, rewardData)
 	--Set up the text and icons.
 
 	frame.instanceName:SetText(rewardData.name);
+
+	local instanceNameYOffset = isRaid and -43 or -39;
 	if ( rewardData.subtypeID == LFG_SUBTYPEID_HEROIC ) then
 		frame.heroicIcon:Show();
-		frame.instanceName:SetPoint("TOP", 33, -44);
+		frame.instanceName:SetPoint("TOP", 33, instanceNameYOffset);
 	else
 		frame.heroicIcon:Hide();
-		frame.instanceName:SetPoint("TOP", 25, -44);
+		frame.instanceName:SetPoint("TOP", 25, instanceNameYOffset);
 	end
 
 	frame.dungeonTexture:SetTexture(rewardData.iconTextureFile);
@@ -1167,10 +1172,27 @@ function NewRuneforgePowerAlertFrameMixin:OnPowerSet(oldPowerID, newPowerID)
 	self:SetUpDisplay(powerInfo.iconFileID, Enum.ItemQuality.Legendary, powerInfo.name, YOU_EARNED_LABEL);
 end
 
+function NewRuneforgePowerAlertFrameMixin:OnEnter()
+	RuneforgePowerBaseMixin.OnEnter(self);
+
+	AlertFrame_PauseOutAnimation(self);
+end
+
+function NewRuneforgePowerAlertFrameMixin:OnLeave()
+	RuneforgePowerBaseMixin.OnLeave(self);
+
+	AlertFrame_ResumeOutAnimation(self);
+end
+
 function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
 		return;
 	end
 
-	-- No left-click behavior.
+	if self:OnSelected() then
+		return;
+	end
+
+	EncounterJournal_LoadUI();
+	EncounterJournal_OpenToPowerID(self:GetPowerID());
 end

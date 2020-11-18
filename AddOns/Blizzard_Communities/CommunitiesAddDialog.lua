@@ -67,6 +67,7 @@ Import("strlenutf8");
 Import("tonumber");
 Import("UnitFactionGroup");
 Import("IsVeteranTrialAccount");
+Import("C_ClassTrial");
 
 CommunitiesAddDialogMixin = {};
 
@@ -76,7 +77,7 @@ function CommunitiesAddDialogMixin:OnShow()
 	self.CreateWoWCommunityLabel:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL:format(localizedFactionName));
 	self.CreateWoWCommunityDescription:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION:format(localizedFactionName));
 	
-	self.CreateWoWCommunityButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.Character) and not IsVeteranTrialAccount());
+	self.CreateWoWCommunityButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.Character) and not IsVeteranTrialAccount() and not C_ClassTrial.IsClassTrialCharacter());
 	self.CreateWoWCommunityButton.FactionIcon:Show();
 	if factionTag == "Horde" then
 		self.CreateWoWCommunityButton.FactionIcon:SetAtlas("communities-create-button-wow-horde", true);

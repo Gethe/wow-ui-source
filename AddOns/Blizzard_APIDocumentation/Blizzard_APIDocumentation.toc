@@ -19,6 +19,7 @@ AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
+ArdenwealdGardeningDocumentation.lua
 AreaPoiInfoDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua
@@ -187,6 +188,7 @@ ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua
+CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua

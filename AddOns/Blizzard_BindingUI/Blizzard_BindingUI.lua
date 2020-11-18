@@ -757,6 +757,8 @@ end
 QuickKeybindFrameMixin = {};
 
 function QuickKeybindFrameMixin:OnShow()
+	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeEnabled");
+
 	self.characterSpecificButton:SetChecked(KeyBindingFrame.characterSpecificButton:GetChecked());
 	self.mouseOverButton = nil;
 	Enable_BagButtons();
@@ -769,6 +771,8 @@ function QuickKeybindFrameMixin:OnShow()
 end
 
 function QuickKeybindFrameMixin:OnHide()
+	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeDisabled");
+
 	KeybindFrames_ClearOutputText();
 	if ( not GameMenuFrame:IsShown() ) then
 		ShowUIPanel(KeyBindingFrame);

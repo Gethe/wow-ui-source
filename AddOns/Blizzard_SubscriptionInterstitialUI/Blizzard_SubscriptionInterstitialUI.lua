@@ -21,16 +21,13 @@ end
 function SubscriptionInterstitialSubscribeButtonBaseMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-	if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAME_TIME_CATEGORY_ID) then
-		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Clicked);
-		StoreFrame_SelectGameTimeProduct();
-		ToggleStoreUI();
-	else
-		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.WebRedirect);
-		LoadURLIndex(22);
-	end
-
 	self.wasClicked = true;
+
+	if StoreInterfaceUtil.OpenToSubscriptionProduct() then
+		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.Clicked);
+	else
+		SendSubscriptionInterstitialResponse(Enum.SubscriptionInterstitialResponseType.WebRedirect)
+	end
 
 	HideUIPanel(self:GetParent());
 end
@@ -69,7 +66,7 @@ function SubscriptionInterstitialUpgradeButtonMixin:OnLoad()
 	SubscriptionInterstitialSubscribeButtonBaseMixin.OnLoad(self);
 
 	self.TitleLine:SetFontObjectsToTry("Game40Font_Shadow2", "Game36Font_Shadow2", "Game32Font_Shadow2");
-	self.TitleSubText:SetFontObjectsToTry("Game17Font_Shadow", "Game13FontShadow");
+	self.TitleSubText:SetFontObjectsToTry("Game17Font_Shadow", "Game13FontShadow", "Game11Font_Shadow");
 
 	self.bulletPointPool = CreateFramePool("FRAME", self, "SubscriptionInterstitialBulletPointTemplate");
 

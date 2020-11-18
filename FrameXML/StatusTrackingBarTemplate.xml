@@ -28,7 +28,7 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-			<Frame parentKey="OverlayFrame" frameStrata="HIGH" setAllPoints="true">
+			<Frame parentKey="OverlayFrame" frameStrata="MEDIUM" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="5">
 						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">

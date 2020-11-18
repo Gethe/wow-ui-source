@@ -1,5 +1,4 @@
 GossipTitleButtonMixin = {}
-
 function GossipTitleButtonMixin:OnHide()
 	self:CancelCallback();
 	self.ClearData();
@@ -31,15 +30,27 @@ function GossipTitleButtonMixin:SetActiveQuest(titleText, level, isTrivial, isCo
 	self:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial);
 end
 
-function GossipTitleButtonMixin:SetOption(titleText, iconName)
+function GossipTitleButtonMixin:SetOption(titleText, iconName, spellID)
 	self.type = "Gossip";
-
+	self.spellID = spellID; 
 	self:SetText(titleText);
 	self.Icon:SetTexture("Interface/GossipFrame/" .. iconName .. "GossipIcon");
 	self.Icon:SetVertexColor(1, 1, 1, 1);
 
 	self:Resize();
 end
+
+function GossipTitleButtonMixin:OnEnter()
+	if (self.spellID) then 
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetSpellByID(self.spellID);
+		GameTooltip:Show(); 
+	end  
+end 
+
+function GossipTitleButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 
 
 function GossipTitleButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial)
 	if ( isIgnored ) then
@@ -66,7 +77,7 @@ function GossipFrame_OnLoad(self)
 	self.titleButtonPool = CreateFramePool("Button", GossipGreetingScrollChildFrame, "GossipTitleButtonTemplate");
 end
 
-function GossipFrame_HandleShow(self)
+function GossipFrame_HandleShow(self, textureKit)
 -- if there is only a non-gossip option, then go to it directly
 	if ( (C_GossipInfo.GetNumAvailableQuests() == 0) and (C_GossipInfo.GetNumActiveQuests()  == 0) and (C_GossipInfo.GetNumOptions() == 1) and not C_GossipInfo.ForceGossip() ) then
 		local gossipInfoTable = C_GossipInfo.GetOptions();
@@ -83,9 +94,25 @@ function GossipFrame_HandleShow(self)
 			return;
 		end
 	end
+
+	self.Background:SetAtlas(GossipFrame_GetBackgroundTexture(self, textureKit), TextureKitConstants.UseAtlasSize);
 	NPCFriendshipStatusBar_Update(self);
 	GossipFrameUpdate();
 end
+
+local backgroundTextureKit = "QuestBG-%s";
+local defaultBackgroundTexture = "QuestBG-Parchment";
+
+function GossipFrame_GetBackgroundTexture(self, textureKit)
+	if (textureKit) then 
+		local backgroundAtlas = GetFinalNameFromTextureKit(backgroundTextureKit, textureKit);
+		local atlasInfo = C_Texture.GetAtlasInfo(backgroundAtlas); 
+		if(atlasInfo) then 
+			return backgroundAtlas; 
+		end
+	end
+	return defaultBackgroundTexture; 
+end 
 
 function GossipFrame_HandleHide(self)
 	HideUIPanel(self);
@@ -202,7 +229,7 @@ function GossipFrameOptionsUpdate()
 	local titleIndex = 1;
 	for titleIndex, optionInfo in ipairs(gossipOptions) do
 		local button = GossipFrame_AcquireTitleButton();
-		button:SetOption(optionInfo.name, optionInfo.type);
+		button:SetOption(optionInfo.name, optionInfo.type, optionInfo.spellID);
 
 		button:SetID(titleIndex);
 		GossipFrame_AnchorTitleButton(button);
@@ -227,7 +254,7 @@ function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
 		statusBar:SetMinMaxValues(threshold, nextThreshold);
 		statusBar:SetValue(rep);
 		statusBar:ClearAllPoints();
-		statusBar:SetPoint("TOPLEFT", 73, -41);
+		statusBar:SetPoint("TOPLEFT", 80, -41);
 		statusBar:Show();
 	else
 		statusBar:Hide();

@@ -71,7 +71,7 @@ end
 
 function VehiclePinMixin:OnUpdate()
 	local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
-	if vehicleInfo.x and vehicleInfo.isAlive and not vehicleInfo.isPlayer then
+	if vehicleInfo and vehicleInfo.x and vehicleInfo.isAlive and not vehicleInfo.isPlayer then
 		self:SetPosition(vehicleInfo.x, vehicleInfo.y);
 		self.Texture:SetRotation(vehicleInfo.facing);
 	else
@@ -82,14 +82,11 @@ end
 function VehiclePinMixin:OnMouseEnter(motion)
 	local tooltipText = "";
 	for pin in self:GetMap():EnumeratePinsByTemplate("VehiclePinTemplate") do
-		if pin:IsVisible() and pin:IsMouseOver() then
-			local vehicleInfo = C_PvP.GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
-			if vehicleInfo.name then
-				if tooltipText == "" then
-					tooltipText = vehicleInfo.name;
-				else
-					tooltipText = tooltipText.."|n"..vehicleInfo.name;
-				end
+		if pin:IsVisible() and pin:IsMouseOver() and pin.name then
+			if tooltipText == "" then
+				tooltipText = pin.name;
+			else
+				tooltipText = tooltipText.."|n"..pin.name;
 			end
 		end
 	end

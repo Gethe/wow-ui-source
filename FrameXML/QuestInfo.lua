@@ -409,9 +409,11 @@ QUEST_SPELL_REWARD_TYPE_ABILITY = 3;
 QUEST_SPELL_REWARD_TYPE_AURA = 4;
 QUEST_SPELL_REWARD_TYPE_SPELL = 5;
 QUEST_SPELL_REWARD_TYPE_UNLOCK = 6;
+QUEST_SPELL_REWARD_TYPE_COMPANION = 7;
 
 QUEST_INFO_SPELL_REWARD_ORDERING = {
 	QUEST_SPELL_REWARD_TYPE_FOLLOWER,
+	QUEST_SPELL_REWARD_TYPE_COMPANION,
 	QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL,
 	QUEST_SPELL_REWARD_TYPE_ABILITY,
 	QUEST_SPELL_REWARD_TYPE_AURA,
@@ -421,6 +423,7 @@ QUEST_INFO_SPELL_REWARD_ORDERING = {
 
 QUEST_INFO_SPELL_REWARD_TO_HEADER = {
 	[QUEST_SPELL_REWARD_TYPE_FOLLOWER] = REWARD_FOLLOWER,
+	[QUEST_SPELL_REWARD_TYPE_COMPANION] = REWARD_COMPANION,
 	[QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL] = REWARD_TRADESKILL_SPELL,
 	[QUEST_SPELL_REWARD_TYPE_ABILITY] = REWARD_ABILITY,
 	[QUEST_SPELL_REWARD_TYPE_AURA] = REWARD_AURA,
@@ -443,7 +446,7 @@ local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryF
 		name, texture, numItems, quality, isUsable, itemID = questLogQueryFunction(index);
 		SetItemButtonQuality(questItem, quality, itemID);
 	else
-		name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, index);
+		name, texture, numItems, quality, isUsable, itemID = GetQuestItemInfo(questItem.type, index);
 		SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, index));
 	end
 
@@ -451,17 +454,28 @@ local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryF
 	questItem:SetID(index);
 	questItem:Show();
 
-	-- For the tooltip
-	questItem.Name:SetText(name);
-	SetItemButtonCount(questItem, numItems);
-	SetItemButtonTexture(questItem, texture);
-	if ( isUsable ) then
-		SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
-		SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-	else
-		SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
-		SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
-	end
+	local item = Item:CreateFromItemID(itemID);
+	item:ContinueOnItemLoad(function()
+		if ( QuestInfoFrame.questLog ) then
+			name, texture, numItems, quality, isUsable = questLogQueryFunction(index);
+			SetItemButtonQuality(questItem, quality, itemID);
+		else
+			name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, index);
+			SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, index));
+		end
+
+		-- For the tooltip
+		questItem.Name:SetText(name);
+		SetItemButtonCount(questItem, numItems);
+		SetItemButtonTexture(questItem, texture);
+		if ( isUsable ) then
+			SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+			SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+		else
+			SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
+			SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
+		end
+	end);
 end
 
 local function QuestInfo_ShowRewardAsItem(questItem, index)
@@ -691,7 +705,12 @@ function QuestInfo_ShowRewards()
 				elseif ( isBoostSpell ) then
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
 				elseif ( garrFollowerID ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
+					local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
+					if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_COMPANION, rewardSpellIndex);
+					else
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
+					end
 				elseif ( isSpellLearned ) then
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_SPELL, rewardSpellIndex);
 				elseif ( genericUnlock ) then

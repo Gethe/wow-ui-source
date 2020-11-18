@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ArdenwealdGardening.lua"/>
+
+	<Frame name="ArdenwealdGardeningPanelTemplate" virtual="true">
+		<Size x="350" y="200"/>
+		<Layers>
+			<Layer level="Background" textureSubLevel="1">
+				<Texture atlas="shadowlands-landingpage-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="Background" textureSubLevel="2">
+				<Texture atlas="queensconservatory-bg" useAtlasSize="true" alpha=".4">
+					<Anchors>
+						<Anchor point="CENTER" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="Overlay">
+				<FontString parentKey="Label" text="GARDENWEALD_LANDING_HEADER" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="45" y="-14"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ArdenwealdGardeningButtonTemplate" mixin="ArdenwealdGardeningButtonMixin" enableMouse="true">
+				<Size x="79" y="79"/>
+				<Anchors>
+					<Anchor point="CENTER" x="9" y="25"/>
+				</Anchors>
+				<Layers>
+					<Layer level="Background" textureSubLevel="1">
+						<Texture parentKey="Icon" file="Interface/Icons/Sanctum_Features_Gardenweald">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="Background" textureSubLevel="1">
+						<Texture parentKey="Icon2" file="Interface/Icons/Sanctum_Features_Gardenweald" alphaMode="ADD" alpha=".18" hidden="true">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="Overlay" textureSubLevel="1">
+						<Texture parentKey="Border" atlas="queensconservatory-seedborder" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="Overlay" textureSubLevel="2">
+						<Texture parentKey="Highlight" atlas="queensconservatory-seedborder"  useAtlasSize="true" alphaMode="ADD" alpha=".50" hidden="true">
+							<Size x="79" y="79"/>
+						</Texture>
+						<FontString parentKey="Label" inherits="SystemFont_Shadow_Med1">
+							<Anchors>
+								<Anchor point="LEFT" x="24"/>
+							</Anchors>
+						</FontString>
+						<MaskTexture atlas="CircleMaskScalable" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="65" y="65"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+								<MaskedTexture childKey="Icon2"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

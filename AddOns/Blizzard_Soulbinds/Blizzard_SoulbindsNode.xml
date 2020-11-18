@@ -190,7 +190,13 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="AvailableOverlay" parentArray="AttentionAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+				<Texture parentKey="PickupArrowsStatic" atlas="Soulbinds_Tree_Conduit_Arrows" alphaMode="ADD" hidden="true">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="UnsocketedWarning" parentArray="UnsocketedWarningTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
 					<Size x="56" y="57"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -202,7 +208,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="AvailableOverlay2" parentArray="AttentionAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+				<Texture parentKey="UnsocketedWarning2" parentArray="UnsocketedWarningTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
 					<Size x="56" y="57"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -242,14 +248,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4" >
-				<Texture parentKey="Emblem">
-					<Size x="26" y="31"/>
-					<Anchors>
-						<Anchor point="BOTTOM" y="-16"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="5" >
 				<Texture parentKey="Ring2" parentArray="SocketAnimTextures" inherits="ConduitInstallTemplate">
 					<Animations>
 						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
@@ -299,15 +297,15 @@
 					</Animations>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="6">
+			<Layer level="OVERLAY" textureSubLevel="5">
 				<Texture parentKey="Pending" parentArray="PendingAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring_PendingAnimation_Glow" hidden="true">
-					<Size x="52" y="53"/>
+					<Size x="62" y="63"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="7">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="PendingStick" parentArray="PendingAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring_PendingAnimation_Stick" useAtlasSize="true" rotation="90" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -338,11 +336,21 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7" >
+				<Texture parentKey="Emblem">
+					<Size x="26" y="31"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="-16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnReceiveDrag method="OnReceiveDrag"/>
 		</Scripts>
 	</Button>

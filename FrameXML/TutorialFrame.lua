@@ -77,20 +77,20 @@ local DISPLAY_DATA = {
 
 
 	[16] = { --TUTORIAL_REPUTATION
-		tileHeight = 8, 
+		tileHeight = 8,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
-	
+
 	[17] = { --TUTORIAL_TELLS
-		tileHeight = 6, 
+		tileHeight = 6,
 		anchorData = {align = "LEFT", xOff = 25, yOff = -50},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
-	
+
 	[18] = { --TUTORIAL_GROUPING
-		tileHeight = 20, 
+		tileHeight = 20,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -165, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeParty", align = "TOP", xOff = -50, yOff = -63},
@@ -98,9 +98,9 @@ local DISPLAY_DATA = {
 		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
 		notNPE = true,
 	},
-	
+
 	[20] = { --TUTORIAL_BUYING_ITEMS
-		tileHeight = 17, 
+		tileHeight = 17,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCursor", align = "TOP", xOff = 0, yOff = -60},
@@ -108,32 +108,32 @@ local DISPLAY_DATA = {
 		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
 		notNPE = true,
 	},
-	
+
 	[22] = { --TUTORIAL_FRIENDS
-		tileHeight = 10, 
+		tileHeight = 10,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "QuickJoinToastButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},
-	
+
 	[27] = { --TUTORIAL_FATIGUE
-		tileHeight = 9, 
+		tileHeight = 9,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -95, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FatigueBar", align = "TOP", xOff = 10, yOff = -40},
 	},
-	
+
 	[28] = { --TUTORIAL_SWIMMING
-		tileHeight = 14, 
+		tileHeight = 14,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 10, yOff = -35},
 		notNPE = true,
 	},
-	
+
 	[30] = { --TUTORIAL_INNS
-		tileHeight = 11, 
+		tileHeight = 11,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 32, yOff = -4, width = 85, height = 85},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
@@ -141,16 +141,16 @@ local DISPLAY_DATA = {
 	},
 
 	[32] = { --TUTORIAL_PVP
-		tileHeight = 10, 
+		tileHeight = 10,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
-	},	
-	
-	
+	},
+
+
 	[37] = { --TUTORIAL_DURABILITY_BROKEN
-		tileHeight = 18, 
+		tileHeight = 18,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -20},
 		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = -4, yOff = 8, align2 = "BOTTOMRIGHT", xOff2 = 4, yOff2 = -8},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
@@ -158,9 +158,9 @@ local DISPLAY_DATA = {
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
 	},
-	
+
 	[38] = { --TUTORIAL_PROFESSIONS
-		tileHeight = 18, 
+		tileHeight = 18,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TrainerCursor", align = "TOP", xOff = 0, yOff = -60},
@@ -169,86 +169,86 @@ local DISPLAY_DATA = {
 		notNPE = true,
 	},
 
-	
+
 	[41] = { --TUTORIAL_ELITE_QUESTS
-		tileHeight = 21, 
+		tileHeight = 21,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Elite", align = "TOP", xOff = 10, yOff = -50},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -160, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 
 	[46] = { --TUTORIAL_RAID
-		tileHeight = 14, 
+		tileHeight = 14,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 
 	[48] = { --TUTORIAL_PVP_QUEUE
-		tileHeight = 7, 
+		tileHeight = 7,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
-	
+
 	[51] = { --TUTORIAL_LOOKINGFORGROUP
-		tileHeight = 7, 
+		tileHeight = 7,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "LFDMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 
 	[52] = { --TUTORIAL_CRITTER
-		tileHeight = 11, 
+		tileHeight = 11,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 
 	[58] = { --TUTORIAL_BAG_FULL
-		tileHeight = 22, 
+		tileHeight = 22,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "TOP", xOff = -22, yOff = -55},
     },
-	
+
 	[59] = { --TUTORIAL_BAG_ALMOST_FULL
-		tileHeight = 24, 
+		tileHeight = 24,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "TOP", xOff = -70, yOff = -65},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
     },
-	
-	
+
+
 	[61] = { --TUTORIAL_LEARN_SPELL_1
 		spellTutorial = true;
-		tileHeight = 21, 
+		tileHeight = 21,
 		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	[62] = { --TUTORIAL_LEARN_SPELL_1
 		spellTutorial = true;
-		tileHeight = 21, 
+		tileHeight = 21,
 		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	[63] = { --TUTORIAL_LEARN_SPELL_1
 		spellTutorial = true;
-		tileHeight = 21, 
+		tileHeight = 21,
 		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	[64] = { --TUTORIAL_LEARN_SPELL_1
 		spellTutorial = true;
-		tileHeight = 21, 
+		tileHeight = 21,
 		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	[65] = { --TUTORIAL_LEARN_SPELL_1
 		spellTutorial = true;
-		tileHeight = 21, 
+		tileHeight = 21,
 		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
@@ -265,7 +265,7 @@ setmetatable( DISPLAY_DATA, {__index = function () return DisplayDataFallback en
 function TutorialFrame_OnLoad(self)
 	self:RegisterEvent("TUTORIAL_TRIGGER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");	
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 
 	for i = 1, MAX_TUTORIAL_VERTICAL_TILE do
 		local texture = self:CreateTexture("TutorialFrameLeft"..i, "BORDER");
@@ -279,7 +279,7 @@ function TutorialFrame_OnLoad(self)
 	end
 	TutorialFrameLeft1:SetPoint("TOPLEFT", TutorialFrameTop, "BOTTOMLEFT", 6, 0);
 	TutorialFrameRight1:SetPoint("TOPRIGHT", TutorialFrameTop, "BOTTOMRIGHT", -1, 0);
-	
+
 	for i = 1, MAX_TUTORIAL_IMAGES do
 		local texture = self:CreateTexture("TutorialFrameImage"..i, "ARTWORK");
 	end
@@ -337,7 +337,7 @@ end
 
 function TutorialFrame_OnHide(self)
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
-	
+
 	if ( (getn(TUTORIALFRAME_QUEUE) <= 0) and (UnitLevel("player") > 5) ) then
 		TutorialFrameAlertButton:Hide();
 		UIParent_ManageFramePositions();
@@ -414,11 +414,11 @@ function TutorialFrame_CheckNextPrevButtons()
 	else
 		TutorialFramePrevButton:Disable();
 	end
-	
+
 	local nextTutorial = GetNextCompleatedTutorial(TutorialFrame.id);
 	while ( nextTutorial and DISPLAY_DATA[nextTutorial].tileHeight == 0) do
 		nextTutorial = GetNextCompleatedTutorial(nextTutorial);
-	end	
+	end
 	if ( nextTutorial or (getn(TUTORIALFRAME_QUEUE) > 0) ) then
 		TutorialFrameNextButton:Enable();
 	else
@@ -440,12 +440,12 @@ function TutorialFrame_Update(currentTutorial)
 	if ( displayData.notNPE and NewPlayerExperience and NewPlayerExperience:GetIsActive() ) then
 		return;
 	end
-	
+
 	PlaySound(SOUNDKIT.TUTORIAL_POPUP);
 	TutorialFrame_ClearTextures();
 	TutorialFrame.id = currentTutorial;
 	FlagTutorial(currentTutorial);
-		
+
 	local _, className = UnitClass("player");
 	local _, raceName  = UnitRace("player");
 	className = strupper(className);
@@ -453,7 +453,7 @@ function TutorialFrame_Update(currentTutorial)
 	if ( className == "DEATHKNIGHT") then
 		raceName = "DEATHKNIGHT";
 	end
-	
+
 	if ( displayData.raceRequired and not CURRENT_TUTORIAL_QUEST_INFO) then
 		return;
 	end
@@ -530,7 +530,7 @@ function TutorialFrame_Update(currentTutorial)
 		RaidNotice_AddMessage(RaidWarningFrame, text, HIGHLIGHT_FONT_COLOR);
 		return;
 	end
-	
+
 	local displayNPC, killCreature;
 	if ( CURRENT_TUTORIAL_QUEST_INFO ) then
 		displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
@@ -563,7 +563,7 @@ function TutorialFrame_Update(currentTutorial)
 	if (text) then
 		TutorialFrameText:SetText(text);
 	end
-	
+
 	if (title) then
 		TutorialFrameTitle:SetText(title);
 	end
@@ -612,14 +612,14 @@ function TutorialFrame_Update(currentTutorial)
 		local mouseTexture = _G["TutorialFrameMouse"..mouseData.image];
 		mouseTexture:SetPoint( mouseData.align, TutorialFrame, mouseData.align, mouseData.xOff, mouseData.yOff );
 		TutorialFrameMouse:SetPoint( mouseData.align, TutorialFrame, mouseData.align, mouseData.xOff, mouseData.yOff );
-		
+
 		local scale = 1.0;
 		if ( mouseData.scale ) then
 			scale = mouseData.scale;
 		end
 		mouseTexture:SetSize( MOUSE_SIZE.x * scale, MOUSE_SIZE.y * scale );
 		TutorialFrameMouse:SetSize( MOUSE_SIZE.x * scale, MOUSE_SIZE.y * scale );
-		
+
 		if ( mouseData.layer ) then
 			mouseTexture:SetDrawLayer(mouseData.layer);
 		end
@@ -670,7 +670,7 @@ function TutorialFrame_Update(currentTutorial)
 			arrowTexture:Hide();
 		end
 	end
-	
+
 	-- show
 	TutorialFrame:Show();
 	TutorialFrame_CheckNextPrevButtons();
@@ -689,7 +689,7 @@ function TutorialFrame_ClearTextures()
 	AnimateCallout:Stop();
 	TutorialFrameCallOut:ClearAllPoints();
 	TutorialFrameCallOut:Hide();
-	
+
 	TutorialFrameMouse:ClearAllPoints();
 	TutorialFrameMouseRightClick:ClearAllPoints();
 	TutorialFrameMouseLeftClick:ClearAllPoints();
@@ -726,7 +726,7 @@ function TutorialFrame_ClearTextures()
 		keyTexture:Hide();
 		keyString:Hide();
 	end
-	
+
 	for i = 1, getn(ARROW_TYPES) do
 		local arrowTexture = _G[ "TutorialFrame"..ARROW_TYPES[i] ];
 		arrowTexture:ClearAllPoints();
@@ -749,11 +749,11 @@ function TutorialFrame_NewTutorial(tutorialID, forceShow)
 		FlagTutorial(tutorialID);
 		return;
 	end
-	
+
 	if ( displayData.notNPE and NewPlayerExperience and NewPlayerExperience:GetIsActive() ) then
 		return;
 	end
-	
+
 	-- check that we haven't already seen it
 	if ( IsTutorialFlagged(tutorialID) ) then
 		return;
@@ -900,7 +900,11 @@ function HelpPlate_ShowTutorialPrompt( self, mainHelpButton )
 	mainHelpButton.initialTutorial = true;
 	Main_HelpPlate_Button_ShowTooltip(mainHelpButton);
 	HelpPlateTooltip.LingerAndFade:Play();
-	
+	HelpPlateTooltip.target = self;
+end
+
+function HelpPlateTooltip_IsShowing(target)
+	return HelpPlateTooltip:IsVisible() and HelpPlateTooltip.target == target;
 end
 
 local HELP_PLATE_CURRENT_PLATE = nil;
@@ -929,12 +933,12 @@ function HelpPlate_Show( self, parent, mainHelpButton )
 				button.BgGlow:Hide();
 				button.Pulse:Stop();
 			end
-			
+
 			button.box:ClearAllPoints();
 			button.box:SetSize( self[i].HighLightBox.width, self[i].HighLightBox.height );
 			button.box:SetPoint( "TOPLEFT", HelpPlate, "TOPLEFT", self[i].HighLightBox.x, self[i].HighLightBox.y );
 			button.box:Show();
-			
+
 			button.boxHighlight:ClearAllPoints();
 			button.boxHighlight:SetSize( self[i].HighLightBox.width, self[i].HighLightBox.height );
 			button.boxHighlight:SetPoint( "TOPLEFT", HelpPlate, "TOPLEFT", self[i].HighLightBox.x, self[i].HighLightBox.y );
@@ -950,9 +954,9 @@ function HelpPlate_Hide(userToggled)
 	if ( not HELP_PLATE_CURRENT_PLATE ) then
 		return;
 	end
-	
+
 	HELP_PLATE_CURRENT_PLATE.mainHelpButton.initialTutorial = false;
-	
+
 	if (not userToggled) then
 		for i = 1, #HELP_PLATE_BUTTONS do
 			local button = HELP_PLATE_BUTTONS[i];
@@ -1023,7 +1027,7 @@ function HelpPlate_Button_AnimGroup_Show_OnFinished(self)
 	-- hide the parent button
 	self.parent:Hide();
 	self:SetScript("OnFinished", nil);
-	
+
 	-- lets see if we can cleanup the help plate now.
 	for i = 1, #HELP_PLATE_BUTTONS do
 		local button = HELP_PLATE_BUTTONS[i];
@@ -1087,7 +1091,7 @@ function HelpPlate_Button_OnLeave(self)
 	self.viewed = true;
 
 	-- remind the player to use the main button to toggle the help plate
-	-- but only if this is the first time they have opened the UI and are 
+	-- but only if this is the first time they have opened the UI and are
 	-- going through the initial tutorial
 	if ( HELP_PLATE_CURRENT_PLATE.mainHelpButton.initialTutorial ) then
 		for i = 1, #HELP_PLATE_BUTTONS do

@@ -328,8 +328,9 @@
 				<xs:element name="OnChar" type="ScriptType"/>
 				<xs:element name="OnKeyDown" type="ScriptType"/>
 				<xs:element name="OnKeyUp" type="ScriptType"/>
-				<xs:element name="OnGamePadDown" type="ScriptType"/>
-				<xs:element name="OnGamePadUp" type="ScriptType"/>
+				<xs:element name="OnGamePadButtonDown" type="ScriptType"/>
+				<xs:element name="OnGamePadButtonUp" type="ScriptType"/>
+				<xs:element name="OnGamePadStick" type="ScriptType"/>
 				<xs:element name="OnColorSelect" type="ScriptType"/>
 				<xs:element name="OnHyperlinkEnter" type="ScriptType"/>
 				<xs:element name="OnHyperlinkLeave" type="ScriptType"/>
@@ -697,6 +698,8 @@
 				<xs:attribute name="clipChildren" type="xs:boolean" default="false"/>
 				<xs:attribute name="propagateHyperlinksToParent" type="xs:boolean" default="false"/>
 				<xs:attribute name="hyperlinksEnabled" type="xs:boolean" default="false"/>
+				<xs:attribute name="fixedFrameStrata" type="xs:boolean" default="false"/>
+				<xs:attribute name="fixedFrameLevel" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

@@ -12,7 +12,7 @@
 			</Layer>
 			<Layer level="Overlay" textureSubLevel="3">
 				<Texture parentKey="Highlight" atlas="shadowlands-landingpage-soulbindsbutton-highlight" alphaMode="ADD" useAtlasSize="true" hidden="true"/>
-				<FontString parentKey="Label" inherits="SystemFont_Shadow_Med1">
+				<FontString parentKey="Label" inherits="SystemFont_Shadow_Med3">
 					<Anchors>
 						<Anchor point="LEFT" x="24"/>
 					</Anchors>

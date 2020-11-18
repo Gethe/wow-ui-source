@@ -1,7 +1,4 @@
 
-PVP_GEAR_REWARD_BY_RANK = "%d";
-PVP_GEAR_REWARD_BY_NEXT_RANK = "%d";
-
 MAX_ARENA_TEAM_MEMBERS = 10;
 
 BATTLEGROUND_BUTTON_HEIGHT = 40;
@@ -13,10 +10,6 @@ local SEASON_STATE_OFFSEASON = 1;
 local SEASON_STATE_PRESEASON = 2;
 local SEASON_STATE_ACTIVE = 3;
 local SEASON_STATE_DISABLED = 4;
-
-local HONOR_CURRENCY_ID = 1792;
-local CONQUEST_CURRENCY_ID = 1602;
-local ECHOS_OF_NYLOTHA_CURRENCY_ID = 1803; 
 
 local BFA_START_SEASON = 26;
 local BFA_FINAL_SEASON = 29;
@@ -244,7 +237,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 	-- artifact-level currency trumps item
 	if currencyRewards then
 		for i, reward in ipairs(currencyRewards) do	
-			if(reward.id ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
+			if(reward.id ~= Constants.CurrencyConsts.ECHOES_OF_NYALOTHA_CURRENCY_ID or #currencyRewards == 1) then
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
 				local name = currencyInfo.name;
 				local texture = currencyInfo.iconFileID;
@@ -255,8 +248,9 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 					currencyID = reward.id;
 					rewardTexture = texture;
 					rewardQuantity = reward.quantity;
-				elseif reward.id == CONQUEST_CURRENCY_ID then
+				elseif reward.id == Constants.CurrencyConsts.CONQUEST_CURRENCY_ID then
 					rewardFrame.conquestAmount = reward.quantity;
+					rewardTexture = rewardTexture or texture;
 				end
 			end
 		end
@@ -271,7 +265,18 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 		end
 	end
 
-	if currencyID or itemID then
+	if not rewardTexture then
+		if honor > 0 then
+			local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(Constants.CurrencyConsts.HONOR_CURRENCY_ID, honor);
+			if currencyInfo then
+				rewardTexture = currencyInfo.icon;
+			end
+		elseif experience > 0 then
+			rewardTexture = "Interface\\Icons\\xp_icon"
+		end
+	end
+
+	if rewardTexture then
 		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
 		rewardFrame.honor = honor;
 		rewardFrame.experience = experience;
@@ -405,7 +410,7 @@ end
 
 function PVPQueueFrame_UpdateTitle()
 	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_PRE_SEASON);
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
@@ -1138,6 +1143,10 @@ function ConquestFrame_EvaluateSeasonState(self)
 	end
 end
 
+function ConquestFrame_HasActiveSeason()
+	return ConquestFrame.seasonState == SEASON_STATE_ACTIVE;
+end
+
 function ConquestFrame_UpdateSeasonFrames(self)
 	PVPQueueFrame_UpdateTitle();
 	PVPQueueFrame.HonorInset:Update();
@@ -1156,7 +1165,8 @@ function ConquestFrame_OnShow(self)
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
 	local lastSeasonNumber = tonumber(GetCVar("newPvpSeason"));
-	if lastSeasonNumber < (GetCurrentArenaSeason() - SL_START_SEASON + 1) then
+	local currentSeasonNumber = GetCurrentArenaSeason();
+	if currentSeasonNumber >= SL_START_SEASON and lastSeasonNumber < currentSeasonNumber then
 		PVPQueueFrame.NewSeasonPopup:Show();
 	end
 end
@@ -1308,7 +1318,7 @@ function ConquestFrame_UpdateJoinButton()
 	local button = ConquestFrame.JoinButton;
 	local groupSize = GetNumGroupMembers();
 
-	if ConquestFrame.seasonState == SEASON_STATE_DISABLED or ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
+	if not ConquestFrame_HasActiveSeason() then
 		button:Disable();
 		button.tooltip = nil;
 		return;
@@ -1487,11 +1497,11 @@ function PVPStandardRewardTemplate_OnEnter(self)
 		if PVPUtil.ShouldShowLegacyRewards() then
 			GameTooltip_AddColoredLine(EmbeddedItemTooltip, REWARD_FOR_PVP_WIN_HONOR:format(BreakUpLargeNumbers(self.honor)), HIGHLIGHT_FONT_COLOR);
 		else
-			AddPVPRewardCurrency(EmbeddedItemTooltip, HONOR_CURRENCY_ID, self.honor);
+			AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.HONOR_CURRENCY_ID, self.honor);
 		end
 	end
 	if self.conquestAmount > 0 then
-		AddPVPRewardCurrency(EmbeddedItemTooltip, CONQUEST_CURRENCY_ID, self.conquestAmount);
+		AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.CONQUEST_CURRENCY_ID, self.conquestAmount);
 	end
 
 	if PVPUtil.ShouldShowLegacyRewards() then
@@ -1516,7 +1526,7 @@ function PVPStandardRewardTemplate_OnEnter(self)
 
 	if self.itemID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID);
+		EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.itemID, self.quantity);
 	elseif self.currencyID and self.currencyID ~= CONQUEST_CURRENCY_ID then
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		EmbeddedItemTooltip_SetCurrencyByID(EmbeddedItemTooltip.ItemTooltip, self.currencyID, self.quantity);
@@ -1603,8 +1613,8 @@ local SEASON_REWARD_ACHIEVEMENTS = {
 		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 13943,
 	},
 	[SL_START_SEASON] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14561,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14555,
+		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14611,
+		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14612,
 	},
 	[SL_START_SEASON + 1] = {
 		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14563,
@@ -1849,8 +1859,7 @@ function PVPAchievementRewardMixin:UpdateTooltip()
 	EmbeddedItemTooltip:Show();
 end
 
-function PVPAchievementRewardMixin:OnEnter()
-	self:UpdateTooltip();
+function PVPAchievementRewardMixin:UpdateCursor()
 	if self.rewardItemID and IsModifiedClick("DRESSUP") then
 		ShowInspectCursor();
 	else
@@ -1858,7 +1867,16 @@ function PVPAchievementRewardMixin:OnEnter()
 	end
 end
 
+function PVPAchievementRewardMixin:OnEnter()
+	self:SetScript("OnUpdate", self.UpdateCursor);
+
+	self:UpdateTooltip();
+	self:UpdateCursor();
+end
+
 function PVPAchievementRewardMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+
 	EmbeddedItemTooltip:Hide();
 	ResetCursor();
 end
@@ -1909,7 +1927,7 @@ function PVPConquestBarMixin:OnLeave()
 end
 
 function PVPConquestBarMixin:LegacyUpdate()
-	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
+	local inactiveSeason = not ConquestFrame_HasActiveSeason();
 	local currentValue, maxValue, questID = PVPGetConquestLevelInfo();
 	local questDone = questID and questID == 0;
 	if self.locked or inactiveSeason or questDone or maxValue == 0 then
@@ -1923,7 +1941,7 @@ function PVPConquestBarMixin:LegacyUpdate()
 	if self.locked or inactiveSeason or not questID then
 		self.Reward:Clear();
 	else
-		self.Reward:LegacySetup(questID, ConquestFrame.seasonState);
+		self.Reward:LegacySetup(questID);
 	end
 	self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
 end
@@ -1949,7 +1967,6 @@ function PVPConquestBarMixin:Update()
 	local displayType = weeklyProgress.displayType;
 
 	local isAtMax = progress >= maxProgress;
-	self.Border:SetDesaturated(isAtMax);
 	if not isAtMax then
 		if displayType == Enum.ConquestProgressBarDisplayType.Seasonal then
 			self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
@@ -1960,7 +1977,7 @@ function PVPConquestBarMixin:Update()
 		self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-disabled");
 	end
 
-	local inactiveSeason = ConquestFrame.seasonState == SEASON_STATE_PRESEASON or ConquestFrame.seasonState == SEASON_STATE_DISABLED;
+	local inactiveSeason = not ConquestFrame_HasActiveSeason();
 	if self.locked or inactiveSeason or maxProgress == 0 then
 		self:SetValue(0);
 	else
@@ -1969,12 +1986,14 @@ function PVPConquestBarMixin:Update()
 	end
 
 	self:SetDisabled(inactiveSeason or self.locked);
+	self.Border:SetDesaturated(isAtMax or self.disabled);
+
 	self.Label:SetFormattedText(CONQUEST_BAR, progress, maxProgress);
 
 	if self.locked or inactiveSeason then
 		self.Reward:Clear();
 	else
-		self.Reward:Setup(ConquestFrame.seasonState);
+		self.Reward:Setup();
 	end
 end
 
@@ -1996,14 +2015,22 @@ NewPvpSeasonMixin = { };
 
 function NewPvpSeasonMixin:OnShow()
 	local currentSeason = GetCurrentArenaSeason();
-	self.SeasonDescription:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
-	self.SeasonDescription2:SetText(SL_PVP_SEASON_DESCRIPTION);
+	if currentSeason == SL_START_SEASON then
+		self.SeasonDescription:SetText(SL_PVP_FIRST_SEASON_DESCRIPTION);
+		self.SeasonDescription2:SetText(nil);
+		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescription, "BOTTOM", 0, -14);
+	else
+		self.SeasonDescription:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
+		self.SeasonDescription2:SetText(SL_PVP_SEASON_DESCRIPTION);
+		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescription2, "BOTTOM", 0, -14);
+	end
 
 	local achievementID = GetPVPSeasonAchievementID(currentSeason);
 	local showSeasonReward = achievementID ~= nil;
 	if showSeasonReward then
 		self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
 	end
+	self.SeasonRewardText:SetShown(showSeasonReward);
 	self.SeasonRewardFrame:SetShown(showSeasonReward);
 end
 
@@ -2041,6 +2068,7 @@ function PVPWeeklyChestMixin:LegacyOnShow()
 		atlas = "pvpqueue-chest-alliance-"..state;
 	end
 	self.ChestTexture:SetAtlas(atlas);
+	self.ChestTexture:SetDesaturated(not ConquestFrame_HasActiveSeason());
 
 	if state == "collect" then
 		self.SpinTextureBottom:Show();
@@ -2063,6 +2091,7 @@ function PVPWeeklyChestMixin:OnShow()
 	local atlas = "pvpqueue-chest-greatvault-"..state;
 	local useAtlasSize = true;
 	self.ChestTexture:SetAtlas(atlas, useAtlasSize);
+	self.ChestTexture:SetDesaturated(not ConquestFrame_HasActiveSeason());
 
 	self.SpinTextureBottom:Hide();
 	self.SpinTextureTop:Hide();
@@ -2072,6 +2101,15 @@ end
 function PVPWeeklyChestMixin:OnEnter()
 	if PVPUtil.ShouldShowLegacyRewards() then
 		self:LegacyOnEnter();
+		return;
+	end
+
+	if not ConquestFrame_HasActiveSeason() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
+		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
+		GameTooltip_AddNormalLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON);
+		GameTooltip:Show();
 		return;
 	end
 
@@ -2147,7 +2185,7 @@ end
 
 function PVPNewSeasonPopupOnClick(self)
 	self:GetParent():Hide();
-	SetCVar("newPvpSeason", GetCurrentArenaSeason() - SL_START_SEASON + 1);
+	SetCVar("newPvpSeason", GetCurrentArenaSeason());
 end
 
 PVPWeeklyCasualPanelMixin = { };

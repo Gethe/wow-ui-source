@@ -78,15 +78,23 @@
 			<KeyValue key="checkedTextureSize" value="118" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="RaceName" inherits="GameFontNormalMed2Outline" justifyH="CENTER" justifyV="MIDDLE">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="7"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+		<Frames>
+			<Frame parentKey="RaceName">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormalMed2Outline" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</CheckButton>
 
 	<CheckButton name="CharacterCreateAllianceButtonTemplate" inherits="CharacterCreateRaceButtonTemplate" virtual="true">
@@ -392,10 +400,8 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.HordeRaces" relativePoint="TOPLEFT" x="-18" y="-68"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="Classes" inherits="HorizontalLayoutFrame">
-						<KeyValues>
-							<KeyValue key="spacing" value="15" type="number"/>
-						</KeyValues>
+					<Frame parentKey="Classes">
+						<Size x="969" y="67" />
 						<Anchors>
 							<Anchor point="BOTTOM" y="62"/>
 						</Anchors>

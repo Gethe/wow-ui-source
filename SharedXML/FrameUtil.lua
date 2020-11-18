@@ -75,3 +75,14 @@ function ApplyDefaultScale(frame, minScale, maxScale)
 
 	frame:SetScale(scale);
 end
+
+function UpdateScaleForFit(frame)
+	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
+	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
+
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+	else
+		frame:SetScale(1);
+	end
+end 

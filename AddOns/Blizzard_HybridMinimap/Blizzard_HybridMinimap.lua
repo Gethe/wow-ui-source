@@ -1,8 +1,6 @@
 HybridMinimapMixin = { };
 
 function HybridMinimapMixin:OnLoad()
-	self:SetFrameStrata("BACKGROUND");
-
 	local mapCanvas = self.MapCanvas;
 	mapCanvas:SetShouldZoomInOnClick(false);
 	mapCanvas:SetShouldPanOnClick(false);
@@ -22,12 +20,14 @@ end
 function HybridMinimapMixin:Enable()
 	self:RegisterEvent("NEW_WMO_CHUNK");
 	self:RegisterEvent("ZONE_CHANGED_INDOORS");
+	self:RegisterEvent("AREA_POIS_UPDATED");
 	self:CheckMap();
 end
 
 function HybridMinimapMixin:Disable()
 	self:UnregisterEvent("NEW_WMO_CHUNK");
 	self:UnregisterEvent("ZONE_CHANGED_INDOORS");
+	self:UnregisterEvent("AREA_POIS_UPDATED");
 	self:Hide();
 end
 
@@ -49,12 +49,15 @@ end
 function HybridMinimapMixin:OnEvent(event)
 	if event == "MINIMAP_UPDATE_ZOOM" then
 		self:UpdateZoom();
-	elseif event == "NEW_WMO_CHUNK" or event == "ZONE_CHANGED_INDOORS" then
+	elseif event == "NEW_WMO_CHUNK" or event == "ZONE_CHANGED_INDOORS" or event == "AREA_POIS_UPDATED" then
 		self:CheckMap();
 	end
 end
 
 function HybridMinimapMixin:OnUpdate(elapsed)
+	if not self.mapID then
+		self:CheckMap();
+	end
 	self:UpdatePosition();
 end
 

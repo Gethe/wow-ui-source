@@ -32,12 +32,22 @@ function AdventuresRewardsScreenMixin:ShowAdventureVictoryStateScreen(combatWon)
 		successFrame.CovenantCrest:SetPoint("BOTTOM", successFrame.CombatCompleteLineTop, "TOP", 0, -71);
 		PlaySound(CovenantVictorySoundKits[kit]);
 		self:ShowCombatCompleteSuccessPanel();
+
+		local successColor = WHITE_FONT_COLOR;
+		successFrame.CombatCompleteLineTop:SetVertexColor(successColor:GetRGBA());
+		successFrame.CombatCompleteLineBottom:SetVertexColor(successColor:GetRGBA());
+		successFrame.TextCenter:SetTextColor(DARKYELLOW_FONT_COLOR:GetRGBA());
 	else
 		successFrame.CovenantCrest:SetAtlas(adventuresEmblemFormat:format("Fail"), true);
 		successFrame.CovenantCrest:ClearAllPoints();
 		successFrame.CovenantCrest:SetPoint("BOTTOM", successFrame.CombatCompleteLineTop, "TOP", 0, -5);
 		PlaySound(self:HasExperienceRewards() and SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_PARTIAL or SOUNDKIT.UI_ADVENTURES_ADVENTURE_FAILURE_COMPLETE);
 		self:ShowCombatCompleteSuccessPanel();
+
+		local failureColor = RED_FONT_COLOR;
+		successFrame.CombatCompleteLineTop:SetVertexColor(failureColor:GetRGBA());
+		successFrame.CombatCompleteLineBottom:SetVertexColor(failureColor:GetRGBA());
+		successFrame.TextCenter:SetTextColor(failureColor:GetRGBA());
 	end
 
 	self:Show();
@@ -84,22 +94,32 @@ function AdventuresRewardsScreenMixin:SetRewards(rewards, victoryState)
 		end
 	end
 
-		self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame:Layout();
-		self.FinalRewardsPanel.SpoilsFrame:Layout();
-		self.FinalRewardsPanel.RewardsEarnedLabel:SetPoint("BOTTOM", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "TOP", 0, 0);
+	self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame:Layout();
+	self.FinalRewardsPanel.SpoilsFrame:Layout();
+	self.FinalRewardsPanel.RewardsEarnedLabel:SetPoint("BOTTOM", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "TOP", 0, 0);
 end
 
-function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, missionInfo)
+function AdventuresRewardsScreenMixin:PopulateFollowerInfo(followerInfo, missionInfo, winner)
 	self.followerPool:ReleaseAll();
 	self.FinalRewardsPanel.FollowerProgressLabel:Hide();
 	self.hasExperienceRewards = false;
 	local layoutIndex = 1;
+	local bonusXP = 0;
+	
+	if winner then
+		for _, reward in pairs(missionInfo.rewards) do
+			if reward.followerXP then
+				bonusXP = bonusXP + reward.followerXP;
+			end
+		end
+	end
+
 	for guid, info in pairs(followerInfo) do 
 		--Don't show followers that don't have experience to gain
 		if info.maxXP and info.maxXP ~= 0 then
 			local followerFrame = self.followerPool:Acquire();
 			followerFrame.layoutIndex = layoutIndex;
-			followerFrame.RewardsFollower:SetFollowerInfo(info, missionInfo.xp);
+			followerFrame.RewardsFollower:SetFollowerInfo(info, missionInfo.xp + bonusXP);
 			followerFrame:Show();
 
 			layoutIndex = layoutIndex + 1;

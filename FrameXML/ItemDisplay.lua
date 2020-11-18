@@ -2,7 +2,7 @@ LootItemExtendedMixin = {};
 
 function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurrency, isUpgraded, isIconBorderShown, isIconBorderDropShadowShown, iconDrawLayer)
 	local itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency);
-	
+
 	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity];
 	local desaturate = false;
 	if (not atlas) then
@@ -33,6 +33,7 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	else
 		local showAzeriteBorder = isIconBorderShown and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink);
 		self:SetIconOverlayAtlas(showAzeriteBorder and "LootToast-Azerite-Border" or nil);
+		self:SetIconOverlay2Atlas(nil);
 	end
 
 	local showSpecID = specID and specID > 0 and not isCurrency;
@@ -40,7 +41,7 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	self:SetSpecIconTexture(texture);
 
 	self:StopAnimArrows();
-	
+
 	if isUpgraded then
 		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity or Enum.ItemQuality.Uncommon];
 		self:SetArrowUpgradeTexture(upgradeTexture);
@@ -103,7 +104,7 @@ end
 function LootItemExtendedMixin:SetSpecIconTexture(texture)
 	local isValid = atlas ~= nil;
 	if isValid then
-		self.SpecIcon:SetTexture(texture);	
+		self.SpecIcon:SetTexture(texture);
 	end
 	self:SetSpecIconShown(isValid);
 end

@@ -175,16 +175,6 @@ BACKDROP_TEXT_PANEL_0_16 = {
 	edgeSize = 16,
 };
 
-BACKDROP_CHAT_BUBBLE_16_16 = {
-	bgFile = "Interface\\Tooltips\\ChatBubble-Background",
-	edgeFile = "Interface\\Tooltips\\ChatBubble-Backdrop",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 16, right = 16, top = 16, bottom = 16 },
-};
-
 BackdropTemplateMixin = { };
 
 local coordStart = 0.0625;

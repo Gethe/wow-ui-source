@@ -116,7 +116,7 @@
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
 						<FontString parentKey="TitleSubText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE_SUBTEXT">
-							<Size x="300" y="0"/>
+							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-122"/>
 							</Anchors>

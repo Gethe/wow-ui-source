@@ -91,6 +91,7 @@
 			<OnLoad>
 				Graphics_OnLoad(self);
 				RaidGraphics_:Hide();
+				BlizzardOptionsPanel_SetupDependentControl(Display_UseUIScale, Display_UIScaleSlider);
 			</OnLoad>
 			<OnShow function="VideoOptionsPanel_OnShow"/>
 		</Scripts>
@@ -260,17 +261,6 @@
 									VideoOptionsCheckbox_OnLoad(self);
 								end
 							</OnLoad>
-							<OnClick>
-								local parent = (self:GetParent()):GetName();
-								local slider = _G[parent.."UIScaleSlider"];
-								if ( self:GetChecked() ) then
-									VideoOptions_Enable(slider);
-								else
-									VideoOptions_Disable(slider);
-								end
-								BlizzardOptionsPanel_CheckButton_OnClick(self);
-								Graphics_EnableApply(self);
-							</OnClick>
 						</Scripts>
 					</CheckButton>
 					<!-- Column B -->
@@ -1155,9 +1145,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentSSAOTypeDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRTShadowQualityDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SSAO_TYPE_LABEL" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSSAOTypeDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>

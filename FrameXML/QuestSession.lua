@@ -960,8 +960,25 @@ function QuestSessionManagerMixin:CheckMutuallyExclusiveDialogs(shownDialog)
 	end
 end
 
+function QuestSessionManagerMixin:GetSessionManagementFailureReason()
+	if self:GetActiveDialog() then
+		return "activeDialog";
+	end
+
+	local command = self:GetSessionCommand();
+	if command == Enum.QuestSessionCommand.None then
+		return "noCommand";
+	end
+
+	if command == Enum.QuestSessionCommand.Start and UnitAffectingCombat("player") then
+		return "inCombat";
+	end
+
+	return nil;
+end
+
 function QuestSessionManagerMixin:IsSessionManagementEnabled()
-	return not self:GetActiveDialog() and (self:GetSessionCommand() ~= Enum.QuestSessionCommand.None) and not UnitAffectingCombat("player");
+	return self:GetSessionManagementFailureReason() == nil;
 end
 
 function QuestSessionManagerMixin:StartSession()

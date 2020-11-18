@@ -160,8 +160,9 @@ function ScriptAnimatedModelSceneMixin:AddDynamicEffect(dynamicEffectDescription
 	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, dynamicEffectDescription.effectID, source, target, onEffectFinish, onEffectResolution);
 
 	local function StartEffectController()
-		effectController:StartEffect();
+		effectController:SetSoundEnabled(dynamicEffectDescription.soundEnabled);
 		effectController:SetDynamicOffsets(dynamicEffectDescription.offsetX, dynamicEffectDescription.offsetY, dynamicEffectDescription.offsetZ);
+		effectController:StartEffect();
 	end
 
 	self:ExecuteOrDelayUntilSceneSet(StartEffectController);

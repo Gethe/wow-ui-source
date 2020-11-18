@@ -195,7 +195,7 @@ local rafHelpTipInfo = {
 
 function CharacterCreateMixin:UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
-	if active and not self.paidServiceType and C_CharacterCreation.IsNewPlayerRestricted() then
+	if active and not self.paidServiceType and C_CharacterCreation.UseBeginnerMode() then
 		local recruiterIsHorde = (PLAYER_FACTION_GROUP[faction] == "Horde");
 		rafHelpTipInfo.text = recruiterIsHorde and RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE or RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
 		rafHelpTipInfo.targetPoint = recruiterIsHorde and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter;
@@ -276,7 +276,8 @@ function CharacterCreateMixin:UpdateBackgroundModel()
 end
 
 local classBGAlphaValues = {
-	DEATHKNIGHT = 0.5,
+	DEMONHUNTER = 0.7,
+	DEATHKNIGHT = 0.8,
 };
 
 local raceBGAlphaValues = {
@@ -447,7 +448,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
 	NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
-	NewPlayerTutorial:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and C_CharacterCreation.IsNewPlayerRestricted());
+	NewPlayerTutorial:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and C_CharacterCreation.UseBeginnerMode());
 
 	self.currentMode = mode;
 	self.creatingCharacter = false;
@@ -746,7 +747,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 			local validAllianceRaceNames = {};
 			local validHordeRaceNames = {};
 			for _, raceData in ipairs(validRaces) do
-				if not raceData.isAlliedRace or not C_CharacterCreation.IsNewPlayerRestricted() then
+				if not raceData.isAlliedRace or not C_CharacterCreation.UseBeginnerMode() then
 					if raceData.isNeutralRace or (raceData.factionInternalName == "Alliance") then 
 						tinsert(validAllianceRaceNames, raceData.name);
 					end
@@ -863,11 +864,11 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 		self:StopFlash();
 	end
 
-	self.RaceName:SetText(raceData.name);
-	self.RaceName:SetShown(C_CharacterCreation.IsNewPlayerRestricted());
+	self.RaceName.Text:SetText(raceData.name);
+	self.RaceName:SetShown(C_CharacterCreation.UseBeginnerMode());
 
 	if not raceData.isAlliedRace then
-		if C_CharacterCreation.IsNewPlayerRestricted() then
+		if C_CharacterCreation.UseBeginnerMode() then
 			self.tooltipXOffset = 16;
 		else
 			self.tooltipXOffset = 113;
@@ -1020,8 +1021,9 @@ end
 
 function CharacterCreateRaceAndClassMixin:OnShow()
 	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
-	self.AllianceAlliedRaces:SetShown(not isNewPlayerRestricted);
-	self.HordeAlliedRaces:SetShown(not isNewPlayerRestricted);
+	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
+	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
+	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
@@ -1345,7 +1347,6 @@ function CharacterCreateRaceAndClassMixin:LayoutButtons()
 	self.AllianceAlliedRaces:MarkDirty();
 	self.HordeRaces:MarkDirty();
 	self.HordeAlliedRaces:MarkDirty();
-	self.Classes:MarkDirty();
 end
 
 function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
@@ -1440,15 +1441,31 @@ function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
 	end
 end
 
+local function SortClasses(classData1, classData2)
+	return classLayoutIndices[classData1.fileName] < classLayoutIndices[classData2.fileName];
+end
+
 function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 	if releaseButtons then
 		self.buttonPool:ReleaseAllByTemplate("CharacterCreateClassButtonTemplate");
 	end
 
 	local classes = C_CharacterCreation.GetAvailableClasses();
-	for _, classData in pairs(classes) do
+	table.sort(classes, SortClasses);
+
+	local lastButton;
+	for i, classData in ipairs(classes) do
 		local button = self.buttonPool:Acquire("CharacterCreateClassButtonTemplate");
 		button:SetClass(classData, self.selectedClassID);
+
+		if i == 1 then
+			button:SetPoint("TOPLEFT", self.Classes, "TOPLEFT", 0, 0);
+		else
+			button:SetPoint("TOPLEFT", lastButton, "TOPRIGHT", 15, 0);
+		end
+
+		lastButton = button;
+
 		button:Show();
 	end
 end

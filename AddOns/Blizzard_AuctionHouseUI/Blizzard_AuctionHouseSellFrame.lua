@@ -318,10 +318,14 @@ function AuctionHouseSellFrameMixin:OnShow()
 	self.fixedWidth = self:GetWidth();
 	self.fixedHeight = self:GetHeight();
 	self:Layout();
+
+	OpenAllBags(self:GetAuctionHouseFrame());
 end
 
 function AuctionHouseSellFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, AUCTION_HOUSE_SELL_FRAME_EVENTS);
+
+	CloseAllBags(self:GetAuctionHouseFrame());
 end
 
 function AuctionHouseSellFrameMixin:OnEvent(event, ...)

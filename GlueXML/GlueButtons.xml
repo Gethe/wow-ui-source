@@ -10,4 +10,14 @@
 		<HighlightFont style="GlueFontHighlightSmall"/>
 		<DisabledFont style="GlueFontDisableSmall"/>
 	</Button>
+	<Button name="GlueGoldRedButtonTemplate" inherits="SharedGoldRedButtonTemplate" virtual="true">
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+	</Button>
+	<Button name="GlueGoldRedButtonSmallTemplate" inherits="SharedGoldRedButtonSmallTemplate" virtual="true">
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+	</Button>
 </Ui>

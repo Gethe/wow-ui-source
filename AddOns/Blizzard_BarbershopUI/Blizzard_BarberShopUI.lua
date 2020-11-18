@@ -105,7 +105,14 @@ function BarberShopMixin:ApplyChanges()
 end
 
 function BarberShopMixin:UpdatePrice()
-	self.PriceFrame:SetAmount(C_BarberShop.GetCurrentCost());
+	local currentCost = C_BarberShop.GetCurrentCost();
+	local copperCost = currentCost % 100;
+	if copperCost > 0 then
+		-- Round any copper cost up to the next silver
+		currentCost = currentCost - copperCost + 100;
+	end
+
+	self.PriceFrame:SetAmount(currentCost);
 
 	local hasAnyChanges = C_BarberShop.HasAnyChanges();
 	self.AcceptButton:SetEnabled(hasAnyChanges);
@@ -166,11 +173,13 @@ function BarberShopMixin:ResetCharacterRotation()
 end
 
 function BarberShopMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
+	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingAlteredForm(viewingAlteredForm);
 	self:UpdateCharCustomizationFrame(resetCategory);
 end
 
 function BarberShopMixin:SetViewingShapeshiftForm(formID)
+	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingShapeshiftForm(formID);
 	self.Sexes:SetShown(formID == nil);
 end

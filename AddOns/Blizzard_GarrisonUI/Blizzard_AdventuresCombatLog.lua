@@ -138,8 +138,12 @@ function AdventuresCombatLogMixin:GetCompleteScreen()
 end
 
 function AdventuresCombatLogMixin:GetNameAtBoardIndex(boardIndex)
+	if boardIndex == -1 and self.environmentEffect then
+		return self.environmentEffect.name;
+	end
+		
 	local frame = self:GetCompleteScreen():GetFrameFromBoardIndex(boardIndex);
-	return frame:GetName() or "";
+	return frame and frame:GetName() or "";
 end
 
 function AdventuresCombatLogMixin:UpdateScrollbar()

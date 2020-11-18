@@ -32,9 +32,7 @@ function LandingPageSoulbindButtonMixin:ShowHelpTip()
 	local helpTipInfo = {
 		text = SOULBIND_LANDING_BUTTON_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.BottomEdgeCenter,
-		alignment = HelpTip.Alignment.BOTTOM,
-		offsetY = 5,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
 		cvar = "soulbindsLandingPageTutorial",
 		cvarValue = 1,
 	};

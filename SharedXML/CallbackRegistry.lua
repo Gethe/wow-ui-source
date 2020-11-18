@@ -92,10 +92,12 @@ end
 function CallbackRegistryMixin:GenerateCallbackEvents(events)
 	if not self.Event then
 		self.Event = {};
-		for eventIndex, eventName in ipairs(events) do
-			self.Event[eventName] = eventName;
+	end
+
+	for eventIndex, eventName in ipairs(events) do
+		if self.Event[eventName] then
+			error(string.format("CallbackRegistryMixin:GenerateCallbackEvents: event %s already exists.", eventName));
 		end
-	else
-		error("CallbackRegistryMixin:GenerateCallbackEvents: events already generated.");
+		self.Event[eventName] = eventName;
 	end
 end

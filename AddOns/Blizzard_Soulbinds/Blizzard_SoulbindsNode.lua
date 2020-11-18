@@ -176,10 +176,20 @@ function SoulbindTreeNodeMixin:GetConduitRank()
 end
 
 function SoulbindTreeNodeMixin:GetUnavailableReason()
-	return self.node.playerConditionReason;
+
+	if self.node.failureRenownRequirement then
+
+		local renownLevel = C_CovenantSanctumUI.GetRenownLevel();
+		local renownRequirement = self.node.failureRenownRequirement;
+
+		return SOULBIND_NODE_RENOWN_ERROR_FORMAT:format(renownRequirement, renownLevel);
+		
+	elseif self.node.playerConditionReason then
+		return self.node.playerConditionReason;
+	end
 end
 
-function SoulbindTreeNodeMixin:SetActivationOverlayShown(shown, editable, multipleSelectable)
+function SoulbindTreeNodeMixin:SetSelectableAnimShown(shown, editable, canSelectMultiple)
 	self.RingOverlay:SetShown(shown);
 	
 	local animated = shown and editable;
@@ -187,7 +197,7 @@ function SoulbindTreeNodeMixin:SetActivationOverlayShown(shown, editable, multip
 		self.RingOverlay.Anim:SetPlaying(shown);
 	end
 
-	local showArrow = animated and multipleSelectable;
+	local showArrow = animated and canSelectMultiple;
 	self.Arrow:SetShown(showArrow);
 	self.Arrow2:SetShown(showArrow);
 end
@@ -250,19 +260,18 @@ local SoulbindConduitNodeEvents =
 	"SOULBIND_CONDUIT_INSTALLED",
 	"SOULBIND_CONDUIT_UNINSTALLED",
 	"SOULBIND_PENDING_CONDUIT_CHANGED",
+	"CURSOR_CHANGED",
 }
 
 function SoulbindConduitNodeMixin:OnLoad()
 	SoulbindTreeNodeMixin.OnLoad(self);
-	self.conduit = nil;
-	self.pending = false;
 	self.animTextures =
 	{
 		self.PickupOverlay,
 		self.PickupOverlay2,
 		self.PickupArrowsOverlay,
-		self.AvailableOverlay,
-		self.AvailableOverlay2,
+		self.UnsocketedWarning,
+		self.UnsocketedWarning2,
 	};
 end
 
@@ -274,29 +283,59 @@ function SoulbindConduitNodeMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindConduitNodeEvents);
 end
 
+function SoulbindConduitNodeMixin:OnEnter()
+	SoulbindTreeNodeMixin.OnEnter(self);
+
+	self:TrySetConduitListConduitsPulsePlaying();
+end
+
+function SoulbindConduitNodeMixin:OnLeave()
+	SoulbindTreeNodeMixin.OnLeave(self);
+
+	SoulbindViewer:SetConduitListConduitsPulsePlaying(self:GetConduitType(), false);
+end
+
+function SoulbindConduitNodeMixin:TrySetConduitListConduitsPulsePlaying()
+	if not Soulbinds.HasConduitAtCursor() and C_Soulbinds.GetConduitDisplayed(self:GetID()) == 0 then
+		SoulbindViewer:SetConduitListConduitsPulsePlaying(self:GetConduitType(), true);
+	end
+end
+
+function SoulbindConduitNodeMixin:EvaluateSetConduitListConduitsPulsePlaying()
+	local playing = false;
+	if not Soulbinds.HasConduitAtCursor() and C_Soulbinds.GetConduitDisplayed(self:GetID()) == 0 then
+		playing = true;
+	end
+	SoulbindViewer:SetConduitListConduitsPulsePlaying(self:GetConduitType(), playing);
+end
+
 function SoulbindConduitNodeMixin:Reset()
 	SoulbindTreeNodeMixin.Reset(self);
 	self.conduit = nil;
-	self.pending = false;
 	self.Icon:Hide();
 	for _, texture in ipairs(self.SocketAnimTextures) do
 		texture.Anim:Stop();
 	end
 end
 
-function SoulbindConduitNodeMixin:AssignConduitData(conduitID, pending)
-	self.pending = pending;
-	
-	if conduitID and conduitID > 0 then
-		local conduitData = C_Soulbinds.GetConduitCollectionData(conduitID);
-		if conduitData then
-			self.conduit = SoulbindConduitMixin_Create(conduitID, conduitData.conduitRank);
-			return true;
+function SoulbindConduitNodeMixin:SetConduit(conduitID, initializing)
+	local oldConduitID = self.conduit and self.conduit:GetConduitID() or 0;
+	self.conduit = SoulbindConduitMixin_Create(conduitID);
+	local newConduitID = self.conduit:GetConduitID();
+
+	self:DisplayConduit();
+
+	if not initializing and conduitID > 0 and C_Soulbinds.GetInstalledConduitID(self:GetID()) ~= conduitID and (oldConduitID ~= newConduitID) then
+		self:PlaySocketAnimation();
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_ADD_PENDING, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		
+		if GameTooltip:IsShown() then
+			GameTooltip:Hide();
+			self:LoadTooltip();
 		end
 	end
 
-	self.conduit = nil;
-	return false;
+	self:UpdatePendingAnim();
 end
 
 function SoulbindConduitNodeMixin:GetConduit()
@@ -311,47 +350,12 @@ function SoulbindConduitNodeMixin:Init(node)
 	self.EmblemBg:SetAtlas(atlas)
 	self.EmblemBg:SetVertexColor(0, 0, 0);
 
-	local pendingID = C_Soulbinds.GetPendingConduitID(self:GetID());
-	if pendingID > 0 then
-		local pending = true;
-		self:AssignConduitData(pendingID, pending);
-	else
-		local pending = false;
-		self:AssignConduitData(self:GetConduitID(), pending);
-	end
-	
+	local conduitID = C_Soulbinds.GetConduitDisplayed(self:GetID());
+	local initializing = true;
+	self:SetConduit(conduitID, initializing);
+
 	self:DisplayConduit();
 	self:UpdatePendingAnim();
-end
-
-function SoulbindConduitNodeMixin:AssignPendingConduit(conduitID)
-	assert(not (self.conduit and self.pending == false));
-
-	local pending = true;
-	if self:AssignConduitData(conduitID, pending) then
-		self:DisplayConduit();
-		self:PlaySocketAnimation();
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_ADD_PENDING, nil, SOUNDKIT_ALLOW_DUPLICATES);
-
-		if GameTooltip:IsShown() then
-			GameTooltip:Hide();
-			self:LoadTooltip();
-		end
-	end
-
-	self:UpdatePendingAnim();
-end
-
-function SoulbindConduitNodeMixin:ClearPendingConduit()
-	assert(self.pending == true);
-
-	if self.pending then
-		local pending = false;
-		self:AssignConduitData(nil, pending);
-
-		self:DisplayConduit();
-		self:UpdatePendingAnim();
-	end
 end
 
 function SoulbindConduitNodeMixin:PlaySocketAnimation()
@@ -377,9 +381,10 @@ function SoulbindConduitNodeMixin:OnUninstalled()
 end
 
 function SoulbindConduitNodeMixin:UpdatePendingAnim()
-	self.Pending:SetShown(self.pending);
-	self.PendingStick.RotateAnim:SetPlaying(self.pending);
-	self.PendingStick2.RotateAnim:SetPlaying(self.pending);
+	local pending = self.conduit:GetConduitID() ~= self:GetConduitID();
+	self.Pending:SetShown(pending);
+	self.PendingStick.RotateAnim:SetPlaying(pending);
+	self.PendingStick2.RotateAnim:SetPlaying(pending);
 end
 
 function SoulbindConduitNodeMixin:UpdateVisuals()
@@ -409,13 +414,12 @@ end
 
 function SoulbindConduitNodeMixin:OnEvent(event, ...)
 	if event == "SOULBIND_PENDING_CONDUIT_CHANGED" then
-		local nodeID, conduitID, pending = ...;
+		local nodeID = ...;
 		if nodeID == self:GetID() then
-			if pending then
-				self:AssignPendingConduit(conduitID);
-			else
-				self:ClearPendingConduit();
-			end
+			local conduitID = C_Soulbinds.GetConduitDisplayed(nodeID);
+			self:SetConduit(conduitID);
+
+			self:EvaluateSetConduitListConduitsPulsePlaying();
 		end
 	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
 		local nodeID, conduitData = ...;
@@ -426,6 +430,13 @@ function SoulbindConduitNodeMixin:OnEvent(event, ...)
 		local nodeID = ...;
 		if nodeID == self:GetID() then
 			self:OnUninstalled();
+		end
+	elseif event == "CURSOR_CHANGED" then
+		local isDefault, newCursorType, oldCursorType = ...;
+		if isDefault and oldCursorType == Enum.UICursorType.ConduitCollectionItem then
+			if self:IsMouseOver() then
+				self:TrySetConduitListConduitsPulsePlaying();
+			end
 		end
 	end
 end
@@ -442,20 +453,38 @@ function SoulbindConduitNodeMixin:IsConduitType(type)
 	return self:GetConduitType() == type;
 end
 
-function SoulbindConduitNodeMixin:SetConduitPickupAnimShown(shown)
+function SoulbindConduitNodeMixin:SetUsingStaticAnimOverride(useAnimOverride)
+	if useAnimOverride then
+		self.PickupArrowsOverlay:SetAtlas(nil);
+		self.PickupArrowsStatic:Show();
+	else
+		self.PickupArrowsOverlay:SetAtlas("Soulbinds_Tree_Conduit_Arrows", false);
+		self.PickupArrowsStatic:Hide();
+	end
+end
+
+function SoulbindConduitNodeMixin:EvaluatePickupAnimOverride(conduitID)
+	if conduitID and conduitID > 0 then
+		local appearsInstalledID = C_Soulbinds.FindNodeIDAppearingInstalled(Soulbinds.GetOpenSoulbindID(), conduitID);
+		local useAnimOverride =  appearsInstalledID == self:GetID();
+		self:SetUsingStaticAnimOverride(useAnimOverride);
+	else
+		local useAnimOverride = false;
+		self:SetUsingStaticAnimOverride(useAnimOverride);
+	end
+end
+
+function SoulbindConduitNodeMixin:SetConduitPickupAnimShown(shown, conduitID)
 	for _, texture in ipairs(self.PickupAnimTextures) do
 		texture:SetShown(shown);
 		texture.Anim:SetPlaying(shown);
 	end
 
-	local pendingAnimAlpha = shown and 0 or 1;
-	for _, texture in ipairs(self.PendingAnimTextures) do
-		texture:SetAlpha(pendingAnimAlpha);
-	end
+	self:EvaluatePickupAnimOverride(conduitID);
 end
 
-function SoulbindConduitNodeMixin:SetAttentionAnimShown(shown)
-	for _, texture in ipairs(self.AttentionAnimTextures) do
+function SoulbindConduitNodeMixin:SetUnsocketedWarningAnimShown(shown)
+	for _, texture in ipairs(self.UnsocketedWarningTextures) do
 		texture:SetShown(shown);
 		texture.Anim:SetPlaying(shown);
 	end
@@ -468,15 +497,11 @@ function SoulbindConduitNodeMixin:StopAnimations()
 		texture.Anim:Stop();
 		texture:Hide();
 	end
-
-	for _, texture in ipairs(self.PendingAnimTextures) do
-		texture:SetAlpha(1);
-	end
 end
 
 function SoulbindConduitNodeMixin:DisplayConduit()
 	local conduit = self.conduit;
-	if conduit then
+	if conduit:IsValid() then
 		if not conduit.Matches(self:GetConduit()) then
 			local onConduitSpellLoad = function()
 				local spellID = conduit:GetSpellID();
@@ -506,11 +531,18 @@ function SoulbindTreeNodeMixin:AddTooltipContents()
 			self:AddNotInProximityLine();
 		end
 	elseif self:IsUnselected() then
-		GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED);
+		local canModify = C_Soulbinds.CanModifySoulbind();
+		local canAdjustFlow = C_Soulbinds.CanSwitchActiveSoulbindTreeBranch();
+
+		if canModify or canAdjustFlow then
+			GameTooltip_AddInstructionLine(GameTooltip, SOULBIND_NODE_SELECT_PATH);
+		else
+			GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_UNSELECTED);
+		end
 	elseif self:IsUnavailable() then
 		local reason = self:GetUnavailableReason();
 		if reason then
-			GameTooltip_AddDisabledLine(GameTooltip, reason);
+			GameTooltip_AddErrorLine(GameTooltip, reason);
 		else
 			if C_Soulbinds.CanModifySoulbind() then
 				GameTooltip_AddErrorLine(GameTooltip, SOULBIND_NODE_DISCONNECTED);
@@ -533,7 +565,7 @@ end
 
 function SoulbindConduitNodeMixin:LoadTooltip()
 	local conduit = self:GetConduit();
-	if conduit then
+	if conduit:IsValid() then
 		local onConduitLoad = function()
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetConduit(conduit:GetConduitID(), conduit:GetConduitRank()); 

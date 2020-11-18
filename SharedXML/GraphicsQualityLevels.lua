@@ -1134,6 +1134,32 @@ VideoData["Advanced_RTShadowQualityDropDown"]={
 	},
 }
 
+VideoData["Advanced_SSAOTypeDropDown"]={
+	name = SSAO_TYPE_LABEL;
+	validateOnGXRestart = true,
+
+	data = {
+		{
+			text = GX_ADAPTER_AUTO_DETECT,
+			cvars =    {
+				ResolvedSSAOType = 0,
+			},
+		},
+		{
+			text = SSAO_TYPE_ASSAO,
+			cvars =    {
+				ResolvedSSAOType = 1,
+			},
+		},
+		{
+			text = SSAO_TYPE_CACAO,
+			cvars =	{
+				ResolvedSSAOType = 2,
+			},
+		},
+	},
+}
+
 VideoData["Advanced_MaxFPSSlider"]={
 	name = MAXFPS;
 	tooltip = OPTION_MAXFPS,

@@ -10,7 +10,6 @@ function ExtraAbilityContainerMixin:OnLoad()
 end
 
 function ExtraAbilityContainerMixin:OnShow()
-	UIParent_ManageFramePositions();
 end
 
 function ExtraAbilityContainerMixin:OnHide()
@@ -71,4 +70,8 @@ function ExtraAbilityContainerMixin:UpdateLayoutIndicies()
 	end
 
 	self:MarkDirty();
+end
+
+function ExtraAbilityContainerMixin:OnCleaned()
+	UIParent_ManageFramePositions();
 end

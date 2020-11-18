@@ -12,6 +12,7 @@ WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER = 0x0004;
 WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS = 0x0008;
 WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT = 0x0010;
 WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION = 0x0020;
+WORLD_QUEST_REWARD_TYPE_FLAG_ANIMA = 0x0040;
 function WorldMap_GetWorldQuestRewardType(questID)
 	if ( not HaveQuestRewardData(questID) ) then
 		C_TaskQuest.RequestPreloadRewardData(questID);
@@ -53,6 +54,10 @@ function WorldMap_GetWorldQuestRewardType(questID)
 
 			if ( classID == LE_ITEM_CLASS_TRADEGOODS ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS);
+			end
+
+			if ( C_Item.IsAnimaItemByID(itemID) ) then
+				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ANIMA);
 			end
 		end
 	end
@@ -103,6 +108,8 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 				typeMatchesFilters = true;
 			elseif ( GetCVarBool("worldQuestFilterReputation") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_REPUTATION) ~= 0 ) then
 				typeMatchesFilters = true;
+			elseif ( GetCVarBool("worldQuestFilterAnima") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ANIMA) ~= 0 ) then
+				typeMatchesFilters = true;
 			end
 
 			-- We always want to show quests that do not fit any of the enumerated reward types.
@@ -132,6 +139,22 @@ function WorldMap_AddQuestTimeToTooltip(questID)
 	end
 end
 
+function CallingPOI_OnEnter(self)
+	local noWrap = false;
+	GameTooltip_SetTitle(GameTooltip, QuestUtils_GetQuestName(self.questID), nil, noWrap);
+	WorldMap_AddQuestTimeToTooltip(self.questID);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
+
+	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
+	if (widgetSetID) then 
+		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
+	end 
+
+	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD);
+	GameTooltip.recalculatePadding = true;
+end
+
 function TaskPOI_OnEnter(self, skipSetOwner)
 	if not skipSetOwner then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -142,6 +165,15 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		GameTooltip:Show();
 		return;
 	end
+
+	if C_QuestLog.IsQuestCalling(self.questID) then
+		CallingPOI_OnEnter(self);
+		GameTooltip:Show();
+		return;
+	end
+
+	local widgetSetAdded = false; 
+	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
@@ -206,12 +238,22 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		if ( percent  and showObjective ) then
 			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 		end
+		
+		if (widgetSetID) then
+			widgetSetAdded = true;
+			GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
+		end
 
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, self.questRewardTooltipStyle);
 
 		if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
 			GameTooltip:AddDebugWorldQuestInfo(self.questID);
 		end
+	end
+
+			
+	if (not widgetSetAdded and widgetSetID) then
+		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end
 
 	GameTooltip:Show();

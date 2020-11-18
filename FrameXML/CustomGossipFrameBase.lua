@@ -49,6 +49,8 @@ function CustomGossipManagerMixin:HandleOpenEvent(textureKit)
 		local handler = self:GetHandler(textureKit);
 		if handler then
 			self.customFrame = handler(textureKit);
+		else 
+			GossipFrame_HandleShow(GossipFrame, textureKit);
 		end
 	end
 end

@@ -1,8 +1,6 @@
 PVPConquestRewardMixin = { };
-function PVPConquestRewardMixin:LegacySetup(questID, seasonState, tooltipAnchor)
+function PVPConquestRewardMixin:LegacySetup(questID)
 	self.questID = questID;
-	self.seasonState = seasonState;
-	self.tooltipAnchor = tooltipAnchor;
 	if questID == 0 then
 		self:SetTexture("Interface\\Icons\\inv_misc_bag_10", 0.2);
 		self.CheckMark:Show();
@@ -25,10 +23,7 @@ function PVPConquestRewardMixin:LegacySetup(questID, seasonState, tooltipAnchor)
 	end
 end
 
-function PVPConquestRewardMixin:Setup(seasonState, tooltipAnchor)
-	self.seasonState = seasonState;
-	self.tooltipAnchor = tooltipAnchor;
-
+function PVPConquestRewardMixin:Setup()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local progress = weeklyProgress.progress;
 	local maxProgress = weeklyProgress.maxProgress;
@@ -71,7 +66,7 @@ end
 
 function PVPConquestRewardMixin:LegacyTryShowTooltip()
 	local WORD_WRAP = true;
-	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
+	if not ConquestFrame_HasActiveSeason() then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR, WORD_WRAP);
@@ -118,7 +113,7 @@ function PVPConquestRewardMixin:TryShowTooltip()
 	local itemLink = weeklyProgress.sampleItemHyperlink;
 	local itemLevel = itemLink and GetDetailedItemLevelInfo(itemLink) or 0;
 
-	if self.seasonState and self.seasonState == SEASON_STATE_PRESEASON then
+	if not ConquestFrame_HasActiveSeason() then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR);
 	else
 		local unlocksCompleted = weeklyProgress.unlocksCompleted;

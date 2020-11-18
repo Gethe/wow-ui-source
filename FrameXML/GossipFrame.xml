@@ -51,6 +51,8 @@
 			<OnClick>
 				GossipTitleButton_OnClick(self, button, down);
 			</OnClick>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 		<ButtonText>
@@ -73,7 +75,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="GossipFrameBg" atlas="QuestBG-Parchment" useAtlasSize="true">
+				<Texture name="GossipFrameBg" parentKey="Background">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
@@ -193,7 +195,7 @@
 	<StatusBar name="NPCFriendshipStatusBar" parent="GossipFrame" hidden="true">
 		<Size x="230" y="14"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="73" y="-41"/>
+			<Anchor point="TOPLEFT" x="80" y="-41"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="-25" right="0" top="-15" bottom="0"/>

@@ -70,7 +70,7 @@
 						<Scripts>
 							<OnValueChanged function="ScrollingMessageFrameScrollBar_OnValueChanged"/>
 						</Scripts>
-						<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Thumb" parentKey="thumbTexture">
+						<ThumbTexture name="$parentThumbTexture" atlas="Soulbinds_Collection_Scrollbar_Thumb_Wide" parentKey="thumbTexture">
 							<Size x="10" y="24"/>
 						</ThumbTexture>
 					</Slider>

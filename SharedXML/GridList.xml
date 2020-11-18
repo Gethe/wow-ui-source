@@ -2,6 +2,8 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GridList.lua"/>
 
+	<Button name="GridListElementTemplate" mixin="GridListElementMixin" inherits="TemplatedListElementTemplate" virtual="true"/>
+
 	<ScrollFrame name="GridListTemplate" mixin="GridListMixin" inherits="UIPanelScrollFrameCodeTemplate, TemplatedListTemplate" virtual="true">
 		<ScrollChild>
 			<Frame parentKey="ScrollChild" inherits="ResizeLayoutFrame">

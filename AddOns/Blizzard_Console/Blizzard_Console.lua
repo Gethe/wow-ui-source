@@ -1,3 +1,6 @@
+
+local forceinsecure = forceinsecure;
+
 local ADDON_NAME = ...;
 local DEFAULT_SAVED_VARS = { isShown = false, commandHistory = {}, messageHistory = {}, height = 300, fontHeight = 14 };
 local SAVED_VARS_VERSION = 3;
@@ -505,4 +508,18 @@ end
 
 function DeveloperConsoleMixin:HasSetCommandHistoryIndex()
 	return self.commandHistoryIndex ~= nil;
+end
+
+function BlizzardConsoleMessageFrame_OnHyperlinkClick(self, link, text, button)
+	local command = link:sub(2);
+	if IsShiftKeyDown() then
+		self:GetParent():InsertLinkedCommand(command);
+	else
+		forceinsecure();
+		ConsoleExec(command, true);
+		if button == "RightButton" then
+			self:GetParent():AddToCommandHistory(command);
+			self:GetParent():ResetCommandHistoryIndex();
+		end
+	end
 end

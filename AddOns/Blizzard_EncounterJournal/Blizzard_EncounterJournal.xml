@@ -1930,7 +1930,7 @@
 							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT_JOURNAL_POWERS" parentKey="LootJournalTab">	 	 
+					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT_JOURNAL_POWERS" parentKey="LootJournalTab">
 						<KeyValues>
 							<KeyValue key="id" value="4" type="number"/>
 						</KeyValues>
@@ -2073,7 +2073,8 @@
 							<ScrollFrame name="$parentLoreScrollFrame" parentKey="loreScroll" inherits="UIPanelScrollFrameCodeTemplate">
 								<Size x="315" y="102"/>
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="5"/>
+									<Anchor point="BOTTOMLEFT" x="35" y="5"/>
+									<Anchor point="BOTTOMRIGHT" x="-15" y="5"/>
 								</Anchors>
 								<Frames>
 									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplate"/>

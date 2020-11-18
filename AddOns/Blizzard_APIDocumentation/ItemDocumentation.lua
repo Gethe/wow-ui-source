@@ -259,6 +259,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsAnimaItemByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAnimaItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBound",
 			Type = "Function",
 
@@ -270,6 +284,20 @@ local Item =
 			Returns =
 			{
 				{ Name = "isBound", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemConduit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isConduit", Type = "bool", Nilable = false },
 			},
 		},
 		{

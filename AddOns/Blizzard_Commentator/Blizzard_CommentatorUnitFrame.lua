@@ -119,6 +119,9 @@ function CommentatorUnitFrameMixin:OnUnfilteredCombatLogEvent(...)
 			local trackedSpellID = C_Commentator.GetTrackedSpellID(select(12, ...));
 			self:SetSpellActive(trackedSpellID, isActive);
 		end
+	elseif event == "ARENA_MATCH_START" then
+		-- Tempoary equipment change check.
+		C_PvP.RequestCrowdControlSpell(self.unitToken);
 	end
 end
 

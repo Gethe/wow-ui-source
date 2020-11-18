@@ -16,20 +16,12 @@
 	</Frame>
 
 	<Frame name="AnimaDiversionCurrencyCostFrameTemplate" virtual="true">
-		<Size x="200" y="20"/>
+		<Size x="200" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Quantity" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontHighlight">
-					<Anchors>
-						<Anchor point="LEFT" x="0" y="-15"/>
-					</Anchors>
+				<FontString parentKey="Quantity" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight">
+					<Size x="200" y="18"/>
 				</FontString>
-				<Texture parentKey="CurrencyIcon">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Quantity" relativePoint="RIGHT" x="5"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -61,6 +53,15 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="3" y="3" />
 				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="UI-Frame-Oribos-ExitButtonBorder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnClick>
 						C_AnimaDiversion.CloseUI();
@@ -81,7 +82,7 @@
 				<Frames>
 					<Frame parentKey="CurrencyFrame" inherits="AnimaDiversionCurrencyCostFrameTemplate">
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Background" x="85" y="15"/>
+							<Anchor point="CENTER" relativeKey="$parent.Background" x="0" y="0"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -146,70 +147,6 @@
 				<Scripts>
 					<OnHide method="OnHide"/>
 				</Scripts>
-			</Frame>
-			<Frame parentKey="SelectPinInfoFrame" inherits="ResizeLayoutFrame" mixin="AnimaDiversionSelectionInfoMixin" frameLevel="515">
-				<KeyValues>
-					<KeyValue key="spacing" value="5" type="number"/>
-					<KeyValue key="fixedWidth" value="250" type="number"/>
-				</KeyValues>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-							<Color r="0" b="0" g="0"/> 
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Title" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontNormal">
-							<Size x="230" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" x="2" y="-10"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="Description" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontHighlight">
-							<Size x="230" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-15"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="AlreadySelected" justifyV="BOTTOM" justifyH="LEFT" inherits="GameFontRed" text="ANIMA_DIVERSION_NODE_SELECTED" hidden="true">
-							<Size x="230" y="0"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="550">
-						<KeyValues>
-							<KeyValue key="layoutType" value="IdenticalCornersLayout" type="string"/>
-							<KeyValue key="layoutTextureKit" value="AnimaChannel" type="string"/>
-							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-8" y="8"/>
-							<Anchor point="BOTTOMRIGHT" x="8" y="-8" />
-						</Anchors>
-					</Frame>
-					<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" mixin="AnimaDiversionSelectButtonMixin" text="ANIMA_DIVERSION_DIVERT_ANIMA">
-						<Size x="100" y="25"/>
-						<Scripts>
-							<OnClick method="OnClick"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="555">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="5" y="5" />
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():ClearSelectedNode();
-								self:GetParent():Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

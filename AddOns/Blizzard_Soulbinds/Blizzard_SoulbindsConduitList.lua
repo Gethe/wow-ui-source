@@ -1,5 +1,128 @@
 local CONDUIT_PENDING_INSTALL_FONT_COLOR = CreateColor(0.0, 0.8, 1.0);
 
+local ConduitChargeSecondsFormatter = CreateFromMixins(SecondsFormatterMixin);
+ConduitChargeSecondsFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.Truncate, true, true);
+
+function ConduitChargeSecondsFormatter:GetDesiredUnitCount(seconds)
+	return 1;
+end
+
+ConduitChargeMixin = {};
+
+local CONDUIT_CHARGE_STATE_AVAILABLE = 1;
+local CONDUIT_CHARGE_STATE_PENDING = 2;
+local CONDUIT_CHARGE_STATE_UNAVAILABLE = 3;
+
+function ConduitChargeMixin:SetState(state)
+	local useAtlasSize = true;
+	if state == CONDUIT_CHARGE_STATE_AVAILABLE then
+		self.Icon:SetAtlas("soulbinds_collection_charge_active", useAtlasSize);
+		self.PendingOverlay:SetAtlas(nil);
+	elseif state == CONDUIT_CHARGE_STATE_PENDING then
+		self.Icon:SetAtlas("soulbinds_collection_charge_pending", useAtlasSize);
+		self.PendingOverlay:SetAtlas("soulbinds_collection_charge_pending", useAtlasSize);
+	elseif state == CONDUIT_CHARGE_STATE_UNAVAILABLE then
+		self.Icon:SetAtlas("soulbinds_collection_charge_inactive", useAtlasSize);
+		self.PendingOverlay:SetAtlas(nil);
+	end
+end
+
+function ConduitChargeMixin:OnShow()
+	self.PendingOverlay.Anim:Play();
+end
+
+ConduitChargesTrayEvents = 
+{
+	"SOULBIND_CONDUIT_CHARGES_UPDATED",
+	"SOULBIND_PENDING_CONDUIT_CHANGED",
+	"SOULBIND_CONDUIT_INSTALLED",
+	"CURRENCY_DISPLAY_UPDATE",
+};
+
+ConduitChargesTrayMixin = {};
+
+function ConduitChargesTrayMixin:OnLoad()
+	self.pool = CreateFramePool("FRAME", self, "ConduitChargeTemplate");
+	self.frames = {};
+
+	local capacity = C_Soulbinds.GetConduitChargesCapacity();
+	local function FactoryFunction(index)
+		if index > capacity then
+			return nil;
+		end
+
+		local frame = self.pool:Acquire();
+		table.insert(self.frames, frame);
+		frame:Show();
+		return frame;
+	end
+
+	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT");
+	local direction, stride, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, capacity, -6, 0;
+	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
+	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, capacity, anchor, layout);
+end
+
+function ConduitChargesTrayMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, ConduitChargesTrayEvents);
+end
+
+function ConduitChargesTrayMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, ConduitChargesTrayEvents);
+end
+
+function ConduitChargesTrayMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -4);
+	GameTooltip_SetTitle(GameTooltip, CONDUIT_CHARGE_HEADER);
+	GameTooltip_AddNormalLine(GameTooltip, CONDUIT_CHARGE_DESCRIPTION);
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+	local time = ConduitChargeSecondsFormatter:Format(C_DateAndTime.GetSecondsUntilDailyReset());
+	local text = CONDUIT_CHARGE_REPLENISHMENT_TIME:format(WHITE_FONT_COLOR:WrapTextInColorCode(time));
+	GameTooltip_AddNormalLine(GameTooltip, text);
+
+	GameTooltip:Show();
+end
+
+function ConduitChargesTrayMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function ConduitChargesTrayMixin:Init()
+	self:EvaluateCharges();
+end
+
+function ConduitChargesTrayMixin:EvaluateCharges()
+	local charges = C_Soulbinds.GetConduitCharges();
+	local unused = charges - C_Soulbinds.GetTotalConduitChargesPending();
+	for index = 1, unused do
+		self.frames[index]:SetState(CONDUIT_CHARGE_STATE_AVAILABLE);
+	end
+
+	for index = unused + 1, charges do
+		self.frames[index]:SetState(CONDUIT_CHARGE_STATE_PENDING);
+	end
+
+	local capacity = C_Soulbinds.GetConduitChargesCapacity();
+	for index = charges + 1, capacity do
+		self.frames[index]:SetState(CONDUIT_CHARGE_STATE_UNAVAILABLE);
+	end
+end
+
+function ConduitChargesTrayMixin:SetPendingCount(pendingCount)
+	local available = Clamp(pendingCount, 0, C_Soulbinds.GetConduitCharges());
+	self.pendingCount = Clamp(available, 0, C_Soulbinds.GetConduitChargesCapacity());
+	self:EvaluateCharges();
+end
+
+function ConduitChargesTrayMixin:OnEvent(event, ...)
+	if event == "SOULBIND_CONDUIT_CHARGES_UPDATED" or event == "SOULBIND_PENDING_CONDUIT_CHANGED" or 
+		event == "SOULBIND_CONDUIT_INSTALLED" or event == "CURRENCY_DISPLAY_UPDATE" then
+		self:EvaluateCharges();
+	end
+end
+
 ConduitListCategoryButtonMixin = CreateFromMixins(CallbackRegistryMixin);
 
 ConduitListCategoryButtonMixin:GenerateCallbackEvents(
@@ -34,7 +157,7 @@ function ConduitListCategoryButtonMixin:Init(conduitType)
 	local icon = self.Container.ConduitIcon;
 	icon:SetAtlas(Soulbinds.GetConduitEmblemAtlas(conduitType), false);
 	icon:SetScale(GetConduitIconScale(conduitType));
-	icon:SetPoint("LEFT", name, "RIGHT", -40, 0);
+	icon:SetPoint("LEFT", name, "RIGHT", -40, -1);
 end
 
 function ConduitListCategoryButtonMixin:OnEnter()
@@ -111,13 +234,24 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	local itemID = conduitData.conduitItemID;
 	local item = Item:CreateFromItemID(itemID);
 	local itemCallback = function()
+		self.ConduitName:SetSize(150, 30);
 		self.ConduitName:SetText(item:GetItemName());
+		self.ConduitName:SetHeight(self.ConduitName:GetStringHeight());
+		
+		local yOffset = self.ConduitName:GetNumLines() > 1 and -6 or 0;
+		self.ConduitName:ClearAllPoints();
+		self.ConduitName:SetPoint("BOTTOMLEFT", self.Icon, "RIGHT", 10, yOffset);
+		self.ConduitName:SetWidth(150);
+
+		self.ItemLevel:SetPoint("TOPLEFT", self.ConduitName, "BOTTOMLEFT", 0, 0);
+		self.ItemLevel:SetText(conduitData.conduitItemLevel);
 	end;
 	item:ContinueOnItemLoad(itemCallback);
 
 	local icon = item:GetItemIcon();
 	self.Icon:SetTexture(icon);
 	self.Icon2:SetTexture(icon);
+	self.IconPulse:SetTexture(icon);
 
 	local conduitQuality = C_Soulbinds.GetConduitQuality(conduitData.conduitID, conduitData.conduitRank);
 	local color = ITEM_QUALITY_COLORS[conduitQuality];
@@ -127,16 +261,39 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	self.IconOverlayDark:SetVertexColor(0, 0, 0);
 	self.ConduitName:SetTextColor(r, g, b);
 
-	self.ConduitName:ClearAllPoints();
-	local specName = conduitData.conduitSpecName;
-	if specName then
-		self.ConduitName:SetPoint("BOTTOMLEFT", self.Icon, "RIGHT", 10, -8);
-		self.ConduitName:SetPoint("RIGHT");
-		self.SpecName:SetText(specName);
+	local conduitSpecName = conduitData.conduitSpecName;
+	if conduitSpecName then
+		local specIDs = C_SpecializationInfo.GetSpecIDs(conduitData.conduitSpecSetID);
+		self.Spec.Icon:SetTexture(select(4, GetSpecializationInfoByID(specIDs[1])));
+
+		local isCurrentSpec = C_SpecializationInfo.MatchesCurrentSpecSet(conduitData.conduitSpecSetID);
+		if isCurrentSpec then
+			self.Spec.stateAlpha = 1;
+			self.Spec.stateAtlas = "soulbinds_collection_specborder_primary";
+			self.ItemLevel:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+		else
+			self.Spec.stateAlpha = .4;
+			self.Spec.stateAtlas = "soulbinds_collection_specborder_secondary";
+			self.ItemLevel:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		end
+		self.Spec.Icon:SetAlpha(self.Spec.stateAlpha);
+
+		self.Spec:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(self.Spec, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, conduitSpecName);
+			GameTooltip:Show();
+		end);
+		self.Spec:SetScript("OnLeave", function()
+			GameTooltip_Hide();
+		end);
+		self.Spec:Show();
 	else
-		self.ConduitName:SetPoint("LEFT", self.Icon, "RIGHT", 10, 0);
-		self.ConduitName:SetPoint("RIGHT");
-		self.SpecName:SetText("");
+		self.ItemLevel:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+		self.Spec:Hide();
+		self.Spec:SetScript("OnEnter", nil);
+		self.Spec:SetScript("OnLeave", nil);
+		self.Spec.stateAlpha = 1;
+		self.Spec.stateAtlas = "soulbinds_collection_specborder_primary";
 	end
 
 	self:Update();
@@ -144,14 +301,8 @@ end
 
 function ConduitListConduitButtonMixin:OnEvent(event, ...)
 	if event == "SOULBIND_PENDING_CONDUIT_CHANGED" then
-		local nodeID, conduitID, pending = ...;
-		if conduitID == self.conduitData.conduitID then
-			if pending then
-				self:UpdateVisuals(ConduitListConduitButtonMixin.State.Pending);
-			else
-				self:UpdateVisuals(ConduitListConduitButtonMixin.State.Uninstalled);
-			end
-		end
+		local nodeID, conduitID = ...;
+		self:Update();
 	elseif event == "SOULBIND_CONDUIT_INSTALLED" then
 		local nodeID, conduitData = ...;
 		if conduitData.conduitID == self.conduitData.conduitID then
@@ -189,11 +340,16 @@ function ConduitListConduitButtonMixin:UpdateVisuals(state)
 	local installed = state == ConduitListConduitButtonMixin.State.Installed;
 	local pending = state == ConduitListConduitButtonMixin.State.Pending;
 	local dark = installed or pending;
+	self.ConduitName:SetAlpha(dark and .5 or 1);
+	self.ItemLevel:SetAlpha(dark and .2 or 1);
 	self.IconOverlayDark:SetShown(dark);
 	self.IconDark:SetShown(dark);
-	self.ConduitName:SetAlpha(dark and .5 or 1);
-	self.SpecName:SetAlpha(dark and .5 or 1);
 	
+	local specIconAlpha = dark and .2 or self.Spec.stateAlpha;
+	local specIconAtlas = dark and "soulbinds_collection_specborder_tertiary" or self.Spec.stateAtlas;
+	local useAtlasSize = true;
+	self.Spec.IconOverlay:SetAtlas(specIconAtlas, useAtlasSize);
+	self.Spec.Icon:SetAlpha(specIconAlpha);
 	self.Pending:SetShown(pending);
 end
 
@@ -204,30 +360,50 @@ end
 function ConduitListConduitButtonMixin:GetState()
 	local soulbindID = Soulbinds.GetOpenSoulbindID();
 	local conduitID = self.conduitData.conduitID;
+	
+	local pendingInstallNodeID = C_Soulbinds.FindNodeIDPendingInstall(soulbindID, conduitID);
+	if pendingInstallNodeID > 0 then
+		return ConduitListConduitButtonMixin.State.Pending;
+	end
+
+	local pendingUninstallNodeID = C_Soulbinds.FindNodeIDPendingUninstall(soulbindID, conduitID);
+	if pendingUninstallNodeID > 0 then
+		return ConduitListConduitButtonMixin.State.Uninstalled;
+	end
+
 	local installed = C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID);
 	if installed then
 		return ConduitListConduitButtonMixin.State.Installed;
 	end
 
-	local pending = C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID);
-	if pending then
-		return ConduitListConduitButtonMixin.State.Pending;
-	end
 	return ConduitListConduitButtonMixin.State.Uninstalled;
 end
 
 function ConduitListConduitButtonMixin:OnClick(buttonName)
 	if buttonName == "LeftButton" then
-		self:CreateCursor();
+		local linked = false;
+		if IsModifiedClick("CHATLINK") then
+			linked = HandleModifiedItemClick(self.conduit:GetHyperlink());
+		end
+
+		if not linked then
+			self:CreateCursor();
+		end
 	elseif buttonName == "RightButton" then
 		local soulbindID = Soulbinds.GetOpenSoulbindID();
 		local conduitID = self.conduitData.conduitID;
-		if C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID) then
-			local nodeID = C_Soulbinds.GetPendingNodeIDInSoulbind(soulbindID, conduitID);
-			if nodeID > 0 then
-				C_Soulbinds.RemovePendingConduit(nodeID);
+
+		local pendingInstallNodeID = C_Soulbinds.FindNodeIDPendingInstall(soulbindID, conduitID);
+		if pendingInstallNodeID > 0 then
+			C_Soulbinds.UnmodifyNode(pendingInstallNodeID);
+		else
+			local pendingUninstallNodeID = C_Soulbinds.FindNodeIDPendingUninstall(soulbindID, conduitID);
+			if pendingUninstallNodeID > 0 then
+				C_Soulbinds.UnmodifyNode(pendingUninstallNodeID);
 			end
 		end
+
+		SoulbindViewer:OnCollectionConduitClick(conduitID);
 	end
 end
 
@@ -236,10 +412,6 @@ function ConduitListConduitButtonMixin:OnDragStart()
 end
 
 function ConduitListConduitButtonMixin:CreateCursor()
-	if C_Soulbinds.IsConduitInstalledInSoulbind(Soulbinds.GetOpenSoulbindID(), self.conduitData.conduitID) then
-		return;
-	end
-
 	SetCursorVirtualItem(self.conduitData.conduitItemID, Enum.UICursorType.ConduitCollectionItem);
 end
 
@@ -249,16 +421,20 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 			self.conduitOnSpellLoadCb = nil;
 		end
 
-		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 190, 0);
+		GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 178, 0);
 		
 		local conduitID = self.conduit:GetConduitID();
 		GameTooltip:SetConduit(conduitID, self.conduit:GetConduitRank());
 
 		local soulbindID = Soulbinds.GetOpenSoulbindID();
-		if C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID) then
-			GameTooltip_AddErrorLine(GameTooltip, CONDUIT_COLLECTION_ITEM_SOCKETED);
-		elseif C_Soulbinds.HasPendingConduitInSoulbind(soulbindID, conduitID) then
+		if C_Soulbinds.FindNodeIDPendingInstall(soulbindID, conduitID) > 0 then
 			GameTooltip_AddColoredLine(GameTooltip, CONDUIT_COLLECTION_ITEM_PENDING, CONDUIT_PENDING_INSTALL_FONT_COLOR);
+		else
+			if C_Soulbinds.FindNodeIDPendingUninstall(soulbindID, conduitID) == 0 then
+				if C_Soulbinds.IsConduitInstalledInSoulbind(soulbindID, conduitID) then
+					GameTooltip_AddErrorLine(GameTooltip, CONDUIT_COLLECTION_ITEM_SOCKETED);
+				end	
+			end
 		end
 		GameTooltip:Show();
 	end;
@@ -270,8 +446,9 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 	end
 
 	local conduitType = self.conduitData.conduitType;
-	Soulbinds.SetPreviewConduitType(conduitType);
-	SoulbindViewer:OnCollectionConduitEnter(conduitType);
+	local conduitID = self.conduitData.conduitID;
+	Soulbinds.SetPreviewConduit(conduitType, conduitID);
+	SoulbindViewer:OnCollectionConduitEnter(conduitType, self.conduit:GetConduitID());
 end
 
 function ConduitListConduitButtonMixin:OnLeave(collectionData)
@@ -286,8 +463,13 @@ function ConduitListConduitButtonMixin:OnLeave(collectionData)
 		element:Hide();
 	end
 	
-	Soulbinds.SetPreviewConduitType(nil);
+	Soulbinds.ClearPreviewConduit();
 	SoulbindViewer:OnCollectionConduitLeave();
+end
+
+function ConduitListConduitButtonMixin:SetConduitPulsePlaying(playing)
+	self.IconOverlayPulse.Anim:SetPlaying(playing);
+	self.IconPulse.Anim:SetPlaying(playing);
 end
 
 ConduitListSectionMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -314,6 +496,12 @@ end
 function ConduitListSectionMixin:Update()
 	for conduitButton in self.pool:EnumerateActive() do
 		conduitButton:Update();
+	end
+end
+
+function ConduitListSectionMixin:SetConduitPulsePlaying(playing)
+	for conduitButton in self.pool:EnumerateActive() do
+		conduitButton:SetConduitPulsePlaying(playing);
 	end
 end
 
@@ -353,7 +541,7 @@ function ConduitListSectionMixin:BuildConduits(collection)
 	end
 
 	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Container, "TOPLEFT");
-	local direction, stride, x, y = GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, 1;
+	local direction, stride, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, 0;
 	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
 	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, count, anchor, layout);
 
@@ -431,17 +619,21 @@ function ConduitListMixin:SetConduitPreview(preview)
 	self.preview = preview;
 end
 
-function ConduitListMixin:Init()
-	local activeCovenantID = C_Covenants.GetActiveCovenantID();
-	local filterCollection = function(collection)
-		local isIndexTable = true;
-		local includeIf = function(collectionData)
-			local covenantID = collectionData.covenantID;
-			return not covenantID or covenantID == activeCovenantID;
-		end;
-		collection = tFilter(collection, includeIf, isIndexTable);
-	end;
+function ConduitListMixin:SetConduitListConduitsPulsePlaying(conduitType, playing)
+	local section = self:FindListSection(conduitType);
+	if section then
+		section:SetConduitPulsePlaying(playing);
+	end
+end
 
+function ConduitListMixin:FindListSection(conduitType)
+	local _, section = FindInTableIf(self:GetLists(), function(section)
+		return section.conduitType == conduitType;
+	end);
+	return section;
+end
+
+function ConduitListMixin:Init()
 	local anyShown = false;
 	local parsed = 0;
 	local lists = self:GetLists();
@@ -450,14 +642,13 @@ function ConduitListMixin:Init()
 		list.layoutIndex = index;
 
 		local collection = C_Soulbinds.GetConduitCollection(list.conduitType);
-		filterCollection(collection);
 
 		local continuableContainer = ContinuableContainer:Create();
 		local matchesSpecSet = {};
 		for index, collectionData in ipairs(collection) do
 			local specSetID = collectionData.conduitSpecSetID;
 			if not matchesSpecSet[specSetID] then
-				matchesSpecSet[specSetID] = C_Soulbinds.MatchesCurrentSpecSet(specSetID);
+				matchesSpecSet[specSetID] = C_SpecializationInfo.MatchesCurrentSpecSet(specSetID);
 			end
 
 			if not collectionData.conduitSpecName then
@@ -475,7 +666,11 @@ function ConduitListMixin:Init()
 		continuableContainer:ContinueOnLoad(function()
 			table.sort(collection, function(lhs, rhs)
 				if lhs.sortingCategory == rhs.sortingCategory then
-					if (not lhs.conduitSpecName or not rhs.conduitSpecname) or lhs.conduitSpecName == rhs.conduitSpecName then
+					if (not lhs.conduitSpecName or not rhs.conduitSpecName) or lhs.conduitSpecName == rhs.conduitSpecName then
+						if lhs.conduitRank ~= rhs.conduitRank then
+							return lhs.conduitRank > rhs.conduitRank;	
+						end
+
 						return lhs.item:GetItemName() < rhs.item:GetItemName();
 					else
 						return lhs.conduitSpecName < rhs.conduitSpecName;
@@ -496,8 +691,14 @@ function ConduitListMixin:Init()
 			parsed = parsed + 1;
 			if parsed == #lists then
 				self.ScrollBox.ScrollTarget:Layout();
-				self.ScrollBox.BottomShadowContainer.BottomShadow:SetShown(anyShown);
+				self.BottomShadowContainer.BottomShadow:SetShown(anyShown);
 				self.preview:SetShown(not anyShown);
+
+				if anyShown then
+					self.Charges:Init();
+				end
+				self.Fx:SetShown(anyShown);
+				self.Charges:SetShown(anyShown);
 
 				local scrollValue = 0;
 				local elementExtent = 41;

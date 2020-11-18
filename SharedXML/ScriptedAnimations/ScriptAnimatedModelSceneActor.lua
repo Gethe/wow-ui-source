@@ -108,7 +108,7 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 
 	self:SetParticleOverrideScale(effectDescription.particleOverrideScale);
 
-	if self.source and self.target and self.source ~= self.target then
+	if self.source and self.target and self.source ~= self.target and not effectDescription.useTargetAsSource then
 		self:SetYaw(GetAngleForModel(self.source, self.target));
 	else
 		self:SetYaw(effectDescription.yawRadians);

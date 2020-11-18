@@ -100,40 +100,66 @@ end
 function CovenantFollowerTabMixin:UpdateValidSpellHighlightOnAbilityFrame()
 end
 
-function CovenantFollowerTabMixin:CalculateHealCost()
-	local followerStats = self.followerInfo.autoCombatantStats;
-	return math.ceil(((followerStats.maxHealth - followerStats.currentHealth) / followerStats.maxHealth) * Constants.GarrisonConstsExposed.GARRISON_AUTO_COMBATANT_FULL_HEAL_COST);
-end
-
 function CovenantFollowerTabMixin:UpdateHealCost()	
 	self.HealFollowerFrame.HealFollowerButton.tooltip = nil;
+	self:HideHealFollowerTutorial();
 
 	if not self.followerInfo.autoCombatantStats then
 		self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 		return;
 	end
 
-	local buttonCost = self:CalculateHealCost();
-	self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
+	local buttonCost = self.followerInfo.autoCombatantStats.healCost;
 	
 	if (buttonCost == 0) then
+		self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
 		self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 		self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_FULL_HEALTH;
 		StaticPopup_Hide("COVENANT_MISSIONS_HEAL_CONFIRMATION");
 	else 
 		local _, secondaryCurrency = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(secondaryCurrency);
+
+		if (currencyInfo.quantity < buttonCost) then
+			self.HealFollowerFrame.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..buttonCost..FONT_COLOR_CODE_CLOSE);
+		else
+			self.HealFollowerFrame.CostFrame.Cost:SetText(buttonCost);
+		end 
+
 		if (buttonCost > currencyInfo.quantity) then 
 			self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
 			self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
+		elseif self.followerInfo.status == GARRISON_FOLLOWER_ON_MISSION then
+			self.HealFollowerFrame.HealFollowerButton:SetEnabled(false);
+			self.HealFollowerFrame.HealFollowerButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_ON_ADVENTURE;
 		else
 			self.HealFollowerFrame.HealFollowerButton:SetEnabled(true);
+			self:ShowHealFollowerTutorial();
 		end
 	end
 end
 
 function CovenantFollowerTabMixin:ShowHealConfirmation()
 	StaticPopup_Show("COVENANT_MISSIONS_HEAL_CONFIRMATION", nil, nil, {followerID = self.followerID});
+end
+
+function CovenantFollowerTabMixin:ShowHealFollowerTutorial()
+	local helpTipInfo = {
+		text = COVENANT_MISSIONS_TUTORIAL_HEALING,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "covenantMissionTutorial",
+		bitfieldFlag = Enum.GarrAutoCombatTutorial.HealCompanion,
+		targetPoint = HelpTip.Point.TopEdgeCenter,
+		offsetX = 0,
+		offsetY = 5,
+		checkCVars = true,
+	}
+
+	HelpTip:Show(self.HealFollowerFrame.HealFollowerButton, helpTipInfo);
+end
+
+function CovenantFollowerTabMixin:HideHealFollowerTutorial()
+	HelpTip:Hide(self.HealFollowerFrame.HealFollowerButton, COVENANT_MISSIONS_TUTORIAL_HEALING);
 end
 
 function CovenantFollowerTabMixin:GetStatsAnchorFrame()
@@ -298,6 +324,7 @@ function CovenantMissionListMixin:Update()
 		self.EmptyListString:Show();
 	else
 		self.EmptyListString:Hide();
+		self:ShowAdventureSelectTutorial();
 	end
 
 	for i = 1, numButtons do
@@ -365,6 +392,28 @@ function CovenantMissionListMixin:Update()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
+function CovenantMissionListMixin:ShowAdventureSelectTutorial()
+	if not GetCVarBitfield("covenantMissionTutorial", Enum.GarrAutoCombatTutorial.SelectMission) then
+		local helpTipInfo = {
+			text = COVENANT_MISSIONS_TUTORIAL_MISSION_LIST,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			cvarBitfield = "covenantMissionTutorial",
+			bitfieldFlag = Enum.GarrAutoCombatTutorial.SelectMission,
+			targetPoint = HelpTip.Point.LeftEdgeTop,
+			offsetX = 15,
+			offsetY = -60,
+			checkCVars = true,
+		}
+
+		HelpTip:Show(self, helpTipInfo);
+	end
+end
+
+function CovenantMissionListMixin:ClearAdventureSelectTutorial()
+	SetCVarBitfield("covenantMissionTutorial", Enum.GarrAutoCombatTutorial.SelectMission, true);
+	HelpTip:Acknowledge(self, COVENANT_MISSIONS_TUTORIAL_MISSION_LIST);
+end
+
 ---------------------------------------------------------------------------------
 --- Covenant Mission List Button Handlers									  ---
 ---------------------------------------------------------------------------------
@@ -389,13 +438,17 @@ function CovenantMissionButton_OnEnter(self)
 
 	GameTooltip_SetTitle(GameTooltip, missionInfo.name);
 	if(missionInfo.canBeCompleted) then
-		GameTooltip_AddColoredLine(GameTooltip, COMPLETE, WHITE_FONT_COLOR);
+		GameTooltip_AddHighlightLine(GameTooltip, COMPLETE);
 	elseif missionInfo.inProgress then
-		GameTooltip_AddColoredLine(GameTooltip, IN_PROGRESS, WHITE_FONT_COLOR);
+		GameTooltip_AddHighlightLine(GameTooltip, IN_PROGRESS);
 	end
 
+	if(missionInfo.description) then 
+		GameTooltip_AddNormalLine(GameTooltip, missionInfo.description);
+	end 
+
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, REWARDS);
+	GameTooltip_AddHighlightLine(GameTooltip, REWARDS);
 	for id, reward in pairs(missionInfo.rewards) do
 		if (reward.quality) then
 			GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
@@ -410,21 +463,22 @@ function CovenantMissionButton_OnEnter(self)
 				GameTooltip:AddLine(ITEM_QUALITY_COLORS[quality].hex..name..FONT_COLOR_CODE_CLOSE);
 			end
 		else
-			GameTooltip_AddColoredLine(GameTooltip, reward.title, WHITE_FONT_COLOR);
+			GameTooltip_AddNormalLine(GameTooltip, reward.title);
 		end
 	end
 
-	if missionInfo.inProgress then
+	if (missionInfo.inProgress) then
 		if (self.info.followers ~= nil) then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddNormalLine(GameTooltip, COVENANT_MISSIONS_FOLLOWERS);
+			GameTooltip_AddHighlightLine(GameTooltip, COVENANT_MISSIONS_FOLLOWERS);
 			for i=1, #(missionInfo.followers) do
-				GameTooltip_AddColoredLine(GameTooltip, C_Garrison.GetFollowerName(missionInfo.followers[i]), WHITE_FONT_COLOR);
+				GameTooltip_AddNormalLine(GameTooltip, C_Garrison.GetFollowerName(missionInfo.followers[i]));
 			end
 		end
-	elseif (missionInfo.isRare) then
-		GameTooltip_AddNormalLine(GameTooltip, COVENANT_MISSIONS_AVAILABILITY);
-		GameTooltip_AddColoredLine(GameTooltip, missionInfo.offerTimeRemaining, WHITE_FONT_COLOR);
+	elseif (missionInfo.offerTimeRemaining) then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddHighlightLine(GameTooltip, COVENANT_MISSIONS_AVAILABILITY);
+		GameTooltip_AddNormalLine(GameTooltip, missionInfo.offerTimeRemaining);
 	end
 
 	GameTooltip:Show();
@@ -651,8 +705,8 @@ function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	self.HealthBar:Show();
 	self.HealthBar:SetScale(0.7);
 	self.LevelText:SetText(followerInfo.level);
-	self.HealthBar:SetMaxHealth(followerInfo.autoCombatantStats.maxHealth);
-	self.HealthBar:SetHealth(followerInfo.autoCombatantStats.currentHealth);
+	self.HealthBar:SetMaxHealth(followerInfo.autoCombatantStats and followerInfo.autoCombatantStats.maxHealth or 1);
+	self.HealthBar:SetHealth(followerInfo.autoCombatantStats and followerInfo.autoCombatantStats.currentHealth or 1);
 	self.HealthBar:SetRole(followerInfo.role);
 	local puckBorderAtlas = followerInfo.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
 	self.PuckBorder:SetAtlas(puckBorderAtlas);
@@ -675,7 +729,7 @@ end
 
 function AdventuresPuckHealthBarMixin:SetHealth(health)
 	self.health = health;
-
+	self.HealthValue:SetText(BreakUpLargeNumbers(health));
 	self:UpdateHealthBar();
 end
 

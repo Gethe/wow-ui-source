@@ -6,18 +6,8 @@ local FastSpeed = 2 * SlowSpeed;
 AdventuresCompleteScreenContinueButtonMixin = {};
 
 function AdventuresCompleteScreenContinueButtonMixin:OnClick()
-	local completeScreen = self:GetParent():GetParent();
-	if completeScreen.replayFinished then 
-		if completeScreen:ShouldShowRewardsScreen() then
-			completeScreen:ShowRewardsScreen();
-		else
-			completeScreen:CloseMissionComplete();
-		end
-	else
-		completeScreen:SkipToTheEndOfMission();
-	end
+	self:GetParent():GetParent():AdvanceStage();
 end
-
 
 AdventuresCompleteScreenSpeedButtonMixin = {};
 
@@ -98,8 +88,8 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
    	end
 
    	self:ResetMissionDisplay();
-	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, mission);
 	self.MissionInfo.EncounterIcon:SetEncounterInfo(mission.encounterIconInfo);
+	self.AdventuresCombatLog.environmentEffect = C_Garrison.GetAutoMissionEnvironmentEffect(mission.missionID);
 
 	if not mission.completed then
    		C_Garrison.MarkMissionComplete(self.currentMission.missionID);
@@ -142,6 +132,10 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 	self.RewardsScreen:Reset();
 	self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_SKIP_TO_END);
 	self.replayFinished = false;
+
+	local shouldShowCompleteFrame = not mission.isTutorialMission; -- Tutorial Missions can't be skipped or fast forwarded through.
+	self:SetCompleteFrameState(shouldShowCompleteFrame);
+
 	self:EnableCompleteFrameButtons();
 end
 
@@ -161,6 +155,7 @@ function AdventuresCompleteScreenMixin:StartMissionReplay()
 	self.replayTimeElapsed = 0;
 	self.replayRoundIndex = 1;
 	self:SetScript("OnUpdate", AdventuresCompleteScreenMixin.UpdateMissionReplay);
+	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, self.currentMission, self.autoCombatResult.winner);
 
 	local roundIndex = 1;
 	self:StartReplayRound(roundIndex);
@@ -322,7 +317,10 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 
 		local sourceBoardIndex = combatLogEvent.casterBoardIndex;
 		local sourceFrame = self:GetFrameFromBoardIndex(sourceBoardIndex);
-		self.Board:RaiseFrameByBoardIndex(sourceBoardIndex);
+		
+		if sourceBoardIndex ~= -1 then
+			self.Board:RaiseFrameByBoardIndex(sourceBoardIndex);
+		end 
 
 		local effectInfo = ScriptedAnimationEffectsUtil.GetEffectByID(effect);
 		local secondaryEffect = effectInfo and effectInfo.finishEffectID or nil;
@@ -336,7 +334,7 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 			self.Board:UpdateBoardAuraState(combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura, combatLogEvent);
 		end
 
-		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or eventType == Enum.GarrAutoMissionEventType.RemoveAura or eventType == combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
+		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
 			if #combatLogEvent.targetInfo > 2 then
 				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
 			end
@@ -371,8 +369,13 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 				self:OnReplayEffectResolved();
 			end
 			
-			local primaryTarget = self:GetFrameFromBoardIndex(combatLogEvent.targetInfo[1].boardIndex);
-			self.ModelScene:AddEffect(effect, sourceFrame, primaryTarget, PrimaryEffectOnFinish, EffectOnResolution);
+			if sourceFrame then
+				local primaryTarget = self:GetFrameFromBoardIndex(combatLogEvent.targetInfo[1].boardIndex);
+				self.ModelScene:AddEffect(effect, sourceFrame, primaryTarget, PrimaryEffectOnFinish, EffectOnResolution);
+			else
+				PrimaryEffectOnFinish();
+				EffectOnResolution();
+			end
 		else
 			local resolutionCount = #combatLogEvent.targetInfo;
 			local function MultiEffectOnResolution()
@@ -413,7 +416,17 @@ end
 function AdventuresCompleteScreenMixin:FinishReplay()
 	self:SetScript("OnUpdate", nil);
 	self.AdventuresCombatLog:AddVictoryState(self.autoCombatResult.winner);
-	self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
+	C_Timer.After(1.0, function ()
+		if not self.RewardsScreen.CombatCompleteSuccessFrame:IsShown() then 
+			self.RewardsScreen:ShowAdventureVictoryStateScreen(self.autoCombatResult.winner);
+		end
+
+		C_Timer.After(2.5, function() 
+			if self.RewardsScreen.CombatCompleteSuccessFrame:IsShown() then 
+				self:AdvanceStage(); 
+			end
+		end);
+	end);
 	self.replayFinished = true;
 	self:UpdateButtonTextToState();
 end
@@ -426,12 +439,16 @@ function AdventuresCompleteScreenMixin:SkipToTheEndOfMission()
 	--Previous eventIndex already printed
 	for eventIndex = self.replayEventIndex + 1, #currentRound.events do
 		self.AdventuresCombatLog:AddCombatEvent(currentRound.events[eventIndex]);
+		self.Board:AddCombatEventText(currentRound.events[eventIndex]);
 	end
 
 	--dump the rest
 	for roundIndex = self.replayRoundIndex + 1, self:GetNumReplayRounds() do 
 		local round = self:GetReplayRound(roundIndex);
 		self.AdventuresCombatLog:AddCombatRound(roundIndex, round, self:GetNumReplayRounds());
+		for eventIndex = 1, #round.events do 
+			self.Board:AddCombatEventText(round.events[eventIndex]);
+		end	
 	end
 
 	self:FinishReplay();
@@ -462,10 +479,35 @@ function AdventuresCompleteScreenMixin:DisableCompleteFrameButtons()
 	completeFrame.SpeedButton:Disable();
 end
 
+function AdventuresCompleteScreenMixin:SetCompleteFrameState(shouldShow)
+	local completeFrame = self.CompleteFrame;
+	completeFrame:SetShown(shouldShow);
+end 
 
 function AdventuresCompleteScreenMixin:EnableCompleteFrameButtons()
 	local completeFrame = self.CompleteFrame;
 
 	completeFrame.ContinueButton:Enable();
 	completeFrame.SpeedButton:Enable();
+end
+
+function AdventuresCompleteScreenMixin:AdvanceStage()
+	if self.replayFinished then 
+		if self:ShouldShowRewardsScreen() then
+			self:ShowRewardsScreen();
+		else
+			self:CloseMissionComplete();
+		end
+	else
+		self:SkipToTheEndOfMission();
+	end
+end
+
+function AdventuresCompleteScreenMixin:OnSkipKeyPressed(key)
+	if ( key == "SPACE" ) then
+		-- Tutorial mission playback can't be skipped
+		if (self.currentMission and not self.currentMission.isTutorialMission) then 
+			self:AdvanceStage(); 
+		end
+	end
 end

@@ -50,7 +50,7 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 			end
 			return;
 		end
-		if ( eventIndex == ACTIVE_INDEX ) then
+		if ( eventIndex == LOSS_OF_CONTROL_ACTIVE_INDEX ) then
 			self.fadeTime = nil;
 			LossOfControlFrame_SetUpDisplay(self, true);
 		end

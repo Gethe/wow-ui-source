@@ -279,12 +279,14 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, _;
+	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, isBound, _;
 	if ( voidStorage ) then
 		itemID, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
+		isBound = true;
 		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
 	elseif ( not bags ) then -- and (player or bank) 
 		itemID = GetInventoryItemID("player", slot);
+		isBound = true;
 		name, _, _, _, _, _, _, _, invType, textureName = GetItemInfo(itemID);
 		if ( textureName ) then
 			count = GetInventoryItemCount("player", slot);
@@ -299,7 +301,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 	else -- bags
 		itemID = GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = GetItemInfo(itemID);
-		textureName, count, locked, quality = GetContainerItemInfo(bag, slot);
+		textureName, count, locked, quality, _, _, _, _, _, _, isBound = GetContainerItemInfo(bag, slot);
 		start, duration, enable = GetContainerItemCooldown(bag, slot);
 		
 		durability, maxDurability = GetContainerItemDurability(bag, slot);
@@ -308,7 +310,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
 	end
 	
-	return itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade;
+	return itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, isBound;
 end
 
 function EquipmentManager_EquipSet (setID)

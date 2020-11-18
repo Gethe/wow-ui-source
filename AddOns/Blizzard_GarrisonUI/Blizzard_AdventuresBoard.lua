@@ -62,6 +62,10 @@ function AdventuresBoardMixin:OnShow()
 	end
 end
 
+function AdventuresBoardMixin:GetMainFrame()
+	return self:GetParent():GetParent():GetParent();
+end
+
 function AdventuresBoardMixin:GetFrameByBoardIndex(boardIndex)
 	return self.framesByBoardIndex[boardIndex];
 end
@@ -195,7 +199,9 @@ function AdventuresBoardMixin:GetAnimFrameByAuraType(frame, previewType)
 	if bit.band(previewType, Enum.GarrAutoPreviewTargetType.Damage) == Enum.GarrAutoPreviewTargetType.Damage then
 		return frame.EnemyTargetingIndicatorFrame;
 	elseif bit.band(previewType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff or bit.band(previewType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
-		frame.FriendlyTargetingIndicatorFrame.SupportColorationAnimator:SetPreviewTargets(previewType, {frame.FriendlyTargetingIndicatorFrame.TargetMarker});
+		if frame.FriendlyTargetingIndicatorFrame then
+			frame.FriendlyTargetingIndicatorFrame.SupportColorationAnimator:SetPreviewTargets(previewType, {frame.FriendlyTargetingIndicatorFrame.TargetMarker});
+		end
 		return frame.FriendlyTargetingIndicatorFrame;
 	end
 
@@ -253,6 +259,66 @@ function AdventuresBoardMixin:UpdateBoardState(boardTargetInfo)
 	end
 end
 
+function AdventuresBoardMixin:ShowAssignmentTutorial()
+	if not GetCVarBitfield("covenantMissionTutorial", Enum.GarrAutoCombatTutorial.PlaceCompanion) then
+		for followerSocket in self:EnumerateFollowerSockets() do
+			followerSocket.TutorialRing:Show();
+		end
+
+		local helpTipInfo = {
+			text = COVENANT_MISSIONS_TUTORIAL_ASSIGNMENT,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			cvarBitfield = "covenantMissionTutorial",
+			bitfieldFlag = Enum.GarrAutoCombatTutorial.PlaceCompanion,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = 5,
+			offsetY = 0,
+			checkCVars = true,
+		}
+
+		HelpTip:Show(self.FollowerContainer, helpTipInfo);
+	end
+end
+
+function AdventuresBoardMixin:HideAssignmentTutorial()
+	if not GetCVarBitfield("covenantMissionTutorial", Enum.GarrAutoCombatTutorial.PlaceCompanion) then
+		for followerSocket in self:EnumerateFollowerSockets() do
+			followerSocket.TutorialRing:Hide();
+		end
+
+		HelpTip:Acknowledge(self.FollowerContainer, COVENANT_MISSIONS_TUTORIAL_ASSIGNMENT);
+	end
+end
+
+function AdventuresBoardMixin:ShowHealthValues()
+	for enemyFrame in self.enemyFramePool:EnumerateActive() do
+		enemyFrame:ShowHealthValues();
+	end
+
+	for followerFrame in self.followerFramePool:EnumerateActive() do
+		followerFrame:ShowHealthValues();
+	end
+end
+
+function AdventuresBoardMixin:HideHealthValues()
+	for enemyFrame in self.enemyFramePool:EnumerateActive() do
+		enemyFrame:HideHealthValues();
+	end
+
+	for followerFrame in self.followerFramePool:EnumerateActive() do
+		followerFrame:HideHealthValues();
+	end
+end
+
+function AdventuresBoardMixin:UpdateHealedFollower(followerID)
+	for followerFrame in self.followerFramePool:EnumerateActive() do
+		if followerFrame:GetFollowerGUID() == followerID then
+			followerFrame:UpdateStats();
+			return;
+		end
+	end
+end
+
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);
 
 function AdventuresBoardCombatMixin:OnLoad()
@@ -269,7 +335,9 @@ end
 
 function AdventuresBoardCombatMixin:UpdateCooldownsFromEvent(combatLogEvent)
 	local sourceFrame = self:GetFrameByBoardIndex(combatLogEvent.casterBoardIndex);
-	sourceFrame:StartCooldown(combatLogEvent.spellID);
+	if sourceFrame then
+		sourceFrame:StartCooldown(combatLogEvent.spellID);
+	end
 end
 
 function AdventuresBoardCombatMixin:UpdateCooldownsFromNewRound()
@@ -369,6 +437,11 @@ function AdventuresBoardCombatMixin:AddCombatText(text, source, target)
 	fontString:Show();
 end
 
+function AdventuresBoardCombatMixin:GetMainFrame()
+	return self:GetParent():GetParent();
+end
+
+
 -------------------------------------------------
 --- AdventuresSocketMixin for aura management ---
 -------------------------------------------------
@@ -390,6 +463,10 @@ function AdventuresSocketMixin:OnHide()
 	EventRegistry:UnregisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self);
 end
 
+function AdventuresSocketMixin:GetBoard()
+	return self:GetParent():GetParent();
+end
+
 function AdventuresSocketMixin:ResetVisibility()
 	self:ClearActiveAuras();
 	self:ClearTemporaryAuras();
@@ -407,6 +484,7 @@ end
 function AdventuresSocketMixin:ClearActiveAndRefresh()
 	self:ClearActiveAuras();
 	self:UpdateAuraVisibility();
+	HelpTip:Hide(self.AuraContainer, COVENANT_MISSIONS_TUTORIAL_BENEFICIAL_EFFECT);
 end
 
 function AdventuresSocketMixin:ClearTemporaryAuras()
@@ -433,6 +511,22 @@ function AdventuresSocketMixin:SetBoardPreviewState(auraType)
 		self.activeHealing[auraType] = true;
 	end
 
+	if not GetCVarBitfield("covenantMissionTutorial", Enum.GarrAutoCombatTutorial.BeneficialEffect) then
+		local helpTipInfo = {
+			text = COVENANT_MISSIONS_TUTORIAL_BENEFICIAL_EFFECT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "covenantMissionTutorial",
+			bitfieldFlag = Enum.GarrAutoCombatTutorial.BeneficialEffect,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = 0,
+			offsetY = 0,
+			onHideCallback = function(acknowledged, closeFlag) self:GetBoard():GetMainFrame():ProcessTutorials(); end;
+			checkCVars = true,
+		}
+		local mainFrame = self:GetBoard():GetMainFrame();
+		mainFrame:QueueTutorial(mainFrame, helpTipInfo, self.AuraContainer);
+	end
+
 	self:UpdateAuraVisibility();
 end
 
@@ -454,9 +548,12 @@ end
 function AdventuresSocketMixin:RemoveAura(spellID, effectIndex, auraType)
 	local collection = self:GetCollectionByAuraType(auraType);
 
-	collection[spellID][effectIndex] = nil;
-	if next(collection[spellID]) == nil then 
-		collection[spellID] = nil;
+	if collection[spellID] then
+		collection[spellID][effectIndex] = nil;
+		
+		if next(collection[spellID]) == nil then 
+			collection[spellID] = nil;
+		end
 	end
 
 	self:UpdateAuraVisibility();
