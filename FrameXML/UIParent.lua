@@ -5554,7 +5554,8 @@ end
 -- Currency Overflow --
 function WillCurrencyRewardOverflow(currencyID, rewardQuantity)
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
-	return currencyInfo.maxQuantity > 0 and rewardQuantity + currencyInfo.quantity > currencyInfo.maxQuantity;
+	local quantity = currencyInfo.useTotalEarnedForMaxQty and currencyInfo.totalEarned or currencyInfo.quantity;
+	return currencyInfo.maxQuantity > 0 and rewardQuantity + quantity > currencyInfo.maxQuantity;
 end
 
 function GetColorForCurrencyReward(currencyID, rewardQuantity, defaultColor)

@@ -132,6 +132,7 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 	self.RewardsScreen:Reset();
 	self.CompleteFrame.ContinueButton:SetText(COVENANT_MISSIONS_SKIP_TO_END);
 	self.replayFinished = false;
+	self.replayRoundIndex = 0;
 
 	local shouldShowCompleteFrame = not mission.isTutorialMission; -- Tutorial Missions can't be skipped or fast forwarded through.
 	self:SetCompleteFrameState(shouldShowCompleteFrame);
@@ -432,6 +433,11 @@ function AdventuresCompleteScreenMixin:FinishReplay()
 end
 
 function AdventuresCompleteScreenMixin:SkipToTheEndOfMission()
+	--Don't try to skip if the replay hasn't started yet/we don't have the log
+	if not self.replayRoundIndex or self.replayRoundIndex == 0 then
+		return;
+	end
+
 	self.ModelScene:ClearEffects();
 	
 	--Finish current round

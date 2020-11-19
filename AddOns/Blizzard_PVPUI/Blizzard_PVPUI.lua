@@ -1144,7 +1144,7 @@ function ConquestFrame_EvaluateSeasonState(self)
 end
 
 function ConquestFrame_HasActiveSeason()
-	return ConquestFrame.seasonState == SEASON_STATE_ACTIVE;
+	return (ConquestFrame.seasonState == SEASON_STATE_ACTIVE) or (ConquestFrame.seasonState == SEASON_STATE_OFFSEASON);
 end
 
 function ConquestFrame_UpdateSeasonFrames(self)
@@ -1961,9 +1961,11 @@ function PVPConquestBarMixin:Update()
 		return;
 	end
 
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
+	local maxProgress = currencyInfo.maxQuantity;
+	local progress = math.min(currencyInfo.totalEarned, maxProgress);
+
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local progress = weeklyProgress.progress;
-	local maxProgress = weeklyProgress.maxProgress;
 	local displayType = weeklyProgress.displayType;
 
 	local isAtMax = progress >= maxProgress;
