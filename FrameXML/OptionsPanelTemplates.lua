@@ -150,7 +150,9 @@ function BlizzardOptionsPanel_CheckButton_SetNewValue (checkButton)
 
 	-- CLASS-4108: Fixing a bug, but maintaining current functionality.
 	-- Check button controls should take effect immediately.
-	BlizzardOptionsPanel_SetCVarSafe(checkButton.cvar, checkButton.newValue or checkButton.value);
+	if( checkButton.cvar ) then
+		BlizzardOptionsPanel_SetCVarSafe(checkButton.cvar, checkButton.newValue or checkButton.value);
+	end
 
 	BlizzardOptionsPanel_SetDependentControlsEnabled(checkButton, isChecked);
 end
