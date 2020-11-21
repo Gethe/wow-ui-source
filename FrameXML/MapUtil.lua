@@ -34,7 +34,14 @@ function MapUtil.ShouldShowTask(mapID, info)
 	if (info.isQuestStart and info.inProgress) then
 		return false
 	end
-	return (mapID == info.mapID) and HaveQuestData(info.questId);
+	if not HaveQuestData(info.questId) then
+		return false;
+	end
+	-- callings are allowed on other maps if they are zone maps 
+	if C_QuestLog.IsQuestCalling(info.questId) and MapUtil.IsMapTypeZone(mapID) then
+		return true;
+	end
+	return mapID == info.mapID;
 end
 
 function MapUtil.MapHasUnlockedBounties(mapID)
