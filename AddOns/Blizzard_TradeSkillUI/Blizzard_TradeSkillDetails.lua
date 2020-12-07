@@ -247,6 +247,11 @@ function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
 			HelpTip:Show(self, helpTipInfo, self.Contents.OptionalReagent1);
 		end
 	elseif self.tutorialStage == OptionalReagentTutorialStage.List then
+		local firstLine = self:GetParent():GetOptionalReagentListTutorialLine();
+		if not firstLine:IsShown() then
+			return;
+		end
+
 		self.hasShownSlotTutorial = true;
 
 		local helpTipInfo = {
@@ -258,7 +263,6 @@ function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
 			offsetY = 0,
 		};
 
-		local firstLine = self:GetParent():GetOptionalReagentListTutorialLine();
 		HelpTip:Show(self, helpTipInfo, firstLine);
 	elseif self.tutorialStage == OptionalReagentTutorialStage.Icon then
 		local function HelpTipHiddenCallback(acknowledged)

@@ -868,6 +868,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="IconOverlay2" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
@@ -884,6 +892,7 @@
 				<Alpha childKey="Icon" startDelay="0.1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconHitBox.IconBorder" startDelay="0.1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconHitBox.IconOverlay" startDelay="0.1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconHitBox.IconOverlay2" startDelay="0" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="Icon" startDelay="0.25" smoothing="OUT" duration="0.4" order="1" offsetX="-110" offsetY="0"/>
 				<Alpha childKey="IconHitBox.Glow" smoothing="IN" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconHitBox.Glow" startDelay="0.25" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
@@ -903,6 +912,7 @@
 						lootFrame.Icon:SetAlpha(0);
 						lootFrame.IconHitBox.IconBorder:SetAlpha(0);
 						lootFrame.IconHitBox.IconOverlay:SetAlpha(0);
+						lootFrame.IconHitBox.IconOverlay2:SetAlpha(0);
 						lootFrame.Icon:SetPoint("LEFT", 124, 0);
 					</OnPlay>
 					<OnFinished>

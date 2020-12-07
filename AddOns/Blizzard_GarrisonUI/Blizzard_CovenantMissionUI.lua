@@ -292,6 +292,7 @@ function CovenantMission:ShowMission(missionInfo)
 		followerFrame:SetEmpty();
 		followerFrame:Show();
 	end
+	self:GetMissionPage().Board:ResetBoardIndicators();
 
 	self:SetupShowMissionTutorials(missionInfo);
 

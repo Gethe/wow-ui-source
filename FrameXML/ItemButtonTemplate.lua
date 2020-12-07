@@ -198,8 +198,12 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("ConduitIconFrame");
 		button.IconOverlay:Show();
-		button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
-		button.IconOverlay2:Show();
+
+		-- If this is missing, the texture will make it apparant instead of error.
+		if button.IconOverlay2 then
+			button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
+			button.IconOverlay2:Show();
+		end
 	else
 		button.IconOverlay:Hide();
 	end

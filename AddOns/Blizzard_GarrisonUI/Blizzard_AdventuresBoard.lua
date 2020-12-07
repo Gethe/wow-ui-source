@@ -319,6 +319,12 @@ function AdventuresBoardMixin:UpdateHealedFollower(followerID)
 	end
 end
 
+function AdventuresBoardMixin:ResetBoardIndicators() 
+	for followerFrame in self:EnumerateFollowerSockets() do
+		followerFrame:ResetVisibility();
+	end
+end
+
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);
 
 function AdventuresBoardCombatMixin:OnLoad()
@@ -458,7 +464,6 @@ function AdventuresSocketMixin:OnShow()
 end
 
 function AdventuresSocketMixin:OnHide()
-	self:ResetVisibility();
 	EventRegistry:UnregisterCallback("CovenantMission.CancelTargetingAnimation", self);
 	EventRegistry:UnregisterCallback("CovenantMission.CancelLoopingTargetingAnimation", self);
 end
