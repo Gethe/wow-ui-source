@@ -744,7 +744,7 @@ end
 function TradeSkillDetailsMixin:OnResultMouseEnter(resultButton)
 	if self.selectedRecipeID then
 		GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
-		GameTooltip:SetRecipeResultItem(self.selectedRecipeID, self:GetOptionalReagentsArray());
+		GameTooltip:SetRecipeResultItem(self.selectedRecipeID, self:GetOptionalReagentsArray(), self:GetSelectedRecipeLevel());
 		CursorUpdate(resultButton);
 		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Icon)
 	end

@@ -3163,7 +3163,7 @@ function LFGListUtil_SetAutoAccept(autoAccept)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	if activeEntryInfo then
 		C_LFGList.CopyActiveEntryInfoToCreationFields();
-		C_LFGList.UpdateListing(activeEntryInfo.activityID, activeEntryInfo.requiredItemLevel, activeEntryInfo.requiredHonorLevel, activeEntryInfo.autoAccept, activeEntryInfo.privateGroup, activeEntryInfo.questID);
+		C_LFGList.UpdateListing(activeEntryInfo.activityID, activeEntryInfo.requiredItemLevel, activeEntryInfo.requiredHonorLevel, autoAccept, activeEntryInfo.privateGroup, activeEntryInfo.questID);
 	end
 end
 

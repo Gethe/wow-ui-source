@@ -402,15 +402,12 @@ function ClubFinderApplicantListMixin:GuildMemberUpdate()
 
 	local clubInfo = C_Club.GetClubInfo(clubId);
 
-	if clubInfo and clubInfo.clubType == Enum.ClubType.Guild then
-		if (not communitiesFrame:IsShowingApplicantList() and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer())) then 
+	if clubInfo and clubInfo.clubType == Enum.ClubType.Guild and (IsGuildLeader() or C_GuildInfo.IsGuildOfficer()) then
+		if not communitiesFrame:IsShowingApplicantList() then 
 			C_ClubFinder.RequestApplicantList(Enum.ClubFinderRequestType.Guild); 
 			if (not self.newApplicantListRequest) then 
 				self:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Guild);
 			end	
-		elseif not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer() then 
-			communitiesFrame.GuildMemberListDropDownMenu:ResetDisplayMode();
-			self:CancelRefreshTicker();
 		end
 	end
 end 

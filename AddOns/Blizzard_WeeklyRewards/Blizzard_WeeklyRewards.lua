@@ -412,7 +412,7 @@ function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, 
 			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT);
 		else
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, self.info.level + 1, self.info.threshold));
-			local runHistory = C_MythicPlus.GetRunHistory();
+			local runHistory = C_MythicPlus.GetRunHistory(false, true);
 			if #runHistory > 0 then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));			
@@ -424,7 +424,7 @@ function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, 
 					end
 				end
 				table.sort(runHistory, comparison);
-				for i = 1, self.info.threshold do
+				for i = 1, #runHistory do
 					local runInfo = runHistory[i];
 					local name = C_ChallengeMode.GetMapUIInfo(runInfo.mapChallengeModeID);
 					GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_RUN_INFO, runInfo.level, name));

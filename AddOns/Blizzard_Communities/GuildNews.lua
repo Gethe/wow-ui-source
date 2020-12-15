@@ -7,12 +7,13 @@ function CommunitiesGuildNewsFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
 	self:RegisterEvent("GUILD_MOTD");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	local fontString = self.SetFiltersButton:GetFontString();
 	self.SetFiltersButton:SetHeight(fontString:GetHeight() + 4);
 	self.SetFiltersButton:SetWidth(fontString:GetWidth() + 4);
 	self.Container.update = function () CommunitiesGuildNews_Update(self); end;
 	HybridScrollFrame_CreateButtons(self.Container, "CommunitiesGuildNewsButtonTemplate", 0, 0);
-	
+
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
 	else  -- alliance
@@ -31,8 +32,12 @@ function CommunitiesGuildNewsFrame_OnHide(self)
 end
 
 function CommunitiesGuildNewsFrame_OnEvent(self, event)
-	if ( self:IsShown() ) then
-		CommunitiesGuildNews_Update(self);
+	if event == "PLAYER_ENTERING_WORLD" then
+		QueryGuildNews();
+	else
+		if ( self:IsShown() ) then
+			CommunitiesGuildNews_Update(self);
+		end
 	end
 end
 
@@ -51,13 +56,13 @@ function CommunitiesGuildNews_Update(self)
 		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 7);
 		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 5);
 	end
-	
+
 	local motd = GetGuildRosterMOTD();
 	local scrollFrame = self.Container;
-	local haveMOTD = motd ~= "" and 1 or 0;	
+	local haveMOTD = motd ~= "" and 1 or 0;
 	local buttons = scrollFrame.buttons;
 	local button, index;
-	
+
 	local numEvents = math.min(7, C_Calendar.GetNumGuildEvents());
 	local numNews = GetNumGuildNews();
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -81,17 +86,17 @@ function CommunitiesGuildNews_Update(self)
 			button:Hide();
 		end
 	end
-	
+
 	-- update tooltip
 	if ( self.activeButton ) then
 		CommunitiesGuildNewsButton_OnEnter(self.activeButton);
 	end
-	
+
 	-- hide dropdown menu
 	if ( self.DropDown.newsIndex ) then
 		CloseDropDownMenus();
 	end
-	
+
 	if ( numNews == 0 and haveMOTD == 0 and numEvents == 0 ) then
 		self.NoNews:Show();
 	else
@@ -113,10 +118,10 @@ function CommunitiesGuildNewsButton_SetEvent( button, event_id )
 	local minute = guildEventInfo.minute;
 	local title = guildEventInfo.title;
 	local texture = guildEventInfo.texture;
-	
+
 	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
 	local displayDay;
-	
+
 	if ( today["day"] == day and today["month"] == month ) then
 		displayDay = NORMAL_FONT_COLOR_CODE..GUILD_EVENT_TODAY..FONT_COLOR_CODE_CLOSE;
 	else
@@ -134,9 +139,9 @@ function CommunitiesGuildNewsButton_SetEvent( button, event_id )
 		end
 	end
 	GuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_EVENT_FORMAT, displayDay, displayTime, title);
-	
+
 	button.text:SetPoint("LEFT", 24, 0);
-	GuildNewsButton_SetIcon( button, texture);	
+	GuildNewsButton_SetIcon( button, texture);
 	button.index = event_id;
 	button.newsType = NEWS_GUILD_EVENT;
 
@@ -187,7 +192,7 @@ function CommunitiesGuildNewsButton_OnEnter(self)
 		if ( leftCriteria ) then
 			if ( firstCriteria ) then
 				GameTooltip:AddLine(" ");
-			end	
+			end
 			GameTooltip:AddLine(leftCriteria, 0.8, 0.8, 0.8);
 		end
 		GameTooltip:Show();
@@ -246,7 +251,7 @@ end
 function CommunitiesGuildNewsButton_OnLeave(self)
 	self.activeButton = nil;
 	GameTooltip:Hide();
-	
+
 	local guildNewsFrame = self:GetParent():GetParent():GetParent();
 	guildNewsFrame.BossModel:Hide();
 end
@@ -261,7 +266,7 @@ function CommunitiesGuildNewsDropDown_Initialize(self)
 	if not self.newsInfo then
 		return;
 	end
-	
+
 	-- we don't have any options for these combinations
 	if ( ( self.newsInfo.newsType == NEWS_DUNGEON_ENCOUNTER or self.newsInfo.newsType == NEWS_GUILD_LEVEL or self.newsInfo.newsType == NEWS_GUILD_CREATE ) and not CanEditMOTD() ) then
 		return;
@@ -275,14 +280,14 @@ function CommunitiesGuildNewsDropDown_Initialize(self)
 	else
 		info.text = self.newsInfo.whatText;
 	end
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
-	
+
 	if ( self.newsInfo.newsType == NEWS_PLAYER_ACHIEVEMENT or self.newsInfo.newsType == NEWS_GUILD_ACHIEVEMENT ) then
 		info.func = function (button, ...) OpenAchievementFrameToAchievement(...); end;
 		info.text = GUILD_NEWS_VIEW_ACHIEVEMENT;
-		info.arg1 = self.newsInfo.newsDataID;	
+		info.arg1 = self.newsInfo.newsDataID;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	elseif ( IsLootNews(self.newsInfo.newsType) ) then
 		info.func = function (button, ...) ChatEdit_LinkItem(...) end;
