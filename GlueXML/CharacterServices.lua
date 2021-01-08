@@ -549,9 +549,7 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 	if isExpansionTrialCharacter and CanUpgradeExpansion()  then
 		return false;
 	elseif isTrialBoost then
-		if level >= flowData.level and not IsUsingValidProductForTrialBoost(flowData) then
-			return false;
-		end
+		return true;
 	elseif revokedCharacterUpgrade then
 		if level > flowData.level then
 			return false;

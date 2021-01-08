@@ -188,7 +188,9 @@ function CommentatorUnitFrameMixin:OnUpdate(elapsed)
 	end
 
 	local color = C_Commentator.GetTeamColor(self.teamIndex);
-	self.Circle.TeamColorOverlay:SetVertexColor(color.r, color.g, color.b, color.a);
+	for index, overlay in ipairs(self.Circle.TeamOverlays) do
+		overlay:SetVertexColor(color.r, color.g, color.b, color.a);
+	end
 
 	if UnitExists(self.unitToken) then
 		local unitData = C_Commentator.GetUnitData(self.unitToken);

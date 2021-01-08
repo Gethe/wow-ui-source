@@ -296,8 +296,6 @@ function CovenantMission:ShowMission(missionInfo)
 
 	self:SetupShowMissionTutorials(missionInfo);
 
-	self:SetupShowMissionTutorials(missionInfo);
-
 	missionPage.missionInfo = missionInfo;
 
 	self:SetTitle(missionInfo.name);

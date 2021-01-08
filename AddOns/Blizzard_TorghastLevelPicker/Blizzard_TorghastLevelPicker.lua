@@ -291,7 +291,6 @@ end
 
 function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
 	local continuableContainer = ContinuableContainer:Create();
-	self.itemRewards = { };
 	self.currencyRewards = { };
 
 	for _, reward in ipairs(self.rewards) do 
@@ -311,6 +310,7 @@ function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
 	end 
 
 	continuableContainer:ContinueOnLoad(function()
+		self.itemRewards = { };
 		for  _, reward in ipairs(self.rewards) do
 			if	(reward.rewardType == Enum.GossipOptionRewardType.Item) then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = GetItemInfo(reward.id);
