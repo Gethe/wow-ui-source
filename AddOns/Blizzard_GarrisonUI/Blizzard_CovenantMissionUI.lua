@@ -292,6 +292,9 @@ function CovenantMission:ShowMission(missionInfo)
 		followerFrame:SetEmpty();
 		followerFrame:Show();
 	end
+	self:GetMissionPage().Board:ResetBoardIndicators();
+
+	self:SetupShowMissionTutorials(missionInfo);
 
 	self:SetupShowMissionTutorials(missionInfo);
 
@@ -681,6 +684,8 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 	if updateValues then
 		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
+
+	self:ClearQueuedTutorials();
 end
 
 function CovenantMission:GetNumMissionFollowers()

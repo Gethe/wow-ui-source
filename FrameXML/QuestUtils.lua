@@ -105,7 +105,7 @@ function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCam
 		return "CampaignAvailableQuestIcon", true;
 	elseif isCovenantCalling then
 		return "CampaignAvailableDailyQuestIcon", true;
-	elseif frequency ~= Enum.QuestFrequency.Default then
+	elseif frequency == Enum.QuestFrequency.Daily then
 		return "Interface/GossipFrame/DailyQuestIcon", false;
 	elseif isRepeatable then
 		return "Interface/GossipFrame/DailyActiveQuestIcon", false;

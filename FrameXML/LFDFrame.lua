@@ -180,11 +180,12 @@ function LFDQueueFrame_UpdateRoleButtons()
 				end
 			end
 		end
-	elseif( dungeonID == "specific" and LFGEnabledList )then
+	elseif( dungeonID == "specific" and LFDDungeonList and LFGEnabledList )then
 		-- count the number of dungeons a role is locked
 		local dungeonCount = 0;
-		for id, isChecked in pairs(LFGEnabledList) do
-			if( isChecked and not LFGIsIDHeader(id) and not LFGLockList[id] ) then
+		for _, id in ipairs(LFDDungeonList) do
+			local isChecked = LFGEnabledList[id];
+			if isChecked and not LFGIsIDHeader(id) then
 				tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(id);
 				restrictedRoles[1].count = restrictedRoles[1].count + ((tankLocked and 1) or 0);
 				restrictedRoles[2].count = restrictedRoles[2].count + ((healerLocked and 1) or 0);
@@ -234,21 +235,25 @@ end
 
 --Role-check functions
 function LFDQueueCheckRoleSelectionValid(tank, healer, dps)
-	if ( not tank and not healer and not dps ) then
+	if not tank and not healer and not dps then
 		return false;
 	end
 
-	local dungeonID = LFDQueueFrame.type;
-	if ( dungeonID == "specific" and LFGEnabledList )then
-		local tankLocked, healerLocked, dpsLocked;
-		for id, isChecked in pairs(LFGEnabledList) do
-			if ( isChecked and not LFGIsIDHeader(id) and not LFGLockList[id] ) then
-				if ( LFDCheckRolesRestricted( id, tank, healer, dps ) ) then
+	if not LFDDungeonList or not LFGEnabledList then
+		return true;
+	end
+
+	if LFDQueueFrame.type == "specific" then
+		for _, id in ipairs(LFDDungeonList) do
+			local isChecked = LFGEnabledList[id];
+			if isChecked and not LFGIsIDHeader(id) then
+				if LFDCheckRolesRestricted( id, tank, healer, dps ) then
 					return false;
 				end
 			end
 		end
 	end
+
 	return true;
 end
 

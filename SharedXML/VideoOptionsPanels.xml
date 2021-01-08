@@ -806,7 +806,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SPELL_DENSITY">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT">
 											<Offset x="0" y="0"/>

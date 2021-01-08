@@ -346,7 +346,7 @@ local choiceLayout = {
 		optionsButtonContainerYOffset = 10,
 		headerYOffset = -50;
 		artworkBorderYOffset = 25;
-		tooltipOnlyOnArtwork = true,
+		tooltipOnArtworkAndOptionText = true,
 		fadeOutSoundKitID = SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_FADEOUT_POWERS_NOT_PICKED,
 		setupTooltip = function(frame, tooltip, choiceInfo)
 			tooltip:SetOwner(frame, "ANCHOR_RIGHT");
@@ -1182,13 +1182,17 @@ function PlayerChoiceOptionFrameMixin:UpdateMouseOverStateOnOption()
 	local choiceInfo = C_PlayerChoice.GetPlayerChoiceOptionInfo(self.layoutIndex);
 
 	if (layoutInfo.setupTooltip and choiceInfo) then
-		local mouseOverFrame = self.MouseOverOverride;
-		if (layoutInfo.tooltipOnlyOnArtwork) then
-			mouseOverFrame = self.Artwork;
-		elseif (layoutInfo.tooltipOnlyOnOptionText) then
-			mouseOverFrame = self.OptionText;
+		local mouseOverFrame = nil;
+
+		if (layoutInfo.tooltipOnArtworkAndOptionText) then
+			if (MouseIsOver(self.Artwork) or MouseIsOver(self.OptionText)) then 
+				mouseOverFrame = self.OptionText;
+			end
+		elseif (MouseIsOver(self.MouseOverOverride)) then
+			mouseOverFrame = self.MouseOverOverride;
 		end
-		if (MouseIsOver(mouseOverFrame)) then
+
+		if (mouseOverFrame) then
 			layoutInfo.setupTooltip(mouseOverFrame, GameTooltip, choiceInfo);
 			tooltipShown = true;
 		end

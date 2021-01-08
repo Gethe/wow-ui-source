@@ -1,3 +1,5 @@
+local StaticPopup_Show = StaticPopup_Show or GlueDialog_Show;
+
 function AudioOptionsFrame_Toggle ()
 	if ( AudioOptionsFrame:IsShown() ) then
 		AudioOptionsFrame:Hide();
@@ -45,7 +47,7 @@ function AudioOptionsFrame_OnHide (self)
 	if ( AudioOptionsFrame.gameRestart ) then
 		StaticPopup_Show("CLIENT_RESTART_ALERT");
 		AudioOptionsFrame.gameRestart = nil;
-	elseif ( AudioOptionsFrame.logout ) then
+	elseif ( AudioOptionsFrame.logout and not IsOnGlueScreen() ) then
 		StaticPopup_Show("CLIENT_LOGOUT_ALERT");
 		AudioOptionsFrame.logout = nil;
 	end

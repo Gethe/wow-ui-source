@@ -501,7 +501,7 @@ end
 --- Talent Tree                                                               ---
 ---------------------------------------------------------------------------------
 
-function GetGarrisonTalentCostString(talentInfo, abbreviate)
+function GetGarrisonTalentCostString(talentInfo, abbreviate, colorCode)
 	local costString;
 
 	local function AddCost(cost)
@@ -512,7 +512,6 @@ function GetGarrisonTalentCostString(talentInfo, abbreviate)
 		end
 	end
 
-	local colorCode = nil;
 	for i, researchCostInfo in ipairs(talentInfo.researchCurrencyCosts) do
 		AddCost(GetCurrencyString(researchCostInfo.currencyType, researchCostInfo.currencyQuantity, colorCode, abbreviate));
 	end

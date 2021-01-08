@@ -59,17 +59,17 @@ end
 
 function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self:UpdateTabs();
-	if (C_Garrison.IsInvasionAvailable()) then
-		self.InvasionBadge:Show();
-		self.InvasionBadge.InvasionBadgeAnim:Play();
-	else
-		self.InvasionBadge:Hide();
-	end
 
 	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0) or C_Garrison.HasAdventures();
 	self.FollowerTabButton:SetShown(shouldShowFollowerTab);
 
 	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
+		if (C_Garrison.IsInvasionAvailable()) then
+			self.InvasionBadge:Show();
+			self.InvasionBadge.InvasionBadgeAnim:Play();
+		else
+			self.InvasionBadge:Hide();
+		end
 		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOMLEFT", 60, 40);

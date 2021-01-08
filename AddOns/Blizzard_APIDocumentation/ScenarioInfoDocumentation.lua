@@ -6,6 +6,20 @@ local ScenarioInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetJailersTowerTypeString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "runType", Type = "JailersTowerType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "typeString", Type = "string", Nilable = true },
+			},
+		},
 	},
 
 	Events =

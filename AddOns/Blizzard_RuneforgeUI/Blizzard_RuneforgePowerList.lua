@@ -46,6 +46,8 @@ end
 
 function RuneforgePowerSlotMixin:OnShow()
 	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.OnBaseItemChanged, self);
+
+	self:UpdateState();
 end
 
 function RuneforgePowerSlotMixin:OnHide()

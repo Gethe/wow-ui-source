@@ -74,7 +74,8 @@ function AchievementDisplayOverviewBulletMixin:SetUpCriteria(achievementID, crit
 	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, criteriaIndex);
 	local _, name, _, achievementCompleted, _, _, _, _, _, _, _, _, wasEarnedByMe = GetAchievementInfo(achievementID);
 	completed = completed or (achievementCompleted and wasEarnedByMe);
-	self:Setup(achievementID, criteriaIndex, name, completed);
+	local bulletString = criteriaString or name; 
+	self:Setup(achievementID, criteriaIndex, bulletString, completed);
 end
 
 function AchievementDisplayOverviewBulletMixin:SetUpAchievement(achievementID)
