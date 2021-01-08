@@ -26,9 +26,6 @@ function NewPlayerExperience:Begin()
 	
 	-- if the achievement is NOT completed, we don't care if Tutorials are on or off
 
-	-- anyone going through the NPE Tutorial has this CVAR set
-	SetCVar("whisperMode", "popout");
-
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 	Dispatcher:RegisterEvent("CVAR_UPDATE", self);
 

@@ -12,6 +12,13 @@
 	<Cooldown name="CommentatorRadialCooldownTemplate" virtual="true" >
 		<SwipeTexture file="Interface\PVPFrame\PVP-Separation-Circle-Cooldown-overlay"/>
 	</Cooldown>
+
+	<Texture name="CommentatorTeamOverlayTemplate" atlas="Portrait-frame-color" virtual="true">
+		<Size x="86" y="86"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Texture>
 	
 	<Frame name="CommentatorUnitFrameTemplate" frameStrata="LOW" mixin="CommentatorUnitFrameMixin" virtual="true">
 		<Size x="300" y="100"/>
@@ -47,16 +54,22 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="TeamColorOverlay" atlas="Portrait-frame-color" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="TrimOverlay" atlas="Portrait-Frame" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" y="-5"/>
-							</Anchors>
-						</Texture>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="3">
 						<Texture parentKey="DeathIcon" atlas="Icon-Death" scale=".7" useAtlasSize="true" hidden="true">
@@ -66,6 +79,13 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="TrimOverlay" atlas="Portrait-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
 						<FontString parentKey="CCText" inherits="CommentatorCCFont" justifyH="CENTER" justifyV="MIDDLE">
 							<Size x="100" y="100"/>
 							<Anchors>
