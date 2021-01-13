@@ -1074,7 +1074,9 @@ function HonorFrameBonusFrame_SetButtonState(button, enable, minLevel)
 		button.Title:SetTextColor(0.4, 0.4, 0.4);
 		button.NormalTexture:SetAlpha(0.5);
 		button:Disable();
-		if ( minLevel ) then
+
+		local tooLowLevel = minLevel and PartyUtil.GetMinLevel() < minLevel;
+		if tooLowLevel then
 			button.LevelRequirement:Show();
 			button.LevelRequirement:SetFormattedText(UNLOCKS_AT_LEVEL, minLevel);
 			local height = button.LevelRequirement:GetHeight() + 4;
