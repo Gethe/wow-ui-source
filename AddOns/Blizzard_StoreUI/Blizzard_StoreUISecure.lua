@@ -1534,7 +1534,14 @@ local productCardTemplateData = {
 		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
 		poolSize = 1,
 		buyButton = true,
-	}
+	},
+	HorizontalFullStoreCardWithNydusLinkButtonTemplate = {
+		cellGridSize = {width = 4, height = 2},
+		cellPixelSize = {width = 576, height = 471},
+		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
+		poolSize = 1,
+		buyButton = true
+	},
 };
 
 function StoreFrame_GetCellPixelSize(cardTemplate)
@@ -1606,6 +1613,8 @@ function StoreFrame_GetProductCardTemplate(cardType, flags)
 		return "HorizontalLargeStoreCardWithBuyButtonTemplate"
 	elseif cardType == Enum.BattlepayCardType.LargeVeritcalCardWithBuyButton then
 		return "VerticalLargeStoreCardWithBuyButtonTemplate"
+	elseif cardType == Enum.BattlepayCardType.FullCardWithNydusLinkButton then
+		return "HorizontalFullStoreCardWithNydusLinkButtonTemplate";
 	elseif cardType == Enum.BattlepayCardType.FullCardWithBuyButton then
 		if bit.band(flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
 			return "HorizontalFullStoreCardWithBuyButtonTemplate";

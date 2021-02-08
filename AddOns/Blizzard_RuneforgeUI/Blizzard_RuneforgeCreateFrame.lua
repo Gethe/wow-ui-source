@@ -6,6 +6,19 @@ StaticPopupDialogs["CONFIRM_RUNEFORGE_LEGENDARY_CRAFT"] = {
 
 	OnShow = function(self, data)
 		self.text:SetText(data.title);
+		self.confirmationDelayTimeLeft = 5;
+	end,
+
+	OnUpdate = function(self, elapsed)
+		self.confirmationDelayTimeLeft = self.confirmationDelayTimeLeft - elapsed;
+
+		if self.confirmationDelayTimeLeft <= 0 then
+			self.button1:Enable();
+			self.button1:SetText(YES);
+		else
+			self.button1:Disable();
+			self.button1:SetText(math.ceil(self.confirmationDelayTimeLeft));
+		end
 	end,
 
 	OnAccept = function()

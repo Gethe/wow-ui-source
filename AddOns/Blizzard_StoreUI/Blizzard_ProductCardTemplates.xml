@@ -47,6 +47,14 @@
 				</Scripts>
 			</Button>
 
+		<Button name="NydusLinkButtonTemplate" inherits="StoreButtonTemplate" mixin="StoreNydusLinkButtonMixin" virtual="true">
+			<Scripts>
+				<OnMouseUp method="OnMouseUp" />
+				<OnMouseDown method="OnMouseDown" />
+				<OnClick method="OnClick" />
+			</Scripts>
+		</Button>
+
 		<Button name="DefaultStoreCardTemplate" motionScriptsWhileDisabled="true" virtual="true">
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -197,8 +205,10 @@
 
 		<Button name="LargeStoreCardBuyButtonTemplate" inherits="LargeStoreCardTemplate" virtual="true">
 			<Layers>
-				<Layer level="ARTWORK" textureSubLevel="4">
+				<Layer level="ARTWORK" textureSubLevel="3">
 					<Texture parentKey="SplashBanner" inherits="store-card-splash-banner" />
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="4">
 					<FontString parentKey="SplashBannerText" inherits="GameFontNormalHuge3" />
 					<FontString parentKey="PurchasedText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
 						<Color r="0.1" g="1" b="0.1" />
@@ -224,6 +234,32 @@
 			</Frames>
 		</Button>
 
+		<Button name="LargeStoreCardNydusLinkButtonTemplate" inherits="LargeStoreCardTemplate" virtual="true">
+			<Layers>
+				<Layer level="ARTWORK" textureSubLevel="3">
+					<Texture parentKey="SplashBanner" inherits="store-card-splash-banner" />
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="4">
+					<FontString parentKey="SplashBannerText" inherits="GameFontNormalHuge3" />
+					<FontString parentKey="PurchasedText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
+						<Color r="0.1" g="1" b="0.1" />
+					</FontString>
+					<FontString parentKey="DisclaimerText" inherits="GameFontNormalTiny2" justifyH="LEFT" hidden="true">
+						<Color r="1" g="1" b="1" />
+					</FontString>
+					<Texture parentKey="PurchasedMark" atlas="shop-icon-purchasedcheckmark" useAtlasSize="true" >
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.PurchasedText" relativePoint="LEFT" x="-5" y="0" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="BuyButton" inherits="CustomBuyButtonTemplate" motionScriptsWhileDisabled="true" />
+				<Button parentKey="NydusLinkButton" inherits="NydusLinkButtonTemplate" motionScriptsWhileDisabled="true" />
+			</Frames>
+		</Button>
+
 
 		<!-- Card Templates WITHOUT a Buy Button-->
 		<Button name="SmallStoreCardTemplate" mixin="SmallStoreCardMixin" inherits="DefaultStoreCardTemplate" virtual="true" />
@@ -244,6 +280,9 @@
 		<Button name="HorizontalFullStoreCardWithBuyButtonTemplate" mixin="HorizontalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
 
 		<Button name="VerticalFullStoreCardWithBuyButtonTemplate" mixin="VerticalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+		<!-- Card Templates WITH a Nydus Link Button and WITHOUT a Buy Button-->
+		<Button name="HorizontalFullStoreCardWithNydusLinkButtonTemplate" mixin="HorizontalFullStoreCardWithNydusLinkMixin" inherits="LargeStoreCardNydusLinkButtonTemplate" virtual="true" />
 
 	</ScopedModifier>
 </Ui>
