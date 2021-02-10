@@ -11,6 +11,8 @@ end
 Import("IsOnGlueScreen");
 Import("BLIZZARD_STORE_PURCHASED");
 Import("GetUnscaledFrameRect");
+Import("GetCurrentRegionName");
+Import("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
@@ -127,4 +129,18 @@ end
 function StoreBuyButtonMixin:OnMouseUp()
 	StoreButtonMixin.OnMouseUp(self);
 	self.Discount:SetPoint("CENTER", 0, 0);
+end
+
+--------------------------------------------------
+-- STORE BUY BUTTON MIXIN
+StoreNydusLinkButtonMixin = CreateFromMixins(StoreButtonMixin);
+
+function StoreNydusLinkButtonMixin:OnClick(self)
+	-- TODO: Add column for nydus link and update tag for server data import
+	if ( GetCurrentRegionName() == "CN" ) then
+		LoadURLIndex(54);
+	else
+		LoadURLIndex(53);
+	end
+	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
 end

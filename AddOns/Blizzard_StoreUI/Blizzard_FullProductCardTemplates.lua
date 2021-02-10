@@ -436,6 +436,66 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 end
 
 --------------------------------------------------
+-- HORIZONTAL FULL STORE CARD WITH NYDUS LINK MIXIN 
+HorizontalFullStoreCardWithNydusLinkMixin = CreateFromMixins(FullStoreCardMixin);
+
+function HorizontalFullStoreCardWithNydusLinkMixin:Layout()
+	FullStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("HorizontalFullStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+end
+
+function HorizontalFullStoreCardWithNydusLinkMixin:SetStyle(overrideBackground)
+	FullStoreCardMixin.SetStyle(self, overrideBackground);
+
+	self.ModelScene:ClearAllPoints();
+	self.ModelScene:SetPoint("TOPLEFT", 4, -4);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -4, 4);
+	self.ModelScene:SetViewInsets(0, 0, 0, 0);
+
+	self.SplashBanner:Hide();
+	self.SplashBannerText:Hide();
+
+	self.ProductName:ClearAllPoints();
+	self.CurrentPrice:ClearAllPoints();
+	self.NormalPrice:ClearAllPoints();
+	self.Description:ClearAllPoints();
+
+	if not self.ProductName.SetFontObjectsToTry then
+		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
+	end
+	self.ProductName:SetWidth(535);
+	self.ProductName:SetMaxLines(1);
+	self.ProductName:SetPoint("CENTER", 0, -63);
+	self.ProductName:SetJustifyH("CENTER");
+	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
+	self.ProductName:SetShadowOffset(1, -1);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
+
+	self.CurrentPrice:Hide();
+	self.NormalPrice:Hide();
+
+	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -10);
+	self.Description:SetFontObject("GameFontNormalMed1");
+	self.Description:SetWidth(490);
+	self.Description:SetJustifyH("CENTER");
+
+	self.SalePrice:Hide();
+
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("BOTTOM", 0, 33);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
+
+	self.NydusLinkButton:ClearAllPoints();
+	self.NydusLinkButton:SetPoint("BOTTOM", 0, 33);
+	self.NydusLinkButton:SetText(BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT);
+end
+
+--------------------------------------------------
 -- VERTICAL FULL STORE CARD MIXIN
 VerticalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin, ProductCardBuyButtonMixin);
 
