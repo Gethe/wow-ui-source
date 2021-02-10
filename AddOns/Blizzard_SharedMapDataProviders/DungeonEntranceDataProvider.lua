@@ -51,5 +51,5 @@ end
 
 function DungeonEntrancePinMixin:UpdateSupertrackedHighlight()
 	local highlight = QuestSuperTracking_ShouldHighlightDungeons(self:GetMap():GetMapID());
-	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(highlight, self, self.Texture);
 end

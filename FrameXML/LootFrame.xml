@@ -67,8 +67,8 @@
 				GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 				if ( not self:IsEnabled() ) then
 					GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				end
+				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

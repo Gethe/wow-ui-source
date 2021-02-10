@@ -3404,10 +3404,10 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 end
 
 function DoesActivePlayerHaveMentorStatus()
-	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) ~= Enum.PlayerMentorshipStatus.None;
+	return C_PlayerMentorship.IsActivePlayerConsideredNewcomer() or (C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) ~= Enum.PlayerMentorshipStatus.None);
 end
 
-function IsActivePlayerMentor()
+function IsActivePlayerGuide()
 	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Mentor;
 end
 
@@ -3426,11 +3426,11 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 			-- Add Blizzard Icon if  this was sent by a GM/DEV
 			return "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 		elseif specialFlag == "GUIDE" then
-			if C_PlayerMentorship.IsActivePlayerConsideredNewcomer() then
+			if DoesActivePlayerHaveMentorStatus() then
 				return NPEV2_CHAT_USER_TAG_GUIDE .. " "; -- possibly unable to save global string with trailing whitespace...
 			end
 		elseif specialFlag == "NEWCOMER" then
-			if IsActivePlayerMentor() then
+			if IsActivePlayerGuide() then
 				return NPEV2_CHAT_USER_TAG_NEWCOMER;
 			end
 		else

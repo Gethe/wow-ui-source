@@ -1526,19 +1526,21 @@ function IsAnyBagOpen()
 end
 
 function OpenAllBagsMatchingContext(frame)
-	if IsAnyBagOpen() then
-		return;
-	end
-
+	local count = 0;
 	for i = 0, NUM_BAG_FRAMES do
 		if ItemButtonUtil.GetItemContextMatchResultForContainer(i) == ItemButtonUtil.ItemContextMatchResult.Match then
-			OpenBag(i);
+			if not IsBagOpen(i) then
+				OpenBag(i);
+				count = count + 1;
+			end
 		end
 	end
 
 	if frame and not FRAME_THAT_OPENED_BAGS then
 		FRAME_THAT_OPENED_BAGS = frame:GetName();
 	end
+
+	return count;
 end
 
 function OpenAllBags(frame, forceUpdate)

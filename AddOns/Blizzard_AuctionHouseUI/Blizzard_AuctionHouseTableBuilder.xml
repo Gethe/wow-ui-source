@@ -187,6 +187,8 @@
 	</Frame>
 
 	<Frame name="AuctionHouseTableCellItemBuyoutTemplate" inherits="AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
+	
+	<Frame name="AuctionHouseTableCellItemSellBuyoutTemplate" mixin="AuctionHouseTableCellItemSellBuyoutMixin" inherits="AuctionHouseTableCellTextTemplate, AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
 
 	<Frame name="AuctionHouseTableCellItemQuantityLeftTemplate" mixin="AuctionHouseTableCellItemQuantityMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
 

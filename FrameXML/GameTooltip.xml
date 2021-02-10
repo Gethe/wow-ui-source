@@ -306,6 +306,7 @@
 					BattlePetTooltip:Hide();
 				end
 			</OnLoad>
+			<OnShow function="GameTooltip_CalculatePadding"/>;
 			<OnTooltipSetUnit function="GameTooltip_OnTooltipSetUnit" />
 			<OnTooltipSetItem function="GameTooltip_OnTooltipSetItem" />
 			<OnTooltipSetSpell function="GameTooltip_OnTooltipSetSpell" />
@@ -339,20 +340,14 @@
 		<Scripts>
 			<OnLoad inherit="prepend">
 				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-				self.updateTooltip = TOOLTIP_UPDATE_TIME;
 			</OnLoad>
 			<OnUpdate function="GameTooltip_OnUpdate"/>
-			<OnShow inherit="prepend">
-				self.recalculatePadding = true;
-			</OnShow>
+			<OnShow function="GameTooltip_CalculatePadding"/>
 			<OnHide inherit="prepend">
 				self.ItemTooltip:Hide();
 				self:SetPadding(0, 0, 0, 0);
 				self.BottomFontString:Hide();
 			</OnHide>
-			<OnSizeChanged inherit="prepend">
-				self.recalculatePadding = true;
-			</OnSizeChanged>
 		</Scripts>
 	</GameTooltip>
 

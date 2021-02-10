@@ -1148,6 +1148,7 @@ function UIMenuButtonStretchMixin:OnEnter()
 	if(self.tooltipText ~= nil) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+		GameTooltip:Show();
 	end
 end
 

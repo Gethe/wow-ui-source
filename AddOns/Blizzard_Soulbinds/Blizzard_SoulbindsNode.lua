@@ -327,7 +327,7 @@ function SoulbindConduitNodeMixin:SetConduit(conduitID, initializing)
 
 	if not initializing and conduitID > 0 and C_Soulbinds.GetInstalledConduitID(self:GetID()) ~= conduitID and (oldConduitID ~= newConduitID) then
 		self:PlaySocketAnimation();
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_ADD_PENDING, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_ADD_PENDING);
 		
 		if GameTooltip:IsShown() then
 			GameTooltip:Hide();

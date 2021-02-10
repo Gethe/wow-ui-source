@@ -14,6 +14,3 @@ function PVPUtil.GetTierName(tierEnum)
 	return tierEnumToName[tierEnum];
 end
 
-function PVPUtil.ShouldShowLegacyRewards()
-	return GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS;
-end

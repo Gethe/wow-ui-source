@@ -276,6 +276,31 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	return time;
 end
 
+function MinutesToTime(mins, hideDays)
+	local time = "";
+	local count = 0;
+	local tempTime;
+	-- only show days if hideDays is false
+	if ( mins > 1440 and not hideDays ) then
+		tempTime = floor(mins / 1440);
+		time = TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
+		mins = mod(mins, 1440);
+		count = count + 1;
+	end
+	if ( mins > 60  ) then
+		tempTime = floor(mins / 60);
+		time = time .. TIME_UNIT_DELIMITER .. format(HOURS_ABBR, tempTime);
+		mins = mod(mins, 60);
+		count = count + 1;
+	end
+	if ( count < 2 ) then
+		tempTime = mins;
+		time = time .. TIME_UNIT_DELIMITER .. format(MINUTES_ABBR, tempTime);
+		count = count + 1;
+	end
+	return time;
+end
+
 function SecondsToTimeAbbrev(seconds)
 	local tempTime;
 	if ( seconds >= 86400  ) then

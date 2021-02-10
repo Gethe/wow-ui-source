@@ -20,6 +20,19 @@ function TransmogUtil.GetInfoForEquippedSlot(transmogLocation)
 	return appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID, itemSubclass;
 end
 
+function TransmogUtil.GetCategoryForSlot(transmogLocation)
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(transmogLocation);
+	if pendingSourceID ~= REMOVE_TRANSMOG_ID then
+		return pendingCategoryID;
+	elseif ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
+		return -1;
+	elseif hasPendingUndo then
+		return -1;
+	else
+		return appliedCategoryID;
+	end
+end
+
 function TransmogUtil.CanEnchantSource(sourceID)
 	local _, _, canEnchant = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
 	return canEnchant;

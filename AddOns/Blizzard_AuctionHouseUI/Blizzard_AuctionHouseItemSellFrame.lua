@@ -67,6 +67,8 @@ function AuctionHouseItemSellFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, AUCTION_HOUSE_ITEM_SELL_FRAME_EVENTS);
 
 	self:InitializeItemSellList();
+
+	self:UpdateNoneAvailableEntry();
 end
 
 function AuctionHouseItemSellFrameMixin:OnHide()
@@ -85,9 +87,11 @@ function AuctionHouseItemSellFrameMixin:OnEvent(event, ...)
 	AuctionHouseSellFrameMixin.OnEvent(self, event, ...);
 
 	if event == "ITEM_SEARCH_RESULTS_UPDATED" then
+		self:UpdateNoneAvailableEntry();
 		self:UpdatePriceSelection();
 		self:GetItemSellList():DirtyScrollFrame();
 	elseif event == "ITEM_SEARCH_RESULTS_ADDED" then
+		self:UpdateNoneAvailableEntry();
 		self:GetItemSellList():DirtyScrollFrame();
 	elseif event == "AUCTION_MULTISELL_START" then
 		local itemLocation = self:GetItem();
@@ -121,6 +125,92 @@ function AuctionHouseItemSellFrameMixin:SetMultiSell(inProgress)
 	end
 end
 
+local function RowDataCheapestBuyoutComparison(lhs, rhs)
+	if (lhs == nil) and (rhs == nil) then
+		return false;
+	elseif (lhs == nil) or (rhs == nil) then
+		return lhs ~= nil;
+	elseif (lhs.buyoutAmount ~= nil) and (rhs.buyoutAmount ~= nil) then
+		return lhs.buyoutAmount < rhs.buyoutAmount;
+	elseif (lhs.buyoutAmount ~= nil) or (rhs.buyoutAmount ~= nil) then
+		return lhs.buyoutAmount ~= nil;
+	elseif (lhs.bidAmount ~= nil) and (rhs.bidAmount ~= nil) then
+		return lhs.bidAmount < rhs.bidAmount;
+	elseif (lhs.bidAmount ~= nil) or (rhs.bidAmount ~= nil) then
+		return lhs.bidAmount ~= nil;
+	end
+
+	return false;
+end
+
+function AuctionHouseItemSellFrameMixin:GetBestEntry()
+	if (self.itemLocation == nil) or (self.listDisplayedItemKey == nil) then
+		return nil;
+	end
+
+	local itemLevel = C_Item.GetCurrentItemLevel(self.itemLocation);
+	local isGreenQuality = C_Item.GetItemQuality(self.itemLocation) == Enum.ItemQuality.Uncommon;
+	local bestEntry = nil;
+	local numSearchResults = C_AuctionHouse.GetNumItemSearchResults(self.listDisplayedItemKey);
+	for i = 1, numSearchResults do
+		local searchResult = C_AuctionHouse.GetItemSearchResultInfo(self.listDisplayedItemKey, i);
+		if isGreenQuality or (searchResult.itemKey.itemLevel == itemLevel) then
+			if RowDataCheapestBuyoutComparison(searchResult, bestEntry) then
+				bestEntry = searchResult;
+			end
+		end
+	end
+
+	if (numSearchResults > 0) and (bestEntry == nil) then
+		bestEntry = self.noneAvailableEntry;
+	end
+
+	return bestEntry;
+end
+
+function AuctionHouseItemSellFrameMixin:ClearNoneAvailableEntry()
+	self.noneAvailableIndex = nil;
+	self.noneAvailableEntry = nil;
+end
+
+function AuctionHouseItemSellFrameMixin:UpdateNoneAvailableEntry()
+	local previousEntry = self.noneAvailableEntry;
+
+	self:ClearNoneAvailableEntry();
+	if (self.itemLocation == nil) or (self.listDisplayedItemKey == nil) then
+		return;
+	end
+
+	local numSearchResults = C_AuctionHouse.GetNumItemSearchResults(self.listDisplayedItemKey);
+	if numSearchResults == 0 then
+		return;
+	end
+
+	local sorts = self:GetAuctionHouseFrame():GetSortsForContext(AuctionHouseSearchContext.SellItems);
+	local primarySort = sorts[1];
+	local reverseSort = primarySort.reverseSort;
+
+	local itemLevel = C_Item.GetCurrentItemLevel(self.itemLocation);
+	local noneAvailableIndex = nil;
+	for i = 1, numSearchResults do
+		local searchResult = C_AuctionHouse.GetItemSearchResultInfo(self.listDisplayedItemKey, i);
+		if searchResult.itemKey.itemLevel == itemLevel then
+			return;
+		elseif (searchResult.itemKey.itemLevel > itemLevel) then
+			if reverseSort then
+				noneAvailableIndex = i + 1;
+			elseif noneAvailableIndex == nil then
+				noneAvailableIndex = i;
+			end
+		end
+	end
+
+	self.noneAvailableIndex = noneAvailableIndex or (numSearchResults + 1);
+
+	local isSelectedVirtualEntry = (previousEntry ~= nil) and (self:GetItemSellList():GetSelectedEntry() == previousEntry);
+	self.noneAvailableEntry = AuctionHouseUtil.CreateVirtualRowData(AUCTION_HOUSE_NONE_AVAILABLE_FORMAT:format(itemLevel), isSelectedVirtualEntry);
+end
+
 function AuctionHouseItemSellFrameMixin:UpdatePriceSelection()
 	self:ClearSearchResultPrice();
 
@@ -131,9 +221,9 @@ function AuctionHouseItemSellFrameMixin:UpdatePriceSelection()
 
 		-- If the user hasn't entered a price, update to the lowest price available.
 		if defaultBid and defaultBuyout then
-			local firstSearchResult = C_AuctionHouse.GetItemSearchResultInfo(self.listDisplayedItemKey, 1);
-			if firstSearchResult then
-				self:GetItemSellList():SetSelectedEntry(firstSearchResult);
+			local bestEntry = self:GetBestEntry();
+			if bestEntry ~= nil then
+				self:GetItemSellList():SetSelectedEntry(bestEntry);
 			end
 		end
 	end
@@ -166,11 +256,27 @@ function AuctionHouseItemSellFrameMixin:InitializeItemSellList()
 	end
 
 	local function ItemSellListGetEntry(index)
-		return self.listDisplayedItemKey and C_AuctionHouse.GetItemSearchResultInfo(self.listDisplayedItemKey, index);
+		if self.listDisplayedItemKey == nil then
+			return nil;
+		end
+
+		if self.noneAvailableIndex ~= nil then
+			if index > self.noneAvailableIndex then
+				index = index - 1;
+			elseif index == self.noneAvailableIndex then
+				return self.noneAvailableEntry;
+			end
+		end
+
+		return C_AuctionHouse.GetItemSearchResultInfo(self.listDisplayedItemKey, index);
 	end
 
 	local function ItemSellListGetNumEntries()
-		return self.listDisplayedItemKey and C_AuctionHouse.GetNumItemSearchResults(self.listDisplayedItemKey) or 0; -- Implemented in-line instead for performance.
+		if self.listDisplayedItemKey == nil then
+			return 0;
+		end
+
+		return C_AuctionHouse.GetNumItemSearchResults(self.listDisplayedItemKey) + ((self.noneAvailableIndex ~= nil) and 1 or 0);
 	end
 
 	local function ItemSellListHasFullResults()
@@ -200,6 +306,10 @@ function AuctionHouseItemSellFrameMixin:OnSearchResultSelected(searchResult)
 
 	self.PriceInput:SetAmount(searchResult.buyoutAmount or 0);
 	self:SetSearchResultPrice(searchResult.buyoutAmount);
+
+	if self.noneAvailableEntry ~= nil then
+		self.noneAvailableEntry.isSelectedVirtualEntry = (searchResult == self.noneAvailableEntry);
+	end
 end
 
 function AuctionHouseItemSellFrameMixin:SetSecondaryPriceInputEnabled(enabled)
@@ -219,6 +329,8 @@ function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, r
 	if self.DisabledOverlay:IsShown() then
 		return;
 	end
+
+	self:ClearNoneAvailableEntry();
 
 	AuctionHouseSellFrameMixin.SetItem(self, itemLocation, fromItemDisplay);
 
@@ -262,6 +374,7 @@ function AuctionHouseItemSellFrameMixin:SetItem(itemLocation, fromItemDisplay, r
 		self:GetAuctionHouseFrame():QueryItem(self:GetSearchContext(), itemKey, itemKeyInfo and itemKeyInfo.isEquipment);
 	end
 
+	self:UpdateNoneAvailableEntry();
 	self:UpdatePriceSelection();
 	itemSellList:DirtyScrollFrame();
 

@@ -285,33 +285,6 @@
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="RewardButton" hidden="true">
-								<Size x="48" y="48"/>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="50" y="-3"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY" textureSubLevel="1">
-										<Texture parentKey="RewardRing" atlas="legioninvasion-scenario-rewardring" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.RewardRing"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY" textureSubLevel="0">
-										<Texture parentKey="RewardIcon">
-											<Size x="29" y="29"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.RewardRing"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter function="ScenarioRewardButton_OnEnter"/>
-									<OnLeave function="ScenarioRewardButton_OnLeave"/>
-								</Scripts>
-							</Button>
 						</Frames>
 						<Scripts>
 							<OnLoad>
@@ -681,45 +654,4 @@
 			<OnUpdate function="ScenarioTimer_OnUpdate"/>
 		</Scripts>
 	</Frame>
-
-	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
-		<KeyValues>
-			<KeyValue key="fixedWidth" value="100" type="number"/>
-			<KeyValue key="expand" value="true" type="boolean"/>
-			<KeyValue key="topPadding" value="10" type="number"/>
-			<KeyValue key="bottomPadding" value="12" type="number"/>
-			<KeyValue key="leftPadding" value="10" type="number"/>
-			<KeyValue key="rightPadding" value="10" type="number"/>
-			<KeyValue key="spacing" value="8" type="number"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="SCENARIO_INVASION_REWARD_TOOLTIP_TEXT">
-					<Size x="100" y="0"/>
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="1" type="number"/>
-						<KeyValue key="expand" value="true" type="boolean"/>
-					</KeyValues>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
-				<KeyValues>
-					<KeyValue key="leftPadding" value="8" type="number"/>
-					<KeyValue key="layoutIndex" value="2" type="number"/>
-				</KeyValues>
-				<Size x="100" y="100"/>
-				<Scripts>
-					<OnSizeChanged inherit="prepend">
-						self:GetParent():Layout();
-					</OnSizeChanged>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-
 </Ui>

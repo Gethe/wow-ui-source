@@ -38,10 +38,13 @@ end
 --[[ Area POI Pin ]]--
 AreaPOIPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI");
 
+local AREAPOI_HIGHLIGHT_PARAMS = { backgroundPadding = 20 };
+
 function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
 
 	self.areaPoiID = poiInfo.areaPoiID;
+	MapPinHighlight_CheckHighlightPin(poiInfo.shouldGlow, self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
@@ -81,15 +84,15 @@ function AreaPOIPinMixin:TryShowTooltip()
 		end
 
 		if hasWidgetSet then
-			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
+			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, 10);
 		end
 
-		if (self.textureKit) then 
+		if (self.textureKit) then
 			local backdropStyle = GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES[self.textureKit];
-			if (backdropStyle) then 
+			if (backdropStyle) then
 				SharedTooltip_SetBackdropStyle(GameTooltip, backdropStyle);
-			end 
-		end 
+			end
+		end
 		GameTooltip:Show();
 		return true;
 	end

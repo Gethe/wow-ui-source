@@ -600,20 +600,6 @@ function Scenario_ProvingGrounds_CountdownAnim_OnFinished(self)
 end
 
 -- *****************************************************************************************************
--- ***** LEGION INVASION MODE
--- *****************************************************************************************************
-
-function ScenarioRewardButton_OnEnter(self)
-	EmbeddedItemTooltip_SetItemByID(ScenarioStepRewardTooltip.ItemTooltip, self.rewardID);
-	ScenarioStepRewardTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
-	ScenarioStepRewardTooltip:Show();
-end
-
-function ScenarioRewardButton_OnLeave(self)
-	ScenarioStepRewardTooltip:Hide();
-end
-
--- *****************************************************************************************************
 -- ***** SPELLS
 -- *****************************************************************************************************
 
@@ -890,7 +876,6 @@ end
 
 function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit)
 	stageBlock.widgetSetID = widgetSetID;
-	stageBlock.RewardButton:Hide();
 	stageBlock.Stage:Show();
 	stageBlock.NormalBG:Show();
 

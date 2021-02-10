@@ -92,8 +92,8 @@ end
 function SoulbindTreeMixin:OnNodeLearned(nodeID)
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
-	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_NODE_LEARNED);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH);
 end
 
 function SoulbindTreeMixin:OnNodeSwitched(nodeID)
@@ -104,7 +104,7 @@ end
 function SoulbindTreeMixin:OnPathChanged()
 	self:Init(C_Soulbinds.GetSoulbindData(self.soulbindID));
 	self:TriggerEvent(SoulbindTreeMixin.Event.OnNodeChanged);
-	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_PATH);
 end
 
 function SoulbindTreeMixin:OnConduitCollectionUpdated()
@@ -377,9 +377,9 @@ function SoulbindTreeMixin:OnCursorChanged(isDefault, newCursorType, oldCursorTy
 	end
 
 	if newCursorType == Enum.UICursorType.ConduitCollectionItem then
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_BEGIN, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_BEGIN);
 	elseif oldCursorType == Enum.UICursorType.ConduitCollectionItem then
-		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_END, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_CURSOR_END);
 	end
 end
 

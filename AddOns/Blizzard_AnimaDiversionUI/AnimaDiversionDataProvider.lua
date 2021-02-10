@@ -342,7 +342,6 @@ function AnimaDiversionPinMixin:RefreshTooltip()
 		local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
 		if worldQuestID then
 			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, worldQuestID);
-			GameTooltip.recalculatePadding = true;
 			if not HaveQuestRewardData(worldQuestID) then
 				self.UpdateTooltip = self.RefreshTooltip;
 			end

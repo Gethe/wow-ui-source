@@ -31,6 +31,14 @@ function CovenantCallingQuestMixin:UpdateBang()
 	self.Glow:SetShown(self.calling:GetState() == Enum.CallingStates.QuestOffer);
 end
 
+function CovenantCallingQuestMixin:GetDaysUntilNext()
+	return self:GetParent():GetDaysUntilNext(self.calling);
+end
+
+function CovenantCallingQuestMixin:GetDaysUntilNextString()
+	return _G["BOUNTY_BOARD_NO_CALLINGS_DAYS_" .. self:GetDaysUntilNext()] or BOUNTY_BOARD_NO_CALLINGS_DAYS_1;
+end
+
 function CovenantCallingQuestMixin:UpdateTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
@@ -40,19 +48,20 @@ function CovenantCallingQuestMixin:UpdateTooltip()
 	elseif state == Enum.CallingStates.QuestActive then
 		self:UpdateTooltipQuestActive();
 	elseif state == Enum.CallingStates.QuestCompleted then
-		GameTooltip:SetText(self.calling:GetDaysUntilNextString(), HIGHLIGHT_FONT_COLOR:GetRGB());
+		GameTooltip:SetText(self:GetDaysUntilNextString(), HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
 
 	GameTooltip:Show();
-	GameTooltip.recalculatePadding = true;
 end
 
 function CovenantCallingQuestMixin:UpdateTooltipCheckHasQuestData()
 	if HaveQuestData(self.calling.questID) then
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 		return true;
 	end
 
 	GameTooltip_AddColoredLine(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+	GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 	return false;
 end
 
@@ -79,7 +88,7 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 	end
 
 	-- Add the remaining time
-	WorldMap_AddQuestTimeToTooltip(questID);
+	GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
 
 	-- Add the objectives
 	local questCompleted = C_QuestLog.IsComplete(questID);
@@ -274,8 +283,13 @@ function CovenantCallingsMixin:ProcessCallings(callings)
 
 	table.sort(self.callings, CompareCallings);
 
+	self.firstLockedIndex = nil;
 	for index, calling in ipairs(self.callings) do
 		calling:SetIndex(index);
+
+		if not self.firstLockedIndex and calling:IsLocked() then
+			self.firstLockedIndex = index;
+		end
 
 		-- Then nuke the remaining time after the sort, must be updated anyway.
 		calling.tempTimeRemaining = nil;
@@ -296,6 +310,14 @@ function CovenantCallingsMixin:GetHelptipTargetFrame()
 	end
 
 	return targetFrame;
+end
+
+function CovenantCallingsMixin:GetDaysUntilNext(calling)
+	if self.firstLockedIndex and calling:IsLocked() then
+		return math.max(0, calling:GetIndex() - self.firstLockedIndex + 1);
+	end
+
+	return 0;
 end
 
 function CovenantCallingsMixin:CheckDisplayHelpTip()

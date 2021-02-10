@@ -69,6 +69,16 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetFilteredSearchResults",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "totalResultsFound", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "filteredResults", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 
@@ -80,6 +90,16 @@ local LFGListInfo =
 			Returns =
 			{
 				{ Name = "searchResultData", Type = "LfgSearchResultData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSearchResults",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "totalResultsFound", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "results", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

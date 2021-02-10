@@ -29,18 +29,6 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		<Layers>
-			<Layer>
-				<FontString parentKey="CraftError" font="GameFontNormal" justifyH="CENTER" hidden="true">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.CraftItemButton" relativePoint="BOTTOM" x="0" y="-12"/>
-						<Anchor point="LEFT"/>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-					<Color color="RED_FONT_COLOR"/>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

@@ -279,7 +279,7 @@ function QUEST_TRACKER_MODULE:UpdatePOIs(numPOINumeric)
 	return self.numPOINumeric;
 end
 
-function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, questSequenced, existingBlock)
+function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, questSequenced, existingBlock, useFullHeight)
 	local objectiveCompleting = false;
 	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(block.id);
 	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
@@ -290,7 +290,7 @@ function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, qu
 			if ( questCompleted ) then
 				-- only process existing lines
 				if ( line ) then
-					line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+					line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, useFullHeight, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 					-- don't do anything else if a line is either COMPLETING or FADING, the anims' OnFinished will continue the process
 					if ( not line.state or line.state == "PRESENT" ) then
 						-- this objective wasn't marked finished
@@ -305,7 +305,7 @@ function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, qu
 			else
 				if ( finished ) then
 					if ( line ) then
-						line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, useFullHeight, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 						if ( not line.state or line.state == "PRESENT" ) then
 							-- complete this
 							line.block = block;
@@ -318,7 +318,7 @@ function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, qu
 					else
 						-- didn't have a line, just show completed if not sequenced
 						if ( not questSequenced ) then
-							line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+							line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, useFullHeight, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 							line.Check:Show();
 							line.state = "COMPLETED";
 						end
@@ -327,7 +327,7 @@ function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, qu
 					if ( not questSequenced or not objectiveCompleting ) then
 						-- new objectives need to animate in
 						if ( questSequenced and existingBlock and not line ) then
-							line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM);
+							line = self:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, useFullHeight);
 							line.Sheen.Anim:Play();
 							line.Glow.Anim:Play();
 							line.state = "ADDING";
@@ -336,7 +336,7 @@ function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, qu
 								self:AddProgressBar(block, line, block.id, finished);
 							end
 						else
-							self:AddObjective(block, objectiveIndex, text);
+							self:AddObjective(block, objectiveIndex, text, nil, useFullHeight);
 							if ( objectiveType == "progressbar" ) then
 								self:AddProgressBar(block, block.currentLine, block.id, finished);
 							end
@@ -367,8 +367,9 @@ end
 function QUEST_TRACKER_MODULE:UpdateSingle(quest)
 	local questID = quest:GetID();
 	local isComplete = quest:IsComplete();
-
-	local shouldShowWaypoint = (questID == C_SuperTrack.GetSuperTrackedQuestID()) or (questID == QuestMapFrame_GetFocusedQuestID());
+	local isSuperTracked = (questID == C_SuperTrack.GetSuperTrackedQuestID());
+	local useFullHeight = true; -- Always use full height of the block for the quest tracker.
+	local shouldShowWaypoint = isSuperTracked or (questID == QuestMapFrame_GetFocusedQuestID());
 	local isSequenced = IsQuestSequenced(questID);
 	local existingBlock = self:GetExistingBlock(questID);
 	local block = self:GetBlock(questID);
@@ -383,7 +384,7 @@ function QUEST_TRACKER_MODULE:UpdateSingle(quest)
 
 	if ( isComplete ) then
 		-- don't display completion state yet if we're animating an objective completing
-		local objectiveCompleting = QuestObjectiveTracker_DoQuestObjectives(self, block, isComplete, isSequenced, existingBlock);
+		local objectiveCompleting = QuestObjectiveTracker_DoQuestObjectives(self, block, isComplete, isSequenced, existingBlock, useFullHeight);
 		if ( not objectiveCompleting ) then
 			if ( quest.isAutoComplete ) then
 				self:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_COMPLETE);
@@ -394,36 +395,37 @@ function QUEST_TRACKER_MODULE:UpdateSingle(quest)
 					if ( shouldShowWaypoint ) then
 						local waypointText = C_QuestLog.GetNextWaypointText(questID);
 						if ( waypointText ~= nil ) then
-							self:AddObjective(block, "Waypoint", WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText));
+							self:AddObjective(block, "Waypoint", WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText), nil, useFullHeight);
 						end
 					end
 
-					self:AddObjective(block, "QuestComplete", completionText, nil, OBJECTIVE_DASH_STYLE_HIDE);
+					local forceCompletedToUseFullHeight = true;
+					self:AddObjective(block, "QuestComplete", completionText, nil, forceCompletedToUseFullHeight, OBJECTIVE_DASH_STYLE_HIDE);
 				else
 					-- If there isn't completion text, always prefer waypoint to "Ready for turn-in".
 					local waypointText = C_QuestLog.GetNextWaypointText(questID);
 					if ( waypointText ~= nil ) then
-						self:AddObjective(block, "Waypoint", waypointText);
+						self:AddObjective(block, "Waypoint", waypointText, nil, useFullHeight);
 					else
-						self:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						self:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, useFullHeight, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 					end
 				end
 			end
 		end
 	elseif ( questFailed ) then
-		self:AddObjective(block, "Failed", FAILED, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Failed"]);
+		self:AddObjective(block, "Failed", FAILED, nil, useFullHeight, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Failed"]);
 	else
 		if ( shouldShowWaypoint ) then
 			local waypointText = C_QuestLog.GetNextWaypointText(questID);
 			if ( waypointText ~= nil ) then
-				self:AddObjective(block, "Waypoint", WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText));
+				self:AddObjective(block, "Waypoint", WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText), nil, useFullHeight);
 			end
 		end
 
-		QuestObjectiveTracker_DoQuestObjectives(self, block, isComplete, isSequenced, existingBlock);
+		QuestObjectiveTracker_DoQuestObjectives(self, block, isComplete, isSequenced, existingBlock, useFullHeight);
 		if ( quest.requiredMoney > self.playerMoney ) then
 			local text = GetMoneyString(self.playerMoney).." / "..GetMoneyString(quest.requiredMoney);
-			self:AddObjective(block, "Money", text);
+			self:AddObjective(block, "Money", text, nil, useFullHeight);
 		end
 
 		-- timer bar

@@ -3,3 +3,5 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 0
+
+Deprecated_9_0_5.lua

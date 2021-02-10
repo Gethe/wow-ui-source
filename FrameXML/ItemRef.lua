@@ -549,14 +549,14 @@ function ItemRefTooltipMixin:OnLoad()
 	GameTooltip_OnLoad(self);
 	self:RegisterForDrag("LeftButton");
 	self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
-	self.updateTooltipTime = 0;
+	self.updateTooltipTimer = 0;
 	self.UpdateTooltip = function(self, elapsed)
 		if ( IsModifiedClick("COMPAREITEMS") ) then
-			self.updateTooltipTime = self.updateTooltipTime - elapsed;
-			if ( self.updateTooltipTime > 0 ) then
+			self.updateTooltipTimer = self.updateTooltipTimer - elapsed;
+			if ( self.updateTooltipTimer > 0 ) then
 				return;
 			end
-			self.updateTooltipTime = TOOLTIP_UPDATE_TIME;
+			self.updateTooltipTimer = TOOLTIP_UPDATE_TIME;
 			GameTooltip_ShowCompareItem(self);
 		else
 			for _, frame in pairs(self.shoppingTooltips) do
@@ -570,7 +570,7 @@ function ItemRefTooltipMixin:OnLoad()
 end
 
 function ItemRefTooltipMixin:OnTooltipSetItem()
-	self.updateTooltipTime = 0;
+	self.updateTooltipTimer = 0;
 	if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver() ) then
 		GameTooltip_ShowCompareItem(self);
 	end
@@ -589,7 +589,7 @@ function ItemRefTooltipMixin:OnDragStop()
 end
 
 function ItemRefTooltipMixin:OnEnter()
-	self.updateTooltipTime = 0;
+	self.updateTooltipTimer = 0;
 	self:SetScript("OnUpdate", self.UpdateTooltip);
 end
 

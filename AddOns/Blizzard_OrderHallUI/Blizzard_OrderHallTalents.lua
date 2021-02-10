@@ -81,7 +81,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		local soundKitID = GetResearchSoundForTalentType(self.data.talentType);
-		PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soundKitID);
 		C_Garrison.ResearchTalent(self.data.id, self.data.rank);
 		if (not self.data.hasTime) then
 			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
@@ -761,7 +761,7 @@ function GarrisonTalentButtonMixin:OnClick()
 			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, rank = self.talent.talentRank + 1,  hasTime = hasTime,  button = self, talentType = self.talent.type });
 		else
 			local soundKitID = GetResearchSoundForTalentType(self.talent.type);
-			PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(soundKitID);
 			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
 			self:GetParent():SetResearchingTalentID(self.talent.id);
 		end

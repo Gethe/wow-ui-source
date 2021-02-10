@@ -14,6 +14,10 @@ function CovenantCallingMixin:SetIndex(index)
 	self.index = index;
 end
 
+function CovenantCallingMixin:GetIndex()
+	return self.index;
+end
+
 function CovenantCallingMixin:IsLocked()
 	return self.isLockedToday;
 end
@@ -49,18 +53,6 @@ function CovenantCallingMixin:GetBang()
 	end
 
 	return nil;
-end
-
-function CovenantCallingMixin:GetDaysUntilNext()
-	if self:IsLocked() and self.index then
-		return Constants.Callings.MaxCallings - self.index + 1;
-	end
-
-	return 0;
-end
-
-function CovenantCallingMixin:GetDaysUntilNextString()
-	return _G["BOUNTY_BOARD_NO_CALLINGS_DAYS_" .. self:GetDaysUntilNext()] or BOUNTY_BOARD_NO_CALLINGS_DAYS_1;
 end
 
 function CovenantCalling_Create(bounty)

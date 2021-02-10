@@ -27,7 +27,7 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_CONFIRMATION"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		C_Garrison.RushHealFollower(self.data.followerID);
-		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -40,7 +40,7 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		C_Garrison.RushHealAllFollowers(self.data.followerType);
-		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -297,8 +297,16 @@ function CovenantMission:ShowMission(missionInfo)
 	self:SetupShowMissionTutorials(missionInfo);
 
 	missionPage.missionInfo = missionInfo;
+	local missionDuration;
+	if ( missionInfo.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+		local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, missionInfo.duration);
+		missionDuration = format(PARENS_TEMPLATE, duration); 
+	else
+		missionDuration = format(PARENS_TEMPLATE, missionInfo.duration);
+	end
 
-	self:SetTitle(missionInfo.name);
+	local ignoreTruncation = true;
+	self:SetTitle(COVENANT_MISSION_TITLE_FORMAT:format(missionInfo.name, missionDuration), ignoreTruncation);
 	
 	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
 	missionPage.environment = missionDeploymentInfo.environment;
@@ -306,6 +314,7 @@ function CovenantMission:ShowMission(missionInfo)
 	missionPage.EncounterIcon:SetEncounterInfo(missionInfo.encounterIconInfo);
 	missionInfo.environmentEffect = C_Garrison.GetAutoMissionEnvironmentEffect(missionInfo.missionID);
 	missionPage.Stage.EnvironmentEffectFrame:SetEnvironmentEffect(missionInfo.environmentEffect);
+	missionPage.Stage.info = missionInfo; 
 	local enemies = missionDeploymentInfo.enemies;
 	self:SetEnemies(missionPage, enemies);
 	self:UpdateEnemyPower(missionPage, enemies);
@@ -421,7 +430,7 @@ function CovenantMission:OnClickFollowerPlacerFrame(button, info)
 	end
 	
 	if soundKitToPlay then
-		PlaySound(soundKitToPlay, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soundKitToPlay);
 	end
 	self:ClearMouse();
 end
@@ -431,9 +440,9 @@ function CovenantMission:SetPlacerFrame(placer, info, yOffset, soundKit)
 	self:LockPlacerToMouse(placer);
 
 	if soundKit then
-		PlaySound(soundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soundKit);
 	else
-		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED);
 	end
 end
 
@@ -647,7 +656,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
 	self:ProcessTutorials();
-	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED);
 
 	return true;
 end
@@ -680,7 +689,7 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 	self:UpdateMissionData(missionPage);
 
 	if updateValues then
-		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED);
 	end
 
 	self:ClearQueuedTutorials();
@@ -1105,3 +1114,14 @@ function CovenantMissionHealAllButton_OnClick(self)
 	local currencyString = CreateTextureMarkup(self.currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, self.currencyInfo.name);
 	StaticPopup_Show("COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION", currencyString, "", {followerType = self.followerType});
 end
+
+ConvenantMissionPageMouseOverTitleMixin = { };
+function ConvenantMissionPageMouseOverTitleMixin:OnEnter()
+	self.info = self:GetParent().info; 
+	GameTooltip:SetOwner(self, "ANCHOR_CENTER", 320, 0);
+	CovenantMissionInfoTooltip_OnEnter(self);
+end 
+
+function ConvenantMissionPageMouseOverTitleMixin:OnLeave() 
+	GameTooltip:Hide(); 
+end 

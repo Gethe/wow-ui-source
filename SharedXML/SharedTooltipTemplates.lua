@@ -93,12 +93,8 @@ function GameTooltip_AddBlankLineToTooltip(tooltip)
 end
 
 function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
-	local titleColor = overrideColor or HIGHLIGHT_FONT_COLOR;
-	local r, g, b, a = titleColor:GetRGBA();
-	if wrap == nil then
-		wrap = true;
-	end
-	tooltip:SetText(text, r, g, b, a, wrap);
+	tooltip:ClearLines();
+	GameTooltip_AddColoredLine(tooltip, text, overrideColor or HIGHLIGHT_FONT_COLOR, wrap)
 end
 
 function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
@@ -138,15 +134,18 @@ function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColo
 	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap);
 end
 
-function GameTooltip_InsertFrame(tooltipFrame, frame)
+function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
+	verticalPadding = verticalPadding or 0;
+
 	local textSpacing = 2;
 	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
-	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
+	local neededHeight = frame:GetHeight() + verticalPadding ;
+	local numLinesNeeded = math.ceil(neededHeight / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);
 	frame:SetParent(tooltipFrame);
 	frame:ClearAllPoints();
-	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, 0);
+	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, -verticalPadding);
 	if not tooltipFrame.insertedFrames then
 		tooltipFrame.insertedFrames = { };
 	end

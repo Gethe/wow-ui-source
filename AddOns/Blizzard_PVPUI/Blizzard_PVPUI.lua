@@ -236,7 +236,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 
 	-- artifact-level currency trumps item
 	if currencyRewards then
-		for i, reward in ipairs(currencyRewards) do	
+		for i, reward in ipairs(currencyRewards) do
 			if(reward.id ~= Constants.CurrencyConsts.ECHOES_OF_NYALOTHA_CURRENCY_ID or #currencyRewards == 1) then
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
 				local name = currencyInfo.name;
@@ -414,11 +414,7 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		if PVPUtil.ShouldShowLegacyRewards() then
-			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON_LEGACY:format(GetCurrentArenaSeason() - BFA_START_SEASON + 1));
-		else
-			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
-		end
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
 	end
 end
 
@@ -1189,13 +1185,10 @@ function PVPRatedTier_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, tierName);
 
-		if not PVPUtil.ShouldShowLegacyRewards() then
-			local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
-			if weeklyItemLevel > 0 then
-				GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_BY_RANK:format(weeklyItemLevel), NORMAL_FONT_COLOR);
-			end
+		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
+		if weeklyItemLevel > 0 then
+			GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_BY_RANK:format(weeklyItemLevel), NORMAL_FONT_COLOR);
 		end
-
 		GameTooltip:Show();
 	end
 end
@@ -1212,12 +1205,7 @@ function NextTier_OnEnter(self)
 		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
 		if activityItemLevel > 0 then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-
-			if PVPUtil.ShouldShowLegacyRewards() then
-				GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_CHANCE_LONG:format(activityItemLevel), NORMAL_FONT_COLOR);
-			else
-				GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_BY_NEXT_RANK:format(weeklyItemLevel), NORMAL_FONT_COLOR);
-			end
+			GameTooltip_AddColoredLine(GameTooltip, PVP_GEAR_REWARD_BY_NEXT_RANK:format(weeklyItemLevel), NORMAL_FONT_COLOR);
 		end
 		GameTooltip:Show();
 	end
@@ -1496,34 +1484,10 @@ function PVPStandardRewardTemplate_OnEnter(self)
 	if (self.experience > 0) then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_REWARD_XP_FORMAT:format(BreakUpLargeNumbers(self.experience)), HIGHLIGHT_FONT_COLOR);
 	else
-		if PVPUtil.ShouldShowLegacyRewards() then
-			GameTooltip_AddColoredLine(EmbeddedItemTooltip, REWARD_FOR_PVP_WIN_HONOR:format(BreakUpLargeNumbers(self.honor)), HIGHLIGHT_FONT_COLOR);
-		else
-			AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.HONOR_CURRENCY_ID, self.honor);
-		end
+		AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.HONOR_CURRENCY_ID, self.honor);
 	end
 	if self.conquestAmount > 0 then
 		AddPVPRewardCurrency(EmbeddedItemTooltip, Constants.CurrencyConsts.CONQUEST_CURRENCY_ID, self.conquestAmount);
-	end
-
-	if PVPUtil.ShouldShowLegacyRewards() then
-		local activityItemLevel;
-		local pvpTierEnum = self:GetParent().pvpTierEnum;
-		if pvpTierEnum then
-			activityItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierEnum);
-		end
-		local rewardQuestID = self:GetParent().rewardQuestID;
-		if rewardQuestID then
-			if HaveQuestRewardData(rewardQuestID) then
-				activityItemLevel = select(7, GetQuestLogRewardInfo(1, rewardQuestID));
-			else
-				self.UpdateTooltip = PVPStandardRewardTemplate_OnEnter;
-			end
-		end
-		if activityItemLevel and activityItemLevel > 0 then
-			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-			GameTooltip_AddColoredLine(EmbeddedItemTooltip, PVP_GEAR_REWARD_CHANCE:format(activityItemLevel), HIGHLIGHT_FONT_COLOR);
-		end
 	end
 
 	if self.itemID then
@@ -1744,21 +1708,7 @@ function PVPUIHonorLevelDisplayMixin:OnMouseUp(button)
 	end
 end
 
-function PVPUIHonorLevelDisplayMixin:LegacyOnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -20);
-	GameTooltip:SetText(HONOR);
-	local currentHonor = UnitHonor("player");
-	local maxHonor = UnitHonorMax("player");
-	GameTooltip_AddColoredLine(GameTooltip, string.format(GENERIC_FRACTION_STRING_WITH_SPACING, currentHonor, maxHonor), HIGHLIGHT_FONT_COLOR);
-	GameTooltip:Show();
-end
-
 function PVPUIHonorLevelDisplayMixin:OnEnter()
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self:LegacyOnEnter();
-		return;
-	end
-
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -20);
 	GameTooltip_SetTitle(GameTooltip, LIFETIME_HONOR);
 	GameTooltip_AddColoredLine(GameTooltip, LIFETIME_HONOR_DESC, NORMAL_FONT_COLOR);
@@ -1890,33 +1840,19 @@ function PVPConquestBarMixin:OnLoad()
 end
 
 function PVPConquestBarMixin:OnShow()
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:RegisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
-		self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
-	else
-		self:RegisterEvent("QUEST_LOG_UPDATE");
-	end
+	self:RegisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
+	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
 	self:Update();
 end
 
 function PVPConquestBarMixin:OnHide()
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		self:UnregisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
-		self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
-	else
-		self:UnregisterEvent("QUEST_LOG_UPDATE");
-	end
+	self:UnregisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
+	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
 end
 
 function PVPConquestBarMixin:OnEvent(event, ...)
-	if GetServerExpansionLevel() >= LE_EXPANSION_SHADOWLANDS then
-		if event == "WEEKLY_REWARDS_ITEM_CHANGED" or event == "WEEKLY_REWARDS_UPDATE" then
-			self:Update();
-		end
-	else
-		if event == "QUEST_LOG_UPDATE" then
-			self:Update();
-		end
+	if event == "WEEKLY_REWARDS_ITEM_CHANGED" or event == "WEEKLY_REWARDS_UPDATE" then
+		self:Update();
 	end
 end
 
@@ -1928,26 +1864,6 @@ function PVPConquestBarMixin:OnLeave()
 	self.Reward:HideTooltip();
 end
 
-function PVPConquestBarMixin:LegacyUpdate()
-	local inactiveSeason = not ConquestFrame_HasActiveSeason();
-	local currentValue, maxValue, questID = PVPGetConquestLevelInfo();
-	local questDone = questID and questID == 0;
-	if self.locked or inactiveSeason or questDone or maxValue == 0 then
-		self:SetValue(0);
-	else
-		self:SetValue(currentValue / maxValue * 100);
-	end
-	self:SetDisabled(inactiveSeason or self.locked or questDone);
-	self.Label:SetFormattedText(CONQUEST_BAR, currentValue, maxValue);
-
-	if self.locked or inactiveSeason or not questID then
-		self.Reward:Clear();
-	else
-		self.Reward:LegacySetup(questID);
-	end
-	self.FillTexture:SetAtlas("_pvpqueue-conquestbar-fill-yellow");
-end
-
 function PVPConquestLockTooltipShow(self)
 	GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
 	GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, GetMaxLevelForLatestExpansion()));
@@ -1957,11 +1873,6 @@ end
 function PVPConquestBarMixin:Update()
 	self.locked = not IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(self.locked);
-
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self:LegacyUpdate();
-		return;
-	end
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
 	local maxProgress = currencyInfo.maxQuantity;
@@ -2038,64 +1949,28 @@ function NewPvpSeasonMixin:OnShow()
 	self.SeasonRewardFrame:SetShown(showSeasonReward);
 end
 
-PVPWeeklyChestMixin = { };
-
-function PVPWeeklyChestMixin:LegacyGetState()
-	local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
-	if lastWeekRewardAchieved and not lastWeekRewardClaimed then
-		return "collect";
-	elseif rewardAchieved then
-		return "complete";
-	end
-	return "incomplete";
-end
-
+PVPWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
 function PVPWeeklyChestMixin:GetState()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local unlocksCompleted = weeklyProgress.unlocksCompleted;
 
-	local hasRewards = C_WeeklyRewards.HasAvailableRewards();
-	if hasRewards then
+	if C_WeeklyRewards.HasAvailableRewards() then
 		return "collect";
-	elseif unlocksCompleted > 0 then
+	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.RankedPvP) or weeklyProgress.unlocksCompleted > 0 then
 		return "complete";
 	end
+
 	return "incomplete";
-end
-
-function PVPWeeklyChestMixin:LegacyOnShow()
-	local state = self:LegacyGetState();
-	local atlas;
-	if (UnitFactionGroup("player") == HORDE_PLAYER_FACTION_GROUP_NAME) then
-		atlas = "pvpqueue-chest-horde-"..state;
-	else
-		atlas = "pvpqueue-chest-alliance-"..state;
-	end
-	self.ChestTexture:SetAtlas(atlas);
-	self.ChestTexture:SetDesaturated(not ConquestFrame_HasActiveSeason());
-
-	if state == "collect" then
-		self.SpinTextureBottom:Show();
-		self.SpinTextureTop:Show();
-		self.SpinAnim:Play();
-	else
-		self.SpinTextureBottom:Hide();
-		self.SpinTextureTop:Hide();
-		self.SpinAnim:Stop();
-	end
 end
 
 function PVPWeeklyChestMixin:OnShow()
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self:LegacyOnShow();
-		return;
-	end
-
 	local state = self:GetState();
 	local atlas = "pvpqueue-chest-greatvault-"..state;
-	local useAtlasSize = true;
-	self.ChestTexture:SetAtlas(atlas, useAtlasSize);
-	self.ChestTexture:SetDesaturated(not ConquestFrame_HasActiveSeason());
+	self.ChestTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.Highlight:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+
+	local desaturated = not ConquestFrame_HasActiveSeason();
+	self.ChestTexture:SetDesaturated(desaturated);
+	self.Highlight:SetDesaturated(desaturated);
 
 	self.SpinTextureBottom:Hide();
 	self.SpinTextureTop:Hide();
@@ -2103,16 +1978,12 @@ function PVPWeeklyChestMixin:OnShow()
 end
 
 function PVPWeeklyChestMixin:OnEnter()
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self:LegacyOnEnter();
-		return;
-	end
-
 	if not ConquestFrame_HasActiveSeason() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
 		GameTooltip_AddNormalLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON);
+		GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 		GameTooltip:Show();
 		return;
 	end
@@ -2148,42 +2019,7 @@ function PVPWeeklyChestMixin:OnEnter()
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	end
 	GameTooltip_AddNormalLine(GameTooltip, description);
-	GameTooltip:Show();
-end
-
-function PVPWeeklyChestMixin:LegacyOnEnter()
-	local state = self:LegacyGetState();
-	local title, description, showItemLevel;
-	if state == "incomplete" then
-		title = RATED_PVP_WEEKLY_CHEST;
-		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_INCOMPLETE;
-		showItemLevel = true;
-	elseif state == "complete" then
-		title = RATED_PVP_WEEKLY_CHEST_EARNED;
-		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_COMPLETE;
-		showItemLevel = true;
-	elseif state == "collect" then
-		title = RATED_PVP_WEEKLY_CHEST;
-		description = RATED_PVP_WEEKLY_CHEST_TOOLTIP_COLLECT;
-		showItemLevel = false;
-	end
-
-	if showItemLevel then
-		local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed, pvpTierMaxFromWins = C_PvP.GetWeeklyChestInfo();
-		-- it's -1 if you haven't won any matches in the current season
-		pvpTierMaxFromWins = max(pvpTierMaxFromWins, 0);
-		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(pvpTierMaxFromWins);
-		description = description:format(weeklyItemLevel);
-	end
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, title);
-	GameTooltip_AddColoredLine(GameTooltip, description, NORMAL_FONT_COLOR);
-	if state == "incomplete" then
-		local current, max = PVPGetConquestLevelInfo();
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip_AddColoredLine(GameTooltip, RATED_PVP_WEEKLY_CHEST_REQUIREMENTS:format(current, max), HIGHLIGHT_FONT_COLOR);
-	end
+	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
 end
 
@@ -2193,25 +2029,8 @@ function PVPNewSeasonPopupOnClick(self)
 end
 
 PVPWeeklyCasualPanelMixin = { };
-function PVPWeeklyCasualPanelMixin:LegacyOnShow()
-	local lifetimeHonorKills = GetPVPLifetimeStats();
-	
-	self.HKLabel:SetText(HONORABLE_KILLS);
-	self.HKLabel:SetPoint("TOP", 0, -184);
-
-	self.HKValue:SetText(BreakUpLargeNumbers(lifetimeHonorKills));
-	self.HKValue:Show();
-
-	self.WeeklyChest:Hide();
-	self.HonorLevelDisplay:SetPoint("TOP", 0, -25);
-end
-
 function PVPWeeklyCasualPanelMixin:OnShow()
 	local serverExpansionLevel = GetServerExpansionLevel();
-	if serverExpansionLevel < LE_EXPANSION_SHADOWLANDS then
-		self:LegacyOnShow();
-		return;
-	end
 
 	local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
 	local playerLevel = UnitLevel("player");
@@ -2231,10 +2050,6 @@ end
 
 
 PVPWeeklyRatedPanelMixin = { };
-function PVPWeeklyRatedPanelMixin:LegacyOnShow()
-	self.Label:SetText(RATED_PVP_WEEKLY_CHEST);
-end
-
 function PVPWeeklyRatedPanelMixin:OnShow()
 	local showSeasonReward = false;
 	local seasonState = ConquestFrame.seasonState;
@@ -2298,11 +2113,6 @@ function PVPWeeklyRatedPanelMixin:OnShow()
 		Label:Show();
 		self.WeeklyChest:Show();
 		Tier:SetPoint("TOP", self.WeeklyChest, "BOTTOM", 0, -90);
-	end
-
-	if serverExpansionLevel < LE_EXPANSION_SHADOWLANDS then
-		self:LegacyOnShow();
-		return;
 	end
 	Label:SetText(RATED_PVP_WEEKLY_VAULT);
 end

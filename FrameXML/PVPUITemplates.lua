@@ -1,28 +1,4 @@
 PVPConquestRewardMixin = { };
-function PVPConquestRewardMixin:LegacySetup(questID)
-	self.questID = questID;
-	if questID == 0 then
-		self:SetTexture("Interface\\Icons\\inv_misc_bag_10", 0.2);
-		self.CheckMark:Show();
-		self.CheckMark:SetDesaturated(true);
-	else
-		if C_QuestLog.IsComplete(questID) then
-			self.CheckMark:Show();
-			self.CheckMark:SetDesaturated(false);
-		else
-			self.CheckMark:Hide();
-		end
-		local itemTexture;
-		if HaveQuestRewardData(questID) then
-			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);
-			if itemIndex and rewardType then
-				itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
-			end
-		end
-		self:SetTexture(itemTexture, 1);
-	end
-end
-
 function PVPConquestRewardMixin:Setup()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local progress = weeklyProgress.progress;
@@ -64,45 +40,7 @@ function PVPConquestRewardMixin:SetTooltipAnchor(questTooltipAnchor)
 	self.questTooltipAnchor = questTooltipAnchor;
 end
 
-function PVPConquestRewardMixin:LegacyTryShowTooltip()
-	local WORD_WRAP = true;
-	if not ConquestFrame_HasActiveSeason() then
-		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR, WORD_WRAP);
-		EmbeddedItemTooltip:Show();
-	elseif self.questID == 0 then
-		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_DONE, NORMAL_FONT_COLOR, WORD_WRAP);
-		EmbeddedItemTooltip:Show();
-	elseif self.questID and self:IsMouseOver() then
-		EmbeddedItemTooltip:SetOwner(self, self.questTooltipAnchor);
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST);
-		if C_QuestLog.IsComplete(self.questID) then
-			GameTooltip_AddNormalLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_COLLECT, WORD_WRAP);
-			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		end
-		GameTooltip_AddNormalLine(EmbeddedItemTooltip, SAMPLE_REWARD_WITH_COLON);
-		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER);
-		self.UpdateTooltip = self.OnEnter;
-
-		if IsModifiedClick("DRESSUP") then
-			ShowInspectCursor();
-		else
-			ResetCursor();
-		end
-		EmbeddedItemTooltip:Show();
-	end
-end
-
 function PVPConquestRewardMixin:TryShowTooltip()
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self:LegacyTryShowTooltip();
-		return;
-	end
-
 	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 

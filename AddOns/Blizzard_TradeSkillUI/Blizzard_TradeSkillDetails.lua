@@ -719,7 +719,7 @@ function TradeSkillDetailsMixin:ViewGuildCrafters()
 	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineID = C_TradeSkillUI.GetTradeSkillLine();
 	local effectiveSkillLineID = parentSkillLineID or tradeSkillID;
 	if effectiveSkillLineID and self.selectedRecipeID then
-		self.GuildFrame:ShowGuildRecipe(effectiveSkillLineID, self.selectedRecipeID);
+		self.GuildFrame:ShowGuildRecipe(effectiveSkillLineID, self.selectedRecipeID, self:GetSelectedRecipeLevel());
 	end
 end
 
@@ -1004,11 +1004,15 @@ function TradeSkillGuildListingMixin:Clear()
 	self:Hide();
 end
 
-function TradeSkillGuildListingMixin:ShowGuildRecipe(skillLineID, recipeID)
-	self.skillLineID = skillLineID;
-	self.recipeID = recipeID;
-	self.waitingOnData = true;
-	QueryGuildMembersForRecipe(skillLineID, recipeID);
+function TradeSkillGuildListingMixin:ShowGuildRecipe(skillLineID, recipeID, recipeLevel)
+	local updatedRecipeID = C_GuildInfo.QueryGuildMembersForRecipe(skillLineID, recipeID, recipeLevel);
+	if not updatedRecipeID then
+		return;
+	else
+		self.skillLineID = skillLineID;
+		self.recipeID = updatedRecipeID;
+		self.waitingOnData = true;
+	end
 	
 	self:Refresh();
 

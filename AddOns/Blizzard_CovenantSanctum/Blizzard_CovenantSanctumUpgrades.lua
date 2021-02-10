@@ -38,13 +38,24 @@ local featureBorderTextureKitRegions = {
 	["Glow"] = "CovenantSanctum-Icon-Glow-%s",
 }
 local reservoirTextureKitRegions = {
-	["Glow"] = "CovenantSanctum-Resevoir-Glow-%s",
-	["StaticGlow"] = "CovenantSanctum-Resevoir-Glow-%s",
 	["Background"] = "CovenantSanctum-Resevoir-Empty-%s",
+};
+local reservoirClippedElementsTextureKitRegions = {
 	["FillBackground"] = "CovenantSanctum-Resevoir-Full-%s",
+	["InnerGlow"] = "CovenantSanctum-Reservoir-Idle-%s-Glow",
+	["VerticalStrands"] = "!CovenantSanctum-Reservoir-Idle-%s-Strands",
+	["GlassCover"] = "CovenantSanctum-Reservoir-Idle-%s-Glass",
+	["LowSpeck1"] = "CovenantSanctum-Reservoir-Idle-%s-Speck",
+	["LowSpeck2"] = "CovenantSanctum-Reservoir-Idle-%s-Speck2",
+};
+local reservoirFullElementsTextureKitRegions = {
 	["Spark"] = "CovenantSanctum-Reservoir-Spark-%s",
 	["SparkGlow"] = "CovenantSanctum-Reservoir-Spark-Glow-%s",
-}
+	["Glow"] = "CovenantSanctum-Resevoir-Glow-%s",
+	["StaticGlow"] = "CovenantSanctum-Resevoir-Glow-%s",
+	["HighSpeck1"] = "CovenantSanctum-Reservoir-Idle-%s-Speck",
+	["HighSpeck2"] = "CovenantSanctum-Reservoir-Idle-%s-Speck2",
+};
 local upgradeTextureKitRegions = {
 	["Border"] = "CovenantSanctum-Upgrade-Border-%s",
 	["IconBorder"] = "CovenantSanctum-Upgrade-Icon-Border-%s",
@@ -74,6 +85,13 @@ local function GetEffectID(index)
 	local effectList = covenantSanctumEffectList[GetCovenantID()];
 	return effectList and effectList[index];
 end
+
+local reservoirAnimSettings = {
+	[Enum.CovenantType.Venthyr] = 	{ strand = { vert = true, horiz = true, alpha = 0.5, rate = 0.05 }, glow = { fromAlpha = 0, toAlpha = 0.7,	rotate = false }, spirals = false, pulse = false, lowSpecks = false, highSpecks = false },
+	[Enum.CovenantType.Kyrian] = 	{ strand = { vert = true, horiz = false, alpha = 0.3, rate = 0.04 }, glow = { fromAlpha = 0, toAlpha = 0.7, rotate = false }, spirals = false, pulse = false, lowSpecks = false, highSpecks = true },
+	[Enum.CovenantType.NightFae] = 	{ strand = nil, glow = { fromAlpha = 0, toAlpha = 1, rotate = true }, spirals = true, pulse = false, lowSpecks = false, highSpecks = true },
+	[Enum.CovenantType.Necrolord] = { strand = nil, glow = nil, spirals = false, pulse = true, lowSpecks = true, highSpecks = false },
+}
 
 local covenantSanctumFeatureDescription = {
 	[Enum.GarrTalentFeatureType.AnimaDiversion] = {
@@ -301,7 +319,7 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 	local paddingX = 7;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
 	local initAnchor = nil;
-	local abbreviateCost = true;
+	local abbreviateCost = false;
 	local reverseOrder = true;
 	self.CurrencyDisplayGroup:SetCurrencies(currencies, initFunction, initAnchor, layout, tooltipAnchor, abbreviateCost, reverseOrder);
 
@@ -464,7 +482,7 @@ end
 
 function CovenantSanctumUpgradeTalentListMixin:Upgrade()
 	if self.upgradeTalentID then
-		PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_UNLOCK_UPGRADE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_UNLOCK_UPGRADE);
 		C_Garrison.ResearchTalent(self.upgradeTalentID, 1);
 	end
 end
@@ -753,7 +771,7 @@ function CovenantSanctumUpgradeBaseMixin:OnMouseDown()
 		parent:SetSelectedTree(self.treeID);
 
 		local covenantData = GetCovenantData();
-		PlaySound(covenantData.upgradeTabSelectSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(covenantData.upgradeTabSelectSoundKitID);
 	end
 end
 
@@ -772,7 +790,7 @@ function CovenantSanctumUpgradeBaseMixin:RefreshTooltip()
 				break;
 			end
 		end
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -7);
 		GameTooltip_SetTitle(GameTooltip, treeInfo.title);
 		GameTooltip_AddNormalLine(GameTooltip, self:GetDescriptionText());
 		if timeRemaining and timeRemaining > 0 then
@@ -806,17 +824,168 @@ CovenantSanctumUpgradeTreeMixin = CreateFromMixins(CovenantSanctumUpgradeBaseMix
 --=============================================================================================
 CovenantSanctumUpgradeReservoirMixin = CreateFromMixins(CovenantSanctumUpgradeBaseMixin);
 
+local ORB_INSIDE_HEIGHT = 182;
+
 function CovenantSanctumUpgradeReservoirMixin:OnHide()
 	local isFull = false;
 	self:UpdateFullSound(isFull);
 end
 
+function CovenantSanctumUpgradeReservoirMixin:OnEnter()
+	self.isMousedOver = true;
+end
+
+function CovenantSanctumUpgradeReservoirMixin:OnLeave()
+	self.isMousedOver  = false;
+	if self.showingTooltip then
+		self.showingTooltip = false;
+		GameTooltip:Hide();
+	end
+end
+
+function CovenantSanctumUpgradeReservoirMixin:OnUpdate(elapsed)
+	if self.strandRate then
+		local changeBack = self.strandRate * elapsed;
+
+		self.horizProgress = (self.horizProgress or 0) + changeBack;
+		if self.horizProgress >= 1 then
+			self.horizProgress = self.horizProgress - 1;
+		end
+		self.vertProgress = (self.vertProgress or 0) - changeBack;
+		if self.vertProgress <= 0 then
+			self.vertProgress = 1 - self.vertProgress;
+		end
+
+		self.ClippedElements.VerticalStrands:SetTexCoord(0, 1, self.vertProgress, self.vertProgress + 1);
+		self.ClippedElements.HorizontalStrands:SetTexCoord(self.horizProgress, self.horizProgress + 1, 0, 1);
+	end
+
+	if self.isMousedOver then
+		local cx, cy = GetCursorPosition();
+		local mx, my = self:GetCenter();
+		local scale = self:GetEffectiveScale();
+		local distance = CalculateDistance(cx, cy, mx * scale, my * scale);
+		local tooltipMaxDistance = (ORB_INSIDE_HEIGHT / 2) * scale;
+		if distance < tooltipMaxDistance then
+			if not self.showingTooltip then
+				self.showingTooltip = true;
+				local animaCurrencyID, maxDisplayableValue = C_CovenantSanctumUI.GetAnimaInfo();
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -30, -30);
+				GameTooltip:SetCurrencyByID(animaCurrencyID);
+			end
+		elseif self.showingTooltip then
+			self.showingTooltip = false;
+			GameTooltip:Hide();
+		end
+	end
+end
+
 function CovenantSanctumUpgradeReservoirMixin:SetUpTextureKit()
 	SetupTextureKit(self, reservoirTextureKitRegions);
+	SetupTextureKit(self.ClippedElements, reservoirClippedElementsTextureKitRegions);
+	SetupTextureKit(self.FullElements, reservoirFullElementsTextureKitRegions);
+
+	self:SetUpAnimations();
+end
+
+function CovenantSanctumUpgradeReservoirMixin:SetUpAnimations()
+	local clippedFrame = self.ClippedElements;
+	local fullFrame = self.FullElements;
+	local textureKit = GetCovenantTextureKit();
+	local animSettings = reservoirAnimSettings[GetCovenantID()];
+
+	-- specks
+	local highSpecks = animSettings.highSpecks;
+	fullFrame.HighSpeck1:SetShown(highSpecks);
+	fullFrame.HighSpeck2:SetShown(highSpecks);
+	fullFrame.HighSpeck1.Anim:SetPlaying(highSpecks);
+	fullFrame.HighSpeck2.Anim:SetPlaying(highSpecks);
+	local lowSpecks = animSettings.lowSpecks;
+	clippedFrame.LowSpeck1:SetShown(lowSpecks);
+	clippedFrame.LowSpeck2:SetShown(lowSpecks);
+	clippedFrame.LowSpeck1.Anim:SetPlaying(lowSpecks);
+	clippedFrame.LowSpeck2.Anim:SetPlaying(lowSpecks);
+
+	-- spirals
+	if animSettings.spirals then
+		SetupTextureKitOnFrame(textureKit, clippedFrame.Spiral1, "CovenantSanctum-Reservoir-Idle-%s-Spiral1", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnFrame(textureKit, clippedFrame.Spiral2, "CovenantSanctum-Reservoir-Idle-%s-Spiral2", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnFrame(textureKit, clippedFrame.Spiral3, "CovenantSanctum-Reservoir-Idle-%s-Spiral3", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	end
+	clippedFrame.Spiral1:SetShown(animSettings.spirals);
+	clippedFrame.Spiral2:SetShown(animSettings.spirals);
+	clippedFrame.Spiral3:SetShown(animSettings.spirals);
+	clippedFrame.SpiralsAnim:SetPlaying(animSettings.spirals);
+
+	-- pulse
+	if animSettings.pulse then
+		SetupTextureKitOnFrame(textureKit, clippedFrame.Pulse, "CovenantSanctum-Reservoir-Idle-%s-Pulse", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		clippedFrame.Pulse:SetAlpha(0);
+		clippedFrame.PulseAlphaAnim:Restart();
+		clippedFrame.PulseRotateAnim:Restart();
+		clippedFrame.Pulse:Show();
+
+		SetupTextureKitOnFrame(textureKit, clippedFrame.Pulse2, "CovenantSanctum-Reservoir-Idle-%s-Veins", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		clippedFrame.Pulse2:SetAlpha(0);
+		clippedFrame.Pulse2AlphaAnim:Restart();
+		clippedFrame.Pulse2RotateAnim:Restart();
+		clippedFrame.Pulse2:Show();
+	else
+		clippedFrame.Pulse:Hide();
+	end
+
+	-- strands
+	local strandSettings = animSettings.strand;
+	if strandSettings then
+		if strandSettings.vert then
+			SetupTextureKitOnFrame(textureKit, clippedFrame.VerticalStrands, "!CovenantSanctum-Reservoir-Idle-%s-Strands", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+			clippedFrame.VerticalStrands:SetAlpha(strandSettings.alpha);
+		end
+		if strandSettings.horiz then
+			SetupTextureKitOnFrame(textureKit, clippedFrame.HorizontalStrands, "_CovenantSanctum-Reservoir-Idle-%s-Strands2", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+			clippedFrame.HorizontalStrands:SetAlpha(strandSettings.alpha);
+		end		
+		clippedFrame.VerticalStrands:SetShown(strandSettings.vert);
+		clippedFrame.HorizontalStrands:SetShown(strandSettings.horiz);
+		-- store for lookups in OnUpdate
+		self.strandRate = strandSettings.rate;
+	else
+		clippedFrame.VerticalStrands:Hide();
+		clippedFrame.HorizontalStrands:Hide();
+		self.strandRate = nil;
+	end
+
+	-- inner glow
+	local glowSettings = animSettings.glow;
+	if glowSettings then
+		-- reverse from-to for steps 2 & 4
+		local fromAlpha = glowSettings.fromAlpha;
+		local toAlpha = glowSettings.toAlpha;
+		local alphaAnim = clippedFrame.InnerGlow.AlphaAnim;
+		alphaAnim.Step1:SetFromAlpha(fromAlpha);
+		alphaAnim.Step1:SetToAlpha(toAlpha);
+		alphaAnim.Step2:SetFromAlpha(toAlpha);
+		alphaAnim.Step2:SetToAlpha(fromAlpha);
+		alphaAnim.Step3:SetFromAlpha(fromAlpha);
+		alphaAnim.Step3:SetToAlpha(toAlpha);
+		alphaAnim.Step4:SetFromAlpha(toAlpha);
+		alphaAnim.Step4:SetToAlpha(fromAlpha);
+		alphaAnim:Play();
+		if glowSettings.rotate then
+			clippedFrame.InnerGlow.RotateAnim:Play();
+		else
+			clippedFrame.InnerGlow.RotateAnim:Stop();
+		end
+	else
+		clippedFrame.InnerGlow.AlphaAnim:Stop();
+		clippedFrame.InnerGlow.RotateAnim:Stop();
+	end
+
+	-- restart shared elements
+	clippedFrame.FillBackground.Anim:Restart();
 end
 
 function CovenantSanctumUpgradeReservoirMixin:Refresh()
-	self.SelectedTexture:SetShown(self:IsSelected());
 	self:UpdateAnima();
 end
 
@@ -828,29 +997,25 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 
 	local isFull = false;
 	if value == 0 then
-		self.FillBackground:Hide();
-		self.Spark:Hide();
+		self.ClippedElements.FillBackground:Hide();
+		self.FullElements.Spark:Hide();
 	else
-		self.FillBackground:Show();
+		self.ClippedElements.FillBackground:Show();
 		local totalHeight = 336;
 		if value >= maxDisplayableValue then
-			self.FillBackground:SetHeight(totalHeight);
-			self.FillBackground:SetTexCoord(0, 1, 0, 1);
-			self.Spark:Hide();
+			self.ClippedElements:SetHeight(totalHeight);
+			self.FullElements.Spark:Hide();
 			isFull = true;
 		else
-			local usableHeight = 182;  -- orb portion of the artwork
-			local base = (totalHeight - usableHeight) / 2;
+			local base = (totalHeight - ORB_INSIDE_HEIGHT) / 2;
 			local percent = value / maxDisplayableValue;
-			local height = base + usableHeight * percent;
-			self.FillBackground:SetHeight(height);
-			local coordTop = 1 - height / totalHeight;
-			self.FillBackground:SetTexCoord(0, 1, coordTop, 1);
-			self.Spark:Show();
+			local height = base + ORB_INSIDE_HEIGHT * percent;
+			self.ClippedElements:SetHeight(height);
+			self.FullElements.Spark:Show();
 		end
 	end
 
-	self.StaticGlow:SetShown(isFull);
+	self.FullElements.StaticGlow:SetShown(isFull);
 	local modelScene = self.ModelScene;
 	modelScene:SetShown(isFull);
 	if isFull then
@@ -871,7 +1036,7 @@ end
 function CovenantSanctumUpgradeReservoirMixin:UpdateFullSound(isFull)
 	local covenantData = GetCovenantData();
 	if isFull and not self.fullAnimaSoundHandle then
-		self.fullAnimaSoundHandle = select(2, PlaySound(covenantData.reservoirFullSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES));
+		self.fullAnimaSoundHandle = select(2, PlaySound(covenantData.reservoirFullSoundKitID));
 	elseif not isFull and self.fullAnimaSoundHandle then
 		StopSound(self.fullAnimaSoundHandle);
 		self.fullAnimaSoundHandle = nil;
@@ -884,15 +1049,15 @@ function CovenantSanctumUpgradeReservoirMixin:GetAnimaAmount()
 end
 
 function CovenantSanctumUpgradeReservoirMixin:StartAnimaGainEffect()
-	self.GlowAnim:Play();
-	self.SparkGlowAnim:Play();
+	self.FullElements.GlowAnim:Play();
+	self.FullElements.SparkGlowAnim:Play();
 end
 
 function CovenantSanctumUpgradeReservoirMixin:CancelAnimaGainEffect()
-	self.SparkGlowAnim:Stop();
-	self.SparkGlow:SetAlpha(0);
-	self.GlowAnim:Stop();
-	self.Glow:SetAlpha(0);
+	self.FullElements.SparkGlowAnim:Stop();
+	self.FullElements.SparkGlow:SetAlpha(0);
+	self.FullElements.GlowAnim:Stop();
+	self.FullElements.Glow:SetAlpha(0);
 end
 
 CovenantSanctumUpgradeButtonMixin = {};
@@ -901,5 +1066,5 @@ function CovenantSanctumUpgradeButtonMixin:OnClick(button)
 	self:GetParent():Upgrade();
 
 	local covenantData = GetCovenantData();
-	PlaySound(covenantData.beginResearchSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(covenantData.beginResearchSoundKitID);
 end

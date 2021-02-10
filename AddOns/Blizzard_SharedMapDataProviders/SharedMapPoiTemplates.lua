@@ -76,7 +76,7 @@ end
 
 MapPinSupertrackHighlightMixin = {};
 
-function MapPinSupertrackHighlightMixin:SetHighlightShown(shown, texture)
+function MapPinSupertrackHighlightMixin:SetHighlightShown(shown, texture, params)
 	self:SetShown(shown);
 	self.BackHighlight:SetShown(shown);
 	self.TopHighlight:SetShown(shown);
@@ -84,7 +84,10 @@ function MapPinSupertrackHighlightMixin:SetHighlightShown(shown, texture)
 	if shown then
 		local w, h = texture:GetSize();
 		self.Expand:SetSize(w, h);
-		self.BackHighlight:SetSize(w + 10, h + 10);
+
+		local backgroundPadding = (params and params.backgroundPadding) or 10;
+
+		self.BackHighlight:SetSize(w + backgroundPadding, h + backgroundPadding);
 		self.TopHighlight:SetSize(w + 10, h + 10);
 
 		local atlas = texture:GetAtlas();
@@ -100,7 +103,7 @@ function MapPinSupertrackHighlightMixin:SetHighlightShown(shown, texture)
 	end
 end
 
-function MapPinSupertrackHighlight_CheckHighlightPin(highlight, parentPin, regionToHighlight)
+function MapPinHighlight_CheckHighlightPin(highlight, parentPin, regionToHighlight, params)
 	if highlight and not parentPin.SupertrackedHighlight then
 		local frame = CreateFrame("Frame", nil, parentPin, "MapPinSupertrackHighlightTemplate");
 		parentPin.SupertrackedHighlight = frame;
@@ -114,6 +117,6 @@ function MapPinSupertrackHighlight_CheckHighlightPin(highlight, parentPin, regio
 	end
 
 	if parentPin.SupertrackedHighlight then
-		parentPin.SupertrackedHighlight:SetHighlightShown(highlight, regionToHighlight);
+		parentPin.SupertrackedHighlight:SetHighlightShown(highlight, regionToHighlight, params);
 	end
 end

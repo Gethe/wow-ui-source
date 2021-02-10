@@ -1901,11 +1901,7 @@
 				</Layers>
 				<Scripts>
 					<OnTextChanged>
-						if ( strupper(self:GetText()) == strupper(DELETE_CONFIRM_STRING) ) then
-							CharacterDeleteButton1:Enable();
-						else
-							CharacterDeleteButton1:Disable();
-						end
+						CharacterDeleteButton1:SetEnabled(ConfirmationEditBoxMatches(self, DELETE_CONFIRM_STRING));
 					</OnTextChanged>
 					<OnEnterPressed>
 						if ( CharacterDeleteButton1:IsEnabled() ) then

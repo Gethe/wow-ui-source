@@ -91,6 +91,7 @@ local AreaPoiInfo =
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "shouldGlow", Type = "bool", Nilable = false },
 			},
 		},
 	},

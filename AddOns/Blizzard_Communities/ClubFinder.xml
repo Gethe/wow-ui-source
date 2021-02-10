@@ -86,7 +86,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button parentKey="ApplyButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="APPLY">
+			<Button parentKey="ApplyButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="CLUB_FINDER_APPLY">
 				<Size x="150" y="24"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="-80" y="22"/>

@@ -1311,6 +1311,7 @@ local AuctionHouse =
 				{ Name = "unitPrice", Type = "number", Nilable = false },
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "owners", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "totalNumberOfOwners", Type = "number", Nilable = false },
 				{ Name = "timeLeftSeconds", Type = "number", Nilable = true },
 				{ Name = "numOwnerItems", Type = "number", Nilable = false },
 				{ Name = "containsOwnerItem", Type = "bool", Nilable = false },
@@ -1350,6 +1351,7 @@ local AuctionHouse =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
 				{ Name = "owners", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "totalNumberOfOwners", Type = "number", Nilable = false },
 				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = false },
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },

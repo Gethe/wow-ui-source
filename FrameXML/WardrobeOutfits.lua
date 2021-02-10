@@ -142,9 +142,15 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 						if ( canCollect ) then
 							isValidSource = true;
 						else
-							-- hack: ignore artifacts
+							-- hack: ignore artifacts from the paired category
 							if (not IsSourceArtifact(sourceID)) then
 								hadInvalidSources = true;
+							else
+								-- In a pair, parents will have the category "Paired", and children will have no category (-1)
+								local category = TransmogUtil.GetCategoryForSlot(transmogSlot.location);
+								if (category ~= (Enum.TransmogCollectionType.Paired + 1) and category ~= -1) then
+									hadInvalidSources = true;
+								end
 							end
 						end
 					else
@@ -153,9 +159,15 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 					end
 				end
 				if ( isValidSource ) then
-					-- No artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
-					if ( IsSourceArtifact(sourceID) ) then
-						sources[slotID] = NO_TRANSMOG_SOURCE_ID;
+					-- No paired-category artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
+					if ( IsSourceArtifact(sourceID)) then
+						-- In a pair, parents will have the category "Paired", and children will have no category (-1)
+						local category = TransmogUtil.GetCategoryForSlot(transmogSlot.location);
+						if (category == (Enum.TransmogCollectionType.Paired + 1) or category == -1) then
+							sources[slotID] = NO_TRANSMOG_SOURCE_ID;
+						else
+							sources[slotID] = sourceID;
+						end
 					else
 						sources[slotID] = sourceID;
 					end

@@ -660,7 +660,7 @@ function ChannelFrameMixin:CheckNewcomerChannelJoin(channelIndex)
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
-	elseif IsActivePlayerMentor() then
+	elseif IsActivePlayerGuide() then
 		-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
 		-- then if you're not a newcomer, you must be a guide.
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));

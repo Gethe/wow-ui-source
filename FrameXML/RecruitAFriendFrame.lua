@@ -399,6 +399,7 @@ function RecruitActivityButtonMixin:OnEnter()
 
 	if not self.questName then
 		GameTooltip_SetTitle(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		GameTooltip_SetTooltipWaitingForData(EmbeddedItemTooltip, true);
 		self.UpdateTooltip = self.OnEnter;
 	else
 		GameTooltip_SetTitle(EmbeddedItemTooltip, self.questName, nil, wrap);
@@ -427,6 +428,7 @@ function RecruitActivityButtonMixin:OnEnter()
 			GameTooltip_AddInstructionLine(EmbeddedItemTooltip, CLICK_CHEST_TO_CLAIM_REWARD, wrap);
 		end
 
+		GameTooltip_SetTooltipWaitingForData(EmbeddedItemTooltip, false);
 		self.UpdateTooltip = nil;
 	end
 
@@ -713,6 +715,7 @@ function RecruitAFriendClaimOrViewRewardButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, BLIZZARD_STORE_PROCESSING, RED_FONT_COLOR, wrap);
 		self.disabledTooltipShowing = true;
+		GameTooltip:Show();
 	end
 end
 
@@ -1146,9 +1149,11 @@ function RecruitAFriendGenerateOrCopyLinkButtonMixin:OnEnter()
 		if self.recruitsAreMaxed then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip_SetTitle(GameTooltip, RAF_FULL_RECRUITS:format(maxRecruits, maxRecruits), RED_FONT_COLOR, wrap);
+			GameTooltip:Show();
 		elseif not self.waitingForRecruitmentInfo then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip_SetTitle(GameTooltip, RAF_EXPENDED_LINK_EXPIRE_DATE:format(self.recruitmentInfo.expireDateString), RED_FONT_COLOR, wrap);
+			GameTooltip:Show();
 		end
 	end
 end

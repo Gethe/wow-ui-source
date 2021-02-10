@@ -7,6 +7,20 @@ local ChallengeModeInfo =
 	Functions =
 	{
 		{
+			Name = "CanUseKeystoneInCurrentMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearKeystone",
 			Type = "Function",
 		},

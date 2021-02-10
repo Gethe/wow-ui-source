@@ -1390,7 +1390,7 @@ function QuestLogQuests_Update(poiTable)
 		if displayState.campaignShown then
 			QuestScrollFrame.Contents.StoryHeader.topPadding = -18;
 		else
-			QuestScrollFrame.Contents.StoryHeader.topPadding = 0;
+			QuestScrollFrame.Contents.StoryHeader.topPadding = -4;
 		end
 
 		QuestScrollFrame.Contents.StoryHeader:Show();
@@ -1508,9 +1508,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, tagName, overrideQuestTag, tagInfo.worldQuestType, NORMAL_FONT_COLOR);
 	end
 
-	if C_QuestLog.IsQuestCalling(questID) then
-		WorldMap_AddQuestTimeToTooltip(questID);
-	end
+	GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
 
 	if ( info.frequency == Enum.QuestFrequency.Daily ) then
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, DAILY, "DAILY", nil, NORMAL_FONT_COLOR);

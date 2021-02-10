@@ -34,6 +34,7 @@ RuneforgeCreateFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
 local RuneforgeCreateFrameEvents = {
 	"UNIT_INVENTORY_CHANGED",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 function RuneforgeCreateFrameMixin:OnLoad()
@@ -57,7 +58,7 @@ function RuneforgeCreateFrameMixin:OnHide()
 end
 
 function RuneforgeCreateFrameMixin:OnEvent(event)
-	if event == "UNIT_INVENTORY_CHANGED" then
+	if event == "UNIT_INVENTORY_CHANGED" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:Refresh();
 	end
 end
@@ -123,19 +124,34 @@ end
 function RuneforgeCreateFrameMixin:Refresh()
 	local canCraft, errorString = self:GetRuneforgeFrame():CanCraftRuneforgeLegendary();
 	self.CraftItemButton:SetCraftState(canCraft, errorString);
-	self.CraftError:SetShown(errorString ~= nil);
-	self.CraftError:SetText(errorString);
 
 	self:UpdateCost();
 end
 
+
 function RuneforgeCreateFrameMixin:UpdateCost()
-	local currenciesCost = self:GetRuneforgeFrame():GetCost();
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	local currenciesCost = runeforgeFrame:GetCost();
 	local showCost = (currenciesCost ~= nil) and (#currenciesCost > 0);
 	self.Cost:SetShown(showCost);
 
 	if showCost then
-		self.Cost:SetCurrencies(currenciesCost, RUNEFORGE_LEGENDARY_COST_FORMAT);
+		local availableCurrencyString = "";
+		local currencies = C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies();
+
+		-- If there's only one currency, show just the amount since the icon will be shown by the currency display.
+		-- If there are multiple currencies, each shows a separate amount and icon.
+		if #currencies == 1 then
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencies[1]);
+			availableCurrencyString = BreakUpLargeNumbers(currencyInfo.quantity);
+		else
+			availableCurrencyString = GetCurrenciesString(currencies);
+		end
+	
+		-- Format back in a "%s" for the final currency string set by the CurrencyDisplayTemplate.
+		local currencyColorCode = runeforgeFrame:CanAffordRuneforgeLegendary() and HIGHLIGHT_FONT_COLOR_CODE or RED_FONT_COLOR_CODE;
+		local format = RUNEFORGE_LEGENDARY_COST_FORMAT:format(currencyColorCode, availableCurrencyString, "%s");
+		self.Cost:SetCurrencies(currenciesCost, format);
 	end
 end
 
@@ -170,4 +186,5 @@ end
 function RuneforgeCraftItemButtonMixin:SetCraftState(canCraft, errorString)
 	self:SetEnabled(canCraft);
 	self.errorString = errorString;
+	GlowEmitterFactory:SetShown(self, canCraft, GlowEmitterMixin.Anims.FaintFadeAnim);
 end

@@ -82,7 +82,7 @@ end
 function MawBuffsContainerMixin:OnClick()
 	self.List:SetShown(not self.List:IsShown());
 	HelpTip:Acknowledge(self, JAILERS_TOWER_BUFFS_TUTORIAL);
-	PlaySound(SOUNDKIT.UI_MAW_BUFFS_ANIMA_POWERS_BUTTON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_MAW_BUFFS_ANIMA_POWERS_BUTTON);
 end
 
 function MawBuffsContainerMixin:HighlightBuffAndShow(spellID, maxStacks)

@@ -948,6 +948,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "ShouldDisplayTimeRemaining",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "displayTimeRemaining", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldShowQuestRewards",
 			Type = "Function",
 

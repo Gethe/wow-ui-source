@@ -41,7 +41,7 @@ function SoulbindsSelectButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -14, -14);
 
 	if not self.soulbindData.unlocked then
-		GameTooltip_AddNormalLine(GameTooltip, SOULBIND_TUTORIAL_SOULBIND_UNLOCK:format(self.soulbindData.name));
+		GameTooltip_AddNormalLine(GameTooltip, self.soulbindData.playerConditionReason);
 	else
 		GameTooltip_AddNormalLine(GameTooltip, self.soulbindData.name);
 	end

@@ -59,6 +59,11 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="ErrorTexture" atlas="runecarving-icon-power-empty-error" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<NormalTexture atlas="runecarving-icon-power-empty" useAtlasSize="true" alpha="0">

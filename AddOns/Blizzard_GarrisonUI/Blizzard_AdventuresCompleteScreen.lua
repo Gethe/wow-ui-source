@@ -337,7 +337,7 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 
 		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
 			if #combatLogEvent.targetInfo > 2 then
-				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER);
 			end
 		end
 
@@ -358,9 +358,9 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 				end
 
 				if #combatLogEvent.targetInfo > 5 then
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE);
 				elseif #combatLogEvent.targetInfo > 1 then		
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM);
 				end
 
 				return false;

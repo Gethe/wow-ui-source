@@ -13,7 +13,7 @@ function Class_TutorialBase.static:GlobalDisable()
 	self.static.IsGlobalEnabled = false;
 
 	-- Shutdown all tutorials
-	for k, tutorial in pairs(Tutorials) do
+	for k, tutorial in pairs(TutorialLogic.Tutorials) do
 		if (type(tutorial) == "table") then
 			tutorial:Interrupt();
 		end
@@ -234,7 +234,6 @@ function Class_TutorialBase:_DoBegin(...)
 					self:_DoOnBegin();
 				end
 			end, true);
-
 	else
 		self:_DoOnBegin(...);
 	end
@@ -417,6 +416,14 @@ function Class_TutorialBase:SetMaxLevel(level)
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 end
 
+function Class_TutorialBase:SetExclusiveClass(class)
+	self.playerClass = TutorialHelper:GetClass();
+	if (class and (class == self.playerCLass == class)) then
+		self:Interrupt(self);
+		return;
+	end
+end
+
 -- ------------------------------------------------------------------------------------------------------------
 function Class_TutorialBase:PLAYER_LEVEL_UP(newLevel)
 	if (self._MaxLevel and (newLevel > self._MaxLevel)) then
@@ -443,4 +450,19 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function Class_TutorialBase:DelayWhileFrameVisible(frame)
 	self._DelayFrame = frame;
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function Class_TutorialBase:CanStart(args)
+	return true;
+end
+
+function Class_TutorialBase:Start()
+end
+
+function Class_TutorialBase:Status()
+	return self.class.name;
+end
+
+function Class_TutorialBase:Finish()
 end

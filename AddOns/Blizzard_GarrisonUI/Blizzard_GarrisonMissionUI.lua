@@ -570,9 +570,9 @@ local tutorials = {
 	[2] = { text = GARRISON_MISSION_TUTORIAL2, anchor = "mission", offsetX = -37, offsetY = 13, parent = "MissionList", targetPoint = HelpTip.Point.BottomEdgeRight },
 	[3] = { text = GARRISON_MISSION_TUTORIAL3, anchor = "threat", offsetX = 0, offsetY = 8, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeCenter },
 	[4] = { text = GARRISON_MISSION_TUTORIAL4, anchor = "follower", offsetX = -16, offsetY = 33, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeRight },
-	[5] = { text = GARRISON_MISSION_TUTORIAL5, anchor = "slot", offsetX = 26, offsetY = 3, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeLeft },	
+	[5] = { text = GARRISON_MISSION_TUTORIAL5, anchor = "slot", offsetX = 26, offsetY = 3, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeLeft },
 	[6] = { text = GARRISON_MISSION_TUTORIAL6, anchor = "threat", offsetX = 0, offsetY = 8, parent = "MissionPage", targetPoint = HelpTip.Point.BottomEdgeCenter },
-	[7] = { text = GARRISON_MISSION_TUTORIAL7, anchor = "rewards",  offsetX = 32, offsetY = -23, parent = "MissionPage", targetPoint = HelpTip.Point.TopEdgeLeft },	
+	[7] = { text = GARRISON_MISSION_TUTORIAL7, anchor = "rewards",  offsetX = 32, offsetY = -23, parent = "MissionPage", targetPoint = HelpTip.Point.TopEdgeLeft },
 	[8] = { text = GARRISON_MISSION_TUTORIAL9, anchor = "button", offsetX = 0, offsetY = -17, parent = "MissionPage", targetPoint = HelpTip.Point.TopEdgeCenter },
 }
 
@@ -650,12 +650,12 @@ function GarrisonMissionFrame_ClearMouse()
 	if ( GarrisonFollowerPlacer.info ) then
 		GarrisonFollowerPlacer:Hide();
 		GarrisonFollowerPlacer.info = nil;
-		
+
 		return true;
 	elseif (CovenantFollowerPlacer.info ) then
 		CovenantFollowerPlacer:Hide();
 		CovenantFollowerPlacer.info = nil;
-		
+
 		EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 		return true;
 	end
@@ -1325,6 +1325,13 @@ end
 function GarrisonMissionPage_OnUpdate(self)
 	if ( self.missionInfo.offerEndTime and self.missionInfo.offerEndTime <= GetTime() ) then
 		-- mission expired
+		GarrisonMissionFrame_ClearMouse();
+		self.CloseButton:Click();
+	end
+end
+
+function GarrisonMissionPage_OnClick(self, button)
+	if button == "RightButton" then
 		GarrisonMissionFrame_ClearMouse();
 		self.CloseButton:Click();
 	end

@@ -81,6 +81,22 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetNextMythicPlusIncrease",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mythicPlusLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSeasonData", Type = "bool", Nilable = false },
+				{ Name = "nextMythicPlusLevel", Type = "number", Nilable = true },
+				{ Name = "itemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "HasAvailableRewards",
 			Type = "Function",
 
@@ -96,6 +112,15 @@ local WeeklyRewards =
 			Returns =
 			{
 				{ Name = "hasGeneratedRewards", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasInteraction",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInteracting", Type = "bool", Nilable = false },
 			},
 		},
 	},

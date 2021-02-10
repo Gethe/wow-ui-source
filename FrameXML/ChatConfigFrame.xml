@@ -538,6 +538,7 @@
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_UP);
+										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
@@ -560,6 +561,7 @@
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_DOWN);
+										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>

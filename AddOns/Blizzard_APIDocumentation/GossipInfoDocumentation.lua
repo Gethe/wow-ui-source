@@ -38,6 +38,15 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "GetCustomGossipDescriptionString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNumActiveQuests",
 			Type = "Function",
 

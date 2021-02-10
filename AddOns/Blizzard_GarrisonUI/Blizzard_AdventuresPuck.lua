@@ -151,7 +151,7 @@ function AdventuresPuckMixin:PlayDeathAnimation()
 	self.DeathAnimationFrame.DeathAnimation:Play();
 	
 	if self.deathSound then	
-		PlaySound(self.deathSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(self.deathSound);
 	end
 end
 

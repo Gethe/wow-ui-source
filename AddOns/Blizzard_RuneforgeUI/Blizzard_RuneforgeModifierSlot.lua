@@ -28,6 +28,16 @@ function RuneforgeModifierSlotMixin:OnEnter()
 		GameTooltip:SetOwner(self);
 		self:GetModifierFrame():SetModifierTooltip(GameTooltip, self:GetID(), itemID);
 		GameTooltip:Show();
+	elseif self:HasError() then
+		local errorText, errorDescription = self:GetError();
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, errorText, RED_FONT_COLOR);
+		if errorDescription ~= nil then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, errorDescription);
+		end
+
+		GameTooltip:Show();
 	end
 end
 
@@ -50,14 +60,24 @@ function RuneforgeModifierSlotMixin:OnClick(buttonName)
 	end
 end
 
-function RuneforgeModifierSlotMixin:SetSelectable(selectable)
+function RuneforgeModifierSlotMixin:SetSelectable(selectable, errorText, errorDescription)
 	self.selectable = selectable;
+	self.errorText = errorText;
+	self.errorDescription = errorDescription;
 
 	self:UpdateButtonState();
 end
 
 function RuneforgeModifierSlotMixin:IsSelectable()
-	return self.selectable;
+	return self.selectable and not self:HasError();
+end
+
+function RuneforgeModifierSlotMixin:GetError()
+	return self.errorText, self.errorDescription;
+end
+
+function RuneforgeModifierSlotMixin:HasError()
+	return self:GetError() ~= nil;
 end
 
 function RuneforgeModifierSlotMixin:SetItem(item)
@@ -88,6 +108,7 @@ function RuneforgeModifierSlotMixin:UpdateButtonState()
 	self:GetNormalTexture():SetAlpha(buttonAlpha);
 	self:GetPushedTexture():SetAlpha(buttonAlpha);
 
+	self.ErrorTexture:SetShown(self:HasError());
 end
 
 function RuneforgeModifierSlotMixin:SetArrowShown(shown)
@@ -345,11 +366,17 @@ end
 
 function RuneforgeModifierFrameMixin:UpdateEnabledState()
 	local isUpgrading = self:IsRuneforgeUpgrading();
-	local enabled = (self:GetRuneforgeFrame():GetItem() ~= nil) and (self:GetRuneforgeFrame():GetPowerID() ~= nil);
-	self.FirstSlot:SetSelectable(not isUpgrading and enabled);
+	local previousItemsValid = (self:GetRuneforgeFrame():GetItem() ~= nil) and (self:GetRuneforgeFrame():GetPowerID() ~= nil);
+	local numModifierTypes = self:GetRuneforgeFrame():GetNumAvailableModifierTypes();
+	local errorText = RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_MODIFIERS;
+	local errorDescription = RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_MODIFIERS_DESCRIPTION;
+
+	local firstSlotHasError = not isUpgrading and (numModifierTypes < 1);
+	self.FirstSlot:SetSelectable(not isUpgrading and previousItemsValid, firstSlotHasError and errorText or nil, firstSlotHasError and errorDescription or nil);
 
 	local secondSlotEnabled = (self.SecondSlot:GetItem() ~= nil) or (self.FirstSlot:GetItem() ~= nil);
-	self.SecondSlot:SetSelectable(not isUpgrading and enabled and secondSlotEnabled);
+	local secondSlotHasError = not isUpgrading and (numModifierTypes < 2);
+	self.SecondSlot:SetSelectable(not isUpgrading and previousItemsValid and secondSlotEnabled, secondSlotHasError and errorText or nil, secondSlotHasError and errorDescription or nil);
 end
 
 function RuneforgeModifierFrameMixin:SetModifierSlot(slot, itemID)

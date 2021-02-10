@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
   <Script file="Blizzard_PVPUI.lua"/>
-  
+
 	<Frame name="SeasonRewardFrameTemplate" mixin="PVPAchievementRewardMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="useAchievementDescription" value="false" type="boolean"/>
@@ -22,7 +22,7 @@
 			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PVPSeasonChangesNoticeTemplate" hidden="true" mixin="NewPvpSeasonMixin" enableMouse="true" virtual="true">
 		<Size x="398" y="548"/>
 		<Layers>
@@ -165,7 +165,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
+
 	<Button name="PVPInstanceListHeaderButtonTemplate" virtual="true">
 		<Size x="309" y="16"/>
 		<Anchors>
@@ -641,7 +641,7 @@
 			<OnEnter method="OnEnter"/>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
 		<Size x="365" y="91"/>
 		<Layers>
@@ -716,7 +716,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PVPWeeklyChestTemplate" virtual ="true" useParentLevel="true" mixin="PVPWeeklyChestMixin" >
+	<Frame name="PVPWeeklyChestTemplate" virtual="true" useParentLevel="true" mixin="PVPWeeklyChestMixin">
 		<Size x="84" y="70"/>
 		<Anchors>
 			<Anchor point="TOP" y="-48"/>
@@ -752,11 +752,20 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
+					<Size x="187" y="152"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
@@ -1605,7 +1614,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					
+
 					<Frame parentKey="NewSeasonPopup" frameStrata="HIGH" inherits="PVPSeasonChangesNoticeTemplate">
 						<Size x="570" y="390"/>
 						<Anchors>
