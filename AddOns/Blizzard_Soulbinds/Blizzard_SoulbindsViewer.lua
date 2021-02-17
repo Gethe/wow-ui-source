@@ -92,10 +92,7 @@ function SoulbindViewerMixin:OnShow()
 	self:UpdateBackgrounds();
 
 	if C_Soulbinds.CanModifySoulbind() then
-		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-
-		local openedCount = OpenAllBagsMatchingContext(self);
-		self.closeBagsOnHide = openedCount > 0;
+		ItemButtonUtil.OpenAndFilterBags(self);
 	end
 
 	self:CheckTutorials();
@@ -112,13 +109,7 @@ function SoulbindViewerMixin:OnHide()
 	end
 	self.helpTipItemLocation = nil;
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-
-	if self.closeBagsOnHide then
-		local forceUpdate = true;
-		CloseAllBags(self, forceUpdate);
-		self.closeBagsOnHide = nil;
-	end
+	ItemButtonUtil.CloseFilteredBags(self);
 	
 	StaticPopup_Hide("SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION");
 	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");

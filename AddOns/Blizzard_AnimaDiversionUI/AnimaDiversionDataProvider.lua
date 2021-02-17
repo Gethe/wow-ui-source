@@ -193,6 +193,12 @@ end
 AnimaDiversionPinMixin = CreateFromMixins(MapCanvasPinMixin); 
 function AnimaDiversionPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
+	self:SetNudgeSourceRadius(1);
+
+	-- This map doesn't zoom so set them both the same.
+	local zoomedInNudge = 3;
+	local zoomedOutNudge = zoomedInNudge;
+	self:SetNudgeSourceMagnitude(zoomedInNudge, zoomedOutNudge);
 end 
 
 function AnimaDiversionPinMixin:SetupOrigin()

@@ -65,6 +65,28 @@ local bagsGlowTextureKitRegions = {
 	["Glow"] = "CovenantSanctum-Bag-Glow-%s",
 }
 
+StaticPopupDialogs["CONFIRM_SANCTUM_UPGRADE"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		self.data.owner:Upgrade();
+		local covenantData = GetCovenantData();
+		PlaySound(covenantData.beginResearchSoundKitID);
+	end,
+	OnShow = function(self, data)
+		if data then
+			local costString = GetGarrisonTalentCostString(data.talent);
+			self.text:SetText(SANCTUM_UPGRADE_CONFIRMATION:format(data.talent.name, data.talent.tier + 1, costString));
+		end
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+
+}
+
 local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(GetCovenantTextureKit(), frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
@@ -160,6 +182,8 @@ function CovenantSanctumUpgradesTabMixin:OnShow()
 end
 
 function CovenantSanctumUpgradesTabMixin:OnHide()
+	StaticPopup_Hide("CONFIRM_SANCTUM_UPGRADE");
+
 	FrameUtil.UnregisterFrameForEvents(self, CovenantSanctumUpgradesEvents);
 	self.selectedTreeID = nil;
 	if self.animaGainEffect then
@@ -281,6 +305,7 @@ function CovenantSanctumUpgradesTabMixin:SetSelectedTree(treeID)
 	if self.selectedTreeID ~= treeID then
 		self.selectedTreeID = treeID;
 		self:Refresh();
+		StaticPopup_Hide("CONFIRM_SANCTUM_UPGRADE");
 	end
 end
 
@@ -829,6 +854,7 @@ local ORB_INSIDE_HEIGHT = 182;
 function CovenantSanctumUpgradeReservoirMixin:OnHide()
 	local isFull = false;
 	self:UpdateFullSound(isFull);
+	StaticPopup_Hide("CONFIRM_SANCTUM_UPGRADE");
 end
 
 function CovenantSanctumUpgradeReservoirMixin:OnEnter()
@@ -1063,8 +1089,8 @@ end
 CovenantSanctumUpgradeButtonMixin = {};
 
 function CovenantSanctumUpgradeButtonMixin:OnClick(button)
-	self:GetParent():Upgrade();
-
-	local covenantData = GetCovenantData();
-	PlaySound(covenantData.beginResearchSoundKitID);
+	local talent = C_Garrison.GetTalentInfo(self:GetParent().upgradeTalentID);
+	if(talent) then 
+		StaticPopup_Show("CONFIRM_SANCTUM_UPGRADE", nil, nil, {owner = self:GetParent(), talent = talent}); 
+	end 
 end

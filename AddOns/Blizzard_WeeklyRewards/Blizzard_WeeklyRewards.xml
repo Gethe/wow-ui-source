@@ -339,6 +339,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PreviousRewardNotification" inherits="SystemFont_Med3" justifyH="CENTER" hidden="true" text="WEEKLY_REWARDS_UNCLAIMED_REWARDS_FROM_PREVIOUS_TIME">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="41"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="WeeklyRewardsNineSliceTemplate"/>

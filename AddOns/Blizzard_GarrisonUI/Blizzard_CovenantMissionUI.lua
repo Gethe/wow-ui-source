@@ -292,6 +292,14 @@ function CovenantMission:ShowMission(missionInfo)
 		followerFrame:SetEmpty();
 		followerFrame:Show();
 	end
+
+	for enemySocket in missionPage.Board:EnumerateEnemySockets() do 
+		enemySocket:SetSocketTexture(missionInfo.locTextureKit, true);
+	end 
+
+	for followerSocket in missionPage.Board:EnumerateFollowerSockets() do 
+		followerSocket:SetSocketTexture(missionInfo.locTextureKit, false);
+	end 
 	self:GetMissionPage().Board:ResetBoardIndicators();
 
 	self:SetupShowMissionTutorials(missionInfo);
@@ -320,6 +328,7 @@ function CovenantMission:ShowMission(missionInfo)
 	self:UpdateEnemyPower(missionPage, enemies);
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
+	CovenantMissionUpdateBoardTextures(missionPage, missionInfo.locTextureKit)
 end
 
 function CovenantMission:SetupShowMissionTutorials(missionInfo)
@@ -1124,4 +1133,135 @@ end
 
 function ConvenantMissionPageMouseOverTitleMixin:OnLeave() 
 	GameTooltip:Hide(); 
+end 
+
+local defaultMissionPageTextureKit = "Adventures-Missions";
+local missionPageEnemyBGTexture = "%s-bg-01"; 
+local missionPageFollowerBGTexture = "%s-bg-02"; 
+
+local missionBoardTextureLayout = {
+	["defaultTextureKit"] = 
+	{
+		EnemyBackgroundYOffset = 0,
+		FollowerBackgroundYOffset = 0,
+		EnemyBackgroundXOffset = 0,
+		FollowerBackgroundXOffset = 0,
+		horzTile = false,
+		vertTile = false,
+		useAtlasSize = true,
+		showBorder = false,
+		showMedian = false,
+		showDropShadow = false,
+		showIconBG = false,
+		showHeader = false, 
+		showCloseButtonBorder = false, 
+		closeButtonOffsetX = 2,
+		closeButtonOffsetY = 3,
+	},
+
+	["GarrMissionLocation-Maw"] = 
+	{
+		EnemyBackgroundYOffset = -10,
+		FollowerBackgroundYOffset = 0,
+		EnemyBackgroundXOffset = 0,
+		FollowerBackgroundXOffset = 0,
+		horzTile = false,
+		vertTile = false,
+		useAtlasSize = true,
+		showBorder = false,
+		showMedian = false,
+		showDropShadow = false,
+		showIconBG = false,
+		showHeader = false, 
+		showCloseButtonBorder = false, 
+		closeButtonOffsetX = -2,
+		closeButtonOffsetY = 3,
+	},
+	["Adventures-Missions"] = 
+	{
+		EnemyBackgroundYOffset = 0,
+		FollowerBackgroundYOffset = 0,
+		EnemyBackgroundXOffset = 0,
+		FollowerBackgroundXOffset = 0,
+		horzTile = true,
+		vertTile = true,
+		useAtlasSize = false,
+		showBorder = true,
+		showMedian = true,
+		showDropShadow = true,
+		showIconBG = true,
+		showHeader = true,
+		showCloseButtonBorder = true, 
+		closeButtonOffsetX = 2,
+		closeButtonOffsetY = 3,
+	},
+};
+
+function CovenantMissionUpdateBoardTextures(frame, textureKit)
+	if(not frame) then 
+		return; 
+	end 
+
+	local textureKitFollowerAtlas = GetFinalAtlasFromTextureKitIfExists(missionPageFollowerBGTexture, textureKit);
+	local textureKitEnemyAtlas = GetFinalAtlasFromTextureKitIfExists(missionPageEnemyBGTexture, textureKit);
+
+	local defaultEnemyAtlas = GetFinalNameFromTextureKit(missionPageEnemyBGTexture, defaultMissionPageTextureKit);
+	local defaultFollowerAtlas = GetFinalNameFromTextureKit(missionPageFollowerBGTexture, defaultMissionPageTextureKit);
+
+	local followerBGAtlas = textureKitFollowerAtlas and textureKitFollowerAtlas or defaultFollowerAtlas; 
+	local enemyBGAtlas = textureKitEnemyAtlas and textureKitEnemyAtlas or defaultEnemyAtlas; 
+	
+	--Special case for the default atlas, we always want it to be the enemybg. 
+	if(enemyBGAtlas == defaultEnemyAtlas) then 
+		followerBGAtlas = enemyBGAtlas;
+	elseif(not followerBGAtlas and enemyBGAtlas) then
+		followerBGAtlas = enemyBGAtlas; 
+	elseif(not enemyBGAtlas and followerBGAtlas) then 
+		enemyBGAtlas = followerBGAtlas; 
+	end 
+	local layoutIndex = textureKitFollowerAtlas and textureKit or defaultMissionPageTextureKit;
+	local layoutInfo = missionBoardTextureLayout[layoutIndex] and missionBoardTextureLayout[layoutIndex] or missionBoardTextureLayout["defaultTextureKit"];
+
+	frame.NineSlice:SetShown(layoutInfo.showBorder); 
+	frame.Median:SetShown(layoutInfo.showMedian); 
+	frame.BoardDropShadow:SetShown(layoutInfo.showDropShadow);
+
+	if(frame.MissionInfo) then 
+		frame.MissionInfo.Header:SetShown(layoutInfo.showHeader);
+		frame.MissionInfo.IconBG:SetShown(layoutInfo.hideIconBG);	
+	end 
+
+	if(frame.IconBG) then 
+		frame.IconBG:SetShown(layoutInfo.hideIconBG);	
+	end 
+
+	if(frame.Stage) then 
+		frame.Stage.Header:SetShown(layoutInfo.showHeader);
+	end 
+
+	if(frame.CloseButton) then 
+		frame.CloseButton.CloseButtonBorder:SetShown(layoutInfo.showCloseButtonBorder);
+		frame.CloseButton:SetPoint("TOPRIGHT", layoutInfo.closeButtonOffsetX, layoutInfo.closeButtonOffsetY);
+	end
+	
+	frame.EnemyBackground:ClearAllPoints(); 
+	frame.EnemyBackground:SetHorizTile(layoutInfo.horzTile);
+	frame.EnemyBackground:SetVertTile(layoutInfo.vertTile);
+	frame.EnemyBackground:SetAtlas(enemyBGAtlas, layoutInfo.useAtlasSize, nil, true);
+
+	frame.FollowerBackground:ClearAllPoints(); 
+	frame.FollowerBackground:SetHorizTile(layoutInfo.horzTile);
+	frame.FollowerBackground:SetVertTile(layoutInfo.vertTile);
+	frame.FollowerBackground:SetAtlas(followerBGAtlas, layoutInfo.useAtlasSize, nil, true);
+
+
+	if(layoutInfo.useAtlasSize) then 
+		frame.EnemyBackground:SetPoint("BOTTOM", frame.Median, "TOP", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
+		frame.FollowerBackground:SetPoint("TOP", frame.Median, "BOTTOM", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
+	else 
+		frame.EnemyBackground:SetPoint("TOPLEFT", frame, "TOPLEFT", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
+		frame.EnemyBackground:SetPoint("BOTTOMRIGHT", frame.Median, "TOPRIGHT", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
+		frame.FollowerBackground:SetPoint("TOPLEFT", frame.Median, "BOTTOMLEFT", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
+		frame.FollowerBackground:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
+	end
 end 

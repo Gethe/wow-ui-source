@@ -96,6 +96,7 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
 	else
 		C_Garrison.RegenerateCombatLog(self.currentMission.missionID);
 	end
+
 end
 
 function AdventuresCompleteScreenMixin:ResetMissionDisplay()
@@ -104,9 +105,19 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
    	local board = self.Board;
    	board:Reset();
 
-   	local missionInfo = self.MissionInfo;
+
+	for enemySocket in board:EnumerateEnemySockets() do 
+		enemySocket:SetSocketTexture(mission.locTextureKit, true);
+	end 
+
+	for followerSocket in board:EnumerateFollowerSockets() do 
+		followerSocket:SetSocketTexture(mission.locTextureKit, false);
+	end 
+
+	local missionInfo = self.MissionInfo;
    	missionInfo.Title:SetText(mission.name);
    	GarrisonTruncationFrame_Check(missionInfo.Title);
+	CovenantMissionUpdateBoardTextures(self, mission.locTextureKit);
    
    	-- rare
    	local color = mission.isRare and RARE_MISSION_COLOR or BLACK_FONT_COLOR;

@@ -7,6 +7,15 @@ local WeeklyRewards =
 	Functions =
 	{
 		{
+			Name = "AreRewardsForCurrentRewardPeriod",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCurrentPeriod", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanClaimRewards",
 			Type = "Function",
 

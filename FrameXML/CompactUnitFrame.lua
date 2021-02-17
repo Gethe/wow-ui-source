@@ -1445,11 +1445,12 @@ do
 		CompactUnitFrame_Util_IsPriorityDebuff = function(...)
 			local spellId = select(10, ...);
 			local isForbearance = (spellId == 25771);
-			return isForbearance;
+			return isForbearance or SpellIsPriorityAura(spellId);
 		end
 	else
 		CompactUnitFrame_Util_IsPriorityDebuff = function(...)
-			return false;
+			local spellId = select(10, ...);
+			return SpellIsPriorityAura(spellId);
 		end
 	end
 end

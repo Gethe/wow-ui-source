@@ -144,6 +144,7 @@ end
 function WeeklyRewardsMixin:Refresh(playSheenAnims)
 	self:UpdateTitle();
 	self:UpdateOverlay();
+	self:UpdatePreviousClaim();
 
 	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
 	self.SelectRewardButton:SetShown(canClaimRewards);
@@ -210,6 +211,10 @@ function WeeklyRewardsMixin:GetOrCreateOverlay()
 	RaiseFrameLevel(self.Overlay);
 
 	return self.Overlay;
+end
+
+function WeeklyRewardsMixin:UpdatePreviousClaim()
+	self.PreviousRewardNotification:SetShown(not self:IsReadOnly() and C_WeeklyRewards.HasAvailableRewards() and not C_WeeklyRewards.AreRewardsForCurrentRewardPeriod())
 end
 
 function WeeklyRewardsMixin:SelectActivity(activityFrame)

@@ -441,7 +441,7 @@ function GameTooltip_OnHide(self)
 	end
 
 	if self.ItemTooltip then
-		self.ItemTooltip:Hide();
+		EmbeddedItemTooltip_Hide(self.ItemTooltip);
 	end
 	self:SetPadding(0, 0, 0, 0);
 end
@@ -838,7 +838,6 @@ function GameTooltip_Hide()
 	-- Used for XML OnLeave handlers
 	GameTooltip:Hide();
 	GameTooltip_HideBattlePetTooltip();
-	EmbeddedItemTooltip_Hide(GameTooltip.ItemTooltip);
 end
 
 function GameTooltip_HideResetCursor()

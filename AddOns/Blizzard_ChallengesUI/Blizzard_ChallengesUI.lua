@@ -621,10 +621,7 @@ function ChallengesKeystoneFrameMixin:OnShow()
     PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_OPEN);
     self:Reset();
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-
-	local openedCount = OpenAllBagsMatchingContext(self);
-	self.closeBagsOnHide = openedCount > 0;
+	ItemButtonUtil.OpenAndFilterBags(self);
 end
 
 function ChallengesKeystoneFrameMixin:OnHide()
@@ -635,13 +632,7 @@ function ChallengesKeystoneFrameMixin:OnHide()
 	C_ChallengeMode.ClearKeystone();
 	self:Reset();
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-
-	if self.closeBagsOnHide then
-		local forceUpdate = true;
-		CloseAllBags(self, forceUpdate);
-		self.closeBagsOnHide = nil;
-	end
+	ItemButtonUtil.CloseFilteredBags(self);
 end
 
 function ChallengesKeystoneFrameMixin:Reset()

@@ -778,12 +778,12 @@ function Class_AddSpellToActionBarService:RemindAbility()
 end
 
 function Class_AddSpellToActionBarService:ACTIONBAR_SLOT_CHANGED(slot)
-	local actionType, spellID, subType = GetActionInfo(slot);
-
-	local button = TutorialHelper:GetActionButtonBySpellID(spellID);
+	local button = TutorialHelper:GetActionButtonBySpellID(self.spellToAdd);
 	if button then
 		self:Finish();
 	else
+		local _, spellID = GetActionInfo(slot);
+
 		-- HACK: there is a special Tutorial only condition here we need to check here for Freezing Trap
 		local normalFreezingTrapSpellID = 187650;
 		local specialFreezingTrapSpellID = 321164;
@@ -3412,6 +3412,13 @@ function Class_PromptLFG:Start()
 	if instanceType ~= "none" then
 		-- we are in a dungeon, we succeeded somehow
 		self.success = true;
+		self:Finish();
+		return;
+	end
+
+	if C_QuestLog.GetLogIndexForQuestID(self.questID) == nil then
+		self.questRemoved = true;
+		self.success = false;
 		self:Finish();
 		return;
 	end

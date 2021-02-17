@@ -180,6 +180,8 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="TorghastLevelPickerFrame" hidden="true" inherits="CustomGossipFrameBaseGridTemplate" mixin="TorghastLevelPickerFrameMixin">

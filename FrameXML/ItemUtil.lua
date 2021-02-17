@@ -10,6 +10,7 @@ ItemButtonUtil.ItemContextEnum = {
 	SelectRuneforgeUpgradeItem = 6,
 	Soulbinds = 7,
 	MythicKeystone = 8,
+	UpgradableItem = 9,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -52,8 +53,27 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.Soulbinds;
 	elseif ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() then
 		return ItemButtonUtil.ItemContextEnum.MythicKeystone;
+	elseif ItemUpgradeFrame and ItemUpgradeFrame:IsShown() then
+		return ItemButtonUtil.ItemContextEnum.UpgradableItem;
 	end
 	return nil;
+end
+
+function ItemButtonUtil.OpenAndFilterBags(frame)
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+
+	local openedCount = OpenAllBagsMatchingContext(frame);
+	frame.closeBagsOnHide = openedCount > 0;
+end
+
+function ItemButtonUtil.CloseFilteredBags(frame)
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+
+	if frame.closeBagsOnHide then
+		local forceUpdate = true;
+		CloseAllBags(frame, forceUpdate);
+		frame.closeBagsOnHide = nil;
+	end
 end
 
 function ItemButtonUtil.HasItemContext()
@@ -88,6 +108,11 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.MythicKeystone then
 			if C_Item.IsItemKeystoneByID(C_Item.GetItemID(itemLocation)) and C_ChallengeMode.CanUseKeystoneInCurrentMap(itemLocation) then
+				return ItemButtonUtil.ItemContextMatchResult.Match;
+			end
+			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.UpgradableItem then
+			if C_ItemUpgrade.CanUpgradeItem(itemLocation) then
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;

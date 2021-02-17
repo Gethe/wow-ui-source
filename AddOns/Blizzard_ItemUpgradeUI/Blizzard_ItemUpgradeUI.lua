@@ -31,6 +31,7 @@ end
 function ItemUpgradeFrame_OnShow(self)
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
 	ItemUpgradeFrame_Update();
+	ItemButtonUtil.OpenAndFilterBags(self);
 
 	self:RegisterEvent("BAG_UPDATE");
 
@@ -41,6 +42,7 @@ function ItemUpgradeFrame_OnHide(self)
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	CloseItemUpgrade();
+	ItemButtonUtil.CloseFilteredBags(self);
 
 	self:UnregisterEvent("BAG_UPDATE");
 

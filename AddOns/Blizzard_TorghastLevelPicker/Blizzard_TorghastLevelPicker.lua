@@ -202,7 +202,22 @@ function TorghastLevelPickerOptionButtonMixin:Setup(textureKit, optionInfo, inde
 	self:SetupBase(textureKit, optionInfo, index, gossipButtonTextureKitRegions)
 	self:SetState(optionInfo.status); 
 	self:SetDifficultyTexture();
+	self.spell = nil; 
+
 	self:Show(); 
+
+	if(not optionInfo.spellID)  then 
+		return; 
+	end 
+
+	if not self.spell then
+		self.spell = Spell:CreateFromSpellID(optionInfo.spellID);
+	end
+
+	local onSpellLoad = function()
+		self:RefreshTooltip(); 
+	end;
+	self.spell:ContinueOnSpellLoad(onSpellLoad);
 end 
 
 function TorghastLevelPickerOptionButtonMixin:ShouldOptionBeEnabled()
@@ -263,6 +278,26 @@ function TorghastLevelPickerOptionButtonMixin:OnClick()
 	self:GetParent():GetParent():SelectLevel(self);
 	self:UpdateSelectionState(); 
 end 
+
+function TorghastLevelPickerOptionButtonMixin:RefreshTooltip()
+	if (not RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self) or not self.spell) then 
+		return;
+	end 
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local description = self.spell:GetSpellDescription();
+	GameTooltip_AddNormalLine(GameTooltip, description);
+	GameTooltip:Show(); 
+end 
+
+function TorghastLevelPickerOptionButtonMixin:OnEnter()
+	self:RefreshTooltip(); 
+end 
+
+
+function TorghastLevelPickerOptionButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
+end		
 
 TorghastPagingContainerMixin = {}; 
 

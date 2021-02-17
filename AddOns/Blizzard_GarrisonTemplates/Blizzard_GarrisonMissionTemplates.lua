@@ -652,6 +652,7 @@ function GarrisonMission:CloseMission()
 	end
 	self.followerCounters = nil;
 	self:GetMissionPage().missionInfo = nil;
+	self:ClearMouse();
 end
 
 function GarrisonMission:ClearParty()
