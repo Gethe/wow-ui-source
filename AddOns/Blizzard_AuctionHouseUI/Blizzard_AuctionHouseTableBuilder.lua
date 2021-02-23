@@ -390,12 +390,14 @@ function AuctionHouseTableCellOwnersMixin:Init(owner)
 end
 
 function AuctionHouseTableCellOwnersMixin:Populate(rowData, dataIndex)
-	self:UpdateText(AuctionHouseUtil.GetSellersString(rowData));
+	if rowData.owners then
+		self:UpdateText(AuctionHouseUtil.GetSellersString(rowData));
+	end
 end
 
 function AuctionHouseTableCellOwnersMixin:ShowTooltip(tooltip)
 	local owners = self.rowData.owners;
-	if #owners > 1 then
+	if owners and #owners > 1 then
 		tooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT");
 		AuctionHouseUtil.AddSellersToTooltip(tooltip, owners, self.rowData.totalNumberOfOwners);
 		tooltip:Show();

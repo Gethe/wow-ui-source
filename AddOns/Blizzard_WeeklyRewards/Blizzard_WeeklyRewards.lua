@@ -481,6 +481,39 @@ function WeeklyRewardsActivityMixin:HandlePreviewRaidRewardTooltip(itemLevel, up
 			local difficultyName = DifficultyUtil.GetDifficultyName(nextDifficultyID);
 			GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_RAID, difficultyName));
+
+			local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
+			if encounters then
+				table.sort(encounters, function(left, right)
+					if left.instanceID ~= right.instanceID then
+						return left.instanceID < right.instanceID;
+					end
+					local leftCompleted = left.bestDifficulty > 0;
+					local rightCompleted = right.bestDifficulty > 0;
+					if leftCompleted ~= rightCompleted then
+						return leftCompleted;
+					end
+					return left.uiOrder < right.uiOrder;
+				end)
+				local lastInstanceID = nil;
+				for index, encounter in ipairs(encounters) do
+					local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounter.encounterID);
+					if instanceID ~= lastInstanceID then
+						local instanceName = EJ_GetInstanceInfo(instanceID);
+						GameTooltip_AddBlankLineToTooltip(GameTooltip);	
+						GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_ENCOUNTER_LIST, instanceName));
+						lastInstanceID = instanceID;
+					end
+					if name then
+						if encounter.bestDifficulty > 0 then
+							local completedDifficultyName = DifficultyUtil.GetDifficultyName(encounter.bestDifficulty);
+							GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETED_ENCOUNTER, name, completedDifficultyName), GREEN_FONT_COLOR);
+						else
+							GameTooltip_AddColoredLine(GameTooltip, string.format(DASH_WITH_TEXT, name), DISABLED_FONT_COLOR);
+						end
+					end
+				end
+			end
 		end
 	end
 end

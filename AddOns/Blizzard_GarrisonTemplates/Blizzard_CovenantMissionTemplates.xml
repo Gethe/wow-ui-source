@@ -96,7 +96,6 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Portrait"/>
-						<MaskedTexture childKey="PuckBorder"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>

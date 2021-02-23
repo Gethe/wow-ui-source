@@ -21,4 +21,17 @@ do
 	function WorldMap_AddQuestTimeToTooltip(questID)
 		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
 	end
- end
+end
+
+-- Conduits: Use C_Soulbinds.GetConduitCollectionData to get the item level the player currently knows for conduitID
+-- Querying the item level for an arbitrary conduit rank is no longer exposed
+do
+	function C_Soulbinds.GetConduitItemLevel(conduitID, rank)
+		local collectionData = C_Soulbinds.GetConduitCollectionData(conduitID);
+		if collectionData  then
+			return collectionData.conduitItemLevel;
+		else
+			return 0;
+		end
+	end
+end

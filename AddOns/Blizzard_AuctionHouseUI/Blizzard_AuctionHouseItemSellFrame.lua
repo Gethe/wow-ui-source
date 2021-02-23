@@ -181,6 +181,11 @@ function AuctionHouseItemSellFrameMixin:UpdateNoneAvailableEntry()
 		return;
 	end
 
+	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(self.listDisplayedItemKey);
+	if itemKeyInfo.isPet then
+		return;
+	end
+
 	local numSearchResults = C_AuctionHouse.GetNumItemSearchResults(self.listDisplayedItemKey);
 	if numSearchResults == 0 then
 		return;

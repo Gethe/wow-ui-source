@@ -5109,7 +5109,7 @@ function StaticPopup_SetUpAnchor(dialog, idx)
 	if ( lastFrame ) then
 		dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
 	else
-		dialog:SetPoint("TOP", UIParent, "TOP", 0, -135);
+		dialog:SetPoint("TOP", UIParent, "TOP", 0, dialog.topOffset or -135);
 	end
 end
 

@@ -254,21 +254,21 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="SpiralsAnim" looping="REPEAT">
-						<Rotation childKey="Spiral1" duration="5" order="1" degrees="360"/>
-						<Rotation childKey="Spiral2" duration="5" order="1" degrees="-360"/>
-						<Rotation childKey="Spiral3" duration="5" order="1" degrees="-360"/>
+						<Rotation childKey="Spiral1" duration="8" order="1" degrees="360"/>
+						<Rotation childKey="Spiral2" duration="8" order="1" degrees="-360"/>
+						<Rotation childKey="Spiral3" duration="8" order="1" degrees="-360"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="PulseAlphaAnim" looping="REPEAT">
-						<Alpha childKey="Pulse" startDelay="3" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="Pulse" startDelay="6" endDelay="2" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Pulse" startDelay="1.5" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Pulse" startDelay="3" endDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="PulseRotateAnim" looping="REPEAT">
 						<Rotation childKey="Pulse" duration="5" order="1" degrees="-10"/>
 						<Rotation childKey="Pulse" duration="5" order="2" degrees="10"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="Pulse2AlphaAnim" looping="REPEAT">
-						<Alpha childKey="Pulse2" startDelay="9.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="Pulse2" startDelay="0.25" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Pulse2" startDelay="4.625" duration="0.125" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Pulse2" startDelay="0.125" duration="0.125" order="2" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="Pulse2RotateAnim" looping="REPEAT">
 						<Rotation childKey="Pulse2" duration="5" order="1" degrees="-10"/>

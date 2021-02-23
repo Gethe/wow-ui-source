@@ -109,8 +109,8 @@ local function GetEffectID(index)
 end
 
 local reservoirAnimSettings = {
-	[Enum.CovenantType.Venthyr] = 	{ strand = { vert = true, horiz = true, alpha = 0.5, rate = 0.05 }, glow = { fromAlpha = 0, toAlpha = 0.7,	rotate = false }, spirals = false, pulse = false, lowSpecks = false, highSpecks = false },
-	[Enum.CovenantType.Kyrian] = 	{ strand = { vert = true, horiz = false, alpha = 0.3, rate = 0.04 }, glow = { fromAlpha = 0, toAlpha = 0.7, rotate = false }, spirals = false, pulse = false, lowSpecks = false, highSpecks = true },
+	[Enum.CovenantType.Venthyr] = 	{ strand = { vert = true, horiz = true, alpha = 0.5, rate = 0.05, mode = "BLEND" }, glow = { fromAlpha = 0, toAlpha = 0.7,	rotate = false }, spirals = false, pulse = false, lowSpecks = false, highSpecks = false },
+	[Enum.CovenantType.Kyrian] = 	{ strand = { vert = true, horiz = false, alpha = 0.3, rate = 0.04, mode = "ADD", reverseDir = true }, glow = { fromAlpha = 0, toAlpha = 0.7, rotate = false }, spirals = false, pulse = false, lowSpecks = false, highSpecks = true },
 	[Enum.CovenantType.NightFae] = 	{ strand = nil, glow = { fromAlpha = 0, toAlpha = 1, rotate = true }, spirals = true, pulse = false, lowSpecks = false, highSpecks = true },
 	[Enum.CovenantType.Necrolord] = { strand = nil, glow = nil, spirals = false, pulse = true, lowSpecks = true, highSpecks = false },
 }
@@ -882,8 +882,15 @@ function CovenantSanctumUpgradeReservoirMixin:OnUpdate(elapsed)
 			self.vertProgress = 1 - self.vertProgress;
 		end
 
-		self.ClippedElements.VerticalStrands:SetTexCoord(0, 1, self.vertProgress, self.vertProgress + 1);
-		self.ClippedElements.HorizontalStrands:SetTexCoord(self.horizProgress, self.horizProgress + 1, 0, 1);
+		local vertStart = self.vertProgress;
+		local horizStart = self.horizProgress;
+		if self.reverseDir then
+			vertStart = 1 - vertStart;
+			horizStart = 1 - horizStart;
+		end
+
+		self.ClippedElements.VerticalStrands:SetTexCoord(0, 1, vertStart, vertStart + 1);
+		self.ClippedElements.HorizontalStrands:SetTexCoord(horizStart, horizStart + 1, 0, 1);
 	end
 
 	if self.isMousedOver then
@@ -966,19 +973,23 @@ function CovenantSanctumUpgradeReservoirMixin:SetUpAnimations()
 		if strandSettings.vert then
 			SetupTextureKitOnFrame(textureKit, clippedFrame.VerticalStrands, "!CovenantSanctum-Reservoir-Idle-%s-Strands", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 			clippedFrame.VerticalStrands:SetAlpha(strandSettings.alpha);
+			clippedFrame.VerticalStrands:SetBlendMode(strandSettings.mode);
 		end
 		if strandSettings.horiz then
 			SetupTextureKitOnFrame(textureKit, clippedFrame.HorizontalStrands, "_CovenantSanctum-Reservoir-Idle-%s-Strands2", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 			clippedFrame.HorizontalStrands:SetAlpha(strandSettings.alpha);
+			clippedFrame.HorizontalStrands:SetBlendMode(strandSettings.mode);
 		end		
 		clippedFrame.VerticalStrands:SetShown(strandSettings.vert);
 		clippedFrame.HorizontalStrands:SetShown(strandSettings.horiz);
 		-- store for lookups in OnUpdate
 		self.strandRate = strandSettings.rate;
+		self.reverseDir = strandSettings.reverseDir;
 	else
 		clippedFrame.VerticalStrands:Hide();
 		clippedFrame.HorizontalStrands:Hide();
 		self.strandRate = nil;
+		self.reverseDir = nil;
 	end
 
 	-- inner glow
@@ -1023,10 +1034,10 @@ function CovenantSanctumUpgradeReservoirMixin:UpdateAnima()
 
 	local isFull = false;
 	if value == 0 then
-		self.ClippedElements.FillBackground:Hide();
+		self.ClippedElements:Hide();
 		self.FullElements.Spark:Hide();
 	else
-		self.ClippedElements.FillBackground:Show();
+		self.ClippedElements:Show();
 		local totalHeight = 336;
 		if value >= maxDisplayableValue then
 			self.ClippedElements:SetHeight(totalHeight);

@@ -267,21 +267,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitItemLevel",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "conduitID", Type = "number", Nilable = false },
-				{ Name = "rank", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "itemLevel", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetConduitQuality",
 			Type = "Function",
 

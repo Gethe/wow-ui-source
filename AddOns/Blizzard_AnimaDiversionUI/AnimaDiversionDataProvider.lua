@@ -196,7 +196,7 @@ function AnimaDiversionPinMixin:OnLoad()
 	self:SetNudgeSourceRadius(1);
 
 	-- This map doesn't zoom so set them both the same.
-	local zoomedInNudge = 3;
+	local zoomedInNudge = 4;
 	local zoomedOutNudge = zoomedInNudge;
 	self:SetNudgeSourceMagnitude(zoomedInNudge, zoomedOutNudge);
 end 

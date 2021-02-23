@@ -52,6 +52,21 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetActivityEncounterInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "WeeklyRewardChestThresholdType", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "WeeklyRewardActivityEncounterInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConquestWeeklyProgress",
 			Type = "Function",
 
@@ -184,6 +199,17 @@ local WeeklyRewards =
 				{ Name = "unlocksCompleted", Type = "number", Nilable = false },
 				{ Name = "maxUnlocks", Type = "number", Nilable = false },
 				{ Name = "sampleItemHyperlink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "WeeklyRewardActivityEncounterInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "encounterID", Type = "number", Nilable = false },
+				{ Name = "bestDifficulty", Type = "number", Nilable = false },
+				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "instanceID", Type = "number", Nilable = false },
 			},
 		},
 		{
