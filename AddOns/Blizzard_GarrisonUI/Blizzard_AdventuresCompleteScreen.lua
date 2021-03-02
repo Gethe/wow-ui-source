@@ -104,8 +104,8 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 
    	local board = self.Board;
    	board:Reset();
-
-
+	board:ResetBoardIndicators();
+	
 	for enemySocket in board:EnumerateEnemySockets() do 
 		enemySocket:SetSocketTexture(mission.locTextureKit, true);
 	end 

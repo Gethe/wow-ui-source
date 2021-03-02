@@ -52,9 +52,17 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	local taskInfo;
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if (MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
+		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	end
 
-	if taskInfo and #taskInfo > 0 then
+	if (not taskInfo) then
+		return
+	end
+
+	if #taskInfo > 0 then
 		self:CancelCallbacks();
 		self.cancelCallbacks = {};
 

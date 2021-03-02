@@ -778,7 +778,7 @@ function WeeklyRewardConfirmSelectionMixin:ShowPopup(itemDBID, activityInfo)
 	self.itemDBID = itemDBID;
 	self.activityInfo = activityInfo;
 	self:RefreshRewards();
-	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.id, self);
+	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.claimID, self);
 end
 
 function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
