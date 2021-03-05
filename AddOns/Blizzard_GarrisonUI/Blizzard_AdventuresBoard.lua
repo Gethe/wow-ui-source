@@ -328,6 +328,9 @@ function AdventuresBoardMixin:ResetBoardIndicators()
 	for followerFrame in self:EnumerateFollowerSockets() do
 		followerFrame:ResetVisibility();
 	end
+	for enemyFrame in self:EnumerateEnemySockets() do 
+		enemyFrame:ResetVisibility(); 
+	end
 end
 
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);

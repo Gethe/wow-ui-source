@@ -489,7 +489,9 @@ function GarrisonFollowerList:UpdateMissionRemainingTime(follower, fontString)
 	if follower.status == GARRISON_FOLLOWER_ON_MISSION then
 		local missionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft(follower.followerID);
 		if missionTimeLeft then
-			if follower.isMaxLevel then
+			if C_Garrison.IsFollowerOnCompletedMission(follower.followerID) then
+				fontString:SetText(GarrisonFollowerOptions[follower.followerTypeID].strings.FOLLOWER_ON_COMPLETED_MISSION);
+			elseif follower.isMaxLevel then
 				fontString:SetText(missionTimeLeft);
 			else
 				fontString:SetFormattedText(GarrisonFollowerOptions[follower.followerTypeID].strings.OUT_WITH_DURATION, missionTimeLeft);

@@ -385,6 +385,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "IsFollowerOnCompletedMission",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "followerID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "followerOnCompletedMission", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTalentConditionMet",
 			Type = "Function",
 

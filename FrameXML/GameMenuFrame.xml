@@ -4,7 +4,7 @@
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
 		<Size x="195" y="312"/>
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-135"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
