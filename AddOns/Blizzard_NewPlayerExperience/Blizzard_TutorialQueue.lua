@@ -21,9 +21,10 @@ function TutorialQueue:Add(tutorialInstance, ...)
 	self:CheckQueue();
 end
 
-function TutorialQueue:NotifyDone()
-	if self.currentTutorial then
+function TutorialQueue:NotifyDone(callingTutorial)
+	if self.currentTutorial and self.currentTutorial == callingTutorial then
 		--print("FINISH: "..self.currentTutorial.class.name);
+		self.currentTutorial:Finish();
 		self.currentTutorial.inProgress = false;
 		self.currentTutorial = nil;
 	end

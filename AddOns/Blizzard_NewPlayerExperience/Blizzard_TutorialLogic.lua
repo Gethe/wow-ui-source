@@ -149,9 +149,9 @@ function TutorialLogic:Quest_ObjectivesComplete(questData)
 		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
 		if questID and C_QuestLog.ReadyForTurnIn(questID) then
 			if questID == self.factionData.UseQuestItemData.ItemQuest then
-				tutorials.UseQuestItem:Finish();
+				TutorialQueue:NotifyDone(tutorials.UseQuestItem);
 			elseif questID == self.factionData.RemindUseQuestItemData.ItemQuest then
-				tutorials.UseQuestItem:Finish();
+				TutorialQueue:NotifyDone(tutorials.UseQuestItem);
 			elseif questID == self.factionData.UseFoodQuest then
 				tutorials.LowHealthWatcher:Complete();
 			end

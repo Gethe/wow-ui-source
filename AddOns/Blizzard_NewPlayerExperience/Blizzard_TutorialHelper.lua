@@ -222,8 +222,9 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 			if btn and btn.action then
 				local actionType, sID, subType = GetActionInfo(btn.action);
 
-				local baseSpellID  = FindBaseSpellByID(spellID);
-				if (sID == baseSpellID) or (sID == FindSpellOverrideByID(spellID)) then
+				local baseSpellID  = FindBaseSpellByID(spellID) or spellID;
+				local overrideSpellID = FindSpellOverrideByID(spellID) or spellID;
+				if sID and (sID == baseSpellID or sID == overrideSpellID) then
 					return btn;
 				elseif (actionType == "flyout" and FlyoutHasSpell(sID, spellID)) then
 					return btn;

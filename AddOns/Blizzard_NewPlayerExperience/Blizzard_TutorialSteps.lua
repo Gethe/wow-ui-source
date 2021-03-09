@@ -679,7 +679,7 @@ end
 function Class_AddSpellToActionBarService:Start(args)
 	local spellID, warningString, spellMicroButtonString, optionalPreferredActionBar, requiredForm = unpack(args);
 	if not spellID then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 	self.inProgress = true;
@@ -691,7 +691,7 @@ function Class_AddSpellToActionBarService:Start(args)
 	self.requiredForm = requiredForm;
 
 	if self.requiredForm and (GetShapeshiftFormID() ~= self.requiredForm) then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -701,7 +701,7 @@ function Class_AddSpellToActionBarService:Start(args)
 
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellToAdd);
 	if button then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -723,7 +723,7 @@ end
 
 function Class_AddSpellToActionBarService:UPDATE_SHAPESHIFT_FORM()
 	if self.requiredForm and (GetShapeshiftFormID() ~= self.requiredForm) then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 end
@@ -737,7 +737,7 @@ function Class_AddSpellToActionBarService:SpellBookFrameShow()
 end
 
 function Class_AddSpellToActionBarService:SpellBookFrameHide()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_AddSpellToActionBarService:ACTIONBAR_SHOW_BOTTOMLEFT()
@@ -780,7 +780,7 @@ end
 function Class_AddSpellToActionBarService:ACTIONBAR_SLOT_CHANGED(slot)
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellToAdd);
 	if button then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	else
 		local _, spellID = GetActionInfo(slot);
 
@@ -789,14 +789,14 @@ function Class_AddSpellToActionBarService:ACTIONBAR_SLOT_CHANGED(slot)
 		local specialFreezingTrapSpellID = 321164;
 		if self.spellToAdd == normalFreezingTrapSpellID then
 			if (spellID == normalFreezingTrapSpellID) or (spellID == specialFreezingTrapSpellID) then
-				self:Finish();
+				TutorialQueue:NotifyDone(self);
 				return;
 			end
 		end
 
 		local nextEmptyButton = TutorialHelper:FindEmptyButton();
 		if not nextEmptyButton then
-			self:Finish();-- no more empty buttons
+			TutorialQueue:NotifyDone(self);-- no more empty buttons
 		elseif self.actionButton ~= nextEmptyButton then
 			NPE_TutorialDragButton:Hide();
 			self.actionButton = nextEmptyButton;
@@ -806,7 +806,7 @@ function Class_AddSpellToActionBarService:ACTIONBAR_SLOT_CHANGED(slot)
 end
 
 function Class_AddSpellToActionBarService:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_AddSpellToActionBarService:Finish()
@@ -822,10 +822,6 @@ function Class_AddSpellToActionBarService:Finish()
 	self.actionButton = nil;
 	self.spellButton = nil;
 	self.inProgress = false;
-
-	self.Timer = C_Timer.NewTimer(0.1, function()
-		TutorialQueue:NotifyDone();
-	end);
 end
 
 
@@ -852,7 +848,7 @@ function Class_ItemUpgradeCheckingService:Start()
 	if item and slot ~= INVSLOT_TABARD then
 		TutorialQueue:Add(TutorialLogic.Tutorials.ChangeEquipment, item);
 	end
-	TutorialQueue:NotifyDone();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_ItemUpgradeCheckingService:STRUCT_ItemContainer(itemLink, characterSlot, container, containerSlot)
@@ -1027,10 +1023,10 @@ function Class_Intro_KeyboardMouse:Start()
 	C_Timer.After(4, function()
 		self:LaunchMouseKeyboardFrame();
 	end);
-	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self.Finish, self);
 end
 
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
+	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self.CloseMouseKeyboardFrame, self);
 	self:ShowMouseKeyboardTutorial();
 	self.Timer = C_Timer.NewTimer(10, 
 		function() 
@@ -1039,14 +1035,18 @@ function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
 		end);
 end
 
+function Class_Intro_KeyboardMouse:CloseMouseKeyboardFrame()
+	TutorialQueue:NotifyDone(self);
+end
+
 function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
 	EventRegistry:UnregisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self);
 	self.earlyExit = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_KeyboardMouse:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_KeyboardMouse:Finish()
@@ -1055,7 +1055,6 @@ function Class_Intro_KeyboardMouse:Finish()
 	if not self.earlyExit then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Intro_CameraLook);
 	end
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1101,17 +1100,17 @@ end
 
 function Class_Intro_CameraLook:PLAYER_STOPPED_TURNING()
 	if self.playerHasLooked then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_Intro_CameraLook:QUEST_DETAIL()
 	self.earlyExit = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_CameraLook:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_CameraLook:Finish()
@@ -1123,7 +1122,6 @@ function Class_Intro_CameraLook:Finish()
 	if not self.earlyExit then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Intro_ApproachQuestGiver);
 	end;
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1156,17 +1154,17 @@ function Class_Intro_ApproachQuestGiver:Start()
 	self:ShowWalkTutorial();
 	local unit = TutorialHelper:GetFactionData().StartingQuestGiverCreatureID;
 	if (unit) then
-		NPE_RangeManager:StartWatching(unit, NPE_RangeManager.Type.Unit, 5, function() self:Finish(); end);
+		NPE_RangeManager:StartWatching(unit, NPE_RangeManager.Type.Unit, 5, function() TutorialQueue:NotifyDone(self); end);
 	end
 end
 
 function Class_Intro_ApproachQuestGiver:QUEST_DETAIL()
 	self.earlyExit = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_ApproachQuestGiver:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_ApproachQuestGiver:Finish()
@@ -1177,7 +1175,6 @@ function Class_Intro_ApproachQuestGiver:Finish()
 	if not self.earlyExit then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Intro_Interact);
 	end;
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1212,13 +1209,13 @@ end
 
 function Class_Intro_Interact:QUEST_DETAIL(logindex, questID)
 	if not TutorialHelper:IsQuestCompleteOrActive(self.questID) then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_Intro_Interact:QUEST_ACCEPTED(questID)
 	if self.questID == questID then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -1230,7 +1227,6 @@ end
 function Class_Intro_Interact:Finish()
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
 	self:HideScreenTutorial();
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1293,14 +1289,14 @@ function Class_Intro_CombatDummyInRange:CheckFinished()
 	if self.InRange and self.targetedDummy then
 		self.success = true;
 		self:HideScreenTutorial();
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_Intro_CombatDummyInRange:QUEST_REMOVED(questID)
 	if questID == TutorialHelper:GetFactionData().StartingQuest then
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -1317,7 +1313,6 @@ function Class_Intro_CombatDummyInRange:Finish()
 	if self.success then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Intro_CombatTactics);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 function Class_Intro_CombatDummyInRange:OnComplete()
@@ -1461,7 +1456,7 @@ function Class_Intro_CombatTactics:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.success = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -1469,7 +1464,7 @@ function Class_Intro_CombatTactics:QUEST_REMOVED(questIDRemoved)
 	local questID = TutorialHelper:GetFactionData().StartingQuest;
 	if questID == questIDRemoved then
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -1500,7 +1495,6 @@ function Class_Intro_CombatTactics:Finish()
 	self:HideAbilityPrompt();
 	self:HidePointerTutorials();
 
-	TutorialQueue:NotifyDone();
 	if self.success == true then
 		C_Timer.After(2, function() TutorialQueue:Add(TutorialLogic.Tutorials.QuestCompleteHelp); end);
 	end
@@ -1546,17 +1540,15 @@ end
 function Class_Intro_Chat:OnUpdate(elapsed)
 	self.Elapsed = self.Elapsed + elapsed;
 	if (self.Elapsed > 10) then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_Intro_Chat:OnInterrupt(interruptedBy)
-	self:Finish();
-	self:Complete();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_Chat:Finish()
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1590,7 +1582,7 @@ function Class_QuestCompleteHelp:QUEST_COMPLETE()
 	if (self.QuestCompleteTimer) then
 		self.QuestCompleteTimer:Cancel()
 	end
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_QuestCompleteHelp:QUEST_REMOVED(questIDRemoved)
@@ -1598,7 +1590,7 @@ function Class_QuestCompleteHelp:QUEST_REMOVED(questIDRemoved)
 	if questID == questIDRemoved then
 		self:HidePointerTutorials();
 	end
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_QuestCompleteHelp:OnInterrupt(interruptedBy)
@@ -1606,7 +1598,6 @@ function Class_QuestCompleteHelp:OnInterrupt(interruptedBy)
 end
 
 function Class_QuestCompleteHelp:Finish()
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1643,7 +1634,7 @@ function Class_UseMinimap:Start()
 		MinimapCluster:Show();
 
 		if C_QuestLog.IsQuestFlaggedCompleted(self.showMinimapQuestID) then
-			self:Finish();
+			TutorialQueue:NotifyDone(self);
 		elseif C_QuestLog.GetLogIndexForQuestID(self.showMinimapQuestID) ~= nil then 
 			self.PointerTimer = C_Timer.NewTimer(1, function() self:ShowMinimapPrompt() end);
 		end
@@ -1655,7 +1646,7 @@ end
 
 function Class_UseMinimap:ShowMinimapPrompt()
 	self:ShowPointerTutorial(NPEV2_TURN_MINIMAP_ON, "RIGHT", Minimap, 0, 0, nil, "RIGHT");
-	self.EndTimer = C_Timer.NewTimer(12, function() self:Finish(); end);
+	self.EndTimer = C_Timer.NewTimer(12, function() TutorialQueue:NotifyDone(self); end);
 end
 
 function Class_UseMinimap:OnInterrupt(interruptedBy)
@@ -1663,7 +1654,6 @@ function Class_UseMinimap:OnInterrupt(interruptedBy)
 end
 
 function Class_UseMinimap:Finish()
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1705,8 +1695,8 @@ function Class_QuestRewardChoice:Start(args)
 		self:ShowPointerTutorial(prompt, "LEFT", QuestFrame, -15, 0);
 	end
 
-	Dispatcher:RegisterEvent("QUEST_TURNED_IN", function() self:Finish() end, true);
-	Dispatcher:RegisterScript(QuestFrame, "OnHide", function() self:Finish() end, true);
+	Dispatcher:RegisterEvent("QUEST_TURNED_IN", function() TutorialQueue:NotifyDone(self); end, true);
+	Dispatcher:RegisterScript(QuestFrame, "OnHide", function() TutorialQueue:NotifyDone(self); end, true);
 end
 
 function Class_QuestRewardChoice:OnInterrupt(interruptedBy)
@@ -1715,7 +1705,6 @@ end
 
 function Class_QuestRewardChoice:Finish()
 	self:HidePointerTutorials();
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -1753,19 +1742,19 @@ function Class_Intro_OpenMap:Start()
 	self:ShowSingleKeyTutorial(content);
 
 	self.Timer = C_Timer.NewTimer(12, function()
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end);
 end
 
 function Class_Intro_OpenMap:OnShow()
 	self:HideSingleKeyTutorial();
 	self.success = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_OpenMap:PLAYER_DEAD()
 	self.success = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Intro_OpenMap:OnInterrupt(interruptedBy)
@@ -1787,7 +1776,6 @@ function Class_Intro_OpenMap:Finish()
 	if self.success then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Intro_MapHighlights);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 function Class_Intro_OpenMap:OnComplete()
@@ -1810,7 +1798,7 @@ function Class_Intro_MapHighlights:Start()
 	self.MapID = WorldMapFrame:GetMapID();
 	self.Prompt = NPEV2_MAPCALLOUTPOINT;
 	self:Display();
-	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() self:Finish(); end, true);
+	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() TutorialQueue:NotifyDone(self); end, true);
 
 	self.MapProvider = MapBridgeDataProviderMixin:New();
 	self.MapProvider:SetOnMapChangedCallback(function()
@@ -1854,7 +1842,6 @@ function Class_Intro_MapHighlights:OnInterrupt(interruptedBy)
 end
 
 function Class_Intro_MapHighlights:Finish()
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -1891,7 +1878,7 @@ function Class_UseQuestItem:Start(args)
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	local questActive = C_QuestLog.GetLogIndexForQuestID(self.questID) ~= nil;
 	if objectivesComplete or not questActive then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -1939,7 +1926,7 @@ function Class_UseQuestItem:InRange()
 end
 
 function Class_UseQuestItem:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_UseQuestItem:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
@@ -1956,9 +1943,10 @@ function Class_UseQuestItem:UNIT_TARGET()
 end
 
 function Class_UseQuestItem:Finish()
+	self:HidePointerTutorials();
+	self:HideScreenTutorial();
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -1988,7 +1976,7 @@ function Class_ChangeEquipment:Start(args)
 	EventRegistry:RegisterCallback("ContainerFrame.CloseBackpack", self.BagClosed, self);
 
 	if (not GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -1996,7 +1984,7 @@ function Class_ChangeEquipment:Start(args)
 end
 
 function Class_ChangeEquipment:PLAYER_DEAD()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 
 	-- the player died in the middle of the tutorial, requeue it so that when the player is alive, they can try again
 	self.Timer = C_Timer.NewTimer(0.1, function()
@@ -2047,7 +2035,7 @@ end
 
 function Class_ChangeEquipment:BagClosed()
 	if self.success then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 	self:Reset();
@@ -2081,7 +2069,7 @@ function Class_ChangeEquipment:CharacterSheetClosed()
 	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
 	
 	if self.success then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 	self:Reset();
@@ -2117,17 +2105,17 @@ function Class_ChangeEquipment:PLAYER_EQUIPMENT_CHANGED()
 			EventRegistry:RegisterCallback("CharacterFrame.Hide", self.CharacterSheetClosed, self);
 
 			self.EquipmentChangedTimer = C_Timer.NewTimer(8, function()
-				self:Finish();
+				TutorialQueue:NotifyDone(self);
 			end);
 		else
-			self:Finish();
+			TutorialQueue:NotifyDone(self);
 		end
 	end
 end
 
 function Class_ChangeEquipment:StartAnimation()
 	if not self.data then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -2212,7 +2200,7 @@ function Class_ChangeEquipment:UpdateDragOrigin()
 				self:HidePointerTutorial(self.newItemPointerID);
 				self:StartAnimation();
 			else
-				self:Finish();
+				TutorialQueue:NotifyDone(self);
 			end
 		end
 	end
@@ -2227,12 +2215,12 @@ function Class_ChangeEquipment:BAG_UPDATE_DELAYED()
 		end
 	else
 		-- for some reason, the item is gone.  maybe the player sold it
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_ChangeEquipment:OnInterrupt()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 	self:Complete();
 end
 
@@ -2263,10 +2251,6 @@ function Class_ChangeEquipment:Finish()
 	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
 	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 	Dispatcher:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", self);
-
-	C_Timer.After(0.1, function()
-		TutorialQueue:NotifyDone();
-	end);
 end
 
 function Class_ChangeEquipment:OnComplete()
@@ -2306,20 +2290,20 @@ function Class_EnhancedCombatTactics:Start()
 	self.completed = false;
 	if playerClass == "WARRIOR" then
 		TutorialQueue:Add(TutorialLogic.Tutorials.EnhancedCombatTactics_Warrior);
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	elseif playerClass == "ROGUE" then
 		TutorialQueue:Add(TutorialLogic.Tutorials.EnhancedCombatTactics_Rogue);
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
 		TutorialQueue:Add(TutorialLogic.Tutorials.EnhancedCombatTactics_UseDoTs);
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
 		TutorialQueue:Add(TutorialLogic.Tutorials.EnhancedCombatTactics_Ranged	);
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	elseif playerClass == "HUNTER" or playerClass == "MONK" then
 		self.completed = true;
 		-- Hunters and Monks do not have an Enhanced Combat Tutorial
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	else
 		self.combatData = TutorialHelper:FilterByClass(TutorialData.ClassData);
 		Dispatcher:RegisterEvent("UNIT_TARGET", self);
@@ -2447,7 +2431,7 @@ end
 
 function Class_EnhancedCombatTactics:OnInterrupt(interruptedBy)
 	self.completed = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_EnhancedCombatTactics:CleanUp()
@@ -2460,13 +2444,12 @@ function Class_EnhancedCombatTactics:CleanUp()
 	if self.completed == true then
 		TutorialLogic.Tutorials.LowHealthWatcher:StartWatching();
 	end
-	TutorialQueue:NotifyDone();
 end
 
 function Class_EnhancedCombatTactics:QUEST_REMOVED(questID)
 	if questID == self.questID then
 		self.completed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2474,7 +2457,7 @@ function Class_EnhancedCombatTactics:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.completed = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2562,7 +2545,7 @@ end
 function Class_EnhancedCombatTactics_Warrior:QUEST_REMOVED(questID)
 	if questID == self.questID then
 		self.completed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2570,13 +2553,13 @@ function Class_EnhancedCombatTactics_Warrior:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.completed = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_EnhancedCombatTactics_Warrior:OnInterrupt(interruptedBy)
 	self.completed = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_EnhancedCombatTactics_Warrior:Finish()
@@ -2666,13 +2649,13 @@ end
 
 function Class_EnhancedCombatTactics_Rogue:OnInterrupt(interruptedBy)
 	self.completed = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_EnhancedCombatTactics_Rogue:QUEST_REMOVED(questID)
 	if questID == self.questID then
 		self.completed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2680,7 +2663,7 @@ function Class_EnhancedCombatTactics_Rogue:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.completed = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2756,13 +2739,13 @@ end
 
 function Class_EnhancedCombatTactics_UseDoTs:OnInterrupt(interruptedBy)
 	self.completed = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_EnhancedCombatTactics_UseDoTs:QUEST_REMOVED(questID)
 	if questID == self.questID then
 		self.completed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2770,7 +2753,7 @@ function Class_EnhancedCombatTactics_UseDoTs:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.completed = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2850,13 +2833,13 @@ end
 
 function Class_EnhancedCombatTactics_Ranged:OnInterrupt(interruptedBy)
 	self.completed = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_EnhancedCombatTactics_Ranged:QUEST_REMOVED(questID)
 	if questID == self.questID then
 		self.completed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -2864,7 +2847,7 @@ function Class_EnhancedCombatTactics_Ranged:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.completed = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3005,11 +2988,7 @@ end
 
 function Class_AddHunterTameSpells:StartTameTutorial()
 	TutorialQueue:Add(TutorialLogic.Tutorials.HunterTame);
-	self:Finish();
-end
-
-function Class_AddHunterTameSpells:Finish()
-	TutorialQueue:NotifyDone();
+	TutorialQueue:NotifyDone(self);
 end
 
 
@@ -3045,7 +3024,7 @@ function Class_HunterTame:Start()
 	else
 		TutorialQueue:Add(TutorialLogic.Tutorials.AddHunterTameSpells);
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3057,7 +3036,7 @@ function Class_HunterTame:StartTameTutorial()
 	else
 		TutorialQueue:Add(TutorialLogic.Tutorials.AddHunterTameSpells);
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3065,7 +3044,7 @@ function Class_HunterTame:QUEST_REMOVED(questIDRemoved)
 	local questID = TutorialHelper:GetFactionData().HunterTameTutorialQuestID;
 	if questID == questIDRemoved then
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3073,13 +3052,13 @@ function Class_HunterTame:QUEST_LOG_UPDATE()
 	local objectivesComplete = C_QuestLog.IsComplete(self.questID);
 	if (objectivesComplete) then
 		self.success = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_HunterTame:PET_STABLE_UPDATE()
 	self.success = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_HunterTame:OnInterrupt(interruptedBy)
@@ -3096,7 +3075,6 @@ function Class_HunterTame:Finish()
 		TutorialLogic.Tutorials.AddHunterTameSpells:Complete();
 		self:Complete();
 	end
-	TutorialQueue:NotifyDone();
 end
 
 function Class_HunterTame:OnComplete()
@@ -3114,7 +3092,7 @@ end
 function Class_EatFood:Start(args)
 	local inCombat = unpack(args);
 	if self.tutorialSuccess == true then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3160,7 +3138,7 @@ function Class_EatFood:BackpackOpened(inCombat)
 		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
 		self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_BEGIN), "RIGHT", itemFrame, 0, 0, nil, "RIGHT");
 	else
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3173,14 +3151,14 @@ function Class_EatFood:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 		local content = {text = TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_SUCCEEDED), icon=nil};
 		self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 		self.CloseBagTimer = C_Timer.NewTimer(8, function()
-			self:Finish();
+			TutorialQueue:NotifyDone(self);
 		end);
 	end
 end
 
 function Class_EatFood:Reset()
 	if not self.tutorialSuccess then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		TutorialLogic.Tutorials.LowHealthWatcher:StartWatching();
 	end
 end
@@ -3202,8 +3180,7 @@ end
 
 function Class_EatFood:OnInterrupt(interruptedBy)
 	self.tutorialSuccess = false;
-	self:Finish();
-	self:Complete();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_EatFood:Finish()
@@ -3217,7 +3194,6 @@ function Class_EatFood:Finish()
 	if self.tutorialSuccess == true then
 		self:Complete();
 	end
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -3350,7 +3326,7 @@ end
 
 function Class_UseVendor:MERCHANT_SHOW()
 	if self.buyTutorialComplete == true and self.sellTutorialComplete == true and self.buyBackTutorialComplete == true then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3361,7 +3337,7 @@ end
 
 function Class_UseVendor:MERCHANT_CLOSED()
 	if self.buyTutorialComplete == true and self.sellTutorialComplete == true --[[and self.buyBackTutorialComplete == true]] then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3372,8 +3348,7 @@ function Class_UseVendor:MERCHANT_CLOSED()
 end
 
 function Class_UseVendor:OnInterrupt(interruptedBy)
-	self:Finish();
-	self:Complete();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_UseVendor:Finish()
@@ -3384,7 +3359,6 @@ function Class_UseVendor:Finish()
 	self.sellPointerID = nil;
 	self:HidePointerTutorials();
 
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -3412,14 +3386,14 @@ function Class_PromptLFG:Start()
 	if instanceType ~= "none" then
 		-- we are in a dungeon, we succeeded somehow
 		self.success = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
 	if C_QuestLog.GetLogIndexForQuestID(self.questID) == nil then
 		self.questRemoved = true;
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3450,13 +3424,13 @@ function Class_PromptLFG:QUEST_REMOVED(questIDRemoved)
 	if self.questID == questIDRemoved then
 		self.questRemoved = true;
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
 function Class_PromptLFG:ShowLFG()
 	self.success = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_PromptLFG:CloseTutorialElements()
@@ -3482,7 +3456,6 @@ function Class_PromptLFG:Finish()
 	elseif not self.questRemoved then
 		TutorialQueue:Add(TutorialLogic.Tutorials.PromptLFG);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 function Class_PromptLFG:OnComplete()
@@ -3507,7 +3480,7 @@ function Class_LookingForGroup:Start()
 	if instanceType ~= "none" then
 		-- we are in a dungeon, we succeeded somehow
 		self.success = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3531,17 +3504,17 @@ function Class_LookingForGroup:HideLFG()
 	self:HideScreenTutorial();
 
 	if self.success then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	elseif LFGDungeonReadyPopup:IsShown() then
 		self.success = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	elseif self.inQueue then
 		return;-- the player is queued for the dungeon
 	end
 	self.success = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_LookingForGroup:DungeonEnabled(dungeonID)
@@ -3621,7 +3594,7 @@ function Class_LookingForGroup:LFG_PROPOSAL_SHOW()
 	GlowEmitterFactory:Hide(LFDQueueFrameFindGroupButton);
 	self:HidePointerTutorials();
 	self.success = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
@@ -3629,7 +3602,7 @@ function Class_LookingForGroup:QUEST_REMOVED(questIDRemoved)
 	if questID == questIDRemoved then
 		self.questRemoved = true;
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3665,7 +3638,6 @@ function Class_LookingForGroup:Finish()
 			TutorialQueue:Add(TutorialLogic.Tutorials.PromptLFG);
 		end
 	end
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -3679,7 +3651,7 @@ end
 function Class_LeavePartyPrompt:Start()
 	self.pointerID = self:AddPointerTutorial(NPEV2_LEAVE_PARTY_PROMPT, "LEFT", PlayerFrame, 0, 0);
 	C_Timer.After(12, function()
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end);
 end
 
@@ -3688,7 +3660,6 @@ function Class_LeavePartyPrompt:OnInterrupt(interruptedBy)
 end
 
 function Class_LeavePartyPrompt:Finish()
-	TutorialQueue:NotifyDone();
 	self:Complete();
 end
 
@@ -3738,7 +3709,7 @@ function Class_MountReceived:Start()
 	else
 		-- the player doesn't have the mount
 		self.proceed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3756,7 +3727,7 @@ function Class_MountReceived:BackpackOpened()
 	else
 		-- the player doesn't have the mount
 		self.proceed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3766,7 +3737,7 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
 		TutorialQueue:Add(TutorialLogic.Tutorials.UseMount);
 		self.proceed = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3779,7 +3750,7 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 		SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 		MountJournal_SelectByMountID(self.mountID);
 		self.proceed = true;
-		self:Finish()
+		TutorialQueue:NotifyDone(self);
 	end, true);
 end
 
@@ -3794,7 +3765,6 @@ function Class_MountReceived:Finish()
 	if self.proceed == true then
 		TutorialQueue:Add(TutorialLogic.Tutorials.AddMountToActionBar, self.mountData);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -3819,7 +3789,7 @@ function Class_AddMountToActionBar:Start(args)
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
 		self.success = true;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
 
@@ -3838,20 +3808,20 @@ function Class_AddMountToActionBar:MountJournalShow()
 end
 
 function Class_AddMountToActionBar:MountJournalHide()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_AddMountToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 	local actionType, sID, subType = GetActionInfo(slot);
 
 	if sID == self.mountData.mountID then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	else
 		local nextEmptyButton = TutorialHelper:FindEmptyButton();
 		if not nextEmptyButton then
 			-- no more empty buttons
 			self.success = false;
-			self:Finish();
+			TutorialQueue:NotifyDone(self);
 			self:Complete();
 		else
 			NPE_TutorialDragButton:Hide();
@@ -3874,7 +3844,6 @@ function Class_AddMountToActionBar:Finish()
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
 		TutorialQueue:Add(TutorialLogic.Tutorials.UseMount);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -3891,10 +3860,10 @@ end
 
 function Class_UseMount:Start()
 	if IsMounted() then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 		return;
 	end
-	self.Timer = C_Timer.NewTimer(20, function() self:Finish() end);
+	self.Timer = C_Timer.NewTimer(20, function() TutorialQueue:NotifyDone(self); end);
 
 	Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_USABLE", self);
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
@@ -3908,8 +3877,6 @@ function Class_UseMount:TryUseMount()
 	local button = TutorialHelper:GetActionButtonBySpellID(self.mountID);
 	if button and IsUsableAction(button.action) then
 		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P4, "DOWN", button, 0, 10, nil, "UP");
-	else
-		--self:Finish();
 	end
 end
 
@@ -3919,7 +3886,7 @@ end
 
 function Class_UseMount:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
 	if self.mountSpellID == spellID then
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3934,7 +3901,6 @@ function Class_UseMount:Finish()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -3961,7 +3927,7 @@ end
 function Class_ChangeSpec:QUEST_REMOVED(questIDRemoved)
 	if self.specQuestID == questIDRemoved then
 		self.success = false;
-		self:Finish();
+		TutorialQueue:NotifyDone(self);
 	end
 end
 
@@ -3997,17 +3963,17 @@ function Class_ChangeSpec:ShowTalentChoiceHelp()
 	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_TOGGLE_TALENT_FRAME, "DOWN", PlayerTalentFrameSpecializationSpecButton1, 10, 0, nil, "DOWN");
 
 	Dispatcher:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
-	self.Timer = C_Timer.NewTimer(120, function() self:Finish() end);
+	self.Timer = C_Timer.NewTimer(120, function() TutorialQueue:NotifyDone(self); end);
 end
 
 function Class_ChangeSpec:PLAYER_SPECIALIZATION_CHANGED()
 	self.success = true;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_ChangeSpec:OnInterrupt(interruptedBy)
 	self.success = false;
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_ChangeSpec:Finish()
@@ -4021,7 +3987,6 @@ function Class_ChangeSpec:Finish()
 	if self.success then
 		self:Complete();
 	end
-	TutorialQueue:NotifyDone();
 end
 
 
@@ -4051,11 +4016,11 @@ end
 
 -- PLAYER_ALIVE gets called when the player releases, not when they get back to their corpse
 function Class_Death_ReleaseCorpse:PLAYER_ALIVE()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_ReleaseCorpse:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_ReleaseCorpse:Finish()
@@ -4063,7 +4028,6 @@ function Class_Death_ReleaseCorpse:Finish()
 	if (UnitIsGhost("player")) then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Death_MapPrompt);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -4083,15 +4047,15 @@ function Class_Death_MapPrompt:Start()
 end
 
 function Class_Death_MapPrompt:PLAYER_UNGHOST()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_MapPrompt:CORPSE_IN_RANGE()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_MapPrompt:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_MapPrompt:Finish()
@@ -4099,7 +4063,6 @@ function Class_Death_MapPrompt:Finish()
 	if (UnitIsGhost("player")) then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Death_ResurrectPrompt);
 	end
-	TutorialQueue:NotifyDone();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -4115,16 +4078,15 @@ function Class_Death_ResurrectPrompt:Start()
 end
 
 function Class_Death_ResurrectPrompt:PLAYER_UNGHOST()
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_ResurrectPrompt:OnInterrupt(interruptedBy)
-	self:Finish();
+	TutorialQueue:NotifyDone(self);
 end
 
 function Class_Death_ResurrectPrompt:Finish()
 	GlowEmitterFactory:Hide(StaticPopup1Button1);
-	TutorialQueue:NotifyDone();
 end
 
 -- ============================================================================================================
