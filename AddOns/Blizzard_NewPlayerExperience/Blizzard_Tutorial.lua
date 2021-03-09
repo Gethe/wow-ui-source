@@ -37,7 +37,7 @@ function NewPlayerExperience:Begin()
 	
 	MainMenuMicroButton_SetAlertsEnabled(false, "NPEv2"); --Turns off microtips
 	NPE_QuestManager:Initialize();
-	Tutorials:Begin();
+	TutorialLogic:Begin();
 
 	self.IsActive = true;
 end
@@ -70,7 +70,7 @@ function NewPlayerExperience:Shutdown()
 	HelpTip:SetHelpTipsEnabled("NPEv2", true);
 	MainMenuMicroButton_SetAlertsEnabled(true, "NPEv2"); --Turns microtips back on
 
-	Tutorials:Shutdown();
+	TutorialLogic:Shutdown();
 	self.IsActive = false;
 end
 

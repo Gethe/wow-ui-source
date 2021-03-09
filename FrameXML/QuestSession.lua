@@ -754,7 +754,8 @@ AddNotification(Enum.QuestSessionResult.Restricted, ERR_QUEST_SESSION_RESULT_RES
 AddNotification(Enum.QuestSessionResult.InPetBattle, ERR_QUEST_SESSION_RESULT_IN_PET_BATTLE);
 AddNotification(Enum.QuestSessionResult.InvalidPublicParty, ERR_QUEST_SESSION_RESULT_UNKNOWN);
 AddNotification(Enum.QuestSessionResult.Unknown, ERR_QUEST_SESSION_RESULT_UNKNOWN);
-AddNotification(Enum.QuestSessionResult.InCombat, ERR_AFFECTING_COMBAT); -- TODO: Add new string for 9.0.2
+AddNotification(Enum.QuestSessionResult.InCombat, ERR_QUEST_SESSION_RESULT_IN_COMBAT);
+AddNotification(Enum.QuestSessionResult.MemberInCombat, ERR_QUEST_SESSION_RESULT_MEMBER_IN_COMBAT);
 
 QuestSessionManagerMixin = {};
 

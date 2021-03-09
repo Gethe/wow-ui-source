@@ -93,16 +93,16 @@ function FullStoreCardMixin:GetCurrencyFormat(currencyInfo)
 	return currencyInfo.formatLong;
 end
 
-function FullStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
-	if entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW then
+function FullStoreCardMixin:UpdateBannerText(discounted, discountPercentage, displayInfo)
+	if displayInfo.bannerType == Enum.BattlepayBannerType.New then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
-	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT then
+	elseif displayInfo.bannerType == Enum.BattlepayBannerType.Discount then
 		if discounted then
 			self.SplashBannerText:SetText(string.format(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT, discountPercentage));
 		else
 			self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 		end
-	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED then
+	elseif displayInfo.bannerType == Enum.BattlepayBannerType.Featured then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 	end
 end
@@ -318,12 +318,10 @@ function FullStoreCardMixin:Layout()
 	self.SplashBanner:ClearAllPoints();
 	self.SplashBanner:SetSize(374, 77);
 	self.SplashBanner:SetPoint("TOP", 3, 2);
-	self.SplashBanner:Show();
 	
 	self.SplashBannerText:ClearAllPoints();
 	self.SplashBannerText:SetPoint("CENTER", self.SplashBanner, "CENTER", 0, 16);
 	self.SplashBannerText:SetTextColor(0.36, 0.18, 0.05);
-	self.SplashBannerText:Show();
 
 	self.Strikethrough:ClearAllPoints();
 	self.Strikethrough:SetPoint("TOPLEFT", self.NormalPrice, "TOPLEFT", 0, 0);
@@ -355,14 +353,24 @@ function FullStoreCardMixin:Layout()
 	self.Checkmark:Hide();
 end
 
-function FullStoreCardMixin:SetStyle(overrideBackground)
+function FullStoreCardMixin:SetStyle(entryInfo)
 	self.Card:ClearAllPoints();
+
+	local displayInfo =  entryInfo.sharedData;
+	if displayInfo.bannerType == Enum.BattlepayBannerType.None then
+		self.SplashBanner:Hide();
+		self.SplashBannerText:Hide();
+	else
+		self.SplashBanner:Show();
+		self.SplashBannerText:Show();
+	end
 	
 	self.DiscountMiddle:Hide();
 	self.DiscountLeft:Hide();
 	self.DiscountRight:Hide();
 	self.DiscountText:Hide();
 	
+	local overrideBackground = entryInfo.sharedData.overrideBackground;
 	if overrideBackground then
 		self.Card:SetPoint("CENTER");
 		self.Card:SetAtlas(overrideBackground, true);
@@ -384,16 +392,13 @@ function HorizontalFullStoreCardMixin:Layout()
 	self:SetSize(width, height);
 end
 
-function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
-	FullStoreCardMixin.SetStyle(self, overrideBackground);
+function HorizontalFullStoreCardMixin:SetStyle(entryInfo)
+	FullStoreCardMixin.SetStyle(self, entryInfo);
 
 	self.ModelScene:ClearAllPoints();
 	self.ModelScene:SetPoint("TOPLEFT", 4, -4);
 	self.ModelScene:SetPoint("BOTTOMRIGHT", -4, 4);
 	self.ModelScene:SetViewInsets(0, 0, 0, 0);
-
-	self.SplashBanner:Hide();
-	self.SplashBannerText:Hide();
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();
@@ -446,16 +451,13 @@ function HorizontalFullStoreCardWithNydusLinkMixin:Layout()
 	self:SetSize(width, height);
 end
 
-function HorizontalFullStoreCardWithNydusLinkMixin:SetStyle(overrideBackground)
-	FullStoreCardMixin.SetStyle(self, overrideBackground);
+function HorizontalFullStoreCardWithNydusLinkMixin:SetStyle(entryInfo)
+	FullStoreCardMixin.SetStyle(self, entryInfo);
 
 	self.ModelScene:ClearAllPoints();
 	self.ModelScene:SetPoint("TOPLEFT", 4, -4);
 	self.ModelScene:SetPoint("BOTTOMRIGHT", -4, 4);
 	self.ModelScene:SetViewInsets(0, 0, 0, 0);
-
-	self.SplashBanner:Hide();
-	self.SplashBannerText:Hide();
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();
@@ -506,11 +508,8 @@ function VerticalFullStoreCardMixin:Layout()
 	self:SetSize(width, height);
 end
 
-function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
-	FullStoreCardMixin.SetStyle(self, overrideBackground);
-
-	self.SplashBanner:Show();
-	self.SplashBannerText:Show();
+function VerticalFullStoreCardMixin:SetStyle(entryInfo)
+	FullStoreCardMixin.SetStyle(self, entryInfo);
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();

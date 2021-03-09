@@ -722,6 +722,14 @@ function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
 end
 
+function WeeklyRewards_ShowUI()
+	if not WeeklyRewardsFrame then
+		WeeklyRewards_LoadUI();
+	end
+
+	ShowUIPanel(WeeklyRewardsFrame);
+end
+
 --[[
 function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
@@ -2360,10 +2368,7 @@ function UIParent_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
 	elseif (event == "WEEKLY_REWARDS_SHOW") then
-		if not WeeklyRewardsFrame then
-			WeeklyRewards_LoadUI();
-		end
-		ShowUIPanel(WeeklyRewardsFrame);
+		WeeklyRewards_ShowUI();
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 

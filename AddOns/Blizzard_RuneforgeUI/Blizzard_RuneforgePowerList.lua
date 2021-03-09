@@ -56,6 +56,22 @@ function RuneforgePowerSlotMixin:OnHide()
 	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self);
 end
 
+function RuneforgePowerSlotMixin:OnEnter()
+	if self:HasError() then
+		local errorText, errorDescription = self:GetError();
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, errorText, RED_FONT_COLOR);
+		if errorDescription ~= nil then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, errorDescription);
+		end
+
+		GameTooltip:Show();
+	else
+		RuneforgePowerButtonMixin.OnEnter(self);
+	end
+end
+
 function RuneforgePowerSlotMixin:OnClick(buttonName)
 	if buttonName == "RightButton" then
 		self:Reset();
@@ -66,6 +82,23 @@ end
 
 function RuneforgePowerSlotMixin:IsSelectionActive()
 	return self:IsEnabled();
+end
+
+function RuneforgePowerSlotMixin:GetError()
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	if self:IsRuneforgeUpgrading() or (runeforgeFrame:GetItem() == nil) then
+		return nil;
+	end
+
+	if not runeforgeFrame:IsAnyPowerAvailable() then
+		return RUNEFORGE_LEGENDARY_ERROR_NO_POWER, RUNEFORGE_LEGENDARY_ERROR_NO_POWER_DESCRIPTION;
+	end
+
+	return nil;
+end
+
+function RuneforgePowerSlotMixin:HasError()
+	return self:GetError() ~= nil;
 end
 
 function RuneforgePowerSlotMixin:Reset()
@@ -79,7 +112,8 @@ function RuneforgePowerSlotMixin:UpdateState()
 
 	local isUpgrading = self:IsRuneforgeUpgrading();
 	local hasItem = self:GetRuneforgeFrame():GetItem() ~= nil;
-	local alpha = (not powerSelected and hasItem and not isUpgrading) and 1 or 0;
+	local hasError = self:HasError();
+	local alpha = (not powerSelected and hasItem and not isUpgrading and not hasError) and 1 or 0;
 	self:GetNormalTexture():SetAlpha(alpha);
 	self:GetPushedTexture():SetAlpha(alpha);
 
@@ -93,6 +127,8 @@ function RuneforgePowerSlotMixin:UpdateState()
 	self:SetEffectShown("primary", showEffects);
 	self:SetEffectShown("chains", showEffects);
 	self:SetEffectShown("chains2", showEffects);
+
+	self.ErrorTexture:SetShown(hasError);
 end
 
 function RuneforgePowerSlotMixin:OnPowerSet(oldPowerID, powerID)

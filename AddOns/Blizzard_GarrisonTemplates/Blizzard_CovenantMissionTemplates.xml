@@ -62,6 +62,24 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="TroopStackBorder1" atlas="Adventurers-Followers-Frame-Troops" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="-4" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="8"/>
+					</Anchors>
+				<Color r="0.46" g=".345" b="0.254"/>
+				</Texture>
+			</layer>
+			<layer level="BORDER" textureSubLevel="-2">
+				<Texture parentKey="TroopStackBorder2" atlas="Adventurers-Followers-Frame-Troops" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="-10" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="12"/>
+					</Anchors>
+				<Color r="0.254" g=".207" b="0.176"/>
+				</Texture>
+			</layer>
 			<Layer level="BORDER">
 				<Texture parentKey="PuckBorder" atlas="Adventurers-Followers-Frame">
 					<Anchors>
@@ -78,7 +96,6 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Portrait"/>
-						<MaskedTexture childKey="PuckBorder"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -565,6 +582,18 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x ="26" y="-8"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="HealTimeRemaining" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.HealFollowerFrame" relativePoint="BOTTOM" x ="0" y="35"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="HealTimeRemainingIcon" atlas="auctionhouse-icon-clock">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.HealTimeRemaining" relativePoint="LEFT" x ="-5" y="0"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

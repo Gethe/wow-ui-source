@@ -107,7 +107,7 @@ function VerticalLargeStoreCardMixin:GetCurrencyFormat(currencyInfo)
 	return currencyInfo.formatLong;
 end
 
-function VerticalLargeStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
+function VerticalLargeStoreCardMixin:UpdateBannerText(discounted, discountPercentage, displayInfo)
 	-- empty override
 end
 
@@ -268,16 +268,16 @@ function VerticalLargeStoreCardWithBuyButtonMixin:OnLoad()
 	self.SplashBannerText:SetShadowColor(0, 0, 0, 1);
 end
 
-function VerticalLargeStoreCardWithBuyButtonMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
-	if entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW then
+function VerticalLargeStoreCardWithBuyButtonMixin:UpdateBannerText(discounted, discountPercentage, displayInfo)
+	if displayInfo.bannerType == Enum.BattlepayBannerType.New then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
-	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT then
+	elseif displayInfo.bannerType == Enum.BattlepayBannerType.Discount then
 		if discounted then
 			self.SplashBannerText:SetText(string.format(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT, discountPercentage));
 		else
 			self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 		end
-	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED then
+	elseif displayInfo.bannerType == Enum.BattlepayBannerType.Featured then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 	end	
 end

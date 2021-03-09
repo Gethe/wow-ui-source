@@ -122,6 +122,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="MouseOverTitleFrame" mixin="ConvenantMissionPageMouseOverTitleMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-100" y="-66"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="MissionInfo" inherits="VerticalLayoutFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
@@ -233,7 +243,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="CovenantMissionPageTemplate" virtual="true">
+	<Button name="CovenantMissionPageTemplate" virtual="true">
 		<Size x="556" y="580"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-55" y="-34"/>
@@ -391,11 +401,9 @@
 			<OnShow function="CovenantMissionPage_OnShow"/>
 			<OnHide function="CovenantMissionPage_OnHide"/>
 			<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
-			<OnClick>
-				self.CloseButton:Click();
-			</OnClick>
+			<OnClick function="GarrisonMissionPage_OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Frame name="CovenantMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, CovenantMission" frameLevel="1" parent="UIParent" topLevel="true">
 		<Size x="962" y="662"/>

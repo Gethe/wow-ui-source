@@ -92,16 +92,14 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 			if ( not self:IsEnabled() ) then
 				if ( self.factionGroup == "Neutral" ) then
 					GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				elseif ( self.minLevel ) then
 					GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				elseif ( self.disabledTooltip ) then
 					local disabledTooltipText = GetValueOrCallFunction(self, "disabledTooltip");
 					GameTooltip:AddLine(disabledTooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				end
 			end
+			GameTooltip:Show();
 		end
 	end
 end
@@ -289,7 +287,8 @@ function UpdateMicroButtons()
 			StoreMicroButton:Disable();
 		end
 	elseif C_PlayerInfo.IsPlayerNPERestricted() then
-		if Tutorials and Tutorials.Hide_StoreMicroButton and Tutorials.Hide_StoreMicroButton.IsActive then
+		local tutorials = TutorialLogic and TutorialLogic.Tutorials;
+		if tutorials and tutorials.UI_Watcher and tutorials.UI_Watcher.IsActive then
 			StoreMicroButton:Hide();
 		end
 	else

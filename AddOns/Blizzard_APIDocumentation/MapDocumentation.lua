@@ -556,9 +556,9 @@ local Map =
 		{
 			Name = "UIMapFlag",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 1,
-			MaxValue = 32768,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
@@ -577,6 +577,7 @@ local Map =
 				{ Name = "FlightMapShowZoomOut", Type = "UIMapFlag", EnumValue = 8192 },
 				{ Name = "FlightMapAutoZoom", Type = "UIMapFlag", EnumValue = 16384 },
 				{ Name = "ForceOnNavbar", Type = "UIMapFlag", EnumValue = 32768 },
+				{ Name = "AlwaysAllowUserWaypoints", Type = "UIMapFlag", EnumValue = 65536 },
 			},
 		},
 		{

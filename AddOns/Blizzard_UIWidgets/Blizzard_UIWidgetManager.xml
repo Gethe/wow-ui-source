@@ -31,15 +31,4 @@
 
 
 	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="UIWidgetContainerNoResizeTemplate, ResizeLayoutFrame" mixin="UIWidgetContainerMixin"/>
-
-	<Frame name="WidgetOffsetContainerTemplate" virtual="true">
-		<Frames>
-			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-10"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
-	
 </Ui>

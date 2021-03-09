@@ -327,8 +327,8 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	local questIndex = C_QuestLog.GetLogIndexForQuestID(bountyData.questID);
 	local title = C_QuestLog.GetTitleForLogIndex(questIndex);
 	if title then
-		GameTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB());
-		WorldMap_AddQuestTimeToTooltip(bountyData.questID);
+		GameTooltip_SetTitle(GameTooltip, title);
+		GameTooltip_AddQuestTimeToTooltip(GameTooltip, bountyData.questID);
 
 		local _, questDescription = GetQuestLogQuestText(questIndex);
 		GameTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -340,12 +340,13 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 		end
 
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, bountyData.questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD);
-		GameTooltip:Show();
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 	else
-		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
-		GameTooltip:Show();
+		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 	end
-	GameTooltip.recalculatePadding = true;
+
+	GameTooltip:Show();
 end
 
 function WorldMapBountyBoardMixin:SetTooltipOwner()

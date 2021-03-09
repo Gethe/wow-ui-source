@@ -193,6 +193,12 @@ end
 AnimaDiversionPinMixin = CreateFromMixins(MapCanvasPinMixin); 
 function AnimaDiversionPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
+	self:SetNudgeSourceRadius(1);
+
+	-- This map doesn't zoom so set them both the same.
+	local zoomedInNudge = 4;
+	local zoomedOutNudge = zoomedInNudge;
+	self:SetNudgeSourceMagnitude(zoomedInNudge, zoomedOutNudge);
 end 
 
 function AnimaDiversionPinMixin:SetupOrigin()
@@ -342,7 +348,6 @@ function AnimaDiversionPinMixin:RefreshTooltip()
 		local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
 		if worldQuestID then
 			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, worldQuestID);
-			GameTooltip.recalculatePadding = true;
 			if not HaveQuestRewardData(worldQuestID) then
 				self.UpdateTooltip = self.RefreshTooltip;
 			end

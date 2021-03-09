@@ -47,8 +47,22 @@
 		</Frames>
 	</Frame>
 	<Button name="TorghastLevelPickerRewardCircleTemplate" frameStrata="HIGH" motionScriptsWhileDisabled="true" mixin="TorghastLevelPickerRewardCircleMixin" virtual="true">
-		<Size x="32" y="33"/>
+		<Size x="40" y="40"/>
 		<Layers>
+			<Layer level="BORDER" textureSubLevel="-2">
+					<Texture parentKey="HighlightGlow" atlas="jailerstower-wayfinder-rewardglow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="-7" y="7"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="7" y="-7"/>
+						</Anchors>
+					</Texture>
+				<Texture parentKey="HighlightGlow2" atlas="jailerstower-wayfinder-rewardglow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="-7" y="7"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
 				<Texture parentKey="RewardBorder" atlas="jailerstower-wayfinder-rewardcircle" useAtlasSize="true"/>
 				<Texture parentKey="QuestComplete" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true" hidden="true">
@@ -67,8 +81,8 @@
 			<Layer level="BORDER">
 				<Texture parentKey="Icon">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="-3" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -84,6 +98,14 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="HighlightGlow" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="HighlightGlow" startDelay=".75" duration=".75" order="1" fromAlpha="1" toAlpha=".5"/>
+				<Alpha childKey="HighlightGlow2" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="HighlightGlow2" startDelay=".75" duration=".75" order="1" fromAlpha="1" toAlpha=".5"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -95,6 +117,11 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Banner" atlas="jailerstower-wayfinder-rewardbackground" useAtlasSize="true"/>
 				<Texture parentKey="BannerDisabled" atlas="jailerstower-wayfinder-rewardbackground-disable" hidden="true" useAtlasSize="true"/>
+				<Texture parentKey="BannerSelected" atlas="jailerstower-wayfinder-rewardbackground-selected" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="3"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="EarnedCheck" hidden="true" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true">
@@ -112,7 +139,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<CheckButton name="TorghastLevelPickerOptionButtonTemplate" motionScriptsWhileDisable="true" inherits="CustomGossipOptionButtonBaseTemplate" mixin="TorghastLevelPickerOptionButtonMixin" virtual="true">
+	<CheckButton name="TorghastLevelPickerOptionButtonTemplate" motionScriptsWhileDisabled="true" inherits="CustomGossipOptionButtonBaseTemplate" mixin="TorghastLevelPickerOptionButtonMixin" frameStrata="HIGH" virtual="true">
 		<Size x="91" y="91"/>
 		<Layers>
 			<Layer level="Background">
@@ -153,6 +180,8 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="TorghastLevelPickerFrame" hidden="true" inherits="CustomGossipFrameBaseGridTemplate" mixin="TorghastLevelPickerFrameMixin">
@@ -170,11 +199,17 @@
 					<Anchors>
 						<Anchor point="TOP" x="140" y="-70"/>
 					</Anchors>
-					<Color r="0.513" g="0.73" b="0.8"/>
+					<Color color="BATTLENET_FONT_COLOR"/>
 				</FontString>
 				<FontString parentKey="SubTitle" inherits="GameFontHighlightMedium" text="JAILERSTOWER_LEVEL_PICKER_SELECT_DIFFICULTY">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" justifyH="CENTER" inherits="GameFontHighlight">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="110" y="-110"/>
 					</Anchors>
 				</FontString>
 			</Layer>

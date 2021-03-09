@@ -37,7 +37,7 @@ end
 
 function TorghastLevelPickerFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, TORGHAST_LEVEL_PICKER_EVENTS);
-	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_UI); 
 end 
 
 function TorghastLevelPickerFrameMixin:CancelEffects()
@@ -67,7 +67,6 @@ end
 function TorghastLevelPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
-
 	local inParty = UnitInParty("player"); 
 	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 
@@ -78,6 +77,7 @@ function TorghastLevelPickerFrameMixin:TryShow(textureKit)
 
 	self:SetupOptions();
 	self:ScrollAndSelectHighestAvailableLayer();
+	self:SetupDescription();
 	ShowUIPanel(self); 
 end 
 
@@ -141,6 +141,11 @@ function TorghastLevelPickerFrameMixin:SetupBackground()
 	SetupTextureKitOnRegions(self.textureKit, self, gossipBackgroundTextureKitRegion, true, TextureKitConstants.UseAtlasSize);
 end
 
+function TorghastLevelPickerFrameMixin:SetupDescription() 
+	local description = C_GossipInfo.GetCustomGossipDescriptionString() or "";
+	self.Description:SetText(description);
+end
+
 function TorghastLevelPickerFrameMixin:ScrollAndSelectHighestAvailableLayer()
 	local highestAvailableLayerIndex = nil
 
@@ -164,15 +169,17 @@ function TorghastLevelPickerFrameMixin:ScrollAndSelectHighestAvailableLayer()
 
 	local startingIndex = ((page - 1) * self.maxOptionsPerPage) + 1;
 	self:SetupOptionsByStartingIndex(startingIndex);
+	self.highestAvailableLayerIndex = highestAvailableLayerIndex;
 
 	-- Select the option that is the highest available layer. 
 	for layer in self.gossipOptionsPool:EnumerateActive() do 
 		if (layer.index == highestAvailableLayerIndex) then 
 			self:SelectLevel(layer);
-			layer:SetState(self.gossipOptions[highestAvailableLayerIndex].status)
+			layer:SetState(self.gossipOptions[highestAvailableLayerIndex].status);
 			return; 
 		end 
 	end 
+
 end 
 
 TorghastLevelPickerOptionButtonMixin = {}; 
@@ -195,7 +202,22 @@ function TorghastLevelPickerOptionButtonMixin:Setup(textureKit, optionInfo, inde
 	self:SetupBase(textureKit, optionInfo, index, gossipButtonTextureKitRegions)
 	self:SetState(optionInfo.status); 
 	self:SetDifficultyTexture();
+	self.spell = nil; 
+
 	self:Show(); 
+
+	if(not optionInfo.spellID)  then 
+		return; 
+	end 
+
+	if not self.spell then
+		self.spell = Spell:CreateFromSpellID(optionInfo.spellID);
+	end
+
+	local onSpellLoad = function()
+		self:RefreshTooltip(); 
+	end;
+	self.spell:ContinueOnSpellLoad(onSpellLoad);
 end 
 
 function TorghastLevelPickerOptionButtonMixin:ShouldOptionBeEnabled()
@@ -206,14 +228,18 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 	local lockedState = status == Enum.GossipOptionStatus.Locked;
 	local completeState = status == Enum.GossipOptionStatus.AlreadyComplete; 
 	self.RewardBanner.BannerDisabled:SetShown(lockedState);
-	self.RewardBanner.Banner:SetShown(not lockedState);
 	self.RewardBanner.Reward.completeState = completeState; 
 	self.RewardBanner.Reward.lockedState = lockedState; 
 	self.RewardBanner.Reward:Init()
 	self.Background:SetDesaturated(lockedState);
 	self.Icon:SetDesaturated(lockedState); 
 	local parent = self:GetParent():GetParent(); 
+	local isHighestAvailableLayer = self.index == parent.highestAvailableLayerIndex;
 	local isChecked = (self == parent.currentSelectedButton) and (self.index == parent.currentSelectedButtonIndex);
+
+	self.RewardBanner.Banner:SetShown(not lockedState);
+	self.RewardBanner.BannerSelected:SetShown(not lockedState and isChecked);
+	self.RewardBanner.Reward.PulseAnim:Stop();
 
 	-- We never want the locked icon to be checked.  
 	if(isChecked and lockedState) then
@@ -227,20 +253,51 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 		fontColor = LIGHTGRAY_FONT_COLOR;
 	end 
 	self.Title:SetTextColor(fontColor:GetRGB());
+	self.RewardBanner.Reward.HighlightGlow:SetShown(isHighestAvailableLayer);
+	self.RewardBanner.Reward.HighlightGlow2:SetShown(isHighestAvailableLayer);
+	if(self.RewardBanner.Reward.HighlightGlow:IsShown()) then 
+		self.RewardBanner.Reward.PulseAnim:Play();
+	end
 	self:SetEnabled(not lockedState);
 end
 
+function TorghastLevelPickerOptionButtonMixin:UpdateSelectionState()
+	local isChecked = self:GetChecked(); 
+	self.SelectedBorder:SetShown(isChecked); 
+	self.RewardBanner.BannerSelected:SetShown(isChecked)
+end 
+
 function TorghastLevelPickerOptionButtonMixin:ClearSelection()
 	self:SetChecked(false);
-	self.SelectedBorder:SetShown(self:GetChecked()); 
+	self:UpdateSelectionState(); 
 end 
 
 function TorghastLevelPickerOptionButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_SELECT_DIFFICULTY, nil, SOUNDKIT_ALLOW_DUPLICATES); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_SELECT_DIFFICULTY); 
 	self:SetChecked(true);
 	self:GetParent():GetParent():SelectLevel(self);
-	self.SelectedBorder:SetShown(self:GetChecked()); 
+	self:UpdateSelectionState(); 
 end 
+
+function TorghastLevelPickerOptionButtonMixin:RefreshTooltip()
+	if (not RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self) or not self.spell) then 
+		return;
+	end 
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local description = self.spell:GetSpellDescription();
+	GameTooltip_AddNormalLine(GameTooltip, description);
+	GameTooltip:Show(); 
+end 
+
+function TorghastLevelPickerOptionButtonMixin:OnEnter()
+	self:RefreshTooltip(); 
+end 
+
+
+function TorghastLevelPickerOptionButtonMixin:OnLeave()
+	GameTooltip:Hide(); 
+end		
 
 TorghastPagingContainerMixin = {}; 
 
@@ -323,6 +380,7 @@ function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
 			end);
 		end 
 		self:RefreshTooltip();
+		self:SetRewardIcon(); 
 	end);
 
 	if (self.currencyRewards and #self.currencyRewards > 1) then
@@ -479,5 +537,5 @@ function TorghastLevelPickerOpenPortalButtonMixin:OnClick()
 		return; 
 	end
 	C_GossipInfo.SelectOption(selectedPortal.index); 
-	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL, nil, SOUNDKIT_ALLOW_DUPLICATES); 
+	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL); 
 end 

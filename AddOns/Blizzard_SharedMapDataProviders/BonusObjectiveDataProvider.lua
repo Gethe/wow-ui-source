@@ -17,6 +17,7 @@ end
 function BonusObjectiveDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
@@ -115,6 +116,10 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 		self:SetScalingLimits(1, 0.825, 0.85);
 		self.Texture:SetSize(30, 30);
 	end
+
+	if not HaveQuestRewardData(self.questID) then
+		C_TaskQuest.RequestPreloadRewardData(self.questID);
+	end
 end
 
 function BonusObjectivePinMixin:OnMouseEnter()
@@ -145,6 +150,10 @@ function ThreatObjectivePinMixin:OnAcquired(taskInfo)
 	else
 		self.Texture:SetTexCoord(0.875, 1, 0.375, 0.5);
 		self.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
+	end
+
+	if not HaveQuestRewardData(self.questID) then
+		C_TaskQuest.RequestPreloadRewardData(self.questID);
 	end
 end
 

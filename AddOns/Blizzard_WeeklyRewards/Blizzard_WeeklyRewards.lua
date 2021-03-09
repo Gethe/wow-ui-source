@@ -10,7 +10,7 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD);
 		C_WeeklyRewards.ClaimReward(self.data);
 		HideUIPanel(WeeklyRewardsFrame);
 	end,
@@ -20,6 +20,7 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 }
 
 local WEEKLY_REWARDS_EVENTS = {
+	"WEEKLY_REWARDS_SHOW",
 	"WEEKLY_REWARDS_HIDE",
 	"WEEKLY_REWARDS_UPDATE",
 	"CHALLENGE_MODE_COMPLETED",
@@ -29,15 +30,14 @@ local WEEKLY_REWARDS_EVENTS = {
 WeeklyRewardsMixin = { };
 
 function WeeklyRewardsMixin:OnLoad()
-	NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, "Oribos");
 	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-Oribos-ExitButtonBorder", -1, 1);
 
 	self:SetUpActivity(self.RaidFrame, RAIDS, "weeklyrewards-background-raid", Enum.WeeklyRewardChestThresholdType.Raid);
 	self:SetUpActivity(self.MythicFrame, MYTHIC_DUNGEONS, "weeklyrewards-background-mythic", Enum.WeeklyRewardChestThresholdType.MythicPlus);
 	self:SetUpActivity(self.PVPFrame, PVP, "weeklyrewards-background-pvp", Enum.WeeklyRewardChestThresholdType.RankedPvP);
 
-	local attributes = 
-	{ 
+	local attributes =
+	{
 		area = "center",
 		pushable = 0,
 		allowOtherPanels = 1,
@@ -47,28 +47,22 @@ end
 
 function WeeklyRewardsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
-
-	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
-
-	-- for preview item tooltips
-	C_MythicPlus.RequestMapInfo();
-
-	self.hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
-	self.couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards();
-
-	self:Refresh(self.couldClaimRewardsInOnShow);
+	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW);
+	self:FullRefresh();
 end
 
 function WeeklyRewardsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
-	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLOSE_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLOSE_WINDOW);
 	self.selectedActivity = nil;
 	C_WeeklyRewards.CloseInteraction();
 	StaticPopup_Hide("CONFIRM_SELECT_WEEKLY_REWARD");
 end
 
 function WeeklyRewardsMixin:OnEvent(event)
-	if event == "WEEKLY_REWARDS_HIDE" then
+	if event == "WEEKLY_REWARDS_SHOW" then
+		self:FullRefresh();
+	elseif event == "WEEKLY_REWARDS_HIDE" then
 		HideUIPanel(self);
 	elseif event == "WEEKLY_REWARDS_UPDATE" then
 		if not self.hasAvailableRewards and C_WeeklyRewards.HasAvailableRewards() then
@@ -132,13 +126,27 @@ function WeeklyRewardsMixin:GetActivityFrame(activityType, index)
 	end
 end
 
+function WeeklyRewardsMixin:IsReadOnly()
+	return self.isReadOnly;
+end
+
+function WeeklyRewardsMixin:FullRefresh()
+	-- for preview item tooltips
+	C_MythicPlus.RequestMapInfo();
+
+	self.hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
+	self.couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards();
+	self.isReadOnly = not C_WeeklyRewards.HasInteraction();
+
+	self:Refresh(self.couldClaimRewardsInOnShow);
+end
+
 function WeeklyRewardsMixin:Refresh(playSheenAnims)
+	self:UpdateTitle();
+	self:UpdateOverlay();
+	self:UpdatePreviousClaim();
+
 	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
-	if canClaimRewards then
-		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_CHOOSE_REWARD);
-	else
-		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_ADD_ITEMS);
-	end
 	self.SelectRewardButton:SetShown(canClaimRewards);
 
 	-- always hide concession, if there are rewards the refresh will show it
@@ -166,9 +174,56 @@ function WeeklyRewardsMixin:Refresh(playSheenAnims)
 	self:UpdateSelection();
 end
 
+function WeeklyRewardsMixin:UpdateTitle()
+	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
+	if canClaimRewards then
+		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_CHOOSE_REWARD);
+	elseif not C_WeeklyRewards.HasInteraction() and C_WeeklyRewards.HasAvailableRewards() then
+		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_RETURN_TO_CLAIM);
+	else
+		self.HeaderFrame.Text:SetText(WEEKLY_REWARDS_ADD_ITEMS);
+	end
+end
+
+function WeeklyRewardsMixin:UpdateOverlay()
+	local show = self:ShouldShowOverlay();
+
+	if self:ShouldShowOverlay() then
+		self:GetOrCreateOverlay():Show();
+	elseif self.Overlay then
+		self.Overlay:Hide();
+	end
+
+	self.Blackout:SetShown(show);
+end
+
+function WeeklyRewardsMixin:ShouldShowOverlay()
+	return self:IsReadOnly() and C_WeeklyRewards.HasAvailableRewards();
+end
+
+function WeeklyRewardsMixin:GetOrCreateOverlay()
+	if self.Overlay then
+		return self.Overlay;
+	end
+
+	self.Overlay = CreateFrame("Frame", nil, self, "WeeklyRewardOverlayTemplate");
+	self.Overlay:SetPoint("TOP", self, "TOP", 0, -142);
+	RaiseFrameLevel(self.Overlay);
+
+	return self.Overlay;
+end
+
+function WeeklyRewardsMixin:UpdatePreviousClaim()
+	self.PreviousRewardNotification:SetShown(not self:IsReadOnly() and C_WeeklyRewards.HasAvailableRewards() and not C_WeeklyRewards.AreRewardsForCurrentRewardPeriod())
+end
+
 function WeeklyRewardsMixin:SelectActivity(activityFrame)
+	if self:IsReadOnly() then
+		return;
+	end
+
 	if activityFrame.hasRewards then
-		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLICK_REWARD, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CLICK_REWARD);
 		if self.selectedActivity == activityFrame then
 			self.selectedActivity = nil;
 		else
@@ -202,11 +257,25 @@ function WeeklyRewardsMixin:GetSelectedActivityInfo()
 end
 
 function WeeklyRewardsMixin:SelectReward()
-	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_SELECT_REWARD, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_SELECT_REWARD);
 	if not self.confirmSelectionFrame then
 		self.confirmSelectionFrame = CreateFrame("FRAME", nil, self, "WeeklyRewardConfirmSelectionTemplate");
 	end
 	self.confirmSelectionFrame:ShowPopup(self.selectedActivity:GetDisplayedItemDBID(), self:GetSelectedActivityInfo());
+end
+
+WeeklyRewardOverlayMixin = {};
+
+function WeeklyRewardOverlayMixin:OnShow()
+	local effect = { effectID = 102, offsetX = 3, offsetY = 0 };
+	self.activeEffect = self.ModelScene:AddDynamicEffect(effect, self);
+end
+
+function WeeklyRewardOverlayMixin:OnHide()
+	if self.activeEffect then
+		self.activeEffect:CancelEffect();
+		self.activeEffect = nil;
+	end
 end
 
 WeeklyRewardsActivityMixin = { };
@@ -329,7 +398,7 @@ function WeeklyRewardsActivityMixin:SetProgressText(text)
 	if text then
 		self.Progress:SetText(text);
 	elseif self.hasRewards then
-		self.Progress:SetText(nil);	
+		self.Progress:SetText(nil);
 	elseif self.unlocked then
 		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			local name = DifficultyUtil.GetDifficultyName(activityInfo.level);
@@ -340,12 +409,19 @@ function WeeklyRewardsActivityMixin:SetProgressText(text)
 			self.Progress:SetText(PVPUtil.GetTierName(activityInfo.level));
 		end
 	else
-		self.Progress:SetFormattedText(GENERIC_FRACTION_STRING, activityInfo.progress, activityInfo.threshold);
+		if C_WeeklyRewards.CanClaimRewards() then
+			-- no progress on incomplete activites during claiming
+			self.Progress:SetText(nil);
+		else
+			self.Progress:SetFormattedText(GENERIC_FRACTION_STRING, activityInfo.progress, activityInfo.threshold);
+		end
 	end
 end
 
-function WeeklyRewardsActivityMixin:OnMouseDown()
-	self:GetParent():SelectActivity(self);
+function WeeklyRewardsActivityMixin:OnMouseUp(button, upInside)
+	if button == "LeftButton" and upInside then
+		self:GetParent():SelectActivity(self);
+	end
 end
 
 function WeeklyRewardsActivityMixin:CanShowPreviewItemTooltip()
@@ -354,7 +430,7 @@ end
 
 function WeeklyRewardsActivityMixin:OnEnter()
 	if self:CanShowPreviewItemTooltip() then
-		self:ShowPreviewItemTooltip();		
+		self:ShowPreviewItemTooltip();
 	end
 end
 
@@ -377,7 +453,13 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 		if self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			self:HandlePreviewRaidRewardTooltip(itemLevel, upgradeItemLevel);
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
-			self:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel);
+			local hasData, nextLevel, nextItemLevel = C_WeeklyRewards.GetNextMythicPlusIncrease(self.info.level);
+			if hasData then
+				upgradeItemLevel = nextItemLevel;
+			else
+				nextLevel = self.info.level + 1;
+			end
+			self:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel, nextLevel);
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 			self:HandlePreviewPvPRewardTooltip(itemLevel, upgradeItemLevel);
 		end
@@ -399,23 +481,56 @@ function WeeklyRewardsActivityMixin:HandlePreviewRaidRewardTooltip(itemLevel, up
 			local difficultyName = DifficultyUtil.GetDifficultyName(nextDifficultyID);
 			GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_RAID, difficultyName));
+
+			local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
+			if encounters then
+				table.sort(encounters, function(left, right)
+					if left.instanceID ~= right.instanceID then
+						return left.instanceID < right.instanceID;
+					end
+					local leftCompleted = left.bestDifficulty > 0;
+					local rightCompleted = right.bestDifficulty > 0;
+					if leftCompleted ~= rightCompleted then
+						return leftCompleted;
+					end
+					return left.uiOrder < right.uiOrder;
+				end)
+				local lastInstanceID = nil;
+				for index, encounter in ipairs(encounters) do
+					local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounter.encounterID);
+					if instanceID ~= lastInstanceID then
+						local instanceName = EJ_GetInstanceInfo(instanceID);
+						GameTooltip_AddBlankLineToTooltip(GameTooltip);	
+						GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_ENCOUNTER_LIST, instanceName));
+						lastInstanceID = instanceID;
+					end
+					if name then
+						if encounter.bestDifficulty > 0 then
+							local completedDifficultyName = DifficultyUtil.GetDifficultyName(encounter.bestDifficulty);
+							GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETED_ENCOUNTER, name, completedDifficultyName), GREEN_FONT_COLOR);
+						else
+							GameTooltip_AddColoredLine(GameTooltip, string.format(DASH_WITH_TEXT, name), DISABLED_FONT_COLOR);
+						end
+					end
+				end
+			end
 		end
 	end
 end
 
-function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel)
+function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel, nextLevel)
 	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC, itemLevel, self.info.level));
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	if upgradeItemLevel then
 		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 		if self.info.threshold == 1 then
-			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT);
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT, nextLevel));
 		else
-			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, self.info.level + 1, self.info.threshold));
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, nextLevel, self.info.threshold));
 			local runHistory = C_MythicPlus.GetRunHistory(false, true);
 			if #runHistory > 0 then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));			
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
 				local comparison = function(entry1, entry2)
 					if ( entry1.level == entry2.level ) then
 						return entry1.mapChallengeModeID < entry2.mapChallengeModeID;
@@ -663,7 +778,7 @@ function WeeklyRewardConfirmSelectionMixin:ShowPopup(itemDBID, activityInfo)
 	self.itemDBID = itemDBID;
 	self.activityInfo = activityInfo;
 	self:RefreshRewards();
-	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.id, self);
+	StaticPopup_Show("CONFIRM_SELECT_WEEKLY_REWARD", nil, nil, activityInfo.claimID, self);
 end
 
 function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
@@ -683,7 +798,7 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 			end
 		end
 		SetItemButtonCount(itemFrame, count);
-		local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);		
+		local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
 		SetItemButtonQuality(itemFrame, itemQuality, itemHyperlink);
 		if itemName and itemQuality then
 			itemFrame.Name:SetText(itemName);

@@ -357,15 +357,15 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 	end
 
 	if ( info.classSpec == 53 or info.classSpec == 58 ) then
-		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_LANDING_CRAFT, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_LANDING_CRAFT);
 	elseif ( info.classSpec == 54 or info.classSpec == 59 ) then
-		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_DREADNOUGHT, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_DREADNOUGHT);
 	elseif ( info.classSpec == 55 or info.classSpec == 60 ) then
-		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_CARRIER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_CARRIER);
 	elseif ( info.classSpec == 56 or info.classSpec == 61 ) then
-		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_GALLEON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_GALLEON);
 	elseif ( info.classSpec == 57 or info.classSpec == 62 ) then
-		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_SUBMARINE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_SUBMARINE);
 	end
 	self:SetFollowerPortrait(frame, info, false, false);
 	local color = FOLLOWER_QUALITY_COLORS[info.quality];
@@ -641,19 +641,19 @@ end
 function GarrisonShipyardMissionComplete:PlaySplashAnim(followerFrame)
 	followerFrame.BoatDeathAnimations:SetCameraPosition(self.boatDeathCamPos[1], self.boatDeathCamPos[2], self.boatDeathCamPos[3]);
 	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.surviveAnim);
-	PlaySound(self.surviveSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(self.surviveSound);
 end
 
 function GarrisonShipyardMissionComplete:PlayExplosionAnim(followerFrame)
 	followerFrame.BoatDeathAnimations:SetCameraPosition(self.boatDeathCamPos[1], self.boatDeathCamPos[2], self.boatDeathCamPos[3]);
 	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.destroyAnim);
-	PlaySound(self.destroySound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(self.destroySound);
 end
 
 function GarrisonShipyardMissionComplete:PlaySavedAnim(followerFrame)
 	followerFrame.BoatDeathAnimations:SetCameraPosition(self.boatDeathCamPos[1], self.boatDeathCamPos[2], self.boatDeathCamPos[3]);
 	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.saveAnim);
-	PlaySound(self.saveSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(self.saveSound);
 end
 
 function GarrisonShipyardMissionComplete:AnimBoatDeath(entry)

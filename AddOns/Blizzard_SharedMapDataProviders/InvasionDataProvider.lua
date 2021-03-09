@@ -56,8 +56,10 @@ function InvasionPinMixin:OnMouseEnter()
 	if invasionInfo.rewardQuestID then
 		if not HaveQuestData(invasionInfo.rewardQuestID) then
 			GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
+			GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 		else
 			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, invasionInfo.rewardQuestID);
+			GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 		end
 	end
 

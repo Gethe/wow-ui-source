@@ -95,6 +95,7 @@
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="ToggleWorldMap"/>

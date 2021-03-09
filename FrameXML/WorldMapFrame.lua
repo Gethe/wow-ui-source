@@ -117,6 +117,11 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 				return false;
 			end
 		end
+	else
+		-- Even if we don't care about type filters, we still want to make sure reward data is up to date
+		if not HaveQuestRewardData(info.questId) then
+			C_TaskQuest.RequestPreloadRewardData(info.questId);
+		end
 	end
 
 	return true;
@@ -132,27 +137,20 @@ function WorldMap_GetQuestTimeForTooltip(questID)
 	end
 end
 
-function WorldMap_AddQuestTimeToTooltip(questID)
-	local formattedTime, color, secondsRemaining = WorldMap_GetQuestTimeForTooltip(questID);
-	if formattedTime and color then
-		GameTooltip_AddColoredLine(GameTooltip, formattedTime, color);
-	end
-end
-
 function CallingPOI_OnEnter(self)
 	local noWrap = false;
 	GameTooltip_SetTitle(GameTooltip, QuestUtils_GetQuestName(self.questID), nil, noWrap);
-	WorldMap_AddQuestTimeToTooltip(self.questID);
+	GameTooltip_AddQuestTimeToTooltip(GameTooltip, self.questID);
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
 
 	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
-	if (widgetSetID) then 
+	if (widgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
-	end 
+	end
 
 	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD);
-	GameTooltip.recalculatePadding = true;
+	GameTooltip:Show();
 end
 
 function TaskPOI_OnEnter(self, skipSetOwner)
@@ -161,26 +159,26 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 	end
 
 	if ( not HaveQuestData(self.questID) ) then
-		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 		GameTooltip:Show();
 		return;
 	end
 
 	if C_QuestLog.IsQuestCalling(self.questID) then
 		CallingPOI_OnEnter(self);
-		GameTooltip:Show();
 		return;
 	end
 
-	local widgetSetAdded = false; 
+	local widgetSetAdded = false;
 	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
 		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
 		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
-		local color = WORLD_QUEST_QUALITY_COLORS[quality];
-		GameTooltip:SetText(title, color.r, color.g, color.b);
+		local color = WORLD_QUEST_QUALITY_COLORS[quality].color;
+		GameTooltip_SetTitle(GameTooltip, title, color);
 		QuestUtils_AddQuestTypeToTooltip(GameTooltip, self.questID, NORMAL_FONT_COLOR);
 
 		local factionName = factionID and GetFactionInfoByID(factionID);
@@ -193,12 +191,12 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 			end
 		end
 
-		WorldMap_AddQuestTimeToTooltip(self.questID);
+		GameTooltip_AddQuestTimeToTooltip(GameTooltip, self.questID);
 	elseif ( self.isThreat ) then
 		GameTooltip_SetTitle(GameTooltip, title);
-		WorldMap_AddQuestTimeToTooltip(self.questID);
+		GameTooltip_AddQuestTimeToTooltip(GameTooltip, self.questID);
 	else
-		GameTooltip:SetText(title);
+		GameTooltip_SetTitle(GameTooltip, title);
 	end
 
 	if (self.isCombatAllyQuest) then
@@ -238,7 +236,7 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		if ( percent  and showObjective ) then
 			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 		end
-		
+
 		if (widgetSetID) then
 			widgetSetAdded = true;
 			GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
@@ -251,13 +249,12 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 		end
 	end
 
-			
+
 	if (not widgetSetAdded and widgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end
 
 	GameTooltip:Show();
-	GameTooltip.recalculatePadding = true;
 end
 
 function TaskPOI_OnLeave(self)

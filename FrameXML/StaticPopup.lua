@@ -1536,9 +1536,11 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 
 			GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
 			GameTooltip:AddLine(itemLevelLine, HIGHLIGHT_FONT_COLOR:GetRGB());
+			GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 		else
 			self.nextUpdateTime = timeNow + .5;
 			GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
+			GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 		end
 
 		GameTooltip:Show();
@@ -1884,12 +1886,7 @@ StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE"] = {
 		end
 	end,
 	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if ( strupper(parent.editBox:GetText()) ==  CONFIRM_AZERITE_EMPOWERED_RESPEC_STRING ) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
+		StaticPopup_StandardConfirmationTextHandler(self, CONFIRM_AZERITE_EMPOWERED_RESPEC_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -2014,12 +2011,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		end
 	end,
 	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if ( strupper(parent.editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
+		StaticPopup_StandardConfirmationTextHandler(self, DELETE_ITEM_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -2065,12 +2057,7 @@ StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
 		end
 	end,
 	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if ( strupper(parent.editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
+		StaticPopup_StandardConfirmationTextHandler(self, DELETE_ITEM_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -2413,12 +2400,7 @@ StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY"] = {
 		end
 	end,
 	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if ( strupper(parent.editBox:GetText()) == COMMUNITIES_DELETE_CONFIRM_STRING ) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
+		StaticPopup_StandardConfirmationTextHandler(self, COMMUNITIES_DELETE_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -3479,11 +3461,7 @@ StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
 		parent:Hide();
 	end,
 	EditBoxOnTextChanged = function(self)
-		if ( strtrim(self:GetText()) == "" ) then
-			self:GetParent().button1:Disable();
-		else
-			self:GetParent().button1:Enable();
-		end
+		StaticPopup_StandardNonEmptyTextHandler(self);
 	end,
 	OnShow = function(self)
 		self.button1:Disable();
@@ -3840,12 +3818,7 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 		end
 	end,
 	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if ( parent.editBox:GetText() ~= "" ) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
+		StaticPopup_StandardNonEmptyTextHandler(self);
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -4002,16 +3975,16 @@ StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
 	button1 = LIST_MY_GROUP,
 	button2 = GROUP_FINDER_DESLIST_WARNING_EDIT_LISTING,
 	button3 = UNLIST_MY_GROUP,
-	
+
 	OnAccept = function(self)
 		self.delistOnHide = false;
-	end, 
+	end,
 
 	OnCancel = function(self, data, reason)
-		if(reason ~= "timeout") then 
+		if(reason ~= "timeout") then
 			LFGListUtil_OpenBestWindow(true);
 			self.delistOnHide = false;
-		end 
+		end
 	end,
 
 	OnHide = function(self)
@@ -4021,8 +3994,8 @@ StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
 	end,
 
 	OnShow = function(self, data)
-		self.text:SetText(GROUP_FINDER_DELIST_WARNING_TITLE:format(data.listingTitle)); 
-		self.timeleft = data.delistTime; 
+		self.text:SetText(GROUP_FINDER_DELIST_WARNING_TITLE:format(data.listingTitle));
+		self.timeleft = data.delistTime;
 		self.delistOnHide = true;
 	end,
 
@@ -4233,12 +4206,7 @@ StaticPopupDialogs["CONFIRM_RAF_REMOVE_RECRUIT"] = {
 		end
 	end,
 	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if ( strupper(parent.editBox:GetText()) ==  REMOVE_RECRUIT_CONFIRM_STRING ) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
+		StaticPopup_StandardConfirmationTextHandler(self, REMOVE_RECRUIT_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -4482,11 +4450,11 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
 		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
 		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT") or
-		 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then 
+		 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
-	elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then 
+	elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then
 		dialog.SubText:SetText(" ");	-- The text will be filled in later.
 		dialog.SubText.text_arg1 = text_arg1;
 		dialog.SubText.text_arg2 = text_arg2;
@@ -4820,7 +4788,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
-			 (which == "SPELL_CONFIRMATION_PROMPT") or 
+			 (which == "SPELL_CONFIRMATION_PROMPT") or
 			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") or
 			 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then
 			local text = _G[dialog:GetName().."Text"];
@@ -4846,7 +4814,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			elseif ( which == "SPELL_CONFIRMATION_PROMPT") then
 				local time = SpellConfirmationFormatter:Format(timeleft);
 				text:SetText(StaticPopupDialogs[which].text .. " " ..TIME_REMAINING .. " " .. time);
-			elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then 
+			elseif (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") then
 				dialog.SubText:SetText(StaticPopupDialogs[which].subText:format(SecondsToTime(timeleft)));
 			elseif (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL") then
 				local formatterOutput = WorldQuestsSecondsFormatter:Format(timeleft);
@@ -5141,7 +5109,7 @@ function StaticPopup_SetUpAnchor(dialog, idx)
 	if ( lastFrame ) then
 		dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
 	else
-		dialog:SetPoint("TOP", UIParent, "TOP", 0, -135);
+		dialog:SetPoint("TOP", UIParent, "TOP", 0, dialog.topOffset or -135);
 	end
 end
 
@@ -5211,6 +5179,16 @@ end
 function StaticPopup_OnEvent(self)
 	self.maxHeightSoFar = 0;
 	StaticPopup_Resize(self, self.which);
+end
+
+function StaticPopup_StandardConfirmationTextHandler(self, expectedText)
+	local parent = self:GetParent();
+	parent.button1:SetEnabled(ConfirmationEditBoxMatches(parent.editBox, expectedText));
+end
+
+function StaticPopup_StandardNonEmptyTextHandler(self)
+	local parent = self:GetParent();
+	parent.button1:SetEnabled(UserEditBoxNonEmpty(parent.editBox));
 end
 
 function StaticPopup_HideExclusive()

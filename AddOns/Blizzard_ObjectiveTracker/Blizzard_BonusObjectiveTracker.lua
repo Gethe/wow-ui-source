@@ -490,6 +490,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 
 	if ( not HaveQuestRewardData(questID) ) then
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 	else
 		local isWorldQuest = block.module.ShowWorldQuests;
 		if ( isWorldQuest ) then
@@ -501,10 +502,10 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		GameTooltip:AddLine(isWorldQuest and WORLD_QUEST_TOOLTIP_DESCRIPTION or BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
 		GameTooltip:AddLine(" ");
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, TOOLTIP_QUEST_REWARDS_STYLE_NONE);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 	end
 
 	GameTooltip:Show();
-	GameTooltip.recalculatePadding = true;
 	block.module.tooltipBlock = block;
 end
 

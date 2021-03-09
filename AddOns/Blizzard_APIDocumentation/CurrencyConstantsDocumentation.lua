@@ -94,9 +94,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 49,
+			NumValues = 51,
 			MinValue = 0,
-			MaxValue = 48,
+			MaxValue = 50,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -147,7 +147,9 @@ local CurrencyConstants =
 				{ Name = "DailyReset", Type = "CurrencySource", EnumValue = 45 },
 				{ Name = "AddConduitToCollection", Type = "CurrencySource", EnumValue = 46 },
 				{ Name = "Barbershop", Type = "CurrencySource", EnumValue = 47 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 48 },
+				{ Name = "ConvertItemsToCurrencyValue", Type = "CurrencySource", EnumValue = 48 },
+				{ Name = "PvPTeamContribution", Type = "CurrencySource", EnumValue = 49 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 50 },
 			},
 		},
 		{

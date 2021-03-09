@@ -366,7 +366,9 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	pin:SetPosition(info.x, info.y);
 
-	C_TaskQuest.RequestPreloadRewardData(info.questId);
+	if not HaveQuestRewardData(info.questId) then
+		C_TaskQuest.RequestPreloadRewardData(info.questId);
+	end
 
 	return pin;
 end
@@ -429,7 +431,7 @@ end
 
 function WorldQuestPinMixin:UpdateSupertrackedHighlight()
 	local highlight = self.dataProvider:ShouldHighlightInfo(self.questID, self.tagInfo);
-	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Background);
+	MapPinHighlight_CheckHighlightPin(highlight, self, self.Background);
 end
 
 function WorldQuestPinMixin:OnMouseEnter()

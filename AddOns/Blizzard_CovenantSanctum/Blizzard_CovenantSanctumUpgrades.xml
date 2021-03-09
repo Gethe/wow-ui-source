@@ -113,59 +113,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="FillBackground" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Background"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum-Reservoir-Select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Spark" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.FillBackground" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="SparkGlow" useAtlasSize="true" alpha="0">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Spark"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Reservoir-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<MaskTexture parentKey="SparkMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Size x="182" y="182"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Spark"/>
-						<MaskedTexture childKey="SparkGlow"/>
-					</MaskedTextures>
-				</MaskTexture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Glow" useAtlasSize="true" alpha="0">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="StaticGlow" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
 			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" drawLayer="BACKGROUND" useParentLevel="true">
@@ -174,21 +121,243 @@
 					<Anchor point="BOTTOMLEFT" x="-95" y="-105"/>
 				</Anchors>
 			</ModelScene>
+			<Frame parentKey="ClippedElements" frameLevel="10" clipChildren="true">
+				<Size x="182" y="182"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Background"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="FillBackground" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT">
+									<Rotation duration="5" order="1" degrees="-10"/>
+									<Rotation startDelay="5" duration="5" order="1" degrees="10"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="InnerGlow" alpha="0" alphaMode="BLEND" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="AlphaAnim" setToFinalAlpha="true" looping="REPEAT">
+									<Alpha parentKey="Step1" startDelay="1" duration="2" order="1" fromAlpha="0" toAlpha="0.7"/>
+									<Alpha parentKey="Step2" startDelay="3" duration="2" order="1" fromAlpha="0.7" toAlpha="0"/>
+									<Alpha parentKey="Step3" startDelay="9" duration="3" order="1" fromAlpha="0" toAlpha="0.7"/>
+									<Alpha parentKey="Step4" startDelay="12" endDelay="2" duration="2" order="1" fromAlpha="0.7" toAlpha="0"/>
+								</AnimationGroup>
+								<AnimationGroup parentKey="RotateAnim" looping="REPEAT">
+									<Rotation duration="5" order="1" degrees="-36"/>
+									<Rotation duration="5" order="2" degrees="36"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="VerticalStrands" alpha="0.3" alphaMode="ADD" useAtlasSize="true" vertTile="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HorizontalStrands" alpha="0.3" alphaMode="ADD" useAtlasSize="true" vertTile="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="Spiral1" alpha="0.5">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background" x="50" y="30"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Spiral2" alpha="0.5">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background" x="-100" y="-50"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Spiral3" alpha="0.5">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background" x="40" y="-115"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="4">
+						<Texture parentKey="Pulse" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Pulse2" alpha="0" >
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="6">
+						<Texture parentKey="LowSpeck1" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT">
+									<Rotation startDelay="2" smoothing="IN_OUT" duration="8" order="1" degrees="60"/>
+									<Alpha startDelay="3" duration="2" order="1" fromAlpha="0" toAlpha="0.6"/>
+									<Alpha startDelay="5" duration="2" order="1" fromAlpha="0.6" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="LowSpeck2" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT">
+									<Alpha endDelay="6" duration="1" order="1" fromAlpha="0" toAlpha="0.5"/>
+									<Rotation endDelay="6" smoothing="IN_OUT" duration="5" order="1" degrees="160"/>
+									<Alpha startDelay="1" endDelay="6" duration="2" order="1" fromAlpha="0.5" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="7">
+						<Texture parentKey="GlassCover" alpha="1" alphaMode="BLEND" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="SpiralMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="182" y="182"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="VerticalStrands"/>
+								<MaskedTexture childKey="HorizontalStrands"/>
+								<MaskedTexture childKey="Spiral1"/>
+								<MaskedTexture childKey="Spiral2"/>
+								<MaskedTexture childKey="Spiral3"/>
+								<MaskedTexture childKey="LowSpeck1"/>
+								<MaskedTexture childKey="LowSpeck2"/>
+								<MaskedTexture childKey="Pulse"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="SpiralsAnim" looping="REPEAT">
+						<Rotation childKey="Spiral1" duration="8" order="1" degrees="360"/>
+						<Rotation childKey="Spiral2" duration="8" order="1" degrees="-360"/>
+						<Rotation childKey="Spiral3" duration="8" order="1" degrees="-360"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="PulseAlphaAnim" looping="REPEAT">
+						<Alpha childKey="Pulse" startDelay="1.5" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Pulse" startDelay="3" endDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="PulseRotateAnim" looping="REPEAT">
+						<Rotation childKey="Pulse" duration="5" order="1" degrees="-10"/>
+						<Rotation childKey="Pulse" duration="5" order="2" degrees="10"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Pulse2AlphaAnim" looping="REPEAT">
+						<Alpha childKey="Pulse2" startDelay="4.625" duration="0.125" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Pulse2" startDelay="0.125" duration="0.125" order="2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Pulse2RotateAnim" looping="REPEAT">
+						<Rotation childKey="Pulse2" duration="5" order="1" degrees="-10"/>
+						<Rotation childKey="Pulse2" duration="5" order="2" degrees="10"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="FullElements" frameLevel="20" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="HighSpeck1" alpha="0" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+									<Alpha endDelay="6" duration="1" order="1" fromAlpha="0" toAlpha="0.5"/>
+									<Rotation endDelay="6" smoothing="IN_OUT" duration="5" order="1" degrees="160"/>
+									<Alpha startDelay="1" endDelay="6" duration="2" order="1" fromAlpha="0.5" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="HighSpeck2" hidden="false" alpha="0" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="10" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+									<Rotation startDelay="9" smoothing="IN_OUT" duration="5" order="2" degrees="120"/>
+									<Alpha startDelay="10" duration="2" order="2" fromAlpha="0" toAlpha="0.6"/>
+									<Alpha startDelay="12" duration="2" order="2" fromAlpha="0.6" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Spark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.ClippedElements" relativePoint="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SparkGlow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Spark"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="SparkMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="182" y="182"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Spark"/>
+								<MaskedTexture childKey="SparkGlow"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="StaticGlow" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+						<Alpha childKey="Glow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.3"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():GetParent():UpdateAnima();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="SparkGlowAnim" setToFinalAlpha="true">
+						<Alpha childKey="SparkGlow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.5"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
-				<Alpha childKey="Glow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.3"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():UpdateAnima();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="SparkGlowAnim" setToFinalAlpha="true">
-				<Alpha childKey="SparkGlow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.5"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
@@ -426,6 +595,7 @@
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip_SetTitle(GameTooltip, COVENANT_SANCTUM_DEPOSIT_TOOLTIP);
+						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

@@ -184,6 +184,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip_SetTitle(GameTooltip, AIM_UP);
+								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -208,6 +209,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip_SetTitle(GameTooltip, AIM_DOWN);
+								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -272,6 +274,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
+								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

@@ -195,9 +195,9 @@ function ConduitListCategoryButtonMixin:SetExpanded(expanded)
 
 	if changed then
 		if expanded then
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		end
 		self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
 	end
@@ -732,7 +732,7 @@ function ConduitListMixin:PlayLearnAnimation(button)
 	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay=0, duration = 0.769, speed = 1 },};
 	modelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
 
-	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_LEARNED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_LEARNED);
 end
 
 function ConduitListMixin:OnCollectionDataUpdated(collectionData)

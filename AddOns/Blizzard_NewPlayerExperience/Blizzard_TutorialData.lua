@@ -3,7 +3,6 @@ local _, addonTable = ...;
 local TutorialData = {};
 addonTable.TutorialData = TutorialData;
 
--- ------------------------------------------------------------------------------------------------------------
 TutorialData.LevelAbilitiesTable = {
 	WARRIOR = {
 		1464,	-- Start with Slam
@@ -25,7 +24,7 @@ TutorialData.LevelAbilitiesTable = {
 		26573,	-- Consecration, level 6
 		85673,	-- Word of Glory, level 7
 		nil,	-- 327977, Judgement Rank 2, level 8
-		633,	-- Lay on Hands, level 8
+		62124,	-- Hand of Reckoning, level 9
 	};
 	HUNTER = {
 		56641,	-- Start with Steady Shot

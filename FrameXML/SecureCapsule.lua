@@ -155,7 +155,6 @@ retain("UnitSex");
 retain("GetURLIndexAndLoadURL");
 retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
-retain("GetCurrentRegionName");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -554,6 +553,7 @@ takeenum("VasPurchaseState");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
 takeenum("BattlepayCardType");
+takeenum("BattlepayBannerType");
 retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");

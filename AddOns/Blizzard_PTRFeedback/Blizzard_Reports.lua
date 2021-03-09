@@ -1,4 +1,4 @@
-PTR_IssueReporter.Data.Message_Key = "[*S&^$#L]"
+PTR_IssueReporter.Data.Message_Key = "[*S&^$&L]"
 PTR_IssueReporter.LockedReports = {}
 
 function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
@@ -30,6 +30,44 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
     local GetCurrentiLvl = function()
         return select(2, GetAverageItemLevel())
     end
+
+	local GetCurrentConduits = function()
+		local results = ""
+		local soulbindID = C_Soulbinds.GetActiveSoulbindID()
+
+		if (soulbindID > 0) then
+			local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID)
+
+			if (soulbindData) and (soulbindData.tree) and (soulbindData.tree.nodes) then
+				for i, nodeInfo in pairs(soulbindData.tree.nodes) do
+					if (nodeInfo.conduitID > 0) and (nodeInfo.state == Enum.SoulbindNodeState.Selected) then
+						results = results .. ":" .. nodeInfo.conduitID
+					end
+				end
+			end
+		end
+
+		return results
+	end
+
+	local GetCurrentSoulbindTraits = function()
+		local results = ""
+		local soulbindID = C_Soulbinds.GetActiveSoulbindID()
+
+		if (soulbindID > 0) then
+			local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID)
+
+			if (soulbindData) and (soulbindData.tree) and (soulbindData.tree.nodes) then
+				for i, nodeInfo in pairs(soulbindData.tree.nodes) do
+					if (nodeInfo.conduitID == 0) and (nodeInfo.spellID > 0) and (nodeInfo.state == Enum.SoulbindNodeState.Selected) then
+						results = results .. ":" .. nodeInfo.spellID
+					end
+				end
+			end
+		end
+
+		return results
+	end
     
     survey:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetMessageKey)
     survey:AddDataCollection(collector.SurveyID)
@@ -40,6 +78,10 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
     survey:AddDataCollection(collector.RunFunction, GetClassID)
     survey:AddDataCollection(collector.RunFunction, GetSpecID)
     survey:AddDataCollection(collector.RunFunction, GetCurrentiLvl)
+	survey:AddDataCollection(collector.RunFunction, C_Covenants.GetActiveCovenantID)
+	survey:AddDataCollection(collector.RunFunction, C_Soulbinds.GetActiveSoulbindID)
+	survey:AddDataCollection(collector.RunFunction, GetCurrentConduits)
+	survey:AddDataCollection(collector.RunFunction, GetCurrentSoulbindTraits)
 end
 --------------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CreateReports()
@@ -102,7 +144,29 @@ function PTR_IssueReporter.CreateReports()
         else
             return 0
         end
-    end    
+    end
+
+	local GetCurrentQuestStatus = function(dataPackage)
+		local results = ""
+		
+		for i=1, C_QuestLog.GetNumQuestLogEntries() do
+			local questInfo = C_QuestLog.GetInfo(i)
+			if (questInfo) and (questInfo.questID) and (questInfo.questID > 0) then
+				local questEntry = ":" .. questInfo.questID
+				local objectives = C_QuestLog.GetQuestObjectives(questInfo.questID)
+		
+				if (objectives) then
+					for i, objectiveInfo in pairs(objectives) do
+						questEntry = questEntry .. "." .. objectiveInfo.numFulfilled
+					end
+				end
+
+				results = results .. questEntry
+			end
+		end
+
+		return results
+	end
     
     local questReport = PTR_IssueReporter.CreateSurvey(4, "Bug Report: %s")
     questReport:PopulateDynamicTitleToken(1, "Name")
@@ -112,6 +176,7 @@ function PTR_IssueReporter.CreateReports()
     questReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this quest?")
     questReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     questReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
+	questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
     
     local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Bug Report: Quest")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(AutoQuestReport)
@@ -120,6 +185,7 @@ function PTR_IssueReporter.CreateReports()
     AutoQuestReport:AddDataCollection(collector.OpenEndedQuestion, "Did you experience any issues?")
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
+	AutoQuestReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
     
     questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
     AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 
@@ -174,6 +240,20 @@ function PTR_IssueReporter.CreateReports()
     spellReport:RegisterPopEvent(event.Tooltip, tooltips.spell)
     
     ------------------------------------ Encounter Reporting -------------------------------------------
+	local GetMythicPlusInfo = function()
+		local returnString = ""
+		local keystoneLevel, activeAffixes, keystoneCharged = C_ChallengeMode.GetActiveKeystoneInfo()
+
+		if (keystoneLevel > 0) then
+			returnString = keystoneLevel .. ":" .. tostring(keystoneCharged)
+			for key, affixId in pairs (activeAffixes) do
+				returnString = returnString .. ":" .. affixId
+			end
+		end
+
+		return returnString
+	end
+
     local encounterReport = PTR_IssueReporter.CreateSurvey(8, "Bug Report: %s")
     encounterReport:PopulateDynamicTitleToken(1, "Name")
     encounterReport:AttachModelViewer("DisplayInfoID", true)
@@ -182,6 +262,7 @@ function PTR_IssueReporter.CreateReports()
     encounterReport:AddDataCollection(collector.FromDataPackage, "ID")
     encounterReport:AddDataCollection(collector.FromDataPackage, "DifficultyID")
     encounterReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this boss?")
+	encounterReport:AddDataCollection(collector.RunFunction, GetMythicPlusInfo)
     
     local automaticEncounterReport = PTR_IssueReporter.CreateSurvey(8, "Bug Report: %s")
     automaticEncounterReport:PopulateDynamicTitleToken(1, "Name")
@@ -191,6 +272,7 @@ function PTR_IssueReporter.CreateReports()
     automaticEncounterReport:AddDataCollection(collector.FromDataPackage, "ID")
     automaticEncounterReport:AddDataCollection(collector.FromDataPackage, "DifficultyID")
     automaticEncounterReport:AddDataCollection(collector.OpenEndedQuestion, "Did you encounter any issues with this boss?")
+	automaticEncounterReport:AddDataCollection(collector.RunFunction, GetMythicPlusInfo)
         
     automaticEncounterReport:RegisterPopEvent(event.EncounterSuccess)
     

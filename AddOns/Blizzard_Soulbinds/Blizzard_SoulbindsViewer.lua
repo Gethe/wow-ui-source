@@ -87,14 +87,14 @@ function SoulbindViewerMixin:OnShow()
 
 	self:UpdateButtons();
 
-	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
 	
 	self:UpdateBackgrounds();
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-	OpenAllBagsMatchingContext(self);
+	if C_Soulbinds.CanModifySoulbind() then
+		ItemButtonUtil.OpenAndFilterBags(self);
+	end
 
-	self.openedBags = IsAnyBagOpen();
 	self:CheckTutorials();
 end
 
@@ -102,22 +102,14 @@ function SoulbindViewerMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindViewerEvents);
 	C_Soulbinds.CloseUI();
 
-	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI);
 	
 	if HelpTip:IsShowingAnyInSystem("soulbinds") then
 		HelpTip:HideAllSystem("soulbinds");
 	end
 	self.helpTipItemLocation = nil;
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-	
-	if self.openedBags then
-		-- Only if opening the viewer caused bags to open will
-		-- we close the bags when closing the viewer.
-		local forceUpdate = true;
-		CloseAllBags(self, forceUpdate);
-		self.openedBags = nil;
-	end
+	ItemButtonUtil.CloseFilteredBags(self);
 	
 	StaticPopup_Hide("SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION");
 	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
@@ -234,16 +226,17 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 	
 	self:TriggerEvent(SoulbindViewerMixin.Event.OnSoulbindChanged, self.covenantData, soulbindData);
 
-	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED);
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
 	self.Tree:Init(soulbindData);
+	self.SelectGroup:Init(self.covenantData, soulbindID);
 	self:UpdateButtons();
 
 	if soulbindData.activationSoundKitID then
-		PlaySound(soulbindData.activationSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soulbindData.activationSoundKitID);
 	end
 end
 
@@ -297,7 +290,7 @@ function SoulbindViewerMixin:OnActivateSoulbindClicked()
 
 	C_Soulbinds.ActivateSoulbind(openSoulbindID);
 
-	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
 	
 	self.Background2.ActivateAnim:Play();
 	self.ActivateFX.ActivateAnim:Play();
@@ -354,7 +347,7 @@ function SoulbindViewerMixin:OnCommitConduitsClicked()
 	local onConfirm = function()
 		Soulbinds.SetConduitInstallPending(true);
 		C_Soulbinds.CommitPendingConduitsInSoulbind(soulbindID);
-		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
 	end
 
 	local total = C_Soulbinds.GetTotalConduitChargesPendingInSoulbind(soulbindID);

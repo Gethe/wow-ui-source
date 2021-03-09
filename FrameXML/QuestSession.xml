@@ -184,9 +184,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEvent method="BaseOnEvent"/>
-			<OnShow method="BaseOnShow"/>
-			<OnHide method="BaseOnHide"/>
+			<OnEvent method="BaseOnEvent" inherit="append"/>
+			<OnShow method="BaseOnShow" inherit="append"/>
+			<OnHide method="BaseOnHide" inherit="append"/>
 		</Scripts>
 	</Frame>
 

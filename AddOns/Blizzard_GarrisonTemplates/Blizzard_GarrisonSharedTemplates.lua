@@ -489,7 +489,9 @@ function GarrisonFollowerList:UpdateMissionRemainingTime(follower, fontString)
 	if follower.status == GARRISON_FOLLOWER_ON_MISSION then
 		local missionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft(follower.followerID);
 		if missionTimeLeft then
-			if follower.isMaxLevel then
+			if C_Garrison.IsFollowerOnCompletedMission(follower.followerID) then
+				fontString:SetText(GarrisonFollowerOptions[follower.followerTypeID].strings.FOLLOWER_ON_COMPLETED_MISSION);
+			elseif follower.isMaxLevel then
 				fontString:SetText(missionTimeLeft);
 			else
 				fontString:SetFormattedText(GarrisonFollowerOptions[follower.followerTypeID].strings.OUT_WITH_DURATION, missionTimeLeft);
@@ -1253,6 +1255,8 @@ function GarrisonFollowerList_SortFollowers(self)
 		local follower2 = followers[index2];
 		local follower1Active = follower1.status ~= GARRISON_FOLLOWER_INACTIVE;
 		local follower2Active = follower2.status ~= GARRISON_FOLLOWER_INACTIVE;
+		local follower1OnMission = follower1.status == GARRISON_FOLLOWER_ON_MISSION;
+		local follower2OnMission = follower2.status == GARRISON_FOLLOWER_ON_MISSION;
 
 		-- collected > troops > inactive is always the primary sort order; the category names rely on this.
 		if ( follower1.isCollected ~= follower2.isCollected ) then
@@ -1261,12 +1265,18 @@ function GarrisonFollowerList_SortFollowers(self)
 		if ( follower1Active ~= follower2Active ) then
 			return follower1Active;
 		end
+
 		if ( follower1.isTroop ~= follower2.isTroop ) then
 			return follower2.isTroop;
 		end
-		if ( follower1.isAutoTroop ~= follower2.isAutoTroop ) then
+		if ( follower1.isAutoTroop ~= follower2.isAutoTroop) then
 			return follower2.isAutoTroop;
 		end
+
+		if (follower1.isSoulbind ~= follower2.isSoulbind)  and follower1OnMission == follower2OnMission then
+			return follower1.isSoulbind;
+		end
+
 
 		-- run use-specific sort function
 		if self.sortFunc then
@@ -2173,12 +2183,21 @@ function GarrisonFollowerTabMixin:UpdateCombatantStats(followerInfo)
 
 		--Attack
 		newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_ATTACK, autoCombatantStats.attack);
-
 		--Experience, hide if max level.
 		if followerInfo.levelXP ~= 0 and not self.isLandingPage then
 			newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_XP_TO_LEVEL, followerInfo.levelXP - followerInfo.xp);
 		end
 
+		if(self.HealTimeRemainingIcon and self.HealTimeRemaining) then 
+			local shouldShowHealTimeRemaining = autoCombatantStats.minutesHealingRemaining > 0; 
+
+			if(shouldShowHealTimeRemaining) then 
+				self.HealTimeRemaining:SetText(ADVENTURES_FOLLOWER_HEAL_TIME:format(MinutesToTime(autoCombatantStats.minutesHealingRemaining)));
+			end
+
+			self.HealTimeRemainingIcon:SetShown(shouldShowHealTimeRemaining);
+			self.HealTimeRemaining:SetShown(shouldShowHealTimeRemaining);
+		end 
 		anchorFrame:Show();
 	else
 		anchorFrame:Hide();

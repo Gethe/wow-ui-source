@@ -202,24 +202,52 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 				GameTooltip_AddColoredLine(tooltip, RETRIEVING_DATA, RED_FONT_COLOR);
 			end
 		end
+
+		GameTooltip_SetTooltipWaitingForData(tooltip, showRetrievingData);
+	end
+end
+
+function GameTooltip_CheckAddQuestTimeToTooltip(tooltip, questID)
+	if C_QuestLog.ShouldDisplayTimeRemaining(questID) then
+		GameTooltip_AddQuestTimeToTooltip(tooltip, questID);
+	end
+end
+
+function GameTooltip_AddQuestTimeToTooltip(tooltip, questID)
+	local formattedTime, color, secondsRemaining = WorldMap_GetQuestTimeForTooltip(questID);
+	if formattedTime and color then
+		GameTooltip_AddColoredLine(tooltip, formattedTime, color);
 	end
 end
 
 function GameTooltip_CalculatePadding(tooltip)
 	local itemWidth, itemHeight, bottomFontStringWidth, bottomFontStringHeight = 0, 0, 0, 0;
 
-	if tooltip.ItemTooltip:IsShown() then
-		itemWidth, itemHeight = tooltip.ItemTooltip:GetSize();
-		itemWidth = itemWidth + 9; -- extra padding for this line
-	end
-
-	if tooltip.BottomFontString and tooltip.BottomFontString:IsShown() then
+	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
+	if isBottomFontStringShown then
 		bottomFontStringWidth, bottomFontStringHeight = tooltip.BottomFontString:GetSize();
 		bottomFontStringHeight = bottomFontStringHeight + 7;
 		bottomFontStringWidth = bottomFontStringWidth + 20; -- extra width padding for this line
-		tooltip.ItemTooltip:SetPoint("BOTTOMLEFT", tooltip.BottomFontString, "TOPLEFT", 0, 10);
-	else
-		tooltip.ItemTooltip:SetPoint("BOTTOMLEFT", 10, 13);
+	end
+
+	local itemTooltip = tooltip.ItemTooltip;
+	if itemTooltip then
+		if itemTooltip:IsShown() then
+			itemWidth, itemHeight = itemTooltip:GetSize();
+			itemWidth = itemWidth + 9; -- extra padding for this line
+		end
+
+		if isBottomFontStringShown then
+			itemTooltip:SetPoint("BOTTOMLEFT", tooltip.BottomFontString, "TOPLEFT", 0, 10);
+		else
+			itemTooltip:SetPoint("BOTTOMLEFT", 10, 13);
+		end
+	end
+
+	if tooltip:GetObjectType() ~= "GameTooltip" then
+		-- This means that an InternalEmbeddedItemTooltipTemplate was placed inside a frame that is not a Tooltip
+		-- Everything below here is only relevant for tooltips
+		return;
 	end
 
 	local extraWidth = math.max(itemWidth, bottomFontStringWidth);
@@ -250,7 +278,7 @@ end
 function GameTooltip_OnLoad(self)
 	SharedTooltip_OnLoad(self);
 	self.needsReset = true;
-	self.updateTooltip = TOOLTIP_UPDATE_TIME;
+	self.updateTooltipTimer = TOOLTIP_UPDATE_TIME;
 end
 
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
@@ -393,6 +421,7 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 
 function GameTooltip_OnHide(self)
 	self.needsReset = true;
+	self.waitingForData = false;
 	SharedTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or TOOLTIP_BACKDROP_STYLE_DEFAULT);
 	GameTooltip_ClearMoney(self);
 	GameTooltip_ClearStatusBars(self);
@@ -412,7 +441,7 @@ function GameTooltip_OnHide(self)
 	end
 
 	if self.ItemTooltip then
-		self.ItemTooltip:Hide();
+		EmbeddedItemTooltip_Hide(self.ItemTooltip);
 	end
 	self:SetPadding(0, 0, 0, 0);
 end
@@ -426,18 +455,28 @@ function GameTooltip_CycleSecondaryComparedItem(self)
 	end
 end
 
-function GameTooltip_OnUpdate(self, elapsed)
-	if self.recalculatePadding then
-		self.recalculatePadding = nil;
-		GameTooltip_CalculatePadding(self);
+function GameTooltip_SetTooltipWaitingForData(self, waitingForData)
+	if self.waitingForData and not waitingForData then
+		self.updateTooltipTimer = 0;
 	end
 
-	-- Only update every TOOLTIP_UPDATE_TIME seconds
-	self.updateTooltip = self.updateTooltip - elapsed;
-	if ( self.updateTooltip > 0 ) then
+	self.waitingForData = waitingForData;
+end
+
+function GameTooltip_IsUpdateNeeded(self, elapsed)
+	self.updateTooltipTimer = self.updateTooltipTimer - elapsed;
+	if self.updateTooltipTimer > 0 then
+		return false;
+	end
+
+	self.updateTooltipTimer = TOOLTIP_UPDATE_TIME;
+	return true;
+end
+
+function GameTooltip_OnUpdate(self, elapsed)
+	if not GameTooltip_IsUpdateNeeded(self, elapsed) then
 		return;
 	end
-	self.updateTooltip = TOOLTIP_UPDATE_TIME;
 
 	local shoppingTooltip1 = self.shoppingTooltips[1];
 
@@ -765,21 +804,18 @@ end
 
 local function WidgetLayout(widgetContainer, sortedWidgets)
 	DefaultWidgetLayout(widgetContainer, sortedWidgets);
-    local parentHeight = widgetContainer:GetHeight() + 10;
-	widgetContainer:GetParent():SetHeight(parentHeight);
 	widgetContainer.shownWidgetCount = #sortedWidgets;
 end
 
-function GameTooltip_AddWidgetSet(self, widgetSetID)
+function GameTooltip_AddWidgetSet(self, widgetSetID, verticalPadding)
 	if not widgetSetID then
 		return;
 	end
 
 	if not self.widgetContainer then
-		self.widgetFrame = CreateFrame("FRAME", nil, self, "WidgetOffsetContainerTemplate");
-		self.widgetContainer = self.widgetFrame.WidgetContainer; 
-		self.widgetContainer.verticalAnchorPoint = "TOPLEFT"; 
-		self.widgetContainer.verticalRelativePoint = "BOTTOMLEFT"; 
+		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+		self.widgetContainer.verticalAnchorPoint = "TOPLEFT";
+		self.widgetContainer.verticalRelativePoint = "BOTTOMLEFT";
 		self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
 		self.widgetContainer.disableWidgetTooltips = true;
 		self.widgetContainer:Hide();
@@ -788,7 +824,7 @@ function GameTooltip_AddWidgetSet(self, widgetSetID)
 	self.widgetContainer:RegisterForWidgetSet(widgetSetID, WidgetLayout);
 
 	if self.widgetContainer.shownWidgetCount > 0 then
-		GameTooltip_InsertFrame(self, self.widgetContainer);
+		GameTooltip_InsertFrame(self, self.widgetContainer, verticalPadding);
 	end
 end
 
@@ -818,6 +854,8 @@ function EmbeddedItemTooltip_UpdateSize(self)
 	elseif ( self.FollowerTooltip:IsShown() ) then
 		self:SetSize(self.FollowerTooltip:GetSize());
 	end
+
+	GameTooltip_CalculatePadding(self:GetParent());
 end
 
 function EmbeddedItemTooltip_OnTooltipSetItem(self)
@@ -827,6 +865,11 @@ function EmbeddedItemTooltip_OnTooltipSetItem(self)
 			self.Icon:SetTexture(itemTexture);
 		end
 	end
+end
+
+function EmbeddedItemTooltip_Hide(self)
+	self:Hide();
+	GameTooltip_CalculatePadding(self:GetParent());
 end
 
 function EmbeddedItemTooltip_Clear(self)
@@ -868,7 +911,6 @@ function EmbeddedItemTooltip_SetItemByID(self, id, count)
 	self.itemTextureSet = (itemTexture ~= nil);
 	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 	EmbeddedItemTooltip_UpdateSize(self);
-	self:GetParent().recalculatePadding = true;
 end
 
 function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, rewardType)

@@ -53,6 +53,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<!-- Quickfix until asset replacement -->
 					<Layer level="OVERLAY" textureSubLevel="2">
 						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
 						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>

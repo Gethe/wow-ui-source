@@ -135,7 +135,7 @@ function ChromieTimeExpansionButtonMixin:OnClick()
 	local selectedExpansion = ChromieTimeFrame:GetSelectedExpansion();
 
 	if (selectedExpansion ~= self) then
-		PlaySound(SOUNDKIT.UI_CHROMIE_TIME_SELECT_EXPANSION, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_CHROMIE_TIME_SELECT_EXPANSION);
 	end
 
 	ChromieTimeFrame:SetSelectedExpansion(self);

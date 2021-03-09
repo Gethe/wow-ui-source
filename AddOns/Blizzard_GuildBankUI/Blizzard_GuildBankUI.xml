@@ -30,7 +30,7 @@
 			<OnLoad function="GuildBankItemButton_OnLoad"/>
 			<OnEnter function="GuildBankItemButton_OnEnter"/>
 			<OnLeave>
-				self.updateTooltip = nil;
+				self.updateTooltipTimer = nil;
 				GameTooltip_Hide();
 				ResetCursor();
 			</OnLeave>

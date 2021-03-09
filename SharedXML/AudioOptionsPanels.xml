@@ -439,7 +439,7 @@
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
 						if (self:IsVisible()) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, nil, true);
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -497,7 +497,7 @@
 						self.newValue = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX", true);
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -551,7 +551,7 @@
 						self.newValue = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Music");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Music" , true);
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -605,7 +605,7 @@
 						self.newValue = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Ambience");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Ambience" , true);
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -659,7 +659,7 @@
 						self.newValue = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Dialog");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Dialog", true);
 						end
 					</OnValueChanged>
 					<OnEnter>

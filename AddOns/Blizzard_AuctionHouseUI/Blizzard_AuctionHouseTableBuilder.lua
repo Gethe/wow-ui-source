@@ -109,6 +109,17 @@ function AuctionHouseTableCellTextTooltipMixin:UpdateHitRect()
 end
 
 
+AuctionHouseTableCellVirtualTextMixin = CreateFromMixins(AuctionHouseTableCellMixin);
+
+function AuctionHouseTableCellVirtualTextMixin:Populate(rowData, dataIndex)
+	self.Text:SetShown(rowData.isVirtualEntry);
+	if rowData.isVirtualEntry then
+		self.Text:SetText(rowData.virtualEntryText);
+		self.Text:SetFontObject(rowData.isSelectedVirtualEntry and Number13FontWhite or Number13FontGray);
+	end
+end
+
+
 AuctionHouseTablePriceDisplayMixin = CreateFromMixins(AuctionHouseTableCellMixin);
 
 function AuctionHouseTablePriceDisplayMixin:Init(owner)
@@ -311,6 +322,12 @@ end
 AuctionHouseTableCellBuyoutMixin = CreateFromMixins(AuctionHouseTablePriceDisplayMixin);
 
 function AuctionHouseTableCellBuyoutMixin:Populate(rowData, dataIndex)
+	self.MoneyDisplay:SetShown(not rowData.isVirtualEntry);
+	if rowData.isVirtualEntry then
+		self.Checkmark:Hide();
+		return;
+	end
+
 	local hasBuyout = rowData.buyoutAmount ~= nil;
 	self.MoneyDisplay:SetShown(hasBuyout);
 	if hasBuyout then
@@ -373,14 +390,16 @@ function AuctionHouseTableCellOwnersMixin:Init(owner)
 end
 
 function AuctionHouseTableCellOwnersMixin:Populate(rowData, dataIndex)
-	self:UpdateText(AuctionHouseUtil.GetSellersString(rowData));
+	if rowData.owners then
+		self:UpdateText(AuctionHouseUtil.GetSellersString(rowData));
+	end
 end
 
 function AuctionHouseTableCellOwnersMixin:ShowTooltip(tooltip)
 	local owners = self.rowData.owners;
-	if #owners > 1 then
+	if owners and #owners > 1 then
 		tooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT");
-		AuctionHouseUtil.AddSellersToTooltip(tooltip, owners);
+		AuctionHouseUtil.AddSellersToTooltip(tooltip, owners, self.rowData.totalNumberOfOwners);
 		tooltip:Show();
 	end
 end
@@ -638,6 +657,11 @@ function AuctionHouseTableCellAuctionsItemLevelMixin:Init(...)
 end
 
 function AuctionHouseTableCellAuctionsItemLevelMixin:Populate(rowData, dataIndex)
+	if rowData.isVirtualEntry then
+		self.Text:SetText("");
+		return;
+	end
+
 	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey);
 	if itemKeyInfo then
 		local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
@@ -792,6 +816,14 @@ end
 
 function AuctionHouseTableCellLevelMixin:OnHide(event, ...)
 	self:UnregisterEvent("EXTRA_BROWSE_INFO_RECEIVED");
+end
+
+
+AuctionHouseTableCellItemSellBuyoutMixin = CreateFromMixins(AuctionHouseTableCellVirtualTextMixin, AuctionHouseTableCellBuyoutMixin);
+
+function AuctionHouseTableCellItemSellBuyoutMixin:Populate(rowData, dataIndex)
+	AuctionHouseTableCellVirtualTextMixin.Populate(self, rowData, dataIndex);
+	AuctionHouseTableCellBuyoutMixin.Populate(self, rowData, dataIndex);
 end
 
 
@@ -1052,10 +1084,7 @@ function AuctionHouseTableBuilder.GetItemSellListLayout(owner, itemList, isEquip
 		tableBuilder:SetColumnHeaderOverlap(2);
 
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Bid, "AuctionHouseTableCellBidTemplate");
-		tableBuilder:AddFixedWidthColumn(owner, BUYOUT_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellItemBuyoutTemplate");
-
-		local emptyColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 0, nil, "AuctionHouseTableEmptyTemplate");
-		emptyColumn:SetDisplayUnderPreviousHeader(true);
+		tableBuilder:AddFillColumn(owner, BUYOUT_DISPLAY_PADDING, 1.0, 0, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellItemSellBuyoutTemplate");
 
 		if isEquipment then
 			local socketColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellExtraInfoTemplate");

@@ -159,9 +159,9 @@ function ArtifactAppearanceSlotMixin:OnClick(button)
 				local currentAppearanceSetID = C_ArtifactUI.GetAppearanceInfoByID(activeAppearanceID);
 				local newAppearanceSetID = C_ArtifactUI.GetAppearanceInfoByID(self.appearanceID);
 				if currentAppearanceSetID == newAppearanceSetID then
-					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_COLOR_SELECT, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_COLOR_SELECT);
 				else
-					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_APPEARANCE_CHANGE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_APPEARANCE_CHANGE);
 				end
 				
 				self:GetParent():GetParent():OnAppearanceChanging();

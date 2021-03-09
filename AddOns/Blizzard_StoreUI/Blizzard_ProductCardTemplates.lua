@@ -252,7 +252,7 @@ function StoreCardMixin:ShouldEnableBuyButton(entryInfo)
 	return buyableHere and not owned;
 end
 
-function StoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
+function StoreCardMixin:UpdateBannerText(discounted, discountPercentage, displayInfo)
 end
 
 function StoreCardMixin:SetDefaultCardTexture()
@@ -285,7 +285,7 @@ function StoreCardMixin:UpdateDiscount(currencyInfo, entryInfo, currencyFormat)
 			self.DiscountText:Show();
 		end
 	end
-	self:UpdateBannerText(discounted, discountPercentage, entryInfo);
+	self:UpdateBannerText(discounted, discountPercentage, entryInfo.sharedData);
 end
 
 function StoreCardMixin:UpdatePricing(currencyInfo, entryInfo, currencyFormat)
@@ -368,7 +368,7 @@ function StoreCardMixin:ShouldModelShowShadows()
 	return true;
 end
 
-function StoreCardMixin:SetStyle(overrideBackground)
+function StoreCardMixin:SetStyle(entryInfo)
 end
 
 function StoreCardMixin:ShouldShowIcon(entryInfo)
@@ -496,7 +496,7 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	end
 
 	self:SetCardTexture(entryInfo);
-	self:SetStyle(entryInfo.sharedData.overrideBackground);
+	self:SetStyle(entryInfo);
 	self:SetupWoWToken(entryInfo);
 	self:SetupDescription(entryInfo);
 	self:SetDisclaimerText(entryInfo);

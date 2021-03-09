@@ -12,7 +12,7 @@ EventButtonMixin:GenerateCallbackEvents(
 
 function EventButtonMixin:PlaySoundKit(soundKitID)
 	if soundKitID and self:IsEnabled() then
-		PlaySound(soundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soundKitID);
 	end
 end
 

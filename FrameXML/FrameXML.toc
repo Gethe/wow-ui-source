@@ -58,6 +58,7 @@
 ..\SharedXML\ScrollBox.xml
 ..\SharedXML\ScrollBar.xml
 ..\SharedXML\ScrollUtil.lua
+..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
 MixinUtil.lua
 
@@ -344,6 +345,7 @@ AzeriteEmpoweredItemDataSource.lua
 GuildUtil.lua
 QuestSession.xml
 ActionStatus.xml
+WeeklyReward.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

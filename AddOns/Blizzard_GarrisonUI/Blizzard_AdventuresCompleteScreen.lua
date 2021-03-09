@@ -96,6 +96,7 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
 	else
 		C_Garrison.RegenerateCombatLog(self.currentMission.missionID);
 	end
+
 end
 
 function AdventuresCompleteScreenMixin:ResetMissionDisplay()
@@ -103,10 +104,20 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 
    	local board = self.Board;
    	board:Reset();
+	board:ResetBoardIndicators();
+	
+	for enemySocket in board:EnumerateEnemySockets() do 
+		enemySocket:SetSocketTexture(mission.locTextureKit, true);
+	end 
 
-   	local missionInfo = self.MissionInfo;
+	for followerSocket in board:EnumerateFollowerSockets() do 
+		followerSocket:SetSocketTexture(mission.locTextureKit, false);
+	end 
+
+	local missionInfo = self.MissionInfo;
    	missionInfo.Title:SetText(mission.name);
    	GarrisonTruncationFrame_Check(missionInfo.Title);
+	CovenantMissionUpdateBoardTextures(self, mission.locTextureKit);
    
    	-- rare
    	local color = mission.isRare and RARE_MISSION_COLOR or BLACK_FONT_COLOR;
@@ -337,7 +348,7 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 
 		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
 			if #combatLogEvent.targetInfo > 2 then
-				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER);
 			end
 		end
 
@@ -358,9 +369,9 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 				end
 
 				if #combatLogEvent.targetInfo > 5 then
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE);
 				elseif #combatLogEvent.targetInfo > 1 then		
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM);
 				end
 
 				return false;

@@ -22,7 +22,7 @@ local CovenantSanctumEvents = {
 function CovenantSanctumMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CovenantSanctumEvents);
 
-	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_OPEN_WINDOW);
 end
 
 function CovenantSanctumMixin:OnHide()
@@ -30,7 +30,7 @@ function CovenantSanctumMixin:OnHide()
 
 	C_CovenantSanctumUI.EndInteraction();
 
-	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_CLOSE_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_CLOSE_WINDOW);
 end
 
 function CovenantSanctumMixin:OnEvent(event, ...)

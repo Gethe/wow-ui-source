@@ -38,6 +38,7 @@
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml

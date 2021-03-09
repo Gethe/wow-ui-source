@@ -232,3 +232,14 @@ function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 		SetupTextureKitOnFrame(textureKit, frame[region], regionInfo.formatString, regionInfo.setVisibility, regionInfo.useAtlasSize);
 	end
 end
+
+--Pass the texture and the textureKit, if the atlas exists in data then it will return the actual atlas name otherwise, return nil. 
+function GetFinalAtlasFromTextureKitIfExists(texture, textureKit)
+	if not texture or not textureKit then
+		return nil;
+	end
+
+	local atlas = GetFinalNameFromTextureKit(texture, textureKit);
+	local atlasInfo = C_Texture.GetAtlasInfo(atlas);
+	return atlasInfo and atlas or nil;
+end

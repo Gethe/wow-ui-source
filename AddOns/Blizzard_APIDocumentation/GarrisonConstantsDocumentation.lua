@@ -3,6 +3,20 @@ local GarrisonConstants =
 	Tables =
 	{
 		{
+			Name = "CovenantSkill",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 2730,
+			MaxValue = 2733,
+			Fields =
+			{
+				{ Name = "Kyrian", Type = "CovenantSkill", EnumValue = 2730 },
+				{ Name = "Venthyr", Type = "CovenantSkill", EnumValue = 2731 },
+				{ Name = "NightFae", Type = "CovenantSkill", EnumValue = 2732 },
+				{ Name = "Necrolord", Type = "CovenantSkill", EnumValue = 2733 },
+			},
+		},
+		{
 			Name = "CovenantType",
 			Type = "Enumeration",
 			NumValues = 5,

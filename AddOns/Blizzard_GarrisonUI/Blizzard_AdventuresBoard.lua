@@ -23,18 +23,20 @@ local BackFollowerPositions = {
 	Enum.GarrAutoBoardIndex.AllyRightBack,
 };
 
+local defaultSocketTextureAtlas = "Adventures-Mission";
+
 local EnemySocketAtlasNames = {
-	"Adventures-Mission-Enemy-Socket-01",
-	"Adventures-Mission-Enemy-Socket-02",
-	"Adventures-Mission-Enemy-Socket-03",
-	"Adventures-Mission-Enemy-Socket-04",
+	"%s-Enemy-Socket-01",
+	"%s-Enemy-Socket-02",
+	"%s-Enemy-Socket-03",
+	"%s-Enemy-Socket-04",
 };
 
 local FollowerSocketAtlasNames = {
-	"Adventures-Mission-Follower-Socket-01",
-	"Adventures-Mission-Follower-Socket-02",
-	"Adventures-Mission-Follower-Socket-03",
-	"Adventures-Mission-Follower-Socket-04",
+	"%s-Follower-Socket-01",
+	"%s-Follower-Socket-02",
+	"%s-Follower-Socket-03",
+	"%s-Follower-Socket-04",
 }
 
 
@@ -102,17 +104,20 @@ function AdventuresBoardMixin:EnumerateFollowerSockets()
 	return self.followerSocketFramePool:EnumerateActive();
 end
 
+function AdventuresBoardMixin:EnumerateEnemySockets()
+	return self.enemySocketFramePool:EnumerateActive();
+end
+
 function AdventuresBoardMixin:RegisterFrame(boardIndex, socket, frame)
 	self.framesByBoardIndex[boardIndex] = frame;
 	self.socketsByBoardIndex[boardIndex] = socket;
 end
 
-function AdventuresBoardMixin:GenerateFactoryFunction(puckFramePool, socketFramePool, boardIndices, socketContainer, socketAtlasCollection)
+function AdventuresBoardMixin:GenerateFactoryFunction(puckFramePool, socketFramePool, boardIndices, socketContainer)
 	local function CreateNewFrame(index)
 		local newSocket = socketFramePool:Acquire();
-		local useAtlasSize = true;
-		newSocket.SocketTexture:SetAtlas(socketAtlasCollection[mod(index, #socketAtlasCollection) + 1], useAtlasSize);
 		newSocket:SetParent(socketContainer);
+		newSocket.index = index 
 		newSocket:Show();
 
 		local newFrame = puckFramePool:Acquire();
@@ -135,7 +140,7 @@ function AdventuresBoardMixin:CreateEnemyFrames()
 	self.enemyFramesCreated = true;
 
 	local boardIndices = EnemyOrder;
-	local createNewEnemy = self:GenerateFactoryFunction(self.enemyFramePool, self.enemySocketFramePool, boardIndices, self.EnemyContainer, EnemySocketAtlasNames);
+	local createNewEnemy = self:GenerateFactoryFunction(self.enemyFramePool, self.enemySocketFramePool, boardIndices, self.EnemyContainer);
 
 	local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.EnemyContainer, "TOPLEFT", 0, 0);
 
@@ -156,7 +161,7 @@ function AdventuresBoardMixin:CreateFollowerFrames()
 	self.followerFramesCreated = true;
 
 	local boardIndices = FollowerOrder;
-	local createNewFollower = self:GenerateFactoryFunction(self.followerFramePool, self.followerSocketFramePool, boardIndices, self.FollowerContainer, FollowerSocketAtlasNames);
+	local createNewFollower = self:GenerateFactoryFunction(self.followerFramePool, self.followerSocketFramePool, boardIndices, self.FollowerContainer);
 
 	local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.FollowerContainer, "TOPLEFT", 0, 0);
 
@@ -322,6 +327,9 @@ end
 function AdventuresBoardMixin:ResetBoardIndicators() 
 	for followerFrame in self:EnumerateFollowerSockets() do
 		followerFrame:ResetVisibility();
+	end
+	for enemyFrame in self:EnumerateEnemySockets() do 
+		enemyFrame:ResetVisibility(); 
 	end
 end
 
@@ -583,6 +591,26 @@ function AdventuresSocketMixin:GetCollectionByAuraType(auraType)
 
 	return auraCollection;
 end
+
+function AdventuresSocketMixin:SetSocketTexture(textureKit, isEnemy)
+	local useAtlasSize = true;
+	local socketAtlas = nil;
+	local atlasCollection = isEnemy and EnemySocketAtlasNames or FollowerSocketAtlasNames;
+	if(textureKit) then 
+		local tempSocketAtlas = GetFinalNameFromTextureKit(atlasCollection[mod(self.index, #atlasCollection) + 1], textureKit);
+		local atlasInfo = C_Texture.GetAtlasInfo(tempSocketAtlas);
+		if(atlasInfo) then 
+			socketAtlas = tempSocketAtlas; 
+		end 
+	end 
+
+	if(not socketAtlas) then 
+		local tempSocketAtlas = GetFinalNameFromTextureKit(atlasCollection[mod(self.index, #atlasCollection) + 1], defaultSocketTextureAtlas);
+		socketAtlas = tempSocketAtlas; 
+	end 
+
+	self.SocketTexture:SetAtlas(socketAtlas, useAtlasSize);
+end 
 
 AdventuresCombatSocketMixin = {}
 

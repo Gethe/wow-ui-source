@@ -79,14 +79,14 @@ function WaypointLocationDataProviderMixin:HandleClick()
 	if self.pin and self.pin:IsMouseOver() then
 		C_Map.ClearUserWaypoint();
 		C_SuperTrack.SetSuperTrackedUserWaypoint(false);
-		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_REMOVE);
 	else
 		local mapID = self:GetMap():GetMapID();
 		if C_Map.CanSetUserWaypointOnMap(mapID) then
 			if self.toggleActive then
-				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CLICK_TO_PLACE);
 			else
-				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CONTROL_CLICK);
 			end
 			local scrollContainer = self:GetMap().ScrollContainer;
 			local cursorX, cursorY = scrollContainer:NormalizeUIPosition(scrollContainer:GetCursorPosition());
@@ -133,14 +133,14 @@ end
 function WaypointLocationPinMixin:OnMouseClickAction(mouseButton)
 	if IsModifiedClick("CHATLINK") then
 		ChatEdit_InsertLink(C_Map.GetUserWaypointHyperlink());
-		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
 	elseif mouseButton == "LeftButton" then
 		local shouldSuperTrack = not C_SuperTrack.IsSuperTrackingUserWaypoint();
 		C_SuperTrack.SetSuperTrackedUserWaypoint(shouldSuperTrack);
 		if shouldSuperTrack then
-			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_ON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_ON);
 		else
-			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_SUPER_TRACK_OFF);
 		end
 	end
 end

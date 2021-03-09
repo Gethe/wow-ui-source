@@ -1053,6 +1053,7 @@
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_SetTitle(GameTooltip, TRANSMOG_SET_LIMITED_TIME_SET_TOOLTIP, NORMAL_FONT_COLOR, true);
+										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>

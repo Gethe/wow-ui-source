@@ -201,7 +201,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 			self.displayedAutoAcceptConvert = false;
 		end
 	elseif ( event == "LFG_GROUP_DELISTED_LEADERSHIP_CHANGE") then
-		local listingTitle, delistTime = ...; 
+		local listingTitle, delistTime = ...;
 		StaticPopup_Show("PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING", nil, nil, { listingTitle = listingTitle, delistTime = delistTime, });
 	end
 
@@ -1653,25 +1653,28 @@ function LFGListSearchPanel_OnLoad(self)
 
 		LFGListSearchPanel_DoSearch(self);
 	end);
+
+	self.ScrollFrame.StartGroupButton:SetParent(self.ScrollFrame.ScrollChild);
+	self.ScrollFrame.NoResultsFound:SetParent(self.ScrollFrame.ScrollChild);
+
+	self.ScrollFrame.ScrollChild.StartGroupButton = self.ScrollFrame.StartGroupButton;
+	self.ScrollFrame.ScrollChild.NoResultsFound = self.ScrollFrame.NoResultsFound;
+
+	self.ScrollFrame.StartGroupButton = nil;
+	self.ScrollFrame.NoResultsFound = nil;
 end
 
 function LFGListSearchPanel_OnEvent(self, event, ...)
 	--Note: events are dispatched from the base frame. Add RegisterEvent there.
 	if ( event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" ) then
 		StaticPopupSpecial_Hide(LFGListApplicationDialog);
-		if ( self.searching ) then
-			-- got new list from server, everything we were filtering out should be gone
-			self.filteredIDs = nil;
-		end
 		self.searching = false;
 		self.searchFailed = false;
 		LFGListSearchPanel_UpdateResultList(self);
-		LFGListSearchPanel_UpdateResults(self);
 	elseif ( event == "LFG_LIST_SEARCH_FAILED" ) then
 		self.searching = false;
 		self.searchFailed = true;
 		LFGListSearchPanel_UpdateResultList(self);
-		LFGListSearchPanel_UpdateResults(self);
 	elseif ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		local id = ...;
 		if ( self.selectedResult == id ) then
@@ -1699,16 +1702,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 	end
 end
 
-function LFGListSearchPanel_AddFilteredID(self, id)
-	if ( not self.filteredIDs ) then
-		self.filteredIDs = { };
-	end
-	tinsert(self.filteredIDs, id);
-end
-
 function LFGListSearchPanel_OnShow(self)
 	LFGListSearchPanel_UpdateResultList(self);
-	LFGListSearchPanel_UpdateResults(self);
 	--LFGListSearchPanel_UpdateButtonStatus(self); --Called by UpdateResults
 
 	local availableLanguages = C_LFGList.GetAvailableLanguageSearchFilter();
@@ -1736,7 +1731,6 @@ function LFGListSearchPanel_Clear(self)
 	C_LFGList.ClearSearchTextFields();
 	self.selectedResult = nil;
 	LFGListSearchPanel_UpdateResultList(self);
-	LFGListSearchPanel_UpdateResults(self);
 end
 
 function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilters)
@@ -1758,7 +1752,6 @@ function LFGListSearchPanel_DoSearch(self)
 	self.searchFailed = false;
 	self.selectedResult = nil;
 	LFGListSearchPanel_UpdateResultList(self);
-	LFGListSearchPanel_UpdateResults(self);
 
 	-- If auto-create is desired, then the caller needs to set up that data after the search begins.
 	-- There's an issue with using OnTextChanged to handle this due to how OnShow processes the update.
@@ -1776,12 +1769,10 @@ function LFGListSearchPanel_CreateGroupInstead(self)
 end
 
 function LFGListSearchPanel_UpdateResultList(self)
-	self.totalResults, self.results = C_LFGList.GetSearchResults();
+	self.totalResults, self.results = C_LFGList.GetFilteredSearchResults();
 	self.applications = C_LFGList.GetApplications();
-	if ( self.filteredIDs ) then
-		LFGListUtil_FilterSearchResults(self.results, self.filteredIDs);
-	end
 	LFGListUtil_SortSearchResults(self.results);
+	LFGListSearchPanel_UpdateResults(self);
 end
 
 function LFGListSearchPanel_ValidateSelected(self)
@@ -1799,6 +1790,53 @@ function LFGListSearchPanelUtil_CanSelectResult(resultID)
 	return true;
 end
 
+local function LFGListSearchPanel_UpdateAdditionalButtons(self, totalHeight, showNoResults, showStartGroup, lastVisibleButton)
+	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
+	local noResultsFound = self.ScrollFrame.ScrollChild.NoResultsFound;
+
+	noResultsFound:SetShown(showNoResults);
+	startGroupButton:SetShown(showStartGroup);
+	local topFrame, bottomFrame;
+
+	if showNoResults then
+		noResultsFound:ClearAllPoints();
+		topFrame = noResultsFound;
+		bottomFrame = noResultsFound;
+
+		if lastVisibleButton then
+			noResultsFound:SetPoint("TOP", lastVisibleButton, "BOTTOM", 0, -10);
+		else
+			noResultsFound:SetPoint("TOP", self.ScrollFrame.ScrollChild, "TOP", 0, -27);
+		end
+	end
+
+	if showStartGroup then
+		startGroupButton:ClearAllPoints();
+
+		bottomFrame = startGroupButton;
+		if not topFrame then
+			topFrame = startGroupButton;
+		end
+
+		if showNoResults then
+			startGroupButton:SetPoint("TOP", noResultsFound, "BOTTOM", 0, -5);
+		elseif lastVisibleButton then
+			startGroupButton:SetPoint("TOP", lastVisibleButton, "BOTTOM", 0, -10);
+		else
+			startGroupButton:SetPoint("TOP", self.ScrollFrame.ScrollChild, "TOP", 0, -27);
+		end
+
+		noResultsFound:SetText(showStartGroup and LFG_LIST_NO_RESULTS_FOUND or LFG_LIST_SEARCH_FAILED);
+	end
+
+	if topFrame and bottomFrame then
+		local _, _, _, _, offsetY = topFrame:GetPoint(1);
+		totalHeight = totalHeight - offsetY + (topFrame:GetTop() - bottomFrame:GetBottom());
+	end
+
+	return totalHeight;
+end
+
 function LFGListSearchPanel_UpdateResults(self)
 	local offset = HybridScrollFrame_GetOffset(self.ScrollFrame);
 	local buttons = self.ScrollFrame.buttons;
@@ -1806,10 +1844,13 @@ function LFGListSearchPanel_UpdateResults(self)
 	--If we have an application selected, deselect it.
 	LFGListSearchPanel_ValidateSelected(self);
 
+	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
+	local noResultsFound = self.ScrollFrame.ScrollChild.NoResultsFound;
+
 	if ( self.searching ) then
 		self.SearchingSpinner:Show();
-		self.ScrollFrame.NoResultsFound:Hide();
-		self.ScrollFrame.StartGroupButton:Hide();
+		noResultsFound:Hide();
+		startGroupButton:Hide();
 		for i=1, #buttons do
 			buttons[i]:Hide();
 		end
@@ -1817,6 +1858,7 @@ function LFGListSearchPanel_UpdateResults(self)
 		self.SearchingSpinner:Hide();
 		local results = self.results;
 		local apps = self.applications;
+		local lastVisibleButton;
 
 		for i=1, #buttons do
 			local button = buttons[i];
@@ -1827,6 +1869,7 @@ function LFGListSearchPanel_UpdateResults(self)
 				button.resultID = result;
 				LFGListSearchEntry_Update(button);
 				button:Show();
+				lastVisibleButton = button;
 			else
 				button.resultID = nil;
 				button:Hide();
@@ -1834,25 +1877,9 @@ function LFGListSearchPanel_UpdateResults(self)
 		end
 
 		local totalHeight = buttons[1]:GetHeight() * (#results + #apps);
-
-		--Reanchor the errors to not overlap applications
-		if ( totalHeight < self.ScrollFrame:GetHeight() ) then
-			self.ScrollFrame.NoResultsFound:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 27);
-		end
-		if(self.totalResults == 0) then
-			self.ScrollFrame.NoResultsFound:Show();
-			self.ScrollFrame.StartGroupButton:SetShown(not self.searchFailed);
-			self.ScrollFrame.StartGroupButton:ClearAllPoints();
-			self.ScrollFrame.StartGroupButton:SetPoint("BOTTOM", self.ScrollFrame.NoResultsFound, "BOTTOM", 0, - 27);
-			self.ScrollFrame.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
-		elseif(self.shouldAlwaysShowCreateGroupButton) then
-			self.ScrollFrame.NoResultsFound:Hide();
-			self.ScrollFrame.StartGroupButton:SetShown(not self.searchFailed);
-			self.ScrollFrame.StartGroupButton:ClearAllPoints();
-			self.ScrollFrame.StartGroupButton:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 15);
-		else
-			self.ScrollFrame.NoResultsFound:Hide();
-		end
+		local showNoResults = (self.totalResults == 0);
+		local showStartGroup = ((self.totalResults == 0) or self.shouldAlwaysShowCreateGroupButton) and not self.searchFailed;
+		totalHeight = LFGListSearchPanel_UpdateAdditionalButtons(self, totalHeight, showNoResults, showStartGroup, lastVisibleButton);
 
 		HybridScrollFrame_Update(self.ScrollFrame, totalHeight, self.ScrollFrame:GetHeight());
 	end
@@ -1900,21 +1927,22 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 	end
 
 	--Update the StartGroupButton
+	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
 	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
-		self.ScrollFrame.StartGroupButton:Disable();
-		self.ScrollFrame.StartGroupButton.tooltip = LFG_LIST_NOT_LEADER;
+		startGroupButton:Disable();
+		startGroupButton.tooltip = LFG_LIST_NOT_LEADER;
 	else
 		local messageStart = LFGListUtil_GetActiveQueueMessage(false);
 		local startError, errorText = GetStartGroupRestriction();
 		if ( messageStart ) then
-			self.ScrollFrame.StartGroupButton:Disable();
-			self.ScrollFrame.StartGroupButton.tooltip = messageStart;
+			startGroupButton:Disable();
+			startGroupButton.tooltip = messageStart;
 		elseif ( startError ~= nil ) then
-			self.ScrollFrame.StartGroupButton:Disable();
-			self.ScrollFrame.StartGroupButton.tooltip = errorText;
+			startGroupButton:Disable();
+			startGroupButton.tooltip = errorText;
 		else
-			self.ScrollFrame.StartGroupButton:Enable();
-			self.ScrollFrame.StartGroupButton.tooltip = nil;
+			startGroupButton:Enable();
+			startGroupButton.tooltip = nil;
 		end
 	end
 end
@@ -2834,17 +2862,6 @@ function LFGListUtil_SortSearchResults(results)
 	table.sort(results, LFGListUtil_SortSearchResultsCB);
 end
 
-function LFGListUtil_FilterSearchResults(results, filteredIDs)
-	for i, id in ipairs(filteredIDs) do
-		for j = #results, 1, -1 do
-			if ( results[j] == id ) then
-				tremove(results, j);
-				break;
-			end
-		end
-	end
-end
-
 function LFGListUtil_SortApplicantsCB(applicantID1, applicantID2)
 	local applicantInfo1 = C_LFGList.GetApplicantInfo(applicantID1);
 	local applicantInfo2 = C_LFGList.GetApplicantInfo(applicantID2);
@@ -2915,30 +2932,36 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 				func = function(_, id)
 					CloseDropDownMenus();
 					C_LFGList.ReportSearchResult(id, "lfglistspam");
-					local panel = LFGListFrame.SearchPanel;
-					LFGListSearchPanel_AddFilteredID(panel, id);
-					LFGListSearchPanel_UpdateResultList(panel);
-					LFGListSearchPanel_UpdateResults(panel);
+					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
 				end,
 				arg1 = nil, --Search result ID goes here
 				notCheckable = true,
 			},
 			{
 				text = LFG_LIST_BAD_NAME,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistname"); end,
+				func = function(_, id)
+					C_LFGList.ReportSearchResult(id, "lfglistname");
+					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
+				end,
 				arg1 = nil, --Search result ID goes here
 				notCheckable = true,
 			},
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistcomment"); end,
+				func = function(_, id)
+					C_LFGList.ReportSearchResult(id, "lfglistcomment");
+					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
+				end,
 				arg1 = nil, --Search reuslt ID goes here
 				notCheckable = true,
 				disabled = nil,	--Disabled if the description is just an empty string
 			},
 			{
 				text = LFG_LIST_BAD_LEADER_NAME,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "badplayername"); end,
+				func = function(_, id)
+					C_LFGList.ReportSearchResult(id, "badplayername");
+					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
+				end,
 				arg1 = nil, --Search reuslt ID goes here
 				notCheckable = true,
 				disabled = nil,	--Disabled if we don't have a name for the leader

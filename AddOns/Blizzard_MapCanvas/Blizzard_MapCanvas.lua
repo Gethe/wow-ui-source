@@ -362,7 +362,10 @@ function MapCanvasMixin:UpdatePinNudging()
 		end
 	else
 		for _, targetPin in ipairs(self.pinsToNudge) do
-			self:CalculatePinNudging(targetPin);
+			-- It's possible this pin was unattached before this update had a chance to run.
+			if targetPin:GetMap() == self then
+				self:CalculatePinNudging(targetPin);
+			end
 		end
 	end
 

@@ -60,7 +60,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="4">
-				<Texture parentKey="LeftHide" atlas="parchmentpopup-hide-left" useAtlasSize="true"> 
+				<Texture parentKey="LeftHide" atlas="parchmentpopup-hide-left" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="10" y="10"/>
 					</Anchors>
@@ -144,7 +144,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Affix" inherits="ChallengesKeystoneFrameAffixTemplate">
-				<Size x="77" y="77"/> 
+				<Size x="77" y="77"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription3" y="-92"/>
 				</Anchors>
@@ -163,7 +163,7 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						self.Border:Hide(); 
+						self.Border:Hide();
 					</OnShow>
 				</Scripts>
 			</Frame>
@@ -545,7 +545,7 @@
                         <Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-8"/>
                     </Anchors>
                 </FontString>
-             </Layer>        
+             </Layer>
         </Layers>
         <Animations>
 			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
@@ -556,7 +556,7 @@
             </AnimationGroup>
         </Animations>
     </Frame>
-    
+
     <Frame name="ChallengeModeCompleteBanner" parent="UIParent" hidden="true" alpha="1" mixin="ChallengeModeCompleteBannerMixin">
 		<Size x="128" y="336"/>
 		<Anchors>
@@ -583,7 +583,7 @@
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
-				</Texture>	
+				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BannerMiddle" alpha="0" atlas="BossBanner-BgBanner-Mid" alphaMode="BLEND" useAtlasSize="true">
@@ -611,7 +611,7 @@
                         <Anchor point="CENTER" relativeKey="$parent.SkullCircle"/>
                     </Anchors>
                 </FontString>
-			</Layer>			
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="BottomFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BottomFillagree" useAtlasSize="true">
 					<Anchors>
@@ -652,10 +652,10 @@
                     </Anchors>
                 </Texture>
 			</Layer>
-		</Layers>       
+		</Layers>
         <Frames>
             <Frame hidden="true" inherits="ChallengeModeBannerPartyMemberTemplate"/>
-        </Frames>     
+        </Frames>
 		<Animations>
 			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
 				<Scale childKey="SkullCircle" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
@@ -665,7 +665,7 @@
 				<Alpha childKey="BannerBottom" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerBottom" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BannerMiddle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>				
+				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BottomFillagree" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="37" offsetY="0"/>
@@ -689,7 +689,7 @@
 				<Alpha childKey="BannerBottomGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="BannerMiddleGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerMiddleGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
-				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>							
+				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="DescriptionLineOne" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
                 <Alpha childKey="DescriptionLineTwo" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
@@ -719,7 +719,7 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-    
+
     <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="MEDIUM" mixin="ChallengesDungeonIconMixin" virtual="true">
         <Size x="52" y="52"/>
         <Layers>
@@ -754,7 +754,7 @@
             <OnLeave function="GameTooltip_Hide"/>
         </Scripts>
     </Frame>
-    
+
 	<Frame name="ChallengesFrame" useParentLevel="true" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Frames>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
@@ -862,6 +862,13 @@
 											</Anchors>
 										</Texture>
 									</Layer>
+									<Layer level="HIGHLIGHT">
+										<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
 									<Layer level="OVERLAY">
 										<Texture parentKey="AnimTexture" atlas="mythicplus-greatvault-collect" useAtlasSize="true" alphaMode="ADD">
 											<Anchors>
@@ -879,151 +886,7 @@
 								<Scripts>
 									<OnEnter method="OnEnter"/>
 									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</Frame>
-							<Frame parentKey="LegacyWeeklyChest" hidden="true" mixin="ChallengeModeLegacyWeeklyChestMixin">
-								<Size x="200" y="145"/>
-								<Anchors>
-									<Anchor point="CENTER" x="0" y="-45"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER">
-											<Size x="430" />
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame parentKey="CollectChest" hidden="true"> 
-										<Size x="269" y="188"/>
-										<Anchors>
-											<Anchor point="CENTER"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK" textureSubLevel="-1">
-												<Texture parentKey="CollectGlow" atlas="mythicplus-chest-collect" alphaMode="ADD">
-													<Size x="269" y="188"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="ARTWORK">
-												<Texture parentKey="CollectRewardsChest" atlas="mythicplus-chest-collect">
-													<Size x="269" y="188"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY">
-												<Texture parentKey="CollectSparkle" atlas="mythicplus-chest-collect-sparkles" alpha=".5" alphaMode="ADD">
-													<Size x="269" y="188"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY" textureSubLevel="1">
-												<Texture parentKey="CollectSparkle2" atlas="mythicplus-chest-collect-sparkles" alphaMode="ADD">
-													<Size x="269" y="188"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY" textureSubLevel="3">
-												<FontString parentKey="Level" inherits="GameFontNormalHuge2">
-													<Anchors>
-														<Anchor point="CENTER" x="-1"/>
-													</Anchors>
-													<Color r="1" g="1" b="1"/>
-												</FontString>
-											</Layer>
-											<Layer level="OVERLAY" textureSubLevel="3">
-												<FontString parentKey="FinalKeyLevel" inherits="Fancy20Font">
-													<Anchors>
-														<Anchor point="TOP" x="0" y="15"/>
-													</Anchors>
-													<Color r="1" g="1" b="1"/>
-												</FontString>
-											</Layer>
-										</Layers>
-										<Animations>
-											<AnimationGroup parentKey="Anim" looping="REPEAT">
-												<Alpha childKey="CollectGlow" startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
-												<Alpha childKey="CollectGlow" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha childKey="CollectSparkle2" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
-												<Alpha childKey="CollectSparkle2" startDelay="1" smoothing="OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
-											</AnimationGroup>
-											<AnimationGroup parentKey="SparkleRotation" looping="REPEAT">
-												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="1" degrees="1"/>
-												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="2" degrees="0"/>
-												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="3" degrees="-1"/>
-												<Rotation childKey="CollectSparkle" smoothing="OUT" duration="2" order="4" degrees="0"/>
-												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="1" degrees="1"/>
-												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="2" degrees="0"/>
-												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="3" degrees="-1"/>
-												<Rotation childKey="CollectSparkle2" smoothing="OUT" duration="2" order="4" degrees="0"/>
-											</AnimationGroup>
-									</Animations>
-									</Frame>
-									<Frame parentKey="MissingKeystoneChest" hidden="true">
-										<Size x="219" y="134"/>
-										<Anchors>
-											<Anchor point="CENTER"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<Texture atlas="mythicplus-chest-silver" alpha="0.45">
-													<Size x="219" y="134"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-									</Frame>
-									<Frame parentKey="CompletedKeystoneChest" hidden="true">
-										<Size x="219" y="134"/>
-										<Anchors>
-											<Anchor point="CENTER"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<Texture atlas="mythicplus-chest-gold">
-													<Size x="219" y="134"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY" textureSubLevel="3">
-												<FontString parentKey="Level" inherits="GameFontNormalHuge2">
-													<Anchors>
-														<Anchor point="CENTER" x="-2"/>
-													</Anchors>
-													<Color r="1" g="1" b="1"/>
-												</FontString>
-											</Layer>
-										</Layers>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnEnter method="OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
-									<OnShow>
-										if (self.CollectChest:IsShown()) then
-											self.CollectChest.Anim:Play();
-											self.CollectChest.SparkleRotation:Play();
-										end
-									</OnShow>
-									<OnHide>
-										if (self.CollectChest:IsShown()) then
-											self.CollectChest.Anim:Stop();
-											self.CollectChest.SparkleRotation:Stop();
-										end
-									</OnHide>
+									<OnMouseUp method="OnMouseUp"/>
 								</Scripts>
 							</Frame>
 					</Frames>

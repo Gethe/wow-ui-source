@@ -42,7 +42,7 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept =	function(self, selectedNode)
-					PlaySound(textureKitToConfirmSound[selectedNode.textureKit], nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(textureKitToConfirmSound[selectedNode.textureKit]);
 					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
 					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
 					HelpTip:Acknowledge(AnimaDiversionFrame.ReinforceProgressFrame, ANIMA_DIVERSION_TUTORIAL_FILL_BAR);
@@ -62,7 +62,7 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_REINFORCE"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept =	function(self, selectedNode)
-					PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_REINFORCE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_REINFORCE);
 					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, false);
 					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION_PERMANENT);
 				end,
@@ -96,10 +96,10 @@ function AnimaDiversionFrameMixin:OnShow()
 	self:ResetZoom();
 	FrameUtil.RegisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
 
-	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_OPEN, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_OPEN);
 
 	if AnimaDiversionUtil.IsAnyNodeActive() then
-		PlaySound(self.covenantData.animaChannelActiveSoundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(self.covenantData.animaChannelActiveSoundKit);
 	end
 end
 
@@ -108,7 +108,7 @@ function AnimaDiversionFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_FRAME_EVENTS);
 	self.ReinforceInfoFrame:Hide();
 	self:StopGemsFullSound();
-	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLOSE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLOSE);
 end 
 
 function AnimaDiversionFrameMixin:OnEvent(event, ...) 
@@ -258,7 +258,7 @@ function AnimaDiversionFrameMixin:SetupBolsterProgressBar()
 			self:AddBolsterEffectToGem(self.lastGem, newGemEffectID, true);
 
 			if not isReinforceReady then
-				PlaySound(self.covenantData.animaNewGemSoundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(self.covenantData.animaNewGemSoundKit);
 			end
 		end
 
@@ -412,14 +412,14 @@ function ReinforceInfoFrameMixin:SelectNodeToReinforce(node)
 	node:SetSelectedState(true);
 	self.Title:SetText(self.selectedNode.nodeData.name);
 	self.AnimaNodeReinforceButton:Enable(); 
-	PlaySound(AnimaDiversionFrame.covenantData.animaReinforceSelectSoundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(AnimaDiversionFrame.covenantData.animaReinforceSelectSoundKit);
 end 
 
 AnimaNodeReinforceButtonMixin = { };
 function AnimaNodeReinforceButtonMixin:OnClick()
 	local selectedNode = self:GetParent():GetSelectedNode();
 	if selectedNode then
-		PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLICK_REINFORCE_BUTTON, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CLICK_REINFORCE_BUTTON);
 		StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_REINFORCE", selectedNode.nodeData.name, nil, selectedNode);
 	end
 end

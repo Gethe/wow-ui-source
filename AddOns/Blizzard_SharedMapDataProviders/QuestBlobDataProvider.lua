@@ -137,7 +137,10 @@ function QuestBlobPinMixin:Refresh()
 		return;
 	end
 
-	self:TryDrawQuest(self.questID);
+	if not self.focusedQuestID then
+		self:TryDrawQuest(self.questID);
+	end
+
 	self:TryDrawQuest(self.highlightedQuestID);
 	self:TryDrawQuest(self.focusedQuestID);
 end
@@ -202,8 +205,6 @@ function QuestBlobPinMixin:UpdateTooltip()
 
 	local title = C_QuestLog.GetTitleForQuestID(questID);
 	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
-	self.questID = questID;
-	self.numObjectives = numObjectives;
 
 	if C_QuestLog.IsThreatQuest(questID) then
 		local skipSetOwner = true;

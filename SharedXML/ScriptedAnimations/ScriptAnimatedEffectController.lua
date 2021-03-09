@@ -67,7 +67,7 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 	end
 	
 	if self:IsSoundEnabled() and effect.startSoundKitID then
-		PlaySound(effect.startSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(effect.startSoundKitID);
 	end
 
 	self:UpdateActorDynamicOffsets()
@@ -123,7 +123,7 @@ function ScriptAnimatedEffectControllerMixin:FinishEffect()
 	end
 
 	if self:IsSoundEnabled() and effect.finishSoundKitID then
-		PlaySound(effect.finishSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(effect.finishSoundKitID);
 	end
 
 	self:RunEffectFinish();

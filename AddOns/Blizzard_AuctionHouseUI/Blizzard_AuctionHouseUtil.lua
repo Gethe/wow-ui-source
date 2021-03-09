@@ -309,19 +309,17 @@ function AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)
 	return "";
 end
 
-local MaxSellersListedExplicitly = 10;
-function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
+function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers, totalNumberOfSellers)
 	local sellersString = sellers[1] == "player" and GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	local numSellers = #sellers;
 	if numSellers > 1 then
-		local numSellersListed = math.min(numSellers, MaxSellersListedExplicitly);
-		for i = 2, numSellersListed do
+		for i = 2, numSellers do
 			sellersString = sellersString..PLAYER_LIST_DELIMITER..sellers[i];
 		end
 
 		local wrap = true;
-		if numSellers > MaxSellersListedExplicitly then
-			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_OVERFLOW_SELLERS_FORMAT:format(sellersString, numSellers - MaxSellersListedExplicitly), wrap);
+		if totalNumberOfSellers > numSellers then
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_OVERFLOW_SELLERS_FORMAT:format(sellersString, totalNumberOfSellers - numSellers), wrap);
 		else
 			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
 		end
@@ -334,7 +332,7 @@ end
 function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus)
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 
-	AuctionHouseUtil.AddSellersToTooltip(tooltip, rowData.owners);
+	AuctionHouseUtil.AddSellersToTooltip(tooltip, rowData.owners, rowData.totalNumberOfOwners);
 
 	tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)));
 
@@ -374,7 +372,7 @@ function AuctionHouseUtil.GetSellersString(rowData)
 	elseif #sellers == 1 then
 		return rowData.containsOwnerItem and WHITE_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	else
-		return AUCTION_HOUSE_NUM_SELLERS:format(#sellers);
+		return AUCTION_HOUSE_NUM_SELLERS:format(rowData.totalNumberOfOwners);
 	end
 end
 
@@ -585,19 +583,29 @@ function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
 		return rowData.itemLink;
 	else
 		local itemID = rowData.itemID or rowData.itemKey.itemID;
-		local itemLink = select(2, GetItemInfo(itemID));
-		return itemLink;
+		if itemID ~= nil then
+			local itemLink = select(2, GetItemInfo(itemID));
+			return itemLink;
+		end
 	end
+
+	return nil;
 end
 
 function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selectionCallback)
 	local function RowSelectedCallback(rowData)
 		if rowData and IsModifiedClick("DRESSUP") then
-			DressUpLink(rowData.itemLink);
-			return false;
+			local itemLink = AuctionHouseUtil.GetItemLinkFromRowData(rowData);
+			if itemLink ~= nil then
+				DressUpLink(itemLink);
+				return false;
+			end
 		elseif rowData and IsModifiedClick("CHATLINK") then
-			ChatEdit_InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
-			return false;
+			local itemLink = AuctionHouseUtil.GetItemLinkFromRowData(rowData);
+			if itemLink ~= nil then
+				ChatEdit_InsertLink(itemLink);
+				return false;
+			end
 		end
 
 		selectionCallback(self, rowData);
@@ -658,4 +666,8 @@ end
 
 function AuctionHouseUtil.RowDataIsWoWToken(rowData)
 	return (rowData.itemID == AUCTIONABLE_TOKEN_ITEM_ID) or (rowData.itemKey and rowData.itemKey.itemID == AUCTIONABLE_TOKEN_ITEM_ID);
+end
+
+function AuctionHouseUtil.CreateVirtualRowData(virtualEntryText, isSelectedVirtualEntry)
+	return { isVirtualEntry = true, virtualEntryText = virtualEntryText, isSelectedVirtualEntry = isSelectedVirtualEntry, };
 end

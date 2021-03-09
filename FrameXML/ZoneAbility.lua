@@ -134,7 +134,7 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 			if previousZoneAbility.placedSoundEffect then
 				local spellID = previousZoneAbility.spellID;
 				if activeAbilityIsDisplayedOnBar[spellID] and not DoZoneAbilitiesIncludeSpellID(displayedZoneAbilities, spellID) then
-					PlaySound(previousZoneAbility.placedSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(previousZoneAbility.placedSoundEffect);
 				end
 			end
 		end
@@ -144,7 +144,7 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 		if displayZoneAbility.shownSoundEffect then
 			local spellID = displayZoneAbility.spellID;
 			if not self.previousZoneAbilities or not DoZoneAbilitiesIncludeSpellID(self.previousZoneAbilities, spellID) then
-				PlaySound(displayZoneAbility.shownSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(displayZoneAbility.shownSoundEffect);
 			end
 		end
 	end

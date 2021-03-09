@@ -244,7 +244,7 @@ function StartTimer_SetTexNumbers(self, ...)
 		if(TIMER_DATA[self.type].bigNumberSoundKitID and numShown < TIMER_DATA[self.type].largeMarker ) then 
 			PlaySound(TIMER_DATA[self.type].bigNumberSoundKitID); 
 		else 
-			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX");
 		end 
 		digits[1]:ClearAllPoints();
 		if self.anchorCenter or C_Commentator.IsSpectating() then

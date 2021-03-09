@@ -410,39 +410,15 @@ end
 function PVPMatchResultsMixin:InitHonorFrame(currency)
 	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged));
 	self.honorText:SetText(PVP_HONOR_CHANGE:format(deltaString));
-
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self.legacyHonorButton:Update();
-
-		self.honorButton:Hide();
-		self.legacyHonorButton:Show();
-	else
-		self.honorButton:Show();
-		self.legacyHonorButton:Hide();
-	end
-
-	
+	self.honorButton:Show();
+	self.legacyHonorButton:Hide();
 	self.honorFrame:Show();
 end
 function PVPMatchResultsMixin:InitConquestFrame(currency)
 	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged / 100));
 	self.conquestText:SetText(PVP_CONQUEST_CHANGE:format(deltaString));
-
-	if PVPUtil.ShouldShowLegacyRewards() then
-		local questID = select(3, PVPGetConquestLevelInfo());
-		if questID and IsPlayerAtEffectiveMaxLevel() then
-			self.legacyConquestButton:LegacySetup(questID);
-		else
-			self.legacyConquestButton:Clear();
-		end
-
-		self.conquestButton:Hide();
-		self.legacyConquestButton:Show();
-	else
-		self.conquestButton:Show();
-		self.legacyConquestButton:Hide();
-	end
-
+	self.conquestButton:Show();
+	self.legacyConquestButton:Hide();
 	self.conquestFrame:Show();
 end
 function PVPMatchResultsMixin:InitRatingFrame()

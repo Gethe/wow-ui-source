@@ -7,6 +7,20 @@ local ItemUpgrade =
 	Functions =
 	{
 		{
+			Name = "CanUpgradeItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemHyperlink",
 			Type = "Function",
 

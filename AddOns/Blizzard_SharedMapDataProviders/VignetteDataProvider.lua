@@ -237,7 +237,7 @@ end
 
 function VignettePinMixin:UpdateSupertrackedHighlight()
 	local highlight = (self:GetVignetteType() == Enum.VignetteType.Treasure) and QuestSuperTracking_ShouldHighlightTreasures(self:GetMap():GetMapID());
-	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(highlight, self, self.Texture);
 end
 
 function VignettePinMixin:OnMouseEnter()
@@ -256,7 +256,7 @@ function VignettePinMixin:OnMouseEnter()
 		end
 
 		if hasValidTooltip and self.widgetSetID then
-			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
+			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, 10);
 		elseif not hasValidTooltip then
 			GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA);
 		end

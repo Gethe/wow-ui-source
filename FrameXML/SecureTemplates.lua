@@ -1,3 +1,5 @@
+local LOCAL_CHECK_Frame = CreateFrame("Frame");
+
 -- The "modified attribute" takes the form of: modifier-name-button
 -- The modifier is one of "shift-", "ctrl-", "alt-", and the button is a number from 1 through 5.
 --
@@ -59,7 +61,7 @@ end
 function SecureButton_GetModifierPrefix(frame)
     -- Handle optional frame modifiers attribute
     if ( frame ) then
-        local modlist = frame:GetAttribute("modifiers");
+        local modlist = LOCAL_CHECK_Frame.GetAttribute(frame, "modifiers");
         if ( modlist ) then
             local prefix = SecureButton_ParseModifierString(modlist);
             if ( prefix ) then
@@ -112,10 +114,10 @@ function SecureButton_GetModifiedAttribute(frame, name, button, prefix, suffix)
     if ( not suffix ) then
         suffix = SecureButton_GetButtonSuffix(button);
     end
-    local value = frame:GetAttribute(prefix, name, suffix);
-    if ( not value and (frame:GetAttribute("useparent-"..name) or
-                        frame:GetAttribute("useparent*")) ) then
-        local parent = frame:GetParent();
+    local value = LOCAL_CHECK_Frame.GetAttribute(frame, prefix, name, suffix);
+    if ( not value and (LOCAL_CHECK_Frame.GetAttribute(frame, "useparent-"..name) or
+                        LOCAL_CHECK_Frame.GetAttribute(frame, "useparent*")) ) then
+        local parent = LOCAL_CHECK_Frame.GetParent(frame);
         if ( parent ) then
             value = SecureButton_GetModifiedAttribute(parent, name, button, prefix, suffix);
         end

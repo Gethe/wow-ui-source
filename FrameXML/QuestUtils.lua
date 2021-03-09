@@ -179,6 +179,13 @@ function QuestUtil.ApplyQuestIconActiveToTextureForQuestID(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActiveForQuestID(...));
 end
 
+function QuestUtil.IsQuestActiveButNotComplete(questID)
+	if C_QuestLog.IsQuestFlaggedCompleted(questID) or C_QuestLog.ReadyForTurnIn(questID) then
+		return false;
+	end
+	return C_QuestLog.GetLogIndexForQuestID(questID) ~= nil;
+end
+
 local function ApplyTextureToPOI(texture, width, height)
 	texture:SetTexCoord(0, 1, 0, 1);
 	texture:ClearAllPoints();
@@ -465,7 +472,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
 			if usingCurrencyContainer and numAddedQuestCurrencies > 1 then
 				EmbeddedItemTooltip_Clear(tooltip.ItemTooltip);
-				tooltip.ItemTooltip:Hide();
+				EmbeddedItemTooltip_Hide(tooltip.ItemTooltip);
 				tooltip:Show();
 			end
 		end

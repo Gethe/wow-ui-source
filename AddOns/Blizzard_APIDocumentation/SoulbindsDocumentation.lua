@@ -267,21 +267,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitItemLevel",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "conduitID", Type = "number", Nilable = false },
-				{ Name = "rank", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "itemLevel", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetConduitQuality",
 			Type = "Function",
 
@@ -702,6 +687,7 @@ local Soulbinds =
 				{ Name = "tree", Type = "SoulbindTree", Nilable = false },
 				{ Name = "modelSceneData", Type = "SoulbindModelSceneData", Nilable = false },
 				{ Name = "activationSoundKitID", Type = "number", Nilable = false },
+				{ Name = "playerConditionReason", Type = "string", Nilable = true },
 			},
 		},
 		{

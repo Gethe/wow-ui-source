@@ -17,6 +17,10 @@ local milestonesTextureKitRegions = {
 	["Middle"] = "_UI-Frame-%s-TitleMiddle",
 };
 
+local renownAvailableIconTextureKitRegion = {
+	["Icon"] = "covenantsanctum-renown-icon-available-kyrian",
+}
+
 local finalToastSwirlEffects = {
 	[Enum.CovenantType.Kyrian] = {119},
 	[Enum.CovenantType.Venthyr] = {120},
@@ -30,6 +34,7 @@ local levelEffects = {
 	[Enum.CovenantType.NightFae] = 126,
 	[Enum.CovenantType.Necrolord] = 127,
 };
+
 local levelEffectDelay = 0.5;
 
 local g_covenantID;
@@ -42,6 +47,7 @@ end
 local CovenantRenownEvents = {
 	"COVENANT_RENOWN_INTERACTION_ENDED",
 	"COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED",
+	"COVENANT_RENOWN_CATCH_UP_STATE_UPDATE",
 };
 
 CovenantRenownMixin = {};
@@ -70,8 +76,9 @@ function CovenantRenownMixin:OnShow()
 	local fromOnShow = true;
 	self:Refresh(fromOnShow);
 	self:CheckTutorials();
+	C_CovenantSanctumUI.RequestCatchUpState();
 	FrameUtil.RegisterFrameForEvents(self, CovenantRenownEvents);
-	PlaySound(SOUNDKIT.UI_COVENANT_RENOWN_OPEN_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_RENOWN_OPEN_WINDOW);
 end
 
 function CovenantRenownMixin:OnHide()
@@ -79,7 +86,7 @@ function CovenantRenownMixin:OnHide()
 	self:SetCelebrationSwirlEffects(nil);
 	self:CancelLevelEffect();
 	C_CovenantSanctumUI.EndInteraction();
-	PlaySound(SOUNDKIT.UI_COVENANT_RENOWN_CLOSE_WINDOW, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_COVENANT_RENOWN_CLOSE_WINDOW);
 
 	local cvarName = "lastRenownForCovenant"..g_covenantID;
 	SetCVar(cvarName, self.actualLevel);
@@ -92,6 +99,11 @@ function CovenantRenownMixin:OnEvent(event, ...)
 		ShowUIPanel(self);
 	elseif event == "COVENANT_RENOWN_INTERACTION_ENDED" then
 		HideUIPanel(self);
+	elseif event == "COVENANT_RENOWN_CATCH_UP_STATE_UPDATE" then 
+		if(self.HeaderFrame:IsMouseOver()) then 
+			CovenantRenownHeaderFrameMixin.OnEnter(self.HeaderFrame);
+		end 
+		self.HeaderFrame:SetupRenownAvailableIcon(); 
 	end
 end
 
@@ -99,7 +111,10 @@ function CovenantRenownMixin:OnMouseWheel(direction)
 	local track = self.TrackFrame;
 	local centerIndex = track:GetCenterIndex();
 	centerIndex = centerIndex + (direction * -1);
-	track:SetSelection(centerIndex);
+	local forceRefresh = false;
+	local skipSound = false;
+	local overrideStopSound = SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START;
+	track:SetSelection(centerIndex, forceRefresh, skipSound, overrideStopSound);
 end
 
 function CovenantRenownMixin:SetUpCovenantData()
@@ -217,7 +232,7 @@ function CovenantRenownMixin:PlayLevelEffect()
 
 	local fanfareSound = g_covenantData.renownFanfareSoundKitID;
 	if fanfareSound then
-		PlaySound(fanfareSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(fanfareSound);
 	end
 end
 
@@ -555,12 +570,12 @@ function CovenantRenownTrackFrameMixin:OnUpdate(elapsed)
 		self:RefreshView();
 
 		if not self.loopingSoundHandle and self.scrollLoopSound then
-			self.loopingSoundHandle = select(2, PlaySound(self.scrollLoopSound, nil, SOUNDKIT_ALLOW_DUPLICATES));
+			self.loopingSoundHandle = select(2, PlaySound(self.scrollLoopSound));
 		end
 	end	
 end
 
-function CovenantRenownTrackFrameMixin:SetSelection(index, forceRefresh, skipSound)
+function CovenantRenownTrackFrameMixin:SetSelection(index, forceRefresh, skipSound, overrideStopSound)
 	-- stops other sources (like parent's mousewheel) from interfering during movement
 	if self.scrollTime then
 		return;
@@ -569,7 +584,7 @@ function CovenantRenownTrackFrameMixin:SetSelection(index, forceRefresh, skipSou
 	index = index or self.numElements;
 	index = Clamp(index, 1, self.numElements);
 	if self.selectedIndex ~= index and not skipSound and self.scrollStopSound then
-		PlaySound(self.scrollStopSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(self.scrollStopSound);
 	end
 	self.selectedIndex = index;
 	local offset = self:GetAbsoluteOffsetForIndex(index);
@@ -589,7 +604,7 @@ function CovenantRenownTrackFrameMixin:RefreshView()
 		local rightIndex = math.min(centerIndex + self.numElementsPerHalf, self.numElements);
 		self:GetParent():OnTrackUpdate(leftIndex, centerIndex, rightIndex, self.moving);
 		if self.moving and self.scrollCenterChangeSound then
-			PlaySound(self.scrollCenterChangeSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(self.scrollCenterChangeSound);
 		end
 	end
 
@@ -683,7 +698,7 @@ function CovenantRenownTrackButtonMixin:OnMouseDown()
 		local track = self:GetParent();
 		track:StartScroll(self.direction);
 		if track.scrollStartSound then
-			PlaySound(track.scrollStartSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(track.scrollStartSound);
 		end
 	end
 end
@@ -699,3 +714,30 @@ function CovenantRenownTrackButtonMixin:OnDisable()
 	local track = self:GetParent();
 	track:RequestStop();
 end
+
+CovenantRenownHeaderFrameMixin = { }; 
+function CovenantRenownHeaderFrameMixin:OnEnter()
+	local covenantName = g_covenantData.name;
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -40, 130);
+
+	if (C_CovenantSanctumUI.HasMaximumRenown()) then 
+		GameTooltip_AddNormalLine(GameTooltip, RENOWN_LEVEL_MAXIMUM:format(covenantName));
+	elseif (C_CovenantSanctumUI.IsWeeklyRenownCapped()) then
+		GameTooltip_AddNormalLine(GameTooltip, RENOWN_LEVEL_CAUGHT_UP);
+	elseif (C_CovenantSanctumUI.IsPlayerInRenownCatchUpMode()) then 
+		GameTooltip_AddNormalLine(GameTooltip, RENOWN_LEVEL_CATCH_UP_MODE);
+	else 
+		GameTooltip_AddNormalLine(GameTooltip, RENOWN_LEVEL_CURRENT);
+	end 
+	GameTooltip:Show(); 
+end 
+
+function CovenantRenownHeaderFrameMixin:OnLeave()
+	GameTooltip:Hide();
+end 
+
+function CovenantRenownHeaderFrameMixin:SetupRenownAvailableIcon()
+	local hasRenownAvailable = not C_CovenantSanctumUI.IsWeeklyRenownCapped() and not C_CovenantSanctumUI.HasMaximumRenown();
+	self.Icon:SetShown(hasRenownAvailable);
+	SetupTextureKit(self, renownAvailableIconTextureKitRegion);
+end 

@@ -641,6 +641,10 @@ function AuctionHouseFrameMixin:GetBrowseSortOrderState(sortOrder)
 	return self:GetSortOrderState(browseSearchContext, sortOrder);
 end
 
+function AuctionHouseFrameMixin:GetSortsForContext(searchContext)
+	return GetSortTypes(searchContext);
+end
+
 function AuctionHouseFrameMixin:QueryItem(searchContext, itemKey, byItemID)
 	if not AreSortTypesLoaded() then
 		return;
