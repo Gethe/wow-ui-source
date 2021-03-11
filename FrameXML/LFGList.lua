@@ -1764,7 +1764,7 @@ end
 
 function LFGListSearchPanel_CreateGroupInstead(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local panel = self:GetParent():GetParent();
+	local panel = self:GetParent():GetParent():GetParent();
 	LFGListEntryCreation_Show(panel:GetParent().EntryCreation, panel.preferredFilters, panel.categoryID, panel.filters);
 end
 
