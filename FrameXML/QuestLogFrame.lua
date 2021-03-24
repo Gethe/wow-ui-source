@@ -124,8 +124,7 @@ function QuestLog_Update(self)
 	end
 
 	-- Update Quest Count
-	QuestLogQuestCount:SetText(format(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS));
-	QuestLogCountMiddle:SetWidth(QuestLogQuestCount:GetWidth());
+	QuestLogUpdateQuestCount(numQuests);
 
 	-- ScrollFrame update
 	FauxScrollFrame_Update(QuestLogListScrollFrame, numEntries, QUESTS_DISPLAYED, QUESTLOG_QUEST_HEIGHT, nil, nil, nil, QuestLogHighlightFrame, 293, 316 )
@@ -234,7 +233,6 @@ function QuestLog_Update(self)
 			end
 
 			-- Color the quest title and highlight according to the difficulty level
-			local playerLevel = UnitLevel("player");
 			if ( isHeader ) then
 				color = QuestDifficultyColors["header"];
 			else
@@ -290,7 +288,6 @@ function QuestLog_Update(self)
 
 	-- Update Quest Count
 	QuestLogQuestCount:SetText(format(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS));
-	QuestLogCountMiddle:SetWidth(QuestLogQuestCount:GetWidth());
 
 	-- If no selection then set it to the first available quest
 	if ( GetQuestLogSelection() == 0 ) then
@@ -790,4 +787,32 @@ end
 function GetQuestIDFromLogIndex(questIndex)
 	_, _, _, _, _, _, _, questID = GetQuestLogTitle(questIndex);
 	return questID;
+end
+
+function QuestLogUpdateQuestCount(numQuests)
+	QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS);
+	local width = QuestLogQuestCount:GetWidth();
+	local textHeight = 12;
+	local hPadding = 15;
+	local vPadding = 8;
+	local dailyQuestsComplete = GetDailyQuestsCompleted();
+	
+	if ( dailyQuestsComplete > 0 ) then
+		QuestLogDailyQuestCount:SetFormattedText(QUEST_LOG_DAILY_COUNT_TEMPLATE, dailyQuestsComplete, GetMaxDailyQuests());
+		QuestLogDailyQuestCount:Show();
+		DailyQuestCountButton:Show();
+		-- Use this width
+		if ( QuestLogDailyQuestCount:GetWidth() > width ) then
+			width = QuestLogDailyQuestCount:GetWidth();
+		end
+		QuestLogCount:SetHeight(textHeight*2+vPadding);
+		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -38);
+	else
+		QuestLogDailyQuestCount:Hide();
+		DailyQuestCountButton:Hide();
+		width = QuestLogQuestCount:GetWidth();
+		QuestLogCount:SetHeight(textHeight+vPadding);
+		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -41);
+	end
+	QuestLogCount:SetWidth(width+hPadding);
 end

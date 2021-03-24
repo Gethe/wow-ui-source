@@ -330,6 +330,9 @@
 				<xs:element name="OnChar" type="ScriptType"/>
 				<xs:element name="OnKeyDown" type="ScriptType"/>
 				<xs:element name="OnKeyUp" type="ScriptType"/>
+				<xs:element name="OnGamePadButtonDown" type="ScriptType"/>
+				<xs:element name="OnGamePadButtonUp" type="ScriptType"/>
+				<xs:element name="OnGamePadStick" type="ScriptType"/>
 				<xs:element name="OnColorSelect" type="ScriptType"/>
 				<xs:element name="OnHyperlinkEnter" type="ScriptType"/>
 				<xs:element name="OnHyperlinkLeave" type="ScriptType"/>

@@ -888,12 +888,12 @@
 	<Binding name="PETATTACK" category="BINDING_HEADER_TARGETING">
 		PetAttack();
 	</Binding>
-	<!--<Binding name="FOCUSTARGET" category="BINDING_HEADER_TARGETING">
+	<Binding name="FOCUSTARGET" category="BINDING_HEADER_TARGETING">
 		FocusUnit("target");
 	</Binding>
 	<Binding name="TARGETFOCUS" category="BINDING_HEADER_TARGETING">
 		TargetUnit("focus");
-	</Binding>-->
+	</Binding>
 	<Binding name="TARGETMOUSEOVER" category="BINDING_HEADER_TARGETING">
 		TargetUnit("mouseover");
 	</Binding>

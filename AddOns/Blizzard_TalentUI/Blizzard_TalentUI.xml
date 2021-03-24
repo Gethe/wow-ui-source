@@ -377,6 +377,26 @@
 							<Button name="TalentFrameTalent18" inherits="TalentButtonTemplate" id="18"/>
 							<Button name="TalentFrameTalent19" inherits="TalentButtonTemplate" id="19"/>
 							<Button name="TalentFrameTalent20" inherits="TalentButtonTemplate" id="20"/>
+							<Button name="TalentFrameTalent21" inherits="TalentButtonTemplate" id="21"/>
+							<Button name="TalentFrameTalent22" inherits="TalentButtonTemplate" id="22"/>
+							<Button name="TalentFrameTalent23" inherits="TalentButtonTemplate" id="23"/>
+							<Button name="TalentFrameTalent24" inherits="TalentButtonTemplate" id="24"/>
+							<Button name="TalentFrameTalent25" inherits="TalentButtonTemplate" id="25"/>
+							<Button name="TalentFrameTalent26" inherits="TalentButtonTemplate" id="26"/>
+							<Button name="TalentFrameTalent27" inherits="TalentButtonTemplate" id="27"/>
+							<Button name="TalentFrameTalent28" inherits="TalentButtonTemplate" id="28"/>
+							<Button name="TalentFrameTalent29" inherits="TalentButtonTemplate" id="29"/>
+							<Button name="TalentFrameTalent30" inherits="TalentButtonTemplate" id="30"/>
+							<Button name="TalentFrameTalent31" inherits="TalentButtonTemplate" id="31"/>
+							<Button name="TalentFrameTalent32" inherits="TalentButtonTemplate" id="32"/>
+							<Button name="TalentFrameTalent33" inherits="TalentButtonTemplate" id="33"/>
+							<Button name="TalentFrameTalent34" inherits="TalentButtonTemplate" id="34"/>
+							<Button name="TalentFrameTalent35" inherits="TalentButtonTemplate" id="35"/>
+							<Button name="TalentFrameTalent36" inherits="TalentButtonTemplate" id="36"/>
+							<Button name="TalentFrameTalent37" inherits="TalentButtonTemplate" id="37"/>
+							<Button name="TalentFrameTalent38" inherits="TalentButtonTemplate" id="38"/>
+							<Button name="TalentFrameTalent39" inherits="TalentButtonTemplate" id="39"/>
+							<Button name="TalentFrameTalent40" inherits="TalentButtonTemplate" id="40"/>
 							<Frame name="TalentFrameArrowFrame" setAllPoints="true">
 								<Layers>
 									<Layer level="OVERLAY">

@@ -4,6 +4,7 @@ MAX_CONTAINER_ITEMS = 36;
 NUM_CONTAINER_COLUMNS = 4;
 ROWS_IN_BG_TEXTURE = 6;
 MAX_BG_TEXTURES = 2;
+BG_TEXTURE_MIDDLE_START = 215;
 BG_TEXTURE_HEIGHT = 512;
 CONTAINER_WIDTH = 192;
 CONTAINER_SPACING = 0;
@@ -120,6 +121,10 @@ function ToggleBag(id)
 			end
 		end
 		if ( not containerShowing ) then
+			if ( CanAutoSetGamePadCursorControl(true) ) then
+				SetGamePadCursorControl(true);
+			end
+
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
 			-- Stop keyring button pulse
 			if (id == KEYRING_CONTAINER) then 
@@ -766,7 +771,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			
 			-- Try to cycle all the middle bg textures
 			local firstRowPixelOffset = 9;
-			local firstRowTexCoordOffset = 0.353515625;
+			local firstRowTexCoordOffset = BG_TEXTURE_MIDDLE_START / BG_TEXTURE_HEIGHT;
 			for i=1, bgTextureCount do
 				bgTextureMiddle = _G[name.."BackgroundMiddle"..i];
 				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
@@ -1253,6 +1258,15 @@ function ContainerFrameItemButton_OnClick(self, button)
 end
 
 function ContainerFrameItemButton_OnModifiedClick(self, button)
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+		if C_Item.DoesItemExist(itemLocation) then
+			if SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+				return;
+			end
+		end
+	end
+
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end

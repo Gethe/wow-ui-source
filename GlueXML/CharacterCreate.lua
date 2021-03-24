@@ -1,39 +1,44 @@
 CHARACTER_FACING_INCREMENT = 2;
-MAX_RACES = 8;
+MAX_RACES = 10;
 MAX_CLASSES_PER_RACE = 8;
 NUM_CHAR_CUSTOMIZATIONS = 5;
 MIN_CHAR_NAME_LENGTH = 2;
 CHARACTER_CREATE_ROTATION_START_X = nil;
 CHARACTER_CREATE_INITIAL_FACING = nil;
-FACTION_BACKDROP_COLOR_TABLE = {
-	["Alliance"] = {0.5, 0.5, 0.5, 0.09, 0.09, 0.19},
-	["Horde"] = {0.5, 0.2, 0.2, 0.19, 0.05, 0.05},
-};
+
+FACTION_BACKDROP_COLOR_TABLE = { Alliance = GLUE_ALLIANCE_COLOR, Horde = GLUE_HORDE_COLOR };
+
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
 	"CharacterCreateCharacterClass",
 	"CharacterCreateCharacterFaction",
 };
 RACE_ICON_TCOORDS = {
-	["HUMAN_MALE"]		= {0, 0.25, 0, 0.25},
-	["DWARF_MALE"]		= {0.25, 0.5, 0, 0.25},
-	["GNOME_MALE"]		= {0.5, 0.75, 0, 0.25},
-	["NIGHTELF_MALE"]	= {0.75, 1.0, 0, 0.25},
+	["HUMAN_MALE"]		= {0, 0.125, 0, 0.25},
+	["DWARF_MALE"]		= {0.125, 0.25, 0, 0.25},
+	["GNOME_MALE"]		= {0.25, 0.375, 0, 0.25},
+	["NIGHTELF_MALE"]	= {0.375, 0.5, 0, 0.25},
 	
-	["TAUREN_MALE"]		= {0, 0.25, 0.25, 0.5},
-	["SCOURGE_MALE"]	= {0.25, 0.5, 0.25, 0.5},
-	["TROLL_MALE"]		= {0.5, 0.75, 0.25, 0.5},
-	["ORC_MALE"]		= {0.75, 1.0, 0.25, 0.5},
+	["TAUREN_MALE"]		= {0, 0.125, 0.25, 0.5},
+	["SCOURGE_MALE"]	= {0.125, 0.25, 0.25, 0.5},
+	["TROLL_MALE"]		= {0.25, 0.375, 0.25, 0.5},
+	["ORC_MALE"]		= {0.375, 0.5, 0.25, 0.5},
 
-	["HUMAN_FEMALE"]	= {0, 0.25, 0.5, 0.75},  
-	["DWARF_FEMALE"]	= {0.25, 0.5, 0.5, 0.75},
-	["GNOME_FEMALE"]	= {0.5, 0.75, 0.5, 0.75},
-	["NIGHTELF_FEMALE"]	= {0.75, 1.0, 0.5, 0.75},
+	["HUMAN_FEMALE"]	= {0, 0.125, 0.5, 0.75},  
+	["DWARF_FEMALE"]	= {0.125, 0.25, 0.5, 0.75},
+	["GNOME_FEMALE"]	= {0.25, 0.375, 0.5, 0.75},
+	["NIGHTELF_FEMALE"]	= {0.375, 0.5, 0.5, 0.75},
 	
-	["TAUREN_FEMALE"]	= {0, 0.25, 0.75, 1.0},   
-	["SCOURGE_FEMALE"]	= {0.25, 0.5, 0.75, 1.0}, 
-	["TROLL_FEMALE"]	= {0.5, 0.75, 0.75, 1.0}, 
-	["ORC_FEMALE"]		= {0.75, 1.0, 0.75, 1.0}, 
+	["TAUREN_FEMALE"]	= {0, 0.125, 0.75, 1.0},   
+	["SCOURGE_FEMALE"]	= {0.125, 0.25, 0.75, 1.0}, 
+	["TROLL_FEMALE"]	= {0.25, 0.375, 0.75, 1.0}, 
+	["ORC_FEMALE"]		= {0.375, 0.5, 0.75, 1.0}, 
+
+	["BLOODELF_MALE"]	= {0.5, 0.625, 0.25, 0.5},
+	["BLOODELF_FEMALE"]	= {0.5, 0.625, 0.75, 1.0}, 
+
+	["DRAENEI_MALE"]	= {0.5, 0.625, 0, 0.25},
+	["DRAENEI_FEMALE"]	= {0.5, 0.625, 0.5, 0.75}, 								   
 };
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]	= {0, 0.25, 0, 0.25},
@@ -71,11 +76,6 @@ function CharacterCreate_OnLoad(self)
 	for i=1, NUM_CHAR_CUSTOMIZATIONS, 1 do
 		_G["CharacterCustomizationButtonFrame"..i.."Text"]:SetText(_G["CHAR_CUSTOMIZATION"..i.."_DESC"]);
 	end
-
-	-- Color edit box backdrop
-	local backdropColor = FACTION_BACKDROP_COLOR_TABLE["Alliance"];
-	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 end
 
 function CharacterCreate_OnShow(self)
@@ -330,11 +330,8 @@ function SetCharacterRace(id)
 
 	-- Set backdrop colors based on faction
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE[faction];
-	local frame;
 	for index, value in ipairs(FRAMES_TO_BACKDROP_COLOR) do
-		frame = _G[value];
-		--frame:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-		frame:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
+		_G[value]:SetBackdropColor(backdropColor:GetRGB());
 	end
 
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel());

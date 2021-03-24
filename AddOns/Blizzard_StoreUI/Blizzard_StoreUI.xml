@@ -5,30 +5,6 @@
 	<Script file="Blizzard_StoreUIOutbound.lua" />
 	<Script file="Blizzard_StoreUISecure.lua" />
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		<Button name="StoreDialogTemplate" virtual="true">
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets>
-					<AbsInset left="11" right="12" top="12" bottom="11" />
-				</BackgroundInsets>
-				<TileSize>
-					<AbsValue val="32" />
-				</TileSize>
-				<EdgeSize>
-					<AbsValue val="32" />
-				</EdgeSize>
-			</Backdrop>
-			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture parentKey="Background">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="11" y="-12" />
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-12" y="11" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="0.8" />
-					</Texture>
-				</Layer>
-			</Layers>
-		</Button>
 		<Button name="StoreButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>
@@ -366,19 +342,7 @@
 		</Button>
 		<Button name="StoreDropDownListTemplate" hidden="true" enableMouse="true" virtual="true" clampedToScreen="true">
 			<Frames>
-				<Frame parentKey="Backdrop" setAllPoints="true">
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="9"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
-				</Frame>
+				<Frame parentKey="Border" inherits="SecureDialogBorderDarkTemplate"/>
 				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
@@ -1647,17 +1611,6 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-						</BackgroundInsets>
-						<TileSize>
-							<AbsValue val="32"/>
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32"/>
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="ARTWORK">
 							<FontString parentKey="Title" inherits="GameFontNormalMed2">
@@ -1676,6 +1629,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 						<Button parentKey="ConfirmButton" inherits="StoreButtonSmallTemplate">
 							<Size x="160" y="26"/>
 							<Anchors>
@@ -1699,7 +1653,7 @@
 						</Button>
 					</Frames>
 					<Scripts>
-						<OnLoad function="ServicesLogoutPopup_OnLoad"/>
+						<OnLoad inherit="prepend" function="ServicesLogoutPopup_OnLoad"/>
 					</Scripts>
 				</Frame>
 			</Frames>
@@ -1707,17 +1661,6 @@
 		<Frame name="StoreDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="100" />
 			<!-- Anchors are set in lua -->
-			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets>
-					<AbsInset left="11" right="12" top="11" bottom="11"/>
-				</BackgroundInsets>
-				<TileSize>
-					<AbsValue val="32" />
-				</TileSize>
-				<EdgeSize>
-					<AbsValue val="32" />
-				</EdgeSize>
-			</Backdrop>
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Description" inherits="GameFontNormalMed2">
@@ -1729,6 +1672,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 				<Button parentKey="Button1" inherits="StoreButtonTemplate" text="OKAY" id="1">
 					<Size x="120" y="22"/>
 					<Anchors>
@@ -1824,14 +1768,9 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20" />
 					</Anchors>
-					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<TileSize>
-							<AbsValue val="32" />
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32" />
-						</EdgeSize>
-					</Backdrop>
+					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderNoCenterTemplate"/>
+					</Frames>
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture>
@@ -1880,14 +1819,6 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20" />
 					</Anchors>
-					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<TileSize>
-							<AbsValue val="32" />
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32" />
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture>
@@ -1914,6 +1845,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
 						<Button parentKey="OkayButton" inherits="StoreButtonTemplate">
 							<Size x="120" y="22" />
 							<Anchors>
@@ -1937,14 +1869,6 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="40" />
 					</Anchors>
-					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-						<TileSize>
-							<AbsValue val="32" />
-						</TileSize>
-						<EdgeSize>
-							<AbsValue val="32" />
-						</EdgeSize>
-					</Backdrop>
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture>
@@ -1988,6 +1912,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
 						<Button parentKey="AcceptButton" inherits="StoreButtonTemplate">
 							<Size x="120" y="22" />
 							<Anchors>
@@ -2659,22 +2584,11 @@
 								</OnKeyDown>
 							</Scripts>
 						</EditBox>
-						<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
+						<Frame parentKey="TransferRealmAutoCompleteBox" inherits="TooltipBorderedFrameTemplate" hidden="true">
 							<Size x="154" y="5"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOM" x="-4" y="14"/>
 							</Anchors>
-							<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-								<BackgroundInsets>
-									<AbsInset left="10" right="5" top="4" bottom="9"/>
-								</BackgroundInsets>
-								<TileSize>
-									<AbsValue val="16"/>
-								</TileSize>
-								<EdgeSize>
-									<AbsValue val="16"/>
-								</EdgeSize>
-							</Backdrop>
 							<Layers>
 								<Layer level="BACKGROUND">
 									<Texture parentKey="Shade">
@@ -2842,9 +2756,6 @@
 					</FontString>
 				</Layer>
 			</Layers>
-			<Scripts>
-				<OnLoad function="StoreTooltip_OnLoad" />
-			</Scripts>
 		</Frame>
 		
 		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" hyperlinksEnabled="true" virtual="true">

@@ -13,6 +13,7 @@ end
 Import("C_AuthChallenge");
 Import("IsShiftKeyDown");
 Import("GetBindingFromClick");
+Import("BackdropTemplateMixin");
 
 Import("BLIZZARD_CHALLENGE_SUBMIT");
 Import("BLIZZARD_CHALLENGE_CANCEL");

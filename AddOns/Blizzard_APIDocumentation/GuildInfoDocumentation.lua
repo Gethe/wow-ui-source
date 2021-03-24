@@ -52,6 +52,27 @@ local GuildInfo =
 				{ Name = "guid", Type = "string", Nilable = false },
 				{ Name = "rankOrder", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "isGuildRankAssignmentAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QueryGuildMembersForRecipe",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "updatedRecipeSpellID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "RemoveFromGuild",

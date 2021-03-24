@@ -67,6 +67,37 @@ local Cursor =
 
 	Tables =
 	{
+		{
+			Name = "UICursorType",
+			Type = "Enumeration",
+			NumValues = 21,
+			MinValue = 0,
+			MaxValue = 21,
+			Fields =
+			{
+				{ Name = "Default", Type = "UICursorType", EnumValue = 0 },
+				{ Name = "Item", Type = "UICursorType", EnumValue = 1 },
+				{ Name = "Money", Type = "UICursorType", EnumValue = 2 },
+				{ Name = "Spell", Type = "UICursorType", EnumValue = 3 },
+				{ Name = "PetAction", Type = "UICursorType", EnumValue = 4 },
+				{ Name = "Merchant", Type = "UICursorType", EnumValue = 5 },
+				{ Name = "ActionBar", Type = "UICursorType", EnumValue = 6 },
+				{ Name = "Macro", Type = "UICursorType", EnumValue = 7 },
+				{ Name = "Ammo", Type = "UICursorType", EnumValue = 8 },
+				{ Name = "Pet", Type = "UICursorType", EnumValue = 10 },
+				{ Name = "GuildBank", Type = "UICursorType", EnumValue = 11 },
+				{ Name = "GuildBankMoney", Type = "UICursorType", EnumValue = 12 },
+				{ Name = "EquipmentSet", Type = "UICursorType", EnumValue = 13 },
+				{ Name = "Currency", Type = "UICursorType", EnumValue = 14 },
+				{ Name = "Flyout", Type = "UICursorType", EnumValue = 15 },
+				{ Name = "VoidItem", Type = "UICursorType", EnumValue = 16 },
+				{ Name = "BattlePet", Type = "UICursorType", EnumValue = 17 },
+				{ Name = "Mount", Type = "UICursorType", EnumValue = 18 },
+				{ Name = "Toy", Type = "UICursorType", EnumValue = 19 },
+				{ Name = "CommunitiesStream", Type = "UICursorType", EnumValue = 20 },
+				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 21 },
+			},
+		},
 	},
 };
 

@@ -267,15 +267,16 @@
 					</OnDragStop>
 				</Scripts>
 			</Button>
-			<ScrollFrame parentKey="LinesScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame parentKey="LinesScrollFrame" inherits="UIPanelScrollFrameTemplate, BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Size x="430" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-70"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-						
 						self.scrollBarHideable = 1;
 						self.ScrollBar.scrollStep = 24;
 						ScrollFrame_OnLoad(self);
@@ -291,23 +292,14 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Frame parentKey="ScrollFrameArt">
+			<Frame parentKey="ScrollFrameArt" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LinesScrollFrame" x="0" y="6"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LinesScrollFrame.ScrollBar" x="6" y="-22"/>
 				</Anchors>
-
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="0" bottom="0"/>
-					</BackgroundInsets>
-				</Backdrop>
 			</Frame>
 			<Frame parentKey="FrameHighlight" inherits="FrameHighlightTemplate"/>
 		</Frames>

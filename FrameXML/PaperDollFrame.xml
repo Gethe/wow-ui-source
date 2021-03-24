@@ -128,7 +128,12 @@
 		</Size>
 		<Scripts>
 			<OnEnter>
-				PaperDollStatTooltip(self);
+				if ( self.tooltip ) then
+					GameTooltip:SetOwner(self,"ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, 1.0,1.0,1.0);
+					GameTooltip:AddLine(self.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+					GameTooltip:Show();
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -216,6 +221,24 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="PlayerTitleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-9"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						PlayerTitleDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
+						UIDropDownMenu_SetSelectedValue(self, GetCurrentTitle());
+					</OnShow>
+				</Scripts>
+			</Frame>
 			<PlayerModel name="CharacterModelFrame">
 				<Size x="233" y="224"/>
 				<Anchors>
@@ -276,7 +299,7 @@
 					</OnLoad>
 					<OnMouseUp>
 						if ( self.mouseDown ) then
-							self.onMouseUpFunc(self, button);
+						self.onMouseUpFunc(self, button);
 						end
 						AutoEquipCursorItem();
 					</OnMouseUp>
@@ -301,7 +324,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="PlayerStatBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+						<Texture name="PlayerStatLeftTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 							<Size>
 								<AbsDimension x="115" y="16"/>
 							</Size>
@@ -314,12 +337,12 @@
 							</Anchors>
 							<TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
 						</Texture>
-						<Texture name="PlayerStatBackgroundMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+						<Texture name="PlayerStatLeftMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 							<Size>
 								<AbsDimension x="115" y="53"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="PlayerStatBackgroundTop" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="PlayerStatLeftTop" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
@@ -327,12 +350,12 @@
 							</Anchors>
 							<TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
 						</Texture>
-						<Texture name="PlayerStatBackgroundBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+						<Texture name="PlayerStatLeftBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 							<Size>
 								<AbsDimension x="115" y="16"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="PlayerStatBackgroundMiddle" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="PlayerStatLeftMiddle" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
@@ -340,25 +363,25 @@
 							</Anchors>
 							<TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
 						</Texture>
-						<Texture name="MeleeAttackBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+						<Texture name="PlayerStatRightTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 							<Size>
 								<AbsDimension x="115" y="16"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT">
+								<Anchor point="TOPLEFT" relativeTo="PlayerStatLeftTop" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="115" y="0"/>
+										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
 						</Texture>
-						<Texture name="MeleeAttackBackgroundMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+						<Texture name="PlayerStatRightMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 							<Size>
-								<AbsDimension x="115" y="12"/>
+								<AbsDimension x="115" y="53"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="MeleeAttackBackgroundTop" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="PlayerStatRightTop" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
@@ -366,51 +389,12 @@
 							</Anchors>
 							<TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
 						</Texture>
-						<Texture name="MeleeAttackBackgroundBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+						<Texture name="PlayerStatRightBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 							<Size>
 								<AbsDimension x="115" y="16"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="MeleeAttackBackgroundMiddle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
-						</Texture>
-						<Texture name="RangedAttackBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
-							<Size>
-								<AbsDimension x="115" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="MeleeAttackBackgroundBottom" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
-						</Texture>
-						<Texture name="RangedAttackBackgroundMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
-							<Size>
-								<AbsDimension x="115" y="11"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="RangedAttackBackgroundTop" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
-						</Texture>
-						<Texture name="RangedAttackBackgroundBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
-							<Size>
-								<AbsDimension x="115" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="RangedAttackBackgroundMiddle" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="PlayerStatRightMiddle" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>
@@ -421,7 +405,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="CharacterStatFrame1" inherits="AttributeFrameTemplate" id="1">
+					<Frame name="PlayerStatFrameLeft1" inherits="StatFrameTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -429,179 +413,138 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT1_NAME..":");
-								self.stat = "STRENGTH";
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="CharacterStatFrame2" inherits="AttributeFrameTemplate" id="2">
+					<Frame name="PlayerStatFrameLeft2" inherits="StatFrameTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterStatFrame1" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameLeft1" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT2_NAME..":");
-								self.stat = "AGILITY";
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="CharacterStatFrame3" inherits="AttributeFrameTemplate" id="3">
+					<Frame name="PlayerStatFrameLeft3" inherits="StatFrameTemplate" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterStatFrame2" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameLeft2" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT3_NAME..":");
-								self.stat = "STAMINA";
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="CharacterStatFrame4" inherits="AttributeFrameTemplate" id="4">
+					<Frame name="PlayerStatFrameLeft4" inherits="StatFrameTemplate" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterStatFrame3" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameLeft3" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT4_NAME..":");
-								self.stat = "INTELLECT";
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="CharacterStatFrame5" inherits="AttributeFrameTemplate" id="5">
+					<Frame name="PlayerStatFrameLeft5" inherits="StatFrameTemplate" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterStatFrame4" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameLeft4" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT5_NAME..":");
-								self.stat = "SPIRIT";
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="CharacterArmorFrame" inherits="StatFrameTemplate">
+					<Frame name="PlayerStatFrameLeft6" inherits="StatFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterStatFrame5" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameLeft5" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(ARMOR_COLON);
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="CharacterAttackFrame" inherits="StatFrameTemplate">
+					<Frame name="PlayerStatFrameRight1" inherits="StatFrameTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterAttributesFrame" relativePoint="TOPLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatRightTop">
 								<Offset>
-									<AbsDimension x="122" y="-2"/>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerStatFrameRight2" inherits="StatFrameTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameRight1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerStatFrameRight3" inherits="StatFrameTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameRight2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerStatFrameRight4" inherits="StatFrameTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameRight3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerStatFrameRight5" inherits="StatFrameTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameRight4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerStatFrameRight6" inherits="StatFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerStatFrameRight5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerStatFrameLeftDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="PlayerStatLeftTop" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-17" y="-8"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self.Label:SetText(MELEE_ATTACK);
+								PlayerStatFrameLeftDropDown_OnLoad(self);
 							</OnLoad>
+							<OnShow>
+								PlayerStatFrameLeftDropDown_Initialize(self);
+							</OnShow>
 						</Scripts>
 					</Frame>
-					<Frame name="CharacterAttackPowerFrame" inherits="StatFrameTemplate">
+					<Frame name="PlayerStatFrameRightDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterAttackFrame" relativePoint="BOTTOMLEFT">
+							<Anchor point="BOTTOMLEFT" relativeTo="PlayerStatRightTop" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="5" y="1"/>
+									<AbsDimension x="-17" y="-8"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self.Label:SetText(ATTACK_POWER_COLON);
-								self:SetWidth(99);
+								PlayerStatFrameRightDropDown_OnLoad(self);
 							</OnLoad>
-						</Scripts>
-					</Frame>
-					<Frame name="CharacterDamageFrame" inherits="StatFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterAttackPowerFrame" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(DAMAGE_COLON);
-								self:SetWidth(99);
-							</OnLoad>
-							<OnEnter>
-								CharacterDamageFrame_OnEnter(self);
-							</OnEnter>
-						</Scripts>
-					</Frame>
-					<Frame name="CharacterRangedAttackFrame" inherits="StatFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterDamageFrame" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="-5" y="-6"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(RANGED_ATTACK);
-							</OnLoad>
-						</Scripts>
-					</Frame>
-					<Frame name="CharacterRangedAttackPowerFrame" inherits="StatFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterRangedAttackFrame" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="5" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(ATTACK_POWER_COLON);
-								self:SetWidth(99);
-							</OnLoad>
-						</Scripts>
-					</Frame>
-					<Frame name="CharacterRangedDamageFrame" inherits="StatFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterRangedAttackPowerFrame" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(DAMAGE_COLON);
-								self:SetWidth(99);
-							</OnLoad>
-							<OnEnter>
-								CharacterRangedDamageFrame_OnEnter(self);
-							</OnEnter>
+							<OnShow>
+								PlayerStatFrameRightDropDown_Initialize(self);
+							</OnShow>
 						</Scripts>
 					</Frame>
 				</Frames>

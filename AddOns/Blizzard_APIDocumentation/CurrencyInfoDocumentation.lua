@@ -1,6 +1,6 @@
 local CurrencyInfo =
 {
-	Name = "CurrencyInfo",
+	Name = "CurrencySystem",
 	Type = "System",
 	Namespace = "C_CurrencyInfo",
 

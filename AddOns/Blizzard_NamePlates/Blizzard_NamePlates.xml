@@ -18,9 +18,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
-					<Anchors>
+		<Anchors>
 			<Anchor point="LEFT" relativePoint="LEFT" x="-4" />
-					</Anchors>
+		</Anchors>
 	</Frame>
 
 	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
@@ -55,7 +55,17 @@
 					</OnLoad>
 				</Scripts>
 			</StatusBar>
-
+			
+			<StatusBar parentKey="CastBar" inherits="SmallCastingBarFrameTemplate" hidden="true">
+				<Size x="102" y="10"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.healthBar" relativePoint="BOTTOM" x="17" y="-6"/>
+				</Anchors>
+				<Scripts>
+					<OnShow function="Nameplate_CastBar_AdjustPosition"/>
+				</Scripts>
+			</StatusBar>
+			
 			<Frame parentKey="RaidTargetFrame">
 				<Size x="22" y="22"/>
 				<Anchors>

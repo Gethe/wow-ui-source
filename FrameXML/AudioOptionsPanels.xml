@@ -86,15 +86,18 @@
 			</CheckButton>
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
 				<Size x="186" y="264"/>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
@@ -266,10 +269,13 @@
 						<Offset x="14" y="0"/>
 					</Anchor>
 				</Anchors>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
@@ -396,10 +402,13 @@
 						<Offset x="14" y="0"/>
 					</Anchor>
 				</Anchors>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
@@ -755,7 +764,31 @@
 					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
-			</Slider>			
+			</Slider>
+
+			<Slider name="$parentVoiceChatDucking" parentKey="VoiceChatDucking" inherits="OptionsSliderTemplate">
+				<KeyValues>
+					<KeyValue key="isValueNormalized" value="true" type="boolean"/>
+					<KeyValue key="isValueInverted" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18" y="-45" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_DUCKING_SCALE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
 			
 			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />
@@ -856,12 +889,12 @@
 							<Anchor point="LEFT" relativeKey="$parent.ToggleTest" relativePoint="RIGHT" x="3" y="0"/>
 							<Anchor point="RIGHT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-								self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-							</OnLoad>
-						</Scripts>
+						<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+						<KeyValues>
+							<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+							<KeyValue key="backdropColorAlpha" value=".5" type="number"/>
+							<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+						</KeyValues>
 						<Frames>
 							<StatusBar parentKey="Status" inherits="TextStatusBar">
 								<Anchors>

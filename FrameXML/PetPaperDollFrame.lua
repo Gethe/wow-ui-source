@@ -66,13 +66,10 @@ function PetPaperDollFrame_Update()
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();
 	PetPaperDollFrame_SetStats();
-	PaperDollFrame_SetDamage("pet", "Pet");
-	PaperDollFrame_SetRangedDamage("pet", "Pet");
-	PaperDollFrame_SetAttackPower("pet", "Pet");
-	PaperDollFrame_SetRangedAttackPower("pet", "Pet");
-	PaperDollFrame_SetArmor("pet", "Pet");
-	PaperDollFrame_SetAttackBothHands("pet", "Pet");
-	PaperDollFrame_SetDefense("pet", "Pet");
+	PaperDollFrame_SetDamage(PetDamageFrame, "Pet");
+	PaperDollFrame_SetArmor(PetArmorFrame, "Pet");
+	PaperDollFrame_SetAttackPower(PetAttackPowerFrame, "Pet");
+	PetPaperDollFrame_SetSpellBonusDamage();
 
 	if ( canGainXP ) then
 		PetPaperDollPetInfo:Show();
@@ -132,32 +129,109 @@ end
 
 function PetPaperDollFrame_SetStats()
 	for i=1, NUM_PET_STATS, 1 do
-		local label = _G["PetStatFrame"..i.."Label"];
-		local text = _G["PetStatFrame"..i.."StatText"];
-		local frame = _G["PetStatFrame"..i];
+		local label = getglobal("PetStatFrame"..i.."Label");
+		local text = getglobal("PetStatFrame"..i.."StatText");
+		local frame = getglobal("PetStatFrame"..i);
 		local stat;
 		local effectiveStat;
 		local posBuff;
 		local negBuff;
-		label:SetText(_G["SPELL_STAT"..(i).."_NAME"]..":");
+		label:SetText(getglobal("SPELL_STAT"..i.."_NAME")..":");
 		stat, effectiveStat, posBuff, negBuff = UnitStat("pet", i);
-
 		-- Set the tooltip text
-		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE.._G["SPELL_STAT"..(i).."_NAME"].." ";
-		-- Get class specific tooltip for that stat
-		local temp, classFileName = UnitClass("pet");
-		local classStatText = _G[strupper(classFileName).."_"..frame.stat.."_".."TOOLTIP"];
-		-- If can't find one use the default
-		if ( not classStatText ) then
-			classStatText = _G["DEFAULT".."_"..frame.stat.."_".."TOOLTIP"];
-		end
+		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..getglobal("SPELL_STAT"..i.."_NAME").." ";
 
-		--[[ In 1.12, UnitStat didn't report positive / negative buffs for units that weren't the active player.
-			 To replicate this, we just won't include modifiers (e.g. green / red coloring) in the UI. ]]
-		text:SetText(effectiveStat);
-		frame.tooltip = tooltipText..effectiveStat..FONT_COLOR_CODE_CLOSE;
-		frame.tooltip2 = classStatText;
+		if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
+			text:SetText(effectiveStat);
+			frame.tooltip = tooltipText..effectiveStat..FONT_COLOR_CODE_CLOSE;
+		else 
+			tooltipText = tooltipText..effectiveStat;
+			if ( posBuff > 0 or negBuff < 0 ) then
+				tooltipText = tooltipText.." ("..(stat - posBuff - negBuff)..FONT_COLOR_CODE_CLOSE;
+			end
+			if ( posBuff > 0 ) then
+				tooltipText = tooltipText..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..posBuff..FONT_COLOR_CODE_CLOSE;
+			end
+			if ( negBuff < 0 ) then
+				tooltipText = tooltipText..RED_FONT_COLOR_CODE.." "..negBuff..FONT_COLOR_CODE_CLOSE;
+			end
+			if ( posBuff > 0 or negBuff < 0 ) then
+				tooltipText = tooltipText..HIGHLIGHT_FONT_COLOR_CODE..")"..FONT_COLOR_CODE_CLOSE;
+			end
+			frame.tooltip = tooltipText;
+
+			-- If there are any negative buffs then show the main number in red even if there are
+			-- positive buffs. Otherwise show in green.
+			if ( negBuff < 0 ) then
+				text:SetText(RED_FONT_COLOR_CODE..effectiveStat..FONT_COLOR_CODE_CLOSE);
+			else
+				text:SetText(GREEN_FONT_COLOR_CODE..effectiveStat..FONT_COLOR_CODE_CLOSE);
+			end
+		end
+		
+		-- Second tooltip line
+		frame.tooltip2 = getglobal("DEFAULT_STAT"..i.."_TOOLTIP");
+		if ( i == 1 ) then
+			local attackPower = 2*effectiveStat-20;
+			frame.tooltip2 = format(frame.tooltip2, attackPower);
+		elseif ( i == 2 ) then
+			local newLineIndex = strfind(frame.tooltip2, "|n")+1;
+			frame.tooltip2 = strsub(frame.tooltip2, 1, newLineIndex);
+			frame.tooltip2 = format(frame.tooltip2, GetCritChanceFromAgility("pet"));
+		elseif ( i == 3 ) then
+			local expectedHealthGain = (((stat - posBuff - negBuff)-20)*10+20)*GetUnitHealthModifier("pet");
+			local realHealthGain = ((effectiveStat-20)*10+20)*GetUnitHealthModifier("pet");
+			local healthGain = (realHealthGain - expectedHealthGain)*GetUnitMaxHealthModifier("pet");
+			frame.tooltip2 = format(frame.tooltip2, healthGain);
+		elseif ( i == 4 ) then
+			if ( UnitHasMana("pet") ) then
+				local manaGain = ((effectiveStat-20)*15+20)*GetUnitPowerModifier("pet");
+				frame.tooltip2 = format(frame.tooltip2, manaGain, GetSpellCritChanceFromIntellect("pet"));
+			else
+				local newLineIndex = strfind(frame.tooltip2, "|n")+2;
+				frame.tooltip2 = strsub(frame.tooltip2, newLineIndex);
+				frame.tooltip2 = format(frame.tooltip2, GetSpellCritChanceFromIntellect("pet"));
+			end
+		elseif ( i == 5 ) then
+			frame.tooltip2 = format(frame.tooltip2, GetUnitHealthRegenRateFromSpirit("pet"));
+			if ( UnitHasMana("pet") ) then
+				frame.tooltip2 = frame.tooltip2.."\n"..format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
+			end
+		end
 	end
+end
+
+function PetPaperDollFrame_SetSpellBonusDamage()
+	local unitClass = UnitClass("player");
+	unitClass = strupper(unitClass);
+	local spellDamageBonus = 0;
+	if( unitClass == "WARLOCK" ) then
+		local bonusFireDamage = GetSpellBonusDamage(3);
+		local bonusShadowDamage = GetSpellBonusDamage(6);
+		if ( bonusShadowDamage > bonusFireDamage ) then
+			spellDamageBonus =  ComputePetBonus("PET_BONUS_SPELLDMG_TO_SPELLDMG", bonusShadowDamage);
+		else
+			spellDamageBonus =  ComputePetBonus("PET_BONUS_SPELLDMG_TO_SPELLDMG", bonusFireDamage);
+		end
+	elseif( unitClass == "HUNTER" ) then
+		local base, posBuff, negBuff = UnitRangedAttackPower("player");
+		local totalAP = base+posBuff+negBuff;
+		spellDamageBonus = ComputePetBonus( "PET_BONUS_RAP_TO_SPELLDMG", totalAP );
+	end
+	local spellDamageBonusText = format("%d",spellDamageBonus);
+
+	PetSpellDamageFrameLabel:SetText(SPELL_BONUS_COLON);
+	if ( spellDamageBonus > 0 ) then
+		spellDamageBonusText = GREEN_FONT_COLOR_CODE.."+"..spellDamageBonusText..FONT_COLOR_CODE_CLOSE;
+	elseif( spellDamageBonus < 0 ) then
+		spellDamageBonusText = RED_FONT_COLOR_CODE..spellDamageBonusText..FONT_COLOR_CODE_CLOSE;
+	end
+
+	PetSpellDamageFrameStatText:SetText(spellDamageBonusText);
+	PetSpellDamageFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..SPELL_BONUS..FONT_COLOR_CODE_CLOSE.." "..spellDamageBonusText;
+	PetSpellDamageFrame.tooltip2 = DEFAULT_STATSPELLBONUS_TOOLTIP;
+
+	PetSpellDamageFrame:Show();
 end
 
 function PetExpBar_Update()

@@ -290,22 +290,16 @@
 					<OnUpdate function="TabardCharacterModelFrame_OnUpdate"/>
                 </Scripts>
             </TabardModel>
-			<Frame name="TabardFrameCostFrame">
+			<Frame name="TabardFrameCostFrame" inherits="BackdropTemplate">
 				<Size x="170" y="23"/>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+					<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="TabardFrameOuterFrameTopRight" x="-7" y="-5"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Frames>
 					<Frame name="TabardFrameCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>

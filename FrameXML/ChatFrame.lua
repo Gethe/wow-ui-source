@@ -1411,7 +1411,7 @@ SecureCmdList["ASSIST"] = function(msg)
 	end
 end
 
---[[SecureCmdList["FOCUS"] = function(msg)
+SecureCmdList["FOCUS"] = function(msg)
 	if ( msg == "" ) then
 		FocusUnit();
 	else
@@ -1429,7 +1429,7 @@ SecureCmdList["CLEARFOCUS"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		ClearFocus();
 	end
-end]]
+end
 
 SecureCmdList["MAINTANKON"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
@@ -1987,11 +1987,16 @@ SlashCmdList["CHANNEL"] = function(msg, editBox)
 end
 
 SlashCmdList["FRIENDS"] = function(msg)
-	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-	if ( player ~= "" or UnitIsPlayer("target") ) then
-		C_FriendList.AddOrRemoveFriend(player, note);
-	else
+	if msg == "" and UnitIsPlayer("target") then
+		msg = GetUnitName("target", true)
+	end
+	if not msg or msg == "" then
 		ToggleFriendsPanel();
+	else
+		local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
+		if player then
+			C_FriendList.AddOrRemoveFriend(player, note);
+		end
 	end
 end
 
@@ -2422,9 +2427,9 @@ SlashCmdList["VOICECHAT"] = function(msg)
 	local communityID;
 	local streamID;
 	if lowerName == string.lower(PARTY) then
-		channelType = Enum.ChatChannelType.Private_Party;
+		channelType = Enum.ChatChannelType.PrivateParty;
 	elseif lowerName == string.lower(INSTANCE) then
-		channelType = Enum.ChatChannelType.Public_Party;
+		channelType = Enum.ChatChannelType.PublicParty;
 	elseif lowerName == string.lower(GUILD) then
 		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Guild);
 	elseif lowerName == string.lower(OFFICER) then
@@ -4263,7 +4268,6 @@ function ChatEdit_UpdateHeader(editBox)
 		return;
 	elseif ( type == "WHISPER" ) then
 		local tellTarget = editBox:GetAttribute("tellTarget");
-		tellTarget = Ambiguate(tellTarget, "none")
 		header:SetFormattedText(CHAT_WHISPER_SEND, tellTarget);
 	elseif ( type == "BN_WHISPER" ) then
 		local name = editBox:GetAttribute("tellTarget");
@@ -4860,9 +4864,6 @@ function ChatMenu_OnShow(self)
 	EmoteMenu:Hide();
 	LanguageMenu:Hide();
 	VoiceMacroMenu:Hide();
-
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function EmoteMenu_Click(self)

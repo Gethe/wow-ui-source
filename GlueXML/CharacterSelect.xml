@@ -216,8 +216,20 @@
 				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
 				if ( self:IsEnabled() ) then
 					GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
+					if (self.tooltip2) then
+						GlueTooltip:AddLine(self.tooltip2, nil, nil, nil, nil, true)
+					end
+					if (self.tooltip3) then
+						GlueTooltip:AddLine(self.tooltip3, .5, .5, .5, 1.0, true);
+					end
 				else
-					GlueTooltip:SetText(self.disabledTooltip, 1.0, 1.0, 1.0);
+					GlueTooltip:SetText(self.disabledTooltip, 1.0, 1.0, 1.0, 1.0, true);
+					if (self.disabledTooltip2) then
+						GlueTooltip:AddLine(self.disabledTooltip2, nil, nil, nil, nil, true)
+					end
+					if (self.disabledTooltip3) then
+						GlueTooltip:AddLine(self.disabledTooltip3, 1.0, 0.1, 0.1, 1.0, true);
+					end
 				end
 			</OnEnter>
 			<OnLeave>
@@ -335,7 +347,33 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-
+		
+	<Button name="TBCInfoPaneTemplate" inherits="DefaultScaleFrame" parentArray="notificationIconFrames" frameStrata="HIGH" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+		</KeyValues>
+		<Size x="192" y ="153"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TBCIcon">
+					<Size x="192" y ="153"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="TBCInfoPaneTemplate_OnLoad"/>
+			<OnClick function="TBCInfoPane_Toggle"/>
+			<OnEnter function="TBCInfoPaneTemplate_OnEnter"/>
+			<OnLeave function="TBCInfoPaneTemplate_OnLeave"/>
+		</Scripts>
+		<HighlightTexture parentKey="TBCIconHighlight" alpha="0.3" alphaMode="ADD">
+			<Size x="192" y ="153"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>	
+	</Button>
+	
 	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameStrata="HIGH" hidden="true" virtual="true">
 		<Size x="59" y="60"/>
 		<Layers>
@@ -960,8 +998,14 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterSelectCharacterFrame">
+					<Frame name="CharacterSelectCharacterFrame" inherits="BackdropTemplate">
 						<Size x="260" y="642"/>
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+							<KeyValue key="backdropColorAlpha" value=".85" type="number"/>
+							<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-5" y="-15"/>
 						</Anchors>
@@ -983,17 +1027,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Frames>
 							<Slider name="$parentScrollBar" parentKey="scrollBar" inherits="GlueScrollBarTemplate" hidden="true">
 								<Anchors>
@@ -1110,7 +1143,7 @@
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
+							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" motionScriptsWhileDisabled="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="-18" y="15"/>
@@ -1119,6 +1152,15 @@
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
+									<OnEnter>
+										if (self.tooltip) then
+											GlueTooltip:SetOwner(self);
+											GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+										end
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
 									<OnMouseDown>
 										self.down = true;
 									</OnMouseDown>
@@ -1172,7 +1214,7 @@
 								<Scripts>
 									<OnEnter>
 										GlueTooltip:SetOwner(self);
-										GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
+										GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -1196,6 +1238,21 @@
 									<OnDisable/>
 								</Scripts>
 							</Button>
+							<CheckButton name="CharSelectShowUnactivatedCharactersCheckButton" inherits="GlueCheckButtonTemplate" hidden="true">
+								<Scripts>
+									<OnLoad>
+										self.Text:SetText(SHOW_UNACTIVATED_CHARACTERS);
+										local xOffset = (-1 * self.Text:GetWidth()) - 5;
+										self:SetPoint("TOPRIGHT", self:GetParent(), "BOTTOMRIGHT", xOffset, 0);
+									</OnLoad>
+									<OnShow>
+										self:SetChecked(GetCVarBool("showUnactivatedCharacters"));
+									</OnShow>
+									<OnClick inherit="prepend">
+										SetCVar("showUnactivatedCharacters", self:GetChecked());
+									</OnClick>
+								</Scripts>
+							</CheckButton>
 							<Button name="CharSelectPaidService1" inherits="CharSelectPaidServiceTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="TOP" x="0" y="6"/>
@@ -1553,22 +1610,14 @@
 									<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER" x="0" y="0"/>
 								</Anchors>
 								<Frames>
-									<Frame name="CharacterUpgradeSecondChanceWarningBackground">
+									<Frame name="CharacterUpgradeSecondChanceWarningBackground" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+										</KeyValues>
 										<Size x="412" y="146"/>
 										<Anchors>
 											<Anchor point="CENTER" x="0" y="0"/>
 										</Anchors>
-										<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="11" right="12" top="12" bottom="11"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="32"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="32"/>
-											</EdgeSize>
-										</Backdrop>
 										<Layers>
 											<Layer level="ARTWORK">
 												<FontString parentKey="Text" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT">
@@ -1605,7 +1654,7 @@
 											</Button>
 										</Frames>
 										<Scripts>
-											<OnLoad>
+											<OnLoad inherit="prepend">
 												self.Text:SetSpacing(4);
 											</OnLoad>
 										</Scripts>
@@ -1647,22 +1696,14 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterTemplatesFrame" hidden="true">
+					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+						</KeyValues>
 						<Size x="220" y="150"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOMLEFT" x="-5" y="-4"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString inherits="GlueFontNormal" text="TEMPLATE_CHARACTER">
@@ -1701,22 +1742,14 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame name="PlayersOnServer" hidden="true">
+					<Frame name="PlayersOnServer" hidden="true" inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+						</KeyValues>
 						<Size x="220" y="88"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="CharacterTemplatesFrame" relativePoint="TOP" x="0" y="0"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString inherits="GlueFontNormal" text="PLAYERS_ON_SERVER">
@@ -1875,7 +1908,10 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true">
+			<Frame name="GameRoomBillingFrame" hidden="true" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+				</KeyValues>
 				<Size x="255" y="60"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
@@ -1890,21 +1926,81 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="10" right="5" top="4" bottom="9"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-				</Backdrop>
+			</Frame>
+			<Frame name ="TBCInfoPane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
+				<KeyValues>
+					<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+				</KeyValues>
+				<Size x="586" y ="819"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterSelectUI" relativePoint="TOPLEFT" x="28" y="-19"/>
+				</Anchors>
+				<Layers>
+					<Layer level ="OVERLAY">
+						<Texture name="TBCInfoPaneBG">
+							<Size x="586" y ="819"/>
+						</Texture>
+						<FontString name="TBCInfoPaneTitle" inherits="GameFontOffBlack30" justifyH="CENTER" text="BURNING_CRUSADE_PREVIEW_TITLE">
+							<Size x="450" y ="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-77"/>
+							</Anchors>
+						</FontString>
+						<Texture name="TBCInfoPaneSeparator">
+							<Size x="411" y ="2"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneTitle" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>						
+						</Texture>
+						<FontString name="TBCInfoPaneDesc1" inherits="InfoPaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_PREVIEW_DESCRIPTION1">
+							<Size x="400" y ="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneSeparator" relativePoint="BOTTOM" x="0" y="-28"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="TBCInfoPaneDiagram" name ="TBCInfoPaneDiagram">
+							<Size x="477" y="258"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneDesc1" relativePoint="BOTTOM" x="0" y="-28"/>
+							</Anchors>						
+						</Texture>
+						<FontString name="TBCInfoPaneOr" inherits="InfoPaneMedWhiteFont" justifyH="CENTER" text="OR_CAPS">
+							<Size x="400" y ="90"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="TBCInfoPaneDiagram" relativePoint="CENTER" x="0" y="-52"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+						<SimpleHTML parentKey="TBCInfoPaneHTMLDesc">
+							<Size x="400" y ="90"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneDiagram" relativePoint="BOTTOM" x="0" y="-42"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad function ="TBCInfoPaneHTMLDesc_OnLoad"/>
+								<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+							</Scripts>
+							<FontString inherits="InfoPaneMedFont" spacing="2"/>
+						</SimpleHTML>
+						<Button name="TBCInfoCloseButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_PREVIEW_BUTTON_GOT_IT">
+							<Size x="240" y="63"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="TBCInfoPaneBG" relativePoint="BOTTOM" x="0" y="46"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="TBCInfoPane_Toggle"/>
+							</Scripts>
+						</Button>
+				</Frames>
+				<Scripts>
+					<OnShow function ="TBCInfoPane_OnShow"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CharacterSelect_OnLoad"/>
+			<OnLoad inherit="prepend" function="CharacterSelect_OnLoad"/>
 			<OnShow function="CharacterSelect_OnShow"/>
 			<OnHide function="CharacterSelect_OnHide"/>
 			<OnUpdate function="CharacterSelect_OnUpdate"/>
@@ -1916,24 +2012,16 @@
 			</OnEvent>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" inherits="BackdropTemplate">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="CharacterDeleteBackground">
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterDeleteText1" inherits="GlueFontNormalLarge">
@@ -2041,24 +2129,16 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" inherits="BackdropTemplate">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="CharacterRenameBackground">
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterRenameText1" inherits="GlueFontNormalLarge" text="CHAR_RENAME_DESCRIPTION">

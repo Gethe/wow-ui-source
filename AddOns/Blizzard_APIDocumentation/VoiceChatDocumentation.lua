@@ -190,6 +190,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetMasterVolumeScale",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "scale", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMemberGUID",
 			Type = "Function",
 
@@ -546,6 +555,15 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "volume", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMasterVolumeScale",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "scale", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1002,9 +1020,9 @@ local VoiceChat =
 		{
 			Name = "VoiceChatStatusCode",
 			Type = "Enumeration",
-			NumValues = 23,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 22,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "Success", Type = "VoiceChatStatusCode", EnumValue = 0 },
@@ -1030,6 +1048,8 @@ local VoiceChat =
 				{ Name = "InvalidCommunityStream", Type = "VoiceChatStatusCode", EnumValue = 20 },
 				{ Name = "PlayerSilenced", Type = "VoiceChatStatusCode", EnumValue = 21 },
 				{ Name = "PlayerVoiceChatParentalDisabled", Type = "VoiceChatStatusCode", EnumValue = 22 },
+				{ Name = "InvalidInputDevice", Type = "VoiceChatStatusCode", EnumValue = 23 },
+				{ Name = "InvalidOutputDevice", Type = "VoiceChatStatusCode", EnumValue = 24 },
 			},
 		},
 		{
@@ -1039,22 +1059,9 @@ local VoiceChat =
 			{
 				{ Name = "deviceID", Type = "string", Nilable = false },
 				{ Name = "displayName", Type = "string", Nilable = false },
-				{ Name = "power", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isSystemDefault", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "VoiceChatMember",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "energy", Type = "number", Nilable = false },
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "isActive", Type = "bool", Nilable = false },
-				{ Name = "isSpeaking", Type = "bool", Nilable = false },
-				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
-				{ Name = "isSilenced", Type = "bool", Nilable = false },
+				{ Name = "isCommsDefault", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1071,8 +1078,20 @@ local VoiceChat =
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isMuted", Type = "bool", Nilable = false },
 				{ Name = "isTransmitting", Type = "bool", Nilable = false },
-				{ Name = "isLocalProcess", Type = "bool", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "VoiceChatMember", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatMember",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "energy", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "isSpeaking", Type = "bool", Nilable = false },
+				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
+				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
 		},
 		{

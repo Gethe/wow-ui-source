@@ -185,12 +185,12 @@ local QuestLog =
 			Name = "QuestTag",
 			Type = "Enumeration",
 			NumValues = 10,
-			MinValue = 0,
+			MinValue = 1,
 			MaxValue = 102,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
-				{ Name = "Pvp", Type = "QuestTag", EnumValue = 41 },
+				{ Name = "PvP", Type = "QuestTag", EnumValue = 41 },
 				{ Name = "Raid", Type = "QuestTag", EnumValue = 62 },
 				{ Name = "Dungeon", Type = "QuestTag", EnumValue = 81 },
 				{ Name = "Legendary", Type = "QuestTag", EnumValue = 83 },

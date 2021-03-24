@@ -8,7 +8,7 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>		
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="BORDER">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border">
 					<Size>
 						<AbsDimension x="256" y="64"/>
@@ -21,6 +21,8 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size>
 						<AbsDimension x="256" y="64"/>

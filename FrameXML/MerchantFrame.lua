@@ -684,38 +684,15 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	end
 	
 	
-	local itemName;
+	local itemName = "";
 	local itemQuality = 1;
 	local _;
-	local r, g, b = 1, 1, 1;
 	local specs = {};
 	if(itemButton.link) then
 		itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	end
-
-	if ( itemName ) then
-		--It's an item
-		r, g, b = GetItemQualityColor(itemQuality); 
-		specs = GetItemSpecInfo(itemButton.link, specs);
-	else
-		--Not an item. Could be currency or something. Just use what's on the button.
-		itemName = itemButton.name;
-		r, g, b = GetItemQualityColor(1); 
-	end
-	local specText;
-	if (specs and #specs > 0) then
-		local specName, specIcon;
-		specText = "\n\n";
-		for i=1, #specs do
-			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i], UnitSex("player"));
-			specText = specText.." |T"..specIcon..":0:0:0:-1|t "..NORMAL_FONT_COLOR_CODE..specName..FONT_COLOR_CODE_CLOSE;
-			if (i < #specs) then
-				specText = specText..PLAYER_LIST_DELIMITER
-			end
-		end
-	else
-		specText = "";
-	end
+	local r, g, b = GetItemQualityColor(itemQuality);
+	local specText = "";
 	
 	if (itemButton.showNonrefundablePrompt) then
 		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, 

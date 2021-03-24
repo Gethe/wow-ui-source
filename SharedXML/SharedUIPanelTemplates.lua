@@ -1,6 +1,3 @@
-TOOLTIP_DEFAULT_COLOR = CreateColor(1, 1, 1);
-TOOLTIP_DEFAULT_BACKGROUND_COLOR = CreateColor(0.09, 0.09, 0.19);
-
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;
 PANEL_INSET_RIGHT_OFFSET = -6;
@@ -1004,4 +1001,21 @@ end
 
 function ColumnDisplayButton_OnClick(self)
 	self:GetParent():OnClick(self:GetID());
+end
+
+DefaultScaleFrameMixin = {};
+
+function DefaultScaleFrameMixin:OnDefaultScaleFrameLoad()
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UpdateScale();
+end
+
+function DefaultScaleFrameMixin:OnDefaultScaleFrameEvent(event, ...)
+	if event == "DISPLAY_SIZE_CHANGED" then
+		self:UpdateScale();
+	end
+end
+
+function DefaultScaleFrameMixin:UpdateScale()
+	ApplyDefaultScale(self, self.minScale, self.maxScale);
 end

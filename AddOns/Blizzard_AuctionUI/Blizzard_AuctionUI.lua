@@ -1795,8 +1795,7 @@ function AuctionFrame_GetTimeLeftTooltipText(id, isToken)
 end
 
 local function SetupUnitPriceTooltip(tooltip, auctionItem, insertNewline)
-	-- Mental division was a skill in Classic WoW.
-	--[[if ( auctionItem and auctionItem.itemCount > 1 ) then
+	if ( auctionItem and auctionItem.itemCount > 1 ) then
 		local hasBid = auctionItem.bidAmount > 0;
 		local hasBuyout = auctionItem.buyoutPrice > 0;
 		
@@ -1814,7 +1813,7 @@ local function SetupUnitPriceTooltip(tooltip, auctionItem, insertNewline)
 
 		-- This is necessary to update the extents of the tooltip
 		tooltip:Show();
-	end]]
+	end
 end
 
 local function GetAuctionButton(buttonType, id)

@@ -89,13 +89,13 @@ Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
 Import("PortraitFrameTemplateMixin");
 Import("SecondsToTime");
+Import("BackdropTemplateMixin");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
 Import("BLIZZARD_STORE_ON_SALE");
 Import("BLIZZARD_STORE_BUY");
 Import("BLIZZARD_STORE_BUY_EUR");
-Import("BLIZZARD_STORE_PLUS_TAX");
 Import("BLIZZARD_STORE_PRODUCT_INDEX");
 Import("BLIZZARD_STORE_CANCEL_PURCHASE");
 Import("BLIZZARD_STORE_FINAL_BUY");
@@ -103,8 +103,6 @@ Import("BLIZZARD_STORE_FINAL_BUY_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_TITLE");
 Import("BLIZZARD_STORE_CONFIRMATION_INSTRUCTION");
 Import("BLIZZARD_STORE_FINAL_PRICE_LABEL");
-Import("BLIZZARD_STORE_PAYMENT_METHOD");
-Import("BLIZZARD_STORE_PAYMENT_METHOD_EXTRA");
 Import("BLIZZARD_STORE_LOADING");
 Import("BLIZZARD_STORE_PLEASE_WAIT");
 Import("BLIZZARD_STORE_NO_ITEMS");
@@ -115,38 +113,8 @@ Import("BLIZZARD_STORE_VISIT_WEBSITE");
 Import("BLIZZARD_STORE_VISIT_WEBSITE_WARNING");
 Import("BLIZZARD_STORE_BAG_FULL");
 Import("BLIZZARD_STORE_BAG_FULL_DESC");
-Import("BLIZZARD_STORE_CONFIRMATION_GENERIC");
-Import("BLIZZARD_STORE_CONFIRMATION_TEST");
-Import("BLIZZARD_STORE_CONFIRMATION_EUR");
-Import("BLIZZARD_STORE_CONFIRMATION_SERVICES");
-Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST");
-Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
-Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE");
-Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR");
-Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR");
-Import("BLIZZARD_STORE_CONFIRMATION_OTHER");
-Import("BLIZZARD_STORE_CONFIRMATION_OTHER_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
 Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_TPT");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_GBP");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_EURO");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_RUB");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_MXN");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
-Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
-Import("BLIZZARD_STORE_CURRENCY_BETA");
-Import("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
-Import("BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN");
 Import("BLIZZARD_STORE_BROWSE_EUR");
 Import("BLIZZARD_STORE_ASTERISK");
 Import("BLIZZARD_STORE_INTERNAL_ERROR");
@@ -159,22 +127,6 @@ Import("BLIZZARD_STORE_ERROR_TITLE_PAYMENT");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT");
 Import("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
-Import("BLIZZARD_STORE_SECOND_CHANCE_KR");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_KRW");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_CN");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_TW");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_USD");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_ARS");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_JPY");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_CAD");
-Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_NZD");
 Import("BLIZZARD_STORE_REGION_LOCKED");
 Import("BLIZZARD_STORE_REGION_LOCKED_SUBTEXT");
 Import("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
@@ -241,19 +193,7 @@ Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
 Import("BLIZZARD_STORE_PRODUCT_IS_READY");
 Import("BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION");
 Import("BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION");
-Import("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE");
-Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE");
-Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE");
-Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE");
-Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER");
-Import("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE_CN");
-Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE_CN");
-Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN");
-Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN");
-Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN");
 Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
-Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
-Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
 Import("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
 Import("STORE_CATEGORY_VETERAN_DISABLED_TOOLTIP");
 Import("TOOLTIP_DEFAULT_COLOR");
@@ -348,29 +288,13 @@ Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
+local WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID = 161;
 
 -- Mirror of the same variables in GlueParent.lua and UIParent.lua
 local WOW_GAMES_CATEGORY_ID = 33;
 local WOW_GAME_TIME_CATEGORY_ID = 37;
 
 --Data
-local CURRENCY_UNKNOWN = 0;
-local CURRENCY_USD = 1;
-local CURRENCY_GBP = 2;
-local CURRENCY_KRW = 3;
-local CURRENCY_EUR = 4;
-local CURRENCY_RUB = 5;
-local CURRENCY_ARS = 8;
-local CURRENCY_CLP = 9;
-local CURRENCY_MXN = 10;
-local CURRENCY_BRL = 11;
-local CURRENCY_AUD = 12;
-local CURRENCY_CPT = 14;
-local CURRENCY_TPT = 15;
-local CURRENCY_BETA = 16;
-local CURRENCY_JPY = 28;
-local CURRENCY_CAD = 29;
-local CURRENCY_NZD = 30;
 local NUM_STORE_PRODUCT_CARDS = 8;
 local NUM_STORE_PRODUCT_CARD_ROWS = 2;
 local NUM_STORE_PRODUCT_CARDS_PER_ROW = 4;
@@ -387,106 +311,56 @@ local PI = math.pi;
 local CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID = 239;
 local CHARACTER_TRANSFER_PRODUCT_ID = 189;
 
-local currencyMult = 100;
-
 local selectedCategoryID;
 local selectedEntryID;
 local selectedPageNum = 1;
 
---DECIMAL_SEPERATOR = ",";
---LARGE_NUMBER_SEPERATOR = ".";
+local showExclusiveCategory = false;
 
-local function formatLargeNumber(amount)
-	amount = tostring(amount);
-	local newDisplay = "";
-	local strlen = amount:len();
-	--Add each thing behind a comma
-	for i=4, strlen, 3 do
-		newDisplay = LARGE_NUMBER_SEPERATOR..amount:sub(-(i - 1), -(i - 3))..newDisplay;
+local function GetStoreProductGroups()
+	if ( showExclusiveCategory and (selectedCategoryID ~= nil) ) then
+		return { selectedCategoryID };
 	end
-	--Add everything before the first comma
-	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
-	return newDisplay;
-end
 
-local function largeAmount(num)
-	return formatLargeNumber(math.floor(num / currencyMult));
-end
+	local function ShouldDisplayProductGroup(categoryID)
+		-- WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID only appears as an exclusive category.
+		if categoryID == WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID then
+			return false;
 
-local function formatCurrency(dollars, cents, alwaysShowCents)
-	if ( alwaysShowCents or cents ~= 0 ) then
-		return string.format("%s%s%02d", formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
-	else
-		return formatLargeNumber(dollars);
+		-- WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID should go away once you've purchased everything.
+		elseif categoryID == WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID then
+			return C_StorePublic.DoesGroupHavePurchaseableProducts(categoryID);
+		end
+
+		return true;
 	end
+
+	local categories = C_StoreSecure.GetProductGroups();
+	local i = 1;
+	while i <= #categories do
+		if not ShouldDisplayProductGroup(categories[i]) then
+			table.remove(categories, i);
+		else
+			i = i + 1;
+		end
+	end
+
+	return categories;
 end
 
-local function currencyFormatUSD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_USD, formatCurrency(dollars, cents, false));
-end
+local function SetCurrentCategoryToExclusiveState(shouldBeExclusive)
+	if showExclusiveCategory == shouldBeExclusive then
+		return;
+	end
 
-local function currencyFormatGBP(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GBP, formatCurrency(dollars, cents, false));
-end
+	showExclusiveCategory = shouldBeExclusive;
+	
+	if not shouldBeExclusive then
+		StoreFrame_UpdateSelectedCategory();
+		StoreFrame_SetCategory();
+	end
 
-local function currencyFormatKRWLong(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatEuro(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_EURO, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatRUB(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_RUB, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatARS(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_ARS, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCLP(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CLP, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatMXN(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_MXN, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatBRL(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_BRL, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatAUD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_AUD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCPTLong(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatTPT(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TPT, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatRawStar(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_RAW_ASTERISK, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatBeta(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_BETA, formatCurrency(dollars, cents, true));
-end
-
-local function currencyFormatJPY(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_JPY, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCAD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CAD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatNZD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
+	StoreFrame_UpdateCategories(StoreFrame);
 end
 
 -- This is copied from WowTokenUI.lua
@@ -500,7 +374,7 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 
 	if ( (not IsOnGlueScreen() and GetCVar("colorblindMode") == "1" ) or forceColorBlind ) then
 		if (separateThousands) then
-			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
+			goldString = SecureCurrencyUtil.FormatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else
 			goldString = gold..GOLD_AMOUNT_SYMBOL;
 		end
@@ -508,7 +382,7 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 		copperString = copper..COPPER_AMOUNT_SYMBOL;
 	else
 		if (separateThousands) then
-			goldString = string.format(GOLD_AMOUNT_TEXTURE_STRING, formatLargeNumber(gold), 0, 0);
+			goldString = string.format(GOLD_AMOUNT_TEXTURE_STRING, SecureCurrencyUtil.FormatLargeNumber(gold), 0, 0);
 		else
 			goldString = string.format(GOLD_AMOUNT_TEXTURE, gold, 0, 0);
 		end
@@ -533,534 +407,6 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 	return moneyString;
 end
 
-----------
---Values
----
---formatShort - The format function for currency on the browse window next to quantity display
---formatLong - The format function for currency in areas where we want the full display (e.g. bottom of the browse window and the confirmation frame)
---browseNotice - The notice in the bottom left corner of the browse frame
---confirmationNotice - The notice in the middle of the confirmation frame (between the icon/name and the price
---paymentMethodText - The header displayed on the confirmation frame below the parchment
---paymentMethodSubtext - The smaller text displayed on the confirmation frame below the parchment (and below the paymentMethodText)
---licenseAcceptText - The text (HTML) displayed right above the purchase button on the confirmation window. Can include links.
---requireLicenseAccept - Boolean indicating whether people are required to click a checkbox next to the licenseAcceptText before purchasing the item.
-----------
-local currencySpecific = {
-	[CURRENCY_USD] = {
-		formatShort = currencyFormatUSD,
-		formatLong = currencyFormatUSD,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_USD,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_GBP] = {
-		formatShort = currencyFormatGBP,
-		formatLong = currencyFormatGBP,
-		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		requireLicenseAccept = true,
-		browseHasStar = true,
-		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
-		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_KRW] = {
-		formatShort = currencyFormatRawStar,
-		formatLong = currencyFormatKRWLong,
-		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR,
-		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
-		servicesConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR,
-		expansionConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
-		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
-		paymentMethodText = "",
-		paymentMethodSubtext = "",
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_KRW,
-		requireLicenseAccept = true,
-		hideConfirmationBrowseNotice = true,
-		browseHasStar = false,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_EUR] = {
-		formatShort = currencyFormatEuro,
-		formatLong = currencyFormatEuro,
-		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		requireLicenseAccept = true,
-		browseHasStar = true,
-		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
-		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_RUB] = {
-		formatShort = currencyFormatRUB,
-		formatLong = currencyFormatRUB,
-		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		requireLicenseAccept = true,
-		browseHasStar = true,
-		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
-		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_ARS] = {
-		formatShort = currencyFormatARS,
-		formatLong = currencyFormatARS,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_ARS,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_CLP] = {
-		formatShort = currencyFormatCLP,
-		formatLong = currencyFormatCLP,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_MXN] = {
-		formatShort = currencyFormatMXN,
-		formatLong = currencyFormatMXN,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_BRL] = {
-		formatShort = currencyFormatBRL,
-		formatLong = currencyFormatBRL,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_AUD] = {
-		formatShort = currencyFormatAUD,
-		formatLong = currencyFormatAUD,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_CPT] = {
-		formatShort = currencyFormatRawStar,
-		formatLong = currencyFormatCPTLong,
-		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
-		paymentMethodText = "",
-		paymentMethodSubtext = "",
-		hideConfirmationBrowseNotice = true,
-		browseHasStar = false,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE_CN,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE_CN,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN,
-			},
-		},
-	},
-	[CURRENCY_TPT] = {
-		formatShort = currencyFormatTPT,
-		formatLong = currencyFormatTPT,
-		browseNotice = "",
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
-		paymentMethodText = "",
-		paymentMethodSubtext = "",
-		browseHasStar = false,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_BETA] = {
-		formatShort = currencyFormatBeta,
-		formatLong = currencyFormatBeta,
-		browseNotice = BLIZZARD_STORE_BROWSE_TEST_CURRENCY,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
-		paymentMethodText = BLIZZARD_STORE_CONFIRMATION_TEST,
-		paymentMethodSubtext = "",
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_JPY] = {
-		formatShort = currencyFormatJPY,
-		formatLong = currencyFormatJPY,
-		browseNotice = "",
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_JPY,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_CAD] = {
-		formatShort = currencyFormatCAD,
-		formatLong = currencyFormatCAD,
-		browseNotice = "",
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CAD,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-	[CURRENCY_NZD] = {
-		formatShort = currencyFormatNZD,
-		formatLong = currencyFormatNZD,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
-		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
-		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
-		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_NZD,
-		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
-		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
-		browseHasStar = true,
-		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
-		vasDisclaimerData = {
-			[Enum.VasServiceType.FactionChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
-			},
-			[Enum.VasServiceType.RaceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
-			},
-			[Enum.VasServiceType.AppearanceChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
-			},
-			[Enum.VasServiceType.NameChange] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
-			},
-			[Enum.VasServiceType.CharacterTransfer] = {
-				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
-			},
-		},
-	},
-};
-
-local function currencyInfo()
-	local currency = C_StoreSecure.GetCurrencyID();
-	local info = currencySpecific[currency];
-	return info;
-end
 
 --Error message data
 local errorData = {
@@ -1231,7 +577,7 @@ local vasErrorData = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
 		notUserFixable = true,
 	},
-	[Enum.VasError.PveToPvpTransferNotAllowed] = {
+	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
 	}
 };
@@ -1268,6 +614,11 @@ function StoreFrame_GetDiscountInformation(data)
 end
 
 function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
+	if entryID == nil then
+		card:Hide();
+		return;
+	end
+
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 	if entryInfo.sharedData.tooltip ~= "" then
 		card.productTooltipTitle = entryInfo.sharedData.name;
@@ -1279,7 +630,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	StoreProductCard_ResetCornerPieces(card);
 
-	local info = currencyInfo();
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 
 	if (not info) then
 		card:Hide();
@@ -1574,7 +925,7 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 	local id = selectedCategoryID;
 	local self = StoreFrame;
 
-	local info = currencyInfo();
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 
 	if ( not info ) then
 		return;
@@ -1596,6 +947,17 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 
 	local isThreeSplash = #products >= 3;
 	local isSplashPair = #products == 2;
+
+	if (selectedCategoryID == WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID) then
+		isSplashPair = true;
+		isThreeSplash = false;
+
+		-- We want to always show exactly two products.
+		if (#products == 3) then
+			products[2] = products[3];
+			products[3] = nil;
+		end
+	end
 
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
 
@@ -1630,7 +992,7 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 	local self = StoreFrame;
 	local pageNum = selectedPageNum;
 
-	local info = currencyInfo();
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 
 	if ( not info ) then
 		return;
@@ -2117,8 +1479,8 @@ function StoreFrame_OnEvent(self, event, ...)
 			C_StoreSecure.GetProductList();
 		end
 	elseif ( event == "SIMPLE_CHECKOUT_CLOSED" ) then
-		-- Close the shop after you purchase game time
-		if WasVeteran and not IsVeteranTrialAccount() then
+		-- Close the shop after you purchase game time, or after a clone checkout (regardless of resolution).
+		if (WasVeteran and not IsVeteranTrialAccount()) or (selectedCategoryID == WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID) then
 			self:Hide();
 		end
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
@@ -2220,7 +1582,7 @@ end
 
 function StoreFrame_UpdateBuyButton()
 	local self = StoreFrame;
-	local info = currencyInfo();
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 
 	if (not info) then
 		return;
@@ -2448,7 +1810,7 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NO_ITEMS, BLIZZARD_STORE_CHECK_BACK_LATER);
 	elseif ( not IsOnGlueScreen() and not StoreFrame_HasFreeBagSlots() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
-	elseif ( not currencyInfo() ) then
+	elseif ( not SecureCurrencyUtil.GetActiveCurrencyInfo() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
 	else
 		StoreFrame_HideAlert(self);
@@ -2458,7 +1820,7 @@ function StoreFrame_UpdateActivePanel(self)
 			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Enable();
 			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Hide();
 		end
-		local info = currencyInfo();
+		local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		self.BrowseNotice:SetText(info.browseNotice);
 	end
 end
@@ -2763,7 +2125,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 
 	name = name:gsub("|n", " ");
 	self.ProductName:SetText(name);
-	local info = currencyInfo();
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 	local format = info.formatLong;
 	local notice;
 
@@ -2879,7 +2241,7 @@ function StoreConfirmationFrame_Update(self)
 	IsUpgrade = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost;
 	IsLegion = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion;
 	BoostType = productInfo.sharedData.boostType;
-	local info = currencyInfo();
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 	self.NoticeFrame.BrowseNotice:SetText(info.browseNotice);
 	self.NoticeFrame.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
 
@@ -3004,7 +2366,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.ProductName:SetText(productInfo.sharedData.name);
 	self.ProductDescription:SetText(productInfo.sharedData.description);
 
-	local currencyInfo = currencyInfo();
+	local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 
 	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 
@@ -3119,13 +2481,13 @@ if (IsOnGlueScreen()) then
 		[Enum.VasQueueStatus.ThreeToSixHours] = "THREE_SIX_HOURS",
 		[Enum.VasQueueStatus.SixToTwelveHours] = "SIX_TWELVE_HOURS",
 		[Enum.VasQueueStatus.OverTwelveHours] = "TWELVE_HOURS",
-		[Enum.VasQueueStatus.Over1Days] = "ONE_DAY",
-		[Enum.VasQueueStatus.Over2Days] = "TWO_DAY",
-		[Enum.VasQueueStatus.Over3Days] = "THREE_DAY",
-		[Enum.VasQueueStatus.Over4Days] = "FOUR_DAY",
-		[Enum.VasQueueStatus.Over5Days] = "FIVE_DAY",
-		[Enum.VasQueueStatus.Over6Days] = "SIX_DAY",
-		[Enum.VasQueueStatus.Over7Days] = "SEVEN_DAY",
+		[Enum.VasQueueStatus.Over_1_Days] = "ONE_DAY",
+		[Enum.VasQueueStatus.Over_2_Days] = "TWO_DAY",
+		[Enum.VasQueueStatus.Over_3_Days] = "THREE_DAY",
+		[Enum.VasQueueStatus.Over_4_Days] = "FOUR_DAY",
+		[Enum.VasQueueStatus.Over_5_Days] = "FIVE_DAY",
+		[Enum.VasQueueStatus.Over_6_Days] = "SIX_DAY",
+		[Enum.VasQueueStatus.Over_7_Days] = "SEVEN_DAY",
 	}
 end
 
@@ -3205,7 +2567,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		else
 				self.Disclaimer:SetTextColor(0, 0, 0);
 		end
-		local currencyInfo = currencyInfo();
+		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
 
@@ -3395,7 +2757,7 @@ function StoreProductCard_UpdateState(card)
 				end
 
 				if StoreProductCard_ShouldAddDiscountInformationToTooltip(card) then
-					local info = currencyInfo();
+					local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 					local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
 					if info and discounted then
 						if description then
@@ -3938,12 +3300,6 @@ function StoreCategory_OnClick(self,button,down)
 	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 end
 
-----------------------------------
-function StoreTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.9);
-end
-
 function StoreTooltip_Show(name, description, isToken)
 	local self = StoreTooltip;
 	local STORETOOLTIP_MAX_WIDTH = isToken and 300 or 250;
@@ -4372,7 +3728,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			local diffPrice = bundlePrice - basePrice;
 			local diffDollars = math.floor(diffPrice);
 			local diffCents = (diffPrice - diffDollars) * 100;
-			local info = currencyInfo();
+			local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
 			local format = info.formatLong;
 			frame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, format(diffDollars, diffCents)));
 		end

@@ -2,8 +2,19 @@
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
-..\SharedXML\Util.lua
+GlueCheck.lua
+
+Fonts.xml
+FontStyles.xml
 ..\SharedXML\AnchorUtil.xml
+..\SharedXML\Backdrop.xml
+..\SharedXML\TextureUtil.lua
+..\SharedXML\Util.lua
+..\SharedXML\Constants.lua
+..\SharedXML\SecureUIPanelTemplates.xml
+..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\SharedBasicControls.xml
+
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
@@ -17,10 +28,12 @@
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
 MixinUtil.lua
+..\SharedXML\LinkUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -38,8 +51,7 @@ PlayerMovementFrameFader.lua
 ..\SharedXML\SoundKitConstants.lua
 Constants.lua
 Localization.xml
-Fonts.xml
-FontStyles.xml
+
 
 ..\SharedXML\PropertyBindingMixin.lua
 ..\SharedXML\PropertyButton.xml
@@ -53,6 +65,7 @@ ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
 
 ## add new modules below here
+ChatBubbleTemplates.xml
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
@@ -65,9 +78,6 @@ MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
-..\SharedXML\SecureUIPanelTemplates.xml
-..\SharedXML\SharedUIPanelTemplates.xml
-..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\CustomBindingButtonTemplate.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
@@ -136,6 +146,7 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
+TotemFrame.xml
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
@@ -156,7 +167,6 @@ LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
-ScrollOfResurrection.xml
 ItemRef.xml
 FriendsFrame.xml
 RaidFrame.xml
@@ -186,7 +196,6 @@ CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
 StreamingFrame.xml
-RecruitAFriendFrame.xml
 LootHistory.xml
 StaticPopupSpecial.xml
 PVPHelper.xml
@@ -194,6 +203,7 @@ ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
+ArenaFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

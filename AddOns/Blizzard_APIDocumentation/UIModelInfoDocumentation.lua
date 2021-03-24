@@ -127,7 +127,7 @@ local UIModelInfo =
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "AlignLightToOrbitDelta", Type = "ModelSceneSetting", EnumValue = 0 },
+				{ Name = "AlignLightToOrbitDelta", Type = "ModelSceneSetting", EnumValue = 1 },
 			},
 		},
 		{
@@ -148,8 +148,8 @@ local UIModelInfo =
 				{ Name = "ArtifactTier2SlamEffect", Type = "ModelSceneType", EnumValue = 7 },
 				{ Name = "CommentatorVictoryFanfare", Type = "ModelSceneType", EnumValue = 8 },
 				{ Name = "ArtifactRelicTalentEffect", Type = "ModelSceneType", EnumValue = 9 },
-				{ Name = "PvpWarModeOrb", Type = "ModelSceneType", EnumValue = 10 },
-				{ Name = "PvpWarModeFire", Type = "ModelSceneType", EnumValue = 11 },
+				{ Name = "PvPWarModeOrb", Type = "ModelSceneType", EnumValue = 10 },
+				{ Name = "PvPWarModeFire", Type = "ModelSceneType", EnumValue = 11 },
 				{ Name = "PartyPose", Type = "ModelSceneType", EnumValue = 12 },
 				{ Name = "AzeriteItemLevelUpToast", Type = "ModelSceneType", EnumValue = 13 },
 				{ Name = "AzeritePowers", Type = "ModelSceneType", EnumValue = 14 },

@@ -200,48 +200,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="QuestLogCountRight" file="Interface\Common\Common-Input-Border">
-					<Size>
-						<AbsDimension x="8" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-47" y="-41"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture name="QuestLogCountMiddle" file="Interface\Common\Common-Input-Border">
-					<Size>
-						<AbsDimension x="100" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="QuestLogCountRight" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture name="QuestLogCountLeft" file="Interface\Common\Common-Input-Border">
-					<Size>
-						<AbsDimension x="8" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="QuestLogCountMiddle" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-				</Texture>
-				<FontString name="QuestLogQuestCount" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="QuestLogCountRight">
-							<Offset>
-								<AbsDimension x="-6" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="QuestLogExpandButtonFrame">
@@ -434,6 +392,148 @@
 					</Layer>
 				</Layers>
 			</Frame>
+
+			<Frame name="QuestLogCount">
+				<Size>
+					<AbsDimension x="120" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="QuestLogFrame">
+						<Offset>
+							<AbsDimension x="-44" y="-41"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="QuestLogCountTopRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+						<Texture name="QuestLogCountBottomRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0.375" bottom="0.625"/>
+						</Texture>
+						<Texture name="QuestLogCountRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="QuestLogCountTopRight" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="QuestLogCountBottomRight" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0.25" bottom="0.375"/>
+						</Texture>
+						<Texture name="QuestLogCountTopLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.25"/>
+						</Texture>
+						<Texture name="QuestLogCountBottomLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0.375" bottom="0.625"/>
+						</Texture>
+						<Texture name="QuestLogCountLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="QuestLogCountTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestLogCountBottomLeft" relativePoint="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0.25" bottom="0.375"/>
+						</Texture>
+						<Texture name="QuestLogCountTopMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="100" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="QuestLogCountTopRight" relativePoint="LEFT"/>
+								<Anchor point="LEFT" relativeTo="QuestLogCountTopLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.25"/>
+						</Texture>
+						<Texture name="QuestLogCountMiddleMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="100" y="4"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="QuestLogCountTopLeft" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestLogCountBottomRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0.25" bottom="0.375"/>
+						</Texture>
+						<Texture name="QuestLogCountBottomMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="100" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="QuestLogCountBottomRight" relativePoint="LEFT"/>
+								<Anchor point="LEFT" relativeTo="QuestLogCountBottomLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0.375" bottom="0.625"/>
+						</Texture>
+						<FontString name="QuestLogQuestCount" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="QuestLogCountTopRight" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="1" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="QuestLogDailyQuestCount" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="QuestLogQuestCount" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="DailyQuestCountButton" enableMouse="true">
+						<Size>
+							<AbsDimension x="5" y="12"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="QuestLogDailyQuestCount"/>
+							<Anchor point="RIGHT" relativeTo="QuestLogDailyQuestCount"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(format(QUEST_LOG_DAILY_TOOLTIP, GetMaxDailyQuests(), SecondsToTime(GetQuestResetTime(), nil, 1)));
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+
 			<Button name="QuestLogFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="QuestLogFrame" relativePoint="TOPRIGHT">

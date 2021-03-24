@@ -2,13 +2,6 @@ function AccountLogin_OnLoad(self)
 	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
 
-	-- Color edit box backdrops
-	local backdropColor = DEFAULT_TOOLTIP_COLOR;
-	self.UI.AccountEditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.UI.AccountEditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-	self.UI.PasswordEditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.UI.PasswordEditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-
 	SetLoginScreenModel(LoginBackgroundModel);
 	AccountLogin_UpdateSavedData(self);
 
@@ -357,12 +350,6 @@ end
 -- Token entry
 -- =============================================================
 
-function TokenEntry_OnLoad(self)
-	local backdropColor = DEFAULT_TOOLTIP_COLOR;
-	self.Background.EditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.Background.EditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-end
-
 function TokenEntry_OnShow(self)
 	self.Background.EditBox:SetText("");
 	self.Background.EditBox:SetFocus();
@@ -394,12 +381,6 @@ end
 -- =============================================================
 -- Captcha entry
 -- =============================================================
-
-function CaptchaEntry_OnLoad(self)
-	local backdropColor = DEFAULT_TOOLTIP_COLOR;
-	self.Background.EditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	self.Background.EditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-end
 
 function CaptchaEntry_OnShow(self)
 	self.Background.EditBox:SetText("");

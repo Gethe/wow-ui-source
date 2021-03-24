@@ -212,7 +212,7 @@ function UnitFrame_OnEvent(self, event, ...)
 				UnitFrameManaBar_UpdateType(self.manabar);
 			end
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
-			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill, castID--[[, notInterruptible]], spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then

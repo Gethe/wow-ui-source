@@ -2,7 +2,7 @@ local SocialInfo =
 {
 	Name = "SocialInfo",
 	Type = "System",
-	Namespace = "C_SocialInfo",
+	Namespace = "C_Social",
 
 	Functions =
 	{

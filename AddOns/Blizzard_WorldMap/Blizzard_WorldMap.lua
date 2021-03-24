@@ -23,10 +23,16 @@ function WorldMapMixin:OnLoad()
 	self:AddStandardDataProviders();
 
 	self:SetMapID(C_Map.GetFallbackWorldMapID());
+
+	self:RegisterEvent("VARIABLES_LOADED");
 end
 
 function WorldMapMixin:OnEvent(event, ...)
 	MapCanvasMixin.OnEvent(self, event, ...);
+
+	if event == "VARIABLES_LOADED" then
+		WorldMapZoneMinimapDropDown_Update();
+	end
 end
 
 function WorldMapMixin:AddStandardDataProviders()
@@ -140,6 +146,8 @@ function WorldMapMixin:OnShow()
 	self:ResetZoom();
 
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+
+	WorldMapZoneMinimapDropDown_Update();
 end
 
 function WorldMapMixin:OnHide()
@@ -192,19 +200,40 @@ end
 function WorldMapContinentDropDown_Initialize(self)
 	local mapID = _G["WorldMapFrame"]:GetMapID();
 	if (mapID) then
-		-- Work our way back up to the top (World), then move down to find the continents.
-		local azerothMapInfo = MapUtil.GetMapParentInfo(mapID, Enum.UIMapType.World, TOPMOST);
+		-- Work our way back up to the top (Cosmic), then move down to find the continents.
+		local azerothMapInfo = MapUtil.GetMapParentInfo(mapID, Enum.UIMapType.Cosmic, TOPMOST);
 		if (azerothMapInfo.mapID) then
 
 			-- If we don't have a cached button list, we'll need to create it here.
 			if (not continentDropDownButtons) then
 				continentDropDownButtons = { };
 				-- Get the continents.
-				local continents = C_Map.GetMapChildrenInfo(azerothMapInfo.mapID);
+				local continents = { };
+				local topLevelChildren = C_Map.GetMapChildrenInfo(azerothMapInfo.mapID);
+				-- The top level (Cosmic) can have both Continent and World children.
+				-- We want to add the Continent children to our list of Continents,
+				-- and we want to query the Worlds for any Continents they might have.
+				if (topLevelChildren) then
+					for i, mapInfo in ipairs(topLevelChildren) do
+						if (mapInfo.mapType == Enum.UIMapType.Continent) then
+							tinsert(continents, mapInfo);
+						end
+						if (mapInfo.mapType == Enum.UIMapType.World) then
+							local worldChildren = C_Map.GetMapChildrenInfo(mapInfo.mapID);
+							if (worldChildren) then
+								for k, worldChild in ipairs(worldChildren) do
+									if (worldChild.mapType == Enum.UIMapType.Continent) then
+										tinsert(continents, worldChild);
+									end
+								end
+							end
+						end
+					end
+				end
 				if ( continents ) then
 					local info;
 					for i, continentInfo in ipairs(continents) do
-						-- Filter out anything else that might have the World as a parent (e.g. Battlegrounds).
+						-- We'll only add Continent-type maps to our dropdown.
 						if (continentInfo.mapType == Enum.UIMapType.Continent) then
 							info = {};
 							info.value = continentInfo.mapID;
@@ -281,6 +310,66 @@ function WorldMapZoneDropDown_Initialize(self)
 	end
 end
 
+function WorldMapZoneMinimapDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, WorldMapZoneMinimapDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 130);
+end
+
+function WorldMapZoneMinimapDropDown_Initialize()
+	for index = 1, 3 do
+		local info = UIDropDownMenu_CreateInfo();
+		info.value = tostring(index - 1);
+		info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
+		info.func = WorldMapZoneMinimapDropDown_OnClick;
+		-- info.checked skipped because the checked property is assigned
+		-- in the dropdown by selection comparison
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function WorldMapZoneMinimapDropDown_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+	local text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP:format(GetBindingKey("TOGGLEBATTLEFIELDMINIMAP"));
+	GameTooltip:SetText(text, nil, nil, nil, nil, 1);
+	GameTooltip:Show();
+end
+
+function WorldMapZoneMinimapDropDown_OnLeave(self)
+	GameTooltip:Hide();
+end
+
+function WorldMapZoneMinimapDropDown_GetText(value)
+	if ( value == "0" ) then
+		return BATTLEFIELD_MINIMAP_SHOW_NEVER;
+	elseif ( value == "1" ) then
+		return BATTLEFIELD_MINIMAP_SHOW_BATTLEGROUNDS;
+	elseif ( value == "2" ) then
+		return BATTLEFIELD_MINIMAP_SHOW_ALWAYS;
+	end
+	return nil;
+end
+
+function WorldMapZoneMinimapDropDown_Update()
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, SHOW_BATTLEFIELD_MINIMAP);
+	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_GetText(SHOW_BATTLEFIELD_MINIMAP));
+end
+
+function WorldMapZoneMinimapDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, self.value);
+	SHOW_BATTLEFIELD_MINIMAP = self.value;
+
+	if ( DoesInstanceTypeMatchBattlefieldMapSettings()) then
+		if ( not BattlefieldMapFrame ) then
+			BattlefieldMap_LoadUI();
+		end
+		BattlefieldMapFrame:Show();
+	else
+		if ( BattlefieldMapFrame ) then
+			BattlefieldMapFrame:Hide();
+		end
+	end
+end
+
 function WorldMapZoneDropDown_Update(self)
 	UIDropDownMenu_ClearAll(self);
 
@@ -298,4 +387,14 @@ function WorldMapZoneDropDown_Update(self)
 			self.Text:SetText(mapInfo.name);
 		end
 	end
+end
+
+function DoesInstanceTypeMatchBattlefieldMapSettings()
+	local instanceType = GetBattlefieldMapInstanceType();
+	if instanceType == "pvp" then
+		return SHOW_BATTLEFIELD_MINIMAP == "1";
+	elseif instanceType == "none" then
+		return SHOW_BATTLEFIELD_MINIMAP == "2";
+	end
+	return false;
 end

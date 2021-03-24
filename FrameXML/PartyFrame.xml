@@ -40,21 +40,10 @@
 			</Anchor>
 		</Anchors>
 	</Button>
-	<Frame name="PartyMemberBuffTooltip" frameStrata="TOOLTIP" hidden="true">
+	<Frame name="PartyMemberBuffTooltip" inherits="TooltipBackdropTemplate" frameStrata="TOOLTIP" hidden="true">
 		<Size>
 			<AbsDimension x="200" y="75"/>
 		</Size>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Frames>
 			<Frame name="$parentBuff1" inherits="PartyBuffFrameTemplate">
 				<Anchors>
@@ -274,10 +263,13 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GameTooltip_OnLoad"/>
+			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyMemberBackground" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">
+	<Frame name="PartyMemberBackground" inherits="" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">
+				<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="134" y="10"/>
 		</Size>
@@ -293,19 +285,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\CharacterFrame\UI-Party-Background" edgeFile="Interface\CharacterFrame\UI-Party-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="32" right="32" top="32" bottom="32"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop> 
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:RegisterEvent("VARIABLES_LOADED");
 			</OnLoad>
 			<OnShow>

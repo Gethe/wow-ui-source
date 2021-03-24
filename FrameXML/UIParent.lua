@@ -157,8 +157,6 @@ end
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
-	"ScrollOfResurrectionFrame",
-	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
 	"FloatingGarrisonShipyardFollowerTooltip"
@@ -266,8 +264,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
-	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
-	self:RegisterEvent("SOR_START_EXPERIENCE_INCOMPLETE");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
@@ -289,6 +285,9 @@ function UIParent_OnLoad(self)
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
+
+	-- Events for Item socketing UI
+	self:RegisterEvent("SOCKET_INFO_UPDATE");
 
 	-- Events for craft UI handling
 	self:RegisterEvent("CRAFT_SHOW");
@@ -416,6 +415,10 @@ function TradeSkillFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TradeSkillUI");
 end
 
+function ItemSocketingFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemSocketingUI");
+end
+
 function GMSurveyFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GMSurveyUI");
 end
@@ -502,19 +505,17 @@ function ToggleTalentFrame()
 	end
 end
 
-function BattlefieldMapAllowed()
-	return UIWidgetManager.widgetPools:GetNumActive() > 0 or (MiniMapBattlefieldFrame and MiniMapBattlefieldFrame.status == "active");
+function GetBattlefieldMapInstanceType()
+	local _, instanceType = IsInInstance();
+	if instanceType == "pvp" or instanceType == "none" then
+		return instanceType;
+	end
+	return nil;
 end
 
 function ToggleBattlefieldMap()
 	BattlefieldMap_LoadUI();
-	if ( BattlefieldMapFrame ) then
-		if (BattlefieldMapAllowed()) then
-			BattlefieldMapFrame:Toggle();
-		else
-			BattlefieldMapFrame:Hide();
-		end
-	end
+	BattlefieldMapFrame:Toggle();
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
@@ -644,7 +645,7 @@ local function PlayBattlefieldBanner(self)
 		local bannerName, bannerDescription;
 
 		for i=1, GetMaxBattlefieldID() do
-			local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			local status, _, _, _, _, _, _, _, _, _, _, _, asGroup, shortDescription = GetBattlefieldStatus(i);
 			if ( status and status == "active" ) then
 				bannerName = mapName;
 				bannerDescription = shortDescription;
@@ -2521,6 +2522,10 @@ function ToggleFrame(frame)
 end
 
 function ShowUIPanel(frame, force)
+	if ( CanAutoSetGamePadCursorControl(true) ) then
+		SetGamePadCursorControl(true);
+	end
+
 	if ( not frame or frame:IsShown() ) then
 		return;
 	end
@@ -2747,7 +2752,11 @@ function CloseAllWindows(ignoreCenter)
 		end
 	end
 	windowsVisible = CloseWindows(ignoreCenter);
-	return (bagsVisible or windowsVisible);
+	local anyClosed = (bagsVisible or windowsVisible);
+	if (anyClosed and CanAutoSetGamePadCursorControl(false)) then
+		SetGamePadCursorControl(false);
+	end
+	return anyClosed;
 end
 
 -- this function handles possibly tainted values and so
@@ -3328,7 +3337,15 @@ end
 
 -- Function that handles the escape key functions
 function ToggleGameMenu()
-	if ( not UIParent:IsShown() ) then
+	if ( CanAutoSetGamePadCursorControl(true) and (not IsModifierKeyDown()) ) then
+		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
+		if ( SpellStopCasting() ) then
+		elseif ( SpellStopTargeting() ) then
+		elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
+		else
+			SetGamePadCursorControl(true);
+		end
+	elseif ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
 	elseif ( C_Commentator.IsSpectating() and IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") ) then
@@ -3377,6 +3394,8 @@ function ToggleGameMenu()
 		OpacityFrame:Hide();
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
+	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
+		SetGamePadCursorControl(false);
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
@@ -4389,10 +4408,6 @@ function GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSe
 	end
 end
 
-function InGlue()
-	return false;
-end
-
 function RGBToColorCode(r, g, b)
 	return format("|cff%02x%02x%02x", r*255, g*255, b*255);
 end
@@ -4412,7 +4427,7 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		local status, _, _, _, _, _, _, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
 		if ( ( status == "queued" or status == "confirmed" ) and asGroup ) then
 			return true;
 		end

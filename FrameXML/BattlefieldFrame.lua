@@ -67,9 +67,9 @@ function BattlefieldFrame_OnUpdate(elapsed)
 				local info = ChatTypeInfo["SYSTEM"];
 				local string;
 				if ( GetBattlefieldWinner() ) then
-					string = format(INSTANCE_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					string = format(BATTLEGROUND_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
 				else
-					string = format(INSTANCE_SHUTDOWN_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
+					string = format(BATTLEGROUND_COMPLETE_MESSAGE, SecondsToTime(ceil(BATTLEFIELD_SHUTDOWN_TIMER/threshold) * threshold));
 				end
 				DEFAULT_CHAT_FRAME:AddMessage(string, info.r, info.g, info.b, info.id);
 				PREVIOUS_BATTLEFIELD_MOD = currentMod;

@@ -28,7 +28,10 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="QuestTimerFrame" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent">
+	<Frame name="QuestTimerFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="158" y="72"/>
 		</Size>
@@ -39,17 +42,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="QuestTimerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -258,7 +250,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="QuestTimerFrame_OnLoad" />
+			<OnLoad inherit="prepend" function="QuestTimerFrame_OnLoad" />
 			<OnUpdate function="QuestTimerFrame_OnUpdate" />
 			<OnEvent function="QuestTimerFrame_OnEvent" />
 			<OnShow function="QuestTimerFrame_OnShow" />

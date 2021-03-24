@@ -1,18 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ServerAlert.lua"/>
-	<Frame name="ServerAlertTemplate" virtual="true">
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="11" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
+	<Frame name="ServerAlertTemplate" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="SERVER_ALERT_TITLE">
@@ -60,7 +52,7 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ServerAlert_OnLoad"/>
+			<OnLoad inherit="prepend" function="ServerAlert_OnLoad"/>
 			<OnEvent function="ServerAlert_OnEvent"/>
 		</Scripts>
 	</Frame>

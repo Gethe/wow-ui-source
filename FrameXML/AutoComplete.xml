@@ -30,24 +30,13 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-	<Frame name="AutoCompleteBox" parent="UIParent" hidden="true">
+	<Frame name="AutoCompleteBox" inherits="TooltipBackdropTemplate" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="5" y="5"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="AutoCompleteInstructions" inherits="GameFontDisableSmall" text="PRESS_TAB">
@@ -92,7 +81,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="AutoComplete_OnLoad"/>
+			<OnLoad inherit="prepend" function="AutoComplete_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

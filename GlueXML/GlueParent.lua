@@ -21,6 +21,7 @@ ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 -- Mirror of the same variables in Blizzard_StoreUISecure.lua and UIParent.lua
 local WOW_GAMES_CATEGORY_ID = 33; 
 WOW_GAME_TIME_CATEGORY_ID = 37;
+WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID = 159;
 
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
@@ -99,10 +100,6 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
 		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	end
-end
-
-function InGlue()
-	return true;
 end
 
 function SecureCapsuleGet(name)

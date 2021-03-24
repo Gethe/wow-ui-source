@@ -125,4 +125,4 @@ function TexelSnappingVisualizerMixin:OpenDropdown(dropdownFrame, level, menuLis
 	end
 end
 
-Mixin(CreateFrame("FRAME", "TexelSnappingVisualizer", UIParent), TexelSnappingVisualizerMixin):OnCreated();
+Mixin(CreateFrame("FRAME", "TexelSnappingVisualizer", UIParent, "TooltipBackdropTemplate"), TexelSnappingVisualizerMixin):OnCreated();

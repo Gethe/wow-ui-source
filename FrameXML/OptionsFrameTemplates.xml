@@ -110,101 +110,10 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
-	<Frame name="OptionsFrameListTemplate" virtual="true">
-		<Layers>
-		<!--
-			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" inherits="GameFontHighlight" text="CATEGORY">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="6" y="4"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		-->
-			<Layer level="BACKGROUND">
-				<!-- Yay. It's a backdrop. -->
-				<Texture name="$parentTopLeft" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentBottomLeft" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentBottomRight" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentTopRight" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentLeft" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.125" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\Tooltips\UI-Tooltip-Border">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.125" right="0.25" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentBottom" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTop" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="7"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="OptionsFrameListTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+		</KeyValues>
 		<Frames>
 			<ScrollFrame name="$parentList" hidden="true">
 				<Size>
@@ -222,20 +131,8 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>				
 				<Scripts>
 					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, .6);
 						ScrollFrame_OnLoad(self);
 					</OnLoad>
 					<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
@@ -268,9 +165,7 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				OptionsList_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="OptionsList_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Button name="OptionsListButtonTemplate" virtual="true">
@@ -334,24 +229,16 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="OptionsFrameTemplate" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH" virtual="true">
+	<Frame name="OptionsFrameTemplate" inherits="BackdropTemplate" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="648" y="520"/><!-- this may be overwritten for the VideoOptions frame, see VideoOptionsPanels.lua -->
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -390,15 +277,17 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						--self.labelText = CATEGORY;
-						OptionsList_OnLoad(self);
+					<OnLoad inherit="prepend">
 						self.update = OptionsCategoryFrame_Update;
 						self.toggleSubCategories = OptionsFrame_ToggleSubCategories;
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentPanelContainer">
+			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategoryFrame" relativePoint="TOPRIGHT">
 						<Offset>
@@ -416,28 +305,10 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				OptionsFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="OptionsFrame_OnLoad"/>
 			<OnShow>
 				OptionsFrame_OnShow(self);
 			</OnShow>

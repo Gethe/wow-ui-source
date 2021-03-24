@@ -268,6 +268,7 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	self.driverFrame = driverFrame;
 
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
+	CastingBarFrame_SetUnit(self.UnitFrame.CastBar, namePlateUnitToken, false, false);
 
 	self:ApplyOffsets();
 	
@@ -344,4 +345,20 @@ NamePlateBorderTemplateMixin = {};
 
 function NamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
 	-- Nothing to do in Classic.
+end
+
+function Nameplate_CastBar_AdjustPosition(self)
+	CastingBarFrame_OnShow(self);
+
+	self.Border:ClearAllPoints();
+	self.Border:SetPoint("TOPLEFT", -22, 20);
+	self.Border:SetTexture("Interface/Tooltips/Nameplate-Border-Castbar");
+	self.Border:SetSize(128, 32);
+	self.Border:SetTexCoord(0, 1, 0, 1);
+
+	self.Icon:SetSize(14, 14);
+	self.Icon:SetPoint("RIGHT", self, "LEFT", -3, 1);
+
+	self.Flash:SetTexCoord(0,0,0,0);
+	self.Text:Hide();
 end

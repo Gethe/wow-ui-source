@@ -53,7 +53,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GlueFontNormalSmall">
+				<FontString name="$parentText" parentKey="Text" inherits="GlueFontNormalSmall">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>

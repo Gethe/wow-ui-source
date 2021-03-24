@@ -43,23 +43,15 @@
 		</Scripts>
 	</Button>
 
-	<ContainedAlertFrame name="SocialToastTemplate" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true" mixin="SocialToastMixin" virtual="true">
+	<ContainedAlertFrame inherits="BackdropTemplate" name="SocialToastTemplate" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true" mixin="SocialToastMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global"/>
+		</KeyValues>
 		<Size x="250" y="50"/>
 		<Animations>
 			<AnimationGroup inherits="SocialToastAnimInTemplate"/>
 			<AnimationGroup inherits="SocialToastAnimOutTemplate"/>
 		</Animations>
-		<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\FriendsFrame\UI-Toast-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="12"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="12"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentGlowFrame" inherits="SocialToastGlowTemplate">

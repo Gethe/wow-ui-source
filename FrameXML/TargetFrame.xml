@@ -459,7 +459,7 @@
 			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<!--<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="250" y="-240"/>
 		</Anchors>
@@ -481,7 +481,7 @@
 			<OnDragStart function="FocusFrame_OnDragStart"/>
 			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
-	</Button>-->
+	</Button>
 	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="55" y="-236"/>

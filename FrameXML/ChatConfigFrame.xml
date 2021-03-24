@@ -37,24 +37,10 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="ChatConfigBoxTemplate" virtual="true">
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-		</Scripts>
+	<Frame name="ChatConfigBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value=".5" type="number"/>
+		</KeyValues>
 	</Frame>
 	<Frame name="ChatConfigTextBoxTemplate" inherits="ChatConfigBoxTemplate" virtual="true">
 		<Size x="270" y="26"/>
@@ -191,16 +177,11 @@
 			<AbsInset left="0" right="-55" top="0" bottom="0"/>
 		</HitRectInsets>
 	</CheckButton>
-	<Frame name="ChatConfigCheckBoxTemplate" virtual="true">
+	<Frame name="ChatConfigCheckBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+		</KeyValues>
 		<Size x="200" y="26"/>
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-		</Backdrop>
 		<Frames>
 			<CheckButton name="$parentCheck" parentKey="CheckButton" inherits="ChatConfigCheckButtonTemplate">
 				<Size>
@@ -213,11 +194,6 @@
 				</Anchors>
 			</CheckButton>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
 		<Frames>
@@ -296,18 +272,15 @@
 			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 	</Frame>
-	<Frame name="ChatConfigSwatchTemplate" virtual="true">
+	<Frame name="ChatConfigSwatchTemplate" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="200" y="26"/>
 		</Size>
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontHighlight">
@@ -356,11 +329,6 @@
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 	<Button name="ChatConfigTabTemplate" virtual="true" hidden="true">
 		<Size>
@@ -463,22 +431,14 @@
 		<NormalFont style="GameFontNormalSmall"/>
 	</Button>
 
-	<Frame name="ChatConfigFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true">
+	<Frame name="ChatConfigFrame" toplevel="true" parent="UIParent" hidden="true" inherits="BackdropTemplate" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size x="745" y="605"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="ChatConfigFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -986,7 +946,12 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
-							<Frame name="$parentHighlighting">
+							<Frame name="$parentHighlighting" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+									<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+									<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+								</KeyValues>
 								<Size>
 									<AbsDimension x="200" y="53"/>
 								</Size>
@@ -995,14 +960,6 @@
 										<Offset x="0" y="-25"/>
 									</Anchor>
 								</Anchors>
-								<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-									<TileSize>
-										<AbsValue val="16"/>
-									</TileSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString name="$parentTitle" inherits="GameFontNormal" text="HIGHLIGHTING">
@@ -1120,11 +1077,6 @@
 										</Scripts>
 									</CheckButton>
 								</Frames>
-								<Scripts>
-									<OnLoad>
-										self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-									</OnLoad>
-								</Scripts>
 							</Frame>
 							<Frame name="$parentColorize">
 								<Size x="10" y="10"/>
@@ -1134,7 +1086,12 @@
 									</Anchor>
 								</Anchors>
 								<Frames>
-									<Frame name="$parentUnitName">
+									<Frame name="$parentUnitName" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+										</KeyValues>
 										<Size>
 											<AbsDimension x="200" y="32"/>
 										</Size>
@@ -1154,14 +1111,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-										</Backdrop>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
 												<Size>
@@ -1194,13 +1143,13 @@
 												</Scripts>
 											</CheckButton>
 										</Frames>
-										<Scripts>
-											<OnLoad>
-												self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-											</OnLoad>
-										</Scripts>
 									</Frame>
-									<Frame name="$parentSpellNames">
+									<Frame name="$parentSpellNames" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+										</KeyValues>
 										<Size>
 											<AbsDimension x="200" y="52"/>
 										</Size>
@@ -1209,14 +1158,6 @@
 												<Offset x="0" y="0"/>
 											</Anchor>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-										</Backdrop>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
 												<Size>
@@ -1301,13 +1242,13 @@
 												<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 											</Button>
 										</Frames>
-										<Scripts>
-											<OnLoad>
-												self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-											</OnLoad>
-										</Scripts>
 									</Frame>
-									<Frame name="$parentDamageNumber">
+									<Frame name="$parentDamageNumber" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+										</KeyValues>
 										<Size>
 											<AbsDimension x="200" y="52"/>
 										</Size>
@@ -1316,14 +1257,6 @@
 												<Offset x="0" y="0"/>
 											</Anchor>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-										</Backdrop>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
 												<Size>
@@ -1408,13 +1341,13 @@
 												<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 											</Button>
 										</Frames>
-										<Scripts>
-											<OnLoad>
-												self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-											</OnLoad>
-										</Scripts>
 									</Frame>
-									<Frame name="$parentDamageSchool">
+									<Frame name="$parentDamageSchool" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+										</KeyValues>
 										<Size>
 											<AbsDimension x="200" y="32"/>
 										</Size>
@@ -1423,14 +1356,6 @@
 												<Offset x="0" y="0"/>
 											</Anchor>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-										</Backdrop>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
 												<Size>
@@ -1459,13 +1384,13 @@
 												</Scripts>
 											</CheckButton>
 										</Frames>
-										<Scripts>
-											<OnLoad>
-												self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-											</OnLoad>
-										</Scripts>
 									</Frame>
-									<Frame name="$parentEntireLine">
+									<Frame name="$parentEntireLine" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+										</KeyValues>
 										<Size>
 											<AbsDimension x="200" y="52"/>
 										</Size>
@@ -1474,14 +1399,6 @@
 												<Offset x="0" y="0"/>
 											</Anchor>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-										</Backdrop>
 										<Frames>
 											<CheckButton name="$parentCheck" inherits="ChatConfigCheckButtonTemplate">
 												<Size>
@@ -1548,11 +1465,6 @@
 												</Scripts>
 											</CheckButton>
 										</Frames>
-										<Scripts>
-											<OnLoad>
-												self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-											</OnLoad>
-										</Scripts>
 									</Frame>
 								</Frames>
 							</Frame>
@@ -1905,7 +1817,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ChatConfigFrame_OnLoad"/>
+			<OnLoad inherit="prepend" function="ChatConfigFrame_OnLoad"/>
 			<OnEvent function="ChatConfigFrame_OnEvent"/>
 			<OnShow>
 				CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];

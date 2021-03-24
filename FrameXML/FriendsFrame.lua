@@ -281,7 +281,6 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_INFO_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
-	self:RegisterEvent("PARTY_REFER_A_FRIEND_UPDATED");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
@@ -322,6 +321,12 @@ function FriendsFrame_OnLoad(self)
 	end
 end
 
+function FriendsFrame_CheckDethroneStatus()
+	local canReplaceGM = CanReplaceGuildMaster();
+	GuildFrameImpeachButton:SetShown(canReplaceGM);
+	GuildFrameControlButton:SetShown(not canReplaceGM);
+end
+
 function FriendsFrame_OnShow()
 	FriendsList_Update(true);
 	FriendsFrame_Update();
@@ -331,6 +336,7 @@ function FriendsFrame_OnShow()
 	InGuildCheck();
 	BlizzardGroups_UpdateNotifications();
 	BlizzardGroups_UpdateShowTab();
+	FriendsFrame_CheckDethroneStatus();
 end
 
 function FriendsFrame_Update()
@@ -413,15 +419,10 @@ function FriendsTabHeader_ClickTab(tab)
 end
 
 function FriendsTabHeader_ResizeTabs()
-	local availableWidth = FRIEND_TABS_MAX_WIDTH;
-	if ( FriendsTabHeaderSoRButton:IsShown() ) then
-		availableWidth = availableWidth - 30;
-	end
-	PanelTemplates_ResizeTabsToFit(FriendsTabHeader, availableWidth);
+	PanelTemplates_ResizeTabsToFit(FriendsTabHeader, FRIEND_TABS_MAX_WIDTH);
 end
 
 function FriendsListFrame_OnShow(self)
-	RecruitAFriend_OnFriendsListShown();
 	ProductChoiceFrame_OnFriendsListShown();
 end
 
@@ -882,13 +883,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 				end
 			end
 		end
-	elseif ( event == "PARTY_REFER_A_FRIEND_UPDATED" ) then
-		if ( self:IsShown() ) then
-			local buttons = FriendsFrameFriendsScrollFrame.buttons;
-			for _, button in pairs(buttons) do
-				FriendsFrame_SummonButton_Update(button.summonButton);
-			end
-		end
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
 		FriendsList_Update();
 	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
@@ -943,6 +937,8 @@ function FriendsFrame_OnEvent(self, event, ...)
 			FriendsFrame_Update(); --TODO - Only update the buttons that need updating
 		end
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		FriendsFrame_CheckDethroneStatus();
+
 		if ( GuildFrame:IsVisible() ) then
 			local canRequestGuildRoster = ...;
 			if ( canRequestGuildRoster ) then
@@ -2428,31 +2424,6 @@ function BattleTagInviteFrame_Show(name)
 	end
 end
 
-function RAFButton_Update(self)
-	self.suppressedRewards = C_ProductChoice.GetNumSuppressed();
-	if ( #C_ProductChoice.GetChoices() > 0 ) then
-		self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_mobilebanking");
-		self.rewards = true;
-		self:Show();
-		self:Enable();
-		self.Icon:SetDesaturated(false);
-	elseif ( C_RecruitAFriend.IsSendingEnabled() ) then
-		self.rewards = false;
-		self.Icon:SetTexture("Interface\\Icons\\Raf-Icon");
-		local faction = UnitFactionGroup("player");
-		if ( faction ~= "Alliance" and faction ~= "Horde" ) then
-			self:Disable();
-			self.Icon:SetDesaturated(true);
-		else
-			self:Enable();
-			self.Icon:SetDesaturated(false);
-		end
-		self:Show();
-	else
-		self:Hide();
-	end
-end
-
 function GroupsButton_Update(self)
 	self.Icon:SetTexture("Interface\\Icons\\Achievement_GuildPerk_EverybodysFriend");
 	self:Show();
@@ -2534,7 +2505,7 @@ end
 
 function GuildFrameControlButton_OnUpdate()
 	if ( FriendsFrame.guildControlShow == 1 ) then
-		GuildFrameControlButton:LockHighlight();		
+		GuildFrameControlButton:LockHighlight();
 	else
 		GuildFrameControlButton:UnlockHighlight();
 	end

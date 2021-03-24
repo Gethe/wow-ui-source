@@ -77,6 +77,7 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
+			Documentation = { "Maps an expansion level to a maximum character level for that expansion." },
 
 			Arguments =
 			{
@@ -161,15 +162,6 @@ local Expansion =
 	Tables =
 	{
 		{
-			Name = "ExpansionDisplayInfoFeature",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "ExpansionDisplayInfo",
 			Type = "Structure",
 			Fields =
@@ -177,6 +169,15 @@ local Expansion =
 				{ Name = "logo", Type = "number", Nilable = false },
 				{ Name = "banner", Type = "string", Nilable = false },
 				{ Name = "features", Type = "table", InnerType = "ExpansionDisplayInfoFeature", Nilable = false },
+			},
+		},
+		{
+			Name = "ExpansionDisplayInfoFeature",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 	},

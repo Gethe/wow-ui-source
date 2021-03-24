@@ -1,7 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="AccountLogin.lua"/>
-
+	
+	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+	
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -69,22 +77,11 @@
 		</Frames>
 	</Frame>
 
-	<Button name="KoreanRatings" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	<Button name="KoreanRatings" inherits="BackdropTemplate" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="KoreanRatingsViolence" file="Interface\Glues\Login\Glues-KoreanRating-3">
@@ -173,7 +170,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320">
+					<EditBox parentKey="AccountEditBox" inherits="AccountLoginBackdropTemplate" parentArray="NormalLoginRegions" letters="320">
 						<Size x="160" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="8" y="345"/>
@@ -203,17 +200,6 @@
 								</FontString>-->
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
@@ -243,7 +229,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1">
+					<EditBox parentKey="PasswordEditBox" inherits="AccountLoginBackdropTemplate" parentArray="NormalLoginRegions" letters="128" password="1">
 						<Size x="160" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="8" y="270"/>
@@ -264,17 +250,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
@@ -448,22 +423,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Background">
+							<Frame parentKey="Background" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
 								<Size x="275" y="265"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
@@ -479,22 +446,14 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="Container">
+									<Frame parentKey="Container" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
 											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
 										</Anchors>
-										<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Frames>
 											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
 												<Anchors>
@@ -596,7 +555,7 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="WoWAccountSelect_OnLoad"/>
+							<OnLoad inherit="prepend" function="WoWAccountSelect_OnLoad"/>
 							<OnKeyDown function="WoWAccountSelect_OnKeyDown"/>
 							<OnShow function="WoWAccountSelect_OnShow"/>
 						</Scripts>
@@ -610,24 +569,16 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Background">
+							<Frame parentKey="Background" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
 								<Size>
 									<AbsDimension x="372" y="200"/>
 								</Size>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_CAPTCHA_TITLE">
@@ -651,7 +602,12 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox parentKey="EditBox" letters="16">
+									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+										</KeyValues>
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
@@ -666,17 +622,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Scripts>
 											<OnEscapePressed function="CaptchaEntry_Cancel"/>
 											<OnEnterPressed function="CaptchaEntry_Okay"/>
@@ -712,7 +657,6 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="CaptchaEntry_OnLoad"/>
 							<OnShow function="CaptchaEntry_OnShow"/>
 							<OnHide function="CaptchaEntry_OnHide"/>
 							<OnKeyDown function="CaptchaEntry_OnKeyDown"/>
@@ -727,24 +671,16 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Background">
+							<Frame parentKey="Background" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
 								<Size>
 									<AbsDimension x="372" y="200"/>
 								</Size>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
@@ -760,7 +696,12 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox parentKey="EditBox" letters="16">
+									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+										</KeyValues>
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="CENTER"/>
@@ -775,17 +716,6 @@
 												</FontString>
 											</Layer>
 										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
 										<Scripts>
 											<OnEscapePressed function="TokenEntry_Cancel"/>
 											<OnEnterPressed function="TokenEntry_Okay"/>
@@ -821,7 +751,6 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad function="TokenEntry_OnLoad"/>
 							<OnShow function="TokenEntry_OnShow"/>
 							<OnHide function="TokenEntry_OnHide"/>
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>

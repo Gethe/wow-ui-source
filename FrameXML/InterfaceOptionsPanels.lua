@@ -126,6 +126,7 @@ end
 
 ControlsPanelOptions = {
 	deselectOnClick = { text = "GAMEFIELD_DESELECT_TEXT" },
+	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT" },
 	autoClearAFK = { text = "CLEAR_AFK" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
@@ -149,7 +150,7 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("AUTOLOOTTOGGLE", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_AUTO_LOOT_"..value.."_KEY"];
 			end
 		self.GetValue =
@@ -282,7 +283,7 @@ function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ..
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("SELFCAST", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
@@ -437,7 +438,7 @@ function InterfaceOptionsCombatPanelCombatTextFloatModeDropDown_Initialize()
 end
 
 -- [[ Focus Cast key dropdown ]] --
---[[function InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent (self, event, ...)
+function InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.defaultValue = "NONE";
 		self.oldValue = GetModifiedClick("FOCUSCAST");
@@ -453,7 +454,7 @@ end
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("FOCUSCAST", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_FOCUS_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
@@ -525,7 +526,7 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
 	info.tooltipTitle = NONE_KEY;
 	info.tooltipText = OPTION_TOOLTIP_FOCUS_CAST_NONE_KEY;
 	UIDropDownMenu_AddButton(info);
-end]]
+end
 
 function InterfaceOptionsCombatPanel_OnLoad(self)
 	self.name = COMBAT_LABEL;
@@ -1192,7 +1193,7 @@ function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, e
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("PICKUPACTION", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_PICKUP_ACTION_"..value.."_KEY"];
 			end
 		self.GetValue =

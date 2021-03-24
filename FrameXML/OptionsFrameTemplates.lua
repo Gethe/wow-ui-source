@@ -15,8 +15,6 @@ function OptionsList_OnLoad (self, buttonTemplate)
 
 	--Setup random things!
 	self.scrollFrame = _G[name .. "List"];
-	self:SetBackdropBorderColor(.6, .6, .6, 1);
-	_G[name.."Bottom"]:SetVertexColor(.66, .66, .66);
 
 	--Create buttons for scrolling
 	local buttons = {};

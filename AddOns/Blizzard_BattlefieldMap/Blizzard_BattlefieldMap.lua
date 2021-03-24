@@ -134,13 +134,23 @@ end
 BattlefieldMapMixin = {};
 
 function BattlefieldMapMixin:Toggle()
-	if (BattlefieldMapAllowed()) then
+	local instanceType = GetBattlefieldMapInstanceType();
+	if instanceType ~= nil then
 		if self:IsShown() then
+			SHOW_BATTLEFIELD_MINIMAP = "0";
 			SetCVar("showBattlefieldMinimap", "0");	
 			self:Hide();
 		else
-			SetCVar("showBattlefieldMinimap", "1");
-			self:Show();
+			if instanceType == "pvp" then
+				SHOW_BATTLEFIELD_MINIMAP = "1";
+				SetCVar("showBattlefieldMinimap", "1");
+				self:Show();
+			else
+				SHOW_BATTLEFIELD_MINIMAP = "2";
+				SetCVar("showBattlefieldMinimap", "2");
+				self:Show();
+			end
+			
 		end
 	else
 		self:Hide();
@@ -206,7 +216,7 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 			self:UnregisterEvent("ADDON_LOADED");
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "UPDATE_ALL_UI_WIDGETS" or event == "UPDATE_UI_WIDGET" then
-		if GetCVar("showBattlefieldMinimap") == "1" and BattlefieldMapAllowed() then
+		if GetCVar("showBattlefieldMinimap") == "1" and GetBattlefieldMapInstanceType() ~= nil then
 			local mapID = MapUtil.GetDisplayableMapForPlayer();
 			self:SetMapID(mapID);
 			self:Show();

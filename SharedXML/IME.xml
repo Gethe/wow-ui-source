@@ -22,18 +22,13 @@
     </Layers>
   </Frame>
 
-  <Frame name="IMECandidatesFrame" frameStrata="TOOLTIP" hidden="true" parent="UIParent" virtual="false">
-    <Anchors>
+  <Frame name="IMECandidatesFrame" inherits="BackdropTemplate" frameStrata="TOOLTIP" hidden="true" parent="UIParent" virtual="false">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+		</KeyValues>
+		<Anchors>
       <Anchor point="TOPLEFT"/>
     </Anchors>
-    <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-      <EdgeSize>
-        <AbsValue val="16"/>
-      </EdgeSize>
-      <TileSize>
-        <AbsValue val="16"/>
-      </TileSize>
-    </Backdrop>
     <Frames>
       <Frame parentKey="c1" inherits="IMECandidate">
         <Anchors>

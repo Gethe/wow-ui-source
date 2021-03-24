@@ -534,5 +534,8 @@ end
 take("SecureMixin");
 take("CreateFromSecureMixins");
 
+retain("GetFinalNameFromTextureKit");
+retain("C_Texture");
+
 retain("ShrinkUntilTruncateFontStringMixin");
 retain("PortraitFrameTemplateMixin");

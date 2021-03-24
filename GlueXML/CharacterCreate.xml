@@ -3,7 +3,7 @@
 	<Script file="CharacterCreate.lua"/>
 	<CheckButton name="CharacterCreateIconButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="48" y="48"/>
+			<AbsDimension x="45" y="45"/>
 		</Size>
 		<Layers>
 			<Layer level="HIGHLIGHT">
@@ -78,11 +78,12 @@
 		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
 	</CheckButton>
 	<CheckButton name="CharacterCreateGenderButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
+		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-IconShadow">
 					<Size>
-						<AbsDimension x="64" y="64"/>
+						<AbsDimension x="55" y="55"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -197,7 +198,10 @@
 		<Frames>
 			<Frame name="CharacterCreateFrame" setAllPoints="true" enableMouse="true">
 				<Frames>
-					<Frame name="CharacterCreateCharacterFaction">
+					<Frame name="CharacterCreateCharacterFaction"  inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
+						</KeyValues>
 						<Size>
 							<AbsDimension x="240" y="160"/>
 						</Size>
@@ -346,19 +350,11 @@
 								</ScrollChild>
 							</ScrollFrame>
 						</Frames>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\TextPanel-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="8" right="4" top="4" bottom="8"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="32"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="32"/>
-							</EdgeSize>
-						</Backdrop>
 					</Frame>
-					<Frame name="CharacterCreateCharacterRace">
+					<Frame name="CharacterCreateCharacterRace" inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
+						</KeyValues>
 						<Size>
 							<AbsDimension x="240" y="260"/>
 						</Size>
@@ -489,7 +485,7 @@
 														</Anchor>
 													</Anchors>
 												</FontString>
-												<FontString name="CharacterCreateRaceAbilityText" inherits="GlueFontNormalSmall" justifyH="LEFT" justifyV="TOP">
+												<FontString name="CharacterCreateRaceAbilityText" inherits="GlueFontNormalSmall" justifyH="LEFT">
 													<Size>
 														<AbsDimension x="190" y="0"/>
 													</Size>
@@ -507,19 +503,11 @@
 								</ScrollChild>
 							</ScrollFrame>
 						</Frames>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\TextPanel-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="8" right="4" top="4" bottom="8"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="32"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="32"/>
-							</EdgeSize>
-						</Backdrop>
 					</Frame>
-					<Frame name="CharacterCreateCharacterClass">
+					<Frame name="CharacterCreateCharacterClass" inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
+						</KeyValues>
 						<Size>
 							<AbsDimension x="240" y="210"/>
 						</Size>
@@ -656,17 +644,6 @@
 								</ScrollChild>
 							</ScrollFrame>
 						</Frames>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\TextPanel-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="8" right="4" top="4" bottom="8"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="32"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="32"/>
-							</EdgeSize>
-						</Backdrop>
 					</Frame>
 					<Frame name="CharacterCreateConfigurationFrame">
 						<Size>
@@ -675,7 +652,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="28" y="-74"/>
+									<AbsDimension x="28" y="-62"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -709,7 +686,7 @@
 								</Texture>
 								<Texture name="CharacterCreateOuterBorder3" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder">
 									<Size>
-										<AbsDimension x="224" y="210"/>
+										<AbsDimension x="224" y="228"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder2" relativePoint="BOTTOM">
@@ -722,7 +699,7 @@
 								</Texture>
 								<Texture name="CharacterCreateBanners" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Banners">
 									<Size>
-										<AbsDimension x="256" y="259"/>
+										<AbsDimension x="256" y="500"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOP">
@@ -736,7 +713,7 @@
 									<Anchors>
 										<Anchor point="BOTTOM" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
-												<AbsDimension x="-50" y="3"/>
+												<AbsDimension x="-44" y="2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -745,7 +722,7 @@
 									<Anchors>
 										<Anchor point="BOTTOM" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
-												<AbsDimension x="50" y="3"/>
+												<AbsDimension x="50" y="2"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -779,7 +756,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="CharacterCreateFrame">
 										<Offset>
-											<AbsDimension x="6" y="3"/>
+											<AbsDimension x="3" y="14"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -790,7 +767,11 @@
 												<AbsDimension x="256" y="128"/>
 											</Size>
 											<Anchors>
-												<Anchor point="TOPLEFT"/>
+												<Anchor point="TOP" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="128" y="-4"/>
+													</Offset>
+												</Anchor>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -834,18 +815,18 @@
 							</CheckButton>
 							<CheckButton name="CharacterCreateRaceButton5" inherits="CharacterCreateRaceButtonTemplate" id="5">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateRaceButton1" relativePoint="RIGHT">
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton4" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="46" y="0"/>
+											<AbsDimension x="0" y="-5"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharacterCreateRaceButton6" inherits="CharacterCreateRaceButtonTemplate" id="6">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton5" relativePoint="BOTTOMLEFT">
+									<Anchor point="LEFT" relativeTo="CharacterCreateRaceButton1" relativePoint="RIGHT">
 										<Offset>
-											<AbsDimension x="0" y="-5"/>
+											<AbsDimension x="49" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -868,11 +849,29 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
+							<CheckButton name="CharacterCreateRaceButton9" inherits="CharacterCreateRaceButtonTemplate" id="9">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton8" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateRaceButton10" inherits="CharacterCreateRaceButtonTemplate" id="10">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton9" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
 							<CheckButton name="CharacterCreateGenderButtonMale" inherits="CharacterCreateGenderButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton4" relativePoint="BOTTOMLEFT">
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton5" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="20" y="-28"/>
+											<AbsDimension x="23" y="-25"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -920,9 +919,9 @@
 							</CheckButton>
 							<CheckButton name="CharacterCreateClassButton1" inherits="CharacterCreateClassButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="BOTTOM">
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateGenderButtonMale" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="-50" y="-50"/>
+											<AbsDimension x="-20" y="-15"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1042,7 +1041,7 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharacterCustomizationButtonFrame5" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="0" y="-6"/>
+											<AbsDimension x="0" y="-25"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1057,10 +1056,15 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<EditBox name="CharacterCreateNameEdit" letters="12">
+					<EditBox name="CharacterCreateNameEdit" inherits="BackdropTemplate" letters="12">
 						<Size>
 							<AbsDimension x="156" y="40"/>
 						</Size>
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="backdropColor" value="GLUE_ALLIANCE_COLOR" type="global"/>
+							<KeyValue key="backdropBorderColor" value="GLUE_ALLIANCE_BORDER_COLOR" type="global"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
@@ -1084,17 +1088,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnEscapePressed>
 								CharacterCreate_Back();

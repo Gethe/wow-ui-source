@@ -487,10 +487,8 @@ function EventTraceFrameEventHideButton_OnClick (button)
 	EventTraceFrame_Update();
 end
 
-function DebugTooltip_OnLoad(self)
+function EventTraceTooltip_OnLoad(self)
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function FrameStackTooltip_OnDisplaySizeChanged(self)
@@ -503,7 +501,9 @@ function FrameStackTooltip_OnDisplaySizeChanged(self)
 end
 
 function FrameStackTooltip_OnLoad(self)
-	DebugTooltip_OnLoad(self);
+	self:SetFrameLevel(self:GetFrameLevel() + 2);
+	SharedTooltip_OnLoad(self);
+
 	self.nextUpdate = 0;
 
 	FrameStackTooltip_OnDisplaySizeChanged(self);

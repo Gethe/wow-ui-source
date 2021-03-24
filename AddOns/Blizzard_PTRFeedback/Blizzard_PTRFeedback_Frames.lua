@@ -628,11 +628,11 @@ function PTR_IssueReporter.CreateMainView()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AddBorder(frame)
-    frame.Border = CreateFrame("Frame", nil, frame)
-    frame.Border:SetFrameStrata(frame:GetFrameStrata(), frame:GetFrameLevel() + 1)
-    frame.Border:SetPoint("TOPLEFT", frame, "TOPLEFT", -4, 4)
-    frame.Border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 4, -4)
-    frame.Border:SetBackdrop({edgeFile = PTR_IssueReporter.Assets.TestBorder, edgeSize = 16})
+    frame.Border = CreateFrame("Frame", nil, frame, "BackdropTemplate");
+    frame.Border:SetFrameStrata(frame:GetFrameStrata(), frame:GetFrameLevel() + 1);
+    frame.Border:SetPoint("TOPLEFT", frame, "TOPLEFT", -4, 4);
+    frame.Border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 4, -4);
+    frame.Border:SetBackdrop({edgeFile = PTR_IssueReporter.Assets.TestBorder, edgeSize = 16});
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AddTooltip(frame, title, text, anchor, minWidth, owner, x, y)
