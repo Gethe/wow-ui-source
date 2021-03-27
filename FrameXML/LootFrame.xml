@@ -35,15 +35,15 @@
 			</OnLeave>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					LootItem_OnEnter(self);
+				LootItem_OnEnter(self);
 				end
 				CursorOnUpdate(self);
 			</OnUpdate>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetLootSlotLink(self.slot));
+				HandleModifiedItemClick(GetLootSlotLink(self.slot));
 				else
-					LootButton_OnClick(self, button);
+				LootButton_OnClick(self, button);
 				end
 			</OnClick>
 		</Scripts>
@@ -58,8 +58,8 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(self.tooltipText);
 				if ( not self:IsEnabled() ) then
-					GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
+				GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				GameTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave>
@@ -163,60 +163,60 @@
 			<OnLoad function="GroupLootDropDown_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="GroupLootFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+	<Frame name="GroupLootFrameTemplate" inherits="BackdropTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size x="243" y="84"/>
-				<Layers>
-					<Layer level="ARTWORK">
+		<Layers>
+			<Layer level="ARTWORK">
 				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
-							<Anchors>
+					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="3" y="-3"/>
 							</Offset>
 						</Anchor>
-							</Anchors>
-						</Texture>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
-							<Anchors>
+					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
 								<AbsDimension x="-9" y="-10"/>
 							</Offset>
 						</Anchor>
-							</Anchors>
-						</Texture>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="90" y="30"/>
 					</Size>
-							<Anchors>
+					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
 							<Offset>
 								<AbsDimension x="-5" y="5"/>
 							</Offset>
 						</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-							<Layer level="OVERLAY">
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture name="$parentDecoration" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" hidden="true">
 					<Size>
 						<AbsDimension x="120" y="120"/>
 					</Size>
-									<Anchors>
+					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="-30" y="15"/>
 							</Offset>
 						</Anchor>
-									</Anchors>
-						</Texture>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
 					<Size>
 						<AbsDimension x="32" y="32"/>
@@ -269,8 +269,8 @@
 					</OnLeave>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetLootRollItem(self:GetParent().rollID);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetLootRollItem(self:GetParent().rollID);
 						end
 						CursorOnUpdate(self);
 					</OnUpdate>
@@ -355,7 +355,7 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:RegisterEvent("CANCEL_LOOT_ROLL");
 			</OnLoad>
 			<OnShow function="GroupLootFrame_OnShow"/>
@@ -397,8 +397,8 @@
 			<OnEnter>
 				self.Highlight:Show();
 				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				end
 			</OnEnter>
 			<OnLeave>
