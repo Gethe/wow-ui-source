@@ -318,13 +318,13 @@ function CommunitiesListMixin:RegisterEventCallbacks()
 	end
 
 	self.inviteAcceptedCallback = CommunityInviteAcceptedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback, self);
 	
 	self.inviteDeclinedCallback = CommunityInviteDeclinedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback, self);
 
 	self.ticketAcceptedCallback = CommunityTicketAcceptedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.TicketAccepted, self.ticketAcceptedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.TicketAccepted, self.ticketAcceptedCallback, self);
 end
 
 function CommunitiesListMixin:OnShow()
@@ -340,9 +340,9 @@ function CommunitiesListMixin:OnShow()
 end
 
 function CommunitiesListMixin:OnHide()
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self.inviteAcceptedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self.inviteDeclinedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.TicketAccpted, self.ticketAcceptedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteAccepted, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.InviteDeclined, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.TicketAccpted, self);
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 
@@ -652,14 +652,14 @@ function CommunitiesListDropDownMenuMixin:OnShow()
 		end
 		
 		self.clubSelectedCallback = CommunitiesClubSelectedCallback;
-		parent:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+		parent:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback, self);
 	end
 end
 
 function CommunitiesListDropDownMenuMixin:OnHide()
 	local parent = self:GetParent();
 	if parent.RegisterCallback then
-		parent:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+		parent:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self);
 	end
 end
 

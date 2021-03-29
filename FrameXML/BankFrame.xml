@@ -139,7 +139,7 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-46" y="-24"/>
+							<AbsDimension x="3" y="-24"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -183,6 +183,11 @@
 					<Button parentKey="Bag6" inherits="BankItemButtonBagTemplate" id="6">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bag5" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag7" inherits="BankItemButtonBagTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag6" relativePoint="TOPRIGHT" x="12" y="0"/>
 						</Anchors>
 					</Button>
 					<Frame name="BankFramePurchaseInfo" hidden="false">

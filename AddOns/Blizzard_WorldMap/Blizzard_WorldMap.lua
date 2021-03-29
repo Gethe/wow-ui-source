@@ -321,6 +321,7 @@ function WorldMapZoneMinimapDropDown_Initialize()
 		info.value = tostring(index - 1);
 		info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
 		info.func = WorldMapZoneMinimapDropDown_OnClick;
+		info.classicChecks = true;
 		-- info.checked skipped because the checked property is assigned
 		-- in the dropdown by selection comparison
 		UIDropDownMenu_AddButton(info);

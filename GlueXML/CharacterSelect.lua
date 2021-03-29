@@ -1072,7 +1072,7 @@ function UpdateCharacterList(skipSelect)
         end
     end
 
-	if (GetNumCharactersInactiveForEra() ~= 0) then
+	if (GetTBCTransitionUIEnabled() and GetNumCharactersInactiveForEra() ~= 0) then
 		CharSelectShowUnactivatedCharactersCheckButton:Show();
 	else
 		CharSelectShowUnactivatedCharactersCheckButton:Hide();
@@ -1295,8 +1295,8 @@ function CharacterSelect_EnterWorld()
         return;
     end
 
-	if (DoesEraChoiceStateRequireDecision(eraChoiceState)) then
-		-- TODO: Show UI here!
+	if ( GetTBCTransitionUIEnabled() and DoesEraChoiceStateRequireDecision(eraChoiceState)) then
+			ChoicePane:Show();
 		return;
 	end
 
@@ -1431,12 +1431,7 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
         local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
         GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
 	elseif (PAID_SERVICE_TYPE == PAID_CHARACTER_CLONE) then
-        if (C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID)) then
-        	StoreFrame_SetShown(true);
-
-            local guid = select(15, GetCharacterInfo(GetCharIDFromIndex(id)));
-            StoreFrame_SelectActivateProduct(guid);
-        end
+		CloneConfirmation:Show();
     else
         GlueParent_SetScreen("charcreate");
     end
@@ -1651,6 +1646,10 @@ function GetIndexFromCharID(charID)
 end
 
 function IsEraChoiceStateLocked(eraChoiceState)
+	if( not GetTBCTransitionUIEnabled() ) then 
+		return false;
+	end
+
 	return eraChoiceState == Enum.CharacterEraChoiceState.CharacterEraChoiceLockedToOtherEra;
 end
 
@@ -2244,6 +2243,7 @@ function TBCInfoPane_CheckVisible()
 	TBCInfoPane:SetShown(GetTBCInfoPaneEnabled() and GetCVar("seenTBCInfoPane") == "0");
 end
 
+-- Global because of localization
 tbcInfoIconAtlas = "classic-burningcrusade-infoicon";
 function TBCInfoPaneTemplate_OnLoad(self)
 	DefaultScaleFrameMixin.OnDefaultScaleFrameLoad(self);
@@ -2264,14 +2264,20 @@ function TBCInfoPaneTemplate_OnLeave(self)
 	GlueTooltip:Hide();
 end
 
+-- Global because of localization
 tbcInfoPaneInfographicAtlas = "classic-announcementpopup-bcinfographic";
 function TBCInfoPane_OnShow(self)
-	self.TBCInfoPaneDiagram:SetAtlas(tbcInfoPaneInfographicAtlas);
+	self.TBCInfoPaneDiagram:SetAtlas(tbcInfoPaneInfographicAtlas, true);
 end
 
 function TBCInfoPane_RefreshPrice()
 	if( BURNING_CRUSADE_PREVIEW_DESCRIPTION2 ) then
-		TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(BURNING_CRUSADE_PREVIEW_DESCRIPTION2, GetFormattedClonePrice()));
+		local formattedPrice = BURNING_CRUSADE_TRANSITION_DEFAULT_PRICE;
+		if ( GetTBCInfoPanePriceEnabled() ) then
+			formattedPrice = GetFormattedClonePrice();
+		end
+
+		TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(BURNING_CRUSADE_PREVIEW_DESCRIPTION2, formattedPrice));
 	end
 end
 
@@ -2279,14 +2285,128 @@ function TBCInfoPaneHTMLDesc_OnLoad(self)
 	TBCInfoPane_RefreshPrice();
 end
 
-local cloneServiceProductId = 682
+local cloneServiceProductId = 679
 function GetFormattedClonePrice()
 	local formattedPrice = SecureCurrencyUtil.GetFormattedPrice(cloneServiceProductId);
-	if not GetTBCInfoPanePriceEnabled() or not formattedPrice then
+
+	if not formattedPrice then
 		formattedPrice = BURNING_CRUSADE_TRANSITION_DEFAULT_PRICE;
 	end
 
 	return formattedPrice;
+end
+
+function ChoicePane_OnPlay()
+    PlaySound(SOUNDKIT.YOU_ARE_NOT_PREPARED);
+	ChoiceConfirmation:Show();
+	ChoicePane:Hide();
+end
+
+function ChoicePane_OnExitGame()
+	CharacterSelect_SaveCharacterOrder();
+	QuitGame();
+end
+
+function ChoicePane_Toggle()
+	ChoicePane:SetShown(not ChoicePane:IsShown());
+end
+
+-- Global because of localization
+choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-current";
+choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-other";
+function ChoicePane_OnShow(self)
+	PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
+	
+	local selectedCharName = GetCharacterInfo(GetCharacterSelection());
+	ChoicePaneCurrentDesc:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CURRENT_DESCRIPTION, selectedCharName, selectedCharName, GetFormattedClonePrice()));
+
+	self.CurrentLogo:SetAtlas(choicePaneCurrentLogoAtlas);
+	self.OtherLogo:SetAtlas(choicePaneOtherLogoAtlas);
+end
+
+function ChoicePane_OnClose(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	ChoicePane:Hide();
+end
+
+-- ChoiceConfirmationTemplate
+
+-- This name has a different source depending on whether the ChoiceConfirmation or CloneConfirmation is showing.  But it is used in the same manner in the confirmation edit box.
+local selectedCharName;
+function ChoiceConfirmationEditBox_OnTextChanged(self)
+	if ( strupper(self:GetText()) == strupper(selectedCharName) ) then
+		self:GetParent().ChoiceConfirmationConfirmButton:Enable();
+	else
+		self:GetParent().ChoiceConfirmationConfirmButton:Disable();
+	end
+end
+
+function ChoiceConfirmationEditBox_OnEnterPressed(self)
+	if ( self:GetParent().ChoiceConfirmationConfirmButton:IsEnabled() ) then
+		self:GetParent().ChoiceConfirmationConfirmButton:Click();
+	end
+end
+
+function ChoiceConfirmationEditBox_OnEscapePressed(self)
+	self:GetParent().ChoiceConfirmationCancelButton:Click();
+end
+
+-- ChoiceConfirmation
+
+function ChoiceConfirmation_OnLoad(self)
+	DefaultScaleFrameMixin.OnDefaultScaleFrameLoad(self);
+	self.ChoiceConfirmationConfirmButton:SetScript("OnClick", ChoiceConfirmation_OnConfirm);
+	self.ChoiceConfirmationCancelButton:SetScript("OnClick", ChoiceConfirmation_OnCancel);
+end
+
+function ChoiceConfirmation_OnShow(self)
+	selectedCharName = GetCharacterInfo(GetCharacterSelection());
+	self.ConfirmationLogo:SetAtlas(choicePaneCurrentLogoAtlas);
+	self.ChoiceConfirmationTitle:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CONFIRM, selectedCharName));
+end
+
+function ChoiceConfirmation_OnConfirm(self)
+	PlaySound(SOUNDKIT.FELREAVER);
+    StopGlueAmbience();
+    EnterWorldWithTransitionChoice();
+end
+
+function ChoiceConfirmation_OnCancel(self)
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
+	ChoiceConfirmation:Hide();
+end
+
+-- CloneConfirmation
+
+function CloneConfirmation_OnLoad(self)
+	DefaultScaleFrameMixin.OnDefaultScaleFrameLoad(self);
+	self.ChoiceConfirmationConfirmButton:SetScript("OnClick", CloneConfirmation_OnConfirm);
+	self.ChoiceConfirmationCancelButton:SetScript("OnClick", CloneConfirmation_OnCancel);
+end
+
+function CloneConfirmation_OnShow(self)
+	local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfo(PAID_SERVICE_CHARACTER_ID);
+	selectedCharName = name;
+	self.ConfirmationLogo:SetAtlas(choicePaneCurrentLogoAtlas);
+	local formattedDate = string.format(FULLDATE_NO_WEEKDAY, CALENDAR_FULLDATE_MONTH_NAMES[lastActiveMonth], lastActiveDay, lastActiveYear);
+	if (not formattedDate) then
+		formattedDate = BURNING_CRUSADE_TRANSITION_DEFAULT_CLONE_DATE;
+	end
+	self.ChoiceConfirmationTitle:SetText(string.format(BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_CONFIRM, selectedCharName, formattedDate));
+end
+
+function CloneConfirmation_OnConfirm(self)
+    if (C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID)) then
+		CloneConfirmation:Hide();
+		StoreFrame_SetShown(true);
+		local guid = select(15, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
+		StoreFrame_SelectActivateProduct(guid);
+    end
+end
+
+function CloneConfirmation_OnCancel(self)
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
+	CloneConfirmation:Hide();
 end
 
 local textureKitRegionInfo = {

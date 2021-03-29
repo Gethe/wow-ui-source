@@ -1,5 +1,5 @@
 
-CommunitiesFrameMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+CommunitiesFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
 CommunitiesFrameMixin:GenerateCallbackEvents(
 {
@@ -36,7 +36,7 @@ local COMMUNITIES_STATIC_POPUPS = {
 };
 
 function CommunitiesFrameMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
 	
 	self.PortraitFrame:Hide();
 	

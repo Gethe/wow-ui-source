@@ -1192,6 +1192,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						BackdropTemplateMixin.OnBackdropLoaded(self);
 						if(InGlue()) then
 							self:Hide();
 						else
@@ -1589,6 +1590,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						BackdropTemplateMixin.OnBackdropLoaded(self);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.tooltip = OPTION_STEREO_CONVERGENCE;
@@ -1623,6 +1625,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						BackdropTemplateMixin.OnBackdropLoaded(self);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.tooltip = OPTION_STEREO_SEPARATION;

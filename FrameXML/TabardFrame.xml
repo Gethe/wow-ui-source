@@ -309,7 +309,7 @@
 							<Layer level="BACKGROUND">
 								<FontString name="TabardFrameCostLabel" inherits="GameFontHighlight" text="TABARDVENDORCOST">
 									<Anchors>
-										<Anchor point="RIGHT" relativeTo="TabardFrameCostMoneyFrame" relativePoint="LEFT" x="-5" y="1"/>
+										<Anchor point="RIGHT" relativeTo="TabardFrameCostMoneyFrame" relativePoint="LEFT" x="-5" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>

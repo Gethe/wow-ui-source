@@ -153,8 +153,14 @@
 	<Font name="GameFontBlackHuge2" inherits="SystemFont_Huge2" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
+	<Font name="GameFontWhiteShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
+		<Color r="1" g="1" b="1"/>
+	</Font>
 	<Font name="GameFontOffBlack30" inherits="Game30Font2" virtual="true">
 		<Color r="0.2" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontWhiteOutline30" inherits="Game30Font2Outline" virtual="true">
+		<Color r="1" g="1" b="1"/>
 	</Font>
 	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>

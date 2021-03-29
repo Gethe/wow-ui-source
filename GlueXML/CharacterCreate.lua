@@ -193,6 +193,19 @@ function CharacterCreateFrame_OnUpdate(self, elapsed)
 	end
 end
 
+function CharacterCreateRaceButton_OnEnter(self)
+	if(self:IsEnabled()) then
+		return;
+	end
+	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, -8);
+	GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
+	GlueTooltip:Show();
+end
+
+function CharacterCreateRaceButton_OnLeave(self)
+	GlueTooltip:Hide();
+end
+
 function CharacterCreateEnumerateRaces()
 	local races = C_CharacterCreation.GetAvailableRaces();
 	CharacterCreate.numRaces = #races;
@@ -201,6 +214,7 @@ function CharacterCreateEnumerateRaces()
 		return;
 	end
 
+	local isBoostedCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local coords;
 	local button;
 	local gender;
@@ -214,7 +228,23 @@ function CharacterCreateEnumerateRaces()
 		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
-		button.tooltip = raceData.name;
+		local isNewTBCRace = raceData.fileName == "BloodElf" or raceData.fileName == "Draenei";
+		if isBoostedCharacter and isNewTBCRace then
+			button:Disable();
+			local texture = button:GetNormalTexture();
+			if ( texture ) then
+				texture:SetDesaturated(true);
+			end
+			button:SetText("");
+			button.tooltip = CHAR_CREATE_NO_BOOST;
+		else
+			button:Enable();
+			local texture = button:GetNormalTexture();
+			if ( texture ) then
+				texture:SetDesaturated(false);
+			end
+			button.tooltip = raceData.name;
+		end
 		button.raceID = raceData.raceID;
 	end
 	for i=#races + 1, MAX_RACES, 1 do

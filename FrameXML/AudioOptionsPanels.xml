@@ -436,7 +436,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide();
 						_G[name.."High"]:Hide();
@@ -492,7 +492,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						local label = _G[name.."Low"];
 						label:ClearAllPoints();
@@ -550,7 +550,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide()
 						_G[name.."High"]:Hide();
@@ -604,7 +604,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide();
 						_G[name.."High"]:Hide();
@@ -658,7 +658,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide();
 						_G[name.."High"]:Hide();
@@ -761,7 +761,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -785,7 +785,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -824,7 +824,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -844,7 +844,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>

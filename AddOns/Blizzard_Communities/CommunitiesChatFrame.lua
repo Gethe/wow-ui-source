@@ -35,7 +35,7 @@ function CommunitiesChatMixin:OnShow()
 	end
 
 	self.streamSelectedCallback = StreamSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback, self);
 	
 	self:UpdateChatColor();
 	self:DisplayChat();
@@ -108,7 +108,7 @@ end
 function CommunitiesChatMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_CHAT_FRAME_EVENTS);
 	if self.streamSelectedCallback then
-		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self);
 		self.streamSelectedCallback = nil;
 	end
 end

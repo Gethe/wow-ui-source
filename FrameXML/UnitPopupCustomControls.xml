@@ -35,7 +35,7 @@
 			<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-5" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 		</Scripts>
 	</Slider>
 

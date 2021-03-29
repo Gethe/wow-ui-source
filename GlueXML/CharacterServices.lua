@@ -597,7 +597,7 @@ function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
 	local availableBoosts = {};
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
 	if upgradeDistributions then
-		local _, _, raceFileName, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local _, _, raceFileName, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfoByGUID(characterGUID);
 		for boostType, data in pairs(upgradeDistributions) do
 			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
 				availableBoosts[#availableBoosts + 1] = boostType;
@@ -849,7 +849,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i));
 		if CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;

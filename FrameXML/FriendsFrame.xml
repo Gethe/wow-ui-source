@@ -3406,7 +3406,22 @@ TRAVEL PASS
                 </Offset>
               </Anchor>
             </Anchors>
-            
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="165" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="1" y="-6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
             <Scripts>
               <OnMouseUp>
                 StaticPopup_Show("SET_GUILDOFFICERNOTE");

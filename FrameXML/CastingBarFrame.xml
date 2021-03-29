@@ -8,7 +8,7 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>		
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="ARTWORK">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border">
 					<Size>
 						<AbsDimension x="256" y="64"/>
@@ -21,8 +21,6 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size>
 						<AbsDimension x="256" y="64"/>
@@ -42,7 +40,7 @@
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="5"/>
+								<AbsDimension x="0" y="3"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -132,6 +130,8 @@
 						<Anchor point="TOPRIGHT" x="0" y="4"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture parentKey="Icon">
 					<Size>
 						<AbsDimension x="16" y="16"/>
@@ -144,8 +144,6 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
 				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="32" y="32"/>

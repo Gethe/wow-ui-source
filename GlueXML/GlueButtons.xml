@@ -115,7 +115,7 @@
 		</ButtonText>
 		<NormalFont style="GlueFontNormalLarge"/>
 		<HighlightFont style="GlueFontHighlightLarge"/>
-		<DisabledFont style="GlueFontDisable"/>
+		<DisabledFont style="GlueFontDisableLarge"/>
 		<NormalTexture inherits="GluePanelButtonUpTexture"/>
 		<PushedTexture inherits="GluePanelButtonDownTexture"/>
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>

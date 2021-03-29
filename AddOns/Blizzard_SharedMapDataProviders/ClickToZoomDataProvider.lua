@@ -31,8 +31,8 @@ function ClickToZoomDataProviderMixin:OnAdded(mapCanvas)
 		end
 	end
 	
-	self:GetMap():RegisterCallback("ZoneLabelFadeInStart", self.fadeInCallback);
-	self:GetMap():RegisterCallback("ZoneLabelFadeOutStart", self.fadeOutCallback);
+	self:GetMap():RegisterCallback("ZoneLabelFadeInStart", self.fadeInCallback, self);
+	self:GetMap():RegisterCallback("ZoneLabelFadeOutStart", self.fadeOutCallback, self);
 
 	if self.MapLabel then
 		self.MapLabel:SetParent(self:GetMap());
@@ -49,8 +49,8 @@ end
 function ClickToZoomDataProviderMixin:OnRemoved(mapCanvas)
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 
-	self:GetMap():UnregisterCallback("ZoneLabelFadeInStart", self.fadeInCallback);
-	self:GetMap():UnregisterCallback("ZoneLabelFadeOutStart", self.fadeOutCallback);	
+	self:GetMap():UnregisterCallback("ZoneLabelFadeInStart", self);
+	self:GetMap():UnregisterCallback("ZoneLabelFadeOutStart", self);
 end
 
 function ClickToZoomDataProviderMixin:RemoveAllData()
