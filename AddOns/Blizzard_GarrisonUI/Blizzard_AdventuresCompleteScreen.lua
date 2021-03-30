@@ -94,7 +94,10 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
 	if not mission.completed then
    		C_Garrison.MarkMissionComplete(self.currentMission.missionID);
 	else
-		C_Garrison.RegenerateCombatLog(self.currentMission.missionID);
+		--If we have the ability to regenerate the combat log and can't, don't show the complete screen
+		if not C_Garrison.RegenerateCombatLog(self.currentMission.missionID) then
+			self:GetCovenantMissionFrame():CloseMissionComplete();
+		end
 	end
 
 end

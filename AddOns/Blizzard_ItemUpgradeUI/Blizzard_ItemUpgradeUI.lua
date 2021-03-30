@@ -248,7 +248,8 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 
 	-- effects
 	local effectIndex = 1;
-	for i = 1, GetNumItemUpgradeEffects() do
+	local numEffects = GetNumItemUpgradeEffects();
+	for i = 1, numEffects do
 		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex, setStatsRight);
 		if ( effectIndex == 1 ) then
 			row:ClearAllPoints();
@@ -259,17 +260,36 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 			end
 		end
 		local leftText, rightText = GetItemUpgradeEffect(i);
-		row.LeftText:SetText(leftText);
+		row.Left.Text:SetHeight(0);
+		row.Left.Text:SetText(leftText);
 
 		if ( setStatsRight ) then
-			row.RightText:SetText(ItemUpgradeFrame_GetUpgradedEffectString(leftText, rightText));
-			row.RightText:Show();
+			row.Right.Text:SetHeight(0);
+			row.Right.Text:SetText(ItemUpgradeFrame_GetUpgradedEffectString(leftText, rightText));
+			row.Right.Text:Show();
 		else
-			row.RightText:Hide();
+			row.Right.Text:Hide();
 		end
 
-		local height = max(row.LeftText:GetHeight(), row.RightText:GetHeight());
-		row:SetHeight(height + 3);
+		local height = max(row.Left.Text:GetHeight(), row.Right.Text:GetHeight());
+		local minimumPadding = 20;
+		local isLastEffect = (i == numEffects);
+		local limitedHeight = isLastEffect and ((row:GetTop() - ItemUpgradeFrame:GetBottom()) - minimumPadding);
+		if isLastEffect and (height > limitedHeight) then
+			local rowHeight = limitedHeight - minimumPadding;
+			row:SetHeight(rowHeight);
+			row.Left.Text:SetHeight(rowHeight);
+			row.Right.Text:SetHeight(rowHeight);
+		else
+			local rowHeight = height + 3;
+			row:SetHeight(rowHeight);
+			row.Left.Text:SetHeight(rowHeight);
+			row.Right.Text:SetHeight(rowHeight);
+		end
+
+		row.Left:MarkDirty();
+		row.Right:MarkDirty();
+
 		row:Show();
 		effectIndex = effectIndex + 1;
 	end

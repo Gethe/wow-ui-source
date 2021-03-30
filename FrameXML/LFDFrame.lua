@@ -677,7 +677,16 @@ LFD_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 -----------LFD Role Check Popup Frame--------------
 ---------------------------------------------------
 function LFDFramePopupRoleCheckButton_OnClick(self)
+	LFGRoleCheckPopup_UpdatePvPRoles();
 	LFDRoleCheckPopup_UpdateAcceptButton();
+end
+
+function LFGRoleCheckPopup_UpdatePvPRoles()
+	local isBGRoleCheck = select(6, GetLFGRoleUpdate());
+	if ( isBGRoleCheck ) then
+		local tankChecked, healerChecked, dpsChecked = LFDRoleCheckPopup_GetRolesChecked();
+		SetPVPRoles(tankChecked, healerChecked, dpsChecked);
+	end
 end
 
 function LFGRoleCheckPopup_UpdateRoleButton(button)
@@ -819,14 +828,19 @@ function LFDRoleCheckPopup_Update()
 	LFDRoleCheckPopup_UpdateAcceptButton();
 end
 
+function LFDRoleCheckPopup_GetRolesChecked()
+	local tankChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonTank);
+	local healerChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonHealer);
+	local dpsChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonDPS);
+	return tankChecked, healerChecked, dpsChecked;
+end
+
 function LFDRoleCheckPopupAccept_OnClick()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
 	--Check if the role check is for a BG or not.
 	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
-	local tankChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonTank);
-	local healerChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonHealer);
-	local dpsChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonDPS);
+	local tankChecked, healerChecked, dpsChecked = LFDRoleCheckPopup_GetRolesChecked();
 	if ( isBGRoleCheck ) then
 		SetPVPRoles(tankChecked, healerChecked, dpsChecked);
 	else

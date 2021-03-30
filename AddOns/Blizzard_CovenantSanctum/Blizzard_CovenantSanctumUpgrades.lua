@@ -575,7 +575,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo, inIntroMode)
 
 	self.talentID = talentInfo.id;
 	local disabled = false;
-	local abbreviateCost = true;
+	local abbreviateCost = false;
 	local showingCost = false;
 
 	local nameColor = HIGHLIGHT_FONT_COLOR;

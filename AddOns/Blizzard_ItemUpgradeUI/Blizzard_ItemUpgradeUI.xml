@@ -88,23 +88,44 @@
 					<Color r="1" g="1" b="1" a="0.15"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="LeftText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="150" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-2"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-				<FontString parentKey="RightText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="192" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="183" y="-2"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Left" inherits="ResizeLayoutFrame, TruncatedTooltipScriptTemplate">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Size x="150" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="Right" inherits="ResizeLayoutFrame, TruncatedTooltipScriptTemplate">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="183" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Size x="192" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="ItemUpgradeFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">

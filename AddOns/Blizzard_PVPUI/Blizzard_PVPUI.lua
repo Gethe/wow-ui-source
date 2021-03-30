@@ -208,6 +208,7 @@ function PVPUIFrame_SetRoles(frame)
 	SetPVPRoles(frame.TankIcon.checkButton:GetChecked(),
 		frame.HealerIcon.checkButton:GetChecked(),
 		frame.DPSIcon.checkButton:GetChecked());
+	LFG_UpdateAllRoleCheckboxes();
 end
 
 function PVPUIFrame_UpdateRolesChangeable()

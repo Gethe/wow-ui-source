@@ -421,6 +421,11 @@ local GarrisonInfo =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "RemoveFollowerFromMission",

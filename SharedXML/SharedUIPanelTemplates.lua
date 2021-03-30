@@ -901,7 +901,7 @@ function TruncatedTooltipScript_OnEnter(self)
 	if text:IsTruncated() then
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		tooltip:SetText(text:GetText());
+		GameTooltip_AddNormalLine(tooltip, text:GetText());
 		tooltip:Show();
 	end
 end
