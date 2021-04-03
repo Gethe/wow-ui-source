@@ -21,6 +21,7 @@
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
 MixinUtil.lua
+..\SharedXML\LinkUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml

@@ -8,12 +8,14 @@
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
+..\SharedXML\LinkUtil.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
+..\SharedXML\SecureCurrencyUtil.lua
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml

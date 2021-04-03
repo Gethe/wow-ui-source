@@ -322,6 +322,12 @@ function FriendsFrame_OnLoad(self)
 	end
 end
 
+function FriendsFrame_CheckDethroneStatus()
+	local canReplaceGM = CanReplaceGuildMaster();
+	GuildFrameImpeachButton:SetShown(canReplaceGM);
+	GuildFrameControlButton:SetShown(not canReplaceGM);
+end
+
 function FriendsFrame_OnShow()
 	FriendsList_Update(true);
 	FriendsFrame_Update();
@@ -331,6 +337,7 @@ function FriendsFrame_OnShow()
 	InGuildCheck();
 	BlizzardGroups_UpdateNotifications();
 	BlizzardGroups_UpdateShowTab();
+	FriendsFrame_CheckDethroneStatus();
 end
 
 function FriendsFrame_Update()
@@ -943,6 +950,8 @@ function FriendsFrame_OnEvent(self, event, ...)
 			FriendsFrame_Update(); --TODO - Only update the buttons that need updating
 		end
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		FriendsFrame_CheckDethroneStatus();
+
 		if ( GuildFrame:IsVisible() ) then
 			local canRequestGuildRoster = ...;
 			if ( canRequestGuildRoster ) then
@@ -2534,7 +2543,7 @@ end
 
 function GuildFrameControlButton_OnUpdate()
 	if ( FriendsFrame.guildControlShow == 1 ) then
-		GuildFrameControlButton:LockHighlight();		
+		GuildFrameControlButton:LockHighlight();
 	else
 		GuildFrameControlButton:UnlockHighlight();
 	end

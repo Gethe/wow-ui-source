@@ -48,6 +48,12 @@ function StoreFrame_SelectBoost(boostType, reason, guid)
 	StoreFrame:SetAttribute("selectboost", data);
 end
 
+function StoreFrame_SelectActivateProduct(guid)
+	if guid ~= nil then
+		StoreFrame:SetAttribute("selectactivateproduct", guid);
+	end
+end
+
 function StoreFrame_SelectGameTimeProduct()
 	StoreFrame:SetAttribute("selectgametime", true);
 end

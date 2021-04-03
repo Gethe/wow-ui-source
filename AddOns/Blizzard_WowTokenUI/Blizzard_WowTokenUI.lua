@@ -65,21 +65,6 @@ Import("TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT")
 Import("TOKEN_REDEEM_BALANCE_FORMAT")
 Import("TOKEN_REDEEM_BALANCE_TITLE")
 Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_TPT");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_GBP");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_EURO");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_RUB");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_MXN");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 
@@ -123,176 +108,6 @@ Import("PortraitFrameTemplateMixin");
 BalanceEnabled = nil;
 BalanceAmount = 0;
 
-local CURRENCY_UNKNOWN = 0;
-local CURRENCY_USD = 1;
-local CURRENCY_GBP = 2;
-local CURRENCY_KRW = 3;
-local CURRENCY_EUR = 4;
-local CURRENCY_RUB = 5;
-local CURRENCY_ARS = 8;
-local CURRENCY_CLP = 9;
-local CURRENCY_MXN = 10;
-local CURRENCY_BRL = 11;
-local CURRENCY_AUD = 12;
-local CURRENCY_CPT = 14;
-local CURRENCY_TPT = 15;
-local CURRENCY_BETA = 16;
-local CURRENCY_JPY = 28;
-local CURRENCY_CAD = 29;
-local CURRENCY_NZD = 30;
-
-local currencyMult = 100;
-
-local function formatLargeNumber(amount)
-	amount = tostring(amount);
-	local newDisplay = "";
-	local strlen = amount:len();
-	--Add each thing behind a comma
-	for i=4, strlen, 3 do
-		newDisplay = LARGE_NUMBER_SEPERATOR..amount:sub(-(i - 1), -(i - 3))..newDisplay;
-	end
-	--Add everything before the first comma
-	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
-	return newDisplay;
-end
-
-local function largeAmount(num)
-	return formatLargeNumber(math.floor(num / currencyMult));
-end
-
-local function formatCurrency(dollars, cents, alwaysShowCents)
-	if ( alwaysShowCents or cents ~= 0 ) then
-		return string.format("%s%s%02d", formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
-	else
-		return formatLargeNumber(dollars);
-	end
-end
-
-local function currencyFormatUSD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_USD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatGBP(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GBP, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatKRWLong(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatEuro(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_EURO, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatRUB(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_RUB, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatARS(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_ARS, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCLP(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CLP, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatMXN(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_MXN, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatBRL(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_BRL, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatAUD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_AUD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCPTLong(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatTPT(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TPT, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatRawStar(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_RAW_ASTERISK, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatBeta(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_BETA, formatCurrency(dollars, cents, true));
-end
-
-local function currencyFormatJPY(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_JPY, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCAD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CAD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatNZD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
-end
-
-local currencySpecific = {
-	[CURRENCY_USD] = {
-		["currencyFormat"] = currencyFormatUSD,
-	},
-	[CURRENCY_GBP] = {
-		["currencyFormat"] = currencyFormatGBP,
-	},
-	[CURRENCY_KRW] = {
-		["currencyFormat"] = currencyFormatKRWLong,
-	},
-	[CURRENCY_EUR] = {
-		["currencyFormat"] = currencyFormatEuro,
-	},
-	[CURRENCY_RUB] = {
-		["currencyFormat"] = currencyFormatRUB,
-	},
-	[CURRENCY_ARS] = {
-		["currencyFormat"] = currencyFormatARS,
-	},
-	[CURRENCY_CLP] = {
-		["currencyFormat"] = currencyFormatCLP,
-	},
-	[CURRENCY_MXN] = {
-		["currencyFormat"] = currencyFormatMXN,
-	},
-	[CURRENCY_BRL] = {
-		["currencyFormat"] = currencyFormatBRL,
-	},
-	[CURRENCY_AUD] = {
-		["currencyFormat"] = currencyFormatAUD,
-	},
-	[CURRENCY_CPT] = {
-		["currencyFormat"] = currencyFormatCPTLong,
-	},
-	[CURRENCY_TPT] = {
-		["currencyFormat"] = currencyFormatTPT,
-	},
-	[CURRENCY_BETA] ={
-		["currencyFormat"] = currencyFormatBeta,
-	},
-	[CURRENCY_JPY] = {
-		["currencyFormat"] = currencyFormatJPY,
-	},
-	[CURRENCY_CAD] = {
-		["currencyFormat"] = currencyFormatCAD,
-	},
-	[CURRENCY_NZD] = {
-		["currencyFormat"] = currencyFormatNZD,
-	},
-};
-
-local function currencyInfo()
-	local currency = C_StoreSecure.GetCurrencyID();
-	local info = currencySpecific[currency];
-	return info;
-end
-
 function SecureFormatShortDate(day, month, year)
 	if (LOCALE_enGB) then
 		return string.format(SHORTDATE_EU, day, month, year);
@@ -320,8 +135,8 @@ end
 
 
 function GetBalanceString()
-	local info = currencyInfo();
-	return info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0);
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
+	return info.formatLong(C_WowTokenSecure.GetBalanceRedeemAmount(), 0);
 end
 
 function WowTokenRedemptionFrame_Update(self)
@@ -411,9 +226,9 @@ end
 function GetBalanceRedemptionString()
 	local currentBalance, addedBalance, canRedeem = C_WowTokenSecure.GetBalanceRedemptionInfo();
 
-	local info = currencyInfo();
-	local balanceStr = info.currencyFormat(currentBalance, 0);
-	local addedStr = info.currencyFormat(currentBalance + addedBalance, 0);
+	local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
+	local balanceStr = info.formatLong(currentBalance, 0);
+	local addedStr = info.formatLong(currentBalance + addedBalance, 0);
 
 	return string.format(TOKEN_REDEEM_BALANCE_FORMAT, balanceStr, addedStr);
 end
@@ -446,8 +261,8 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 				C_WowTokenSecure.CanRedeemForBalance();
 				self.RightDisplay.Format:Hide();
 				self.RightDisplay.Spinner:Show();
-				local info = currencyInfo();
-				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
+				local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
+				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.formatLong(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
 			end
 		end
 		self:Show();
@@ -469,8 +284,8 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 			-- Right now, near cap is the only reason the server will send us cannot accept here.
 			-- Have a good (but not perfect) default in case reasons are added before we patch the UI with a better message.
 			if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
-				local info = currencyInfo();
-				local amountStr = info.currencyFormat(currentBalance, 0);
+				local info = SecureCurrencyUtil.GetActiveCurrencyInfo();
+				local amountStr = info.formatLong(currentBalance, 0);
 				self.RightDisplay.Format:SetText(HTML_START_CENTERED..string.format(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT, amountStr)..HTML_END);
 			else
 				self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEMPTION_UNAVAILABLE..HTML_END);
@@ -519,19 +334,6 @@ function WowTokenRedemptionFrameCloseButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
-local function formatLargeNumber(amount)
-	amount = tostring(amount);
-	local newDisplay = "";
-	local strlen = amount:len();
-	--Add each thing behind a comma
-	for i=4, strlen, 3 do
-		newDisplay = LARGE_NUMBER_SEPERATOR..amount:sub(-(i - 1), -(i - 3))..newDisplay;
-	end
-	--Add everything before the first comma
-	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
-	return newDisplay;
-end
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- This section is based on code from MoneyFrame.lua to keep it in the secure environment, if you change it there you should probably change it here as well.
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -549,7 +351,7 @@ function GetSecureMoneyString(money, separateThousands)
 
 	if ( GetCVar("colorblindMode") == "1" ) then
 		if (separateThousands) then
-			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
+			goldString = SecureCurrencyUtil.FormatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else
 			goldString = gold..GOLD_AMOUNT_SYMBOL;
 		end
@@ -557,7 +359,7 @@ function GetSecureMoneyString(money, separateThousands)
 		copperString = copper..COPPER_AMOUNT_SYMBOL;
 	else
 		if (separateThousands) then
-			goldString = string.format(GOLD_AMOUNT_TEXTURE_STRING, formatLargeNumber(gold), 0, 0);
+			goldString = string.format(GOLD_AMOUNT_TEXTURE_STRING, SecureCurrencyUtil.FormatLargeNumber(gold), 0, 0);
 		else
 			goldString = string.format(GOLD_AMOUNT_TEXTURE, gold, 0, 0);
 		end
@@ -695,7 +497,7 @@ dialogs = {
 		title = TOKEN_CONFIRMATION_TITLE,
 		description = TOKEN_REDEEM_BALANCE_CONFIRMATION_DESCRIPTION,
 		formatDesc = true,
-		descFormatArgs = function() local info = currencyInfo(); return { info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0) }; end,
+		descFormatArgs = function() local info = SecureCurrencyUtil.GetActiveCurrencyInfo(); return { info.formatLong(C_WowTokenSecure.GetBalanceRedeemAmount(), 0) }; end,
 		confirmationDesc = nil, -- Now set in reaction to an event
 		confDescIsFunction = true,
 		button1 = ACCEPT,

@@ -33,3 +33,17 @@ function FrameUtil.UnregisterFrameForEvents(frame, events)
 		frame:UnregisterEvent(event);
 	end
 end
+
+function ApplyDefaultScale(frame, minScale, maxScale)
+	local scale = GetDefaultScale();
+	
+	if minScale then
+		scale = math.max(scale, minScale);
+	end
+
+	if maxScale then
+		scale = math.min(scale, maxScale);
+	end
+	
+	frame:SetScale(scale);
+end

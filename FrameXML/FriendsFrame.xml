@@ -2466,6 +2466,35 @@ TRAVEL PASS
               <AbsDimension x="0" y="0"/>
             </PushedTextOffset>
           </Button>
+					<Button name="GuildFrameImpeachButton" inherits="UIPanelButtonTemplate" text="GUILD_IMPEACH_POPUP_CONFIRM" hidden="true">
+						<Size x="104" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-6" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								local markup = CreateTextureMarkup("Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", 64, 64, 16, 16, 0, 1, 0, 1);
+								local buttonString = ("%s %s|r"):format(markup, GUILD_IMPEACH_POPUP_CONFIRM);
+								self:SetText(buttonString);
+							</OnLoad>
+							<OnClick>
+								StaticPopup_Show("GUILD_IMPEACH");
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(self, GUILD_IMPEACH_POPUP_CONFIRM, 1.0, 1.0, 1.0, GUILD_IMPEACH_BUTTON_TEXT, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
           <Button name="GuildFrameControlButton" inherits="UIPanelButtonTemplate" text="GUILDCONTROL">
             <Size>
               <AbsDimension x="104" y="22"/>

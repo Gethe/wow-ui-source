@@ -216,8 +216,20 @@
 				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
 				if ( self:IsEnabled() ) then
 					GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
+					if (self.tooltip2) then
+						GlueTooltip:AddLine(self.tooltip2, nil, nil, nil, nil, true)
+					end
+					if (self.tooltip3) then
+						GlueTooltip:AddLine(self.tooltip3, .5, .5, .5, 1.0, true);
+					end
 				else
-					GlueTooltip:SetText(self.disabledTooltip, 1.0, 1.0, 1.0);
+					GlueTooltip:SetText(self.disabledTooltip, 1.0, 1.0, 1.0, 1.0, true);
+					if (self.disabledTooltip2) then
+						GlueTooltip:AddLine(self.disabledTooltip2, nil, nil, nil, nil, true)
+					end
+					if (self.disabledTooltip3) then
+						GlueTooltip:AddLine(self.disabledTooltip3, 1.0, 0.1, 0.1, 1.0, true);
+					end
 				end
 			</OnEnter>
 			<OnLeave>
@@ -335,7 +347,155 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+		
+	<Button name="TBCInfoPaneTemplate" inherits="DefaultScaleFrame" parentArray="notificationIconFrames" frameStrata="HIGH" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+		</KeyValues>
+		<Size x="177" y ="178"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TBCIcon" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="TBCInfoPaneTemplate_OnLoad"/>
+			<OnClick function="TBCInfoPane_Toggle"/>
+			<OnEnter function="TBCInfoPaneTemplate_OnEnter"/>
+			<OnLeave function="TBCInfoPaneTemplate_OnLeave"/>
+		</Scripts>
+		<HighlightTexture parentKey="TBCIconHighlight" alpha="0.3" alphaMode="ADD" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>	
+	</Button>
 
+	<Frame name="ChoiceConfirmationTemplate" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+		</KeyValues>
+		<Size x="700" y="525"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ConfirmationLogo">
+					<Size x="216" y="148"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="155"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ChoiceConfirmationTitle" inherits="GameFontWhiteShadowHuge2" justifyH="CENTER">
+					<Size x="540" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ChoiceConfirmationInstruction" inherits="GameFontNormalLarge" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CONFIRM_TYPE">
+					<Size x="540" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ChoiceConfirmationTitle" relativePoint="BOTTOM" x="0" y="-37"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ChoiceConfirmationBackdrop" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GlueParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GlueParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a=".75"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="ChoiceConfirmationBackplateDarkener" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="10" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-10" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a=".75"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button parentKey="ChoiceConfirmationConfirmButton" inherits="GlueButtonTemplateLarge" text="ACCEPT_GLUE">
+				<Size x="306" y="63"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-165" y="-215"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ChoiceConfirmationCancelButton" inherits="GlueButtonTemplateLarge" text="CANCEL">
+				<Size x="306" y="63"/>
+				<Anchors>
+					<Anchor point="CENTER" x="165" y="-215"/>
+				</Anchors>
+			</Button>
+			<EditBox parentKey="ChoiceConfirmationEditBox" letters="12">
+				<Size x="185" y="47"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ChoiceConfirmationInstruction" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size x="108" y="47"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-15" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size x="108" y="47"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="15" y="0"/>
+							</Anchors>
+							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged function="ChoiceConfirmationEditBox_OnTextChanged"/>
+					<OnEnterPressed function="ChoiceConfirmationEditBox_OnEnterPressed"/>
+					<OnEscapePressed function="ChoiceConfirmationEditBox_OnEscapePressed"/>
+				</Scripts>
+				<FontString inherits="GlueFontHighlightHuge"/>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnHide>
+				self.ChoiceConfirmationEditBox:SetText("");
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
 	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameStrata="HIGH" hidden="true" virtual="true">
 		<Size x="59" y="60"/>
 		<Layers>
@@ -1110,7 +1270,7 @@
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
+							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" motionScriptsWhileDisabled="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="-18" y="15"/>
@@ -1119,6 +1279,15 @@
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
+									<OnEnter>
+										if (self.tooltip) then
+											GlueTooltip:SetOwner(self);
+											GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+										end
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
 									<OnMouseDown>
 										self.down = true;
 									</OnMouseDown>
@@ -1172,7 +1341,7 @@
 								<Scripts>
 									<OnEnter>
 										GlueTooltip:SetOwner(self);
-										GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
+										GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -1196,6 +1365,21 @@
 									<OnDisable/>
 								</Scripts>
 							</Button>
+							<CheckButton name="CharSelectShowUnactivatedCharactersCheckButton" inherits="GlueCheckButtonTemplate" hidden="true">
+								<Scripts>
+									<OnLoad>
+										self.Text:SetText(SHOW_UNACTIVATED_CHARACTERS);
+										local xOffset = (-1 * self.Text:GetWidth()) - 5;
+										self:SetPoint("TOPRIGHT", self:GetParent(), "BOTTOMRIGHT", xOffset, 0);
+									</OnLoad>
+									<OnShow>
+										self:SetChecked(GetCVarBool("showUnactivatedCharacters"));
+									</OnShow>
+									<OnClick inherit="prepend">
+										SetCVar("showUnactivatedCharacters", self:GetChecked());
+									</OnClick>
+								</Scripts>
+							</CheckButton>
 							<Button name="CharSelectPaidService1" inherits="CharSelectPaidServiceTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="TOP" x="0" y="6"/>
@@ -1901,6 +2085,201 @@
 						<AbsValue val="16"/>
 					</EdgeSize>
 				</Backdrop>
+			</Frame>
+			<Frame name ="TBCInfoPane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
+				<KeyValues>
+					<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+				</KeyValues>
+				<Size x="586" y ="819"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterSelectUI" relativePoint="TOPLEFT" x="28" y="-19"/>
+				</Anchors>
+				<Layers>
+					<Layer level ="OVERLAY">
+						<Texture name="TBCInfoPaneBG" atlas="classic-announcementpopup-frame" useAtlasSize="true"/>
+						<FontString name="TBCInfoPaneTitle" inherits="GameFontOffBlack30" justifyH="CENTER" text="BURNING_CRUSADE_PREVIEW_TITLE">
+							<Size x="450" y ="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-77"/>
+							</Anchors>
+						</FontString>
+						<Texture name="TBCInfoPaneSeparator" atlas="classic-announcementpopup-line" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneTitle" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>						
+						</Texture>
+						<FontString name="TBCInfoPaneDesc1" inherits="InfoPaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_PREVIEW_DESCRIPTION1">
+							<Size x="400" y ="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneSeparator" relativePoint="BOTTOM" x="0" y="-28"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="TBCInfoPaneDiagram" name ="TBCInfoPaneDiagram">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneDesc1" relativePoint="BOTTOM" x="0" y="-28"/>
+							</Anchors>						
+						</Texture>
+						<FontString name="TBCInfoPaneOr" inherits="InfoPaneMedWhiteFont" justifyH="CENTER" text="OR_CAPS">
+							<Size x="400" y ="90"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="TBCInfoPaneDiagram" relativePoint="CENTER" x="0" y="-52"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+						<SimpleHTML parentKey="TBCInfoPaneHTMLDesc">
+							<Size x="400" y ="90"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TBCInfoPaneDiagram" relativePoint="BOTTOM" x="0" y="-42"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad function ="TBCInfoPaneHTMLDesc_OnLoad"/>
+								<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+							</Scripts>
+							<FontString inherits="InfoPaneMedFont" spacing="2"/>
+						</SimpleHTML>
+						<Button name="TBCInfoCloseButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_PREVIEW_BUTTON_GOT_IT">
+							<Size x="240" y="63"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="TBCInfoPaneBG" relativePoint="BOTTOM" x="0" y="46"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="TBCInfoPane_Toggle"/>
+							</Scripts>
+						</Button>
+				</Frames>
+				<Scripts>
+					<OnShow function ="TBCInfoPane_OnShow"/>
+					<OnHide function ="TBCInfoPane_OnHide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ChoicePane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
+				<KeyValues>
+					<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+				</KeyValues>
+				<Size x="1316" y="757"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterSelectUI" relativePoint="TOPLEFT" x="181" y="-78"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="ChoicePaneBG" atlas="classic-burningcrusadetransition-choice-frame-classic" useAtlasSize="true"/>
+						<Texture parentKey="CurrentLogo">
+							<Size x="294" y="202"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="TOPLEFT" x="389" y="-164"/>
+							</Anchors>
+						</Texture>
+						<Texture name="CurrentSeparator" atlas="classic-burningcrusadetransition-choice-line-classic" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="LEFT" x="389" y="-69"/>
+							</Anchors>
+						</Texture>
+						<FontString name="ChoicePaneCurrentTitle" inherits="GameFontWhiteOutline30" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_TITLE">
+							<Size x="500" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="CurrentSeparator" relativePoint="CENTER" x="0" y="71"/>
+							</Anchors>
+						</FontString>
+						<FontString name="ChoicePaneCurrentDesc" inherits="ChoicePaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_DESCRIPTION">
+							<Size x="500" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="CurrentSeparator" relativePoint="BOTTOM" x="0" y="-40"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="OtherLogo">
+							<Size x="294" y="202"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="TOPLEFT" x="1035" y="-164"/>
+							</Anchors>
+						</Texture>
+						<Texture name="OtherSeparator" atlas="classic-burningcrusadetransition-choice-line-bc" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="LEFT" x="1035" y="-69"/>
+							</Anchors>
+						</Texture>
+						<FontString name="ChoicePaneOtherTitle" inherits="GameFontWhiteOutline30" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_BURNINGCRUSADE_TITLE">
+							<Size x="450" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="OtherSeparator" relativePoint="CENTER" x="0" y="71"/>
+							</Anchors>
+						</FontString>
+						<FontString name="ChoicePaneOtherDesc" inherits="ChoicePaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_BURNINGCRUSADE_DESCRIPTION">
+							<Size x="380" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="OtherSeparator" relativePoint="BOTTOM" x="0" y="-40"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="ChoicePaneBackdrop" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GlueParent" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GlueParent" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color r="0" g="0" b="0" a=".75"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="ChoicePanePlayButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_BUTTON">
+						<Size x="300" y="63"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="ChoicePaneBG" relativePoint="BOTTOMLEFT" x="389" y="56"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ChoicePane_OnPlay"/>
+						</Scripts>
+					</Button>
+					<Button name="ChoicePaneExitGameButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_TRANSITION_CHOICE_BURNINGCRUSADE_BUTTON">
+						<Size x="240" y="63"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="ChoicePaneBG" relativePoint="BOTTOMLEFT" x="1035" y="56"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ChoicePane_OnExitGame"/>
+						</Scripts>
+					</Button>
+					<Button name="ChoicePaneCloseButton" inherits="GlueCloseButtonLarge">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="ChoicePaneBG" x="-20" y="-20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ChoicePane_OnClose"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow function="ChoicePane_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ChoiceConfirmation" inherits="ChoiceConfirmationTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CharacterSelectUI" relativePoint="CENTER" x="0" y="146"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function ="ChoiceConfirmation_OnLoad"/>
+					<OnShow function ="ChoiceConfirmation_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="CloneConfirmation" inherits="ChoiceConfirmationTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CharacterSelectUI" relativePoint="CENTER" x="0" y="146"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function ="CloneConfirmation_OnLoad"/>
+					<OnShow function ="CloneConfirmation_OnShow"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

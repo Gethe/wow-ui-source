@@ -14,6 +14,19 @@
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
+	<Button name="GlueCloseButtonLarge" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				self:GetParent():Hide();
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+	</Button>
 	<Texture name="GlueScrollBarButton" virtual="true">
 		<TexCoords left="0.23" right="0.77" top="0.23" bottom="0.77"/>
 	</Texture>
@@ -53,7 +66,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GlueFontNormalSmall">
+				<FontString name="$parentText" parentKey="Text" inherits="GlueFontNormalSmall">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
