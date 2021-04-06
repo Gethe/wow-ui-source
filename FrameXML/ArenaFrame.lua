@@ -17,7 +17,7 @@ function ArenaFrame_OnEvent(self, event)
 		if ( event == "BATTLEFIELDS_SHOW" ) then
 			ShowUIPanel(ArenaFrame);
 			
-			if CanJoinAsGroup() then
+			if ( CanJoinAsGroup() and IsArenaSeasonActive()) then
 				ArenaFrame.selection = 1;
 			else
 				ArenaFrame.selection = 4;
@@ -60,6 +60,9 @@ function ArenaFrame_Update()
 			battleType = ARENA_CASUAL;
 		else
 			battleType = ARENA_RATED;
+			if (not IsArenaSeasonActive()) then
+				button:Disable();
+			end
 		end
 		-- build text string to populate each element.
 		button:SetText(format(PVP_TEAMTYPE, ARENA_TEAMS[teamSize].size, ARENA_TEAMS[teamSize].size).." "..battleType);
@@ -93,11 +96,11 @@ end
 
 function ArenaFrameJoinButton_OnClick(joinAs)
 	if ( ArenaFrame.selection < 4 ) then
-		JoinBattlefield(ArenaFrame.selection, 1, 1);
+		JoinArena(ArenaFrame.selection, 1, 1);
 	elseif ( ArenaFrame.selection > 3  and joinAs ) then
-		JoinBattlefield(ArenaFrame.selection - 3, 1);
+		JoinSkirmish(ArenaFrame.selection - 3, 1);
 	else
-		JoinBattlefield(ArenaFrame.selection - 3);
+		JoinSkirmish(ArenaFrame.selection - 3);
 	end
 	HideUIPanel(ArenaFrame);
 end

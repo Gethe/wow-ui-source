@@ -352,13 +352,11 @@
 		<KeyValues>
 			<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
 		</KeyValues>
-		<Size x="192" y ="153"/>
+		<Size x="177" y ="178"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="TBCIcon">
-					<Size x="192" y ="153"/>
-				</Texture>
-			</Layer>
+				<Texture parentKey="TBCIcon" useAtlasSize="true"/>
+				</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="TBCInfoPaneTemplate_OnLoad"/>
@@ -366,8 +364,7 @@
 			<OnEnter function="TBCInfoPaneTemplate_OnEnter"/>
 			<OnLeave function="TBCInfoPaneTemplate_OnLeave"/>
 		</Scripts>
-		<HighlightTexture parentKey="TBCIconHighlight" alpha="0.3" alphaMode="ADD">
-			<Size x="192" y ="153"/>
+		<HighlightTexture parentKey="TBCIconHighlight" alpha="0.3" alphaMode="ADD" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
@@ -388,16 +385,16 @@
 						<Anchor point="CENTER" x="0" y="155"/>
 					</Anchors>
 				</Texture>
-				<FontString name="ChoiceConfirmationTitle" parentKey="ChoiceConfirmationTitle" inherits="GameFontWhiteShadowHuge2" justifyH="CENTER">
+				<FontString parentKey="ChoiceConfirmationTitle" inherits="GameFontWhiteShadowHuge2" justifyH="CENTER">
 					<Size x="540" y="0"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="12"/>
 					</Anchors>
 				</FontString>
-				<FontString name="ChoiceConfirmationInstruction" inherits="GameFontNormalLarge" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CONFIRM_TYPE">
+				<FontString parentKey="ChoiceConfirmationInstruction" inherits="GameFontNormalLarge" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CONFIRM_TYPE">
 					<Size x="540" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="ChoiceConfirmationTitle" relativePoint="BOTTOM" x="0" y="-37"/>
+						<Anchor point="TOP" relativeKey="$parent.ChoiceConfirmationTitle" relativePoint="BOTTOM" x="0" y="-37"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -454,7 +451,7 @@
 			<EditBox parentKey="ChoiceConfirmationEditBox" letters="12">
 				<Size x="185" y="47"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ChoiceConfirmationInstruction" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeKey="$parent.ChoiceConfirmationInstruction" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

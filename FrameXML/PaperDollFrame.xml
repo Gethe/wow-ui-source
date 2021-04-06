@@ -195,21 +195,12 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CharacterNameText" relativePoint="BOTTOM">
 							<Offset>
-								<AbsDimension x="0" y="-6"/>
+								<AbsDimension x="0" y="-10"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="CharacterTitleText" inherits="GameFontNormalSmall" text="title of the player" hidden="true">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="CharacterGuildText" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
 							<Offset>
@@ -225,7 +216,7 @@
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="-9"/>
+							<AbsDimension x="0" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

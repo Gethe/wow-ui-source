@@ -74,7 +74,7 @@ end
 
 function ClearClampedTextureRotation(texture)
 	if (texture.rotationDegrees) then
-		SetClampedTextureRotation(0);
+		SetClampedTextureRotation(texture, 0);
 		texture.origTexCoords = nil;
 		texture.origWidth = nil;
 		texture.origHeight = nil;
@@ -219,6 +219,11 @@ function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfReg
 	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
+function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
+end
+
 -- Pass in a TextureKit name, a frame and a table containing parentKeys (on frame) as keys and a table as values
 -- The values table should contain formatString as a member (setVisibility and useAtlasSize can also be added if desired)
 -- For each frame key in frames, the TextureKit name will be inserted into formatString (at the first %s). The resulting atlas name will be set on frame
@@ -231,6 +236,11 @@ function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 	for region, regionInfo in pairs(regionInfoList) do
 		SetupTextureKitOnFrame(textureKit, frame[region], regionInfo.formatString, regionInfo.setVisibility, regionInfo.useAtlasSize);
 	end
+end
+
+function SetupTextureKitsFromRegionInfoByID(textureKitID, frame, regionInfoList)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList);
 end
 
 --Pass the texture and the textureKit, if the atlas exists in data then it will return the actual atlas name otherwise, return nil. 

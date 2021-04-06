@@ -820,6 +820,7 @@ function UpdateCharacterList(skipSelect)
             local nameText = button.buttonText.name;
             local infoText = button.buttonText.Info;
             local locationText = button.buttonText.Location;
+			locationText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 
             if (not areCharServicesShown) then
                 nameText:SetTextColor(1, .82, 0, 1);
@@ -828,6 +829,9 @@ function UpdateCharacterList(skipSelect)
 			if (IsEraChoiceStateLocked(eraChoiceState)) then
 				nameText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 				zone = BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_CHARACTERLABEL
+			elseif (DoesEraChoiceStateRequireDecision(eraChoiceState)) then
+				locationText:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+				zone = BURNING_CRUSADE_TRANSITION_CHOOSEEXPANSION_CHARACTERLABEL;
 			else
 				zone = zone or "";
 			end
@@ -1270,6 +1274,7 @@ function CharacterSelect_SelectCharacterByGUID(guid)
             local button = _G["CharSelectCharacterButton"..i];
             CharacterSelectButton_OnClick(button);
             button:LockHighlight();
+			SetLastCharacterGuid(guid);
             UpdateCharacterSelection(CharacterSelect);
             GetCharacterListUpdate();
             return true;
@@ -2219,7 +2224,7 @@ function DisplayNotificationIcon(buttonFrame)
 	if iconFrameIndex > 1 then
 		buttonFrame:SetPoint("TOPRIGHT", CharacterSelect.notificationIconFrames[iconFrameIndex - 1], "TOPLEFT", 0, 0);
 	else
-		buttonFrame:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame, "TOPLEFT", 0, 15);
+		buttonFrame:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame, "TOPLEFT", -16, 7);
 	end
 
 	buttonFrame:Show();
@@ -2297,7 +2302,11 @@ function GetFormattedClonePrice()
 end
 
 function ChoicePane_OnPlay()
-    PlaySound(SOUNDKIT.YOU_ARE_NOT_PREPARED);
+	if (GetCVar("heardChoiceSFX") == "0") then
+		PlaySound(SOUNDKIT.YOU_ARE_NOT_PREPARED);
+	else
+		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	end
 	ChoiceConfirmation:Show();
 	ChoicePane:Hide();
 end
@@ -2366,7 +2375,12 @@ function ChoiceConfirmation_OnShow(self)
 end
 
 function ChoiceConfirmation_OnConfirm(self)
-	PlaySound(SOUNDKIT.FELREAVER);
+	if (GetCVar("heardChoiceSFX") == "0") then
+		PlaySound(SOUNDKIT.FELREAVER);
+		SetCVar("heardChoiceSFX", 1);
+	else
+		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
+	end
     StopGlueAmbience();
     EnterWorldWithTransitionChoice();
 end

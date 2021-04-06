@@ -45,6 +45,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormal" justifyH="LEFT"/>
 		<HighlightFont style="GameFontHighlight" justifyH="LEFT"/>
+		<DisabledFont style="GameFontDisable" justifyH="LEFT"/>
 	</Button>
 	<Frame name="ArenaFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>

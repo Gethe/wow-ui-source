@@ -318,13 +318,15 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 end
 
 function CommunitiesChatMixin:AddDateNotification(date, backfill)
-	local notification = nil;
-	if AreFullDatesEqual(C_DateAndTime.GetTodaysDate(), date) then
+local notification = nil;
+	local today = C_DateAndTime.GetCurrentCalendarTime();
+	local yesterday = C_DateAndTime.AdjustTimeByDays(today, -1);
+	if CalendarUtil.AreDatesEqual(today, calendarTime) then
 		notification = COMMUNITIES_CHAT_FRAME_TODAY_NOTIFICATION;
-	elseif AreFullDatesEqual(C_DateAndTime.GetYesterdaysDate(), date) then
+	elseif CalendarUtil.AreDatesEqual(yesterday, calendarTime) then
 		notification = COMMUNITIES_CHAT_FRAME_YESTERDAY_NOTIFICATION;
 	else
-		notification = FormateFullDateWithoutYear(date);
+		notification = CalendarUtil.FormatCalendarTimeWeekday(calendarTime);
 	end
 	
 	self:AddNotification(notification, "communities-chat-date-line", 0.4, 0.4, 0.4, backfill);
@@ -336,8 +338,9 @@ function CommunitiesChatMixin:AddUnreadNotification(backfill)
 end
 
 local NOTIFICATION_LINE_TEXTURE_SIZE_Y = 8;
+local NOTIFICATION_LINE_TEXTURE_SIZE_X = 200;
 function CommunitiesChatMixin:AddNotification(notification, atlas, r, g, b, backfill)
-	local textureMarkup = CreateAtlasMarkup(atlas, NOTIFICATION_LINE_TEXTURE_SIZE_Y, 200, 0, 3);
+	local textureMarkup = CreateAtlasMarkup(atlas, NOTIFICATION_LINE_TEXTURE_SIZE_X, NOTIFICATION_LINE_TEXTURE_SIZE_Y, 0, 3);
 	if backfill then
 		self.MessageFrame:BackFillMessage(textureMarkup, 1, 1, 1);
 		self.MessageFrame:BackFillMessage(notification, r, g, b);
@@ -374,10 +377,10 @@ function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 		self:RegisterForMemberUpdate(clubId, message.author.memberId);
 	end
 	
-	local messageDate = C_DateAndTime.GetDateFromEpoch(message.messageId.epoch);
+	local messageDate = C_DateAndTime.GetCalendarTimeFromEpoch(message.messageId.epoch);
 	local previousMessageId = select(7, self.MessageFrame:GetMessageInfo(backfill and 1 or self.MessageFrame:GetNumMessages()));
-	local previousMessageDate = previousMessageId and C_DateAndTime.GetDateFromEpoch(previousMessageId.epoch);
-	if previousMessageDate and (messageDate.day ~= previousMessageDate.day or messageDate.month ~= previousMessageDate.month) then
+	local previousMessageDate = previousMessageId and C_DateAndTime.GetCalendarTimeFromEpoch(previousMessageId.epoch);
+	if previousMessageDate and (messageDate.monthDay ~= previousMessageDate.monthDay or messageDate.month ~= previousMessageDate.month) then
 		self:AddDateNotification(backfill and previousMessageDate or messageDate, backfill);
 	end
 	

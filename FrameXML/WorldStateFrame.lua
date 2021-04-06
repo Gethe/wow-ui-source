@@ -74,7 +74,7 @@ function WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, name, battlefie
 end
 
 function WorldStateScoreFrame_Update()
-	local isArena, isRegistered = IsActiveBattlefieldArena();
+	local isArena, isRanked = IsActiveBattlefieldArena();
 	local battlefieldWinner = GetBattlefieldWinner(); 
 
 	if ( isArena ) then
@@ -90,7 +90,7 @@ function WorldStateScoreFrame_Update()
 
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameKB", "RIGHT", 0, 0);
-		if ( isRegistered ) then
+		if ( isRanked ) then
 			WorldStateScoreFrameTeam:Show();
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
 			WorldStateScoreFrameHonorGained.sortType = "team";
@@ -141,7 +141,7 @@ function WorldStateScoreFrame_Update()
 		-- Show winner
 		local teamName, teamRating, newTeamRating;
 		if ( isArena ) then
-			if ( isRegistered ) then
+			if ( isRanked ) then
 				teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
 				if ( teamName ) then
 					WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_ARENA_WINS, teamName);			
@@ -251,7 +251,7 @@ function WorldStateScoreFrame_Update()
 				teamDataFailed = 1;
 			end
 		end
-		if ( isRegistered ) then
+		if ( isRanked ) then
 			teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
 			if ( not teamName ) then
 				teamDataFailed = 1;
@@ -302,8 +302,8 @@ function WorldStateScoreFrame_Update()
 
 			teamName, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
 			if ( isArena ) then
-				if ( isRegistered ) then
-					scoreButton.team.text:SetText(teamName);
+				if ( isRanked ) then
+					scoreButton.team:SetText(teamName);
 					scoreButton.team:Show();
 					if ( teamDataFailed ) then
 						scoreButton.honorGained:SetText("-------");
@@ -448,13 +448,13 @@ function WorldStateScoreFrame_Update()
 end
 
 function WorldStateScoreFrame_Resize()
-	local isArena, isRegistered = IsActiveBattlefieldArena();
+	local isArena, isRanked = IsActiveBattlefieldArena();
 	local columns;
 	local rightPadding = 30;
 	local width =  WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth() + rightPadding;
 	if ( isArena ) then
 		columns = 3;
-		if ( isRegistered ) then
+		if ( isRanked ) then
 			columns = columns + 1; -- Rating
 			width = width + WorldStateScoreFrameTeam:GetWidth();
 		end

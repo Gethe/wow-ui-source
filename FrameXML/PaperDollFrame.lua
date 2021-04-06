@@ -79,14 +79,12 @@ function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_ATTACK_POWER");
 	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
 	self:RegisterEvent("UNIT_ATTACK");
-	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
 end
 
 function PaperDollFrame_OnShow(self)
-	PaperDollFrame_SetGuild();
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
 
@@ -177,10 +175,6 @@ function PaperDollFrame_OnEvent(self, event, ...)
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 		end
 	end
-
-	if ( event == "PLAYER_GUILD_UPDATE" ) then
-		PaperDollFrame_SetGuild();
-	end
 end
 
 -- This makes sure the update only happens once at the end of the frame
@@ -191,18 +185,6 @@ end
 
 function PaperDollFrame_SetLevel()
 	CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), UnitClass("player"));
-end
-
-function PaperDollFrame_SetGuild()
-	local guildName;
-	local rank;
-	guildName, title, rank = GetGuildInfo("player");
-	if ( guildName ) then
-		CharacterGuildText:Show();
-		CharacterGuildText:SetFormattedText(GUILD_TITLE_TEMPLATE, title, guildName);
-	else
-		CharacterGuildText:Hide();
-	end
 end
 
 function PaperDoll_IsEquippedSlot(slot)
@@ -322,7 +304,6 @@ function PlayerTitleDropDown_Initialize()
 			info.text = titleName;
 			info.func = PlayerTitleDropDown_OnClick;
 			info.value = i;
-			info.checked = checked;
 			UIDropDownMenu_AddButton(info);
 		end
 	end

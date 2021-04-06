@@ -594,8 +594,8 @@ end
 function MiniMapBattlefieldFrame_isArena()
 	-- Set minimap icon here since it bugs out on login
 	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(1);
-	local isArena, isRegistered = IsActiveBattlefieldArena();
-	if ( registeredMatch or isRegistered ) then
+	local isArena, isRanked = IsActiveBattlefieldArena();
+	if ( registeredMatch or isRanked ) then
 		MiniMapBattlefieldIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
 		MiniMapBattlefieldIcon:SetWidth(19);
 		MiniMapBattlefieldIcon:SetHeight(19);

@@ -68,7 +68,8 @@ function QuestLog_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if ( GetCVar("autoQuestWatch") == "1" ) then
-			AutoQuestWatch_Update(arg1);
+			local questIndex = GetQuestLogIndexByID(arg1);
+			AutoQuestWatch_Update(questIndex);
 		end
 	elseif ( eventy == "PLAYER_LEVEL_UP" ) then
 		QuestLog_Update();
