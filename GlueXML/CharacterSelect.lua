@@ -2390,6 +2390,7 @@ function ChoiceConfirmation_OnConfirm(self)
 		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
 	end
     StopGlueAmbience();
+	ChoiceConfirmation:Hide();
     EnterWorldWithTransitionChoice();
 end
 
