@@ -3,15 +3,6 @@ COMBATFEEDBACK_FADEINTIME = 0.2;
 COMBATFEEDBACK_HOLDTIME = 0.7;
 COMBATFEEDBACK_FADEOUTTIME = 0.3;
 
-SCHOOL_MASK_NONE		= 0x00;
-SCHOOL_MASK_PHYSICAL	= 0x01;
-SCHOOL_MASK_HOLY		= 0x02;
-SCHOOL_MASK_FIRE		= 0x04;
-SCHOOL_MASK_NATURE		= 0x08;
-SCHOOL_MASK_FROST		= 0x10;
-SCHOOL_MASK_SHADOW		= 0x20;
-SCHOOL_MASK_ARCANE		= 0x40;
-
 CombatFeedbackText = { };
 CombatFeedbackText["INTERRUPT"]	= INTERRUPT;
 CombatFeedbackText["MISS"]		= MISS;
@@ -50,7 +41,7 @@ function CombatFeedback_OnCombatEvent(self, event, flags, amount, type)
 			elseif ( flags == "GLANCING" ) then
 				fontHeight = fontHeight * 0.75;
 			end
-			if ( type ~= SCHOOL_MASK_PHYSICAL ) then
+			if ( type ~= Enum.Damageclass.MaskPhysical ) then
 				r = 1.0;
 				g = 1.0;
 				b = 0.0;

@@ -121,18 +121,29 @@ end
 
 LayoutMixin = CreateFromMixins(BaseLayoutMixin);
 
-function LayoutMixin:GetPadding(frame)
-	if (frame) then
-		return (frame.leftPadding or 0),
-			   (frame.rightPadding or 0),
-			   (frame.topPadding or 0),
-			   (frame.bottomPadding or 0);
+function LayoutMixin:GetPadding()
+	return (self.leftPadding or 0),
+		   (self.rightPadding or 0),
+		   (self.topPadding or 0),
+		   (self.bottomPadding or 0);
+end
+
+-- If child is a layoutFrame that doesn't ignoreLayoutIndex (i.e. child is a vertical or horizontal layout frame) then we need to ignore the padding set on it
+-- If we don't ignore padding here we will be applying that padding twice (once here when we lay out the child and then again when Layout is called on the child itself)
+function LayoutMixin:GetChildPadding(child)
+	if IsLayoutFrame(child) and not child:IgnoreLayoutIndex() then
+		return 0, 0, 0, 0;
+	else
+		return (child.leftPadding or 0),
+			   (child.rightPadding or 0),
+			   (child.topPadding or 0),
+			   (child.bottomPadding or 0);
 	end
 end
 
 function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	local frameWidth, frameHeight;
-	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(self);
+	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding();
 
 	childrenWidth = childrenWidth + leftPadding + rightPadding;
 	childrenHeight = childrenHeight + topPadding + bottomPadding;
@@ -175,7 +186,7 @@ end
 VerticalLayoutMixin = {};
 
 function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
-	local frameLeftPadding, frameRightPadding, topOffset = self:GetPadding(self);
+	local frameLeftPadding, frameRightPadding, topOffset = self:GetPadding();
 	local spacing = self.spacing or 0;
 	local childrenWidth, childrenHeight = 0, 0;
 	local hasExpandableChild = false;
@@ -187,7 +198,7 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 		end
 
 		local childWidth, childHeight = child:GetSize();
-		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(child);
+		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
 		if (child.expand) then
 			hasExpandableChild = true;
 		end
@@ -230,7 +241,7 @@ end
 HorizontalLayoutMixin = {};
 
 function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
-	local leftOffset, _, frameTopPadding, frameBottomPadding = self:GetPadding(self);
+	local leftOffset, _, frameTopPadding, frameBottomPadding = self:GetPadding();
 	local spacing = self.spacing or 0;
 	local childrenWidth, childrenHeight = 0, 0;
 	local hasExpandableChild = false;
@@ -242,7 +253,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 		end
 
 		local childWidth, childHeight = child:GetSize();
-		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(child);
+		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
 		if (child.expand) then
 			hasExpandableChild = true;
 		end

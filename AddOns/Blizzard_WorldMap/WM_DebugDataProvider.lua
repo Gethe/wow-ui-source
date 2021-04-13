@@ -162,3 +162,5 @@ end
 function WorldMap_DebugObjectPinMixin:OnMouseLeave(motion)
 	GameTooltip:Hide();
 end
+
+WorldMap_DebugPortLocPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DEBUG");

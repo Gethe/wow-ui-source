@@ -7,6 +7,21 @@ local Item =
 	Functions =
 	{
 		{
+			Name = "CanItemTransmogAppearance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransmog", Type = "bool", Nilable = false },
+				{ Name = "errorCode", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CanScrapItem",
 			Type = "Function",
 
@@ -74,6 +89,34 @@ local Item =
 			Returns =
 			{
 				{ Name = "matchesBonusTree", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAppliedItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetBaseItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", Mixin = "ItemTransmogInfoMixin", Nilable = true },
 			},
 		},
 		{

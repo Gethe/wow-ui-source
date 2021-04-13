@@ -59,11 +59,41 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
 };
 
+local TORGHAST_TALENT_TREE_ID = 461;
+
+local Torghast_TalentTreeLayoutOptions = 
+{
+	buttonInfo = {
+		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 21, spacingY = 37 },
+		[Enum.GarrTalentType.Major] = { size = 46, spacingX = 21, spacingY = 37 },
+	},
+	spacingTop = 110,
+	spacingBottom = 36,
+	spacingHorizontal = 144,
+	minimumWidth = 336,
+	canHaveBackButton = false,
+	singleCost = false,
+	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
+	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
+};
+
+local function GetTalentTreeLayoutOptions(garrTalentTreeID)
+
+	-- Torghast Talent Tree Specific Layout Options
+	if (garrTalentTreeID == TORGHAST_TALENT_TREE_ID) then
+		return Torghast_TalentTreeLayoutOptions;
+	end
+
+	local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
+	return TalentTreeLayoutOptions[talentTreeType];
+
+end
+
 local function GetResearchSoundForTalentType(talentType)
 	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
 	if garrTalentTreeID then
-		local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
-		local layoutOptions = TalentTreeLayoutOptions[talentTreeType];
+		
+		local layoutOptions = GetTalentTreeLayoutOptions(garrTalentTreeID);
 		if layoutOptions then
 			if talentType == Enum.GarrTalentType.Major then
 				return layoutOptions.researchSoundMajor;
@@ -336,7 +366,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	table.sort(talents, SortTree);
 
 	local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
-	local layoutOptions = TalentTreeLayoutOptions[talentTreeType];
+	local layoutOptions = GetTalentTreeLayoutOptions(garrTalentTreeID);
 
 	local showSingleCost = false;
 	if layoutOptions.singleCost then
@@ -534,10 +564,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 		-- Show the current talent rank if the talent had multiple ranks
 		if talent.talentMaxRank > 1 then
+			local isDisabled = (isZeroRank and not isAvailable);
 			local talentRankFrame = self.talentRankPool:Acquire();
 			talentRankFrame:SetPoint("BOTTOMRIGHT", talentFrame, 15, -12);
 			talentRankFrame:SetFrameLevel(10);
-			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isZeroRank, isAvailable);
+			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled, isAvailable);
 			talentRankFrame:Show();
 		end
 

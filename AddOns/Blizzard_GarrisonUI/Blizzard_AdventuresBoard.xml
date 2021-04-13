@@ -27,9 +27,41 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow>
-					self.FadeIn:Play();
-			</OnShow>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventuresBoardAuraContainerTemplate" mixin="AdventuresBoardAuraContainerMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="spacing" value="4" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="BuffIcon" inherits="AdventuresBoardAuraIcon">
+				<Size x="29" y="19"/>
+				<KeyValues>
+					<KeyValue key="textureAtlas" type="string" value="Adventure-buff-indicator"/>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="DebuffIcon" inherits="AdventuresBoardAuraIcon">
+				<Size x="29" y="19"/>
+				<KeyValues>
+					<KeyValue key="textureAtlas" type="string" value="Adventure-debuff-indicator"/>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HealingIcon" inherits="AdventuresBoardAuraIcon">
+				<Size x="20" y="20"/>
+				<KeyValues>
+					<KeyValue key="textureAtlas" type="string" value="Adventure-heal-indicator"/>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 	
@@ -51,37 +83,10 @@
 			
 			<Frame parentKey="FriendlyTargetingIndicatorFrame" inherits="AdventuresFriendlyTargetingIndicatorTemplate" hidden="false"/>
 				
-			<Frame parentKey="AuraContainer" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="AuraContainer" inherits="AdventuresBoardAuraContainerTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="expand" value="true" type="boolean"/>
-					<KeyValue key="spacing" value="4" type="number"/>
-				</KeyValues>
-				<Frames>
-					<Frame parentKey="BuffIcon" inherits="AdventuresBoardAuraIcon">
-						<Size x="29" y="19"/>
-						<KeyValues>
-							<KeyValue key="textureAtlas"  type="string" value="Adventure-buff-indicator"/>
-							<KeyValue key="layoutIndex" value="1" type="number" />
-						</KeyValues>
-					</Frame>
-					<Frame parentKey="DebuffIcon" inherits="AdventuresBoardAuraIcon">
-						<Size x="29" y="19"/>
-						<KeyValues>
-							<KeyValue key="textureAtlas"  type="string" value="Adventure-debuff-indicator"/>
-							<KeyValue key="layoutIndex" value="2" type="number" />
-						</KeyValues>
-					</Frame>
-					<Frame parentKey="HealingIcon" inherits="AdventuresBoardAuraIcon">
-						<Size x="20" y="20"/>
-						<KeyValues>
-							<KeyValue key="textureAtlas"  type="string" value="Adventure-heal-indicator"/>
-							<KeyValue key="layoutIndex" value="3" type="number" />
-						</KeyValues>
-					</Frame>
-				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

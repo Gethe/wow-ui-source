@@ -248,7 +248,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="ConduitListSectionTemplate" parentArray="Sections" inherits="ResizeLayoutFrame" mixin="ConduitListSectionMixin" virtual="true">
+	<EventFrame name="ConduitListSectionTemplate" inherits="ResizeLayoutFrame" mixin="ConduitListSectionMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="Spacer">
 				<Size x="1" y="10"/>
@@ -262,7 +262,6 @@
 				</Anchors>
 				<Size x="216" y="23"/>
 				<Frames>
-					<Size x="216" y="23"/>
 					<Frame parentKey="Container" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="1">
@@ -278,7 +277,7 @@
 									</Anchors>
 								</Texture>
 								<FontString parentKey="Name" inherits="SystemFont_Shadow_Med1" text="Category" justifyH="LEFT">
-									<Size x="150" y="50"/>
+									<Size x="500" y="50"/>
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ExpandableIcon" x="5" y="1"/>
 									</Anchors>
@@ -295,12 +294,10 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad method="OnLoad"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 					<OnMouseDown method="OnMouseDown"/>
 					<OnMouseUp method="OnMouseUp"/>
-					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="Container" inherits="ResizeLayoutFrame">
@@ -322,39 +319,15 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</Frame>
+	</EventFrame>
 
-	<Frame name="ConduitScrollBarButtonScripts" mixin="ScrollBarButtonScriptsMixin" virtual="true">
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Frame>
-	
 	<Frame name="ConduitListTemplate" mixin="ConduitListMixin" virtual="true">
 		<Size x="268"/>
 		<Frames>
-			<Frame parentKey="Charges" inherits="ConduitChargeTrayTemplate" frameStrata="HIGH" frameLevel="3">
+			<Frame parentKey="Charges" inherits="ConduitChargeTrayTemplate" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="12" y="-39"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="BottomShadowContainer" frameStrata="HIGH">
-				<Size x="1" y="1"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer>
-						<Texture parentKey="BottomShadow" atlas="Soulbinds_Collection_Shadow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-26"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 			<Frame parentKey="Fx" frameStrata="HIGH" frameLevel="20">
 				<Layers>
@@ -373,7 +346,6 @@
 								</AnimationGroup>
 							</Animations>
 						</Texture>
-
 						<MaskTexture parentKey="ChargeMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_charge">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.Background" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
@@ -385,152 +357,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
-			<Frame parentKey="ScrollBar" inherits="ScrollBarTemplate" frameStrata="HIGH">
-				<Size x="10" y="560"/>
-				<KeyValues>
-					<KeyValue key="stepRepeatTime" value=".1" type="number"/>
-					<KeyValue key="stepRepeatDelay" value=".5" type="number"/>
-				</KeyValues>
+			<EventFrame parentKey="ScrollBar" inherits="OribosScrollBar" frameStrata="HIGH">
+				<Size x="10" y="804"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-6" y="-36"/>
 				</Anchors>
-				<Frames>
-					<Frame parentKey="Track" useParentLevel="true" enableMouse="true">
-						<Size x="10"/>
-						<Layers>
-							<Layer>
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Background" useAtlasSize="true"/>
-							</Layer>
-						</Layers>
-					</Frame>
-					<EventButton parentKey="Decrease" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
-						<KeyValues>
-							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
-							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
-						</KeyValues>
-						<Size x="20" y="15"/>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
-									<Anchors>
-										<Anchor point="CENTER" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
-									<Anchors>
-										<Anchor point="CENTER" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</EventButton>
-					<EventButton parentKey="Increase" inherits="ConduitScrollBarButtonScripts" frameLevel="2">
-						<KeyValues>
-							<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
-							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
-						</KeyValues>
-						<Size x="20" y="15"/>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER" y="4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
-									<Anchors>
-										<Anchor point="CENTER" y="4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
-									<Anchors>
-										<Anchor point="CENTER" y="4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</EventButton>
-					<EventButton parentKey="Thumb" inherits="ConduitScrollBarButtonScripts" enableMouse="true">
-						<KeyValues>
-							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
-						</KeyValues>
-						<Size x="16" y="100"/>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="7" y="-4"/>
-									<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
-								</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Enter" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="7" y="-4"/>
-									<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
-								</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="Down" atlas="Soulbinds_Collection_Scrollbar_Thumb" useAtlasSize="true" hidden="true" alphaMode="ADD" alpha=".3">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="7" y="-4"/>
-									<Anchor point="BOTTOMRIGHT" x="-7" y="4"/>
-								</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</EventButton>
-				</Frames>
-			</Frame>
-			<Frame parentKey="ScrollBox" inherits="ScrollBoxTemplate" frameStrata="MEDIUM">
+			</EventFrame>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="MEDIUM">
+				<KeyValues>
+					<KeyValue key="lowerShadowAtlas" value="Soulbinds_Collection_Shadow" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" y="1"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="LEFT" x="-10"/>
 				</Anchors>
-				<Frames>
-					<Frame parentKey="ScrollTarget" inherits="VerticalLayoutFrame" frameStrata="MEDIUM">
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-						<Frames>
-							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
-								<KeyValues>
-									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Endurance" type="global"/>
-								</KeyValues>
-							</Frame>
-							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
-								<KeyValues>
-									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Finesse" type="global"/>
-								</KeyValues>
-							</Frame>
-							<Frame parentArray="Lists" inherits="ConduitListSectionTemplate">
-								<KeyValues>
-									<KeyValue key="conduitType" value="Enum.SoulbindConduitType.Potency" type="global"/>
-								</KeyValues>
-							</Frame>
-						</Frames>
-					</Frame>
-				</Frames>
 			</Frame>
 			<Frame parentKey="Clip" clipChildren="true" frameStrata="DIALOG">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-200" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="200" y="0"/>
+				</Anchors>
 				<Frames>
 					<ModelScene parentKey="ModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
 						<Size x="450" y="650"/>
@@ -549,10 +396,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
 </Ui>

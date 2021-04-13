@@ -258,8 +258,8 @@ function AdventuresBoardMixin:UpdateBoardState(boardTargetInfo)
 	for _, target in ipairs(boardTargetInfo) do
 		local targetingIndex = target.targetIndex
 		if targetingIndex >= Enum.GarrAutoBoardIndex.AllyLeftBack and targetingIndex <= Enum.GarrAutoBoardIndex.AllyRightFront then
-			local targetFrame = self:GetSocketByBoardIndex(targetingIndex); 
-			targetFrame:SetBoardPreviewState(target.previewType);
+			local targetFrame = self:GetSocketByBoardIndex(targetingIndex);
+			targetFrame:SetBoardPreviewState(target);
 		end
 	end
 end
@@ -331,6 +331,11 @@ function AdventuresBoardMixin:ResetBoardIndicators()
 	for enemyFrame in self:EnumerateEnemySockets() do 
 		enemyFrame:ResetVisibility(); 
 	end
+end
+
+-- Overriden by AdventuresBoardCombatMixin.
+function AdventuresBoardMixin:IsShowingActiveCombat() 
+	return false;
 end
 
 AdventuresBoardCombatMixin = CreateFromMixins(AdventuresBoardMixin);
@@ -455,6 +460,10 @@ function AdventuresBoardCombatMixin:GetMainFrame()
 	return self:GetParent():GetParent();
 end
 
+-- Overriding by AdventuresBoardMixin.
+function AdventuresBoardCombatMixin:IsShowingActiveCombat() 
+	return true;
+end
 
 -------------------------------------------------
 --- AdventuresSocketMixin for aura management ---
@@ -483,15 +492,26 @@ end
 function AdventuresSocketMixin:ResetVisibility()
 	self:ClearActiveAuras();
 	self:ClearTemporaryAuras();
-	self.AuraContainer.BuffIcon:Hide();
-	self.AuraContainer.DebuffIcon:Hide();
-	self.AuraContainer.HealingIcon:Hide();
+	self:UpdateAuraVisibility();
 end
 
 function AdventuresSocketMixin:ClearActiveAuras()
 	self.activeBuffs = {};
 	self.activeDebuffs = {};
 	self.activeHealing = {};
+end
+
+function AdventuresSocketMixin:GetActiveAuraArrays()
+	local function AdventuresSocketAurasGetArrayFromCollection(collection)
+		local output = {};
+		for spellID, activeEffects in pairs(collection) do
+			table.insert(output, spellID);
+		end
+
+		return output;
+	end
+
+	return AdventuresSocketAurasGetArrayFromCollection(self.activeBuffs), AdventuresSocketAurasGetArrayFromCollection(self.activeDebuffs), AdventuresSocketAurasGetArrayFromCollection(self.activeHealing);
 end
 
 function AdventuresSocketMixin:ClearActiveAndRefresh()
@@ -509,20 +529,18 @@ function AdventuresSocketMixin:ClearTempAndRefresh()
 	self:UpdateAuraVisibility();
 end
 
-function AdventuresSocketMixin:SetTempPreviewType(auraType)	
+function AdventuresSocketMixin:SetTempPreviewType(auraType)
 	self.temporaryPreviewType = CovenantMission_GetSupportColorationPreviewType(auraType);
 
 	self:UpdateAuraVisibility();
 end
 
-function AdventuresSocketMixin:SetBoardPreviewState(auraType)
-	if bit.band(auraType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff then
-		self.activeBuffs[auraType] = true;
-	end
+function AdventuresSocketMixin:GetTempPreviewType()
+	return self.temporaryPreviewType;
+end
 
-	if bit.band(auraType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
-		self.activeHealing[auraType] = true;
-	end
+function AdventuresSocketMixin:SetBoardPreviewState(targetInfo)
+	self:AddAura(targetInfo.spellID, targetInfo.effectIndex, targetInfo.previewType);
 
 	if not GetCVarBitfield("covenantMissionTutorial", Enum.GarrAutoCombatTutorial.BeneficialEffect) then
 		local helpTipInfo = {
@@ -573,16 +591,13 @@ function AdventuresSocketMixin:RemoveAura(spellID, effectIndex, auraType)
 end
 
 function AdventuresSocketMixin:UpdateAuraVisibility()
-	self.AuraContainer.BuffIcon:SetVisibility((next(self.activeBuffs) ~= nil) or (bit.band(self.temporaryPreviewType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff));
-	self.AuraContainer.DebuffIcon:SetVisibility(next(self.activeDebuffs) ~= nil);
-	self.AuraContainer.HealingIcon:SetVisibility((next(self.activeHealing) ~= nil) or (bit.band(self.temporaryPreviewType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal));
-	self.AuraContainer:Layout();
+	self.AuraContainer:UpdateAuras();
 end
 
 function AdventuresSocketMixin:GetCollectionByAuraType(auraType)
 	local auraCollection = {};
 	if auraType == Enum.GarrAutoPreviewTargetType.Heal then
-		auraCollection = self.activeBuffs;
+		auraCollection = self:GetBoard():IsShowingActiveCombat() and self.activeBuffs or self.activeHealing;
 	elseif  auraType == Enum.GarrAutoPreviewTargetType.Buff then
 		auraCollection = self.activeBuffs;
 	elseif auraType == Enum.GarrAutoPreviewTargetType.Debuff then
@@ -612,31 +627,19 @@ function AdventuresSocketMixin:SetSocketTexture(textureKit, isEnemy)
 	self.SocketTexture:SetAtlas(socketAtlas, useAtlasSize);
 end 
 
-AdventuresCombatSocketMixin = {}
-
-function AdventuresCombatSocketMixin:GetCollectionByAuraType(auraType)
-	local auraCollection = {};
-	if auraType == Enum.GarrAutoPreviewTargetType.Heal then
-		auraCollection = self.activeBuffs;
-	elseif  auraType == Enum.GarrAutoPreviewTargetType.Buff then
-		auraCollection = self.activeBuffs;
-	elseif auraType == Enum.GarrAutoPreviewTargetType.Debuff then
-		auraCollection = self.activeDebuffs;
-	end
-
-	return auraCollection;
-end
-
-
 -------------------------------------------------------
 ---    Adventures Aura Icon Mixin					---
 -------------------------------------------------------
 
 AdventuresBoardAuraIconMixin = {}
 
-function AdventuresBoardAuraIconMixin:OnLoad() 
+function AdventuresBoardAuraIconMixin:OnLoad()
 	local useAtlasSize = true;
 	self.IconTexture:SetAtlas(self.textureAtlas, useAtlasSize);
+end
+
+function AdventuresBoardAuraIconMixin:OnShow()
+	self.FadeIn:Play();
 end
 
 function AdventuresBoardAuraIconMixin:SetVisibility(visible)
@@ -652,4 +655,60 @@ end
 function AdventuresBoardAuraIconMixin:OnFadeOutFinished()
 	self:Hide();
 	self:GetParent():Layout();
+end
+
+-------------------------------------------------------
+---    Adventures Aura Container Mixin				---
+-------------------------------------------------------
+
+AdventuresBoardAuraContainerMixin = {}
+
+function AdventuresBoardAuraContainerMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, COVENANT_MISSIONS_AURA_TOOLTIP_HEADER, HIGHLIGHT_FONT_COLOR);
+
+	local spellIDToDynamicPreviewMask = {};
+	local function AdventuresBoardAddAllAuras(auraArray, previewTypeFlag)
+		for i, spellID in ipairs(auraArray) do
+			spellIDToDynamicPreviewMask[spellID] = bit.bor(spellIDToDynamicPreviewMask[spellID] or 0, previewTypeFlag);
+		end
+	end
+
+	local activeBuffs, activeDebuffs, activeHealing = self:GetSocket():GetActiveAuraArrays();
+	AdventuresBoardAddAllAuras(activeBuffs, Enum.GarrAutoPreviewTargetType.Buff);
+	AdventuresBoardAddAllAuras(activeDebuffs, Enum.GarrAutoPreviewTargetType.Debuff);
+	AdventuresBoardAddAllAuras(activeHealing, Enum.GarrAutoPreviewTargetType.Heal);
+
+	for spellID, dynamicPreviewMask in pairs(spellIDToDynamicPreviewMask) do
+		GarrAutoCombatUtil.AddAuraToTooltip(GameTooltip, spellID, dynamicPreviewMask);
+	end
+
+	local padding = 4;
+	GameTooltip:SetPadding(padding, padding, padding, padding);
+
+	GameTooltip:SetCustomLineSpacing(9);
+
+	GameTooltip:Show();
+end
+
+function AdventuresBoardAuraContainerMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function AdventuresBoardAuraContainerMixin:UpdateAuras()
+	local socket = self:GetSocket();
+	local activeBuffs, activeDebuffs, activeHealing = socket:GetActiveAuraArrays();
+	local temporaryPreviewType = socket:GetTempPreviewType();
+	self.BuffIcon:SetVisibility((#activeBuffs > 0) or FlagsUtil.IsSet(temporaryPreviewType, Enum.GarrAutoPreviewTargetType.Buff));
+	self.DebuffIcon:SetVisibility(#activeDebuffs > 0);
+	self.HealingIcon:SetVisibility((#activeHealing > 0) or FlagsUtil.IsSet(temporaryPreviewType, Enum.GarrAutoPreviewTargetType.Heal));
+	self:Layout();
+
+	if self:IsMouseOver() then
+		self:OnEnter();
+	end
+end
+
+function AdventuresBoardAuraContainerMixin:GetSocket()
+	return self:GetParent();
 end

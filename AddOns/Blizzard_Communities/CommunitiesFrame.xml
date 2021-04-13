@@ -426,12 +426,12 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
-				<Size x="30" y="30"/>
+				<Size x="54" y="27"/>
 				<!-- Anchored in code -->
 			</Frame>
 			<Button parentKey="CommunitiesCalendarButton" hidden="true" inherits="CommunitiesCalendarButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.VoiceChatHeadset" relativePoint="LEFT" x="-2" y="-1"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-26"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="MemberList" inherits="CommunitiesMemberListFrameTemplate">
@@ -541,7 +541,7 @@
 			<DropDownToggleButton parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
 				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.StreamDropDownMenu" relativePoint="RIGHT" x="220" y="3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StreamDropDownMenu" relativePoint="RIGHT" x="170" y="3"/>
 				</Anchors>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</DropDownToggleButton>

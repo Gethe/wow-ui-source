@@ -44,7 +44,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 		if ( itemID ) then
 			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID = GetItemInfo(itemID);
-			if ( classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR or (classID == LE_ITEM_CLASS_GEM and subclassID == LE_ITEM_GEM_ARTIFACTRELIC) ) then
+			if ( classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or (classID == Enum.ItemClass.Gem and subclassID == Enum.ItemGemSubclass.Artifactrelic) ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT);
 			end
 
@@ -52,7 +52,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
 			end
 
-			if ( classID == LE_ITEM_CLASS_TRADEGOODS ) then
+			if ( classID == Enum.ItemClass.Tradegoods ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS);
 			end
 
@@ -255,6 +255,8 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 	end
 
 	GameTooltip:Show();
+
+	EventRegistry:TriggerEvent("TaskPOI.TooltipShown", self, self.questID);
 end
 
 function TaskPOI_OnLeave(self)

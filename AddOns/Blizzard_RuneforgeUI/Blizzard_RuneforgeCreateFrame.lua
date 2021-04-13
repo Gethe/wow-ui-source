@@ -6,19 +6,6 @@ StaticPopupDialogs["CONFIRM_RUNEFORGE_LEGENDARY_CRAFT"] = {
 
 	OnShow = function(self, data)
 		self.text:SetText(data.title);
-		self.confirmationDelayTimeLeft = 5;
-	end,
-
-	OnUpdate = function(self, elapsed)
-		self.confirmationDelayTimeLeft = self.confirmationDelayTimeLeft - elapsed;
-
-		if self.confirmationDelayTimeLeft <= 0 then
-			self.button1:Enable();
-			self.button1:SetText(YES);
-		else
-			self.button1:Disable();
-			self.button1:SetText(math.ceil(self.confirmationDelayTimeLeft));
-		end
 	end,
 
 	OnAccept = function()
@@ -27,6 +14,7 @@ StaticPopupDialogs["CONFIRM_RUNEFORGE_LEGENDARY_CRAFT"] = {
 
 	hideOnEscape = 1,
 	hasItemFrame = 1,
+	acceptDelay = 5;
 };
 
 
@@ -38,7 +26,6 @@ local RuneforgeCreateFrameEvents = {
 };
 
 function RuneforgeCreateFrameMixin:OnLoad()
-	self.Cost:SetTextAnchorPoint("CENTER");
 	self:UpdateCost();
 end
 
@@ -136,22 +123,23 @@ function RuneforgeCreateFrameMixin:UpdateCost()
 	self.Cost:SetShown(showCost);
 
 	if showCost then
-		local availableCurrencyString = "";
-		local currencies = C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies();
-
-		-- If there's only one currency, show just the amount since the icon will be shown by the currency display.
-		-- If there are multiple currencies, each shows a separate amount and icon.
-		if #currencies == 1 then
-			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencies[1]);
-			availableCurrencyString = BreakUpLargeNumbers(currencyInfo.quantity);
-		else
-			availableCurrencyString = GetCurrenciesString(currencies);
+		for i, cost in ipairs(currenciesCost) do
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(cost.currencyID);
+			if cost.amount > currencyInfo.quantity then
+				cost.colorCode = RED_FONT_COLOR_CODE;
+			end
 		end
-	
-		-- Format back in a "%s" for the final currency string set by the CurrencyDisplayTemplate.
-		local currencyColorCode = runeforgeFrame:CanAffordRuneforgeLegendary() and HIGHLIGHT_FONT_COLOR_CODE or RED_FONT_COLOR_CODE;
-		local format = RUNEFORGE_LEGENDARY_COST_FORMAT:format(currencyColorCode, availableCurrencyString, "%s");
-		self.Cost:SetCurrencies(currenciesCost, format);
+
+		local initFunction = nil;
+		local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Cost.Currencies, "TOPLEFT");
+		local stride = #currenciesCost;
+		local paddingX = 10;
+		local paddingY = nil;
+		local fixedWidth = 62;
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, paddingX, paddingY, fixedWidth);
+		local tooltipAnchor = "ANCHOR_TOP";
+		self.Cost.Currencies:SetCurrencies(currenciesCost, initFunction, initialAnchor, layout, tooltipAnchor);
+		self.Cost:MarkDirty();
 	end
 end
 

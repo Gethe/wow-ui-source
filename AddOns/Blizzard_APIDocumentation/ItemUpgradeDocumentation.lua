@@ -29,6 +29,45 @@ local ItemUpgrade =
 				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "GetItemLevelIncrement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "numUpgradeLevels", Type = "number", Nilable = false, Default = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLevelIncrement", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemUpgradeEffect",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "effectIndex", Type = "number", Nilable = false },
+				{ Name = "numUpgradeLevels", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "outBaseEffect", Type = "string", Nilable = false },
+				{ Name = "outUpgradedEffect", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumItemUpgradeEffects",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numItemUpgradeEffects", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

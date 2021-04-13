@@ -1028,6 +1028,12 @@ function ContainerFrameItemButton_OnLoad(self)
 
 	self.UpdateTooltip = ContainerFrameItemButton_OnUpdate;
 	self.timeSinceUpgradeCheck = 0;
+	self.GetDebugReportInfo = ContainerFrameItemButton_GetDebugReportInfo;
+end
+
+function ContainerFrameItemButton_GetDebugReportInfo(self)
+	local texture, itemCount, locked, quality, readable, _, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+	return { debugType = "ContainerItem", itemLink = itemLink, };
 end
 
 function ContainerFrameItemButton_UpdateItemUpgradeIcon(self)

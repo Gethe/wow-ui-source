@@ -146,101 +146,123 @@
 						<Anchor point="CENTER" x="0" y="-80"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="FeedbackMessage" inherits="GameFontNormalMed3" hidden="true">
-					<Size x="167" y="0"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="-20" y="-60" />
-					</Anchors>
-					<Color r="1" g="0.1" b="0.1"/>
-				</FontString>
-				<FontString parentKey="TitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
+				<FontString parentKey="TitleTextLeft" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="23" y="-136"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TitleTextRight" inherits="GameFontNormalMed3" justifyH="LEFT" text="UPGRADE">
+				<FontString parentKey="TitleTextRight" inherits="GameFontNormal" justifyH="RIGHT" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="207" y="-136"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="UpgradeStatus" inherits="GameFontNormal" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.TitleTextLeft" relativePoint="RIGHT" x="5" y="0"/>
+						<Anchor point="TOP" x="0" y="-136"/>
+						<Anchor point="RIGHT" x="-26" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		
 		<Frames>
-			<Frame parentKey="LeftItemLevel" hidden="true">
-				<Size x="180" y="24"/>
+			<Frame parentKey="UpgradeLevelDropDown" inherits="DropDownControlTemplate">
+				<Size x="80" y="30"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="0" y="-7" />
+					<Anchor point="TOPRIGHT" x="-22" y="-125"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="StatsScroll" inherits="WowScrollBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-160"/>
+					<Anchor point="BOTTOMRIGHT" x="-28" y="65"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Contents" inherits="ResizeLayoutFrame">
+						<Size x="1" y="1"/>
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+						<Frames>
+							<Frame parentKey="LeftItemLevel" hidden="true">
+								<Size x="170" y="24"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
+											<Size x="50" y="0"/>
+											<Anchors>
+												<Anchor point="LEFT" x="0" y="0"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="1"/>
+										</FontString>
+										<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.iLvlText" relativePoint="RIGHT" x="8" y="0"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<Frame parentKey="RightItemLevel" hidden="true">
+								<Size x="207" y="24"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.LeftItemLevel" relativePoint="RIGHT" x="0" y="0" />
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="incText" inherits="GameFontNormalLarge" justifyH="RIGHT">
+											<Size x="40" y="22"/>
+											<Anchors>
+												<Anchor point="LEFT" x="0" y="0"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="1"/>
+										</FontString>
+										<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
+											<Size x="40" y="22"/>
+											<Anchors>
+												<Anchor point="LEFT" x="46" y="0"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="1"/>
+										</FontString>
+										<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
+											<Size x="0" y="22"/>
+											<Anchors>
+												<Anchor point="LEFT" x="94"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<EventFrame parentKey="StatsScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.StatsScroll" relativePoint="TOPRIGHT" x="0" y="6"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.StatsScroll" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
+				</Anchors>
+			</EventFrame>
+
+			<Frame parentKey="Feedback" inherits="TruncatedTooltipScriptTemplate" hidden="true">
+				<Size x="120" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" x="30" y="0"/>
+					<Anchor point="RIGHT" x="-30" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="30"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-							<Size x="50" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" x="0" y="0"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-						<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.iLvlText" relativePoint="RIGHT" x="8" y="0"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormalMed3" justifyV="BOTTOM" setAllPoints="true">
+							<Color r="1" g="0.1" b="0.1"/>
 						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="RightItemLevel" hidden="true">
-				<Size x="207" y="24"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-7" />
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="incText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-							<Size x="40" y="22"/>
-							<Anchors>
-								<Anchor point="LEFT" x="0" y="0"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-						<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-							<Size x="40" y="22"/>
-							<Anchors>
-								<Anchor point="LEFT" x="46" y="0"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-						<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="0" y="22"/>
-							<Anchors>
-								<Anchor point="LEFT" x="94"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame parentArray="LeftStat" inherits="ItemUpgradeStatTemplateLeft">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="0" y="-38" />
-				</Anchors>
-			</Frame>
-			<Frame parentArray="RightStat" inherits="ItemUpgradeStatTemplateRight">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
-				</Anchors>
-			</Frame>
-			<Frame parentArray="EffectRow" inherits="ItemUpgradeEffectRowTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
-				</Anchors>
-			</Frame>
+
 			<Frame parentKey="TextFrame">
 				<Size x="348" y="63"/>
 				<Anchors>
@@ -382,13 +404,13 @@
 						</Frames>
 					</Frame>
 
-					<Button name="ItemUpgradeFrameUpgradeButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="UPGRADE">
+					<Button name="ItemUpgradeFrameUpgradeButton" mixin="ItemUpgradeFrameUpgradeButtonMixin" inherits="MagicButtonTemplate, TruncatedButtonTemplate, DisabledTooltipButtonTemplate" motionScriptsWhileDisabled="true" text="UPGRADE">
 						<Size x="160" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="ItemUpgradeFrame_UpgradeClick"/>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>

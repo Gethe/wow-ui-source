@@ -35,6 +35,16 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetAlternateFormInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAlternateForm", Type = "bool", Nilable = false },
+				{ Name = "inAlternateForm", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetContentDifficultyCreatureForPlayer",
 			Type = "Function",
 
@@ -60,6 +70,21 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "difficulty", Type = "RelativeContentDifficulty", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInstancesUnlockedAtLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "isRaid", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dungeonID", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

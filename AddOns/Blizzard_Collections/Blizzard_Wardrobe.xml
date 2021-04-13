@@ -136,10 +136,10 @@
 		</Scripts>
 	</DressUpModel>
 
-	<Button name="WardrobeSlotButtonTemplate" parentArray="Buttons" virtual="true">
+	<Button name="WardrobeSlotButtonTemplate" parentArray="Buttons" mixin="WardrobeItemsCollectionSlotButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
-			<KeyValue key="modification" value="Enum.TransmogModification.None" type="global"/>
+			<KeyValue key="modification" value="Enum.TransmogModification.Main" type="global"/>
 		</KeyValues>
 		<Size x="31" y="31"/>
 		<NormalTexture parentKey="NormalTexture">
@@ -163,15 +163,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
-				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.transmogLocation);
-			</OnClick>
-			<OnEnter function="WardrobeCollectionFrame_OnSlotButtonEnter"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<Button name="WardrobeSmallSlotButtonTemplate" parentArray="Buttons" frameLevel="10" virtual="true">
+	<Button name="WardrobeSmallSlotButtonTemplate" parentArray="Buttons" mixin="WardrobeItemsCollectionSlotButtonMixin" frameLevel="10" virtual="true">
 		<KeyValues>
 			<KeyValue key="isSmallButton" value="true" type="boolean"/>
 		</KeyValues>
@@ -197,14 +194,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
-				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.transmogLocation);
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(WEAPON_ENCHANTMENT);
-			</OnEnter>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
@@ -323,7 +314,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" setAllPoints="true" hidden="true">
+	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">
 		<Frames>
 			<Button name="$parentTab1" parentKey="ItemsTab" inherits="TabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4" parentArray="Tabs">
 				<KeyValues>
@@ -333,7 +324,9 @@
 					<Anchor point="TOPLEFT" x="58" y="-28"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
+					<OnClick>
+						WardrobeCollectionFrame:ClickTab(self);
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parentTab2" parentKey="SetsTab" inherits="TabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4" parentArray="Tabs">
@@ -366,177 +359,174 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
+					<OnClick>
+						WardrobeCollectionFrame:ClickTab(self);
+					</OnClick>
 				</Scripts>
 			</Button>
-			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40">
+			<EditBox name="$parentSearchBox" parentKey="SearchBox" mixin="WardrobeCollectionFrameSearchBoxMixin" inherits="SearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="WardrobeCollectionFrameSearchBox_OnLoad"/>
-					<OnHide function="WardrobeCollectionFrameSearchBox_OnHide"/>
-					<OnKeyDown function="WardrobeCollectionFrameSearchBox_OnKeyDown"/>
-					<OnTextChanged function="WardrobeCollectionFrameSearchBox_OnTextChanged"/>
-					<OnEnter>
-						if ( not self:IsEnabled() ) then
-							GameTooltip:ClearAllPoints();
-							GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 0);
-							GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-							GameTooltip:SetText(WARDROBE_NO_SEARCH);
-						end
-					</OnEnter>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnHide method="OnHide"/>
+					<OnKeyDown method="OnKeyDown"/>
+					<OnTextChanged method="OnTextChanged"/>
+					<OnEnter method="OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</EditBox>
-			<Frame parentKey="searchProgressFrame" hidden="true">
-				<Size x="0" y="24"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.searchBox" relativePoint="BOTTOMLEFT" x="-7"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.searchBox" relativePoint="BOTTOMRIGHT" x="3"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="background" atlas="_search-rowbg">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="botLeftCorner" inherits="UI-Frame-BotCornerLeft">
-							<Anchors>
-								<Anchor point="LEFT" x="-7" y="0"/>
-								<Anchor point="BOTTOM" x="0" y="-5"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="botRightCorner" inherits="UI-Frame-BotCornerRight">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-5"/>
-								<Anchor point="RIGHT" x="4" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
-							<Anchors>
-								<Anchor point="TOP" x="0" y="1" />
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
-							<Anchors>
-								<Anchor point="TOP" x="0" y="1" />
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="topBorder" inherits="_UI-Frame-Bot">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
-								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Frames>
-					<Frame parentKey="loading">
+					<Frame parentKey="ProgressFrame" mixin="WardrobeCollectionFrameSearchBoxProgressMixin" hidden="true">
+						<Size x="0" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="text" text="SEARCH_LOADING_TEXT" hidden="false">
-									<Size x="0" y="0"/>
-									<Anchors>
-										<Anchor point="CENTER" x="14" y="1"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="spinner" inherits="LoadingSpinnerTemplate" hidden="false">
-								<Size x="38" y="38"/>
-								<Anchors>
-									<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT" x="4"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.Anim:Play();
-									</OnLoad>
-								</Scripts>
-							</Frame>
-						</Frames>
-					</Frame>
-					<StatusBar parentKey="searchProgressBar" hidden="false">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="6"/>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-7"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="barBackground">
+								<Texture parentKey="background" atlas="_search-rowbg">
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
 										<Anchor point="BOTTOMRIGHT"/>
 									</Anchors>
-									<Color r="0" g="0" b="0" a=".4"/>
 								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<FontString parentKey="text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
-									<Size x="0" y="0"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="0"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture parentKey="barBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-									<Size x="16" y="0"/>
+								<Texture parentKey="botLeftCorner" inherits="UI-Frame-BotCornerLeft">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="-6" y="5"/>
-										<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+										<Anchor point="LEFT" x="-7" y="0"/>
+										<Anchor point="BOTTOM" x="0" y="-5"/>
 									</Anchors>
-									<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
 								</Texture>
-								<Texture parentKey="barBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-									<Size x="16" y="0"/>
+								<Texture parentKey="botRightCorner" inherits="UI-Frame-BotCornerRight">
 									<Anchors>
-										<Anchor point="TOPRIGHT" x="6" y="5"/>
-										<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+										<Anchor point="BOTTOM" x="0" y="-5"/>
+										<Anchor point="RIGHT" x="4" y="0"/>
 									</Anchors>
-									<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
 								</Texture>
-								<Texture parentKey="barBorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-									<Size x="16"/>
+								<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.barBorderLeft" relativePoint="TOPRIGHT"/>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.barBorderRight" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 									</Anchors>
-									<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+								</Texture>
+								<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="1" />
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="1" />
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="topBorder" inherits="_UI-Frame-Bot">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
+									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="LoadingFrame">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="Text" text="SEARCH_LOADING_TEXT" hidden="false">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="CENTER" x="14" y="1"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="false">
+										<Size x="38" y="38"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="4"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.Anim:Play();
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+							<StatusBar parentKey="ProgressBar" hidden="false">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="6"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="barBackground">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+												<Anchor point="BOTTOMRIGHT"/>
+											</Anchors>
+											<Color r="0" g="0" b="0" a=".4"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString parentKey="text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture parentKey="barBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-6" y="5"/>
+												<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="barBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="6" y="5"/>
+												<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="barBorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.barBorderLeft" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.barBorderRight" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+											<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+
+								</Scripts>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+						</Frames>
 						<Scripts>
-							<OnLoad function="WardrobeCollectionFrameSearchProgressBar_OnLoad"/>
-							<OnHide function="WardrobeCollectionFrameSearchProgressBar_OnHide"/>
+							<OnLoad method="OnLoad"/>
+							<OnUpdate method="OnUpdate"/>
+							<OnHide method="OnHide"/>
 						</Scripts>
-						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-					</StatusBar>
+					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 15);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			</EditBox>
 			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-11"/>
@@ -545,7 +535,7 @@
 			<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.searchBox" relativePoint="RIGHT" x="2" y="-1"/>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -884,32 +874,6 @@
 							</AnimationGroup>
 						</Animations>
 					</Frame>
-					<CheckButton parentKey="RightShoulderCheckbox" mixin="RightShoulderCheckboxMixin" hidden="true">
-						<Size x="30" y="30"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="45" y="35"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="TRANSMOGRIFY_RIGHT_SHOULDER">
-									<Size x="180" y="30"/>
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow method="OnShow"/>
-							<OnEvent method="OnEvent"/>
-							<OnClick method="OnClick"/>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -1344,18 +1308,18 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="WardrobeCollectionFrame_OnLoad"/>
-			<OnEvent function="WardrobeCollectionFrame_OnEvent"/>
-			<OnShow function="WardrobeCollectionFrame_OnShow"/>
-			<OnHide function="WardrobeCollectionFrame_OnHide"/>
-			<OnKeyDown function="WardrobeCollectionFrame_OnKeyDown"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</Frame>
 	
-	<Button name="WardrobeTransmogButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="WardrobeTransmogButtonTemplate" motionScriptsWhileDisabled="true" mixin="TransmogSlotButtonMixin" frameLevel="10" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
-			<KeyValue key="modification" value="Enum.TransmogModification.None" type="global"/>
+			<KeyValue key="modification" value="Enum.TransmogModification.Main" type="global"/>
 		</KeyValues>
 		<Size x="43" y="43"/>
 		<Layers>
@@ -1516,10 +1480,7 @@
 						<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.2" order="2"/>
 						<Scripts>
 							<OnFinished>
-								local frame = self:GetParent();
-								frame:Hide();
-								local slotButton = frame:GetParent();								
-								WardrobeTransmogFrame_UpdateSlotButton(slotButton);
+								self:GetParent():GetParent():OnAnimFinished();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -1527,10 +1488,12 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="WardrobeTransmogButton_OnLoad"/>
-			<OnClick function="WardrobeTransmogButton_OnClick"/>
-			<OnEnter function="WardrobeTransmogButton_OnEnter"/>
-			<OnLeave function="WardrobeTransmogButton_OnLeave"/>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 		<HighlightTexture atlas="transmog-frame-highlighted" alphaMode="ADD">
 			<Size x="44" y="41"/>
@@ -1540,10 +1503,10 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="WardrobeTransmogEnchantButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="WardrobeTransmogEnchantButtonTemplate" motionScriptsWhileDisabled="true" mixin="TransmogSlotButtonMixin" frameLevel="20" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Illusion" type="global"/>
-			<KeyValue key="modification" value="Enum.TransmogModification.None" type="global"/>
+			<KeyValue key="modification" value="Enum.TransmogModification.Main" type="global"/>
 		</KeyValues>
 		<Size x="27" y="27"/>
 		<Layers>
@@ -1671,10 +1634,7 @@
 						<Alpha childKey="Glow" change="-1.0" duration="0.2" order="2"/>
 						<Scripts>
 							<OnFinished>
-								local frame = self:GetParent();
-								frame:Hide();
-								local slotButton = frame:GetParent();
-								WardrobeTransmogFrame_UpdateSlotButton(slotButton);
+								self:GetParent():GetParent():OnAnimFinished();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -1682,10 +1642,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="WardrobeTransmogButton_OnLoad"/>
-			<OnClick function="WardrobeTransmogButton_OnClick"/>
-			<OnEnter function="WardrobeTransmogButton_OnEnter"/>
-			<OnLeave function="WardrobeTransmogButton_OnLeave"/>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<HighlightTexture atlas="transmog-frame-highlighted-small" alphaMode="ADD">
 			<Size x="24" y="24"/>
@@ -1701,7 +1661,7 @@
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
-			<Frame name="WardrobeTransmogFrame">
+			<Frame name="WardrobeTransmogFrame" mixin="TransmogFrameMixin">
 				<Size x="300" y="495"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-86"/>
@@ -1731,7 +1691,31 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>	
+				<Frames>
+					<CheckButton parentKey="ToggleSecondaryAppearanceCheckbox" mixin="TransmogToggleSecondaryAppearanceCheckboxMixin" hidden="true">
+						<Size x="30" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="348" y="15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="TRANSMOGRIFY_RIGHT_SHOULDER">
+									<Size x="180" y="30"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
 					<Frame parentKey="Inset" inherits="InsetFrameTemplate" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1772,7 +1756,7 @@
 									<Anchor point="TOP" x="0" y="-10"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true" mixin="ClearAllPendingButtonMixin">
+							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true" mixin="WardrobeTransmogClearAllPendingButtonMixin">
 								<Size x="26" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-5" y="-10"/>
@@ -1793,138 +1777,141 @@
 									<OnLeave method="OnLeave"/>
 								</Scripts>
 							</Button>
-							<Button parentKey="HeadButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="HEADSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" x="-121" y="-41"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="RightShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate" hidden="true">
-								<KeyValues>
-									<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
-									<KeyValue key="modification" value="Enum.TransmogModification.RightShoulder" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.HeadButton"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="ShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.RightShoulderButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="BackButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="BACKSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.ShoulderButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="ChestButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="CHESTSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="ShirtButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="SHIRTSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.ChestButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TabardButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="TABARDSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.ShirtButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="WristButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="WRISTSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.TabardButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="HandsButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="HANDSSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" x="123" y="-118"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="WaistButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="WAISTSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.HandsButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="LegsButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="LEGSSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.WaistButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="FeetButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="FEETSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.LegsButton" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="MainHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="MAINHANDSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="BOTTOM" x="-26" y="45"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="SecondaryHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
-								<KeyValues>
-									<KeyValue key="slot" value="SECONDARYHANDSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="BOTTOM" x="27" y="45"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="MainHandEnchantButton" parentArray="SlotButtons" inherits="WardrobeTransmogEnchantButtonTemplate" frameLevel="10">
-								<KeyValues>
-									<KeyValue key="slot" value="MAINHANDSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="CENTER" x="-26" y="-203"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="SecondaryHandEnchantButton" parentArray="SlotButtons" inherits="WardrobeTransmogEnchantButtonTemplate" frameLevel="10">
-								<KeyValues>
-									<KeyValue key="slot" value="SECONDARYHANDSLOT" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="CENTER" x="27" y="-203"/>
-								</Anchors>
-							</Button>
 						</Frames>
-					</ModelScene>
-
+					</ModelScene>							
+					<Button parentKey="HeadButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="HEADSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="-121" y="-41"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.HeadButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="SecondaryShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
+							<KeyValue key="modification" value="Enum.TransmogModification.Secondary" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ShoulderButton"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="BackButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="BACKSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.SecondaryShoulderButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ChestButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="CHESTSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ShirtButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="SHIRTSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ChestButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="TabardButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="TABARDSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ShirtButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="WristButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="WRISTSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.TabardButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="HandsButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="HANDSSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="123" y="-118"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="WaistButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="WAISTSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.HandsButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="LegsButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="LEGSSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.WaistButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="FeetButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="FEETSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.LegsButton" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+					</Button>
+					<!--
+						Secondary hand before main hand so it gets processed first when dressing up the model
+						when iterating over parentArray. Needed for Legion Artifacts.
+					-->
+					<Button parentKey="SecondaryHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="SECONDARYHANDSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" x="27" y="45"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="MainHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="MAINHANDSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" x="-26" y="45"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="MainHandEnchantButton" parentArray="SlotButtons" inherits="WardrobeTransmogEnchantButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="MAINHANDSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="CENTER" x="-26" y="-203"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="SecondaryHandEnchantButton" parentArray="SlotButtons" inherits="WardrobeTransmogEnchantButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="SECONDARYHANDSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="CENTER" x="27" y="-203"/>
+						</Anchors>
+					</Button>
 					<Frame parentKey="MoneyFrame" name="WardrobeTransmogMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.MoneyRight" x="6" y="0"/>
@@ -1943,7 +1930,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								WardrobeTransmogFrame_ApplyPending(0);
+								self:GetParent():ApplyPending(0);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1985,11 +1972,11 @@
 					</DropDownToggleButton>
 				</Frames>
 				<Scripts>
-					<OnLoad function="WardrobeTransmogFrame_OnLoad"/>
-					<OnEvent function="WardrobeTransmogFrame_OnEvent"/>
-					<OnShow function="WardrobeTransmogFrame_OnShow"/>
-					<OnHide function="WardrobeTransmogFrame_OnHide"/>
-					<OnUpdate function="WardrobeTransmogFrame_OnUpdate"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 		</Frames>

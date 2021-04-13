@@ -498,7 +498,7 @@ function SoulbindTreeMixin:Init(soulbindData)
 			local y = row * cellVerticalDist;
 			local centerColumn = column == 1;
 			if centerColumn then
-				y = y + NegateIf(cellChevronDist, row < 4);
+				y = y + NegateIf(cellChevronDist, row < 6);
 			end
 
 			local coord = {x = x, y = -y};

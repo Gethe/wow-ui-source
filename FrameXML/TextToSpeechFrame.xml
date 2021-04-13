@@ -1,0 +1,237 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TextToSpeechFrame.lua"/>
+
+	<!-- Text To Speech Frame Templates -->
+
+	<CheckButton name="TextToSpeechCheckButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="text" justifyH="LEFT">
+					<Size x="300" y="100"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<CheckButton name="TextToSpeechCheckButtonSlimTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="text" justifyH="LEFT">
+					<Size x="150" y="100"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<CheckButton name="TextToSpeechChatTypeCheckButtonTemplate" inherits="TextToSpeechCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="TextToSpeechChatTypeCheckButton_OnClick"/>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="TextToSpeechFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+		<Size x="858" y="660"/>
+		<Layers>
+			<Layer level="ARTWORK">
+        <Texture parentKey="TextToSpeechFrameSeparator">
+          <Size x="760" y="1"/>
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="TOPLEFT" x="50" y="-220"/>
+          </Anchors>
+          <Color r="0.25" g="0.25" b="0.25"/>
+        </Texture>
+				<FontString name="$parentSubTitle" text="TEXT_TO_SPEECH_CHAT_MESSAGE_TYPES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextToSpeechFrameSeparator" relativePoint="TOPLEFT" x="32" y="-32"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="headerTextPadding" value="100" type="number"/>
+					<KeyValue key="textString" value="TEXT_TO_SPEECH_CONFIG" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TextToSpeechFrameOkay_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TextToSpeechFrameDefaults_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
+				<Size x="175" y="569"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="36" y="-36"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentOkay" relativePoint="TOPRIGHT" x="-16" y="16"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Frames>
+					<CheckButton parentKey="PlaySoundWhenEnteringChatWindowCheckButton" inherits="TextToSpeechCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parentPanelContainer" relativePoint="TOPLEFT" x="32" y="-32"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="PlaySoundWhenEnteringChatWindowCheckButton_OnLoad"/>
+							<OnClick function="PlaySoundWhenEnteringChatWindowCheckButton_OnClick"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton parentKey="PlaySoundSeparatingChatLinesCheckButton" inherits="TextToSpeechCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlaySoundWhenEnteringChatWindowCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="PlaySoundSeparatingChatLinesCheckButton_OnLoad"/>
+							<OnClick function="PlaySoundSeparatingChatLinesCheckButton_OnClick"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton parentKey="AddCharacterNameToSpeechCheckButton" inherits="TextToSpeechCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlaySoundSeparatingChatLinesCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="AddCharacterNameToSpeechCheckButton_OnLoad"/>
+							<OnClick function="AddCharacterNameToSpeechCheckButton_OnClick"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton parentKey="PlayActivitySoundWhenNotFocusedCheckButton" inherits="TextToSpeechCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.PlaySoundWhenEnteringChatWindowCheckButton" relativePoint="TOP"/>
+							<Anchor point="RIGHT" relativeKey="$parent" relativePoint="CENTER" x="64" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="PlayActivitySoundWhenNotFocusedCheckButton_OnLoad"/>
+							<OnClick function="PlayActivitySoundWhenNotFocusedCheckButton_OnClick"/>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parentChatTypeContainer" inherits="TooltipBorderBackdropTemplate">
+						<Size x="450" y="300"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="32" y="-250"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="TextToSpeechFrameTtsVoiceDropdown" parentKey="TtsVoiceDropdown" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentChatTypeContainer" relativePoint="TOPRIGHT" x="50" y="20" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontHighlightLeft" text="TEXT_TO_SPEECH_VOICE_OPTION">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="8"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad function="TextToSpeechFrameTtsVoiceDropdown_OnLoad"/>
+							<OnEvent function="TextToSpeechFrameTtsVoiceDropdown_OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Button name="TextToSpeechFramePlaySampleButton" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">
+						<Size x="96" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFrameTtsVoiceDropdown" relativePoint="BOTTOMLEFT" x="20" y="-10" />
+						</Anchors>
+						<Scripts>
+							<OnClick function="TextToSpeechFramePlaySampleButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<CheckButton parentKey="UseAlternateVoiceForSystemMessagesCheckButton" inherits="TextToSpeechCheckButtonSlimTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFramePlaySampleButton" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="UseAlternateVoiceForSystemMessagesCheckButton_OnLoad"/>
+							<OnClick function="UseAlternateVoiceForSystemMessagesCheckButton_OnClick"/>
+						</Scripts>
+					</CheckButton>
+					<Slider name="TextToSpeechFrameAdjustRateSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+						<Size x="200" y="17"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.UseAlternateVoiceForSystemMessagesCheckButton" relativePoint="BOTTOMLEFT" y="-40" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" parentKey="Label" inherits="GameFontHighlight" text="TEXT_TO_SPEECH_ADJUST_RATE">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER" y="20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad inherit="append" function="TextToSpeechFrameAdjustRateSlider_OnLoad"/>
+							<OnValueChanged inherit="append" function="TextToSpeechFrameAdjustRateSlider_OnValueChanged"/>
+						</Scripts>
+					</Slider>
+					<Slider name="TextToSpeechFrameAdjustVolumeSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+						<Size x="200" y="17"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFrameAdjustRateSlider" relativePoint="BOTTOMLEFT" y="-40" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" parentKey="Label" inherits="GameFontHighlight" text="TEXT_TO_SPEECH_ADJUST_VOLUME">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER" y="20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad inherit="append" function="TextToSpeechFrameAdjustVolumeSlider_OnLoad"/>
+							<OnValueChanged inherit="append" function="TextToSpeechFrameAdjustVolumeSlider_OnValueChanged"/>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow function="TextToSpeechFrame_OnShow"/>
+			<OnLoad function="TextToSpeechFrame_OnLoad"/>
+			<OnEvent function="TextToSpeechFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

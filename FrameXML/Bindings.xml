@@ -1043,6 +1043,9 @@
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();
 	</Binding>
+	<Binding name="TOGGLETEXTTOSPEECH" category="BINDING_HEADER_INTERFACE">
+		ToggleTextToSpeechFrame();
+	</Binding>
 
 	<Binding name="TOGGLEGROUPFINDER" header="BLANK13" category="BINDING_HEADER_INTERFACE">
 		PVEFrame_ToggleFrame();

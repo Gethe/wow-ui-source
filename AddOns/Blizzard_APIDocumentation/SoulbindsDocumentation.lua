@@ -353,6 +353,20 @@ local Soulbinds =
 			},
 		},
 		{
+			Name = "GetSpecsAssignedToSoulbind",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotalConduitChargesPending",
 			Type = "Function",
 
@@ -716,6 +730,7 @@ local Soulbinds =
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "failureRenownRequirement", Type = "number", Nilable = true },
+				{ Name = "socketEnhanced", Type = "bool", Nilable = true },
 			},
 		},
 		{

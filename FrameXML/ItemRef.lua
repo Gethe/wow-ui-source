@@ -134,7 +134,7 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
 		local _, level, levelUpType, arg1 = strsplit(":", link);
-		LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType], arg1);
+		EventToastManagerSideDisplay:DisplayToastsByLevel(level);
 		return;
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
 		TogglePVPUI();
@@ -263,7 +263,7 @@ function SetItemRef(link, text, button, chatFrame)
 				CollectionsJournal_LoadUI();
 			end
 			if ( CollectionsJournal ) then
-				WardrobeCollectionFrame_OpenTransmogLink(link);
+				WardrobeCollectionFrame:OpenTransmogLink(link);
 			end
 		end
 		return;
@@ -272,7 +272,7 @@ function SetItemRef(link, text, button, chatFrame)
 			CollectionsJournal_LoadUI();
 		end
 		if ( CollectionsJournal ) then
-			WardrobeCollectionFrame_OpenTransmogLink(link);
+			WardrobeCollectionFrame:OpenTransmogLink(link);
 		end
 		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then

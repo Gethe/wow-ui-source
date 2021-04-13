@@ -16,6 +16,20 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "GetCurrentLevelSpells",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSkillLineIndexByID",
 			Type = "Function",
 
@@ -27,6 +41,34 @@ local SpellBook =
 			Returns =
 			{
 				{ Name = "skillIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSpellInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellInfo", Type = "SpellInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLinkFromSpellID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellLink", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -187,6 +229,19 @@ local SpellBook =
 
 	Tables =
 	{
+		{
+			Name = "SpellInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "iconID", Type = "number", Nilable = false },
+				{ Name = "castTime", Type = "number", Nilable = false },
+				{ Name = "minRange", Type = "number", Nilable = false },
+				{ Name = "maxRange", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

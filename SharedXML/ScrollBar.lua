@@ -1,94 +1,71 @@
-ScrollBarButtonMixin = CreateFromMixins(CallbackRegistryMixin);
-
-ScrollBarButtonMixin:GenerateCallbackEvents(
-	{
-		"OnMouseUp",
-		"OnMouseDown",
-		"OnEnter",
-		"OnLeave",
-	}
-);
-
-function ScrollBarButtonMixin:OnLoad_Intrinsic()
-	CallbackRegistryMixin.OnLoad(self);
-end
-
-function ScrollBarButtonMixin:OnMouseDown_Intrinsic(buttonName)
-	self:TriggerEvent("OnMouseDown", buttonName);
-end
-
-function ScrollBarButtonMixin:OnMouseUp_Intrinsic(buttonName)
-	self:TriggerEvent("OnMouseUp", buttonName);
-end
-
-function ScrollBarButtonMixin:OnEnter_Intrinsic()
-	self:TriggerEvent("OnEnter");
-end
-
-function ScrollBarButtonMixin:OnLeave_Intrinsic()
-	self:TriggerEvent("OnLeave");
-end
-
-ScrollBarMixin = CreateFromMixins(CallbackRegistryMixin, ControlExtentAccessorMixin, ScrollControllerMixin);
-
+ScrollBarMixin = CreateFromMixins(CallbackRegistryMixin, ScrollControllerMixin, EventFrameMixin);
 ScrollBarMixin:GenerateCallbackEvents(
 	{
 		"OnScroll",
+		"OnAllowScrollChanged",
 	}
 );
 
 function ScrollBarMixin:OnLoad()
-	CallbackRegistryMixin.OnLoad(self);
 	ScrollControllerMixin.OnLoad(self);
 
-	if not self.stepRepeatTime then
-		self.stepRepeatTime = .1;
-	end
+	self.visibleExtentPercentage = 0;
 
-	if not self.stepDelay then
-		self.stepDelay = .5;
-	end
+	-- Levels are assigned here because it's the closest we can get to a relative
+	-- frame level. The order of these components is an internal detail to this
+	-- object, and we want to avoid defining an absolute frame level in the XML
+	-- resulting in confusion as frames unintentionally appear out of the expected order.
+	local level = self:GetFrameLevel();
+	self:GetTrack():SetFrameLevel(level + 2);
+	self:GetTrack():SetScript("OnMouseDown", GenerateClosure(self.OnTrackMouseDown, self));
 
-	self.extentVisibleRatio = 0;
+	local buttonLevel = level + 3;
+	self:GetBackStepper():SetFrameLevel(buttonLevel);
+	self:GetBackStepper():RegisterCallback("OnMouseDown", GenerateClosure(self.OnStepperMouseDown, self, self:GetBackStepper()), self);
 
-	self.Track:SetPoint(self:GetUpperAnchor(), self.Decrease, self:GetLowerAnchor());
-	self.Track:SetPoint(self:GetLowerAnchor(), self.Increase, self:GetUpperAnchor());
-	self.Track:SetScript("OnMouseDown", GenerateClosure(self.OnTrackMouseDown, self));
+	self:GetForwardStepper():SetFrameLevel(buttonLevel);
+	self:GetForwardStepper():RegisterCallback("OnMouseDown", GenerateClosure(self.OnStepperMouseDown, self, self:GetForwardStepper()), self);
 
-	self.Decrease:SetPoint(self:GetUpperAnchor());
-	self.Decrease:RegisterCallback("OnMouseDown", GenerateClosure(self.OnStepperMouseDown, self, self.Decrease), self);
+	self:GetThumb():SetFrameLevel(buttonLevel);
+	self:GetThumb():RegisterCallback("OnMouseDown", GenerateClosure(self.OnThumbMouseDown, self), self);
 
-	self.Increase:SetPoint(self:GetLowerAnchor());
-	self.Increase:RegisterCallback("OnMouseDown", GenerateClosure(self.OnStepperMouseDown, self, self.Increase), self);
+	self.scrollInternal = GenerateClosure(self.SetScrollPercentageInternal, self);
 
-	self.Thumb:RegisterCallback("OnMouseDown", GenerateClosure(self.OnThumbMouseDown, self), self);
+	self:DisableControls();
 end
 
-function ScrollBarMixin:Init(scrollValue, extentVisibleRatio, stepExtent)
-	ScrollControllerMixin.SetScrollValue(self, scrollValue);
-	self:SetStepExtent(stepExtent);
-	self:SetExtentVisibleRatio(extentVisibleRatio);
+function ScrollBarMixin:Init(visibleExtentPercentage, panExtentPercentage)
+	ScrollControllerMixin.SetScrollPercentage(self, 0);
+	self:SetPanExtentPercentage(panExtentPercentage);
+	self:SetVisibleExtentPercentage(visibleExtentPercentage);
 end
 
-function ScrollBarMixin:GetCursorComponent()
-	local x, y = GetScaledCursorPosition();
-	return self.isHorizontal and x or y;
+function ScrollBarMixin:GetBackStepper()
+	return self.Back;
 end
 
-function ScrollBarMixin:GetStepRepeatTime()
-	return self.stepRepeatTime;
+function ScrollBarMixin:GetForwardStepper()
+	return self.Forward;
 end
 
-function ScrollBarMixin:GetStepRepeatDelay()
-	return self.stepDelay;
+function ScrollBarMixin:GetTrack()
+	return self.Track;
 end
 
-function ScrollBarMixin:OnMouseWheel(direction)
-	if direction < 0 then
-		self:ScrollWheelInDirection(ScrollControllerMixin.Directions.Increase);
-	else
-		self:ScrollWheelInDirection(ScrollControllerMixin.Directions.Decrease);
-	end
+function ScrollBarMixin:GetThumb()
+	return self:GetTrack().Thumb;
+end
+
+function ScrollBarMixin:GetThumbAnchor()
+	return self.thumbAnchor;
+end
+
+function ScrollBarMixin:GetPanRepeatTime()
+	return self.panRepeatTime;
+end
+
+function ScrollBarMixin:GetPanRepeatDelay()
+	return self.panDelay;
 end
 
 function ScrollBarMixin:OnStepperMouseDown(stepper)
@@ -96,8 +73,8 @@ function ScrollBarMixin:OnStepperMouseDown(stepper)
 	self:ScrollStepInDirection(direction);
 
 	local elapsed = 0;
-	local repeatTime = self:GetStepRepeatTime();
-	local delay = self:GetStepRepeatDelay();
+	local repeatTime = self:GetPanRepeatTime();
+	local delay = self:GetPanRepeatDelay();
 	self:SetScript("OnUpdate", function(tbl, dt)
 		if not stepper.leave then
 			elapsed = elapsed + dt;
@@ -121,15 +98,15 @@ function ScrollBarMixin:OnStepperMouseDown(stepper)
 end
 
 function ScrollBarMixin:GetTrackExtent()
-	return self:GetControlExtent(self) - (self:GetControlExtent(self.Increase) + self:GetControlExtent(self.Decrease));
+	return self:GetFrameExtent(self:GetTrack());
 end;
 
-function ScrollBarMixin:ScrollInDirection(ratio, direction)
-	ScrollControllerMixin.ScrollInDirection(self, ratio, direction);
+function ScrollBarMixin:ScrollInDirection(percentage, direction)
+	ScrollControllerMixin.ScrollInDirection(self, percentage, direction);
 
-	self:UpdateVisuals();
+	self:Update();
 
-	self:TriggerEvent("OnScroll", self:GetScrollValue());
+	self:TriggerEvent(ScrollBarMixin.Event.OnScroll, self:GetScrollPercentage());
 end
 
 function ScrollBarMixin:ScrollWheelInDirection(direction)
@@ -137,13 +114,13 @@ function ScrollBarMixin:ScrollWheelInDirection(direction)
 end
 
 function ScrollBarMixin:ScrollStepInDirection(direction)
-	self:ScrollInDirection(self:GetStepExtent(), direction);
+	self:ScrollInDirection(self:GetPanExtentPercentage(), direction);
 end
 
 function ScrollBarMixin:ScrollPageInDirection(direction)
-	local extentVisibleRatio = self:GetExtentVisibleRatio();
-	if extentVisibleRatio > 0 then
-		local pages = 1 / extentVisibleRatio;
+	local visibleExtentPercentage = self:GetVisibleExtentPercentage();
+	if visibleExtentPercentage > 0 then
+		local pages = 1 / visibleExtentPercentage;
 		local magnitude = .95;
 		local span = pages - 1;
 		if span > 0 then
@@ -152,68 +129,112 @@ function ScrollBarMixin:ScrollPageInDirection(direction)
 	end
 end
 
-function ScrollBarMixin:SetExtentVisibleRatio(extentVisibleRatio)
-	self.extentVisibleRatio = Clamp(extentVisibleRatio, 0, 1);
-	self:UpdateVisuals();
+function ScrollBarMixin:SetVisibleExtentPercentage(visibleExtentPercentage)
+	self.visibleExtentPercentage = Saturate(visibleExtentPercentage);
+
+	self:Update();
 end
 
-function ScrollBarMixin:GetExtentVisibleRatio()
-	return self.extentVisibleRatio;
+function ScrollBarMixin:GetVisibleExtentPercentage()
+	return self.visibleExtentPercentage or 0;
 end
 
-function ScrollBarMixin:SetScrollValue(scrollValue)
-	ScrollControllerMixin.SetScrollValue(self, scrollValue);
-	self:UpdateVisuals();
+function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
+	if not forceImmediate and self:CanInterpolateScroll() then
+		self:Interpolate(scrollPercentage, self.scrollInternal);
+	else
+		self:SetScrollPercentageInternal(scrollPercentage);
+	end
 end
 
-function ScrollBarMixin:SetStepperEnabled(stepper, enabled)
-	stepper:DesaturateHierarchy(enabled and 0 or 1);
-	stepper:SetEnabled(enabled);
+function ScrollBarMixin:SetScrollPercentageInternal(scrollPercentage)
+	ScrollControllerMixin.SetScrollPercentage(self, scrollPercentage);
+	
+	self:Update();
+
+	self:TriggerEvent(ScrollBarMixin.Event.OnScroll, self:GetScrollPercentage());
 end
 
-function ScrollBarMixin:CanScroll()
-	local extentVisibleRatio = self:GetExtentVisibleRatio();
-	return extentVisibleRatio > 0 and extentVisibleRatio < 1;
+function ScrollBarMixin:HasScrollableExtent()
+	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), 0, 1);
 end
 
-function ScrollBarMixin:UpdateVisuals()
-	if self:CanScroll() then
-		local extentVisibleRatio = self:GetExtentVisibleRatio();
+function ScrollBarMixin:SetScrollAllowed(allowScroll)
+	local oldAllowScroll = self:IsScrollAllowed();
+	if oldAllowScroll ~= allowScroll then
+		ScrollControllerMixin.SetScrollAllowed(self, allowScroll);
+
+		self:Update();
+
+		self:TriggerEvent(ScrollBarMixin.Event.OnAllowScrollChanged, allowScroll);
+	end
+end
+
+function ScrollBarMixin:Update()
+	if self:HasScrollableExtent() then
+		local visibleExtentPercentage = self:GetVisibleExtentPercentage();
 		local trackExtent = self:GetTrackExtent();
-		local thumbExtent = trackExtent * extentVisibleRatio;
-		self:SetControlExtent(self.Thumb, Clamp(thumbExtent, 5, trackExtent));
+		
+		local thumb = self:GetThumb();
+		local thumbExtent;
+		if self.useProportionalThumb then
+			local minimumThumbExtent = self.minThumbExtent;
+			thumbExtent = Clamp(trackExtent * visibleExtentPercentage, minimumThumbExtent, trackExtent);
+			self:SetFrameExtent(thumb, thumbExtent);
+		else
+			thumbExtent = self:GetFrameExtent(thumb);
+		end
 
-		local scrollValue = self:GetScrollValue();
-		self:SetStepperEnabled(self.Decrease, scrollValue > 0);
-		self:SetStepperEnabled(self.Increase, scrollValue < 1);
+		local allowScroll = self:IsScrollAllowed();
+		local scrollPercentage = self:GetScrollPercentage();
 
-		local offset = (trackExtent - thumbExtent) * self:GetScrollValue();
+		-- Consider interpolation so the enabled or disabled state is not delayed as it approaches
+		-- 0 or 1.
+		local targetScrollPercentage = scrollPercentage;
+		local interpolateTo = self:GetScrollInterpolator():GetInterpolateTo();
+		if interpolateTo then
+			targetScrollPercentage = interpolateTo;
+		end
+
+		-- Small exponential representations of zero (ex. E-15) don't evaluate as > 0, 
+		-- and 1.0 can be represented by .99999XXXXXX.
+		self:GetBackStepper():SetEnabled(allowScroll and targetScrollPercentage > MathUtil.Epsilon);
+		self:GetForwardStepper():SetEnabled(allowScroll and targetScrollPercentage < 1);
+
+		local offset = (trackExtent - thumbExtent) * scrollPercentage;
 		local x, y = 0, -offset;
 		if self.isHorizontal then
 			x, y = -y, x;
 		end
-		self.Thumb:SetPoint(self:GetUpperAnchor(), self.Decrease, self:GetLowerAnchor(), x, y);
-		self.Thumb:Show();
+
+		thumb:SetPoint(self:GetThumbAnchor(), self:GetTrack(), self:GetThumbAnchor(), x, y);
+		thumb:Show();
+		thumb:SetEnabled(allowScroll);
 	else
-		self:SetStepperEnabled(self.Decrease, false);
-		self:SetStepperEnabled(self.Increase, false);
-		self.Thumb:Hide();
+		self:DisableControls();
 	end
 end
 
+function ScrollBarMixin:DisableControls()
+	self:GetBackStepper():SetEnabled(false);
+	self:GetForwardStepper():SetEnabled(false);
+	self:GetThumb():Hide();
+	self:GetThumb():SetEnabled(false);
+end
+
 function ScrollBarMixin:CanCursorStepInDirection(direction)
-	local c = self:GetCursorComponent();
+	local c = self:SelectCursorComponent();
 	if direction ==  ScrollControllerMixin.Directions.Decrease then
 		if self.isHorizontal then
-			return c < self:GetUpper(self.Thumb);
+			return c < self:GetUpper(self:GetThumb());
 		else
-			return c > self:GetUpper(self.Thumb);
+			return c > self:GetUpper(self:GetThumb());
 		end
 	else
 		if self.isHorizontal then
-			return c > self:GetLower(self.Thumb);
+			return c > self:GetLower(self:GetThumb());
 		else
-			return c < self:GetLower(self.Thumb);
+			return c < self:GetLower(self:GetThumb());
 		end
 	end
 	return false;
@@ -224,7 +245,7 @@ function ScrollBarMixin:OnTrackMouseDown(button, buttonName)
 		return;
 	end
 
-	if not self:CanScroll() then
+	if not self:HasScrollableExtent() or not self:IsScrollAllowed() then
 		return;
 	end
 
@@ -239,8 +260,8 @@ function ScrollBarMixin:OnTrackMouseDown(button, buttonName)
 		self:ScrollPageInDirection(direction);
 
 		local elapsed = 0;
-		local repeatTime = self:GetStepRepeatTime();
-		local delay = self:GetStepRepeatDelay();
+		local repeatTime = self:GetPanRepeatTime();
+		local delay = self:GetPanRepeatDelay();
 		local stepCount = 0;
 		self:SetScript("OnUpdate", function(tbl, dt)
 			elapsed = elapsed + dt;
@@ -258,7 +279,7 @@ function ScrollBarMixin:OnTrackMouseDown(button, buttonName)
 			end
 		end);
 
-		self.Track:SetScript("OnMouseUp", GenerateClosure(self.UnregisterUpdate, self));
+		self:GetTrack():SetScript("OnMouseUp", GenerateClosure(self.UnregisterUpdate, self));
 	end
 end
 
@@ -273,30 +294,29 @@ function ScrollBarMixin:OnThumbMouseDown(button, buttonName)
 		return;
 	end
 	
-	local c = self:GetCursorComponent();
-	local scrollValue = self:GetScrollValue();
-	local extentRemaining = self:GetTrackExtent() - self:GetControlExtent(self.Thumb);
+	local c = self:SelectCursorComponent();
+	local scrollPercentage = self:GetScrollPercentage();
+	local extentRemaining = self:GetTrackExtent() - self:GetFrameExtent(self:GetThumb());
 	
 	local min, max;
 	if self.isHorizontal then
-		min = c - scrollValue * extentRemaining;
-		max = c + (1.0 - scrollValue) * extentRemaining;
+		min = c - scrollPercentage * extentRemaining;
+		max = c + (1.0 - scrollPercentage) * extentRemaining;
 	else
-		min = c - (1.0 - scrollValue) * extentRemaining;
-		max = c + scrollValue * extentRemaining;
+		min = c - (1.0 - scrollPercentage) * extentRemaining;
+		max = c + scrollPercentage * extentRemaining;
 	end
 
 	self:SetScript("OnUpdate", function()
-		local c = Clamp(self:GetCursorComponent(), min, max);
-		local scrollValue;
+		local c = Clamp(self:SelectCursorComponent(), min, max);
+		local scrollPercentage;
 		if self.isHorizontal then
-			scrollValue = PercentageBetween(c, min, max);
+			scrollPercentage = PercentageBetween(c, min, max);
 		else
-			scrollValue = 1.0 - PercentageBetween(c, min, max);
+			scrollPercentage = 1.0 - PercentageBetween(c, min, max);
 		end
-		self:SetScrollValue(scrollValue);
-		self:TriggerEvent("OnScroll", scrollValue);
+		self:SetScrollPercentage(scrollPercentage);
 	end);
 
-	self.Thumb:RegisterCallback("OnMouseUp", GenerateClosure(self.UnregisterUpdate, self), self);
+	self:GetThumb():RegisterCallback("OnMouseUp", GenerateClosure(self.UnregisterUpdate, self), self);
 end

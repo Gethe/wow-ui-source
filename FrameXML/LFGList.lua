@@ -1764,7 +1764,7 @@ end
 
 function LFGListSearchPanel_CreateGroupInstead(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local panel = self:GetParent():GetParent();
+	local panel = self:GetParent():GetParent():GetParent();
 	LFGListEntryCreation_Show(panel:GetParent().EntryCreation, panel.preferredFilters, panel.categoryID, panel.filters);
 end
 
@@ -2191,7 +2191,7 @@ function LFGListSearchEntry_Update(self)
 	local panel = self:GetParent():GetParent():GetParent();
 
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
+	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 
 	self.resultID = resultID;
 	self.Selected:SetShown(panel.selectedResult == resultID and not isApplication and not searchResultInfo.isDelisted);
@@ -2500,7 +2500,7 @@ end
 
 function LFGListInviteDialog_Show(self, resultID, kstringGroupName)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
+	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 	local _, status, _, _, role = C_LFGList.GetApplicationInfo(resultID);
 
 	local informational = (status ~= "invited");
@@ -2854,6 +2854,10 @@ function LFGListUtil_SortSearchResultsCB(searchResultID1, searchResultID2)
 		return searchResultInfo1.numGuildMates > searchResultInfo2.numGuildMates;
 	end
 
+	if ( searchResultInfo1.isWarMode ~= searchResultInfo2.isWarMode ) then
+		return searchResultInfo1.isWarMode == C_PvP.IsWarModeDesired();
+	end
+
 	--If we aren't sorting by anything else, just go by ID
 	return searchResultID1 < searchResultID2;
 end
@@ -3195,7 +3199,7 @@ LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE = 2;
 
 function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
+	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);

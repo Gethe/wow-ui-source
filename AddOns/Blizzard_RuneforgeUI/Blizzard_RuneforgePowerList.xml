@@ -38,6 +38,13 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="CovenantSigil" inherits="RuneforgeCovenantSigilTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-12" y="12"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>

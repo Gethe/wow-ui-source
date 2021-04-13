@@ -54,9 +54,12 @@ function AreaPOIPinMixin:OnMouseEnter()
 
 	self.UpdateTooltip = function() self:OnMouseEnter(); end;
 
-	if not self:TryShowTooltip() then
+	local tooltipShown = self:TryShowTooltip();
+	if not tooltipShown then
 		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self.name, self.description);
 	end
+
+	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.areaPoiID, self.name);
 end
 
 function AreaPOIPinMixin:TryShowTooltip()

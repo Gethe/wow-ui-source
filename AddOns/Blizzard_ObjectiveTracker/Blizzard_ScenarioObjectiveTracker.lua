@@ -1038,7 +1038,6 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 					end
 				end
 			end
-			LevelUpDisplay_PlayScenario();
 			-- play sound if not the first stage
 			if ( currentStage > 1 and currentStage <= numStages ) then
 				PlaySound(SOUNDKIT.UI_SCENARIO_STAGE_END);

@@ -164,7 +164,7 @@
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
-		<Size x="300" y="88"/>
+		<Size x="300" y="101"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
 		</Anchors>
@@ -185,62 +185,46 @@
 		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\AchievementFrame\UI-Achievement-Alert-Background">
+				<Texture parentKey="Background" atlas="ui-achievement-alert-background" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0" right=".605" top="0" bottom=".703"/>
 				</Texture>
 				<FontString parentKey="Unlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_UNLOCKED">
 					<Size x="200" y="12"/>
 					<Anchors>
-						<Anchor point="TOP" x="7" y="-23"/>
+						<Anchor point="TOP" x="7" y="-24"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Name" inherits="GameFontHighlight">
+				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyH="CENTER" justifyV="TOP">
+					<Size x="155" y="0"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="72" y="36"/>
-						<Anchor point="BOTTOMRIGHT" x="-60" y="36"/>
+						<Anchors point="TOP" relativeKey="$parent.Unlocked" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
-					<Size x="240" y="16"/>
 				</FontString>
 				<FontString parentKey="GuildName" inherits="GameFontNormal" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="50" y="-10"/>
-						<Anchor point="TOPRIGHT" x="-50" y="-10"/>
+						<Anchor point="TOPLEFT" x="50" y="-13"/>
+						<Anchor point="TOPRIGHT" x="-50" y="-13"/>
 					</Anchors>
-					<Size x="0" y="16"/>
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="GuildBanner" file="Interface\AchievementFrame\UI-Achievement-Guild" hidden="true">
-					<Size x="64" y="64"/>
+				<Texture parentKey="GuildBanner" atlas="ui-achievement-guild-flag-short" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-13" y="-29"/>
+						<Anchor point="TOPRIGHT" x="-13" y="-32"/>
 					</Anchors>
-					<TexCoords left="0.76171875" right="0.88671875" top="0.00195313" bottom="0.12695313"/>
-				</Texture>
-				<Texture parentKey="OldAchievement" file="Interface\AchievementFrame\UI-Achievement-Borders" hidden="true">
-					<Size x="193" y="19"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="93" y="-34"/>
-					</Anchors>
-					<TexCoords left="0.185546875" right="0.623046875" top="0.65625" bottom="0.734375"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="GuildBorder" file="Interface\AchievementFrame\UI-Achievement-Guild" hidden="true">
-					<Size x="64" y="64"/>
+				<Texture parentKey="GuildBorder" atlas="ui-achievement-guild-flag-short-outline" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-13" y="-29"/>
+						<Anchor point="TOPRIGHT" x="-13" y="-34"/>
 					</Anchors>
-					<TexCoords left="0.63281250" right="0.75781250" top="0.00195313" bottom="0.12695313"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
-					<Size x="400" y="171"/>
+				<Texture atlas="ui-achievement-alert-glow-glow" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -255,10 +239,8 @@
 							</Scripts>
 						</AnimationGroup>
 					</Animations>
-					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
 				</Texture>
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
-					<Size x="67" y="72"/>
+				<Texture atlas="ui-achievement-alert-glow-shine" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="shine">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="0" y="8"/>
 					</Anchors>
@@ -274,40 +256,36 @@
 							</Scripts>
 						</AnimationGroup>
 					</Animations>
-					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="Icon">
-				<Size x="124" y="124"/>
+				<Size x="78" y="75"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-26" y="16"/>
+					<Anchor point="TOPLEFT" x="-4" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="Bling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true">
+						<Texture parentKey="Bling" atlas="ui-achievement-bling" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="1"/>
 							</Anchors>
-							<Size x="116" y="116"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Texture">
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="3"/>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
-							<Size x="50" y="50"/>
+							<Size x="52" y="52"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Overlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+						<Texture parentKey="Overlay" atlas="ui-achievement-iconframe" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="2"/>
 							</Anchors>
-							<Size x="72" y="72"/>
-							<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -315,22 +293,20 @@
 			<Frame parentKey="Shield">
 				<Size x="64" y="64"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-13"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Icon" file="Interface\AchievementFrame\UI-Achievement-Shields">
-							<Size x="52" y="48"/>
+						<Texture parentKey="Icon" atlas="ui-achievement-shield-1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="1" y="-6"/>
 							</Anchors>
-							<TexCoords left="0" right=".5" top="0" bottom=".45"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Points" inherits="GameFontNormal">
 							<Anchors>
-								<Anchor point="CENTER" x="7" y="2"/>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 							<Size x="64" y="64"/>
 						</FontString>
@@ -347,7 +323,7 @@
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="CriteriaAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
-		<Size x="256" y="52"/>
+		<Size x="256" y="84"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="0"/>
 		</Anchors>
@@ -368,31 +344,26 @@
 		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\AchievementFrame\UI-Achievement-Alert-Background-Mini">
+				<Texture parentKey="Background" atlas="ui-achievement-alert-background-mini" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" x="23" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Unlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_PROGRESSED">
-					<Size x="200" y="0"/>
+				<FontString parentKey="Unlocked" inherits="GameFontBlackTiny" justifyH="CENTER" text="ACHIEVEMENT_PROGRESSED">
+					<Size x="170" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="23" y="-14"/>
-						</Anchor>
+						<Anchor point="TOP" x="45" y="-18"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Name" inherits="GameFontHighlight">
-					<Size x="200" y="16"/>
+				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyV="TOP" justifyH="LEFT">
+					<Size x="160" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="23" y="-26"/>
-						</Anchor>
+						<Anchor point="TOP" x="50" y="-35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
-					<Size x="257" y="52"/>
+				<Texture atlas="ui-achievement-alert-background-mini-glow" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
 					<Anchors>
 						<Anchor point="CENTER" x="23" y="0"/>
 					</Anchors>
@@ -407,10 +378,8 @@
 							</Scripts>
 						</AnimationGroup>
 					</Animations>
-					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
 				</Texture>
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
-					<Size x="67" y="52"/>
+				<Texture atlas="ui-achievement-alert-background-mini-glow-shine"  useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="shine">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="23" y="0"/>
 					</Anchors>
@@ -426,7 +395,6 @@
 							</Scripts>
 						</AnimationGroup>
 					</Animations>
-					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -434,15 +402,14 @@
 			<Frame parentKey="Icon">
 				<Size x="116" y="116"/>
 				<Anchors>
-					<Anchor point="LEFT" x="-44" y="0"/>
+					<Anchor point="LEFT" x="5" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="Bling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true">
+						<Texture parentKey="Bling" atlas="ui-achievement-bling" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="1"/>
 							</Anchors>
-							<Size x="116" y="116"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -454,12 +421,10 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Overlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+						<Texture parentKey="Overlay" atlas="ui-achievement-iconframe" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="2"/>
 							</Anchors>
-							<Size x="72" y="72"/>
-							<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
 						</Texture>
 					</Layer>
 				</Layers>

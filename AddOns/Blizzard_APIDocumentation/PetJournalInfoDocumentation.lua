@@ -51,6 +51,68 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetPetAbilityInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "abilityID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "petType", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetAbilityListTable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "PetAbilityLevelInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetInfoTableByPetID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "PetJournalPetInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetLoadOutInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "petID", Type = "string", Nilable = true },
+				{ Name = "ability1ID", Type = "number", Nilable = false },
+				{ Name = "ability2ID", Type = "number", Nilable = false },
+				{ Name = "ability3ID", Type = "number", Nilable = false },
+				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetSummonInfo",
 			Type = "Function",
 
@@ -226,6 +288,40 @@ local PetJournalInfo =
 				{ Name = "NoFavoritesToSummon", Type = "PetJournalError", EnumValue = 4 },
 				{ Name = "NoValidRandomSummon", Type = "PetJournalError", EnumValue = 5 },
 				{ Name = "InvalidCovenant", Type = "PetJournalError", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "PetAbilityLevelInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "abilityID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PetJournalPetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+				{ Name = "customName", Type = "string", Nilable = true },
+				{ Name = "petLevel", Type = "number", Nilable = false },
+				{ Name = "xp", Type = "number", Nilable = false },
+				{ Name = "maxXP", Type = "number", Nilable = false },
+				{ Name = "displayID", Type = "number", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "petType", Type = "number", Nilable = false },
+				{ Name = "creatureID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "sourceText", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "isWild", Type = "bool", Nilable = false },
+				{ Name = "canBattle", Type = "bool", Nilable = false },
+				{ Name = "tradable", Type = "bool", Nilable = false },
+				{ Name = "unique", Type = "bool", Nilable = false },
+				{ Name = "obtainable", Type = "bool", Nilable = false },
 			},
 		},
 	},

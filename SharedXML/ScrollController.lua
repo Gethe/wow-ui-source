@@ -1,4 +1,45 @@
-ScrollControllerMixin = {};
+ScrollDirectionMixin = {};
+
+function ScrollDirectionMixin:SetHorizontal(isHorizontal)
+	self.isHorizontal = isHorizontal;
+end
+
+function ScrollDirectionMixin:IsHorizontal()
+	return self.isHorizontal;
+end
+
+function ScrollDirectionMixin:GetFrameExtent(frame)
+	local width, height = frame:GetSize();
+	return self.isHorizontal and width or height;
+end
+
+function ScrollDirectionMixin:SetFrameExtent(frame, value)
+	if self.isHorizontal then
+		frame:SetWidth(value);
+	else
+		frame:SetHeight(value);
+	end
+end
+
+function ScrollDirectionMixin:GetUpper(frame)
+	return self.isHorizontal and frame:GetLeft() or frame:GetTop();
+end
+
+function ScrollDirectionMixin:GetLower(frame)
+	return self.isHorizontal and frame:GetRight() or frame:GetBottom();
+end
+
+function ScrollDirectionMixin:SelectCursorComponent()
+	local x, y = GetScaledCursorPosition();
+	return self.isHorizontal and x or y;
+end
+
+function ScrollDirectionMixin:SelectPointComponent(frame)
+	local index = self.isHorizontal and 4 or 5;
+	return select(index, frame:GetPoint("TOPLEFT"));
+end
+
+ScrollControllerMixin = CreateFromMixins(ScrollDirectionMixin);
 
 ScrollControllerMixin.Directions = 
 {
@@ -7,62 +48,74 @@ ScrollControllerMixin.Directions =
 }
 
 function ScrollControllerMixin:OnLoad()
-	if not self.stepExtent then
-		self.stepExtent = .1;
+	self.panExtentPercentage = .1;
+	self.allowScroll = true;
+
+	if not self.wheelPanScalar then
+		self.wheelPanScalar = 2.0;
 	end
 end
 
-function ScrollControllerMixin:ScrollInDirection(ratio, direction)
-	local scrollValue = (ratio * direction) + self:GetScrollValue();
-	self:SetScrollValue(Clamp(scrollValue, 0, 1));
-end
-
-function ScrollControllerMixin:GetStepExtent()
-	return self.stepExtent;
-end
-
-function ScrollControllerMixin:SetStepExtent(stepExtent)
-	self.stepExtent = stepExtent;
-end
-
-function ScrollControllerMixin:GetWheelExtent()
-	return Clamp(self:GetStepExtent() * 2, 0, 1);
-end
-
-function ScrollControllerMixin:GetScrollValue()
-	return self.scrollValue or 0;
-end
-
-function ScrollControllerMixin:SetScrollValue(scrollValue)
-	self.scrollValue = scrollValue;
-end
-
-ControlExtentAccessorMixin = {};
-
-function ControlExtentAccessorMixin:GetControlExtent(control)
-	return self.isHorizontal and control:GetWidth() or control:GetHeight();
-end
-
-function ControlExtentAccessorMixin:SetControlExtent(control, value)
-	if self.isHorizontal then
-		control:SetWidth(value);
+function ScrollControllerMixin:OnMouseWheel(value)
+	if value < 0 then
+		self:ScrollInDirection(self:GetWheelPanPercentage(), ScrollControllerMixin.Directions.Increase);
 	else
-		control:SetHeight(value);
+		self:ScrollInDirection(self:GetWheelPanPercentage(), ScrollControllerMixin.Directions.Decrease);
 	end
 end
 
-function ControlExtentAccessorMixin:GetUpper(control)
-	return self.isHorizontal and control:GetLeft() or control:GetTop();
+function ScrollControllerMixin:ScrollInDirection(scrollPercentage, direction)
+	if self:IsScrollAllowed() then
+		local delta = scrollPercentage * direction;
+		self:SetScrollPercentage(Saturate(self:GetScrollPercentage() + delta));
+	end
 end
 
-function ControlExtentAccessorMixin:GetLower(control)
-	return self.isHorizontal and control:GetRight() or control:GetBottom();
+function ScrollControllerMixin:GetPanExtentPercentage()
+	return self.panExtentPercentage;
 end
 
-function ControlExtentAccessorMixin:GetUpperAnchor()
-	return self.isHorizontal and "LEFT" or "TOP";
+function ScrollControllerMixin:SetPanExtentPercentage(panExtentPercentage)
+	self.panExtentPercentage = Saturate(panExtentPercentage);
 end
 
-function ControlExtentAccessorMixin:GetLowerAnchor()
-	return self.isHorizontal and "RIGHT" or "BOTTOM";
+function ScrollControllerMixin:GetWheelPanPercentage()
+	return Saturate(self:GetPanExtentPercentage() * self.wheelPanScalar);
+end
+
+function ScrollControllerMixin:GetScrollPercentage()
+	return self.scrollPercentage or 0;
+end
+
+function ScrollControllerMixin:SetScrollPercentage(scrollPercentage)
+	self.scrollPercentage = Saturate(scrollPercentage);
+end
+
+function ScrollControllerMixin:CanInterpolateScroll()
+	return self.canInterpolateScroll or false;
+end
+
+function ScrollControllerMixin:SetInterpolateScroll(canInterpolateScroll)
+	self.canInterpolateScroll = canInterpolateScroll;
+end
+
+function ScrollControllerMixin:GetScrollInterpolator()
+	if not self.interpolator then
+		self.interpolator = CreateFromMixins(InterpolatorMixin);
+	end
+	return self.interpolator;
+end
+
+function ScrollControllerMixin:Interpolate(scrollPercentage, setter)
+	local time = .11;
+	local interpolator = self:GetScrollInterpolator();
+	interpolator:Interpolate(self:GetScrollPercentage(), scrollPercentage, time, setter);
+end
+
+function ScrollControllerMixin:IsScrollAllowed()
+	return self.allowScroll;
+end
+
+function ScrollControllerMixin:SetScrollAllowed(allowScroll)
+	self.allowScroll = allowScroll;
 end

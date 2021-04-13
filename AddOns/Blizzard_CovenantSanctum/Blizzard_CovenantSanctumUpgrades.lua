@@ -342,7 +342,9 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 
 	local stride = #currencies;
 	local paddingX = 7;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
+	local paddingY = nil;
+	local fixedWidth = 62;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX, paddingY, fixedWidth);
 	local initAnchor = nil;
 	local abbreviateCost = false;
 	local reverseOrder = true;
@@ -575,7 +577,7 @@ function CovenantSanctumUpgradeTalentMixin:Set(talentInfo, inIntroMode)
 
 	self.talentID = talentInfo.id;
 	local disabled = false;
-	local abbreviateCost = true;
+	local abbreviateCost = false;
 	local showingCost = false;
 
 	local nameColor = HIGHLIGHT_FONT_COLOR;

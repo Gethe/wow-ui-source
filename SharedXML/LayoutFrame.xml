@@ -61,6 +61,7 @@
 		</Frame>
 
 		<Frame name="ResizeLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="ResizeLayoutMixin">
+			<Size x="1" y="1"/>
 			<!--
 			<KeyValues>
 				ResizeLayoutFrame simply resizes based on the extents of it's child frames & regions.

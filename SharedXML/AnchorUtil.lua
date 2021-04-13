@@ -42,6 +42,9 @@ function AnchorMixin:SetPointWithExtraOffset(region, clearAllPoints, extraOffset
 	region:SetPoint(point, relativeTo, relativePoint, x + extraOffsetX, y + extraOffsetY);
 end
 
+function CreateAnchor(point, relativeTo, relativePoint, x, y)
+	return CreateAndInitFromMixin(AnchorMixin, point, relativeTo, relativePoint or point, x or 0, y or 0);
+end
 
 GridLayoutMixin = {};
 

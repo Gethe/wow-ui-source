@@ -798,6 +798,8 @@ local AuctionHouse =
 			Arguments =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "minLevelFilter", Type = "number", Nilable = true },
+				{ Name = "maxLevelFilter", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -889,6 +891,8 @@ local AuctionHouse =
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
 				{ Name = "sorts", Type = "table", InnerType = "AuctionHouseSortType", Nilable = false },
 				{ Name = "separateOwnerItems", Type = "bool", Nilable = false },
+				{ Name = "minLevelFilter", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "maxLevelFilter", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{

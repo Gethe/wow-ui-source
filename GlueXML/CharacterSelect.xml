@@ -520,6 +520,56 @@
 		</Scripts>
 	</Button>
 
+	<Button name="CharacterSelectRotateButtonTemplate" inherits="IconButtonTemplate" virtual="true">
+		<!--
+		iconAtlas: atlas for the icon and highlight on the button.
+		rotationOnUpdate: function for use in OnUpdate.
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
+			<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateLeft_OnUpdate" type="global"/>
+		</KeyValues>
+		-->
+		<Size x="50" y="50"/>
+		<HitRectInsets>
+			<AbsInset left="7" right="7" top="7" bottom="7"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+				self.Icon:SetAtlas(self.iconAtlas, TextureKitConstants.UseAtlasSize);
+				self.HighlightTexture:SetAtlas(self.iconAtlas, TextureKitConstants.UseAtlasSize);
+				self:SetScript("OnUpdate", self.rotationOnUpdate);
+			</OnLoad>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
+			</OnClick>
+		</Scripts>
+		<NormalTexture atlas="common-button-square-gray-up" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="common-button-square-gray-down"  useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	
 	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -780,65 +830,23 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="CharacterSelectRotateLeft">
-						<Size x="50" y="50"/>
+					<Button name="CharacterSelectRotateLeft" inherits="CharacterSelectRotateButtonTemplate">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
+							<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateLeft_OnUpdate" type="global"/>
+						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOM" x="-15" y="6"/>
+							<Anchor point="TOP" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOM" x="-19" y="6"/>
 						</Anchors>
-						<HitRectInsets>
-							<AbsInset left="13" right="13" top="10" bottom="13"/>
-						</HitRectInsets>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
-							</OnClick>
-							<OnUpdate>
-								CharacterSelectRotateLeft_OnUpdate(self);
-							</OnUpdate>
-						</Scripts>
-						<NormalTexture file="Interface\Glues\CharacterCreate\UI-RotationRight-Big-Up">
-							<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
-						</NormalTexture>
-						<PushedTexture file="Interface\Glues\CharacterCreate\UI-RotationRight-Big-Down">
-							<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
-						</PushedTexture>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size x="30" y="30"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</HighlightTexture>
 					</Button>
-					<Button name="CharacterSelectRotateRight">
-						<Size x="50" y="50"/>
+					<Button name="CharacterSelectRotateRight" inherits="CharacterSelectRotateButtonTemplate">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
+							<KeyValue key="rotationOnUpdate" value="CharacterSelectRotateRight_OnUpdate" type="global"/>
+						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterSelectRotateLeft" relativePoint="RIGHT" x="-19" y="0"/>
+							<Anchor point="LEFT" relativeTo="CharacterSelectRotateLeft" relativePoint="RIGHT" x="-15" y="0"/>
 						</Anchors>
-						<HitRectInsets>
-							<AbsInset left="13" right="13" top="10" bottom="13"/>
-						</HitRectInsets>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
-							</OnClick>
-							<OnUpdate>
-								CharacterSelectRotateRight_OnUpdate(self);
-							</OnUpdate>
-						</Scripts>
-						<NormalTexture file="Interface\Glues\CharacterCreate\UI-RotationRight-Big-Up"/>
-						<PushedTexture file="Interface\Glues\CharacterCreate\UI-RotationRight-Big-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size x="30" y="30"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</HighlightTexture>
 					</Button>
 					<Button parentKey="ConfigurationWarnings" hidden="true">
 						<Size x="32" y="32"/>
@@ -1138,7 +1146,7 @@
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
 									<OnClick>
-										CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, true);
+										CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);
 									</OnClick>
 								</Scripts>
 							</Button>

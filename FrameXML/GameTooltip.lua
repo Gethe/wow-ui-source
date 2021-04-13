@@ -169,8 +169,8 @@ function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
-function GameTooltip_ShowDisabledTooltip(tooltip, owner, text)
-	tooltip:SetOwner(owner);
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
+	tooltip:SetOwner(owner, tooltipAnchor);
 
 	local wrap = true;
 	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
@@ -223,16 +223,22 @@ end
 function GameTooltip_CalculatePadding(tooltip)
 	local itemWidth, itemHeight, bottomFontStringWidth, bottomFontStringHeight = 0, 0, 0, 0;
 
+	local itemTooltip = tooltip.ItemTooltip;
+	local isItemTooltipShown = itemTooltip and itemTooltip:IsShown();
 	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
+
+	if not isItemTooltipShown and not isBottomFontStringShown then
+		return;
+	end
+
 	if isBottomFontStringShown then
 		bottomFontStringWidth, bottomFontStringHeight = tooltip.BottomFontString:GetSize();
 		bottomFontStringHeight = bottomFontStringHeight + 7;
 		bottomFontStringWidth = bottomFontStringWidth + 20; -- extra width padding for this line
 	end
 
-	local itemTooltip = tooltip.ItemTooltip;
 	if itemTooltip then
-		if itemTooltip:IsShown() then
+		if isItemTooltipShown then
 			itemWidth, itemHeight = itemTooltip:GetSize();
 			itemWidth = itemWidth + 9; -- extra padding for this line
 		end
@@ -262,8 +268,8 @@ function GameTooltip_CalculatePadding(tooltip)
 		paddingHeight = extraHeight + 5;
 	end
 
-	if(math.abs(paddingWidth - oldPaddingWidth) > 0.5 or math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
-		tooltip:SetPadding(paddingWidth, paddingHeight);
+	if (math.abs(paddingWidth - oldPaddingWidth) > 0.5) or (math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
+		tooltip:SetPadding(paddingWidth, paddingHeight, 0, 0);
 	end
 end
 

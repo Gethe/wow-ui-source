@@ -165,9 +165,16 @@ function AdventuresPuckMixin:OnEnter()
 		if autoCombatSpells then 
 			for i = 1, #autoCombatSpells do
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				AddAutoCombatSpellToTooltip(GameTooltip, autoCombatSpells[i])
+				AddAutoCombatSpellToTooltip(GameTooltip, autoCombatSpells[i]);
 			end
 		end
+
+		local autoCombatAutoAttack = self:GetAutoCombatAutoAttack();
+		if autoCombatAutoAttack then 
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			AddAutoCombatSpellToTooltip(GameTooltip, autoCombatAutoAttack);
+		end
+
 		GameTooltip:Show();
 	end
 	self:GetBoard():ShowHealthValues();
@@ -184,6 +191,11 @@ end
 
 -- Overwrite in your derived Mixin
 function AdventuresPuckMixin:GetAutoCombatSpells()
+	return nil;
+end
+
+-- Overwrite in your derived Mixin
+function AdventuresPuckMixin:GetAutoCombatAutoAttack()
 	return nil;
 end
 
@@ -211,6 +223,14 @@ function AdventuresFollowerPuckMixin:OnLoad()
 end
 
 function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
+	local function GetFollowerAutoCombatSpellsFromInfo()
+		if (info.autoCombatSpells ~= nil) and (info.autoCombatAutoAttack ~= nil) then
+			return info.autoCombatSpells, info.autoCombatAutoAttack;
+		end
+
+		return C_Garrison.GetFollowerAutoCombatSpells(followerGUID, info.level);
+	end
+
 	self.followerGUID = followerGUID;
 	self.info = info;
 	self.name = info.name;
@@ -218,8 +238,9 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 	local puckBorderAtlas = info.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
 	self.PuckBorder:SetAtlas(puckBorderAtlas);
 
-	local autoCombatSpells = info.autoCombatSpells or C_Garrison.GetFollowerAutoCombatSpells(followerGUID, info.level);
+	local autoCombatSpells, autoCombatAutoAttack = GetFollowerAutoCombatSpellsFromInfo();
 	self.autoCombatSpells = autoCombatSpells;
+	self.autoCombatAutoAttack = autoCombatAutoAttack;
 	
 	local abilityOne = autoCombatSpells[1];
 	local abilityTwo = autoCombatSpells[2];
@@ -249,6 +270,10 @@ end
 
 function AdventuresFollowerPuckMixin:GetAutoCombatSpells()
 	return self.autoCombatSpells;
+end
+
+function AdventuresFollowerPuckMixin:GetAutoCombatAutoAttack()
+	return self.autoCombatAutoAttack;
 end
 
 function AdventuresFollowerPuckMixin:GetName()
@@ -313,6 +338,7 @@ function AdventuresEnemyPuckMixin:SetEncounter(encounter)
 
 	local autoCombatSpells = encounter.autoCombatSpells;
 	self.autoCombatSpells = autoCombatSpells;
+	self.autoCombatAutoAttack = encounter.autoCombatAutoAttack;
 
 	local abilityOne = autoCombatSpells[1];
 	local abilityTwo = autoCombatSpells[2];
@@ -328,6 +354,7 @@ function AdventuresEnemyPuckMixin:SetEncounter(encounter)
 	end
 
 	self.Portrait:SetTexture(encounter.portraitFileDataID);
+	self.EliteOverlay:SetShown(encounter.isElite);
 
 	self.HealthBar:SetMaxHealth(encounter.maxHealth);
 	self.HealthBar:SetHealth(encounter.health);
@@ -336,6 +363,10 @@ end
 
 function AdventuresEnemyPuckMixin:GetAutoCombatSpells()
 	return self.autoCombatSpells;
+end
+
+function AdventuresEnemyPuckMixin:GetAutoCombatAutoAttack()
+	return self.autoCombatAutoAttack;
 end
 
 function AdventuresEnemyPuckMixin:GetName()

@@ -97,9 +97,6 @@ function CovenantPreviewFrameMixin:OnEvent(event, ...)
 end 
 
 function CovenantPreviewFrameMixin:HandleEscape()
-	if (self.showingFromPlayerChoice and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then 
-		HideUIPanel(PlayerChoiceFrame);
-	end 
 	self:Hide();
 end 
 

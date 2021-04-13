@@ -45,7 +45,7 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait3 = trait3;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait4 = trait4;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroop(garrisonFollowerID);
-		GARRISON_FOLLOWER_FLOATING_TOOLTIP.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(garrisonFollowerID, level);
+		GARRISON_FOLLOWER_FLOATING_TOOLTIP.autoCombatSpells = GarrAutoCombatUtil.GetFollowerAutoCombatSpells(garrisonFollowerID, level, true --[[ includeAutoAttack ]]);
 
 		if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
 			GarrisonFollowerTooltipTemplate_SetShipyardFollower(floatingTooltip, GARRISON_FOLLOWER_FLOATING_TOOLTIP);
@@ -215,7 +215,8 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		tooltipFrameHeight = tooltipFrameHeight + Ability:GetHeight();
 	end
 
-	local autoSpells = C_Garrison.GetFollowerAutoCombatSpells(data.garrisonFollowerID, data.level);
+	local includeAutoAttack = true;
+	local autoSpells = GarrAutoCombatUtil.GetFollowerAutoCombatSpells(data.garrisonFollowerID, data.level, includeAutoAttack);
 	local autoSpellCount = #autoSpells;
 
 	if abilityCount > 0 or autoSpellCount > 0 then 
@@ -481,6 +482,7 @@ end
 
 function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed, followerTypeID)
 	Ability.Name:SetText(ability.name);
+	Ability.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	Ability.Icon:SetTexture(ability.icon);
 	Ability.Border:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, ability));
 	Ability:SetHeight(Ability.Name:GetHeight() + 10);	-- ability frame height w/ no description/details being displayed
@@ -497,6 +499,7 @@ function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed, 
 		if string.len(description) == 0 then description = "PH - Description Missing"; end
 	
 		Ability.Description:SetText(description);
+		Ability.Description:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		Ability.Description:Show();
 		Ability:SetHeight(Ability:GetHeight() + Ability.Description:GetHeight() + spacingBetweenNameAndDescription);
 		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon = C_Garrison.GetFollowerAbilityCounterMechanicInfo(ability.id);
@@ -519,6 +522,7 @@ function GarrisonFollowerTooltipTemplate_SetAutoSpell(frame, autoSpell)
 	local spacingBetweenNameAndDescription = 4;	
 	
 	frame.Name:SetText(autoSpell.name);
+	frame.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	frame.Icon:SetTexture(autoSpell.icon);
 	frame:SetHeight(frame.Name:GetHeight() + 10);
 	frame.Details:Hide();
@@ -530,6 +534,7 @@ function GarrisonFollowerTooltipTemplate_SetAutoSpell(frame, autoSpell)
 	end
 	fullDescription = fullDescription .. autoSpell.description;
 	frame.Description:SetText(fullDescription);
+	frame.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	frame.Description:Show();
 	frame:SetHeight(frame:GetHeight() + frame.Description:GetHeight() + spacingBetweenNameAndDescription);
 

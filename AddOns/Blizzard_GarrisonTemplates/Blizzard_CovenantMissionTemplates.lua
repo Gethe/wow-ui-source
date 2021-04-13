@@ -1,7 +1,7 @@
 function AddAutoCombatSpellToTooltip(tooltip, autoCombatSpell)
 	local str;
 	if (autoCombatSpell.icon) then
-		str = CreateTextureMarkup(autoCombatSpell.icon, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
+		str = GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(autoCombatSpell.icon);
 	else
 		str = "";
 	end

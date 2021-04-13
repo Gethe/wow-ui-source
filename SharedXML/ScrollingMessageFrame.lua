@@ -434,7 +434,7 @@ function ScrollingMessageFrameMixin:GatherSelectedText(x, y)
 	if characterIndex and (self.selectingCharacterIndex ~= characterIndex or self.selectingVisibleLineIndex ~= visibleLineIndex) then
 		local pendingText = {};
 		local startLineIndex, endLineIndex = self.selectingVisibleLineIndex, visibleLineIndex;
-		local startCharacterIndex, endCharacterIndex = self.selectingCharacterIndex, characterIndex;
+		local startCharacterIndex, endCharacterIndex = self.selectingCharacterIndex, characterIndex - 1;
 
 		local effectiveStartLineIndex, effectiveEndLineIndex, direction;
 		if self:GetInsertMode() == SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP then

@@ -99,7 +99,6 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Button name="KeybindingsPhantomFrameTemplate" inherits="QuickKeybindButtonTemplate" registerForClicks="AnyUp" virtual="true"/>
 
 	<Button name="KeyBindingFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true" mixin="KeyBindingFrameMixin">
 		<Size x="858" y="660"/>
@@ -321,38 +320,6 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.defaultsButton" relativePoint="BOTTOMLEFT" x="-25" y="0"/>
 				</Anchors>
-			</Button>
-			<Button parentKey="phantomExtraActionButton" inherits="KeybindingsPhantomFrameTemplate" mixin="PhantomExtraActionButtonMixin">
-				<Size x="50" y="50"/>
-				<KeyValues>
-					<KeyValue key="commandName" value="EXTRAACTIONBUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM" x="0" y="150"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-							<Size x="36" y="10"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-5" y="-8"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="normalTexture" file="Interface\Buttons\UI-Quickslot2">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-16" y="16"/>
-								<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnUpdate method="OnUpdate"/>
-					<OnEvent method="OnEvent"/>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

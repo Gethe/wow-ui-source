@@ -138,6 +138,7 @@ CharCustomizeSmallButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMi
 function CharCustomizeSmallButtonMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
 	self.Icon:SetAtlas(self.iconAtlas);
+	self.HighlightTexture:SetAtlas(self.iconAtlas);
 end
 
 function CharCustomizeSmallButtonMixin:OnMouseDown()
@@ -507,14 +508,11 @@ function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
 		self:AddTooltipLine(FEMALE, HIGHLIGHT_FONT_COLOR);
 	end
 
-	local atlas = GetGenderAtlas(sexID);
-	self:SetIconAtlas(atlas);
+	local isSelected = selectedSexID == sexID;
+	local baseAtlas, selectedAtlas = GetGenderAtlases(sexID);
+	self:SetIconAtlas(isSelected and selectedAtlas or baseAtlas);
 
-	if selectedSexID == sexID then
-		self:SetChecked(true);
-	else
-		self:SetChecked(false);
-	end
+	self:SetChecked(isSelected);
 
 	self:UpdateHighlightTexture();
 end
@@ -994,6 +992,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", -20, 0);
 	else
 		self.Categories:Hide();
+		self.Categories:SetSize(1, 105);
 		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "RIGHT", -10, 0);
 	end
 end
@@ -1018,11 +1017,11 @@ function CharCustomizeMixin:UpdateZoomButtonStates()
 
 	local zoomOutEnabled = (currentZoom > 0);
 	self.SmallButtons.ZoomOutButton:SetEnabled(zoomOutEnabled);
-	self.SmallButtons.ZoomOutButton.Icon:SetDesaturated(not zoomOutEnabled);
+	self.SmallButtons.ZoomOutButton.Icon:SetAtlas(zoomOutEnabled and "common-icon-zoomout" or "common-icon-zoomout-disable");
 
 	local zoomInEnabled = (currentZoom < 100);
 	self.SmallButtons.ZoomInButton:SetEnabled(zoomInEnabled);
-	self.SmallButtons.ZoomInButton.Icon:SetDesaturated(not zoomInEnabled);
+	self.SmallButtons.ZoomInButton.Icon:SetAtlas(zoomInEnabled and "common-icon-zoomin" or "common-icon-zoomin-disable");
 end
 
 function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)

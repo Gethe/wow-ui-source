@@ -526,3 +526,65 @@ function GetGarrisonTalentCostString(talentInfo, abbreviate, colorCode)
 
 	return costString;
 end
+
+---------------------------------------------------------------------------------
+--- Auto Combat Util                                                          ---
+---------------------------------------------------------------------------------
+
+GarrAutoCombatUtil = {};
+
+function GarrAutoCombatUtil.GetFollowerAutoCombatSpells(followerGUID, level, includeAutoAttack)
+	local spellInfo, autoAttack = C_Garrison.GetFollowerAutoCombatSpells(followerGUID, level);
+	if includeAutoAttack and (autoAttack ~= nil) then
+		table.insert(spellInfo, autoAttack);
+	end
+
+	return spellInfo;
+end
+
+function GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(icon)
+	return CreateTextureMarkup(icon, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
+end
+
+function GarrAutoCombatUtil.GetAuraTypeAtlasesFromPreviewMask(previewMask)
+	local atlases = {};
+	if FlagsUtil.IsSet(previewMask, Enum.GarrAutoPreviewTargetType.Buff) then
+		table.insert(atlases, "Adventure-buff-indicator-small");
+	end
+
+	if FlagsUtil.IsSet(previewMask, Enum.GarrAutoPreviewTargetType.Heal) then
+		table.insert(atlases, "Adventure-heal-indicator-small");
+	end
+
+	if FlagsUtil.IsSet(previewMask, Enum.GarrAutoPreviewTargetType.Debuff) then
+		table.insert(atlases, "Adventure-debuff-indicator-small");
+	end
+
+	return atlases;
+end
+
+function GarrAutoCombatUtil.GetAtlasMarkupFromPreviewMask(previewMask)
+	local previewTypeAtlases = GarrAutoCombatUtil.GetAuraTypeAtlasesFromPreviewMask(previewMask);
+	local output = "";
+	for i, atlas in ipairs(previewTypeAtlases) do
+		if i > 1 then
+			output = output.." ";
+		end
+
+		output = output..CreateAtlasMarkupWithAtlasSize(atlas);
+	end
+
+	return output;
+end
+
+function GarrAutoCombatUtil.AddAuraToTooltip(tooltip, auraSpellID, dynamicPreviewMask)
+	local autoCombatSpellInfo = C_Garrison.GetCombatLogSpellInfo(auraSpellID);
+	if autoCombatSpellInfo then
+		local iconMarkup = GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(autoCombatSpellInfo.icon);
+		local leftText = COVENANT_MISSIONS_AURA_TOOLTIP_ENTRY_FORMAT:format(iconMarkup, autoCombatSpellInfo.name);
+
+		local previewTypeMarkup = GarrAutoCombatUtil.GetAtlasMarkupFromPreviewMask(dynamicPreviewMask or autoCombatSpellInfo.previewMask);
+		
+		GameTooltip_AddColoredDoubleLine(tooltip, leftText, previewTypeMarkup, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+	end
+end

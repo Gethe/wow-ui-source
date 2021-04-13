@@ -2254,6 +2254,52 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentSpeechToText" hyperlinksEnabled="true" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="SubText" text="SPEECH_TO_TEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="2" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="28" y="6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="TOPRIGHT" x="250"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "speechToText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentTextToSpeech" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSpeechToText" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "textToSpeech";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentRemoteTextToSpeech" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTextToSpeech" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "remoteTextToSpeech";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT" x="90" y="-8" />

@@ -252,6 +252,12 @@ function FramePoolCollectionMixin:CreatePool(frameType, parent, template, resett
 	return pool;
 end
 
+function FramePoolCollectionMixin:CreatePoolIfNeeded(frameType, parent, template, resetterFunc, forbidden)
+	if not self:GetPool(template) then
+		self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+	end
+end
+
 function FramePoolCollectionMixin:GetPool(template)
 	return self.pools[template];
 end

@@ -17,6 +17,7 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	showAlert = 1,
+	acceptDelay = 5,
 }
 
 local WEEKLY_REWARDS_EVENTS = {

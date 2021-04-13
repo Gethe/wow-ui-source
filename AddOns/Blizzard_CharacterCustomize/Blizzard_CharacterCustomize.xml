@@ -54,15 +54,6 @@
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 		</KeyValues>
 		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
-		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="common-button-square-gray-up" alphaMode="ADD" alpha="0.2"/>
-		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="1" y="-1"/>
-				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-			</Anchors>
-		</PushedTexture>
-
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon">
@@ -78,6 +69,19 @@
 			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick" inherit="prepend"/>
 		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
 	</Button>
 
 	<Button name="CharCustomizeClickOrHoldButtonTemplate" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeClickOrHoldButtonMixin" virtual="true">

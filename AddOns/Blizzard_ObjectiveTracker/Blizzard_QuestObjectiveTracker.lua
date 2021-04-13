@@ -101,6 +101,10 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderLeave(block)
 	GameTooltip:Hide();
 end
 
+function QUEST_TRACKER_MODULE:GetDebugReportInfo(block)
+	return { debugType = "TrackedQuest", questID = block.id, };
+end
+
 local LINE_TYPE_ANIM = { template = "QuestObjectiveAnimLineTemplate", freeLines = { } };
 
 -- *****************************************************************************************************

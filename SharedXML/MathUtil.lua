@@ -22,6 +22,11 @@ if tbl then
 end
 ----------------
 
+MathUtil = 
+{
+	Epsilon = .000001;
+};
+
 function Lerp(startValue, endValue, amount)
 	return (1 - amount) * startValue + amount * endValue;
 end
@@ -88,6 +93,18 @@ end
 
 function Square(value)
 	return value * value;
+end
+
+function WithinRange(value, min, max)
+	return value >= min and value <= max;
+end
+
+function WithinRangeExclusive(value, min, max)
+	return value > min and value < max;
+end
+
+function ApproximatelyEqual(v1, v2, epsilon)
+	return math.abs(v1 - v2) < (epsilon or MathUtil.Epsilon);
 end
 
 function CalculateDistanceSq(x1, y1, x2, y2)

@@ -301,103 +301,80 @@ function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	local shieldPoints = frame.Shield.Points;
 	local shieldIcon = frame.Shield.Icon;
 	local unlocked = frame.Unlocked;
-	local oldCheevo = frame.OldAchievement;
 
 	displayName:SetText(name);
 
 	AchievementShield_SetPoints(points, shieldPoints, GameFontNormal, GameFontNormalSmall);
-
 	if ( isGuildAch ) then
 		local guildName = frame.GuildName;
 		local guildBorder = frame.GuildBorder;
 		local guildBanner = frame.GuildBanner;
-		if ( not frame.guildDisplay or frame.oldCheevo) then
-			frame.oldCheevo = nil
+		if ( not frame.guildDisplay ) then
 			shieldPoints:Show();
 			shieldIcon:Show();
-			oldCheevo:Hide();
 			frame.guildDisplay = true;
 			frame:SetHeight(104);
 			local background = frame.Background;
-			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			background:SetTexCoord(0.00195313, 0.62890625, 0.00195313, 0.19140625);
-			background:SetPoint("TOPLEFT", -2, 2);
-			background:SetPoint("BOTTOMRIGHT", 8, 8);
+			background:SetAtlas("ui-achievement-guild-background", TextureKitConstants.UseAtlasSize);
 			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			iconBorder:SetTexCoord(0.25976563,0.40820313,0.50000000,0.64453125);
-			iconBorder:SetPoint("CENTER", 0, 1);
-			frame.Icon:SetPoint("TOPLEFT", -26, 2);
-			displayName:SetPoint("BOTTOMLEFT", 79, 37);
-			displayName:SetPoint("BOTTOMRIGHT", -79, 37);
-			frame.Shield:SetPoint("TOPRIGHT", -15, -28);
+			iconBorder:SetAtlas("ui-achievement-guild-iconframe", TextureKitConstants.UseAtlasSize);
+			iconBorder:SetPoint("CENTER", 0, 0);
+			frame.Icon:SetPoint("TOPLEFT", 0, -25);
+			frame.Icon.Texture:SetPoint("CENTER", -1, -2);
+			displayName:SetPoint("TOP", unlocked, "BOTTOM", 0, -5);
+			frame.Shield:SetPoint("TOPRIGHT", -12, -25);
 			shieldPoints:SetPoint("CENTER", 7, 5);
 			shieldPoints:SetVertexColor(0, 1, 0);
-			shieldIcon:SetTexCoord(0, 0.5, 0.5, 1);
-			unlocked:SetPoint("TOP", -1, -36);
+			unlocked:SetPoint("TOP", 0, -38);
 			unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
 			guildName:Show();
 			guildBanner:Show();
 			guildBorder:Show();
-			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			frame.glow:SetTexCoord(0.00195313, 0.74804688, 0.19531250, 0.49609375);
-			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			frame.shine:SetTexCoord(0.75195313, 0.91601563, 0.19531250, 0.35937500);
+			frame.glow:SetAtlas("ui-achievement-guild-glow", TextureKitConstants.UseAtlasSize);
+			frame.shine:SetAtlas("ui-achievement-guild-shine", TextureKitConstants.UseAtlasSize);
 			frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
 		end
 		guildName:SetText(GetGuildInfo("player"));
 		SetSmallGuildTabardTextures("player", nil, guildBanner, guildBorder);
 	else
-		if ( frame.guildDisplay  or frame.oldCheevo) then
-			frame.oldCheevo = nil
+		if ( frame.guildDisplay ) then
 			shieldPoints:Show();
 			shieldIcon:Show();
-			oldCheevo:Hide();
 			frame.guildDisplay = nil;
-			frame:SetHeight(88);
+			frame:SetHeight(101);
 			local background = frame.Background;
-			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Background");
-			background:SetTexCoord(0, 0.605, 0, 0.703);
-			background:SetPoint("TOPLEFT", 0, 0);
-			background:SetPoint("BOTTOMRIGHT", 0, 0);
+			background:SetAtlas("ui-achievement-alert-background", TextureKitConstants.UseAtlasSize);
 			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
-			iconBorder:SetTexCoord(0, 0.5625, 0, 0.5625);
-			iconBorder:SetPoint("CENTER", -1, 2);
-			frame.Icon:SetPoint("TOPLEFT", -26, 16);
+			iconBorder:SetAtlas("ui-achievement-iconframe", TextureKitConstants.UseAtlasSize);
+			iconBorder:SetPoint("CENTER", -1, 1);
+			frame.Icon:SetPoint("TOPLEFT", -4, -15);
 			displayName:SetPoint("BOTTOMLEFT", 72, 36);
 			displayName:SetPoint("BOTTOMRIGHT", -60, 36);
 			frame.Shield:SetPoint("TOPRIGHT", -10, -13);
 			shieldPoints:SetPoint("CENTER", 7, 2);
 			shieldPoints:SetVertexColor(1, 1, 1);
-			shieldIcon:SetTexCoord(0, 0.5, 0, 0.45);
 			unlocked:SetPoint("TOP", 7, -23);
 			unlocked:SetText(ACHIEVEMENT_UNLOCKED);
 			frame.GuildName:Hide();
 			frame.GuildBorder:Hide();
 			frame.GuildBanner:Hide();
-			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
-			frame.glow:SetTexCoord(0, 0.78125, 0, 0.66796875);
-			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
-			frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
+			frame.glow:SetAtlas("ui-achievement-glow-glow", TextureKitConstants.UseAtlasSize);
+			frame.shine:SetAtlas("ui-achievement-glow-shine", TextureKitConstants.UseAtlasSize);
 			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
 		end
 
 		if (alreadyEarned) then
-			frame.oldCheevo = true;
 			shieldPoints:Hide();
 			shieldIcon:Hide();
-			oldCheevo:Show();
-			displayName:SetPoint("BOTTOMLEFT", 72, 37);
-			displayName:SetPoint("BOTTOMRIGHT", -25, 37);
-			unlocked:SetPoint("TOP", 21, -23);
+			unlocked:SetPoint("TOP", 15, -23);
+			displayName:SetPoint("TOP", unlocked, "BOTTOM", 0, -10);
 		end
 	end
 
 	if ( points == 0 ) then
-		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+		shieldIcon:SetAtlas("ui-achievement-shield-2-desaturated", TextureKitConstants.UseAtlasSize);
 	else
-		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+		shieldIcon:SetAtlas("ui-achievement-shield-2", TextureKitConstants.UseAtlasSize);
 	end
 
 	frame.Icon.Texture:SetTexture(icon);

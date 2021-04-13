@@ -5,21 +5,33 @@
 	<Frame name="RuneforgeCreateFrameTemplate" mixin="RuneforgeCreateFrameMixin" virtual="true">
 		<Size x="350" y="74"/>
 		<Frames>
-			<Frame parentKey="Cost" inherits="CurrencyDisplayTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
-				</KeyValues>
+			<Frame parentKey="Cost" inherits="ResizeLayoutFrame">
+				<Size x="1" y="16"/>
 				<Anchors>
 					<Anchor point="TOP"/>
-					<Anchor point="LEFT"/>
-					<Anchor point="RIGHT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CostLabel" inherits="GameFontNormal" text="RUNEFORGE_LEGENDARY_COST_LABEL">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Currencies" inherits="CurrencyDisplayGroupTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="2" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</Frame>
 
 			<Button parentKey="CraftItemButton" inherits="UIPanelButtonTemplate" mixin="RuneforgeCraftItemButtonMixin" motionScriptsWhileDisabled="true">
 				<Size x="172" y="22"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Cost" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeKey="$parent.Cost" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
 				<Scripts>
 					<OnShow method="OnShow"/>

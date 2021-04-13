@@ -81,14 +81,23 @@ function PTR_IssueReporter.SetupUnitTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupQuestTooltips()
-    hooksecurefunc("QuestMapLogTitleButton_OnEnter", function(self)
-    	if self.questID then
-        	local title = C_QuestLog.GetTitleForQuestID(self.questID);
-        	if title then
-            	PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, self.questID, title)
-        	end
+    local function HookIntoQuestTooltip(self)
+        if self.questID then
+            local title = C_QuestLog.GetTitleForQuestID(self.questID);
+            if title then
+                PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, self.questID, title)
+            end
         end
-     end)
+    end
+
+    hooksecurefunc("QuestMapLogTitleButton_OnEnter", HookIntoQuestTooltip)
+
+    local function OnTaskPOITooltipShown(self, owningFrame)
+        HookIntoQuestTooltip(owningFrame)
+    end
+
+    -- Commented out for now as they are some details to work out still.
+    -- EventRegistry:RegisterCallback("TaskPOI.TooltipShown", OnTaskPOITooltipShown, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupAchievementTooltips()
@@ -137,6 +146,23 @@ function PTR_IssueReporter.SetupAzeriteTooltips()
     end
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupMapPinTooltips()
+    local function OnAreaPOIPinMouseOver(self, pin, tooltipIsShown, areaPOIID, areaPOIName)
+        if not tooltipIsShown then
+            GameTooltip:SetOwner(pin, "ANCHOR_RIGHT")
+            GameTooltip_AddNormalLine(GameTooltip, areaPOIName)
+        end
+
+        -- Todo: PTR_IssueReporter.HookIntoTooltip should replace these.
+        GameTooltip_AddBlankLineToTooltip(GameTooltip)
+        GameTooltip_AddNormalLine(GameTooltip, RED_FONT_COLOR:WrapTextInColorCode("Todo: add a debug hook."))
+        GameTooltip:Show()
+    end
+
+    -- Commented out for now as they are some details to work out still.
+    -- EventRegistry:RegisterCallback("AreaPOIPin.MouseOver", OnAreaPOIPinMouseOver, PTR_IssueReporter)
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -145,5 +171,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupAchievementTooltips()
     PTR_IssueReporter.SetupCurrencyTooltips()
     PTR_IssueReporter.SetupAzeriteTooltips()
+    PTR_IssueReporter.SetupMapPinTooltips()
 end
 ----------------------------------------------------------------------------------------------------

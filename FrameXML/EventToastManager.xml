@@ -1,0 +1,662 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="EventToastManager.lua"/>
+	
+	<Frame name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="418" type="number"/>
+			<KeyValue key="heightPadding" value="30" type="number"/>
+		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="sideAnimIn" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.4" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1" />
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="2" parentKey="anim2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():GetParent():DisplayNextToast(); 
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOP" x="-80" y="-20"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="middleName" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SubIcon">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="2" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SubIconRight" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Size x="22" y="22"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="10" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="RarityIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon" x="10" y="-8"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
+				</Texture>
+				<FontString parentKey="RarityValue" inherits="GameFontHighlight">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RarityIcon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"  relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="10" y="3"/>
+				</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="TOPLEFT" x="0" y="1"/>
+					</Anchors>
+					<Color color="GREEN_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SubText" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.Icon" x="10" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon" x="10" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SubText" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventToastScenarioToastTemplate" inherits="ResizeLayoutFrame" mixin="EventToastScenarioToastMixin" alpha="0" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="418" type="number"/>
+			<KeyValue key="minimumHeight" value="72" type="number"/>
+			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
+		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="NewStage">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="4.5" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
+				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SubTitle" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-14"/>
+					</Anchors>
+					<Color color="SCENARIO_STAGE_COLOR"/>
+				</FontString>
+				<FontString parentKey="Subtitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Color color="SCENARIO_SUBTITLE_COLOR"/>
+				</FontString>
+				<FontString parentKey="Description" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Size x="300" y="0"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-16"/>
+					</Anchors>
+					<Color color="SCENARIO_SUBTITLE_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BannerFrame" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Animations>
+					<AnimationGroup parentKey="fadeIn">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" endDelay="3.8" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture atlas="Banner-FiligreeShadow">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="Banner-FiligreeShadow">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-10"/>at l
+							</Anchors>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Subtitle"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="EventToastChallengeModeToastTemplate" mixin="EventToastChallengeModeToastMixin" alpha="0" virtual="true">
+		<Size x="418" y="72"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="challengeComplete">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.5" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent():OnAnimationPlay(); 
+					</OnPlay>
+					<OnFinished>
+						self:GetParent():GetParent():DisplayNextToast();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-14"/>
+					</Anchors>
+					<Color color="CHALLENGE_MODE_TOAST_TITLE_COLOR"/>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="8"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BannerFrame" setAllPoints="true" alpha="0" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Animations>
+					<AnimationGroup parentKey="fadeIn">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="MedalFlare" atlas="challenges-bannershine" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture atlas="Banner-FiligreeShadow">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="Banner-FiligreeShadow">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BottomFiligree" atlas="Banner-SmallFiligree" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
+						</Texture>
+						<Texture parentKey="MedalIcon">
+							<Size x="102" y="102"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-22"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="418" type="number"/>
+			<KeyValue key="heightPadding" value="20" type="number"/>
+			<KeyValue key="animStartDelay" value="1.5" type="number"/>
+		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="sideAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.4" order="2"/>
+				<Scripts>
+					<OnFinished>
+							self:GetParent():OnAnimFinished(); 
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="levelUp">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="1.5" order="1" parentKey="anim1" />
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished(); 
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fastReveal">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.5" order="1" />
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="immediateReveal">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0" order="1">
+					<Scripts>
+						<OnFinished>
+							self:GetParent():OnAnimFinished();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SingleLine" inherits="GameFont_Gigantic">
+					<Anchors>
+						<Anchor point="CENTER" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.SingleLine" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BlockText" inherits="GameFontNormalHuge">
+					<Anchors>
+						<Anchor point="CENTER" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.BlockText" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="418" type="number"/>
+			<KeyValue key="minimumHeight" value="72" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-190"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="fadeIn">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1" parentKey="anim1" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():PlayAnim();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="hideAnim">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1.0" order="1" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():ToastingEnded();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fastHide">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():ToastingEnded();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackBG" atlas="levelup-shadow-upper" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="1.0" scaleY="0.001" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+								<Origin point="BOTTOM">
+									<Offset x="0" y="0"/>
+								 </Origin>
+							</Scale>
+							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
+								 <Origin point="BOTTOM">
+									<Offset x="0" y="0"/>
+								 </Origin>
+							</Scale>
+						</AnimationGroup>
+					</Animations>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="GLine2" atlas="levelup-bar-gold" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+							</Scale>
+							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="GLine" atlas="levelup-bar-gold" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+							</Scale>
+							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnPlay>
+									local parent = self:GetParent():GetParent();
+									parent.BlackBG:Hide();
+									parent.GLine:Hide();
+									parent.GLine2:Hide();
+									parent.GLine2.grow:Play();
+									parent.BlackBG.grow:Play();
+								</OnPlay>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="EventToastManagerSideDisplay" mixin="EventToastManagerSideDisplayMixin" inherits="ResizeLayoutFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
+		<Animations>
+			<AnimationGroup parentKey="fadeIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.0" order="1" />
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="2" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():DisplayToastAtIndex(1);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fadeOut">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1.0" order="1" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide(); 
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Anchors>
+			<Anchor point="TOPRIGHT"  relativeTo="EventToastManagerFrame" relativePoint="TOPLEFT" x="20" y="20"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="GoldBG" atlas="levelup-glow-gold" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="53"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BlackBG" atlas="levelup-shadow-lower" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.GoldBG" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

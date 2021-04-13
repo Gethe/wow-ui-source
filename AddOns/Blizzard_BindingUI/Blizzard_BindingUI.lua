@@ -767,7 +767,7 @@ function QuickKeybindFrameMixin:OnShow()
 	local showQuickKeybindEffects = true;
 	MainMenuBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	MultiActionBar_SetAllQuickKeybindModeEffectsShown(showQuickKeybindEffects);
-	self.phantomExtraActionButton.QuickKeybindHighlightTexture:Show();
+	ExtraActionBar_ForceShowIfNeeded();
 end
 
 function QuickKeybindFrameMixin:OnHide()
@@ -783,6 +783,7 @@ function QuickKeybindFrameMixin:OnHide()
 	local showQuickKeybindEffects = false;
 	MainMenuBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	MultiActionBar_SetAllQuickKeybindModeEffectsShown(showQuickKeybindEffects);
+	ExtraActionBar_CancelForceShow();
 end
 
 function QuickKeybindFrameMixin:CancelBinding()
@@ -837,28 +838,4 @@ QuickKeybindResetAllButtonMixin = {};
 
 function QuickKeybindResetAllButtonMixin:OnClick()
 	StaticPopup_Show("CONFIRM_RESET_TO_PREVIOUS_KEYBINDINGS");
-end
-
-PhantomExtraActionButtonMixin = {};
-
-function PhantomExtraActionButtonMixin:OnLoad()
-	self:RegisterEvent("UPDATE_BINDINGS");
-	self:UpdateHotkeyText();
-end
-
-function PhantomExtraActionButtonMixin:OnUpdate(elapsed)
-	local bottom = ExtraActionButton1:GetBottom() or 150;
-	self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottom)
-end
-
-function PhantomExtraActionButtonMixin:OnEvent(event, ...)
-	if ( event == "UPDATE_BINDINGS" ) then
-		self:UpdateHotkeyText();
-	end
-end
-
-function PhantomExtraActionButtonMixin:UpdateHotkeyText()
-	local key = GetBindingKey(self.commandName);
-	local bindingText = GetBindingText(key, 1);
-	self.HotKey:SetText(bindingText);
 end

@@ -123,6 +123,13 @@ function CommentatorMixin:SwapTeams()
 end
 
 function CommentatorMixin:ObservePlayer(teamIndex, playerIndex, observationType)
+	if self.sortedPlayerIndices and self.sortedPlayerIndices[teamIndex] then
+		local changedIndex = self.sortedPlayerIndices[teamIndex][playerIndex];
+		if changedIndex then
+			playerIndex = changedIndex;
+		end
+	end
+
 	if C_Commentator.IsUsingSmartCamera() then
 		if observationType == TOURNAMENT_OBSERVE_PLAYER_PRIMARY then
 			C_Commentator.LookAtPlayer(teamIndex, playerIndex, 1);
@@ -319,6 +326,8 @@ local function UnitFrameComparator(left, right)
 end
 
 function CommentatorMixin:InitUnitFrames()
+	self.sortedPlayerIndices = {{},{}};
+
 	for teamIndex = 1, 2 do
 		local playerCount = C_Commentator.GetNumPlayers(teamIndex);
 		if playerCount then
@@ -330,6 +339,7 @@ function CommentatorMixin:InitUnitFrames()
 				local playerData = C_Commentator.GetPlayerData(teamIndex, playerIndex);
 				unitFrame:Init(isAlignedLeft, playerData, teamIndex);
 				unitFrame.tempRole = unitFrame:GetRole();
+				unitFrame.playerIndex = playerIndex;
 				unitFrame.tempName = unitFrame:GetPlayerName();
 				unitFrame:Show();
 				table.insert(unitFrames, unitFrame);
@@ -340,6 +350,7 @@ function CommentatorMixin:InitUnitFrames()
 			for index, unitFrame in ipairs(unitFrames) do
 				unitFrame.tempRole = nil;
 				unitFrame.tempName = nil;
+				self.sortedPlayerIndices[teamIndex][index] = unitFrame.playerIndex;
 			end
 		end
 	end

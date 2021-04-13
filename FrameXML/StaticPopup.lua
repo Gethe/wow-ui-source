@@ -200,6 +200,20 @@ StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["CONFIRM_RESET_TEXTTOSPEECH_SETTINGS"] = {
+	text = CONFIRM_TEXT_TO_SPEECH_RESET,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function ()
+		TextToSpeechFrame_SetToDefaults();
+	end,
+	OnCancel = function() end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
 StaticPopupDialogs["CONFIRM_REDOCK_CHAT"] = {
 	text = CONFIRM_REDOCK_CHAT,
 	button1 = ACCEPT,
@@ -3895,10 +3909,10 @@ StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		return WardrobeTransmogFrame_ApplyPending(self.data.warningIndex);
+		return WardrobeTransmogFrame:ApplyPending(self.data.warningIndex);
 	end,
 	OnHide = function()
-		WardrobeTransmogFrame_UpdateApplyButton();
+		WardrobeTransmogFrame:UpdateApplyButton();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -4727,6 +4741,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		button1:Enable();
 	end
 
+	if info.acceptDelay then
+		dialog.acceptDelay = info.acceptDelay;
+		button1:Disable();
+	else
+		dialog.acceptDelay = nil;
+		button1:Enable();
+	end
+
 	editBox:SetSecureText(info.editBoxSecureText);
 	editBox.hasAutoComplete = info.autoCompleteSource ~= nil;
 	if ( editBox.hasAutoComplete ) then
@@ -4861,6 +4883,19 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				end
 			end
 			StaticPopup_Resize(dialog, which);
+		end
+	end
+
+	if dialog.acceptDelay then
+		dialog.acceptDelay = dialog.acceptDelay - elapsed;
+		if dialog.acceptDelay <= 0 then
+			dialog.button1:Enable();
+			local info = StaticPopupDialogs[dialog.which];
+			dialog.button1:SetText(info.button1);
+			dialog.acceptDelay = nil;
+		else
+			dialog.button1:Disable();
+			dialog.button1:SetText(math.ceil(dialog.acceptDelay));
 		end
 	end
 

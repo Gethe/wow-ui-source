@@ -901,7 +901,7 @@ function TruncatedTooltipScript_OnEnter(self)
 	if text:IsTruncated() then
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		tooltip:SetText(text:GetText());
+		GameTooltip_AddNormalLine(tooltip, text:GetText());
 		tooltip:Show();
 	end
 end
@@ -1030,6 +1030,18 @@ function ColumnDisplayButton_OnClick(self)
 	self:GetParent():OnClick(self:GetID());
 end
 
+IconButtonMixin = {};
+
+function IconButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", 0, -1);
+	end
+end
+
+function IconButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
+end
+
 SquareIconButtonMixin = {};
 
 function SquareIconButtonMixin:OnLoad()
@@ -1059,6 +1071,7 @@ end
 
 function SquareIconButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
+		-- Square icon button template still uses down-to-the-left depress behavior to match the existing art.
 		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
 	end
 end
@@ -1341,7 +1354,7 @@ end
 SharedEditBoxMixin = {}
 
 function SharedEditBoxMixin:OnLoad()
-	local leftAtlasInfo = C_Texture.GetAtlasInfo("common-input-left");
+	local leftAtlasInfo = C_Texture.GetAtlasInfo("common-gray-button-entrybox-left");
 
 	local editBoxHeight = self:GetHeight();
 	local scale = editBoxHeight / leftAtlasInfo.height;
@@ -1856,4 +1869,248 @@ end
 
 function DefaultScaleFrameMixin:UpdateScale()
 	ApplyDefaultScale(self, self.minScale, self.maxScale);
+end
+
+-- Click to drag directly attached to frame itself.
+ClickToDragMixin = {};
+
+function ClickToDragMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function ClickToDragMixin:OnDragStart()
+	self:StartMoving();
+end
+
+function ClickToDragMixin:OnDragStop()
+	self:StopMovingOrSizing();
+end
+
+-- Click to drag attached to a subframe. For example, a title bar.
+PanelDragBarMixin = {};
+
+function PanelDragBarMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function PanelDragBarMixin:Init(target)
+	self.target = target;
+end
+
+function PanelDragBarMixin:OnDragStart()
+	self.target:StartMoving();
+end
+
+function PanelDragBarMixin:OnDragStop()
+	self.target:StopMovingOrSizing();
+end
+
+PanelResizeButtonMixin = {};
+
+function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxHeight)
+	self.target = target;
+	self.minWidth = minWidth;
+	self.minHeight = minHeight;
+	self.maxWidth = maxWidth;
+	self.maxHeight = maxHeight;
+
+	local originalTargetOnSizeChanged = target:GetScript("OnSizeChanged") or nop;
+	target:SetScript("OnSizeChanged", function(target, width, height)
+		originalTargetOnSizeChanged(target, width, height);
+
+		if width < self.minWidth then
+			target:SetWidth(self.minWidth);
+		elseif self.maxWidth and width > self.maxWidth then
+			target:SetWidth(self.maxWidth);
+		end
+
+		if height < self.minHeight then
+			target:SetHeight(self.minHeight);
+		elseif self.maxHeight and height > self.maxHeight then
+			target:SetHeight(self.maxHeight);
+		end
+	end);
+end
+
+function PanelResizeButtonMixin:OnMouseDown()
+	if self.target then
+		self.target:StartSizing("BOTTOMRIGHT");
+	end
+end
+
+function PanelResizeButtonMixin:OnMouseUp()
+	if self.target then
+		self.target:StopMovingOrSizing();
+
+		if self.resizeStoppedCallback ~= nil then
+			self.resizeStoppedCallback(target);
+		end
+	end
+end
+
+function PanelResizeButtonMixin:SetOnResizeStoppedCallback(resizeStoppedCallback)
+	self.resizeStoppedCallback = resizeStoppedCallback;
+end
+
+DropDownControlMixin = {};
+
+function DropDownControlMixin:OnLoad()
+	local function InitializeDropDownFrame()
+		self:Initialize();
+	end
+
+	UIDropDownMenu_Initialize(self.DropDownMenu, InitializeDropDownFrame);
+
+	self:UpdateWidth(self:GetWidth());
+end
+
+function DropDownControlMixin:UpdateWidth(width)
+	UIDropDownMenu_SetWidth(self.DropDownMenu, width - 20);
+end
+
+function DropDownControlMixin:Initialize()
+	if self.options == nil then
+		return;
+	end
+
+	local function DropDownControlButton_OnClick(button)
+		local isUserInput = true;
+		self:SetSelectedValue(button.value, isUserInput);
+	end
+
+	for i, option in ipairs(self.options) do
+		local info = UIDropDownMenu_CreateInfo();
+		if not self.skipNormalSetup then
+			info.text = option.text;
+			info.minWidth = 108;
+			info.value = option.value;
+			info.checked = self.selectedValue == option.value;
+			info.func = DropDownControlButton_OnClick;
+		end
+
+		if self.customSetupCallback ~= nil then
+			self.customSetupCallback(info);
+		end
+
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function DropDownControlMixin:SetSelectedValue(value, isUserInput)
+	self.selectedValue = value;
+
+	if value == nil then
+		UIDropDownMenu_SetText(self.DropDownMenu, self.noneSelectedText);
+	elseif self.options ~= nil then
+		for i, option in ipairs(self.options) do
+			if option.value == value then
+				UIDropDownMenu_SetText(self.DropDownMenu, option.selectedText or option.text);
+			end
+		end
+	end
+
+	if self.optionSelectedCallback ~= nil then
+		self.optionSelectedCallback(value, isUserInput);
+	end
+end
+
+function DropDownControlMixin:GetSelectedValue()
+	return self.selectedValue;
+end
+
+function DropDownControlMixin:SetOptionSelectedCallback(optionSelectedCallback)
+	self.optionSelectedCallback = optionSelectedCallback;
+end
+
+-- options: an array of tables that contain info to display the different dropdown options.
+-- Option keys:
+--   value: a unique value that identifies the option and is passed through to optionSelectedCallback.
+--   text: the text that appears in the dropdown list, and on the dropdown control when an option is selected.
+--   selectedText: an override for text that appears on the dropdown control when an option is selected.
+function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
+	self.options = options;
+	self:Initialize();
+
+	if defaultSelectedValue then
+		self:SetSelectedValue(defaultSelectedValue);
+	end
+end
+
+function DropDownControlMixin:SetCustomSetup(customSetupCallback, skipNormalSetup)
+	self.customSetupCallback = customSetupCallback;
+	self.skipNormalSetup = skipNormalSetup;
+end
+
+function DropDownControlMixin:SetTextJustifyH(...)
+	self.DropDownMenu.Text:SetJustifyH(...);
+end
+
+function DropDownControlMixin:AdjustTextPointsOffset(...)
+	self.DropDownMenu.Text:AdjustPointsOffset(...);
+end
+
+EnumDropDownControlMixin = CreateFromMixins(DropDownControlMixin);
+
+function EnumDropDownControlMixin:SetEnum(enum, nameTranslation, ordering)
+	local options = {};
+	for enumKey, enumValue in pairs(enum) do
+		table.insert(options, { value = enumValue, text = nameTranslation(enumValue), });
+	end
+
+	if ordering then
+		local function EnumOrderingComparator(lhs, rhs)
+			return ordering[lhs.value] < ordering[rhs.value];
+		end
+
+		table.sort(options, EnumOrderingComparator);
+	else
+		local function EnumComparator(lhs, rhs)
+			return lhs.value < rhs.value;
+		end
+
+		table.sort(options, EnumComparator);
+	end
+
+	self:SetOptions(options);
+end
+
+DisabledTooltipButtonMixin = {};
+
+function DisabledTooltipButtonMixin:OnEnter()
+	local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
+	if disabledTooltip ~= nil then
+		GameTooltip_ShowDisabledTooltip(GameTooltip, self, disabledTooltip, disabledTooltipAnchor);
+	end
+end
+
+function DisabledTooltipButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function DisabledTooltipButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor)
+	self.disabledTooltip = disabledTooltip;
+	self.disabledTooltipAnchor = disabledTooltipAnchor;
+end
+
+function DisabledTooltipButtonMixin:GetDisabledTooltip()
+	return self.disabledTooltip, self.disabledTooltipAnchor;
+end
+
+function DisabledTooltipButtonMixin:SetDisabledState(disabled, disabledTooltip, disabledTooltipAnchor)
+	self:SetEnabled(not disabled);
+	self:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor);
+end
+
+AlphaHighlightButtonMixin = {};
+
+function AlphaHighlightButtonMixin:OnLoad()
+	self:SetHighlightAtlas(self.NormalTexture:GetAtlas());
+end
+
+function AlphaHighlightButtonMixin:OnMouseDown()
+	self:SetHighlightAtlas(self.PushedTexture:GetAtlas());
+end
+
+function AlphaHighlightButtonMixin:OnMouseUp()
+	self:SetHighlightAtlas(self.NormalTexture:GetAtlas());
 end

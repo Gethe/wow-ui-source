@@ -1973,6 +1973,9 @@ AccessibilityPanelOptions = {
 	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
 	colorblindSimulator = { text = "COLORBLIND_FILTER" },
 	overrideScreenFlash = { text = "ALTERNATE_SCREEN_EFFECTS" },
+	speechToText = { text = "ENABLE_SPEECH_TO_TEXT" },
+	textToSpeech = { text = "ENABLE_TEXT_TO_SPEECH" },
+	remoteTextToSpeech = { text = "ENABLE_REMOTE_TEXT_TO_SPEECH" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)

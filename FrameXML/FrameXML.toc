@@ -33,6 +33,7 @@
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\ScriptAnimationUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
@@ -53,11 +54,16 @@
 ..\SharedXML\GlobalCallbackRegistry.lua
 ..\SharedXML\SelectableButton.xml
 ..\SharedXML\ButtonGroup.lua
+..\SharedXML\EventFrame.xml
 ..\SharedXML\EventButton.xml
-..\SharedXML\ScrollController.xml
+..\SharedXML\EventEditBox.xml
+..\SharedXML\DataProvider.lua
+..\SharedXML\Interpolator.lua
+..\SharedXML\ScrollUtil.lua
+..\SharedXML\ScrollController.lua
 ..\SharedXML\ScrollBox.xml
 ..\SharedXML\ScrollBar.xml
-..\SharedXML\ScrollUtil.lua
+..\SharedXML\ScrollTemplates.xml
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
 MixinUtil.lua
@@ -124,7 +130,7 @@ AzeriteEssenceUtil.lua
 AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
-RuneforgeUtil.lua
+RuneforgeUtil.xml
 ItemUtil.lua
 PVPUtil.lua
 TransmogUtil.lua
@@ -132,6 +138,7 @@ ActionButtonUtil.lua
 DifficultyUtil.lua
 CovenantUtil.lua
 TitleUtil.lua
+CollectionsUtil.lua
 ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 ExtraAbilityContainer.xml
@@ -224,6 +231,8 @@ LowHealthFrame.xml
 CombatFeedback.xml
 UnitPowerBarAlt.xml
 CastingBarFrame.xml
+VoiceChatDots.xml
+VoiceChatTranscriptionButton.xml
 VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 UnitPopupSlider.xml
@@ -232,6 +241,7 @@ UnitPopup.xml
 HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml
+VoiceChatTranscriptionFrame.xml
 BNet.xml
 ReadyCheck.xml
 PlayerFrame.xml
@@ -259,6 +269,8 @@ RoleSelectionTemplate.xml
 ItemRef.xml
 SocialQueue.xml
 QuickJoinToast.xml
+TextToSpeechFrame.xml
+TextToSpeech.xml
 FriendsFrame.xml
 QuickJoin.xml
 RaidFrame.xml
@@ -307,7 +319,8 @@ ChatConfigFrame.xml
 MovieFrame.xml
 AlternatePowerBar.xml
 MonkStaggerBar.xml
-LevelUpDisplay.xml
+BossBannerToast.xml
+EventToastManager.xml
 AnimationSystem.lua
 EquipmentManager.lua
 CompactUnitFrame.xml

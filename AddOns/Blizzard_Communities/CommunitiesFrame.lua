@@ -1530,7 +1530,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 160);
 		ButtonFrameTemplateMinimizable_ShowPortrait(communitiesFrame);
 		communitiesFrame.PortraitOverlay:Show();
-		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -8, -26);
+		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -180, -26);
 		UpdateUIPanelPositions();
 	end
 
@@ -1551,7 +1551,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -12, 0);
 		communitiesFrame.StreamDropDownMenu:ClearAllPoints();
 		communitiesFrame.StreamDropDownMenu:SetPoint("LEFT", communitiesFrame.CommunitiesListDropDownMenu, "RIGHT", -25, 0);
-		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 115);
+		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 90);
 		ButtonFrameTemplateMinimizable_HidePortrait(communitiesFrame);
 		communitiesFrame.PortraitOverlay:Hide();
 		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -10, -26);

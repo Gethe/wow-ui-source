@@ -148,13 +148,15 @@ function AuctionHouseItemSellFrameMixin:GetBestEntry()
 		return nil;
 	end
 
+	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(self.listDisplayedItemKey);
 	local itemLevel = C_Item.GetCurrentItemLevel(self.itemLocation);
 	local isGreenQuality = C_Item.GetItemQuality(self.itemLocation) == Enum.ItemQuality.Uncommon;
+	local ignoreItemLevel = isGreenQuality or itemKeyInfo.isPet;
 	local bestEntry = nil;
 	local numSearchResults = C_AuctionHouse.GetNumItemSearchResults(self.listDisplayedItemKey);
 	for i = 1, numSearchResults do
 		local searchResult = C_AuctionHouse.GetItemSearchResultInfo(self.listDisplayedItemKey, i);
-		if isGreenQuality or (searchResult.itemKey.itemLevel == itemLevel) then
+		if ignoreItemLevel or (searchResult.itemKey.itemLevel == itemLevel) then
 			if RowDataCheapestBuyoutComparison(searchResult, bestEntry) then
 				bestEntry = searchResult;
 			end

@@ -452,13 +452,13 @@ end
 CurrencyDisplayMixin = CreateFromMixins(CurrencyTemplateMixin);
 
 -- currencies: An array of currencyInfo
--- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }, or a table with { currencyID = 123, amount = 45 }
+-- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }, or a table with { currencyID = 123, amount = 45, colorCode = RED_FONT_COLOR_CODE }
 function CurrencyDisplayMixin:SetCurrencies(currencies, formatString)
 	if #currencies == 1 then
 		local currency = currencies[1];
 		if type(currency) == "table" then
 			if currency.currencyID and currency.amount then
-				self:SetCurrencyFromID(currency.currencyID, currency.amount, formatString);
+				self:SetCurrencyFromID(currency.currencyID, currency.amount, formatString, currency.colorCode);
 			else
 				local currencyID, overrideAmount, colorCode = unpack(currency);
 				self:SetCurrencyFromID(currencyID, overrideAmount, formatString, colorCode);
@@ -480,11 +480,13 @@ end
 
 function CurrencyDisplayMixin:SetText(text)
 	self.Text:SetText(text);
+	self:MarkDirty();
 end
 
 function CurrencyDisplayMixin:SetTextAnchorPoint(anchorPoint)
 	self.Text:ClearAllPoints();
 	self.Text:SetPoint(anchorPoint);
+	self:MarkDirty();
 end
 
 CurrencyDisplayGroupMixin = {};
@@ -494,7 +496,15 @@ function CurrencyDisplayGroupMixin:OnLoad()
 end
 
 -- Defaults to a TOPRIGHT configuration.
-function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, gridLayout, tooltipAnchor, abbreviate, reverseOrder)
+function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initialAnchor, layout, tooltipAnchor, abbreviate, reverseOrder)
+	initialAnchor = initialAnchor or AnchorUtil.CreateAnchor("TOPRIGHT", self, "TOPRIGHT");
+
+	local stride = nil;
+	local paddingX = 10;
+	local paddingY = nil;
+	local fixedWidth = 62;
+	layout = layout or AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX, paddingY, fixedWidth);
+
 	self.currencyFramePool:ReleaseAll();
 
 	local function FactoryFunction(index)
@@ -508,8 +518,13 @@ function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initi
 		currencyFrame:SetTooltipAnchor(tooltipAnchor);
 		currencyFrame:SetAbbreviate(abbreviate);
 
-		if type(currency) == "table" then
-			currencyFrame:SetCurrencyFromID(unpack(currencyInfo));
+		if type(currencyInfo) == "table" then
+			if currencyInfo.currencyID and currencyInfo.amount then
+				local formatString = nil;
+				currencyFrame:SetCurrencyFromID(currencyInfo.currencyID, currencyInfo.amount, formatString, currencyInfo.colorCode);
+			else
+				currencyFrame:SetCurrencyFromID(unpack(currencyInfo));
+			end
 		else
 			currencyFrame:SetCurrencyFromID(currencyInfo);
 		end
@@ -518,13 +533,15 @@ function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initi
 			initFunction(currencyFrame);
 		end
 
+		-- Force the frame to resize. This anchor will be replaced by the grid layout function.
+		currencyFrame:SetPoint("CENTER");
+		currencyFrame:Layout();
+
 		currencyFrame:Show();
 
 		return currencyFrame;
 	end
 
-	local initialAnchor = initialAnchor or AnchorUtil.CreateAnchor("TOPRIGHT", self, "TOPRIGHT");
-	local layout = gridLayout or AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft);
 	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, #currencies, initialAnchor, layout);
 
 	self:MarkDirty();

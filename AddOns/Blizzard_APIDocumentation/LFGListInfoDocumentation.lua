@@ -316,6 +316,7 @@ local LFGListInfo =
 				{ Name = "numGuildMates", Type = "number", Nilable = false },
 				{ Name = "isDelisted", Type = "bool", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
+				{ Name = "isWarMode", Type = "bool", Nilable = false },
 				{ Name = "age", Type = "number", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
 			},

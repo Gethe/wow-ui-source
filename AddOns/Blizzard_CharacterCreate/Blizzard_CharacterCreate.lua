@@ -743,7 +743,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForNewPlayers then
 			tooltipDisabledReason = CHAR_CREATE_NEW_PLAYER;
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace then
-			local validRaces = C_CharacterCreation.GetValidRacesForClass(classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
+			local validRaces = C_CharacterCreation.GetValidRacesForClass(classData.classID);
 			local validAllianceRaceNames = {};
 			local validHordeRaceNames = {};
 			for _, raceData in ipairs(validRaces) do
@@ -807,7 +807,7 @@ end
 function CharacterCreateClassButtonMixin:OnEnter()
 	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
 	if not CharacterCreateFrame.paidServiceType and self:IsDisabledByRace() then
-		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
+		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID);
 		local validRacesMap = {};
 		for _, raceData in ipairs(validRaces) do
 			validRacesMap[raceData.raceID] = true;
@@ -973,142 +973,6 @@ function CharacterCreateSpecButtonMixin:SetEnabledState(enabled)
 	self.RoleName:SetFontObject(enabled and "GameFontHighlight" or "GameFontDisable");
 end
 
-CharacterCreateRaceAndClassMixin = {}
-
-function CharacterCreateRaceAndClassMixin:OnLoad()
-	-- Choose a random faction to be used if Pandaren is chosen as the random race
-	local randomFaction = math.random(0, 1);
-	self.selectedFaction = PLAYER_FACTION_GROUP[randomFaction];
-
-	self.AllianceHeader.Text:SetText(string.upper(FACTION_ALLIANCE));
-	self.AllianceHeader:AddTooltipLine(CHOOSE_THE_ALLIANCE);
-
-	self.HordeHeader.Text:SetText(string.upper(FACTION_HORDE));
-	self.HordeHeader:AddTooltipLine(CHOOSE_THE_HORDE);
-
-	self.ClassTrialCheckButton.Button:SetScript("OnEnter", function() self.ClassTrialCheckButton.OnEnter(self.ClassTrialCheckButton); end);
-	self.ClassTrialCheckButton.Button:SetScript("OnLeave", function() self.ClassTrialCheckButton.OnLeave(self.ClassTrialCheckButton); end);
-
-	self.buttonPool = CreateFramePoolCollection();
-	self.buttonPool:CreatePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
-	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceRaces, "CharacterCreateAllianceButtonTemplate");
-	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceAlliedRaces, "CharacterCreateAllianceAlliedRaceButtonTemplate");
-	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeRaces, "CharacterCreateHordeButtonTemplate");
-	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeAlliedRaces, "CharacterCreateHordeAlliedRaceButtonTemplate");
-	self.buttonPool:CreatePool("CHECKBUTTON", self.Classes, "CharacterCreateClassButtonTemplate");
-end
-
-function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
-	if self.ClassTrialCheckButton.Button:GetChecked() then
-		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
-		return nil;
-	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
-			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
-			return self.selectedFaction;
-		else
-			-- Otherwise they start as neutral so pass back nil
-			return nil;
-		end
-	else
-		return self.selectedFaction;
-	end
-end
-
-function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
-	return PLAYER_FACTION_GROUP[self.selectedFaction];
-end
-
-function CharacterCreateRaceAndClassMixin:OnShow()
-	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
-	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
-	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
-	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
-
-	self.ClassTrialCheckButton:ClearTooltipLines();
-	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
-end
-
-function CharacterCreateRaceAndClassMixin:OnHide()
-end
-
-function CharacterCreateRaceAndClassMixin:ClearTimer()
-	if self.Timer then
-		self.Timer:Cancel();
-	end
-end
-
-function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
-	self:ClearTimer();
-
-	local function playAnims()
-		self:StopClassAnimations();
-
-		local spellVisualKitID = self.selectedClassData.spellVisualKitID;
-		if spellVisualKitID then
-			self:GetParent():RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), 0);
-
-			self.currentSpellVisualKitID = spellVisualKitID;
-			
-			local startTargetingSequence = true;
-			local noBlending = (self.allowClassAnimationsAfterSeconds == 0);
-			C_CharacterCreation.PlaySpellVisualKitOnCharacter(spellVisualKitID, startTargetingSequence, noBlending);
-
-			if self.selectedClassData.groundSpellVisualKitID then
-				self.currentGroundSpellVisualKitID = self.selectedClassData.groundSpellVisualKitID;
-				C_CharacterCreation.PlaySpellVisualKitOnGround(self.selectedClassData.groundSpellVisualKitID);
-			end
-		end
-	end
-
-	if not self.allowClassAnimationsAfterSeconds then
-		return;
-	else
-		if self.allowClassAnimationsAfterSeconds > 0 then
-			self.Timer = C_Timer.NewTimer(self.allowClassAnimationsAfterSeconds, playAnims);
-		else
-			playAnims();
-		end
-	end
-end
-
-function CharacterCreateRaceAndClassMixin:StopClassAnimations()
-	self:ClearTimer();
-	self.currentSpellVisualKitID = nil;
-	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
-	C_CharacterCreation.SetPlayerModelHiddenState(false);
-end
-
-function CharacterCreateRaceAndClassMixin:StopActiveGroundEffect()
-	if self.currentGroundSpellVisualKitID then
-		C_CharacterCreation.StopSpellVisualKit(self.currentGroundSpellVisualKitID);
-		self.currentGroundSpellVisualKitID = nil;
-	end
-end
-
-local function GetDHMetaModelInfo(race, sex)
-	local metaFormScale = 0.7;
-
-	if race == "NightElf" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 63247, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		else
-			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		end
-	elseif race == "BloodElf" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		else
-			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		end
-	end
-end
-
-local function GetDHNormalModelInfo()
-	return { showPlayerModel = true, playerModelSpellVisualKitID = 131914 , destroyModelFunc = GetDHMetaModelInfo };
-end
-
 local function GetDruidCatModelInfo(race, sex)
 	if race == "NightElf" then
 		if sex == Enum.Unitsex.Female then
@@ -1155,69 +1019,228 @@ local function GetDruidCatModelInfo(race, sex)
 	end
 end
 
-local function GetDruidNormalModelInfo()
-	return { showPlayerModel = true, playerModelSpellVisualKitID = 131928, destroyModelFunc = GetDruidCatModelInfo };
+local function GetDHMetaModelInfo(race, sex)
+	local metaFormScale = 0.7;
+
+	if race == "NightElf" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 63247, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	elseif race == "BloodElf" then
+		if sex == Enum.Unitsex.Female then
+			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	end
 end
 
-local spellVisualKitCompletionAction = 
-{
-	-- Druid
-	[129374] = { hidePlayerModel = true, createModelFunc = GetDruidCatModelInfo, onCompletionFunc = GetDruidNormalModelInfo },
+local function GetDHNormalModelInfo()
+	return { showPlayerModel = true, playerModelSpellVisualKitID = 131914, auxModelInfoFunc = GetDHMetaModelInfo, destroyAuxModel = true };
+end
 
-	-- Demon Hunter
-	[129051] = { hidePlayerModel = true, createModelFunc = GetDHMetaModelInfo, onCompletionFunc = GetDHNormalModelInfo },
-}
+local function GetDruidNormalModelInfo()
+	return { showPlayerModel = true, playerModelSpellVisualKitID = 131928, auxModelInfoFunc = GetDruidCatModelInfo, destroyAuxModel = true };
+end
 
-local createdModelIndices = {};
+CharacterCreateRaceAndClassMixin = {}
+
+function CharacterCreateRaceAndClassMixin:OnLoad()
+	-- Choose a random faction to be used if Pandaren is chosen as the random race
+	local randomFaction = math.random(0, 1);
+	self.selectedFaction = PLAYER_FACTION_GROUP[randomFaction];
+
+	self.AllianceHeader.Text:SetText(string.upper(FACTION_ALLIANCE));
+	self.AllianceHeader:AddTooltipLine(CHOOSE_THE_ALLIANCE);
+
+	self.HordeHeader.Text:SetText(string.upper(FACTION_HORDE));
+	self.HordeHeader:AddTooltipLine(CHOOSE_THE_HORDE);
+
+	self.ClassTrialCheckButton.Button:SetScript("OnEnter", function() self.ClassTrialCheckButton.OnEnter(self.ClassTrialCheckButton); end);
+	self.ClassTrialCheckButton.Button:SetScript("OnLeave", function() self.ClassTrialCheckButton.OnLeave(self.ClassTrialCheckButton); end);
+
+	self.buttonPool = CreateFramePoolCollection();
+	self.buttonPool:CreatePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceRaces, "CharacterCreateAllianceButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceAlliedRaces, "CharacterCreateAllianceAlliedRaceButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeRaces, "CharacterCreateHordeButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeAlliedRaces, "CharacterCreateHordeAlliedRaceButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.Classes, "CharacterCreateClassButtonTemplate");
+
+	self.createdModelIndices = {};
+
+	self.spellVisualKitStartAction = 
+	{
+		-- Druid
+		[129374] = { auxModelInfoFunc = GetDruidCatModelInfo, createAuxModel = true, hideAuxModel = true },
+
+		-- Demon Hunter
+		[129051] = { auxModelInfoFunc = GetDHMetaModelInfo, createAuxModel = true, hideAuxModel = true },
+	};
+
+	self.spellVisualKitCompletionAction = 
+	{
+		-- Druid
+		[129374] = { hidePlayerModel = true, auxModelInfoFunc = GetDruidCatModelInfo, showAuxModel = true, startAuxModelAnim = true, onCompletionFunc = GetDruidNormalModelInfo },
+
+		-- Demon Hunter
+		[129051] = { hidePlayerModel = true, auxModelInfoFunc = GetDHMetaModelInfo, showAuxModel = true, startAuxModelAnim = true, onCompletionFunc = GetDHNormalModelInfo },
+	}
+end
+
+function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
+	if self.ClassTrialCheckButton.Button:GetChecked() then
+		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
+		return nil;
+	elseif self.selectedRaceData.isNeutralRace then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
+			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
+			return self.selectedFaction;
+		else
+			-- Otherwise they start as neutral so pass back nil
+			return nil;
+		end
+	else
+		return self.selectedFaction;
+	end
+end
+
+function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
+	return PLAYER_FACTION_GROUP[self.selectedFaction];
+end
+
+function CharacterCreateRaceAndClassMixin:OnShow()
+	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
+	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
+	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
+	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
+
+	self.ClassTrialCheckButton:ClearTooltipLines();
+	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
+	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+end
+
+function CharacterCreateRaceAndClassMixin:OnHide()
+end
+
+function CharacterCreateRaceAndClassMixin:ClearTimer()
+	if self.Timer then
+		self.Timer:Cancel();
+	end
+end
+
+function CharacterCreateRaceAndClassMixin:PerformAnimAction(animAction)
+	if animAction then
+		if animAction.hidePlayerModel then
+			C_CharacterCreation.SetPlayerModelHiddenState(true);
+		elseif animAction.showPlayerModel then
+			C_CharacterCreation.SetPlayerModelHiddenState(false);
+		end
+
+		if animAction.auxModelInfoFunc then
+			local auxModelInfo = animAction.auxModelInfoFunc(self.selectedRaceData.fileName, self.selectedSexID);
+			if auxModelInfo then
+				if animAction.createAuxModel then
+					local needsAnim = true;
+					local useCharFacing = true;
+					self.createdModelIndices[auxModelInfo.displayID] = C_CharacterCreation.CreateAuxModel(auxModelInfo.displayID, needsAnim, useCharFacing, auxModelInfo.position, auxModelInfo.scale);
+				elseif animAction.destroyAuxModel and self.createdModelIndices[auxModelInfo.displayID] then
+					C_CharacterCreation.DestroyAuxModel(self.createdModelIndices[auxModelInfo.displayID]);
+					self.createdModelIndices[auxModelInfo.displayID] = nil;
+				end
+
+				if self.createdModelIndices[auxModelInfo.displayID] then
+					if auxModelInfo.equipWeapons then
+						C_CharacterCreation.EquipWeaponsOnAuxModel(self.createdModelIndices[auxModelInfo.displayID], auxModelInfo.weaponScale);
+					end
+
+					if animAction.startAuxModelAnim and auxModelInfo.spellVisualKitID then
+						local noBlending = true;
+						C_CharacterCreation.PlaySpellVisualKitOnAuxModel(self.createdModelIndices[auxModelInfo.displayID], auxModelInfo.spellVisualKitID, noBlending);
+						self.currentSpellVisualKitID = auxModelInfo.spellVisualKitID;
+
+						if animAction.onCompletionFunc then
+							self.spellVisualKitCompletionAction[auxModelInfo.spellVisualKitID] = animAction.onCompletionFunc();
+						end
+					end
+
+					if animAction.hideAuxModel then
+						C_CharacterCreation.SetAuxModelHiddenState(self.createdModelIndices[auxModelInfo.displayID], true);
+					elseif animAction.showAuxModel then
+						C_CharacterCreation.SetAuxModelHiddenState(self.createdModelIndices[auxModelInfo.displayID], false);
+					end
+				end
+			end
+		end
+
+		if animAction.playerModelSpellVisualKitID then
+			local doNotStartTargetingSequence = false;
+			local noBlending = true;
+			C_CharacterCreation.PlaySpellVisualKitOnCharacter(animAction.playerModelSpellVisualKitID, doNotStartTargetingSequence, noBlending);
+			self.currentSpellVisualKitID = animAction.playerModelSpellVisualKitID;
+		end
+
+		return true;
+	end
+
+	return false;
+end
+
+function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
+	self:ClearTimer();
+
+	local function playAnims()
+		self:StopClassAnimations();
+
+		local spellVisualKitID = self.selectedClassData.spellVisualKitID;
+		if spellVisualKitID then
+			self:GetParent():RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), 0);
+
+			self.currentSpellVisualKitID = spellVisualKitID;
+			
+			local startTargetingSequence = true;
+			local noBlending = (self.allowClassAnimationsAfterSeconds == 0);
+			C_CharacterCreation.PlaySpellVisualKitOnCharacter(spellVisualKitID, startTargetingSequence, noBlending);
+
+			self:PerformAnimAction(self.spellVisualKitStartAction[spellVisualKitID]);
+
+			if self.selectedClassData.groundSpellVisualKitID then
+				self.currentGroundSpellVisualKitID = self.selectedClassData.groundSpellVisualKitID;
+				C_CharacterCreation.PlaySpellVisualKitOnGround(self.selectedClassData.groundSpellVisualKitID);
+			end
+		end
+	end
+
+	if not self.allowClassAnimationsAfterSeconds then
+		return;
+	else
+		if self.allowClassAnimationsAfterSeconds > 0 then
+			self.Timer = C_Timer.NewTimer(self.allowClassAnimationsAfterSeconds, playAnims);
+		else
+			playAnims();
+		end
+	end
+end
+
+function CharacterCreateRaceAndClassMixin:StopClassAnimations()
+	self:ClearTimer();
+	self.currentSpellVisualKitID = nil;
+	C_CharacterCreation.StopAllSpellVisualKitsOnCharacter();
+	C_CharacterCreation.SetPlayerModelHiddenState(false);
+end
+
+function CharacterCreateRaceAndClassMixin:StopActiveGroundEffect()
+	if self.currentGroundSpellVisualKitID then
+		C_CharacterCreation.StopSpellVisualKit(self.currentGroundSpellVisualKitID);
+		self.currentGroundSpellVisualKitID = nil;
+	end
+end
 
 function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisualKitID)
 	if self.currentSpellVisualKitID == spellVisualKitID then
-		local nextAction = spellVisualKitCompletionAction[spellVisualKitID];
-		if nextAction then
-			self.currentSpellVisualKitID = nil;
-
-			if nextAction.hidePlayerModel then
-				C_CharacterCreation.SetPlayerModelHiddenState(true);
-			elseif nextAction.showPlayerModel then
-				C_CharacterCreation.SetPlayerModelHiddenState(false);
-			end
-
-			local modelSvkID;
-			if nextAction.createModelFunc then
-				local createModelInfo = nextAction.createModelFunc(self.selectedRaceData.fileName, self.selectedSexID);
-				if createModelInfo then
-					local needsAnim = (createModelInfo.spellVisualKitID ~= nil);
-					local useCharFacing = true;
-					createdModelIndices[createModelInfo.displayID] = C_CharacterCreation.CreateAuxModel(createModelInfo.displayID, needsAnim, useCharFacing, createModelInfo.position, createModelInfo.scale);
-					if createModelInfo.equipWeapons then
-						C_CharacterCreation.EquipWeaponsOnAuxModel(createdModelIndices[createModelInfo.displayID], createModelInfo.weaponScale);
-					end
-					if createModelInfo.spellVisualKitID then
-						C_CharacterCreation.PlaySpellVisualKitOnAuxModel(createdModelIndices[createModelInfo.displayID], createModelInfo.spellVisualKitID);
-						self.currentSpellVisualKitID = createModelInfo.spellVisualKitID;
-						modelSvkID = createModelInfo.spellVisualKitID;
-					end
-				end
-			end
-
-			if modelSvkID and nextAction.onCompletionFunc then
-				spellVisualKitCompletionAction[modelSvkID] = nextAction.onCompletionFunc();
-			end
-
-			if nextAction.destroyModelFunc then
-				local destroyModelInfo = nextAction.destroyModelFunc(self.selectedRaceData.fileName, self.selectedSexID);
-				if destroyModelInfo and createdModelIndices[destroyModelInfo.displayID] then
-					C_CharacterCreation.DestroyAuxModel(createdModelIndices[destroyModelInfo.displayID]);
-					createdModelIndices[destroyModelInfo.displayID] = nil;
-				end
-			end
-
-			if nextAction.playerModelSpellVisualKitID then
-				local doNotStartTargetingSequence = false;
-				C_CharacterCreation.PlaySpellVisualKitOnCharacter(nextAction.playerModelSpellVisualKitID, doNotStartTargetingSequence);
-				self.currentSpellVisualKitID = nextAction.playerModelSpellVisualKitID;
-			end
-		else
+		if not self:PerformAnimAction(self.spellVisualKitCompletionAction[spellVisualKitID]) then
 			local useBlending = true;
 			self:PlayClassIdleAnimation(useBlending);
 		end
@@ -1234,11 +1257,11 @@ function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending, ov
 end
 
 function CharacterCreateRaceAndClassMixin:DestroyCreatedModels()
-	for _, modelIndex in pairs(createdModelIndices) do
+	for _, modelIndex in pairs(self.createdModelIndices) do
 		C_CharacterCreation.DestroyAuxModel(modelIndex);
 	end
 
-	createdModelIndices = {};
+	self.createdModelIndices = {};
 end
 
 function CharacterCreateRaceAndClassMixin:PlayCustomizationAnimation()
@@ -1381,7 +1404,7 @@ end
 function CharacterCreateRaceAndClassMixin:GetAllValidRaces()
 	local validRaces = {};
 
-	local races = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AllRaces);
+	local races = C_CharacterCreation.GetAvailableRaces();
 	for _, raceData in ipairs(races) do
 		if self:IsRaceValid(raceData, raceData.factionInternalName) then
 			table.insert(validRaces, raceData);
@@ -1420,7 +1443,7 @@ function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
 
 	local templateCount = {};
 
-	local races = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AllRaces);
+	local races = C_CharacterCreation.GetAvailableRaces();
 	for _, raceData in ipairs(races) do
 		local buttonTemplates = {self:GetRaceButtonTemplates(raceData)};
 		for _, buttonTemplate in pairs(buttonTemplates) do

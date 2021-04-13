@@ -6,11 +6,6 @@ QUESTINFO_FADE_IN = 0.5;
 
 local QUEST_FRAME_MODEL_SCENE_ID = 309;
 
--- A temporary solution for solving troublesome models.
-local QUEST_FRAME_CREATURE_DISPLAY_ID_TO_CUSTOM_MODEL_SCENES = {
-	[92797] = 366,
-};
-
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -133,7 +128,9 @@ function QuestFrameRewardPanel_OnShow()
 	QuestRewardScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, 0, questPortraitText, questPortraitName, -3, -42);
+		local questPortraitMount = 0;
+		local questPortraitModelSceneID = nil;
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -453,13 +450,13 @@ function QuestFrame_UpdatePortraitText(text)
 	end
 end
 
-function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
+function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y)
 	QuestModelScene:SetParent(parentFrame);
 	QuestModelScene:SetFrameLevel(600);
 	QuestModelScene:ClearAllPoints();
 	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:ClearScene();
-	QuestModelScene:TransitionToModelSceneID(QUEST_FRAME_CREATURE_DISPLAY_ID_TO_CUSTOM_MODEL_SCENES[portraitDisplayID] or QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+	QuestModelScene:TransitionToModelSceneID(modelSceneID or QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	QuestModelScene:Show();
 	QuestFrame_UpdatePortraitText(text);
 
@@ -526,9 +523,9 @@ function QuestFrameDetailPanel_OnShow()
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

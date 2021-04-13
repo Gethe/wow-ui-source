@@ -24,10 +24,11 @@ UIPANEL_VALIDATE_CURRENT_FRAME = true;
 UIPanelWindows = {};
 
 --Center Menu Frames
-UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1, centerFrameSkipAnchoring = true };
 UIPanelWindows["VideoOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["AudioOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["TextToSpeechFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 1 };
 
 -- Frames using the new Templates
@@ -69,13 +70,13 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
-UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 1 };
+UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -5,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -89,7 +90,7 @@ UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
-UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
 	frame:SetAttribute("UIPanelLayout-defined", true);
@@ -469,6 +470,10 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Weekly Rewards UI
 	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
+
+	-- Event(s) for the UIFrameManager
+	self:RegisterEvent("FRAME_MANAGER_SHOW_FRAME");
+	self:RegisterEvent("FRAME_MANAGER_HIDE_FRAME");
 end
 
 function UIParent_OnShow(self)
@@ -679,7 +684,12 @@ function ItemUpgrade_LoadUI()
 end
 
 function PlayerChoice_LoadUI()
-	UIParentLoadAddOn("Blizzard_PlayerChoiceUI");
+	UIParentLoadAddOn("Blizzard_PlayerChoice");
+
+	-- ACHURCHILL TODO: remove once player choice refactor testing is done
+	if OldPlayerChoiceFrame then
+		PlayerChoiceFrame = OldPlayerChoiceFrame;
+	end
 end
 
 function Store_LoadUI()
@@ -807,6 +817,10 @@ end
 
 function SubscriptionInterstitial_LoadUI()
 	LoadAddOn("Blizzard_SubscriptionInterstitialUI");
+end
+
+function MawBuffs_LoadUI()
+	LoadAddOn("Blizzard_MawBuffs");
 end
 
 local playerEnteredWorld = false;
@@ -1590,7 +1604,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
-			if(not PlayerChoiceFrame) then
+			if not PlayerChoiceFrame then
 				PlayerChoice_LoadUI();
 			end
 			PlayerChoiceToggleButton:TryShow();
@@ -2169,9 +2183,6 @@ function UIParent_OnEvent(self, event, ...)
 				SetCVar("petJournalTab", 5);
 			end
 		end
-
-	-- Quest Choice trigger event
-
 	elseif ( event == "PLAYER_CHOICE_UPDATE" ) then
 		PlayerChoice_LoadUI();
 		PlayerChoiceFrame:TryShow();
@@ -2395,6 +2406,10 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
+	elseif (event == "FRAME_MANAGER_SHOW_FRAME") then 
+		ShowFrameByType(...);
+	elseif (event == "FRAME_MANAGER_HIDE_FRAME") then 
+		HideFrameByType(...);
 	end
 end
 
@@ -2718,7 +2733,8 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		if ( not GetUIPanelAttribute(frame, "allowOtherPanels") ) then
 			securecall("CloseAllBags");
 		end
-		self:SetUIPanel("center", frame, 1);
+		local skipSetPoints = GetUIPanelAttribute(frame, "centerFrameSkipAnchoring");
+		self:SetUIPanel("center", frame, skipSetPoints);
 		return;
 	end
 
@@ -3042,11 +3058,15 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local yOff = GetUIPanelAttribute(frame,"yoffset") or 0;
 			local bottomClampOverride = GetUIPanelAttribute(frame,"bottomClampOverride");
 			local minYOffset = GetUIPanelAttribute(frame,"minYOffset");
+			local skipSetPoints = GetUIPanelAttribute(frame, "centerFrameSkipAnchoring");
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
 				xOff = xOff + xSpacing; -- add separating space
 				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, yPos);
+			elseif not skipSetPoints then
+				frame:ClearAllPoints();
+				frame:SetPoint("TOP", "UIParent", "TOP", 0, yPos);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
 		else
@@ -3347,6 +3367,23 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		UIWidgetBelowMinimapContainerFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
+	end
+
+	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
+	if MawBuffsBelowMinimapFrame and MawBuffsBelowMinimapFrame:IsShown() then
+		if rightActionBars > 0 then
+			anchorY = min(anchorY, buffsAnchorY);
+		end
+
+		if(UIWidgetBelowMinimapContainerFrame) then 
+			MawBuffsBelowMinimapFrame:ClearAllPoints();
+			MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", UIWidgetBelowMinimapContainerFrame, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+		else
+			MawBuffsBelowMinimapFrame:ClearAllPoints();
+			MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+		end 
+
+		anchorY = anchorY - MawBuffsBelowMinimapFrame:GetHeight() - 4;
 	end
 
 	--Setup Vehicle seat indicator offset - needs to move below buffs/debuffs if both right action bars are showing
@@ -5627,3 +5664,18 @@ function DisplayInterfaceActionBlockedMessage()
 		INTERFACE_ACTION_BLOCKED_SHOWN = true;
 	end
 end
+
+function ShowFrameByType(type)
+	if (type == Enum.UIFrameType.JailersTowerBuffs) then	
+		MawBuffs_LoadUI(); 
+		MawBuffsBelowMinimapFrame:Show();
+	end 
+end
+
+function HideFrameByType(type)
+	if	(type == Enum.UIFrameType.JailersTowerBuffs) then 
+		if(MawBuffsBelowMinimapFrame and MawBuffsBelowMinimapFrame:IsShown()) then 
+			MawBuffsBelowMinimapFrame:Hide(); 
+		end		
+	end
+end 

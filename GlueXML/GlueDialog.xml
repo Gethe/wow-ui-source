@@ -8,7 +8,7 @@
 	</Button>
 	<Frame name="GlueDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="GlueDialogBackground">
+			<Frame name="GlueDialogBackground" inherits="BackdropTemplate">
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>

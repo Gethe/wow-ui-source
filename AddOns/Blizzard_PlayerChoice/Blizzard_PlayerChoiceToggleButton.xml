@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Button name="PlayerChoiceToggleButton" parent="UIParent" mixin="PlayerChoiceToggleButtonMixin" hidden="true">
+		<Size x="465" y="149"/>
+		<Anchors>
+			<Anchor point="CENTER" y="-200" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

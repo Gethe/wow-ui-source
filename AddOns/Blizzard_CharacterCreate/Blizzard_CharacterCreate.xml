@@ -492,7 +492,7 @@
 					</EditBox>
 					<Button parentKey="RandomNameButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin" hidden="true">
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.EditBox" relativePoint="LEFT" x="-16" y="-1"/>
+							<Anchor point="RIGHT" relativeKey="$parent.EditBox" relativePoint="LEFT" x="0" y="-1"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="simpleTooltipLine" value="RANDOMIZE" type="global"/>

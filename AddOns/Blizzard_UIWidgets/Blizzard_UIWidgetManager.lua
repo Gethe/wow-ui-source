@@ -323,9 +323,7 @@ end
 
 function UIWidgetContainerMixin:GetWidgetFromPools(templateInfo)
 	if templateInfo then
-		if not self.widgetPools:GetPool(templateInfo.frameTemplate) then
-			self.widgetPools:CreatePool(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
-		end
+		self.widgetPools:CreatePoolIfNeeded(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
 
 		local widgetFrame = self.widgetPools:Acquire(templateInfo.frameTemplate);
 		widgetFrame:SetParent(self);

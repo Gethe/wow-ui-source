@@ -10,7 +10,7 @@
 	</Button>
 	
 	<Frame name="SoulbindViewer" mixin="SoulbindViewerMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
-		<Size x="939" y="682"/>
+		<Size x="939" y="926"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -51,7 +51,7 @@
 			<Layer level="BACKGROUND" textureSubLevel="4">
 				<Texture parentKey="ActivateFX" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="212" y="-45"/>
+						<Anchor point="TOPLEFT" x="205" y="-45"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
@@ -61,7 +61,7 @@
 				</Texture>
 				<Texture parentKey="ActivateFX2" atlas="Soulbinds_Tree_ActivateFX" useAtlasSize="true" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="212" y="-45"/>
+						<Anchor point="CENTER" relativeKey="$parent.ActivateFX" relativePoint="CENTER"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="ActivateAnim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
@@ -78,32 +78,16 @@
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
 							<Alpha childKey="Sheen" order="1" fromAlpha="0" toAlpha="0" duration="4"/>
-							<Translation childKey="Sheen" order="2" offsetX="-1022" offsetY="0"/>
+							<Translation childKey="Sheen" order="2" offsetX="-1422" offsetY="0"/>
 							<Translation childKey="Sheen" order="2" offsetX="1941" offsetY="0" duration="5.9"/>
-							<Translation childKey="Sheen" order="2" offsetX="-1022" offsetY="0" startDelay="5.9" duration="0.1"/>
+							<Translation childKey="Sheen" order="2" offsetX="-1422" offsetY="0" startDelay="5.9" duration="0.1"/>
 							<Alpha childKey="Sheen" order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
 							<Alpha childKey="Sheen" order="2" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-
-				<Texture parentKey="BackgroundSheen1" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="Sheen" order="1" fromAlpha="0" toAlpha="0" duration="4"/>
-							<Translation childKey="Sheen2" order="2" offsetX="-1022" offsetY="0"/>
-							<Translation childKey="Sheen2" order="2" offsetX="1941" offsetY="0" duration="5.9" />
-							<Translation childKey="Sheen2" order="2" offsetX="-1022" offsetY="0" startDelay="5.9" duration="0.1"/>
-							<Alpha childKey="Sheen2" order="2" fromAlpha="0" toAlpha="0.03" startDelay="0" duration="0.1"/>
-							<Alpha childKey="Sheen2" order="2" fromAlpha="0.03" toAlpha="0" startDelay="1.8" duration="0.4"/>
-						</AnimationGroup>
-					</Animations>
-				</Texture>
 				
-				<Texture parentKey="BackgroundSheen2" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="BackgroundSheen" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
@@ -178,7 +162,6 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="BackgroundSheen1"/>
 						<MaskedTexture childKey="BackgroundRuneLeft"/>
 						<MaskedTexture childKey="BackgroundRuneRight"/>
 					</MaskedTextures>
@@ -189,7 +172,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="BackgroundSheen2"/>
+						<MaskedTexture childKey="BackgroundSheen"/>
 					</MaskedTextures>
 				</MaskTexture>
 
@@ -370,7 +353,7 @@
 			</Frame>
 			<Frame parentKey="Tree" inherits="SoulbindTreeTemplate">
 				<Anchors>
-					<Anchor point="CENTER" x="-56" y="-3"/>
+					<Anchor point="TOPLEFT" x="292" y="-89"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="ConduitList" inherits="ConduitListTemplate">

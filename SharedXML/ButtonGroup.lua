@@ -52,7 +52,7 @@ function ButtonGroupBaseMixin:SetButtons(buttons)
 end
 
 function ButtonGroupBaseMixin:RemoveAllButtons()
-	for index, button in ripairs(self.buttons) do
+	for index, button in ipairs_reverse(self.buttons) do
 		self:RemoveInternal(button);
 	end
 end

@@ -41,8 +41,10 @@ function CovenantUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallbac
 		local followerInfo = C_Garrison.GetFollowerInfo(rewardInfo.garrFollowerID);
 		return followerInfo.portraitIconID, followerInfo.name, RENOWN_REWARD_FOLLOWER_NAME_FORMAT, RENOWN_REWARD_FOLLOWER_DESCRIPTION;
 	elseif rewardInfo.transmogIllusionSourceID then
-		local visualID, name, link, icon = C_TransmogCollection.GetIllusionSourceInfo(rewardInfo.transmogIllusionSourceID);
-		return icon, name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
+		local illusionInfo = C_TransmogCollection.GetIllusionInfo(rewardInfo.transmogIllusionSourceID);
+		if illusionInfo then
+			return illusionInfo.icon, illusionInfo.name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
+		end
 	end
 end
 

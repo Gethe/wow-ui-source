@@ -583,9 +583,9 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
 
 	local mapFrame = QuestMapFrame:GetParent();
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestModelScene:GetWidth() + 6)) then
-		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -2, -43);
+		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -2, -43);
 		QuestModelScene:SetFrameLevel(mapFrame:GetFrameLevel() + 2);
 	else
 		QuestFrame_HideQuestPortrait();
@@ -1744,9 +1744,9 @@ function QuestLogPopupDetailFrame_Show(questLogIndex)
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	-- portrait
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
-		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

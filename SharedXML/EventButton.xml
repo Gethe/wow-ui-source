@@ -10,6 +10,7 @@
 			<OnClick method="OnClick_Intrinsic"/>
 			<OnEnter method="OnEnter_Intrinsic"/>
 			<OnLeave method="OnLeave_Intrinsic"/>
+			<OnSizeChanged method="OnSizeChanged_Intrinsic"/>
 		</Scripts>
 	</Button>
 </Ui>

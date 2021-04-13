@@ -997,7 +997,7 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
+						<FontString inherits="GameFontHighlightSmall" text="GUILDBANK_POPUP_TEXT">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="24" y="-21"/>
 							</Anchors>

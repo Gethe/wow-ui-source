@@ -1,8 +1,8 @@
 TransmogUtil = {};
 
 function TransmogUtil.GetInfoForEquippedSlot(transmogLocation)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(transmogLocation);
-	if ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(transmogLocation);
+	if ( appliedSourceID == Constants.Transmog.NoTransmogID ) then
 		appliedSourceID = baseSourceID;
 		appliedVisualID = baseVisualID;
 	end
@@ -18,19 +18,6 @@ function TransmogUtil.GetInfoForEquippedSlot(transmogLocation)
 		selectedVisualID = appliedVisualID;
 	end
 	return appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID, itemSubclass;
-end
-
-function TransmogUtil.GetCategoryForSlot(transmogLocation)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, appliedCategoryID, pendingSourceID, pendingVisualID, pendingCategoryID, hasPendingUndo, _, itemSubclass = C_Transmog.GetSlotVisualInfo(transmogLocation);
-	if pendingSourceID ~= REMOVE_TRANSMOG_ID then
-		return pendingCategoryID;
-	elseif ( appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
-		return -1;
-	elseif hasPendingUndo then
-		return -1;
-	else
-		return appliedCategoryID;
-	end
 end
 
 function TransmogUtil.CanEnchantSource(sourceID)
@@ -54,9 +41,9 @@ end
 -- If not, and the player has an offhand equipped that can have an illusion applied to it, uses that
 -- Otherwise uses the fallback weapon in the mainhand
 function TransmogUtil.GetBestWeaponInfoForIllusionDressup()
-	local mainHandTransmogLocation = TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.None);
+	local mainHandTransmogLocation = TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 	local mainHandVisualID = C_Transmog.GetSlotVisualInfo(mainHandTransmogLocation);
-	local offHandTransmogLocation = TransmogUtil.GetTransmogLocation("SECONDARYHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.None);
+	local offHandTransmogLocation = TransmogUtil.GetTransmogLocation("SECONDARYHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 	local offHandVisualID = C_Transmog.GetSlotVisualInfo(offHandTransmogLocation);
 
 	local transmogLocation = ((mainHandVisualID == NO_TRANSMOG_VISUAL_ID) and (offHandVisualID ~= NO_TRANSMOG_VISUAL_ID)) and offHandTransmogLocation or mainHandTransmogLocation;
@@ -102,9 +89,9 @@ end
 
 function TransmogUtil.GetCorrespondingHandTransmogLocation(transmogLocation)
 	if transmogLocation:IsMainHand() then
-		return TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.None);
+		return TransmogUtil.GetTransmogLocation("MAINHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 	elseif transmogLocation:IsOffHand() then
-		return TransmogUtil.GetTransmogLocation("SECONDARYHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.None);
+		return TransmogUtil.GetTransmogLocation("SECONDARYHANDSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 	end
 end
 
@@ -135,12 +122,68 @@ function TransmogUtil.GetSetIcon(setID)
 	end
 end
 
+function TransmogUtil.CreateTransmogPendingInfo(pendingType, transmogID, category, secondaryTransmogID)
+	return CreateAndInitFromMixin(TransmogPendingInfoMixin, pendingType, transmogID, category, secondaryTransmogID);
+end
+
+function TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation)
+	if itemLocation and C_Item.DoesItemExist(itemLocation) then
+		local itemTransmogInfo = C_Item.GetAppliedItemTransmogInfo(itemLocation);
+		return itemTransmogInfo and itemTransmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID;
+	end
+	return false;
+end
+
+function TransmogUtil.GetItemLocationFromTransmogLocation(transmogLocation)
+	if not transmogLocation then
+		return nil;
+	end
+	return ItemLocation:CreateFromEquipmentSlot(transmogLocation:GetSlotID());
+end
+
+function TransmogUtil.GetRelevantTransmogID(itemTransmogInfo, transmogLocation)
+	if not itemTransmogInfo then
+		return Constants.Transmog.NoTransmogID;
+	end
+	if transmogLocation.type == Enum.TransmogType.Illusion then
+		return itemTransmogInfo.illusionID;
+	end
+	if transmogLocation.modification == Enum.TransmogModification.Secondary then
+		return itemTransmogInfo.secondaryAppearanceID;
+	end
+	return itemTransmogInfo.appearanceID;
+end
+
+function TransmogUtil.IsCategoryLegionArtifact(categoryID)
+	return categoryID == Enum.TransmogCollectionType.Paired;
+end
+
+function TransmogUtil.IsCategoryRangedWeapon(categoryID)
+	return (categoryID == Enum.TransmogCollectionType.Bow) or (categoryID == Enum.TransmogCollectionType.Gun) or (categoryID == Enum.TransmogCollectionType.Crossbow);
+end
+
+function TransmogUtil.IsValidTransmogSlotID(slotID)
+	local lookupKey = TransmogUtil.GetTransmogLocationLookupKey(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+	return not not TRANSMOG_SLOTS[lookupKey];
+end
+	
+TransmogPendingInfoMixin = {};
+
+function TransmogPendingInfoMixin:Init(pendingType, transmogID, category)
+	self.type = pendingType;
+	if pendingType ~= Enum.TransmogPendingType.Apply then
+		transmogID = Constants.Transmog.NoTransmogID;
+	end
+	self.transmogID = transmogID;
+	self.category = category;
+end
+
 TransmogLocationMixin = {};
 
 function TransmogLocationMixin:Set(slotID, transmogType, modification)
 	self.slotID = slotID;
 	self.type = transmogType;
-	self.modification = modification;
+	self.modification = modification or Enum.TransmogModification.Main;
 end
 
 function TransmogLocationMixin:IsAppearance()
@@ -189,8 +232,8 @@ function TransmogLocationMixin:GetLookupKey()
 	return TransmogUtil.GetTransmogLocationLookupKey(self.slotID, self.type, self.modification);
 end
 
-function TransmogLocationMixin:IsRightShoulderModification()
-	return self.modification == Enum.TransmogModification.RightShoulder;
+function TransmogLocationMixin:IsSecondary()
+	return self.modification == Enum.TransmogModification.Secondary;
 end
 
 TRANSMOG_SLOTS = { };
@@ -203,21 +246,21 @@ do
 		TRANSMOG_SLOTS[lookupKey] = { location = location, armorCategoryID = armorCategoryID };
 	end
 
-	Add("HEADSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Head + 1);
-	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Shoulder + 1);
-	Add("BACKSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Back + 1);
-	Add("CHESTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Chest + 1);
-	Add("TABARDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Tabard + 1);
-	Add("SHIRTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Shirt + 1);
-	Add("WRISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Wrist + 1);
-	Add("HANDSSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Hands + 1);
-	Add("WAISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Waist + 1);
-	Add("LEGSSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Legs + 1);
-	Add("FEETSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.None, Enum.TransmogCollectionType.Feet + 1);
-	Add("MAINHANDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.None, nil);
-	Add("SECONDARYHANDSLOT",	Enum.TransmogType.Appearance,	Enum.TransmogModification.None, nil);
-	Add("MAINHANDSLOT",			Enum.TransmogType.Illusion,		Enum.TransmogModification.None, nil);
-	Add("SECONDARYHANDSLOT",	Enum.TransmogType.Illusion,		Enum.TransmogModification.None, nil);
-	-- independent right shoulder
-	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.RightShoulder, Enum.TransmogCollectionType.Shoulder + 1);
+	Add("HEADSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Head);
+	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Shoulder);
+	Add("BACKSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Back);
+	Add("CHESTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Chest);
+	Add("TABARDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Tabard);
+	Add("SHIRTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Shirt);
+	Add("WRISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Wrist);
+	Add("HANDSSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Hands);
+	Add("WAISTSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Waist);
+	Add("LEGSSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Legs);
+	Add("FEETSLOT",				Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, Enum.TransmogCollectionType.Feet);
+	Add("MAINHANDSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, nil);
+	Add("SECONDARYHANDSLOT",	Enum.TransmogType.Appearance,	Enum.TransmogModification.Main, nil);
+	Add("MAINHANDSLOT",			Enum.TransmogType.Illusion,		Enum.TransmogModification.Main, nil);
+	Add("SECONDARYHANDSLOT",	Enum.TransmogType.Illusion,		Enum.TransmogModification.Main, nil);
+	-- secondary shoulder
+	Add("SHOULDERSLOT",			Enum.TransmogType.Appearance,	Enum.TransmogModification.Secondary, Enum.TransmogCollectionType.Shoulder);
 end

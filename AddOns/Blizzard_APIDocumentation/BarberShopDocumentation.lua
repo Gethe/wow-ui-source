@@ -78,10 +78,6 @@ local BarberShop =
 			},
 		},
 		{
-			Name = "OldBarberShopLoaded",
-			Type = "Function",
-		},
-		{
 			Name = "PreviewCustomizationChoice",
 			Type = "Function",
 
@@ -90,6 +86,10 @@ local BarberShop =
 				{ Name = "optionID", Type = "number", Nilable = false },
 				{ Name = "choiceID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "RandomizeCustomizationChoices",
+			Type = "Function",
 		},
 		{
 			Name = "ResetCameraRotation",

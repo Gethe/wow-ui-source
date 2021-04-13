@@ -12,7 +12,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" font="QuestFontHighlight" justifyH="CENTER" justifyV="MIDDLE" maxLines="1">
+				<FontString parentKey="Text" font="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" maxLines="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-4" />
 					<Anchor point="BOTTOMRIGHT" x="-24" y="13" />

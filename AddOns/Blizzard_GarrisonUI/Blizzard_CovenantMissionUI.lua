@@ -967,7 +967,9 @@ function CovenantFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	followerInfo.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	local autoCombatSpells, autoCombatAutoAttack = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	followerInfo.autoCombatSpells = autoCombatSpells;
+	followerInfo.autoCombatAutoAttack = autoCombatAutoAttack;
 
 	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
 		local puck = self.Board:GetFrameByBoardIndex(boardIndex);

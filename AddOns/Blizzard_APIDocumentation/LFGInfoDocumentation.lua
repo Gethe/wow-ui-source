@@ -75,6 +75,20 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetDungeonInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dungeonInfo", Type = "LFGDungeonInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLFDLockStates",
 			Type = "Function",
 
@@ -309,6 +323,16 @@ local LFGInfo =
 
 	Tables =
 	{
+		{
+			Name = "LFGDungeonInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "iconID", Type = "number", Nilable = false },
+				{ Name = "link", Type = "string", Nilable = true },
+			},
+		},
 		{
 			Name = "LFGLockInfo",
 			Type = "Structure",

@@ -319,6 +319,9 @@ do
 		if deviceA.isSystemDefault ~= deviceB.isSystemDefault then
 			return deviceA.isSystemDefault;
 		end
+		if deviceA.isCommsDefault ~= deviceB.isCommsDefault then
+			return deviceA.isCommsDefault;
+		end
 
 		return strcmputf8i(deviceA.displayName, deviceB.displayName) < 0;
 	end

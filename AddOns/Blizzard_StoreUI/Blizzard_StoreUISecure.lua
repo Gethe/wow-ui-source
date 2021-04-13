@@ -13,6 +13,10 @@ Import("IsOnGlueScreen");
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
 	Import("C_StoreGlue");
+	Import("C_Login");
+	Import("GlueParent_UpdateDialogs");
+	Import("LE_AURORA_STATE_NONE");
+	Import("LE_WOW_CONNECTION_STATE_IN_QUEUE");
 end
 
 setfenv(1, tbl);
@@ -2099,6 +2103,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
 
 	self.layoutGrid = CreateFromMixins(StoreLayoutGridMixin);
@@ -2144,7 +2149,13 @@ function StoreFrame_OnLoad(self)
 
 		background:SetColorTexture(0, 0, 0, 0.75);
 	end
-	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	
+	if IsOnGlueScreen() then
+		self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	else
+		self:SetPoint("TOP", nil, "TOP", 0, -116); --Intentionally not anchored to UIParent.
+	end
+
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 
 	self.productCardPoolCollection = CreateFixedSizeFramePoolCollection();
@@ -2292,6 +2303,13 @@ function StoreFrame_OnEvent(self, event, ...)
 			self:Hide();
 			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
+	elseif (event == "LOGIN_STATE_CHANGED") then
+		if (IsOnGlueScreen()) then
+			local auroraState = C_Login.GetState();
+			if ( auroraState == LE_AURORA_STATE_NONE ) then
+				self:Hide();
+			end
+		end
 	elseif (event == "DYNAMIC_BUNDLE_PRICE_UPDATED") then
 		if StoreFrame_GetSelectedCategoryID() then
 			StoreFrame_SetCategory();
@@ -2331,6 +2349,8 @@ function StoreFrame_OnHide(self)
 	Outbound.HidePreviewFrame();
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
+	else
+		GlueParent_UpdateDialogs();
 	end
 
 	StoreVASValidationFrame:Hide();
@@ -2579,6 +2599,23 @@ function StoreFrame_OnError(self, errorID, needsAck, internalErr)
 	end
 end
 
+function StoreFrame_IsLoading(self)
+	if ( not C_StoreSecure.HasProductList() ) then
+		return true;
+	end
+	if ( not C_StoreSecure.HasDistributionList() ) then
+		return true;
+	end
+	-- can open the store UI while in queue, but in that state we don't ask for, nor need the purchase list
+	if ( not C_StoreSecure.HasPurchaseList() ) then
+		local _, _, wowConnectionState = C_Login.GetState();
+		if ( wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+			return true;
+		end
+	end
+	return false;
+end
+
 function StoreFrame_UpdateActivePanel(self)
 	if (StoreFrame.ErrorFrame:IsShown()) then
 		StoreFrame_HideAlert(self);
@@ -2606,7 +2643,7 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NOT_AVAILABLE, BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT);
 	elseif ( C_StoreSecure.IsRegionLocked() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_REGION_LOCKED, BLIZZARD_STORE_REGION_LOCKED_SUBTEXT);
-	elseif ( not C_StoreSecure.HasPurchaseList() or not C_StoreSecure.HasProductList() or not C_StoreSecure.HasDistributionList() ) then
+	elseif ( StoreFrame_IsLoading(self) ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_LOADING, BLIZZARD_STORE_PLEASE_WAIT);
 	elseif ( #C_StoreSecure.GetProductGroups() == 0 ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NO_ITEMS, BLIZZARD_STORE_CHECK_BACK_LATER);
@@ -4436,6 +4473,9 @@ end
 function StoreGetAutoCompleteEntries(self, text, cursorPosition)
 	local autoCompleteList = GetStoreAutoCompleteList(self);
 	if not autoCompleteList or text == "" then
+		-- So this is slightly different in Classic. They still show the full list if text is empty
+		-- Mainline has far more realms so we probably want to keep the realm list empty in this case
+		-- and continue to require the user start typing at least 1 character
 		return {};
 	end
 	local entries = {};

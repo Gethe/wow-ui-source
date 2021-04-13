@@ -68,7 +68,55 @@ function DressUpVisual(...)
 	if ( result ~= Enum.ItemTryOnReason.Success ) then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end
-	DressUpFrame_OnDressModel(frame);
+	return true;
+end
+
+-- For ctrl-clicking in the Appearances collection
+function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor then
+		return false;
+	end
+
+	local itemTransmogInfo;
+	-- if the equipped item has an active secondary appearance then only change the correct appearance
+	if C_Transmog.CanHaveSecondaryAppearanceForSlotID(transmogLocation.slotID) then
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(transmogLocation.slotID);
+		if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
+			itemTransmogInfo = playerActor:GetItemTransmogInfo(transmogLocation.slotID);
+			if transmogLocation:IsSecondary() then
+				itemTransmogInfo.secondaryAppearanceID = appearanceID;
+			else
+				-- if the item on the actor doesn't already have a secondary, copy over one to the other (items previewed via other means do not have secondaries set)
+				if itemTransmogInfo.secondaryAppearanceID == Constants.Transmog.NoTransmogID then
+					itemTransmogInfo.secondaryAppearanceID = itemTransmogInfo.appearanceID;
+				end
+				itemTransmogInfo.appearanceID = appearanceID;
+			end
+		end
+	end
+
+	if not itemTransmogInfo then
+		itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID);
+	end
+
+	local slotID = nil;
+	local canRecurse = false;
+	if categoryID then
+		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+		-- weapons that can go in either hand need the slot specified
+		slotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
+		-- legion artifacts might set both weapons
+		canRecurse = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+	end
+
+	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID, canRecurse);
+	if result ~= Enum.ItemTryOnReason.Success then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
+	end
 	return true;
 end
 
@@ -215,14 +263,6 @@ function SetDressUpBackground(frame, raceFilename, classFilename)
 	end
 end
 
-function DressUpFrame_OnDressModel(self)
-	-- only want 1 update per frame
-	if ( not self.gotDressed ) then
-		self.gotDressed = true;
-		C_Timer.After(0, function() self.gotDressed = nil; DressUpFrameOutfitDropDown:UpdateSaveButton(); end);
-	end
-end
-
 function DressUpFrame_Show(frame)
 	if ( not frame:IsShown() or frame.mode ~= "player") then
 		frame.mode = "player";
@@ -259,8 +299,8 @@ function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
 	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
 end
 
-function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
-	if ( not appearanceSources ) then
+function DressUpItemTransmogInfoList(itemTransmogInfoList)
+	if not itemTransmogInfoList then
 		return true;
 	end
 
@@ -270,46 +310,29 @@ function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
 	DressUpFrame_Show(DressUpFrame);
 
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
-	if (not playerActor) then
+	if not playerActor then
 		return true;
 	end
 
-	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
-	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
-	for i = 1, #appearanceSources do
-		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
-			if ( appearanceSources[i] and appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
-				playerActor:TryOn(appearanceSources[i]);
-			end
-		end
+	for slotID, itemTransmogInfo in ipairs(itemTransmogInfoList) do
+		playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID);
 	end
-
-	playerActor:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
-	playerActor:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
 end
 
 DressUpOutfitMixin = { };
 
-function DressUpOutfitMixin:GetSlotSourceID(transmogLocation)
+function DressUpOutfitMixin:GetItemTransmogInfoList()
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
-	if (not playerActor) then
-		return;
+	if playerActor then
+		return playerActor:GetItemTransmogInfoList();
 	end
-
-	-- TODO: GetSlotTransmogSources needs to use modification
-	local appearanceSourceID, illusionSourceID = playerActor:GetSlotTransmogSources(transmogLocation:GetSlotID());
-	if ( transmogLocation:IsAppearance() ) then
-		return appearanceSourceID;
-	elseif ( transmogLocation:IsIllusion() ) then
-		return illusionSourceID;
-	end
+	return nil;
 end
 
 function DressUpOutfitMixin:LoadOutfit(outfitID)
-	if ( not outfitID ) then
-		return;
+	if outfitID then
+		DressUpItemTransmogInfoList(C_TransmogCollection.GetOutfitItemTransmogInfoList(outfitID));
 	end
-	DressUpSources(C_TransmogCollection.GetOutfitSources(outfitID))
 end
 
 function SetUpSideDressUpFrame(parentFrame, closedWidth, openWidth, point, relativePoint, offsetX, offsetY)

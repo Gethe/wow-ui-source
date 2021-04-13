@@ -198,11 +198,12 @@ local GarrisonConstants =
 		{
 			Name = "GarrFollowerQuality",
 			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 1,
+			NumValues = 7,
+			MinValue = 0,
 			MaxValue = 6,
 			Fields =
 			{
+				{ Name = "None", Type = "GarrFollowerQuality", EnumValue = 0 },
 				{ Name = "Common", Type = "GarrFollowerQuality", EnumValue = 1 },
 				{ Name = "Uncommon", Type = "GarrFollowerQuality", EnumValue = 2 },
 				{ Name = "Rare", Type = "GarrFollowerQuality", EnumValue = 3 },

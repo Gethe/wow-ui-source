@@ -124,6 +124,9 @@ ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flas
 ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["GUILD_ITEM_LOOTED"]						= ChatTypeInfo["GUILD_ACHIEVEMENT"];
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["PARTY_VOICE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD_VOICE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["COMMUNITIES_VOICE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -135,7 +138,7 @@ ChatTypeGroup["SYSTEM"] = {
 	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
-	"QUEST_TURNED_IN",
+	"DISPLAY_EVENT_TOAST_LINK",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -289,6 +292,15 @@ ChatTypeGroup["PET_BATTLE_COMBAT_LOG"] = {
 };
 ChatTypeGroup["PET_BATTLE_INFO"] = {
 	"CHAT_MSG_PET_BATTLE_INFO",
+};
+ChatTypeGroup["PARTY_VOICE"] = {
+	"CHAT_MSG_PARTY_VOICE",
+};
+ChatTypeGroup["GUILD_VOICE"] = {
+	"CHAT_MSG_GUILD_VOICE",
+};
+ChatTypeGroup["COMMUNITIES_VOICE"] = {
+	"CHAT_MSG_COMMUNITIES_VOICE",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.
@@ -1639,9 +1651,9 @@ SecureCmdList["EQUIP_SET"] = function(msg)
 end
 
 SecureCmdList["WORLD_MARKER"] = function(msg)
-	local marker = SecureCmdOptionParse(msg);
+	local marker, target = SecureCmdOptionParse(msg);
 	if ( tonumber(marker) ) then
-		PlaceRaidMarker(tonumber(marker));
+		PlaceRaidMarker(tonumber(marker), target);
 	end
 end
 
@@ -2386,8 +2398,7 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 end
 
 SlashCmdList["EVENTTRACE"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	EventTraceFrame_HandleSlashCmd(msg);
+	UIParentLoadAddOn("Blizzard_EventTrace");
 end
 
 if IsGMClient() then
@@ -2631,6 +2642,74 @@ SlashCmdList["VOICECHAT"] = function(msg)
 	end
 end
 
+local function AddOptionCommand(table, cmd, option)
+	table[string.lower(cmd)] = option;
+end
+
+local ttsConfigCommands = { }
+
+AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_PLAYENTER,		"playSoundWhenEnteringChatWindow");
+AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_PLAYLINE,		"playSoundSeparatingChatLineBreaks");
+AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_PLAYACTIVITY,	"playActivitySoundWhenNotFocused");
+AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_SAYNAME,			"addCharacterNameToSpeech");
+AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_ALTVOICE,		"alternateSystemVoice");
+
+local ttsChatCommands = { }
+
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_NPC,				"CHAT_MSG_MONSTER_SAY");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_SYSTEM,			"CHAT_MSG_SYSTEM");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_EMOTE,			"CHAT_MSG_TEXT_EMOTE");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_WHISPER,			"CHAT_MSG_WHISPER");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_SAY,				"CHAT_MSG_SAY");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_YELL,			"CHAT_MSG_YELL");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_PARTYLEADER,		"CHAT_MSG_PARTY_LEADER");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_PARTY,			"CHAT_MSG_PARTY");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_GUILDLEADER,		"CHAT_MSG_OFFICER");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_GUILD,			"CHAT_MSG_GUILD");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_RAIDLEADER,		"CHAT_MSG_RAID_LEADER");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_RAID,			"CHAT_MSG_RAID");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_INSTANCELEADER,	"CHAT_MSG_INSTANCE_CHAT_LEADER");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_INSTANCE,		"CHAT_MSG_INSTANCE_CHAT");
+AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_BLIZZARD,		"CHAT_MSG_BN_WHISPER");
+
+SlashCmdList["TEXTTOSPEECH"] = function(msg)
+	if msg == "" then
+		ChatFrame_DisplaySystemMessageInPrimary(TEXTTOSPEECH_COMMAND_SYNTAX);
+		C_VoiceChat.SpeakText(
+			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected, 
+			TEXTTOSPEECH_COMMAND_SYNTAX, 
+			Enum.VoiceTtsDestination.QueuedLocalPlayback,
+			TEXTTOSPEECH_CONFIG.speechRate,
+			TEXTTOSPEECH_CONFIG.speechVolume
+		);
+		ToggleTextToSpeechFrame();
+		return;
+	end
+	local name = msg;
+	local lowerName = string.lower(name);
+
+	if ( ttsConfigCommands[lowerName] ) then
+		local val = TEXTTOSPEECH_CONFIG[ttsConfigCommands[lowerName]] or false;
+		TEXTTOSPEECH_CONFIG[ttsConfigCommands[lowerName]] = not val;
+	elseif ( ttsChatCommands[lowerName] ) then
+		local val = TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] or false;
+		TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] = not val;
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICEMALE)
+		or lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICEFEMALE) then
+		local voices = C_VoiceChat.GetTtsVoices() or {};
+		local voiceCount = #voices;
+		if lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICEMALE) and voiceCount > 1 then
+			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[voiceCount - 1].voiceID;
+		elseif voiceCount > 0 then
+			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[voiceCount].voiceID;
+		end
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_DEFAULT) then
+		TEXTTOSPEECH_CONFIG = CopyTable(TEXTTOSPEECH_CONFIG_DEFAULTS);
+	end
+
+	TextToSpeechFrame_Update(TextToSpeechFrame);
+end
+
 SlashCmdList["COMMUNITY"] = function(msg)
 	if msg == "" then
 		local info = ChatTypeInfo["SYSTEM"];
@@ -2773,7 +2852,6 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
 	self:RegisterEvent("NEWCOMER_GRADUATION");
 	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
@@ -3054,6 +3132,10 @@ do
 end
 
 function ChatFrame_OnEvent(self, event, ...)
+	if ( self.customEventHandler and self.customEventHandler(self, event, ...) ) then
+		return;
+	end
+
 	if ( ChatFrame_ConfigEventHandler(self, event, ...) ) then
 		return;
 	end
@@ -3152,10 +3234,6 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 				C_Timer.After(3, ChatFrame_CheckShowNewcomerGraduation);
 			end
 		end
-
-		self.chatLevelUP = {};
-		LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
-
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -3250,22 +3328,11 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local oldLevel, newLevel, real = ...;
 		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
-				LevelUpDisplay_ChatPrint(self, newLevel, LEVEL_UP_TYPE_CHARACTER)
-			elseif newLevel < oldLevel then
-				LevelUpDisplay_InitPlayerStates(self.chatLevelUP);
+				local levelstring = format(LEVEL_UP, newLevel, newLevel);
+				local info = ChatTypeInfo["SYSTEM"];	
+				self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 			end
-		end
-		return true;
-	elseif ( event == "QUEST_TURNED_IN" ) then
-		local questID, xp, money = ...;
-		if questID == WORLD_QUESTS_AVAILABLE_QUEST_ID then
-			LevelUpDisplay_ChatPrint(self, nil, TOAST_WORLD_QUESTS_UNLOCKED)
-		end
-		return true;
-	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
-		local tierIndex = ...;
-		if (tierIndex > 0) then
-			LevelUpDisplay_ChatPrint(self, tierIndex, LEVEL_UP_TYPE_SPELL_BUCKET);
+
 		end
 		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
@@ -3335,6 +3402,8 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 				end
 			end
 		end
+	elseif(event == "DISPLAY_EVENT_TOAST_LINK") then 
+		EventToastManagerFrame:DisplayToastLink(self, ...);
 	end
 end
 
@@ -3426,7 +3495,8 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 			-- Add Blizzard Icon if  this was sent by a GM/DEV
 			return "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 		elseif specialFlag == "GUIDE" then
-			if DoesActivePlayerHaveMentorStatus() then
+			local shouldShowGuideStatus = C_PlayerMentorship.IsActivePlayerConsideredNewcomer() or (IsActivePlayerGuide() and C_ChatInfo.GetChannelRulesetForChannelID(zoneChannelID) == Enum.ChatChannelRuleset.Mentor);
+			if shouldShowGuideStatus then
 				return NPEV2_CHAT_USER_TAG_GUIDE .. " "; -- possibly unable to save global string with trailing whitespace...
 			end
 		elseif specialFlag == "NEWCOMER" then
@@ -3466,6 +3536,10 @@ function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
+	if ( TextToSpeechFrame_MessageEventHandler ~= nil ) then
+		TextToSpeechFrame_MessageEventHandler(self, event, ...)
+	end
+
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 		if (arg16) then
@@ -4218,6 +4292,11 @@ function ChatFrame_DisplaySystemMessageInCurrent(messageTag)
 	SELECTED_CHAT_FRAME:AddMessage(messageTag, info.r, info.g, info.b, info.id);
 end
 
+function ChatFrame_DisplaySystemMessage(frame, messageTag)
+	local info = ChatTypeInfo["SYSTEM"];
+	frame:AddMessage(messageTag, info.r, info.g, info.b, info.id);
+end
+
 -- ChatEdit functions
 
 local ChatEdit_LastTell = {};
@@ -4338,6 +4417,10 @@ function ChatEdit_OnEditFocusLost(self)
 end
 
 function ChatEdit_ActivateChat(editBox)
+	if ( editBox.disableActivate ) then
+		return;
+	end
+
 	ChatFrame_ClearChatFocusOverride();
 	if ( ACTIVE_CHAT_EDIT_BOX and ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		ChatEdit_DeactivateChat(ACTIVE_CHAT_EDIT_BOX);
@@ -4355,6 +4438,7 @@ function ChatEdit_ActivateChat(editBox)
 	editBox:Raise();
 
 	editBox.header:Show();
+	editBox.prompt:Hide();
 	ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 	editBox.focusLeft:Show();
 	editBox.focusRight:Show();
@@ -4375,6 +4459,7 @@ local function ChatEdit_SetDeactivated(editBox)
 	else
 		editBox:SetText("");
 		editBox.header:Hide();
+		editBox.prompt:Show();
 		if ( not editBox.isGM ) then
 			editBox:SetAlpha(0.35);
 		end

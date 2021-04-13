@@ -557,10 +557,10 @@ function PetBattleCatchButton_OnEnter(self)
 end
 
 function PetBattleFrame_GetAbilityAtLevel(speciesID, targetLevel)
-	local abilities, levels = C_PetJournal.GetPetAbilityList(speciesID);
-	for i, level in pairs(levels) do
-		if level == targetLevel then
-			return abilities[i];
+	local abilities = C_PetJournal.GetPetAbilityList(speciesID);
+	for _, ability in pairs(abilities)  do
+		if ability.level == targetLevel then
+			return ability.abilityID; 
 		end
 	end
 
@@ -869,11 +869,14 @@ function PetBattleAbilityButton_UpdateIcons(self)
 	end
 	if ( not name ) then
 		--We don't have an ability here.
-		local abilities = {};
-		local abilityLevels = {};
 		local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ALLY, activePet);
-		C_PetJournal.GetPetAbilityList(speciesID, abilities, abilityLevels);	--Read ability/ability levels into the correct tables
-		self.abilityID = abilities[self:GetID()];
+		local abilities = C_PetJournal.GetPetAbilityList(speciesID);	--Read ability/ability levels into the correct tables
+		if(not abilities[self:GetID()]) then 
+			self:Hide();
+			return; 
+		end 
+
+		self.abilityID = abilities[self:GetID()].abilityID;
 		if ( not self.abilityID ) then
 			self.Icon:SetTexture("INTERFACE\\ICONS\\INV_Misc_Key_05");
 			self:Hide();
@@ -881,7 +884,7 @@ function PetBattleAbilityButton_UpdateIcons(self)
 			name, icon = C_PetJournal.GetPetAbilityInfo(self.abilityID);
 			self.Icon:SetTexture(icon);
 			self.Lock:Show();
-			self.requiredLevel = abilityLevels[self:GetID()];
+			self.requiredLevel = abilities[self:GetID()].level
 		end
 		self.Icon:SetVertexColor(1, 1, 1);
 		self:Disable();

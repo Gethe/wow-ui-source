@@ -501,7 +501,7 @@ end
 
 function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
+	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 	QueueStatusEntry_SetMinimalDisplay(entry, searchResultInfo.name, QUEUED_STATUS_SIGNED_UP, activityName);
 end
 

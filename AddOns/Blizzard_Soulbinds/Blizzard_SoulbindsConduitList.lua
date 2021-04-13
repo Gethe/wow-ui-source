@@ -14,15 +14,14 @@ local CONDUIT_CHARGE_STATE_PENDING = 2;
 local CONDUIT_CHARGE_STATE_UNAVAILABLE = 3;
 
 function ConduitChargeMixin:SetState(state)
-	local useAtlasSize = true;
 	if state == CONDUIT_CHARGE_STATE_AVAILABLE then
-		self.Icon:SetAtlas("soulbinds_collection_charge_active", useAtlasSize);
+		self.Icon:SetAtlas("soulbinds_collection_charge_active", TextureKitConstants.UseAtlasSize);
 		self.PendingOverlay:SetAtlas(nil);
 	elseif state == CONDUIT_CHARGE_STATE_PENDING then
-		self.Icon:SetAtlas("soulbinds_collection_charge_pending", useAtlasSize);
-		self.PendingOverlay:SetAtlas("soulbinds_collection_charge_pending", useAtlasSize);
+		self.Icon:SetAtlas("soulbinds_collection_charge_pending", TextureKitConstants.UseAtlasSize);
+		self.PendingOverlay:SetAtlas("soulbinds_collection_charge_pending", TextureKitConstants.UseAtlasSize);
 	elseif state == CONDUIT_CHARGE_STATE_UNAVAILABLE then
-		self.Icon:SetAtlas("soulbinds_collection_charge_inactive", useAtlasSize);
+		self.Icon:SetAtlas("soulbinds_collection_charge_inactive", TextureKitConstants.UseAtlasSize);
 		self.PendingOverlay:SetAtlas(nil);
 	end
 end
@@ -117,26 +116,10 @@ function ConduitChargesTrayMixin:SetPendingCount(pendingCount)
 end
 
 function ConduitChargesTrayMixin:OnEvent(event, ...)
-	if event == "SOULBIND_CONDUIT_CHARGES_UPDATED" or event == "SOULBIND_PENDING_CONDUIT_CHANGED" or 
-		event == "SOULBIND_CONDUIT_INSTALLED" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:EvaluateCharges();
-	end
 end
 
-ConduitListCategoryButtonMixin = CreateFromMixins(CallbackRegistryMixin);
-
-ConduitListCategoryButtonMixin:GenerateCallbackEvents(
-	{
-		"OnExpandedChanged",
-	}
-);
-
-function ConduitListCategoryButtonMixin:OnLoad()
-	CallbackRegistryMixin.OnLoad(self);
-
-	self.expanded = false;
-	self:SetExpanded(true);
-end
+ConduitListCategoryButtonMixin = {};
 
 local function GetConduitIconScale(conduitType)
 	if conduitType == Enum.SoulbindConduitType.Potency then
@@ -148,27 +131,29 @@ local function GetConduitIconScale(conduitType)
 	end
 end
 
-function ConduitListCategoryButtonMixin:Init(conduitType)
+function ConduitListCategoryButtonMixin:Init(conduitType, collapsed)
 	local name = self.Container.Name;
 	name:SetText(Soulbinds.GetConduitName(conduitType));
 	name:SetWidth(name:GetStringWidth() + 40);
 
-	local useAtlasSize = false;
 	local icon = self.Container.ConduitIcon;
-	icon:SetAtlas(Soulbinds.GetConduitEmblemAtlas(conduitType), false);
+	icon:SetAtlas(Soulbinds.GetConduitEmblemAtlas(conduitType));
 	icon:SetScale(GetConduitIconScale(conduitType));
 	icon:SetPoint("LEFT", name, "RIGHT", -40, -1);
+
+	self.collapsed = collapsed;
+	self:SetCollapsedVisuals(collapsed);
 end
 
 function ConduitListCategoryButtonMixin:OnEnter()
-	for index, element in ipairs(self.Container.Hovers) do
-		element:Show();
+	for index, texture in ipairs(self.Container.Hovers) do
+		texture:Show();
 	end
 end
 
 function ConduitListCategoryButtonMixin:OnLeave()
-	for index, element in ipairs(self.Container.Hovers) do
-		element:Hide();
+	for index, texture in ipairs(self.Container.Hovers) do
+		texture:Hide();
 	end
 	GameTooltip_Hide();
 end
@@ -181,30 +166,28 @@ function ConduitListCategoryButtonMixin:OnMouseUp()
 	self.Container:AdjustPointsOffset(-1, 1);
 end
 
-function ConduitListCategoryButtonMixin:OnClick(buttonName)
-	self:SetExpanded(not self.expanded);
-end
-
-function ConduitListCategoryButtonMixin:SetExpanded(expanded)
-	local changed = self.expanded ~= expanded;
-	self.expanded = expanded;
-
-	local atlas = expanded and "Soulbinds_Collection_CategoryHeader_Collapse" or "Soulbinds_Collection_CategoryHeader_Expand";
-	local useAtlasSize = true;
-	self.Container.ExpandableIcon:SetAtlas(atlas, useAtlasSize);
-
-	if changed then
-		if expanded then
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-		end
-		self:TriggerEvent(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.expanded);
+function ConduitListCategoryButtonMixin:SetCollapsedVisuals(collapsed)
+	if collapsed then
+		self.Container.ExpandableIcon:SetAtlas("Soulbinds_Collection_CategoryHeader_Expand", TextureKitConstants.UseAtlasSize);
+	else
+		self.Container.ExpandableIcon:SetAtlas("Soulbinds_Collection_CategoryHeader_Collapse", TextureKitConstants.UseAtlasSize);
 	end
 end
 
-function ConduitListCategoryButtonMixin:IsExpanded()
-	return self.expanded;
+function ConduitListCategoryButtonMixin:SetCollapsed(collapsed)
+	local changed = self.collapsed ~= collapsed;
+	if not changed then
+		return;
+	end
+	self.collapsed = collapsed;
+
+	if collapsed then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+
+	self:SetCollapsedVisuals(collapsed);
 end
 
 ConduitListConduitButtonMixin = {};
@@ -347,8 +330,7 @@ function ConduitListConduitButtonMixin:UpdateVisuals(state)
 	
 	local specIconAlpha = dark and .2 or self.Spec.stateAlpha;
 	local specIconAtlas = dark and "soulbinds_collection_specborder_tertiary" or self.Spec.stateAtlas;
-	local useAtlasSize = true;
-	self.Spec.IconOverlay:SetAtlas(specIconAtlas, useAtlasSize);
+	self.Spec.IconOverlay:SetAtlas(specIconAtlas, TextureKitConstants.UseAtlasSize);
 	self.Spec.Icon:SetAlpha(specIconAlpha);
 	self.Pending:SetShown(pending);
 end
@@ -416,6 +398,10 @@ function ConduitListConduitButtonMixin:CreateCursor()
 end
 
 function ConduitListConduitButtonMixin:OnEnter(conduitData)
+	if not self.conduit then
+		return;
+	end
+
 	local onConduitLoad = function()
 		if self.conduitOnSpellLoadCb then
 			self.conduitOnSpellLoadCb = nil;
@@ -441,8 +427,8 @@ function ConduitListConduitButtonMixin:OnEnter(conduitData)
 
 	self.conduitOnSpellLoadCb = self.conduit:ContinueWithCancelOnSpellLoad(onConduitLoad);
 
-	for index, element in ipairs(self.Hovers) do
-		element:Show();
+	for index, texture in ipairs(self.Hovers) do
+		texture:Show();
 	end
 
 	local conduitType = self.conduitData.conduitType;
@@ -459,8 +445,8 @@ function ConduitListConduitButtonMixin:OnLeave(collectionData)
 
 	GameTooltip_Hide();
 
-	for index, element in ipairs(self.Hovers) do
-		element:Hide();
+	for index, texture in ipairs(self.Hovers) do
+		texture:Hide();
 	end
 	
 	Soulbinds.ClearPreviewConduit();
@@ -472,25 +458,96 @@ function ConduitListConduitButtonMixin:SetConduitPulsePlaying(playing)
 	self.IconPulse.Anim:SetPlaying(playing);
 end
 
-ConduitListSectionMixin = CreateFromMixins(CallbackRegistryMixin);
-
-ConduitListSectionMixin:GenerateCallbackEvents(
-	{
-		"OnCollapsibleChanged",
-	}
-);
+ConduitListSectionMixin = {}
 
 function ConduitListSectionMixin:OnLoad()
-	CallbackRegistryMixin.OnLoad(self);
+	self.CategoryButton:SetScript("OnClick", function(button, buttonName, down)
+		local newCollapsed = self.Container:IsShown();
+		self.elementData.collapsed = newCollapsed;
+		self:SetCollapsed(newCollapsed);
+	end);
 
 	self.pool = CreateFramePool("BUTTON", self.Container, "ConduitListConduitButtonTemplate");
-	self.CategoryButton:RegisterCallback(ConduitListCategoryButtonMixin.Event.OnExpandedChanged, self.OnExpandedChanged, self);
 end
 
-function ConduitListSectionMixin:Init(collection)
-	self:BuildConduits(collection);
+function ConduitListSectionMixin:Init(elementData)
+	self.pool:ReleaseAll();
 
-	self.CategoryButton:Init(self.conduitType);
+	local conduitDatas = elementData.conduitDatas;
+	self.conduitType = elementData.conduitType;
+
+	local frames = {};
+	local count = #conduitDatas;
+	local function FactoryFunction(index)
+		if index > count then
+			return nil;
+		end
+
+		local frame = self.pool:Acquire();
+		table.insert(frames, frame);
+		frame:SetPoint("LEFT", self.Container, "LEFT", 0, 0);
+		frame:SetPoint("RIGHT", self.Container, "RIGHT", 0, 0);
+		frame:Show();
+		return frame;
+	end
+
+	local direction, stride, x, y, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, 1, 0, 0;
+	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Container, "TOPLEFT");
+	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
+	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, count, anchor, layout);
+	
+	self.CategoryButton:Init(self.conduitType, elementData.collapsed);
+
+	self:SetCollapsed(elementData.collapsed);
+
+	local continuableContainer = ContinuableContainer:Create();
+	local matchesSpecSet = {};
+
+	for index, conduitData in ipairs(conduitDatas) do
+		local specSetID = conduitData.conduitSpecSetID;
+		if not matchesSpecSet[specSetID] then
+			matchesSpecSet[specSetID] = C_SpecializationInfo.MatchesCurrentSpecSet(specSetID);
+		end
+
+		if not conduitData.conduitSpecName then
+			conduitData.sortingCategory = 1;
+		elseif matchesSpecSet[specSetID] then
+			conduitData.sortingCategory = 2;
+		else
+			conduitData.sortingCategory = 3;
+		end
+
+		conduitData.item = Item:CreateFromItemID(conduitData.conduitItemID);
+		continuableContainer:AddContinuable(conduitData.item);
+	end
+	
+	continuableContainer:ContinueOnLoad(function()
+		local sorter = function(lhs, rhs)
+			if lhs.sortingCategory == rhs.sortingCategory then
+				if (not lhs.conduitSpecName or not rhs.conduitSpecName) or lhs.conduitSpecName == rhs.conduitSpecName then
+					if lhs.conduitRank ~= rhs.conduitRank then
+						return lhs.conduitRank > rhs.conduitRank;	
+					end
+					return lhs.item:GetItemName() < rhs.item:GetItemName();
+				else
+					return lhs.conduitSpecName < rhs.conduitSpecName;
+				end
+			else
+				return lhs.sortingCategory < rhs.sortingCategory;
+			end
+		end;
+		table.sort(conduitDatas, sorter);
+
+		for index, conduitData in ipairs(conduitDatas) do
+			frames[index]:Init(conduitData);
+		end
+
+		local newConduitData = elementData.newConduitData;
+		if newConduitData then
+			elementData.newConduitData = nil;
+			self:PlayUpdateAnim(newConduitData);
+		end
+	end);
 end
 
 function ConduitListSectionMixin:Update()
@@ -513,8 +570,8 @@ function ConduitListSectionMixin:FindConduitButton(conduitID)
 	end
 end
 
-function ConduitListSectionMixin:AddCollectionData(collectionData)
-	local conduitButton = self:FindConduitButton(collectionData.conduitID);
+function ConduitListSectionMixin:PlayUpdateAnim(conduitData)
+	local conduitButton = self:FindConduitButton(conduitData.conduitID);
 	if conduitButton then
 		conduitButton:PlayUpdateAnimation();
 		return true, conduitButton;
@@ -522,53 +579,17 @@ function ConduitListSectionMixin:AddCollectionData(collectionData)
 	return false;
 end
 
-function ConduitListSectionMixin:BuildConduits(collection)
-	self.pool:ReleaseAll();
-
-	local count = #collection;
-	local function FactoryFunction(index)
-		if index > count then
-			return nil;
-		end
-
-		local frame = self.pool:Acquire();
-		frame:Init(collection[index]);
-
-		frame:SetPoint("LEFT", 0, 0);
-		frame:SetPoint("RIGHT", 0, 0);
-		frame:Show();
-		return frame;
-	end
-
-	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Container, "TOPLEFT");
-	local direction, stride, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, 0;
-	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
-	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, count, anchor, layout);
-
-	self:UpdateLayout();
-
-	return count > 0;
+function ConduitListSectionMixin:IsCollapsed()
+	return self.elementData.collapsed;
 end
 
-function ConduitListSectionMixin:OnExpandedChanged(expanded)
-	self.Container:SetShown(expanded);
-	self.Spacer:SetShown(expanded);
-	self:UpdateLayout();
+function ConduitListSectionMixin:SetCollapsed(collapsed)
+	self.CategoryButton:SetCollapsed(collapsed);
 
-	self:TriggerEvent(ConduitListSectionMixin.Event.OnCollapsibleChanged);
-end
-
-function ConduitListSectionMixin:UpdateLayout()
-	self.Container:Layout();
+	local shown = not collapsed;
+	self.Container:SetShown(shown);
+	self.Spacer:SetShown(shown);
 	self:Layout();
-end
-
-function ConduitListSectionMixin:IsExpanded()
-	return self.CategoryButton:IsExpanded();
-end
-
-function ConduitListSectionMixin:SetExpanded(expanded)
-	self.CategoryButton:SetExpanded(expanded);
 end
 
 ConduitListMixin = {};
@@ -580,15 +601,6 @@ local ConduitListEvents =
 	"SOULBIND_CONDUIT_COLLECTION_CLEARED",
 	"PLAYER_SPECIALIZATION_CHANGED",
 };
-
-function ConduitListMixin:OnLoad()
-	for index, list in ipairs(self:GetLists()) do
-		list:RegisterCallback(ConduitListSectionMixin.Event.OnCollapsibleChanged, self.OnCollapsibleChanged, self);
-	end
-
-	self.Clip:SetPoint("TOPLEFT", -200, 0);
-	self.Clip:SetPoint("BOTTOMRIGHT", 200, 0);
-end
 
 function ConduitListMixin:OnEvent(event, ...)
 	if event == "SOULBIND_CONDUIT_COLLECTION_UPDATED" then
@@ -611,10 +623,6 @@ function ConduitListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ConduitListEvents);
 end
 
-function ConduitListMixin:GetLists()
-	return self.ScrollBox.ScrollTarget.Lists;
-end
-
 function ConduitListMixin:SetConduitPreview(preview)
 	self.preview = preview;
 end
@@ -627,91 +635,62 @@ function ConduitListMixin:SetConduitListConduitsPulsePlaying(conduitType, playin
 end
 
 function ConduitListMixin:FindListSection(conduitType)
-	local _, section = FindInTableIf(self:GetLists(), function(section)
-		return section.conduitType == conduitType;
+	local section = self.ScrollBox:FindFrameByPredicate(function(frame)
+		return frame.conduitType == conduitType;
 	end);
 	return section;
 end
 
 function ConduitListMixin:Init()
-	local anyShown = false;
-	local parsed = 0;
-	local lists = self:GetLists();
+	local conduitTypes = {
+		Enum.SoulbindConduitType.Endurance,
+		Enum.SoulbindConduitType.Finesse,
+		Enum.SoulbindConduitType.Potency,
+	};
 
-	for index, list in ipairs(lists) do
-		list.layoutIndex = index;
-
-		local collection = C_Soulbinds.GetConduitCollection(list.conduitType);
-
-		local continuableContainer = ContinuableContainer:Create();
-		local matchesSpecSet = {};
-		for index, collectionData in ipairs(collection) do
-			local specSetID = collectionData.conduitSpecSetID;
-			if not matchesSpecSet[specSetID] then
-				matchesSpecSet[specSetID] = C_SpecializationInfo.MatchesCurrentSpecSet(specSetID);
-			end
-
-			if not collectionData.conduitSpecName then
-				collectionData.sortingCategory = 1;
-			elseif matchesSpecSet[specSetID] then
-				collectionData.sortingCategory = 2;
-			else
-				collectionData.sortingCategory = 3;
-			end
-
-			collectionData.item = Item:CreateFromItemID(collectionData.conduitItemID);
-			continuableContainer:AddContinuable(collectionData.item);
+	local listDatas = {};
+	for i, conduitType in ipairs(conduitTypes) do
+		local conduitDatas = C_Soulbinds.GetConduitCollection(conduitType);
+		if #conduitDatas > 0 then
+			table.insert(listDatas, {conduitDatas = conduitDatas, conduitType = conduitType});
 		end
-
-		continuableContainer:ContinueOnLoad(function()
-			table.sort(collection, function(lhs, rhs)
-				if lhs.sortingCategory == rhs.sortingCategory then
-					if (not lhs.conduitSpecName or not rhs.conduitSpecName) or lhs.conduitSpecName == rhs.conduitSpecName then
-						if lhs.conduitRank ~= rhs.conduitRank then
-							return lhs.conduitRank > rhs.conduitRank;	
-						end
-
-						return lhs.item:GetItemName() < rhs.item:GetItemName();
-					else
-						return lhs.conduitSpecName < rhs.conduitSpecName;
-					end
-				else
-					return lhs.sortingCategory < rhs.sortingCategory;
-				end
-			end);
-
-			local shown = #collection > 0;
-			if shown then
-				list:Init(collection);
-				anyShown = true;
-			end
-
-			list:SetShown(shown);
-
-			parsed = parsed + 1;
-			if parsed == #lists then
-				self.ScrollBox.ScrollTarget:Layout();
-				self.BottomShadowContainer.BottomShadow:SetShown(anyShown);
-				self.preview:SetShown(not anyShown);
-
-				if anyShown then
-					self.Charges:Init();
-				end
-				self.Fx:SetShown(anyShown);
-				self.Charges:SetShown(anyShown);
-
-				local scrollValue = 0;
-				local elementExtent = 41;
-				ScrollUtil.Init(self.ScrollBar, self.ScrollBox, scrollValue, elementExtent);
-			end
-		end);
 	end
+
+	local dataProvider = CreateDataProvider(listDatas);
+	local buttonHeight = 42;
+	local topSpacer = 10;
+	local bottomSpacer = 5;
+	local catButtonExtent = 23;
+	local containerOffset = 5;
+	local expandedExtent = catButtonExtent + topSpacer + bottomSpacer + containerOffset;
+	local collapsedExtent = catButtonExtent + topSpacer;
+	
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementExtentCalculator(function(dataIndex, elementData)
+		if elementData.collapsed then
+			return collapsedExtent;
+		else
+			return (#elementData.conduitDatas * buttonHeight) + expandedExtent;
+		end
+	end);
+	view:SetFactory(function(factory, elementData)
+		local list = factory("EventFrame", "ConduitListSectionTemplate");
+		list:Init(elementData);
+		return list;
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+	ScrollUtil.AddResizableChildrenBehavior(self.ScrollBox);
+
+	self.ScrollBox:SetDataProvider(dataProvider);
+	local anyShown = #listDatas > 0;
+	self:UpdateCollectionShown(anyShown);
 end
 
 function ConduitListMixin:Update()
-	for index, list in ipairs(self:GetLists()) do
+	self.ScrollBox:ForEachFrame(function(list)
 		list:Update();
-	end
+	end);
 end
 
 function ConduitListMixin:PlayLearnAnimation(button)
@@ -729,29 +708,53 @@ function ConduitListMixin:PlayLearnAnimation(button)
 	end
 	
 	modelScene:SetPoint("CENTER", button);
-	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay=0, duration = 0.769, speed = 1 },};
+	local MODEL_SCENE_ACTOR_SETTINGS = {["effect"] = { startDelay = 0, duration = 0.769, speed = 1 },};
 	modelScene:ShowAndAnimateActors(MODEL_SCENE_ACTOR_SETTINGS);
 
 	PlaySound(SOUNDKIT.SOULBINDS_CONDUIT_LEARNED);
 end
 
-function ConduitListMixin:OnCollectionDataUpdated(collectionData)
-	self:Init();
+function ConduitListMixin:OnCollectionDataUpdated(conduitData)
+	local conduitType = conduitData.conduitType;
 	
-	local conduitID = collectionData.conduitID;
-	for index, list in ipairs(self:GetLists()) do
-		local result, conduitButton = list:AddCollectionData(collectionData);
-		if result then
-			if not list:IsExpanded() then
-				list:SetExpanded(true);
+	local dataProvider = self.ScrollBox:GetDataProvider();
+	local dataIndex, foundElementData = dataProvider:FindByPredicate(function(elementData)
+		return elementData.conduitType == conduitType;
+	end);
+	
+	if dataIndex then
+		local list = self.ScrollBox:FindFrame(foundElementData);
+		if list then
+			table.insert(foundElementData.conduitDatas, conduitData);
+			foundElementData.newConduitData = conduitData;
+			list:Init(foundElementData);
+		else
+			local conduitID = conduitData.conduitID;
+			local contains = ContainsIf(foundElementData.conduitDatas, function(elementData)
+				return elementData.conduitID == conduitID;
+			end);
+			if not contains then
+				table.insert(foundElementData.conduitDatas, conduitData);
 			end
+			foundElementData.newConduitData = conduitData;
+			end
+		self.ScrollBox:ScrollToElementDataIndex(dataIndex);
+	else
+		local newElementData = {conduitDatas = {conduitData}, conduitType = conduitType};
+		newElementData.newConduitData = conduitData;
+		dataProvider:Insert(newElementData);
 
-			self.ScrollBox:ScrollTo(conduitButton);
-			break;
+		self.ScrollBox:ScrollToElementData(newElementData);
 		end
-	end
+
+	self:UpdateCollectionShown(true);
 end
 
-function ConduitListMixin:OnCollapsibleChanged()
-	self.ScrollBox.ScrollTarget:Layout();
+function ConduitListMixin:UpdateCollectionShown(shown)
+	self.preview:SetShown(not shown);
+	if shown then
+		self.Charges:Init();
+	end
+	self.Fx:SetShown(shown);
+	self.Charges:SetShown(shown);
 end

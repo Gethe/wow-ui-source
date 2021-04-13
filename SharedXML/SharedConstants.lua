@@ -51,9 +51,11 @@ function GetClassAtlas(className)
 	return ("classicon-%s"):format(className);
 end
 
-function GetGenderAtlas(sexID)
+function GetGenderAtlases(sexID)
 	local genderName = (sexID == Enum.Unitsex.Male) and "male" or "female";
-	return ("charactercreate-gendericon-%s"):format(genderName);
+	local baseAtlas = ("charactercreate-gendericon-%s"):format(genderName);
+	local selectedAtlas = ("%s-selected"):format(baseAtlas);
+	return baseAtlas, selectedAtlas;
 end
 
 WOW_GAMES_CATEGORY_ID = 33;

@@ -20,10 +20,6 @@ PAID_CHARACTER_CUSTOMIZATION = 1;
 PAID_RACE_CHANGE = 2;
 PAID_FACTION_CHANGE = 3;
 
--- TODO: Remove once the old Char Create is dead
-PAID_SERVICE_CHARACTER_ID = nil;
-PAID_SERVICE_TYPE = nil;
-
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
 local STORE_IS_LOADED = false;
@@ -1226,13 +1222,8 @@ function CharacterSelect_TabResize(self)
     self:SetWidth(width + (2 * leftWidth));
 end
 
-function CharacterSelect_CreateNewCharacter(characterType, allowCharacterTypeFrameToShow)
+function CharacterSelect_CreateNewCharacter(characterType)
     C_CharacterCreation.SetCharacterCreateType(characterType);
-
--- TODO: Remove once the old Char Create is dead
-	if CharacterCreate_Old then
-		CharacterCreate_SetAllowCharacterTypeFrame(allowCharacterTypeFrameToShow);
-	end
     CharacterSelect_SelectCharacter(CharacterSelect.createIndex);
 end
 
@@ -1415,23 +1406,15 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
         CHARACTER_LIST_OFFSET = 0;
 		CharacterCreateFrame:ClearPaidServiceInfo();
 
-		-- TODO: Remove once the old Char Create is dead
-        PAID_SERVICE_CHARACTER_ID = nil;
-        PAID_SERVICE_TYPE = nil;
-
 		CharacterSelect_GetCharacterListUpdate();
         return;
     end
 
 	CharacterCreateFrame:SetPaidServiceInfo(service, translatedIndex);
 
-	-- TODO: Remove once the old Char Create is dead
-    PAID_SERVICE_CHARACTER_ID = translatedIndex;
-    PAID_SERVICE_TYPE = service;
-
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     if (CharacterSelect.undeleting) then
-        local guid = select(15, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
+        local guid = select(15, GetCharacterInfo(translatedIndex));
         CharacterSelect.pendingUndeleteGuid = guid;
         local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
         GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
@@ -1807,6 +1790,11 @@ function CharacterTemplatesFrameDropDown_Initialize()
 end
 
 function ToggleStoreUI()
+	if (not STORE_IS_LOADED) then
+		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
+		LoadAddOn("Blizzard_AuthChallengeUI");
+	end
+
     if (STORE_IS_LOADED) then
         local wasShown = StoreFrame_IsShown();
         if ( not wasShown ) then
@@ -1818,6 +1806,11 @@ function ToggleStoreUI()
 end
 
 function SetStoreUIShown(shown)
+	if (not STORE_IS_LOADED) then
+		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
+		LoadAddOn("Blizzard_AuthChallengeUI");
+	end
+
 	if (STORE_IS_LOADED) then
 		local wasShown = StoreFrame_IsShown();
 		if ( not wasShown and shown ) then
@@ -2254,7 +2247,7 @@ end
 function CharacterUpgradePopup_OnStartClick(self)
     local data = HandleUpgradePopupButtonClick(self);
 	if data.isExpansionTrial then
-		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.TrialBoost, true);
+		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.TrialBoost);
 	else
 		CharacterUpgradePopup_BeginCharacterUpgradeFlow(data);
 	end

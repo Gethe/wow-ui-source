@@ -4,21 +4,21 @@
 --
 
 WORLD_QUEST_ICONS_BY_PROFESSION = {
-	[129] = "worldquest-icon-firstaid",
-	[164] = "worldquest-icon-blacksmithing",
-	[165] = "worldquest-icon-leatherworking",
-	[171] = "worldquest-icon-alchemy",
-	[182] = "worldquest-icon-herbalism",
-	[186] = "worldquest-icon-mining",
-	[202] = "worldquest-icon-engineering",
-	[333] = "worldquest-icon-enchanting",
-	[755] = "worldquest-icon-jewelcrafting",
-	[773] = "worldquest-icon-inscription",
-	[794] = "worldquest-icon-archaeology",
-	[356] = "worldquest-icon-fishing",
-	[185] = "worldquest-icon-cooking",
-	[197] = "worldquest-icon-tailoring",
-	[393] = "worldquest-icon-skinning",
+	[Constants.ProfessionIDs.PROFESSION_FIRST_AID] = "worldquest-icon-firstaid",
+	[Constants.ProfessionIDs.PROFESSION_BLACKSMITHING] = "worldquest-icon-blacksmithing",
+	[Constants.ProfessionIDs.PROFESSION_LEATHERWORKING] = "worldquest-icon-leatherworking",
+	[Constants.ProfessionIDs.PROFESSION_ALCHEMY] = "worldquest-icon-alchemy",
+	[Constants.ProfessionIDs.PROFESSION_HERBALISM] = "worldquest-icon-herbalism",
+	[Constants.ProfessionIDs.PROFESSION_MINING] = "worldquest-icon-mining",
+	[Constants.ProfessionIDs.PROFESSION_ENGINEERING] = "worldquest-icon-engineering",
+	[Constants.ProfessionIDs.PROFESSION_ENCHANTING] = "worldquest-icon-enchanting",
+	[Constants.ProfessionIDs.PROFESSION_JEWELCRAFTING] = "worldquest-icon-jewelcrafting",
+	[Constants.ProfessionIDs.PROFESSION_INSCRIPTION] = "worldquest-icon-inscription",
+	[Constants.ProfessionIDs.PROFESSION_ARCHAEOLOGY] = "worldquest-icon-archaeology",
+	[Constants.ProfessionIDs.PROFESSION_FISHING] = "worldquest-icon-fishing",
+	[Constants.ProfessionIDs.PROFESSION_COOKING] = "worldquest-icon-cooking",
+	[Constants.ProfessionIDs.PROFESSION_TAILORING] = "worldquest-icon-tailoring",
+	[Constants.ProfessionIDs.PROFESSION_SKINNING] = "worldquest-icon-skinning",
 };
 
 CHAT_FONT_HEIGHTS = {
@@ -64,15 +64,6 @@ WARLOCK_METAMORPHOSIS = 103958;
 WARLOCK_SOULBURN = 117198;
 WARLOCK_GREEN_FIRE = 101508;
 BATTLEGROUND_ENLISTMENT_BONUS = 241260;
-
-SCHOOL_MASK_NONE	= 0x00;
-SCHOOL_MASK_PHYSICAL	= 0x01;
-SCHOOL_MASK_HOLY	= 0x02;
-SCHOOL_MASK_FIRE	= 0x04;
-SCHOOL_MASK_NATURE	= 0x08;
-SCHOOL_MASK_FROST	= 0x10;
-SCHOOL_MASK_SHADOW	= 0x20;
-SCHOOL_MASK_ARCANE	= 0x40;
 
 SCHOOL_STRINGS = {
 	STRING_SCHOOL_PHYSICAL,
@@ -772,9 +763,8 @@ TRANSMOG_INVALID_CODES = {
 
 TRANSMOG_SOURCE_BOSS_DROP = 1;
 
-FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand + 1;
+FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand;
 LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionTypeMeta.NumValues;
-NO_TRANSMOG_SOURCE_ID = 0;
 NO_TRANSMOG_VISUAL_ID = 0;
 REMOVE_TRANSMOG_ID = 0;
 

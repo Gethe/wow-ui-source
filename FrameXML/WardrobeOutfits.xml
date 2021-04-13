@@ -111,7 +111,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local dropDown = self:GetParent();
-						dropDown:CheckOutfitForSave(UIDropDownMenu_GetText(dropDown));
+						dropDown:CheckOutfitForSave(dropDown.selectedOutfitID);
 					</OnClick>
 				</Scripts>
 			</Button>

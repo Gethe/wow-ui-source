@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TextToSpeech.lua"/>
+	<ContainedAlertFrame  name="TextToSpeechButton" frameStrata="LOW" frameLevel="4" parent="UIParent" inherits="QuickKeybindButtonTemplate" mixin="TextToSpeechButtonMixin">
+		<Size x="32" y="32"/>
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLETEXTTOSPEECH" type="string"/>
+		</KeyValues>
+		<NormalTexture atlas="chatframe-button-icon-TTS"/>
+		<PushedTexture atlas="chatframe-button-icon-TTS"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TextToSpeechIcon" hidden="false" alpha="1" alphaMode="BLEND" atlas="quickjoin-button-friendslist-up" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+			<OnLeave method="OnLeave" inherit="append"/>
+		</Scripts>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</ContainedAlertFrame>
+</Ui>

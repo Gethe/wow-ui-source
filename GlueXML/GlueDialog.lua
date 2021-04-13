@@ -195,15 +195,8 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	OnAccept = function()
 		-- need to get desired faction in case of pandaren doing faction change to another pandaren
 		-- this will be nil in any other case
-
 		local noNPE = false;
-
-		-- TODO: Remove once the old Char Create is dead
-		if CharacterCreate_Old then
-			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), noNPE, PandarenFactionButtons_GetSelectedFaction());
-		else
-			C_CharacterCreation.CreateCharacter(CharacterCreateFrame:GetSelectedName(), noNPE, CharacterCreateFrame:GetCreateCharacterFaction());
-		end
+		C_CharacterCreation.CreateCharacter(CharacterCreateFrame:GetSelectedName(), noNPE, CharacterCreateFrame:GetCreateCharacterFaction());
 	end,
 	OnCancel = function()
 		CharacterCreateFrame:UpdateForwardButton();
@@ -232,13 +225,14 @@ GlueDialogTypes["QUEUED_NORMAL"] = {
 
 GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	text = "",
-	button1 = CHANGE_REALM,
-	button2 = QUEUE_FCM_BUTTON,
+	button1 = QUEUE_FCM_BUTTON,
+	button2 = CHANGE_REALM,
+	darken = true,
 	OnAccept = function()
-		C_RealmList.RequestChangeRealmList();
+		ToggleStoreUI();
 	end,
 	OnCancel = function()
-		LaunchURL(QUEUE_FCM_URL)
+		C_RealmList.RequestChangeRealmList();
 	end,
 }
 
@@ -251,7 +245,7 @@ GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
 
 	OnAccept = function ()
 		CharSelectServicesFlowFrame:Hide();
-		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, true);
+		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);
 	end,
 
 	OnCancel = function ()
@@ -364,7 +358,14 @@ function GlueDialog_Show(which, text, data)
 	else
 		GlueDialogBackground:SetPoint("CENTER");
 	end
-	
+
+	-- Dialog background
+	if (dialogInfo.darken) then
+		GlueDialogBackground:SetBackdrop(BACKDROP_DARK_DIALOG_32_32);
+	else
+		GlueDialogBackground:SetBackdrop(BACKDROP_DIALOG_32_32);
+	end
+
 	GlueDialog.data = data;
 	local glueText;
 	if ( dialogInfo.html ) then

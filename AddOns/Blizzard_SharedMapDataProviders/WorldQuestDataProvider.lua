@@ -478,6 +478,10 @@ function WorldQuestPinMixin:OnMouseUpAction()
 	self.Texture:SetPoint("CENTER", 0, 0);
 end
 
+function WorldQuestPinMixin:GetDebugReportInfo()
+	return { debugType = "WorldQuestPin", questID = self.questID, };
+end
+
 --[[ World Quest Spell Effect Pin ]]--
 WorldQuestSpellEffectPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
