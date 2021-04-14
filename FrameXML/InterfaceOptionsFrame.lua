@@ -155,8 +155,6 @@ function InterfaceAddOnsList_Update ()
 
 	-- Show the AddOns tab if it's not empty.
 	if ( ( InterfaceOptionsFrameTab2 and not InterfaceOptionsFrameTab2:IsShown() ) and numAddOnCategories > 0 ) then
-		InterfaceOptionsFrameCategoriesTop:Hide();
-		InterfaceOptionsFrameAddOnsTop:Hide();
 		InterfaceOptionsFrameTab1:Show();
 		InterfaceOptionsFrameTab2:Show();
 	end
@@ -414,15 +412,9 @@ function InterfaceOptionsFrame_TabOnClick ()
 	if ( InterfaceOptionsFrame.selectedTab == 1 ) then
 		InterfaceOptionsFrameCategories:Show();
 		InterfaceOptionsFrameAddOns:Hide();
-		InterfaceOptionsFrameTab1TabSpacer:Show();
-		InterfaceOptionsFrameTab2TabSpacer1:Hide();
-		InterfaceOptionsFrameTab2TabSpacer2:Hide();		
 	else
 		InterfaceOptionsFrameCategories:Hide();
 		InterfaceOptionsFrameAddOns:Show();
-		InterfaceOptionsFrameTab1TabSpacer:Hide();
-		InterfaceOptionsFrameTab2TabSpacer1:Show();
-		InterfaceOptionsFrameTab2TabSpacer2:Show();
 	end
 end
 

@@ -830,32 +830,28 @@
 		</Anchors>
 	</Button>-->
 	<Frame name="ChatMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
-			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
-		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="ChatMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="ChatMenu_OnLoad"/>
 			<OnShow function="ChatMenu_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="EmoteMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad function="EmoteMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="EmoteMenu_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad function="LanguageMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="LanguageMenu_OnLoad"/>
 			<OnEvent function="LanguageMenu_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad function="VoiceMacroMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="VoiceMacroMenu_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="ChatAlertFrame" mixin="ChatAlertFrameMixin" inherits="AlertContainerTemplate">

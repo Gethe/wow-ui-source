@@ -25,6 +25,11 @@ local PLAYER_UNITS = {
 };
 
 function TargetFrame_OnLoad(self, unit, menuFunc)
+	self.HealthBar.LeftText = self.textureFrame.HealthBarTextLeft;
+	self.HealthBar.RightText = self.textureFrame.HealthBarTextRight;
+	self.PowerBar.LeftText = self.textureFrame.ManaBarTextLeft;
+	self.PowerBar.RightText = self.textureFrame.ManaBarTextRight;
+
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
@@ -55,9 +60,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		portraitFrame = _G[thisName.."Portrait"];
 	end
 
-	UnitFrame_Initialize(self, unit, _G[thisName.."TextureFrameName"], portraitFrame,
-						 _G[thisName.."HealthBar"], nil,
-						 _G[thisName.."ManaBar"], nil,
+	UnitFrame_Initialize(self, unit, self.textureFrame.Name, portraitFrame,
+						self.HealthBar, self.textureFrame.HealthBarText,
+						self.PowerBar, self.textureFrame.ManaBarText,
 	                     nil, "player", nil,
 						 nil, nil,
 						 nil, nil, nil,

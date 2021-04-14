@@ -454,6 +454,9 @@ inherits="GameFontHighlightSmall" justifyH="LEFT">
 									<OnLeave>
 										GameTooltip:Hide();
 									</OnLeave>
+									<OnClick>
+										HandleModifiedItemClick(GetTrainerServiceItemLink(ClassTrainerFrame.selectedService));
+									</OnClick>
 								</Scripts>
 							</Button>
 							<Frame name="ClassTrainerDetailMoneyFrame" inherits="SmallMoneyFrameTemplate">

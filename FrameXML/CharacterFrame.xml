@@ -100,46 +100,6 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterStatFrameTemplate" virtual="true">
-		<Size x="187" y="15"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="UI-Character-Info-Line-Bounce" useAtlasSize="true" alpha="0.3">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="LEFT" x="11" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Value" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="RIGHT" x="-8" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				if ( self.onEnterFunc ) then
-					self:onEnterFunc();
-				else
-					PaperDollStatTooltip(self);
-				end
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnLoad>
-				if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
-					self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
-				end
-			</OnLoad>
-		</Scripts>
-	</Frame>
-
     <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="384" y="512"/>

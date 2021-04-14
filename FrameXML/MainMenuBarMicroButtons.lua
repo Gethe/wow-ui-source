@@ -92,7 +92,7 @@ function UpdateMicroButtons()
 		SpellbookMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( TalentFrame and TalentFrame:IsShown() ) then
+	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
 		if ( playerLevel < SHOW_SPEC_LEVEL ) then

@@ -45,14 +45,13 @@
 				</Anchors>
 				<Layers>
 					<Layer>
-						<FontString name="InspectNameText" inherits="GameFontNormal" text="NAME">
+						<FontString name="InspectNameText" inherits="GameFontHighlight" text="NAME">
 							<Size>
 								<AbsDimension x="109" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
-							<Color r="1.0" g="1.0" b="1.0"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -93,7 +92,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
 			</Button>
-			<Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="HONOR">
+			<Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PVP">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT">
                         <Offset>
@@ -105,10 +104,27 @@
 					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(HONOR, 1.0,1.0,1.0 );
+						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
+			</Button>
+			<Button name="InspectFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="TALENTS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TALENTS, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
 			</Button>
 		</Frames>
         <Scripts>

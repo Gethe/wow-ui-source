@@ -1540,10 +1540,95 @@
 									</OnClick>
 								</Scripts>
 							</CheckButton>
-							<CheckButton name="$parentFullText" inherits="ChatConfigCheckButtonTemplate">
+							<CheckButton name="$parentShowBraces" inherits="ChatConfigCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="24" y="24"/>
+								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentShowTimeStamp" relativePoint="BOTTOMLEFT">
 										<Offset x="0" y="-15"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										_G[self:GetName().."Text"]:SetText(SHOW_BRACES);
+										self.tooltip = SHOW_BRACES_COMBATLOG_TOOLTIP;
+									</OnLoad>
+									<OnClick>
+										local checked = self:GetChecked()
+										CHATCONFIG_SELECTED_FILTER.settings.braces = checked;
+
+										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parentUnitNames" inherits="ChatConfigSmallCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentShowBraces" relativePoint="BOTTOMLEFT">
+										<Offset x="10" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										_G[self:GetName().."Text"]:SetText(UNIT_NAMES);
+										self.tooltip = UNIT_NAMES_SHOW_BRACES_COMBATLOG_TOOLTIP;
+									</OnLoad>
+									<OnClick>
+										local checked = self:GetChecked()
+										CHATCONFIG_SELECTED_FILTER.settings.unitBraces = checked;
+										CHATCONFIG_SELECTED_FILTER.settings.sourceBraces = checked;
+										CHATCONFIG_SELECTED_FILTER.settings.destBraces = checked;
+
+										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parentSpellNames" inherits="ChatConfigSmallCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentUnitNames" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-2"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										_G[self:GetName().."Text"]:SetText(SPELL_NAMES);
+										self.tooltip = SPELL_NAMES_SHOW_BRACES_COMBATLOG_TOOLTIP;
+									</OnLoad>
+									<OnClick>
+										local checked = self:GetChecked()
+										CHATCONFIG_SELECTED_FILTER.settings.spellBraces = checked;
+
+										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parentItemNames" inherits="ChatConfigSmallCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentSpellNames" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-2"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										_G[self:GetName().."Text"]:SetText(ITEM_NAMES);
+										self.tooltip = ITEM_NAMES_SHOW_BRACES_COMBATLOG_TOOLTIP;
+									</OnLoad>
+									<OnClick>
+										local checked = self:GetChecked()
+										CHATCONFIG_SELECTED_FILTER.settings.itemBraces = checked;
+										
+										CombatConfig_Formatting_Update();
+										ChatConfigFrame_PlayCheckboxSound(checked);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parentFullText" inherits="ChatConfigCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentItemNames" relativePoint="BOTTOMLEFT">
+										<Offset x="-10" y="-13"/>
 									</Anchor>
 								</Anchors>
 								<Scripts>

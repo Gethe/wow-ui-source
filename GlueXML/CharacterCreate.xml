@@ -657,15 +657,15 @@
 									<Anchors>
 										<Anchor point="TOP">
 											<Offset>
-												<AbsDimension x="0" y="0"/>
+												<AbsDimension x="0" y="38"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0" right="0.875" top="0" bottom="0.9375"/>
+									<TexCoords left="0" right="0.875" top="1.0" bottom="0.1796875"/>
 								</Texture>
 								<Texture name="CharacterCreateOuterBorder2" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder">
 									<Size>
-										<AbsDimension x="224" y="240"/>
+										<AbsDimension x="224" y="280"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder1" relativePoint="BOTTOM">
@@ -678,7 +678,7 @@
 								</Texture>
 								<Texture name="CharacterCreateOuterBorder3" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder">
 									<Size>
-										<AbsDimension x="224" y="228"/>
+										<AbsDimension x="224" y="226"/>
 									</Size>
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder2" relativePoint="BOTTOM">
@@ -728,7 +728,7 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="CharacterCreateOuterBorder1">
 											<Offset>
-												<AbsDimension x="6" y="0"/>
+												<AbsDimension x="6" y="-6"/>
 											</Offset>
 										</Anchor>
 										<Anchor point="BOTTOMLEFT" relativeTo="CharacterCreateOuterBorder3">
@@ -756,12 +756,12 @@
 									<Layer level="ARTWORK">
 										<Texture name="CharacterCreateLogo">
 											<Size>
-												<AbsDimension x="256" y="128"/>
+												<AbsDimension x="196" y="98"/>
 											</Size>
 											<Anchors>
 												<Anchor point="TOP" relativePoint="TOPLEFT">
 													<Offset>
-														<AbsDimension x="128" y="-4"/>
+														<AbsDimension x="129" y="-17"/>
 													</Offset>
 												</Anchor>
 											</Anchors>

@@ -438,7 +438,11 @@ function TimeManagerClockButton_UpdateShowClockSetting()
 end
 
 function TimeManagerClockButton_Update()
-	TimeManagerClockTicker:SetText(GameTime_GetTime(false));
+	local currentText = TimeManagerClockTicker:GetText();
+	local newText = GameTime_GetTime(false);
+	if currentText ~= newText then
+		TimeManagerClockTicker:SetText(newText);
+	end
 end
 
 function TimeManagerClockButton_OnEnter(self)

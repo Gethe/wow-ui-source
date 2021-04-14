@@ -3,7 +3,7 @@
 
 ## add snippets independent of modules here
 GlueCheck.lua
-
+Localization.xml
 Fonts.xml
 FontStyles.xml
 ..\SharedXML\AnchorUtil.xml
@@ -52,8 +52,6 @@ PlayerMovementFrameFader.lua
 
 ..\SharedXML\SoundKitConstants.lua
 Constants.lua
-Localization.xml
-
 
 ..\SharedXML\PropertyBindingMixin.lua
 ..\SharedXML\PropertyButton.xml
@@ -190,6 +188,8 @@ DurabilityFrame.xml
 BattlegroundChatFilters.xml
 WorldStateFrame.xml
 RatingMenuFrame.xml
+TalentFrameBase.lua
+Blizzard_TalentUITemplates.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml

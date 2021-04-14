@@ -21,7 +21,11 @@
 				self.text:SetWidth(290);
 			</OnLoad>
 			<OnClick>
-				CraftButton_OnClick(self,button);
+				if ( IsModifiedClick() ) then
+					HandleModifiedItemClick(GetCraftRecipeLink(self:GetID()));
+				else
+					CraftButton_OnClick(self,button);
+				end
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -48,13 +52,7 @@
 				CursorOnUpdate(self);
 			</OnUpdate>
 			<OnClick>
-				if ( IsControlKeyDown() ) then
-					DressUpItemLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), self:GetID()));
-				elseif ( IsShiftKeyDown() ) then
-					if ( ChatEdit_GetActiveWindow() ) then
-						ChatEdit_InsertLink(GetCraftReagentItemLink(GetCraftSelectionIndex(), self:GetID()));
-					end
-				end
+				HandleModifiedItemClick(GetCraftReagentItemLink(GetCraftSelectionIndex(), self:GetID()));
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -568,13 +566,7 @@
 										end;
 									</OnLoad>
 									<OnClick>
-										if ( IsControlKeyDown() ) then
-											DressUpItemLink(GetCraftItemLink(GetCraftSelectionIndex()));
-										elseif ( IsShiftKeyDown() ) then
-											if ( ChatEdit_GetActiveWindow() ) then
-												ChatEdit_InsertLink(GetCraftItemLink(GetCraftSelectionIndex()));
-											end
-										end
+										HandleModifiedItemClick(GetCraftItemLink(GetCraftSelectionIndex()));
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

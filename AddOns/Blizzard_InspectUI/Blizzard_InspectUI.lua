@@ -1,14 +1,11 @@
-INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectHonorFrame" };
+INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectTalentFrame"};
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
 	if ( CanInspect(unit, true) ) then
-		INSPECTED_UNIT = unit;
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		InspectSwitchTabs(1);
-	else
-		INSPECTED_UNIT = nil;
 	end
 end
 
@@ -20,21 +17,20 @@ function InspectFrame_OnLoad(self)
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("INSPECT_READY");
 	self.unit = nil;
-	INSPECTED_UNIT = nil;
 
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, 3);
 	PanelTemplates_SetTab(self, 1);
-	InspectNameText:SetFontObject("GameFontHighlight");
+
+	-- TODO: Remove
+	PanelTemplates_DisableTab(InspectFrame, 2);
 end
 
 function InspectFrame_OnEvent(self, event, unit, ...)
-
 	if(event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
 		ShowUIPanel(InspectFrame);
-		InspectFrame_UpdateTabs();
+		InspectFrame_UpdateTalentTab();
 	end
-
 
 	if ( not self:IsShown() ) then
 		return;
@@ -43,12 +39,6 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
 		if ( (event == "PLAYER_TARGET_CHANGED" and self.unit == "target") or
 		     (event == "GROUP_ROSTER_UPDATE" and self.unit ~= "target") ) then
-			-- Just hide the InspectFrame when the unit changes.  This hides the bug that occurs when you click on targets too quickly and the server drops the inspect data when flooded with inspect requests.
-			--if ( CanInspect(self.unit) ) then
-			--	InspectFrame_UnitChanged(self);
-			--else
-			--	HideUIPanel(InspectFrame);
-			--end
 			HideUIPanel(InspectFrame);
 		end
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
@@ -72,7 +62,7 @@ function InspectFrame_UnitChanged(self)
 	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
 	InspectNameText:SetText(GetUnitName(unit, true));
-	InspectFrame_UpdateTabs();
+	InspectFrame_UpdateTalentTab();
 	if ( InspectPVPFrame:IsShown() ) then
 		InspectPVPFrame_OnShow();
 	end
@@ -112,8 +102,18 @@ function InspectFrameTab_OnClick(self)
 	InspectSwitchTabs(self:GetID());
 end
 
-function InspectFrame_UpdateTabs()
+function InspectFrame_UpdateTalentTab()
 	if ( not InspectFrame.unit ) then
 		return;
+	end
+	local level = UnitLevel(InspectFrame.unit);
+	if ( level > 0 and level < 10 ) then
+		PanelTemplates_DisableTab(InspectFrame, 3);
+		if ( PanelTemplates_GetSelectedTab(InspectFrame) == 3 ) then
+			InspectSwitchTabs(1);
+		end
+	else
+		PanelTemplates_EnableTab(InspectFrame, 3);
+		InspectTalentFrame_SetupTabs();
 	end
 end

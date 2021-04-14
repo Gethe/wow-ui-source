@@ -1952,7 +1952,7 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-570"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								ServerAlert_OnLoad(self);
 								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 								if ( not C_Login.IsLauncherLogin() ) then
@@ -2247,12 +2247,12 @@
 			</OnEvent>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" inherits="BackdropTemplate">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-		</KeyValues>
+	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="CharacterDeleteBackground">
+			<Frame name="CharacterDeleteBackground" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>

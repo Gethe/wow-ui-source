@@ -77,7 +77,7 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
 		if ( AccountLogin:IsVisible() ) then
-			SetClassicLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
+			SetClassicLogo(AccountLogin.UI.GameLogo);
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
@@ -679,41 +679,16 @@ function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
 end
 
-function GetDisplayedExpansionLogo(expansionLevel)
-	local isTrial = expansionLevel == nil;
-	if isTrial then
-		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
-	elseif expansionLevel <= GetMinimumExpansionLevel() then
-		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
-		if expansionInfo then
-			return expansionInfo.logo;
-		end
-	else
-		local expansionInfo = GetExpansionDisplayInfo(expansionLevel);
-		if expansionInfo then
-			return expansionInfo.logo;
-		end
-	end
-	
-	return nil;
-end
+classicLogo = {
+	[LE_EXPANSION_CLASSIC] = {filename = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR', uv = { 0.125, 0.875, 0.3125, 0.6875 }},
+	[LE_EXPANSION_BURNING_CRUSADE] = {filename = 'Interface\\Glues\\Common\\Glues-WoW-ClassicBurningCrusadeLogo', uv = { 0.125, 0.875, 0.3125, 0.6875 }},
+};
 
--- For Classic, most places should call "SetClassicLogo" instead.
-function SetExpansionLogo(texture, expansionLevel)
-	local logo = GetDisplayedExpansionLogo(expansionLevel);
-	if logo then
-		texture:SetTexture(logo);
-		texture:Show();
-	else
-		texture:Hide();
-	end
-end
-
-classicLogo = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR';
-classicLogoTexCoords = { 0.125, 0.875, 0.3125, 0.6875 };
 function SetClassicLogo(texture)
-	texture:SetTexture(classicLogo);
-	texture:SetTexCoord(classicLogoTexCoords[1], classicLogoTexCoords[2], classicLogoTexCoords[3], classicLogoTexCoords[4]);
+	local expansionLevel = GetClientDisplayExpansionLevel();
+	local logo = classicLogo[expansionLevel];
+	texture:SetTexture(logo.filename);
+	texture:SetTexCoord(unpack(logo.uv));
 	texture:Show();
 end
 
