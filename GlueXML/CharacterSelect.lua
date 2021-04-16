@@ -1012,7 +1012,7 @@ function UpdateCharacterList(skipSelect)
 			disableService = not C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID);
 			paidServiceButton.tooltip = BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_TOOLTIP_TITLE;
 			paidServiceButton.tooltip2 = BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_TOOLTIP_DESCRIPTION;
-			paidServiceButton.tooltip3 = BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_TOOLTIP_ACTION;
+			paidServiceButton.tooltip3 = "|cff20ff20" .. BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_TOOLTIP_ACTION .. "|r";
 			paidServiceButton.disabledTooltip = BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_TOOLTIP_TITLE;
 			paidServiceButton.disabledTooltip2 = BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_TOOLTIP_DESCRIPTION;
             paidServiceButton.disabledTooltip3 = BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT;
@@ -2291,7 +2291,11 @@ function TBCInfoPane_RefreshPrice()
 		formattedPrice = GetFormattedClonePrice();
 	end
 
-	TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(BURNING_CRUSADE_PREVIEW_DESCRIPTION2, formattedPrice));
+	local formatString = BURNING_CRUSADE_PREVIEW_DESCRIPTION2;
+	if ( GetCurrentRegionName() == "CN" ) then
+		formatString = BURNING_CRUSADE_PREVIEW_DESCRIPTION2_CN;
+	end
+	TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(formatString, formattedPrice));
 end
 
 function TBCInfoPaneHTMLDesc_OnLoad(self)
@@ -2405,6 +2409,7 @@ function CloneConfirmation_OnLoad(self)
 	DefaultScaleFrameMixin.OnDefaultScaleFrameLoad(self);
 	self.ChoiceConfirmationConfirmButton:SetScript("OnClick", CloneConfirmation_OnConfirm);
 	self.ChoiceConfirmationCancelButton:SetScript("OnClick", CloneConfirmation_OnCancel);
+	self.ChoiceConfirmationConfirmButton:SetText(CONTINUE);
 end
 
 function CloneConfirmation_OnShow(self)
