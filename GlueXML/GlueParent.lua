@@ -679,10 +679,11 @@ function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
 end
 
-classicLogo = {
-	[LE_EXPANSION_CLASSIC] = {filename = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR', uv = { 0.125, 0.875, 0.3125, 0.6875 }},
-	[LE_EXPANSION_BURNING_CRUSADE] = {filename = 'Interface\\Glues\\Common\\Glues-WoW-ClassicBurningCrusadeLogo', uv = { 0.125, 0.875, 0.3125, 0.6875 }},
-};
+classicLogo = {};
+do
+	classicLogo[LE_EXPANSION_CLASSIC] = CLASSIC_LOGO_OVERRIDE or {filename = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR', uv = { 0.125, 0.875, 0.3125, 0.6875 }};
+	classicLogo[LE_EXPANSION_BURNING_CRUSADE] = BURNING_CRUSADE_OVERRIDE or {filename = 'Interface\\Glues\\Common\\Glues-WoW-ClassicBurningCrusadeLogo', uv = { 0.125, 0.875, 0.3125, 0.6875 }};
+end
 
 function SetClassicLogo(texture)
 	local expansionLevel = GetClientDisplayExpansionLevel();
