@@ -1297,8 +1297,14 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 
 	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame.paidServiceType then
 		local randomRaceData = self:GetRandomValidRaceData();
-		self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName)
-		return;
+		if randomRaceData then
+			self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName);
+			return;
+		else
+			CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PAID_SERVICE_NO_VALID_RACE, HIGH_PRIORITY);
+		end
+	else
+		CharacterCreateFrame:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PAID_SERVICE_NO_VALID_RACE);
 	end
 
 	self.selectedClassData = C_CharacterCreation.GetSelectedClass();
@@ -1416,7 +1422,8 @@ end
 
 function CharacterCreateRaceAndClassMixin:GetRandomValidRaceData()
 	local validRaces = self:GetAllValidRaces();
-	local randomIndex = math.random(1, #validRaces);
+	local numValidRaces = #validRaces;
+	local randomIndex = (numValidRaces > 1) and math.random(1, numValidRaces) or numValidRaces;
 	return validRaces[randomIndex];
 end
 

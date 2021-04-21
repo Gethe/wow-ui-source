@@ -597,6 +597,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button parentKey="UpgradeClickTarget" inherits="GarrisonFollowerUpgradeClickTargetTemplate" hidden=" true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Button>
 			<Frame parentKey="HealFollowerFrame" framelevel="100" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -949,6 +955,21 @@
 						<Anchor point="BOTTOMRIGHT" x="20" y="-18"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="LevelFrame">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.PortraitBorder" relativePoint="BOTTOMRIGHT" x="-3" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="Level" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelFrame" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>

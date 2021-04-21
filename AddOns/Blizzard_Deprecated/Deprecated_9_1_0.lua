@@ -257,3 +257,24 @@ end
 do
 	C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant;
 end
+
+-- Pet battle enum conversions
+do
+	LE_BATTLE_PET_WEATHER = Enum.BattlePetOwner.Weather;
+	LE_BATTLE_PET_ALLY = Enum.BattlePetOwner.Ally;
+	LE_BATTLE_PET_ENEMY = Enum.BattlePetOwner.Enemy;
+
+	LE_BATTLE_PET_ACTION_NONE = Enum.BattlePetAction.None;
+	LE_BATTLE_PET_ACTION_ABILITY = Enum.BattlePetAction.Ability;
+	LE_BATTLE_PET_ACTION_SWITCH_PET = Enum.BattlePetAction.SwitchPet;
+	LE_BATTLE_PET_ACTION_TRAP = Enum.BattlePetAction.Trap;
+	LE_BATTLE_PET_ACTION_SKIP = Enum.BattlePetAction.Skip;
+
+	LE_PET_BATTLE_STATE_CREATED = Enum.PetBattleState.Created;
+	LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE = Enum.PetBattleState.WaitingPreBattle;
+	LE_PET_BATTLE_STATE_ROUND_IN_PROGRESS = Enum.PetBattleState.RoundInProgress;
+	LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS = Enum.PetBattleState.WaitingForFrontPets;
+	LE_PET_BATTLE_STATE_CREATED_FAILED = Enum.PetBattleState.CreatedFailed;
+	LE_PET_BATTLE_STATE_FINAL_ROUND = Enum.PetBattleState.FinalRound;
+	LE_PET_BATTLE_STATE_FINISHED = Enum.PetBattleState.Finished;
+end

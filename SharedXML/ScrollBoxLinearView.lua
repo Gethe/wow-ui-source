@@ -1,5 +1,7 @@
+-- Points are cleared first to avoid some complications related to drag and drop.
 local function SetHorizontalPoint(frame, offset, scrollTarget)
 	local width = frame:GetWidth();
+	frame:ClearAllPoints();
 	frame:SetPoint("TOPLEFT", scrollTarget, "TOPLEFT", offset, 0);
 	frame:SetPoint("BOTTOMLEFT", scrollTarget, "BOTTOMLEFT", offset, 0);
 	return width;
@@ -7,6 +9,7 @@ end
 
 local function SetVerticalPoint(frame, offset, scrollTarget)
 	local height = frame:GetHeight();
+	frame:ClearAllPoints();
 	frame:SetPoint("TOPLEFT", scrollTarget, "TOPLEFT", 0, -offset);
 	frame:SetPoint("TOPRIGHT", scrollTarget, "TOPRIGHT", 0, -offset);
 	return height;
@@ -114,7 +117,6 @@ function ScrollBoxLinearViewMixin:ReparentScrollChildren(...)
 	for index = 1, select("#", ...) do
 		local child = select(index, ...);
 		if child.scrollable then
-			child.orderIndex = index;
 			child:SetParent(scrollTarget);
 			table.insert(self.frames, child);
 		end

@@ -2685,7 +2685,7 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 		ToggleTextToSpeechFrame();
 		return;
 	end
-	local name = msg;
+	local name, num1 = msg:match("(%a+)%s?(%d*)");
 	local lowerName = string.lower(name);
 
 	if ( ttsConfigCommands[lowerName] ) then
@@ -2694,14 +2694,28 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	elseif ( ttsChatCommands[lowerName] ) then
 		local val = TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] or false;
 		TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] = not val;
-	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICEMALE)
-		or lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICEFEMALE) then
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICE) then
 		local voices = C_VoiceChat.GetTtsVoices() or {};
-		local voiceCount = #voices;
-		if lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICEMALE) and voiceCount > 1 then
-			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[voiceCount - 1].voiceID;
-		elseif voiceCount > 0 then
-			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[voiceCount].voiceID;
+		
+		if num1 and num1 ~= "" then
+			local newVoice = tonumber(num1);
+			for index, voice in ipairs(voices) do
+				if voice.voiceID == newVoice then
+					TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = newVoice;
+					break;
+				end
+			end
+		else
+			local nextVoice = 1;
+			for index, voice in ipairs(voices) do
+				if voice.voiceID == TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected and index < #voices then
+					nextVoice = index + 1;
+					break;
+				end
+			end
+			if nextVoice <= #voices then
+				TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[nextVoice].voiceID;
+			end
 		end
 	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_DEFAULT) then
 		TEXTTOSPEECH_CONFIG = CopyTable(TEXTTOSPEECH_CONFIG_DEFAULTS);
@@ -2829,6 +2843,14 @@ end
 ChatFrame_ImportAllListsToHash();
 ChatFrame_ImportEmoteTokensToHash();
 
+function ChatFrame_AddMessage(self, ...)
+	ScrollingMessageFrameMixin.AddMessage(self, ...)
+
+	if ( self.addMessageObserver ) then
+		self.addMessageObserver(self, ...)
+	end
+end
+
 -- ChatFrame functions
 function ChatFrame_OnLoad(self)
 	self:SetTimeVisible(120.0);
@@ -2862,6 +2884,7 @@ function ChatFrame_OnLoad(self)
 
 	self.defaultLanguage = GetDefaultLanguage(); --If PLAYER_ENTERING_WORLD hasn't been called yet, this is nil, but it'll be fixed whent he event is fired.
 	self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
+	self.AddMessage = ChatFrame_AddMessage;
 end
 
 function ChatFrame_RegisterForMessages(self, ...)

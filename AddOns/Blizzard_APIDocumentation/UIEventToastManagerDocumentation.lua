@@ -58,9 +58,9 @@ local UIEventToastManager =
 		{
 			Name = "EventToastDisplayType",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "NormalSingleLine", Type = "EventToastDisplayType", EnumValue = 0 },
@@ -71,6 +71,7 @@ local UIEventToastManager =
 				{ Name = "NormalTextWithIconAndRarity", Type = "EventToastDisplayType", EnumValue = 5 },
 				{ Name = "Scenario", Type = "EventToastDisplayType", EnumValue = 6 },
 				{ Name = "ChallengeMode", Type = "EventToastDisplayType", EnumValue = 7 },
+				{ Name = "ScenarioClickExpand", Type = "EventToastDisplayType", EnumValue = 8 },
 			},
 		},
 		{
@@ -122,6 +123,7 @@ local UIEventToastManager =
 				{ Name = "sortOrder", Type = "number", Nilable = false },
 				{ Name = "time", Type = "number", Nilable = true },
 				{ Name = "uiWidgetSetID", Type = "number", Nilable = true },
+				{ Name = "extraUiWidgetSetID", Type = "number", Nilable = true },
 			},
 		},
 	},

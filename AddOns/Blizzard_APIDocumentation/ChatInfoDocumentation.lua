@@ -81,6 +81,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetChatTypeName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "typeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetClubStreamIDs",
 			Type = "Function",
 

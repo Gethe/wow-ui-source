@@ -51,13 +51,41 @@ function ScrollBoxListGridViewMixin:SetStride(stride)
 	self.stride = stride;
 end
 
+function ScrollBoxListGridViewMixin:SetHorizontal(isHorizontal)
+	-- Horizontal layout not current supported at this time.
+	isHorizontal = false;
+	ScrollDirectionMixin.SetHorizontal(self, isHorizontal);
+end
+
 function ScrollBoxListGridViewMixin:GetStride()
+	local strideExtent = self:GetStrideExtent();
+	if strideExtent then
+		local scrollTarget = self:GetScrollTarget();
+		local extent = scrollTarget:GetWidth();
+		local spacing = self:GetHorizontalSpacing();
+		local stride = math.max(1, math.floor(extent / strideExtent));
+		local extentWithSpacing = (stride * strideExtent) + ((stride-1) * spacing);
+		while stride > 1 and extentWithSpacing > extent do
+			stride = stride - 1;
+			extentWithSpacing = extentWithSpacing - (strideExtent + spacing);
+		end
+		return stride;
+	end
+
 	return self.stride;
+end
+
+function ScrollBoxListGridViewMixin:SetStrideExtent(extent)
+	self.strideExtent = extent;
+end
+
+function ScrollBoxListGridViewMixin:GetStrideExtent()
+	return self.strideExtent;
 end
 
 function ScrollBoxListGridViewMixin:Layout()
 	local frames = self:GetFrames();
-	local frameCount = frames and #frames or 0;
+	local frameCount = #frames;
 	if frameCount == 0 then
 		return 0;
 	end
@@ -91,5 +119,5 @@ function ScrollBoxListGridViewMixin:GetPanExtent()
 end
 
 function CreateScrollBoxListGridView(stride, top, bottom, left, right, horizontalSpacing, verticalSpacing)
-	return CreateAndInitFromMixin(ScrollBoxListGridViewMixin, stride, top or 0, bottom or 0, left or 0, right or 0, horizontalSpacing or 0, verticalSpacing or 0);
+	return CreateAndInitFromMixin(ScrollBoxListGridViewMixin, stride or 1, top or 0, bottom or 0, left or 0, right or 0, horizontalSpacing or 0, verticalSpacing or 0);
 end

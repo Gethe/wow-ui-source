@@ -1,35 +1,8 @@
-local MinPanelWidth = 685;
+local MinPanelWidth = 715;
 local MinPanelHeight = 210;
+local DefaultPanelWidth = MinPanelWidth;
+local DefaultPanelHeight = 400;
 local MaxEvents = 1000;
-local HoursClockFormat = "%.2d:%.2d:%06.3fs";
-local MinutesClockFormat = "%.2d:%06.3fs";
-local TooltipArgFormat = "Arg[%d]";
-local EventRelativeTimeFormat = "[%.3d]";
-
--- These are specifically for CallbackRegistry events from sources that either
--- cause cyclical event logging, or generate spam that is seldom helpful.
--- These are capitalized for search purposes.
-local AlwaysFiltered =
-{
-	-- DataProvider events
-	ONINSERT = true,
-	ONREMOVE = true,
-	ONSORT = true,
-	ONDATARANGECHANGED = true,
-	-- EventButton and EventFrame events
-	ONENTER = true,
-	ONLEAVE = true,
-	ONSIZECHANGED = true,
-	ONMOUSEDOWN = true,
-	ONMOUSEUP = true,
-	ONHIDE = true,
-	ONSHOW = true,
-	-- ScrollBox events
-	ONACQUIREDFRAME = true,
-	ONRELEASEDFRAME = true,
-	ONSCROLL = true,
-	ONLAYOUT = true,
-};
 
 local DefaultFilter =
 {
@@ -63,6 +36,7 @@ end
 EventTraceSavedVars = 
 {
 	ShowArguments = true,
+	ShowTimestamp = true,
 	LogCREvents = true,
 	Filters = 
 	{
@@ -70,8 +44,8 @@ EventTraceSavedVars =
 	},
 	Size =
 	{
-		Width = MinPanelWidth,
-		Height = 400,
+		Width = DefaultPanelWidth,
+		Height = DefaultPanelHeight,
 	},
 };
 
@@ -129,7 +103,7 @@ function EventTracePanelMixin:OnLoad()
 	self.ResizeButton:Init(self, MinPanelWidth, MinPanelHeight);
 	self.TitleText:SetText(EVENTTRACE_HEADER);
 
-	hooksecurefunc(CallbackRegistryMixin, "TriggerEvent", function(registry, event, ...)
+	hooksecurefunc(EventRegistry, "TriggerEvent", function(registry, event, ...)
 		EventTrace:LogCallbackRegistryEvent(registry, event, ...);
 	end);
 end
@@ -157,6 +131,7 @@ function EventTracePanelMixin:SaveVariables()
 	EventTraceSavedVars.Size.Height = height;
 
 	EventTraceSavedVars.ShowArguments = self:IsShowingArguments();
+	EventTraceSavedVars.ShowTimestamp = self:IsShowingTimestamp();
 	EventTraceSavedVars.LogCREvents = self:IsLoggingCREvents();
 end
 
@@ -168,6 +143,7 @@ function EventTracePanelMixin:LoadVariables()
 	self:SetSize(EventTraceSavedVars.Size.Width, EventTraceSavedVars.Size.Height);
 
 	self:SetShowingArguments(EventTraceSavedVars.ShowArguments or true);
+	self:SetShowingTimestamp(EventTraceSavedVars.ShowTimestamp or true);
 	self:SetLoggingCREvents(EventTraceSavedVars.LogCREvents or true);
 end
 
@@ -197,7 +173,7 @@ local function SetScrollBoxButtonAlternateState(scrollBox)
 		button:SetAlternateOverlayShown(index % 2 == 1);
 		index = index + 1;
 	end);
-end;
+end
 
 function EventTracePanelMixin:DisplayEvents()
 	self.Log.Bar.Label:SetText(EVENTTRACE_LOG_HEADER);
@@ -286,30 +262,30 @@ function EventTracePanelMixin:InitializeLog()
 			SetScrollBoxButtonAlternateState(scrollBox);
 		end;
 		scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
-	end;
+	end
 
 	SetOnDataRangeChanged(self.Log.Events.ScrollBox);
 	SetOnDataRangeChanged(self.Log.Search.ScrollBox);
 
-	do
-		local function AddEventToFilter(elementData)
-			local found = self.filterDataProvider:FindElementDataByPredicate(function(filterData)
-				return filterData.event == elementData.event;
-			end);
-			if found then
-				found.enabled = true;
-				
-				local button = found.scrollBoxChild;
-				if button then
-					button:UpdateEnabledState();
-				end
-			else
-				self.filterDataProvider:Insert({event = elementData.event:upper(), displayEvent = GetDisplayEvent(elementData), enabled = true});
+	local function AddEventToFilter(elementData)
+		local found = self.filterDataProvider:FindElementDataByPredicate(function(filterData)
+			return filterData.event == elementData.event;
+		end);
+		if found then
+			found.enabled = true;
+			
+			local button = found.scrollBoxChild;
+			if button then
+				button:UpdateEnabledState();
 			end
-			self:RemoveEventFromDataProvider(self.logDataProvider, elementData.event);
-			self:RemoveEventFromDataProvider(self.searchDataProvider, elementData.event);
-		end;
+		else
+			self.filterDataProvider:Insert({event = elementData.event:upper(), displayEvent = GetDisplayEvent(elementData), enabled = true});
+		end
+		self:RemoveEventFromDataProvider(self.logDataProvider, elementData.event);
+		self:RemoveEventFromDataProvider(self.searchDataProvider, elementData.event);
+	end
 	
+	do
 		local function LocateInSearch(elementData, text)
 			self.pendingSearch = elementData;
 			self.Log.Bar.SearchBox:SetText(text);
@@ -317,10 +293,10 @@ function EventTracePanelMixin:InitializeLog()
 
 		local view = CreateScrollBoxListLinearView();
 		view:SetElementExtent(20);
-		view:SetFactory(function(factory, elementData)
+		view:SetElementFactory(function(factory, elementData)
 			if elementData.event then
 				local button = factory("Button", "EventTraceLogEventButtonTemplate");
-				button:Init(elementData, self:IsShowingArguments());
+				button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp());
 
 				button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
 					AddEventToFilter(elementData);
@@ -365,7 +341,7 @@ function EventTracePanelMixin:InitializeLog()
 
 		local view = CreateScrollBoxListLinearView();
 		view:SetElementExtent(20);
-		view:SetFactory(function(factory, elementData)
+		view:SetElementFactory(function(factory, elementData)
 			if elementData.event then
 				local button = factory("Button", "EventTraceLogEventButtonTemplate");
 				button:Init(elementData, self:IsShowingArguments());
@@ -408,14 +384,14 @@ function EventTracePanelMixin:InitializeFilter()
 		self.Filter.ScrollBox:ForEachFrame(function(button)
 			button:UpdateEnabledState();
 		end);
-	end;
+	end
 
 	local function InitializeCheckButton(button, text, enable)
 		button.Label:SetText(text);
 		button:SetScript("OnClick", function(button, buttonName)
 			SetEventsEnabled(enable);
 		end);
-	end;
+	end
 
 	InitializeCheckButton(self.Filter.Bar.CheckAllButton, EVENTTRACE_BUTTON_ENABLE_FILTERS, true);
 	InitializeCheckButton(self.Filter.Bar.UncheckAllButton, EVENTTRACE_BUTTON_DISABLE_FILTERS, false);
@@ -427,17 +403,16 @@ function EventTracePanelMixin:InitializeFilter()
 
 	local function OnDataRangeChanged(sortPending)
 		SetScrollBoxButtonAlternateState(self.Filter.ScrollBox);
-	end;
+	end
 	self.Filter.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
 
 	local function RemoveEventFromFilter(elementData)
 		self.filterDataProvider:Remove(elementData);
-	end;
+	end
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtent(20);
-	view:SetFactory(function(factory, elementData)
-		local button = factory("Button", "EventTraceFilterButtonTemplate");
+	view:SetElementInitializer("Button", "EventTraceFilterButtonTemplate", function(button, elementData)
 		button:Init(elementData, RemoveEventFromFilter);
 	end);
 
@@ -468,7 +443,16 @@ function EventTracePanelMixin:InitializeOptions()
 		info.checked = self:IsShowingArguments();
 		info.keepShownOnClick = 1;
 		info.func = function()
-			self:ToggleShowingArguments();
+			self:SetShowingArguments(not self:IsShowingArguments());
+		end
+		UIDropDownMenu_AddButton(info);
+
+		info = UIDropDownMenu_CreateInfo();
+		info.text = string.format(EVENTTRACE_SHOW_TIMESTAMP);
+		info.checked = self:IsShowingTimestamp();
+		info.keepShownOnClick = 1;
+		info.func = function()
+			self:SetShowingTimestamp(not self:IsShowingTimestamp());
 		end
 		UIDropDownMenu_AddButton(info);
 
@@ -477,7 +461,7 @@ function EventTracePanelMixin:InitializeOptions()
 		info.checked = self:IsLoggingCREvents();
 		info.keepShownOnClick = 1;
 		info.func = function()
-			self:ToggleLoggingCREvents();
+			self:SetLoggingCREvents(not self:IsLoggingCREvents());
 		end
 		UIDropDownMenu_AddButton(info);
 	end
@@ -493,20 +477,33 @@ function EventTracePanelMixin:InitializeOptions()
 	end);
 end
 
-function EventTracePanelMixin:ToggleShowingArguments()
-	self:SetShowingArguments(not self:IsShowingArguments());
-end
-
 function EventTracePanelMixin:IsShowingArguments()
 	return self.showingArguments;
 end
 
 function EventTracePanelMixin:SetShowingArguments(show)
 	self.showingArguments = show;
+
+	self:UpdateLogScrollBoxes(function(frame)
+		frame:OnShowArgumentsChanged(frame:GetElementData(), show);
+	end);
 end
 
-function EventTracePanelMixin:ToggleLoggingCREvents()
-	self:SetLoggingCREvents(not self:IsLoggingCREvents());
+function EventTracePanelMixin:SetShowingTimestamp(show)
+	self.showingTimestamp = show;
+
+	self:UpdateLogScrollBoxes(function(frame)
+		frame:OnShowTimestampChanged(frame:GetElementData(), show);
+	end);
+end
+
+function EventTracePanelMixin:UpdateLogScrollBoxes(func)
+	self.Log.Events.ScrollBox:ForEachFrame(func);
+	self.Log.Search.ScrollBox:ForEachFrame(func);
+end
+
+function EventTracePanelMixin:IsShowingTimestamp()
+	return self.showingTimestamp;
 end
 
 function EventTracePanelMixin:IsLoggingCREvents()
@@ -537,7 +534,7 @@ function EventTracePanelMixin:LogMessage(message)
 end
 
 local function CreateEventElementData(event, ...)
-	return {event = event, args = {...}};
+	return {event = event, args = SafePack(...)};
 end
 
 function EventTracePanelMixin:LogEvent(event, ...)
@@ -662,10 +659,6 @@ end
 
 function EventTracePanelMixin:IsIgnoredEvent(event)
 	local e = event:upper();
-	if AlwaysFiltered[e] then
-		return true;
-	end
-
 	return self.filterDataProvider:ContainsByPredicate(function(elementData)
 		return elementData.enabled and elementData.event == e;
 	end);
@@ -682,64 +675,68 @@ function EventTracePanelMixin:RemoveEventFromDataProvider(dataProvider, event)
 	end
 end
 
-local function GetClockComponents(timestamp)
-	local hours = math.floor(timestamp / 3600);
-	timestamp = timestamp - (hours * 3600);
-	local minutes = math.floor(timestamp / 60);
-	timestamp = timestamp - (minutes * 60);
-	local seconds = math.floor(timestamp);
-	local milliseconds = timestamp - seconds;
-	return hours, minutes, seconds, milliseconds;
-end
-
 local function CreateClock(timestamp)
-	local hours, minutes, seconds, milliseconds = GetClockComponents(timestamp);
-	if hours > 0 then
-		return string.format(HoursClockFormat, hours, minutes, seconds + milliseconds);
+	local units = ConvertSecondsToUnits(timestamp);
+	local seconds = units.seconds + units.milliseconds;
+	if units.hours > 0 then
+		return string.format("%.2d:%.2d:%06.3fs", units.hours, units.minutes, seconds);
 	else
-		return string.format(MinutesClockFormat, minutes, seconds + milliseconds);
+		return string.format("%.2d:%06.3fs", units.minutes, seconds);
 	end
 end
 
-local function ConstructArgumentString(args)
-	if #args > 0 then
-		local words = {};
-		for index, arg in ipairs(args) do
-			if type(arg) == "string" then
-				table.insert(words, string.format('"%s"', arg));
-			elseif type(arg) == "number" then
-				table.insert(words, ORANGE_FONT_COLOR:WrapTextInColorCode(tostring(arg)));
-			elseif type(arg) == "boolean" then
-				table.insert(words, BRIGHTBLUE_FONT_COLOR:WrapTextInColorCode(tostring(arg)));
-			elseif type(arg) == "table" then
-				table.insert(words, LIGHTYELLOW_FONT_COLOR:WrapTextInColorCode(tostring(arg)));
-			end
-		end
+local ArgumentColors =
+{
+	["string"] = GREEN_FONT_COLOR,
+	["number"] = ORANGE_FONT_COLOR,
+	["boolean"] = BRIGHTBLUE_FONT_COLOR,
+	["table"] = LIGHTYELLOW_FONT_COLOR,
+	["nil"] = GRAY_FONT_COLOR,
+};
 
-		if #words > 1 then
-			return table.concat(words, ", ");	
-		else
-			return words[1];
-		end
+local function GetArgumentColor(arg)
+	return ArgumentColors[type(arg)] or HIGHLIGHT_FONT_COLOR;
+end
+
+local function FormatArgument(arg)
+	local color = GetArgumentColor(arg);
+	local t = type(arg);
+	if t == "string" then
+		return color:WrapTextInColorCode(string.format('"%s"', arg));
+	elseif t == "nil" then
+		return color:WrapTextInColorCode(t);
 	end
-	return "";
+	return color:WrapTextInColorCode(tostring(arg));
+end
+
+local function FormatLogID(elementData)
+	return GRAY_FONT_COLOR:WrapTextInColorCode(string.format("[%.3d]", (elementData.id % MaxEvents)));
+end
+
+local function FormatLine(id, message)
+	return string.format("%s %s", id, message);
 end
 
 EventTraceLogEventButtonMixin = {};
+
+local function AddTooltipArguments(...)
+	local count = select("#", ...);
+	for index = 1, count do
+		local arg = select(index, ...);
+		GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_ARG_FMT:format(index), FormatArgument(arg), HIGHLIGHT_FONT_COLOR, GetArgumentColor(arg));
+	end
+end
 
 function EventTraceLogEventButtonMixin:OnEnter()
 	EventTraceButtonBehaviorMixin.OnEnter(self);
 
 	EventTraceTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	EventTraceTooltip:AddLine(GetDisplayEvent(self.elementData));
-	EventTraceTooltip:AddDoubleLine(EVENTTRACE_TIMESTAMP, self.elementData.systemTimestamp);
-	local args = self.elementData.args;
-	if args then
-		for index, value in ipairs(args) do
-			local leftString = TooltipArgFormat:format(index);
-			EventTraceTooltip:AddDoubleLine(leftString, value);
-		end
-	end
+	local elementData = self:GetElementData();
+	GameTooltip_AddHighlightLine(EventTraceTooltip, GetDisplayEvent(elementData), HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_TIMESTAMP, elementData.systemTimestamp, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+	
+	AddTooltipArguments(SafeUnpack(elementData.args));
+
 	EventTraceTooltip:Show();
 end
 
@@ -749,21 +746,59 @@ function EventTraceLogEventButtonMixin:OnLeave()
 	EventTraceTooltip:Hide();
 end
 
-local function FormatLogID(elementData)
-	return GRAY_FONT_COLOR:WrapTextInColorCode(string.format(EventRelativeTimeFormat, (elementData.id % MaxEvents)));
+local function AddLineArguments(...)
+	local words = {};
+	local count = select("#", ...);
+	for index = 1, count do
+		local arg = select(index, ...);
+		table.insert(words, FormatArgument(arg));
+	end
+
+	local wordCount = #words;
+	if wordCount == 0 then
+		return "";
+	elseif wordCount == 1 then
+		return words[1];
+	end
+	return table.concat(words, ", ");
 end
 
-function EventTraceLogEventButtonMixin:Init(elementData, showArguments)
+function EventTraceLogEventButtonMixin:Init(elementData, showArguments, showTimestamp)
 	local id = FormatLogID(elementData);
 	local message = elementData.displayMessage or elementData.event;
-	elementData.arguments = ConstructArgumentString(elementData.args);
-
-	local args = showArguments and GREEN_FONT_COLOR:WrapTextInColorCode(elementData.arguments) or "";
-	self.LeftLabel:SetText(string.format("%s %s %s", id, message, args));
+	elementData.lineWithoutArguments = FormatLine(id, message);
+	
+	elementData.arguments = AddLineArguments(SafeUnpack(elementData.args));
+	elementData.formattedArguments = GREEN_FONT_COLOR:WrapTextInColorCode(elementData.arguments);
+	self:SetLeftText(elementData, showArguments);
 	
 	local clock = CreateClock(elementData.relativeTimestamp);
-	local timestamp = string.format("%s %s", clock, elementData.eventDelta and elementData.eventDelta or "");
-	self.RightLabel:SetText(GRAY_FONT_COLOR:WrapTextInColorCode(timestamp));
+	elementData.formattedTimestamp = string.format("%s %s", clock, elementData.eventDelta and elementData.eventDelta or "");
+	self:SetRightText(elementData, showTimestamp);
+end
+
+function EventTraceLogEventButtonMixin:SetLeftText(elementData, showArguments)
+	if showArguments then
+		self.LeftLabel:SetText(string.format("%s %s", elementData.lineWithoutArguments, elementData.formattedArguments));
+	else
+		self.LeftLabel:SetText(elementData.lineWithoutArguments);
+	end
+end
+
+function EventTraceLogEventButtonMixin:SetRightText(elementData, showTimestamp)
+	if showTimestamp then
+		self.RightLabel:SetText(GRAY_FONT_COLOR:WrapTextInColorCode(elementData.formattedTimestamp));
+	else
+		self.RightLabel:SetText("");
+	end
+end
+
+function EventTraceLogEventButtonMixin:OnShowArgumentsChanged(elementData, showArguments)
+	self:SetLeftText(elementData, showArguments);
+end
+
+function EventTraceLogEventButtonMixin:OnShowTimestampChanged(elementData, showTimestamp)
+	self:SetRightText(elementData, showTimestamp);
 end
 
 EventTraceLogMessageButtonMixin = {};
@@ -771,14 +806,28 @@ EventTraceLogMessageButtonMixin = {};
 function EventTraceLogMessageButtonMixin:Init(elementData)
 	local id = FormatLogID(elementData);
 	local message = ORANGE_FONT_COLOR:WrapTextInColorCode(string.format(EVENTTRACE_MESSAGE_FORMAT, elementData.message));
-	self.LeftLabel:SetText(string.format("%s %s", id, message));
+	elementData.lineWithoutArguments = FormatLine(id, message);
+
+	self:SetLeftText(elementData);
+end
+
+function EventTraceLogMessageButtonMixin:SetLeftText(elementData)
+	self.LeftLabel:SetText(elementData.lineWithoutArguments);
+end
+
+function EventTraceLogMessageButtonMixin:OnShowArgumentsChanged(elementData, showArguments)
+	self:SetLeftText(elementData);
+end
+
+function EventTraceLogMessageButtonMixin:OnShowTimestampChanged(elementData, showTimestamp)
+end
+
+function EventTraceLogMessageButtonMixin:SetRightText(elementData)
 end
 
 EventTraceFilterButtonMixin = {};
 
 function EventTraceFilterButtonMixin:Init(elementData, hideCb)
-	self.elementData = elementData;
-
 	self.Label:SetText(GetDisplayEvent(elementData));
 	
 	self:UpdateEnabledState();
@@ -793,9 +842,10 @@ function EventTraceFilterButtonMixin:Init(elementData, hideCb)
 end
 
 function EventTraceFilterButtonMixin:UpdateEnabledState()
-	self.CheckButton:SetChecked(self.elementData.enabled);
-	self:SetAlpha(self.elementData.enabled and 1 or .7);
-	self:DesaturateHierarchy(self.elementData.enabled and 0 or 1);
+	local elementData = self:GetElementData();
+	self.CheckButton:SetChecked(elementData.enabled);
+	self:SetAlpha(elementData.enabled and 1 or .7);
+	self:DesaturateHierarchy(elementData.enabled and 0 or 1);
 end
 
 function EventTraceFilterButtonMixin:OnDoubleClick()
@@ -803,7 +853,8 @@ function EventTraceFilterButtonMixin:OnDoubleClick()
 end
 
 function EventTraceFilterButtonMixin:ToggleEnabledState()
-	self.elementData.enabled = not self.elementData.enabled;
+	local elementData = self:GetElementData();
+	elementData.enabled = not elementData.enabled;
 	self:UpdateEnabledState();
 end
 

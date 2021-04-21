@@ -463,7 +463,7 @@ ConduitListSectionMixin = {}
 function ConduitListSectionMixin:OnLoad()
 	self.CategoryButton:SetScript("OnClick", function(button, buttonName, down)
 		local newCollapsed = self.Container:IsShown();
-		self.elementData.collapsed = newCollapsed;
+		self:GetElementData().collapsed = newCollapsed;
 		self:SetCollapsed(newCollapsed);
 	end);
 
@@ -580,7 +580,7 @@ function ConduitListSectionMixin:PlayUpdateAnim(conduitData)
 end
 
 function ConduitListSectionMixin:IsCollapsed()
-	return self.elementData.collapsed;
+	return self:GetElementData().collapsed;
 end
 
 function ConduitListSectionMixin:SetCollapsed(collapsed)
@@ -601,6 +601,31 @@ local ConduitListEvents =
 	"SOULBIND_CONDUIT_COLLECTION_CLEARED",
 	"PLAYER_SPECIALIZATION_CHANGED",
 };
+
+function ConduitListMixin:OnLoad()
+	local buttonHeight = 42;
+	local topSpacer = 10;
+	local bottomSpacer = 5;
+	local catButtonExtent = 23;
+	local containerOffset = 5;
+	local expandedExtent = catButtonExtent + topSpacer + bottomSpacer + containerOffset;
+	local collapsedExtent = catButtonExtent + topSpacer;
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementExtentCalculator(function(dataIndex, elementData)
+		if elementData.collapsed then
+			return collapsedExtent;
+		else
+			return (#elementData.conduitDatas * buttonHeight) + expandedExtent;
+		end
+	end);
+	view:SetElementInitializer("EventFrame", "ConduitListSectionTemplate", function(list, elementData)
+		list:Init(elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+	ScrollUtil.AddResizableChildrenBehavior(self.ScrollBox);
+end
 
 function ConduitListMixin:OnEvent(event, ...)
 	if event == "SOULBIND_CONDUIT_COLLECTION_UPDATED" then
@@ -657,31 +682,6 @@ function ConduitListMixin:Init()
 	end
 
 	local dataProvider = CreateDataProvider(listDatas);
-	local buttonHeight = 42;
-	local topSpacer = 10;
-	local bottomSpacer = 5;
-	local catButtonExtent = 23;
-	local containerOffset = 5;
-	local expandedExtent = catButtonExtent + topSpacer + bottomSpacer + containerOffset;
-	local collapsedExtent = catButtonExtent + topSpacer;
-	
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementExtentCalculator(function(dataIndex, elementData)
-		if elementData.collapsed then
-			return collapsedExtent;
-		else
-			return (#elementData.conduitDatas * buttonHeight) + expandedExtent;
-		end
-	end);
-	view:SetFactory(function(factory, elementData)
-		local list = factory("EventFrame", "ConduitListSectionTemplate");
-		list:Init(elementData);
-		return list;
-	end);
-
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
-	ScrollUtil.AddResizableChildrenBehavior(self.ScrollBox);
-
 	self.ScrollBox:SetDataProvider(dataProvider);
 	local anyShown = #listDatas > 0;
 	self:UpdateCollectionShown(anyShown);

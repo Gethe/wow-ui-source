@@ -493,19 +493,25 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.layoutIndex = layoutIndex;
 
-	local textureKitAppend = "";
+	local bgTextureKitFmt = "%s";
+	local fgTextureKitFmt = "%s";
 
 	if layoutIndex then
-		textureKitAppend = "_"..layoutIndex;
+		if frameTextureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, frameTextureKit)) then 
+			bgTextureKitFmt = "%s_"..layoutIndex;
+		end
+
+		if textureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, textureKit)) then 
+			fgTextureKitFmt = "%s_"..layoutIndex;
+		end
 	end
 
 	self.Text:SetFontObject(GetTextSizeFont(textSizeType));
 
 	self.Text:SetText(text);
 	self:SetTooltip(tooltip);
-
-	SetupTextureKitOnFrame(frameTextureKit, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-	SetupTextureKitOnFrame(textureKit, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(frameTextureKit, self.Background, bgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.Foreground, fgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end

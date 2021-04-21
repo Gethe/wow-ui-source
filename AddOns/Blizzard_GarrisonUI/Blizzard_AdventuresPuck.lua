@@ -5,10 +5,24 @@ function AdventuresPuckAbilityMixin:OnEnter()
 	GameTooltip:SetOwner(self);
 	AddAutoCombatSpellToTooltip(GameTooltip, self.abilityInfo);
 	GameTooltip:Show();
+
+	local autoCombatSpellID = self:GetAutoCombatSpellID();
+	if autoCombatSpellID ~= nil then
+		local board = self:GetBoard();
+		if (board ~= nil) and not board:IsShowingActiveCombat() then
+			local missionID = board:GetMainFrame():GetActiveMissionID();
+			if missionID ~= nil then
+				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatSpellID, self:GetPuck().boardIndex);
+				local useLoop = true;
+				board:TriggerTargetingReticles(abilityTargetInfos, useLoop);
+			end
+		end
+	end
 end
 
 function AdventuresPuckAbilityMixin:OnLeave()
 	GameTooltip_Hide();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 end
 
 function AdventuresPuckAbilityMixin:SetAbilityInfo(abilityInfo)
@@ -59,6 +73,14 @@ end
 function AdventuresPuckAbilityMixin:SetPuckDesaturation(desaturation)
 	self.Icon:SetDesaturation(desaturation);
 	self.Border:SetDesaturation(desaturation);
+end
+
+function AdventuresPuckAbilityMixin:GetPuck()
+	return self:GetParent();
+end
+
+function AdventuresPuckAbilityMixin:GetBoard()
+	return self:GetPuck():GetBoard();
 end
 
 AdventuresPuckMixin = {};
@@ -170,18 +192,36 @@ function AdventuresPuckMixin:OnEnter()
 		end
 
 		local autoCombatAutoAttack = self:GetAutoCombatAutoAttack();
-		if autoCombatAutoAttack then 
+		if autoCombatAutoAttack ~= nil then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			AddAutoCombatSpellToTooltip(GameTooltip, autoCombatAutoAttack);
 		end
 
 		GameTooltip:Show();
+
+		self:ShowAutoAttackTargetingReticles();
 	end
 	self:GetBoard():ShowHealthValues();
 end
 
+function AdventuresPuckMixin:ShowAutoAttackTargetingReticles()
+	local autoCombatAutoAttack = self:GetAutoCombatAutoAttack();
+	if autoCombatAutoAttack ~= nil then
+		local board = self:GetBoard();
+		if (board ~= nil) and not board:IsShowingActiveCombat() then
+			local missionID = board:GetMainFrame():GetActiveMissionID();
+			if missionID ~= nil then
+				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatAutoAttack.autoCombatSpellID, self.boardIndex);
+				local useLoop = true;
+				board:TriggerTargetingReticles(abilityTargetInfos, useLoop);
+			end
+		end
+	end
+end
+
 function AdventuresPuckMixin:OnLeave()
 	GameTooltip_Hide();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 	self:GetBoard():HideHealthValues();
 end
 
@@ -386,12 +426,14 @@ function AdventuresMissionPageFollowerPuckMixin:OnEnter()
 	local followerID = self:GetFollowerGUID();
 	if followerID then
 		GarrisonMissionPageFollowerFrame_OnEnter(self);
+		self:ShowAutoAttackTargetingReticles();
 		self:GetBoard():ShowHealthValues();
 	end
 end
 
 function AdventuresMissionPageFollowerPuckMixin:OnLeave()
 	GarrisonFollowerTooltip:Hide();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 	self:GetBoard():HideHealthValues();
 end
 
@@ -406,6 +448,10 @@ function AdventuresMissionPageFollowerPuckMixin:SetEmpty()
 	self.HealthBar:Hide();
 	self.AbilityOne:Hide();
 	self.AbilityTwo:Hide();
+end
+
+function AdventuresMissionPageFollowerPuckMixin:IsEmpty()
+	return self.followerGUID == nil;
 end
 
 function AdventuresMissionPageFollowerPuckMixin:SetFollowerGUID(...)

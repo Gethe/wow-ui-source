@@ -11,6 +11,9 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("SHOULD_RECONNECT_TO_REALM_LIST");
 
 	AccountLogin_CheckLoginState(self);
+
+	local year = date:sub(#date - 3, #date);
+	self.UI.BlizzDisclaimer:SetText(BLIZZ_DISCLAIMER_FORMAT:format(year));
 end
 
 function AccountLogin_OnEvent(self, event, ...)

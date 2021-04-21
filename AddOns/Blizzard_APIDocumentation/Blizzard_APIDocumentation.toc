@@ -106,6 +106,7 @@ UIManagerDocumentation.lua
 UIModelInfoDocumentation.lua
 UIWidgetManagerDocumentation.lua
 UnitDocumentation.lua
+UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
 VignetteInfoDocumentation.lua
@@ -174,7 +175,6 @@ TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIFrameManagerDocumentation.lua
-UserFeedbackDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
@@ -183,6 +183,7 @@ ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 BaseDocumentation.lua
+BattlePetConstantsDocumentation.lua
 BountySharedDocumentation.lua
 CalendarConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
@@ -200,6 +201,7 @@ ItemSharedDocumentation.lua
 LevelConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
+PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 ProfessionConstantsDocumentation.lua

@@ -48,7 +48,7 @@ function ObjectPoolMixin:Acquire()
 	end
 
 	local newObj = self.creationFunc(self);
-	if self.resetterFunc then
+	if self.resetterFunc and not self.disallowResetIfNew then
 		self.resetterFunc(self, newObj);
 	end
 	self.activeObjects[newObj] = true;
@@ -75,6 +75,10 @@ function ObjectPoolMixin:ReleaseAll()
 	for obj in pairs(self.activeObjects) do
 		self:Release(obj);
 	end
+end
+
+function ObjectPoolMixin:SetResetDisallowedIfNew(disallowed)
+	self.disallowResetIfNew = disallowed;
 end
 
 function ObjectPoolMixin:EnumerateActive()

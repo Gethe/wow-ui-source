@@ -395,7 +395,7 @@ function SoulbindConduitNodeMixin:UpdatePendingAnim()
 end
 
 function SoulbindConduitNodeMixin:IsEnhanced()
-	return self.node.socketEnhanced ;
+	return self.node.socketEnhanced;
 end
 
 function SoulbindConduitNodeMixin:UpdateVisuals()
@@ -582,12 +582,11 @@ local function GetUninstalledConduitStrings(conduitType)
 end
 
 function SoulbindConduitNodeMixin:LoadTooltip()
-	local node = self:GetNode();
 	local conduit = self:GetConduit();
 	if conduit:IsValid() then
 		local onConduitLoad = function()
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			if node.socketEnhanced then 
+			if self:IsEnhanced() then 
 				GameTooltip:SetEnhancedConduit(conduit:GetConduitID(), conduit:GetConduitRank());
 			else
 				GameTooltip:SetConduit(conduit:GetConduitID(), conduit:GetConduitRank()); 
@@ -603,7 +602,7 @@ function SoulbindConduitNodeMixin:LoadTooltip()
 		else
 			local title, description = GetUninstalledConduitStrings(self:GetConduitType());
 			GameTooltip_SetTitle(GameTooltip, title);
-			if node.socketEnhanced then 
+			if self:IsEnhanced() then 
 				GameTooltip_AddColoredLine(GameTooltip, SOULBIND_CONDUIT_ENHANCED, SOULBIND_CONDUIT_ENHANCED_COLOR, false);
 			end
 			GameTooltip_AddNormalLine(GameTooltip, description);

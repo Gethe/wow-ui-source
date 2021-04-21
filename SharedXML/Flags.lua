@@ -22,6 +22,10 @@ function FlagsUtil.IsSet(bitMask, flagOrMask)
 	return bit.band(bitMask, flagOrMask) == flagOrMask;
 end
 
+function FlagsUtil.IsAnySet(bitMask, mask)
+	return bit.band(bitMask, mask) ~= 0;
+end
+
 FlagsMixin = {};
 
 function FlagsMixin:OnLoad()

@@ -359,4 +359,13 @@
 			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
 		</KeyValues>
 	</GameTooltip>
+
+	<GameTooltip name="GameSmallHeaderTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="SystemFont_Med2" type="string"/>
+			<KeyValue key="textRight1Font" value="SystemFont_Med2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
+		</KeyValues>
+	</GameTooltip>
 </Ui>

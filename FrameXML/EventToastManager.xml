@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="EventToastManager.lua"/>
-	
-	<Frame name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
+
+	<Button name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="heightPadding" value="30" type="number"/>
@@ -66,9 +66,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Button name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
@@ -102,9 +102,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Button name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT">
@@ -126,9 +126,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Button name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
@@ -149,9 +149,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastScenarioToastTemplate" inherits="ResizeLayoutFrame" mixin="EventToastScenarioToastMixin" alpha="0" virtual="true">
+	<Button name="EventToastScenarioBaseToastTemplate" inherits="ResizeLayoutFrame" mixin="EventToastScenarioBaseToastMixin" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="minimumHeight" value="72" type="number"/>
@@ -173,6 +173,9 @@
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Topper" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Footer" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Background" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 
 				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
@@ -186,7 +189,29 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Frames>
+			<Frame parentKey="PaddingFrame">
+				<Size x="300" y="20"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.PaddingFrame" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Color color="SCENARIO_STAGE_COLOR"/>
+				</FontString>
+				<FontString parentKey="Subtitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Color color="SCENARIO_SUBTITLE_COLOR"/>
+				</FontString>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
@@ -207,29 +232,30 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-14"/>
-					</Anchors>
-					<Color color="SCENARIO_STAGE_COLOR"/>
-				</FontString>
-				<FontString parentKey="Subtitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
-					</Anchors>
-					<Color color="SCENARIO_SUBTITLE_COLOR"/>
-				</FontString>
-				<FontString parentKey="Description" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
-					<Size x="300" y="0"/>
+			<Layer level="BORDER">
+				<Texture parentKey="Topper" hidden="true" alpha="0" alphaMode="BLEND">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-16"/>
+						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
-					<Color color="SCENARIO_SUBTITLE_COLOR"/>
-				</FontString>
+				</Texture>
+				<Texture parentKey="Footer" hidden="true" alpha="0" alphaMode="BLEND">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" hidden="true" alpha="0" alphaMode="BLEND">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -292,15 +318,87 @@
 					</Layer>
 				</Layers>
 			</Frame>
+		</Frames>
+	</Button>
+	
+	<Button name="EventToastScenarioToastTemplate" inherits="EventToastScenarioBaseToastTemplate" mixin="EventToastScenarioToastMixin" alpha="0" virtual="true">
+		<KeyValues>
+			<KeyValue key="heightPadding" value="10" type="number"/>
+		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="NewStage">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="4.5" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="300" y="0"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Subtitle"/>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 			</Frame>
 		</Frames>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastChallengeModeToastTemplate" mixin="EventToastChallengeModeToastMixin" alpha="0" virtual="true">
+	<Button name="EventToastScenarioExpandToastTemplate" inherits="EventToastScenarioBaseToastTemplate" mixin="EventToastScenarioExpandToastMixin" alpha="0" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="NewStage">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="4.5" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" inherits="Number13FontGray" justifyH="CENTER">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ExpandWidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.WidgetContainer" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		
+	</Button>
+
+	<Button name="EventToastChallengeModeToastTemplate" mixin="EventToastChallengeModeToastMixin" alpha="0" virtual="true">
 		<Size x="418" y="72"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -387,9 +485,9 @@
 				</Layers>
 			</Frame>
 		</Frames>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
+	<Button name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="heightPadding" value="20" type="number"/>
@@ -436,9 +534,9 @@
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
 		</Frames>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Button name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
@@ -453,9 +551,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
-	
-	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	</Button>
+
+	<Button name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="SingleLine" inherits="GameFont_Gigantic">
@@ -472,9 +570,9 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-	</Frame>
+	</Button>
 
-	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Button name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="BlockText" inherits="GameFontNormalHuge">
@@ -491,7 +589,7 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-	</Frame>
+	</Button>
 
 	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<KeyValues>
@@ -613,6 +711,8 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -659,4 +759,8 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
+
+
+
+
 </Ui>

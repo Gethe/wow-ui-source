@@ -129,7 +129,7 @@ function EventEditBoxMixin:ApplyTextColor(color)
 	self.textColor = color;
 
 	if not self:IsDefaultTextDisplayed() then
-		self:SetTextColor(self.textColor);
+		self:SetTextColor(self:GetTextColorRGB());
 	end
 end
 

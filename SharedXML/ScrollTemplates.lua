@@ -204,7 +204,7 @@ end
 
 function ScrollingEditBoxMixin:SetFontObject(fontName)
 	local editBox = self:GetEditBox();
-	editBox:SetFontObject(self.fontName);
+	editBox:SetFontObject(fontName);
 
 	local scrollBox = self:GetScrollBox();
 	local fontHeight = editBox:GetFontHeight();
@@ -401,7 +401,7 @@ end
 
 function ScrollingFontMixin:SetFontObject(fontName)
 	local fontString = self:GetFontString();
-	fontString:SetFontObject(self.fontName);
+	fontString:SetFontObject(fontName);
 	
 	local scrollBox = self:GetScrollBox();
 	local fontHeight = select(2, fontString:GetFont());

@@ -282,7 +282,7 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitRankFromCollection",
+			Name = "GetConduitRank",
 			Type = "Function",
 
 			Arguments =

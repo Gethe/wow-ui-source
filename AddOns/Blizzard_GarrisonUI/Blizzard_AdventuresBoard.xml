@@ -37,21 +37,21 @@
 			<KeyValue key="spacing" value="4" type="number"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="BuffIcon" inherits="AdventuresBoardAuraIcon">
+			<Frame parentKey="BuffIcon" inherits="AdventuresBoardAuraIcon" hidden="true">
 				<Size x="29" y="19"/>
 				<KeyValues>
 					<KeyValue key="textureAtlas" type="string" value="Adventure-buff-indicator"/>
 					<KeyValue key="layoutIndex" value="1" type="number"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="DebuffIcon" inherits="AdventuresBoardAuraIcon">
+			<Frame parentKey="DebuffIcon" inherits="AdventuresBoardAuraIcon" hidden="true">
 				<Size x="29" y="19"/>
 				<KeyValues>
 					<KeyValue key="textureAtlas" type="string" value="Adventure-debuff-indicator"/>
 					<KeyValue key="layoutIndex" value="2" type="number"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="HealingIcon" inherits="AdventuresBoardAuraIcon">
+			<Frame parentKey="HealingIcon" inherits="AdventuresBoardAuraIcon" hidden="true">
 				<Size x="20" y="20"/>
 				<KeyValues>
 					<KeyValue key="textureAtlas" type="string" value="Adventure-heal-indicator"/>
@@ -60,6 +60,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnHide method="OnHide"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>

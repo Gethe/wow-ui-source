@@ -1,3 +1,27 @@
+local ScrollBoxListFrameMixin = {};
+
+-- Verbose argument names here to avoid collisions. Expect
+-- add on authors to use SetElementData().
+function ScrollBoxListFrameMixin:GetElementData()
+	return self.scrollBoxElementData;
+end
+
+function ScrollBoxListFrameMixin:SetElementData(elementData)
+	self.scrollBoxElementData = elementData;
+end
+
+function ScrollBoxListFrameMixin:ElementDataMatches(elementData)
+	return self:GetElementData() == elementData;
+end
+
+function ScrollBoxListFrameMixin:GetOrderIndex()
+	return self.scrollBoxOrderIndex;
+end
+
+function ScrollBoxListFrameMixin:SetOrderIndex(orderIndex)
+	self.scrollBoxOrderIndex = orderIndex;
+end
+
 ScrollBoxPaddingMixin = {};
 
 function ScrollBoxPaddingMixin:Init(top, bottom, left, right)
@@ -66,12 +90,18 @@ function ScrollBoxViewUtil.CreateFrameLevelCounter(frameLevelPolicy, referenceFr
 	return nil;
 end
 
+local InvalidationReason =
+{
+	DataProviderAssigned = 1,
+	DataProviderContentsChanged = 2,
+};
+
 ScrollBoxViewMixin = CreateFromMixins(ScrollDirectionMixin);
 
 ScrollBoxViewMixin.FrameLevelPolicy =
 {
-	Ascending,
-	Descending,
+	Ascending = 1,
+	Descending = 2,
 };
 
 function ScrollBoxViewMixin:Init()
@@ -115,7 +145,7 @@ end
 
 function ScrollBoxViewMixin:FindFrame(elementData)
 	return self:FindFrameByPredicate(function(frame)
-		return frame.elementData == elementData;
+		return frame:GetElementData() == elementData;
 	end);
 end
 
@@ -143,18 +173,32 @@ function ScrollBoxListViewMixin:Init()
 
 	self.poolCollection = CreateFramePoolCollection();
 
+	-- This function is being returned to the consumer of ScrollBox, so
+	-- any values produced here that we want to use in the Acquire() function
+	-- are assigned to self. Will probably need to investigate the taint
+	-- implications here.
 	self.factory = function(frameType, frameTemplate, elementReset)
 		local reset = function(pool, frame)
 			-- elementReset handler not expected to be concerned about the implementation details
-			-- of ScrollBox's frame pool management.
+			-- of ScrollBox's frame management.
 			FramePool_HideAndClearAnchors(pool, frame);
 			if elementReset then
 				elementReset(frame);
 			end
 		end
 
-		local pool = self.poolCollection:GetOrCreatePool(frameType, self:GetScrollTarget(), frameTemplate, reset);
+		local pool = self.poolCollection:GetOrCreatePool(frameType, self:GetScrollTarget(), frameTemplate or "", reset);
+		
+		-- We don't want the behavior of invoking a reset function the first time an object is created. 
+		-- Expectation is for any initialization of the frame to happen once you're returned a reference to it.
+		pool:SetResetDisallowedIfNew(true);
 		local frame, new = pool:Acquire();
+
+		-- For many conveniences, the elementData is assigned to the frame, and done so prior to returning
+		-- a reference to the consumer.
+		Mixin(frame, ScrollBoxListFrameMixin);
+		frame:SetElementData(self.factoryFrameElementData);
+		
 		self.factoryFrame = frame;
 		self.factoryFrameNew = new;
 		return frame, new;
@@ -179,7 +223,7 @@ end
 
 function ScrollBoxListViewMixin:ForEachFrame(func)
 	for index, frame in ipairs(self:GetFrames()) do
-		func(frame, frame.elementData);
+		func(frame, frame:GetElementData());
 	end
 end
 
@@ -264,24 +308,29 @@ function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPositi
 		end
 	end
 	
-	self:Invalidate();
-
-	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataChanged);
+	self:SignalDataChangeEvent(InvalidationReason.DataProviderAssigned);
 end
 
 function ScrollBoxListViewMixin:OnDataProviderSizeChanged(pendingSort)
 	-- Defer if we're about to be sorted since we have a handler for that.
 	if not pendingSort then
-		self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataChanged);
+		self:SignalDataChangeEvent(InvalidationReason.DataProviderContentsChanged);
 	end
 end
 
 function ScrollBoxListViewMixin:OnDataProviderSort()
+	self:SignalDataChangeEvent(InvalidationReason.DataProviderContentsChanged);
+end
+
+function ScrollBoxListViewMixin:SignalDataChangeEvent(invalidationReason)
+	self:SetInvalidationReason(invalidationReason);
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataChanged);
 end
 
-function ScrollBoxListViewMixin:CanAddFrameToElementData(elementData)
-	return type(elementData) == "table";
+function ScrollBoxListViewMixin:AssignFrameToElementData(elementData, frame)
+	if type(elementData) == "table" then
+		elementData.scrollBoxChild = frame;
+	end
 end
 
 function ScrollBoxListViewMixin:IsAcquireLocked()
@@ -302,20 +351,20 @@ function ScrollBoxListViewMixin:Acquire(dataIndex)
 	self:SetAcquireLocked(true);
 
 	local elementData = self:GetDataProvider():Find(dataIndex);
+	self.factoryFrameElementData = elementData;
 	self.frameFactory(self.factory, elementData);
 
-	-- See self.factory for the factory output caching explanation.
-	local frame, new = self.factoryFrame, self.factoryFrameNew;
-	self.factoryFrameNew, self.factoryFrame = nil, nil;
+	local frame = self.factoryFrame;
+	local new = self.factoryFrameNew;
+	self.factoryFrame = nil;
+	self.factoryFrameNew = nil;
+	self.factoryFrameElementData = nil;
 
 	table.insert(self:GetFrames(), frame);
 
-	if self:CanAddFrameToElementData(elementData) then
-		elementData.scrollBoxChild = frame;
-	end
+	self:AssignFrameToElementData(elementData, frame);
 
-	frame.elementData = elementData;
-	frame.orderIndex = dataIndex;
+	frame:SetOrderIndex(dataIndex);
 	frame:Show();
 
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnAcquiredFrame, frame, elementData, new);
@@ -324,16 +373,14 @@ function ScrollBoxListViewMixin:Acquire(dataIndex)
 end
 
 function ScrollBoxListViewMixin:Release(frame)
-	if self:CanAddFrameToElementData() then
-		frame.elementData.scrollBoxChild = nil;
-	end
+	local oldElementData = frame:GetElementData();
+	self:AssignFrameToElementData(oldElementData, nil);
 
 	tDeleteItem(self:GetFrames(), frame);
 	self.poolCollection:Release(frame);
 
-	local oldElementData = frame.elementData;
-	frame.elementData = nil;
-	frame.orderIndex = nil;
+	frame:SetElementData(nil);
+	frame:SetOrderIndex(nil);
 
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnReleasedFrame, frame, oldElementData);
 end
@@ -346,7 +393,29 @@ function ScrollBoxListViewMixin:SetElementExtentCalculator(elementExtentCalculat
 	self.elementExtentCalculator = elementExtentCalculator;
 end
 
-function ScrollBoxListViewMixin:SetFactory(frameFactory)
+--[[]
+	Use SetElementInitializer if using a single template type.
+	SetElementInitializer("Button", "TemplateOne", function(button, elementData, new)
+		button:Init(elementData); 
+	end);
+]]
+function ScrollBoxListViewMixin:SetElementInitializer(frameType, frameTemplate, initializer, elementReset)
+	 local function Factory(factory, elementData)
+        local frame, new = factory(frameType, frameTemplate, elementReset);
+		initializer(frame, elementData, new);
+    end;
+	self:SetElementFactory(Factory);
+end
+
+--[[
+	Use SetElementFactory if using different template types:
+	SetElementFactory(function(factory, elementData)
+		local templateType = elementData.useTypeOne and "TemplateOne" or "TemplateTwo";
+		local button, new = factory("Button", templateType);
+		button:Init(elementData);
+	end);
+]]
+function ScrollBoxListViewMixin:SetElementFactory(frameFactory)
 	self.frameFactory = frameFactory;
 end
 
@@ -402,16 +471,18 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 		return 1, size;
 	end
 
-	local dataIndexBegin = 0;
-	local dataIndexEnd = 0;
+	local dataIndexBegin;
+	local dataIndexEnd;
 	local scrollOffset = scrollBox:GetDerivedScrollOffset();
-
 	local extentBegin = scrollBox:GetUpperPadding();
-	if self:HasStaticElementExtent() then
-		local extentWithSpacing = self.elementExtent + spacing;
-		local intervals = math.floor(scrollOffset / extentWithSpacing);
+	-- For large element ranges (i.e. 10,000+), we're required to use fixed element extents 
+	-- to avoid performance issues. We're calculating the number of elements that occupy the
+	-- existing scroll offset to obtain our reference position.
+	if self:HasFixedElementExtent() then
+		local extentWithSpacing = self:GetFixedElementExtent() + spacing;
+		local intervals = math.max(math.floor(scrollOffset / extentWithSpacing), 1) - 1;
 		dataIndexBegin = 1 + (stride * intervals);
-		extentBegin = extentBegin + (extentWithSpacing * intervals)
+		extentBegin = extentBegin + extentWithSpacing + (extentWithSpacing * intervals);
 	else
 		do
 			dataIndexBegin = 1 - stride;
@@ -422,6 +493,9 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 		end
 	end
 
+	-- Optimization above for fixed element extents above not necessary here, because we
+	-- we only interested in avoiding large iteration ranges. Obtaining the end extents here
+	-- is at worse the number of elements that fit in the displayable area.
 	local extentEnd = scrollBox:GetVisibleExtent() + scrollOffset;
 	dataIndexEnd = dataIndexBegin;
 	while (dataIndexEnd < size) and (extentBegin < extentEnd) do
@@ -445,8 +519,8 @@ function ScrollBoxListViewMixin:GetExtent(recalculate, scrollBox, stride, spacin
 		if dataProvider then
 			size = dataProvider:GetSize();
 
-			if self:HasStaticElementExtent() then
-				virtualExtent = math.ceil(size/stride) * self.elementExtent;
+			if self:HasFixedElementExtent() then
+				virtualExtent = math.ceil(size/stride) * self:GetFixedElementExtent();
 			else
 				self.calculatedElementExtents = {};
 
@@ -469,16 +543,16 @@ function ScrollBoxListViewMixin:GetExtent(recalculate, scrollBox, stride, spacin
 	return self.virtualExtent;
 end
 
-function ScrollBoxListViewMixin:HasStaticElementExtent()
+function ScrollBoxListViewMixin:HasFixedElementExtent()
 	return self.elementExtent ~= nil;
 end
 
-function ScrollBoxListViewMixin:GetElementExtent(dataIndex)
-	return self.elementExtent or self:GetCalculatedElementExtent(dataIndex);
+function ScrollBoxListViewMixin:GetFixedElementExtent()
+	return self.elementExtent;	
 end
 
-function ScrollBoxListViewMixin:GetCalculatedElementExtent(dataIndex)
-	return self.calculatedElementExtents and self.calculatedElementExtents[dataIndex] or 0;
+function ScrollBoxListViewMixin:GetElementExtent(dataIndex)
+	return self.elementExtent or (self.calculatedElementExtents and self.calculatedElementExtents[dataIndex] or 0);
 end
 
 function ScrollBoxListViewMixin:SetElementExtent(extent)
@@ -492,8 +566,8 @@ function ScrollBoxListViewMixin:GetExtentUntil(scrollBox, dataIndex, stride, spa
 
 	local index = dataIndex - stride;
 	local extent = 0;
-	if self:HasStaticElementExtent() then
-		extent = math.max(0, math.ceil(index / stride)) * self.elementExtent;
+	if self:HasFixedElementExtent() then
+		extent = math.max(0, math.ceil(index / stride)) * self:GetFixedElementExtent();
 	else
 		do
 			while index > 0 do
@@ -529,26 +603,31 @@ end
 
 function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 	-- Calculate the range of indices to display.
+	local oldDataIndexBegin, oldDataIndexEnd = self:GetDataRange();
 	local dataIndexBegin, dataIndexEnd = self:CalculateDataIndices(scrollBox);
-	local rangeChanged = self.dataIndicesInvalidated or self.dataIndexBegin ~= dataIndexBegin or self.dataIndexEnd ~= dataIndexEnd;
+
+	-- Invalidation occurs whenever the data provider is sorted, the size changes, or the data provider is replaced.
+	local invalidated = self:IsInvalidated();
+	local rangeChanged = invalidated or oldDataIndexBegin ~= dataIndexBegin or oldDataIndexEnd ~= dataIndexEnd;
 	if rangeChanged then
 		local dataProvider = self:GetDataProvider();
 		--[[
-			print(string.format("%d - %d of %d, invalidated = %s", dataIndexBegin, dataIndexEnd, 
-				dataProvider and dataProvider:GetSize() or 0, tostring(self.dataIndicesInvalidated)));
-		]]
+			local size = dataProvider and dataProvider:GetSize() or 0;
+			print(string.format("%d - %d of %d, invalidated =", dataIndexBegin, dataIndexEnd, 
+				size), invalidated, GetTime());
+		--]]
 
-		self.dataIndexBegin = dataIndexBegin;
-		self.dataIndexEnd = dataIndexEnd;
-	
-		-- Frames cannot be recycled unless the element data is uniquely identifiable. This is naturally
-		-- possible by comparison when using a table. If the element data is an index, the comparison cannot
-		-- account for the actual data referred to by the index having shifted into a new position.
-		local canRecycle = true;
-		for index, frame in ipairs(self:GetFrames()) do
-			if type(frame.elementData) ~= "table" then
-				canRecycle = false;
-				break;
+		self:SetDataRange(dataIndexBegin, dataIndexEnd);
+
+		-- Frames are generally recyclable when the element data is a table because we can uniquely identify it.
+		-- Note that if an invalidation occurred due to the data provider being exchanged, we never try and recycle.
+		local canRecycle = not invalidated or self:GetInvalidationReason() ~= InvalidationReason.DataProviderAssigned;
+		if canRecycle then
+			for index, frame in ipairs(self:GetFrames()) do
+				if type(frame:GetElementData()) ~= "table" then
+					canRecycle = false;
+					break;
+				end
 			end
 		end
 
@@ -556,7 +635,7 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 			local acquireList = {};
 			local releaseList = {};
 			for index, frame in ipairs(self:GetFrames()) do
-				releaseList[frame.elementData] = frame;
+				releaseList[frame:GetElementData()] = frame;
 			end
 
 			if dataIndexBegin > 0 then
@@ -564,7 +643,7 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 					local currentElementData = dataProvider:Find(dataIndex);
 					if releaseList[currentElementData] then
 						local frame = releaseList[currentElementData];
-						frame.orderIndex = dataIndex;
+						frame:SetOrderIndex(dataIndex);
 						releaseList[currentElementData] = nil;
 					else
 						tinsert(acquireList, dataIndex);
@@ -583,7 +662,7 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 			self:Rebuild();
 		end
 		
-		self.dataIndicesInvalidated = false;
+		self:ClearInvalidation();
 
 		self:SortFrames();
 
@@ -594,12 +673,24 @@ end
 
 function ScrollBoxListViewMixin:SortFrames()
 	table.sort(self:GetFrames(), function(lhs, rhs)
-		return lhs.orderIndex < rhs.orderIndex;
+		return lhs:GetOrderIndex() < rhs:GetOrderIndex();
 	end);
 end
 
-function ScrollBoxListViewMixin:Invalidate()
-	self.dataIndicesInvalidated = true;
+function ScrollBoxListViewMixin:SetInvalidationReason(invalidationReason)
+	self.invalidationReason = invalidationReason;
+end
+
+function ScrollBoxListViewMixin:GetInvalidationReason()
+	return self.invalidationReason;
+end
+
+function ScrollBoxListViewMixin:ClearInvalidation()
+	self.invalidationReason = nil;
+end
+
+function ScrollBoxListViewMixin:IsInvalidated()
+	return self.invalidationReason ~= nil;
 end
 
 function ScrollBoxListViewMixin:GetDataIndexBegin()
@@ -612,6 +703,11 @@ end
 
 function ScrollBoxListViewMixin:GetDataRange()
 	return self.dataIndexBegin, self.dataIndexEnd;
+end
+
+function ScrollBoxListViewMixin:SetDataRange(dataIndexBegin, dataIndexEnd)
+	self.dataIndexBegin = dataIndexBegin;
+	self.dataIndexEnd = dataIndexEnd;
 end
 
 function ScrollBoxListViewMixin:IsDataIndexWithinRange(dataIndex)

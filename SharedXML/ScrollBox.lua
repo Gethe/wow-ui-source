@@ -271,8 +271,9 @@ function ScrollBoxBaseMixin:SetScrollAllowed(allowScroll)
 	end
 end
 
+--here
 function ScrollBoxBaseMixin:GetDerivedScrollRange()
-	return self:GetDerivedExtent() - self:GetVisibleExtent();
+	return math.max(0, self:GetDerivedExtent() - self:GetVisibleExtent());
 end
 
 function ScrollBoxBaseMixin:GetDerivedScrollOffset()
@@ -582,8 +583,8 @@ function ScrollBoxListMixin:Update(forceLayout)
 			self:Layout();
 		end
 
-		local scrollOffset = self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self);
-		self:SetScrollTargetOffset(scrollOffset);
+		self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));
+		self:SetPanExtentPercentage(self:CalculatePanExtentPercentage());
 		
 		if changed then
 			self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged);

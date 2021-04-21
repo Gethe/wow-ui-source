@@ -201,9 +201,9 @@ function AdventuresBoardMixin:RaiseFrameByBoardIndex(boardIndex)
 end
 
 function AdventuresBoardMixin:GetAnimFrameByAuraType(frame, previewType)
-	if bit.band(previewType, Enum.GarrAutoPreviewTargetType.Damage) == Enum.GarrAutoPreviewTargetType.Damage then
+	if FlagsUtil.IsAnySet(previewType, bit.bor(Enum.GarrAutoPreviewTargetType.Damage, Enum.GarrAutoPreviewTargetType.Debuff)) then
 		return frame.EnemyTargetingIndicatorFrame;
-	elseif bit.band(previewType, Enum.GarrAutoPreviewTargetType.Buff) == Enum.GarrAutoPreviewTargetType.Buff or bit.band(previewType, Enum.GarrAutoPreviewTargetType.Heal) == Enum.GarrAutoPreviewTargetType.Heal then
+	elseif FlagsUtil.IsAnySet(previewType, bit.bor(Enum.GarrAutoPreviewTargetType.Buff, Enum.GarrAutoPreviewTargetType.Heal)) then
 		if frame.FriendlyTargetingIndicatorFrame then
 			frame.FriendlyTargetingIndicatorFrame.SupportColorationAnimator:SetPreviewTargets(previewType, {frame.FriendlyTargetingIndicatorFrame.TargetMarker});
 		end
@@ -217,11 +217,16 @@ function AdventuresBoardMixin:TriggerTargetingReticles(targetInfos, useLoop)
 	for _, target in ipairs(targetInfos) do
 		local targetingIndex = target.targetIndex
 		local frameToPlayAnimation;
-		if targetingIndex >= Enum.GarrAutoBoardIndex.EnemyLeftFront and targetingIndex <= Enum.GarrAutoBoardIndex.EnemyRightBack then
+		
+		local isFriendlyBuff = FlagsUtil.IsAnySet(target.previewType, bit.bor(Enum.GarrAutoPreviewTargetType.Buff, Enum.GarrAutoPreviewTargetType.Heal));
+		if isFriendlyBuff then
+			frameToPlayAnimation = self:GetSocketByBoardIndex(targetingIndex);
+		elseif targetingIndex >= Enum.GarrAutoBoardIndex.EnemyLeftFront and targetingIndex <= Enum.GarrAutoBoardIndex.EnemyRightBack then
 			local enemyFrame = self:GetFrameByBoardIndex(targetingIndex);
 			frameToPlayAnimation = enemyFrame:IsShown() and enemyFrame or self:GetSocketByBoardIndex(targetingIndex);
-		else
-			frameToPlayAnimation = self:GetSocketByBoardIndex(targetingIndex);
+		elseif targetingIndex >= Enum.GarrAutoBoardIndex.AllyLeftBack and targetingIndex <= Enum.GarrAutoBoardIndex.AllyRightFront then
+			local followerFrame = self:GetFrameByBoardIndex(targetingIndex);
+			frameToPlayAnimation = followerFrame:IsEmpty() and self:GetSocketByBoardIndex(targetingIndex) or followerFrame;
 		end
 		
 		local animationFrame = self:GetAnimFrameByAuraType(frameToPlayAnimation, target.previewType);
@@ -229,7 +234,7 @@ function AdventuresBoardMixin:TriggerTargetingReticles(targetInfos, useLoop)
 			if useLoop then 
 				animationFrame:Loop();
 
-				if bit.band(target.previewType, bit.bor(Enum.GarrAutoPreviewTargetType.Buff, Enum.GarrAutoPreviewTargetType.Heal)) ~= 0 then
+				if isFriendlyBuff then
 					local frameToAddTempEffect = self:GetSocketByBoardIndex(targetingIndex);
 					frameToAddTempEffect:SetTempPreviewType(target.previewType);
 				end
@@ -663,9 +668,15 @@ end
 
 AdventuresBoardAuraContainerMixin = {}
 
+function AdventuresBoardAuraContainerMixin:OnHide()
+	self.BuffIcon:Hide();
+	self.DebuffIcon:Hide();
+	self.HealingIcon:Hide();
+end
+
 function AdventuresBoardAuraContainerMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, COVENANT_MISSIONS_AURA_TOOLTIP_HEADER, HIGHLIGHT_FONT_COLOR);
+	GameSmallHeaderTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameSmallHeaderTooltip, COVENANT_MISSIONS_AURA_TOOLTIP_HEADER, HIGHLIGHT_FONT_COLOR);
 
 	local spellIDToDynamicPreviewMask = {};
 	local function AdventuresBoardAddAllAuras(auraArray, previewTypeFlag)
@@ -680,22 +691,26 @@ function AdventuresBoardAuraContainerMixin:OnEnter()
 	AdventuresBoardAddAllAuras(activeHealing, Enum.GarrAutoPreviewTargetType.Heal);
 
 	for spellID, dynamicPreviewMask in pairs(spellIDToDynamicPreviewMask) do
-		GarrAutoCombatUtil.AddAuraToTooltip(GameTooltip, spellID, dynamicPreviewMask);
+		GarrAutoCombatUtil.AddAuraToTooltip(GameSmallHeaderTooltip, spellID, dynamicPreviewMask);
 	end
 
 	local padding = 4;
-	GameTooltip:SetPadding(padding, padding, padding, padding);
+	GameSmallHeaderTooltip:SetPadding(padding, padding, padding, padding);
 
-	GameTooltip:SetCustomLineSpacing(9);
+	GameSmallHeaderTooltip:SetCustomLineSpacing(9);
 
-	GameTooltip:Show();
+	GameSmallHeaderTooltip:Show();
 end
 
 function AdventuresBoardAuraContainerMixin:OnLeave()
-	GameTooltip_Hide();
+	GameSmallHeaderTooltip:Hide();
 end
 
 function AdventuresBoardAuraContainerMixin:UpdateAuras()
+	if not self:IsVisible() then
+		return;
+	end
+
 	local socket = self:GetSocket();
 	local activeBuffs, activeDebuffs, activeHealing = socket:GetActiveAuraArrays();
 	local temporaryPreviewType = socket:GetTempPreviewType();

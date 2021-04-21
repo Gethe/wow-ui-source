@@ -64,7 +64,7 @@ function PetBattleFrame_OnLoad(self)
 	FlowContainer_SetHorizontalSpacing(flowFrame, 10);
 
 	for i=1, NUM_BATTLE_PETS_IN_BATTLE do
-		PetBattleUnitFrame_SetUnit(self.BottomFrame.PetSelectionFrame["Pet"..i], LE_BATTLE_PET_ALLY, i);
+		PetBattleUnitFrame_SetUnit(self.BottomFrame.PetSelectionFrame["Pet"..i], Enum.BattlePetOwner.Ally, i);
 	end
 	PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	
@@ -168,7 +168,7 @@ function PetBattleFrame_PetSelectionFrameUpdateVisible(showFrame)
 	local selectionFrame = PetBattleFrame.BottomFrame.PetSelectionFrame;
 	local battleState = C_PetBattles.GetBattleState();
 	local selectedActionType = C_PetBattles.GetSelectedAction();
-	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType == BATTLE_PET_ACTION_NONE ) ) and ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS );
+	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType == BATTLE_PET_ACTION_NONE ) ) and ( battleState == Enum.PetBattleState.WaitingPreBattle ) or ( battleState == Enum.PetBattleState.WaitingForFrontPets );
 	if ( selectionFrame:IsShown() and ( not mustSwap ) ) then
 		PetBattlePetSelectionFrame_Hide(selectionFrame);
 	elseif (showFrame) then
@@ -211,16 +211,16 @@ end
 function PetBattleFrame_UpdateSpeedIndicators(self)
 	local hadSpeedIcon = nil;
 	if (PetBattleFrame.ActiveEnemy.SpeedIcon:IsShown()) then
-		hadSpeedIcon = LE_BATTLE_PET_ENEMY;
+		hadSpeedIcon = Enum.BattlePetOwner.Enemy;
 	elseif (PetBattleFrame.ActiveAlly.SpeedIcon:IsShown()) then
-		hadSpeedIcon = LE_BATTLE_PET_ALLY;
+		hadSpeedIcon = Enum.BattlePetOwner.Ally;
 	end
 	
-	local enemyActive = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
-	local enemySpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ENEMY, enemyActive);
+	local enemyActive = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Enemy);
+	local enemySpeed = C_PetBattles.GetSpeed(Enum.BattlePetOwner.Enemy, enemyActive);
 
-	local allyActive = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local allySpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, allyActive);
+	local allyActive = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
+	local allySpeed = C_PetBattles.GetSpeed(Enum.BattlePetOwner.Ally, allyActive);
 	
 	PetBattleFrame.ActiveEnemy.Border:SetShown(enemySpeed <= allySpeed);
 	PetBattleFrame.ActiveEnemy.Border2:SetShown(enemySpeed > allySpeed);
@@ -232,22 +232,22 @@ function PetBattleFrame_UpdateSpeedIndicators(self)
 	PetBattleFrame.ActiveAlly.SpeedUnderlay:SetShown(enemySpeed < allySpeed);
 	PetBattleFrame.ActiveAlly.SpeedIcon:SetShown(enemySpeed < allySpeed);
 	
-	if (enemySpeed > allySpeed and (not hadSpeedIcon or hadSpeedIcon == LE_BATTLE_PET_ALLY)) then
+	if (enemySpeed > allySpeed and (not hadSpeedIcon or hadSpeedIcon == Enum.BattlePetOwner.Ally)) then
 		PetBattleFrame.ActiveEnemy.SpeedFlash:Play();
-	elseif (enemySpeed < allySpeed and (not hadSpeedIcon or hadSpeedIcon == LE_BATTLE_PET_ENEMY)) then
+	elseif (enemySpeed < allySpeed and (not hadSpeedIcon or hadSpeedIcon == Enum.BattlePetOwner.Enemy)) then
 		PetBattleFrame.ActiveAlly.SpeedFlash:Play();
 	end
 end
 
 function PetBattleFrame_UpdateXpBar(self)
-	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local level = C_PetBattles.GetLevel(LE_BATTLE_PET_ALLY, activePet);
+	local activePet = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
+	local level = C_PetBattles.GetLevel(Enum.BattlePetOwner.Ally, activePet);
 	if (level >= MAX_PET_LEVEL) then
 		self.BottomFrame.xpBar:Hide();
 		return;
 	end
 	
-	local xp, maxXp = C_PetBattles.GetXP(LE_BATTLE_PET_ALLY, activePet);
+	local xp, maxXp = C_PetBattles.GetXP(Enum.BattlePetOwner.Ally, activePet);
 	self.BottomFrame.xpBar:SetMinMaxValues(0, maxXp);
 	self.BottomFrame.xpBar:SetValue(xp);
 	self.BottomFrame.xpBar:Show();
@@ -283,7 +283,7 @@ function PetBattleFrame_UpdateAbilityButtonHotKeys(self)
 end
 
 function PetBattleFrame_UpdatePassButtonAndTimer(self)
-	local pveBattle = C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY);
+	local pveBattle = C_PetBattles.IsPlayerNPC(Enum.BattlePetOwner.Enemy);
 	
 	-- Timer & Button for PvP
 	self.BottomFrame.TurnTimer.TimerBG:SetShown(not pveBattle);
@@ -347,7 +347,7 @@ end
 
 function PetBattleFrame_ShowMultiWildNotification(self)
 	if (C_PetBattles.IsWildBattle() == true) then
-		local numOpponentPets = C_PetBattles.GetNumPets(LE_BATTLE_PET_ENEMY);
+		local numOpponentPets = C_PetBattles.GetNumPets(Enum.BattlePetOwner.Enemy);
 		local text = nil;
 		if (numOpponentPets == 2) then
 			text = PET_BATTLE_ANOTHER_PET_JOINED;
@@ -404,11 +404,11 @@ end
 
 function PetBattleAbilityButton_OnClick(self)
 	if ( IsModifiedClick() ) then
-		local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-		local abilityID = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
-		local maxHealth = C_PetBattles.GetMaxHealth(LE_BATTLE_PET_ALLY, activePet);
-		local power = C_PetBattles.GetPower(LE_BATTLE_PET_ALLY, activePet);
-		local speed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, activePet);
+		local activePet = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
+		local abilityID = C_PetBattles.GetAbilityInfo(Enum.BattlePetOwner.Ally, activePet, self:GetID());
+		local maxHealth = C_PetBattles.GetMaxHealth(Enum.BattlePetOwner.Ally, activePet);
+		local power = C_PetBattles.GetPower(Enum.BattlePetOwner.Ally, activePet);
+		local speed = C_PetBattles.GetSpeed(Enum.BattlePetOwner.Ally, activePet);
 		
 		HandleModifiedItemClick(GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed));
 	else
@@ -420,35 +420,35 @@ function PetBattleAbilityButton_OnClick(self)
 end
 
 function PetBattleFrame_UpdateAssignedUnitFrames(self)
-	local activeAlly = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local activeEnemy = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
+	local activeAlly = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
+	local activeEnemy = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Enemy);
 
-	PetBattleUnitFrame_SetUnit(self.ActiveAlly, LE_BATTLE_PET_ALLY, activeAlly);
+	PetBattleUnitFrame_SetUnit(self.ActiveAlly, Enum.BattlePetOwner.Ally, activeAlly);
 	local nextIndex = 2;
 	for i=1, NUM_BATTLE_PETS_IN_BATTLE do
 		if ( i ~= activeAlly ) then
-			PetBattleUnitFrame_SetUnit(self["Ally"..nextIndex], LE_BATTLE_PET_ALLY, i);
+			PetBattleUnitFrame_SetUnit(self["Ally"..nextIndex], Enum.BattlePetOwner.Ally, i);
 			nextIndex = nextIndex + 1;
 		end
 	end
 
-	PetBattleUnitFrame_SetUnit(self.ActiveEnemy, LE_BATTLE_PET_ENEMY, activeEnemy);
+	PetBattleUnitFrame_SetUnit(self.ActiveEnemy, Enum.BattlePetOwner.Enemy, activeEnemy);
 	nextIndex = 2;
 	for i=1, NUM_BATTLE_PETS_IN_BATTLE do
 		if ( i ~= activeEnemy ) then
-			PetBattleUnitFrame_SetUnit(self["Enemy"..nextIndex], LE_BATTLE_PET_ENEMY, i);
+			PetBattleUnitFrame_SetUnit(self["Enemy"..nextIndex], Enum.BattlePetOwner.Enemy, i);
 			nextIndex = nextIndex + 1;
 		end
 	end
 
-	PetBattleAuraHolder_SetUnit(self.EnemyBuffFrame, LE_BATTLE_PET_ENEMY, activeEnemy);
-	PetBattleAuraHolder_SetUnit(self.EnemyDebuffFrame, LE_BATTLE_PET_ENEMY, activeEnemy);
-	PetBattleAuraHolder_SetUnit(self.AllyBuffFrame, LE_BATTLE_PET_ALLY, activeAlly);
-	PetBattleAuraHolder_SetUnit(self.AllyDebuffFrame, LE_BATTLE_PET_ALLY, activeAlly);
-	PetBattleAuraHolder_SetUnit(self.EnemyPadBuffFrame, LE_BATTLE_PET_ENEMY, PET_BATTLE_PAD_INDEX);
-	PetBattleAuraHolder_SetUnit(self.EnemyPadDebuffFrame, LE_BATTLE_PET_ENEMY, PET_BATTLE_PAD_INDEX);
-	PetBattleAuraHolder_SetUnit(self.AllyPadBuffFrame, LE_BATTLE_PET_ALLY, PET_BATTLE_PAD_INDEX);
-	PetBattleAuraHolder_SetUnit(self.AllyPadDebuffFrame, LE_BATTLE_PET_ALLY, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.EnemyBuffFrame, Enum.BattlePetOwner.Enemy, activeEnemy);
+	PetBattleAuraHolder_SetUnit(self.EnemyDebuffFrame, Enum.BattlePetOwner.Enemy, activeEnemy);
+	PetBattleAuraHolder_SetUnit(self.AllyBuffFrame, Enum.BattlePetOwner.Ally, activeAlly);
+	PetBattleAuraHolder_SetUnit(self.AllyDebuffFrame, Enum.BattlePetOwner.Ally, activeAlly);
+	PetBattleAuraHolder_SetUnit(self.EnemyPadBuffFrame, Enum.BattlePetOwner.Enemy, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.EnemyPadDebuffFrame, Enum.BattlePetOwner.Enemy, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.AllyPadBuffFrame, Enum.BattlePetOwner.Ally, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.AllyPadDebuffFrame, Enum.BattlePetOwner.Ally, PET_BATTLE_PAD_INDEX);
 end
 
 function PetBattleFrame_Remove(self)
@@ -463,9 +463,9 @@ local TIMER_BAR_TEXCOORD_RIGHT = 0.89453125;
 local TIMER_BAR_TEXCOORD_TOP = 0.00195313;
 local TIMER_BAR_TEXCOORD_BOTTOM = 0.03515625;
 function PetBattleFrameTurnTimer_OnUpdate(self, elapsed)
-	if ( ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) and
-		 ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_ROUND_IN_PROGRESS ) and
-		 ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) ) then
+	if ( ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.WaitingPreBattle ) and
+		 ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.RoundInProgress ) and
+		 ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.WaitingForFrontPets ) ) then
 		self.Bar:SetAlpha(0);
 		self.TimerText:SetText("");
 	elseif ( self.turnExpires ) then
@@ -571,7 +571,7 @@ end
 ------Pet Battle Pet Selection Frame--------
 --------------------------------------------
 function PetBattlePetSelectionFrame_Show(self)
-	local numPets = C_PetBattles.GetNumPets(LE_BATTLE_PET_ALLY);
+	local numPets = C_PetBattles.GetNumPets(Enum.BattlePetOwner.Ally);
 	self:SetWidth((self.Pet1:GetWidth() + 10) * numPets + 30);
 
 	for i=1, numPets do
@@ -632,8 +632,8 @@ function PetBattleActionButton_UpdateState(self)
 	local battleState = C_PetBattles.GetBattleState();
 
 	--Set up usable/cooldown/locked for each action type.
-	if ( actionType == LE_BATTLE_PET_ACTION_ABILITY ) then
-		local _, name, icon = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
+	if ( actionType == Enum.BattlePetAction.Ability ) then
+		local _, name, icon = C_PetBattles.GetAbilityInfo(Enum.BattlePetOwner.Ally, C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally), actionIndex);
 
 		--If we're being forced to swap pets, hide us
 		if ( C_PetBattles.ShouldShowPetSelect() == true ) then
@@ -642,13 +642,13 @@ function PetBattleActionButton_UpdateState(self)
 
 		--If we exist, check whether we're usable and what the cooldown is.
 		if ( name ) then
-			local isUsable, currentCooldown, currentLockdown = C_PetBattles.GetAbilityState(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
+			local isUsable, currentCooldown, currentLockdown = C_PetBattles.GetAbilityState(Enum.BattlePetOwner.Ally, C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally), actionIndex);
 			usable = isUsable;
 			cooldown = max(currentCooldown, currentLockdown);
 		else
 			isLocked = true;
 		end
-	elseif ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
+	elseif ( actionType == Enum.BattlePetAction.Trap ) then
 		local trapErr;
 		usable, trapErr = C_PetBattles.IsTrapAvailable();
 		if (not usable and trapErr and trapErr > 1) then
@@ -657,7 +657,7 @@ function PetBattleActionButton_UpdateState(self)
 		else
 			self.additionalText = nil;
 		end
-	elseif ( actionType == LE_BATTLE_PET_ACTION_SWITCH_PET ) then
+	elseif ( actionType == Enum.BattlePetAction.SwitchPet ) then
 		--If we're being forced to swap pets, hide us
 		if ( C_PetBattles.ShouldShowPetSelect() == true ) then
 			isHidden = true;
@@ -670,7 +670,7 @@ function PetBattleActionButton_UpdateState(self)
 		end
 		-- AND the active pet must be able to swap out
 		usable = usable and C_PetBattles.CanActivePetSwapOut();
-	elseif ( actionType == LE_BATTLE_PET_ACTION_SKIP ) then
+	elseif ( actionType == Enum.BattlePetAction.Skip ) then
 		usable = C_PetBattles.IsSkipAvailable();
 	else
 		usable = true;
@@ -799,12 +799,12 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
 		end
-		if (self.CooldownFlash and actionType ~= LE_BATTLE_PET_ACTION_TRAP) then
+		if (self.CooldownFlash and actionType ~= Enum.BattlePetAction.Trap) then
 			self.CooldownFlashAnim:Play();
 		end
 	end
 
-	if ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
+	if ( actionType == Enum.BattlePetAction.Trap ) then
 		if ( usable ) then
 			if ( not self.playedSound ) then
 				PlaySound(SOUNDKIT.UI_PET_BATTLES_TRAP_READY);
@@ -823,7 +823,7 @@ end
 --Only for abilities, not other action buttons---
 -------------------------------------------------
 function PetBattleAbilityButton_OnLoad(self)
-	PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_ABILITY, self:GetID());
+	PetBattleActionButton_Initialize(self, Enum.BattlePetAction.Ability, self:GetID());
 	PetBattleAbilityButton_UpdateHotKey(self);
 end
 
@@ -833,20 +833,20 @@ function PetBattleAbilityButton_UpdateBetterIcon(self)
 	end
 	self.BetterIcon:Hide();
 	
-	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
+	local activePet = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
 	if (not activePet) then
 		return;
 	end
 
 	local petType, noStrongWeakHints, _;
-	_, _, _, _, _, _, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+	_, _, _, _, _, _, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(Enum.BattlePetOwner.Ally, activePet, self:GetID());
 	if (not petType) then
 		return;
 	end
 	
 	-- show Strong/Weak icons on buttons.
-	local enemyPetSlot = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
-	local enemyType = C_PetBattles.GetPetType(LE_BATTLE_PET_ENEMY, enemyPetSlot);
+	local enemyPetSlot = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Enemy);
+	local enemyType = C_PetBattles.GetPetType(Enum.BattlePetOwner.Enemy, enemyPetSlot);
 	local modifier = C_PetBattles.GetAttackModifier(petType, enemyType);
 
 	if ( noStrongWeakHints or modifier == 1 ) then
@@ -861,21 +861,21 @@ function PetBattleAbilityButton_UpdateBetterIcon(self)
 end
 
 function PetBattleAbilityButton_UpdateIcons(self)
-	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+	local activePet = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
+	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(Enum.BattlePetOwner.Ally, activePet, self:GetID());
 	self.abilityID = id;
 	if ( not icon ) then
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
 	if ( not name ) then
 		--We don't have an ability here.
-		local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ALLY, activePet);
-		local abilities = C_PetJournal.GetPetAbilityList(speciesID);	--Read ability/ability levels into the correct tables
+		local speciesID = C_PetBattles.GetPetSpeciesID(Enum.BattlePetOwner.Ally, activePet);
+		local abilities = C_PetJournal.GetPetAbilityListTable(speciesID);	--Read ability/ability levels into the correct tables
 		if(not abilities[self:GetID()]) then 
 			self:Hide();
 			return; 
 		end 
-
+		
 		self.abilityID = abilities[self:GetID()].abilityID;
 		if ( not self.abilityID ) then
 			self.Icon:SetTexture("INTERFACE\\ICONS\\INV_Misc_Key_05");
@@ -899,16 +899,16 @@ function PetBattleAbilityButton_UpdateIcons(self)
 end
 
 function PetBattleAbilityButton_OnEnter(self)
-	local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
+	local petIndex = C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally);
 	if ( self:GetEffectiveAlpha() > 0 ) then
-		if ( C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
-			PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
+		if ( C_PetBattles.GetAbilityInfo(Enum.BattlePetOwner.Ally, petIndex, self:GetID()) ) then
+			PetBattleAbilityTooltip_SetAbility(Enum.BattlePetOwner.Ally, petIndex, self:GetID());
 			PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120, self.additionalText);
 		elseif ( self.abilityID ) then
 			if ( self.requiredLevel ) then
-				PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.requiredLevel));
+				PetBattleAbilityTooltip_SetAbilityByID(Enum.BattlePetOwner.Ally, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.requiredLevel));
 			else
-				PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID);
+				PetBattleAbilityTooltip_SetAbilityByID(Enum.BattlePetOwner.Ally, petIndex, self.abilityID);
 			end
 			PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
 		end
@@ -1010,7 +1010,7 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 
 	--Update the pet species icon
 	if ( self.Icon ) then
-		if ( petOwner == LE_BATTLE_PET_ALLY ) then
+		if ( petOwner == Enum.BattlePetOwner.Ally ) then
 			self.Icon:SetTexCoord(1, 0, 0, 1);
 		else
 			self.Icon:SetTexCoord(0, 1, 0, 1);
@@ -1199,7 +1199,7 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 	info.disabled = nil;
 	
 	local name, speciesName = C_PetBattles.GetName(self.petOwner, self.petIndex);
-	if (not C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY) and self.petOwner == LE_BATTLE_PET_ENEMY 
+	if (not C_PetBattles.IsPlayerNPC(Enum.BattlePetOwner.Enemy) and self.petOwner == Enum.BattlePetOwner.Enemy 
 		and name and name ~= speciesName) then
 		info.text = REPORT_PET_NAME;
 		info.func = PetBattleUnitFrameDropDown_ReportUnit;
@@ -1230,10 +1230,10 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	local speed = C_PetBattles.GetSpeed(petOwner, petIndex);
 	local level = C_PetBattles.GetLevel(petOwner, petIndex);
 	local opponentSpeed = 0;
-	if ( petOwner == LE_BATTLE_PET_ALLY ) then
-		opponentSpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ENEMY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY));
+	if ( petOwner == Enum.BattlePetOwner.Ally ) then
+		opponentSpeed = C_PetBattles.GetSpeed(Enum.BattlePetOwner.Enemy, C_PetBattles.GetActivePet(Enum.BattlePetOwner.Enemy));
 	else
-		opponentSpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY));
+		opponentSpeed = C_PetBattles.GetSpeed(Enum.BattlePetOwner.Ally, C_PetBattles.GetActivePet(Enum.BattlePetOwner.Ally));
 	end
 	if (speed > opponentSpeed) then
 		height = height + 36;
@@ -1250,10 +1250,10 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	self.SpeedAmount:SetText(speed);
 	
 	local displayCollected = false;
-	local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ENEMY, petIndex);
+	local speciesID = C_PetBattles.GetPetSpeciesID(Enum.BattlePetOwner.Enemy, petIndex);
 	if ( speciesID ) then
 		local _, _, _, _, _, _, _, _, _, _, obtainable = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
-		if ( obtainable and petOwner == LE_BATTLE_PET_ENEMY and C_PetBattles.IsWildBattle() ) then
+		if ( obtainable and petOwner == Enum.BattlePetOwner.Enemy and C_PetBattles.IsWildBattle() ) then
 			displayCollected = true;
 		end
 	end
@@ -1272,7 +1272,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		self.HealthBorder:SetPoint("TOPLEFT", self.Icon, "BOTTOMLEFT", -1, -6);
 	end
 	
-	if ( petOwner == LE_BATTLE_PET_ALLY and level < MAX_PET_LEVEL ) then
+	if ( petOwner == Enum.BattlePetOwner.Ally and level < MAX_PET_LEVEL ) then
 		--Add the XP bar
 		self.XPBar:Show();
 		self.XPBG:Show();
@@ -1289,7 +1289,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		self.Delimiter:SetPoint("TOP", self.HealthBG, "BOTTOM", 0, -10);
 	end
 
-	if ( petOwner == LE_BATTLE_PET_ALLY or C_PetBattles.IsPlayerNPC(petOwner) ) then
+	if ( petOwner == Enum.BattlePetOwner.Ally or C_PetBattles.IsPlayerNPC(petOwner) ) then
 		--Show and update abilities
 		self.AbilitiesLabel:Show();
 		local enemyPetType = C_PetBattles.GetPetType(PetBattleUtil_GetOtherPlayer(petOwner), C_PetBattles.GetActivePet(PetBattleUtil_GetOtherPlayer(petOwner)));
@@ -1501,7 +1501,7 @@ function PET_BATTLE_ABILITY_INFO:GetState(stateID, target)
 end
 
 function PET_BATTLE_ABILITY_INFO:GetWeatherState(stateID)
-	return C_PetBattles.GetStateValue(LE_BATTLE_PET_WEATHER, PET_BATTLE_PAD_INDEX, stateID);
+	return C_PetBattles.GetStateValue(Enum.BattlePetOwner.Weather, PET_BATTLE_PAD_INDEX, stateID);
 end
 
 function PET_BATTLE_ABILITY_INFO:GetPadState(stateID, target)
@@ -1573,14 +1573,14 @@ function PetBattleWeatherFrame_OnEvent(self, event, ...)
 		event == "PET_BATTLE_AURA_CANCELED" or
 		event == "PET_BATTLE_AURA_CHANGED" ) then
 		local petOwner, petIndex = ...;
-		if ( petOwner == LE_BATTLE_PET_WEATHER ) then
+		if ( petOwner == Enum.BattlePetOwner.Weather ) then
 			PetBattleWeatherFrame_Update(self);
 		end
 	end
 end
 
 function PetBattleWeatherFrame_Update(self)
-	local auraID, instanceID, turnsRemaining, isBuff = C_PetBattles.GetAuraInfo(LE_BATTLE_PET_WEATHER, PET_BATTLE_PAD_INDEX, 1);
+	local auraID, instanceID, turnsRemaining, isBuff = C_PetBattles.GetAuraInfo(Enum.BattlePetOwner.Weather, PET_BATTLE_PAD_INDEX, 1);
 	if ( auraID ) then
 		local id, name, icon, maxCooldown, description = C_PetBattles.GetAbilityInfoByID(auraID);
 		self.Icon:SetTexture(icon);
@@ -1712,7 +1712,7 @@ end
 
 function PetBattleAura_OnEnter(self)
 	local parent = self:GetParent();
-	local isEnemy = (parent.petOwner == LE_BATTLE_PET_ENEMY);
+	local isEnemy = (parent.petOwner == Enum.BattlePetOwner.Enemy);
 	PetBattleAbilityTooltip_SetAura(parent.petOwner, parent.petIndex, self.auraIndex);
 	if ( isEnemy ) then
 		PetBattleAbilityTooltip_Show("TOPRIGHT", self, "BOTTOMLEFT", 15, 5);
@@ -1766,7 +1766,7 @@ function PET_BATTLE_AURA_INFO:GetState(stateID, target)
 end
 
 function PET_BATTLE_AURA_INFO:GetWeatherState(stateID)
-	return C_PetBattles.GetStateValue(LE_BATTLE_PET_WEATHER, PET_BATTLE_PAD_INDEX, stateID);
+	return C_PetBattles.GetStateValue(Enum.BattlePetOwner.Weather, PET_BATTLE_PAD_INDEX, stateID);
 end
 
 function PET_BATTLE_AURA_INFO:GetPadState(stateID, target)
@@ -1858,7 +1858,7 @@ function PET_BATTLE_AURA_ID_INFO:GetState(stateID, target)
 end
 
 function PET_BATTLE_AURA_ID_INFO:GetWeatherState(stateID)
-	return C_PetBattles.GetStateValue(LE_BATTLE_PET_WEATHER, PET_BATTLE_PAD_INDEX, stateID);
+	return C_PetBattles.GetStateValue(Enum.BattlePetOwner.Weather, PET_BATTLE_PAD_INDEX, stateID);
 end
 
 function PET_BATTLE_AURA_ID_INFO:GetPadState(stateID, target)
@@ -1923,10 +1923,10 @@ end
 ------------Pet Battle Util Funcs-------------
 ----------------------------------------------
 function PetBattleUtil_GetOtherPlayer(player)
-	if ( player == LE_BATTLE_PET_ALLY ) then
-		return LE_BATTLE_PET_ENEMY;
-	elseif ( player == LE_BATTLE_PET_ENEMY ) then
-		return LE_BATTLE_PET_ALLY;
+	if ( player == Enum.BattlePetOwner.Ally ) then
+		return Enum.BattlePetOwner.Enemy;
+	elseif ( player == Enum.BattlePetOwner.Enemy ) then
+		return Enum.BattlePetOwner.Ally;
 	end
 end
 

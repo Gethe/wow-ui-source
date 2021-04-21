@@ -1943,7 +1943,7 @@ function PanelResizeButtonMixin:OnMouseUp()
 		self.target:StopMovingOrSizing();
 
 		if self.resizeStoppedCallback ~= nil then
-			self.resizeStoppedCallback(target);
+			self.resizeStoppedCallback(self.target);
 		end
 	end
 end

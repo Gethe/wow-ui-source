@@ -957,6 +957,12 @@ function CovenantMission:GetSystemSpecificStartMissionFailureMessage()
 		end
 	end
 end
+
+function CovenantMission:GetActiveMissionID()
+	local missionInfo = self:GetMissionPage().missionInfo;
+	return (missionInfo ~= nil) and missionInfo.missionID or nil;
+end
+
 ---------------------------------------------------------------------------------
 --- Mission Page Follower Mixin                                               ---
 ---------------------------------------------------------------------------------

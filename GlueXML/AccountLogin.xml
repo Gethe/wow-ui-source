@@ -111,7 +111,7 @@
 								<Anchor point="BOTTOM" x="0" y="8"/>
 							</Anchors>
 						</Texture>
-						<FontString inherits="GlueFontNormalSmall" text="BLIZZ_DISCLAIMER">
+						<FontString parentKey="BlizzDisclaimer" inherits="GlueFontNormalSmall">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="10"/>
 							</Anchors>

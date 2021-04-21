@@ -1,7 +1,7 @@
 ScrollUtil = {};
 
--- Function provided for community addons to modify an element frame.
-function ScrollUtil.AddInitializationCallback(scrollBox, callback, owner, iterateExisting)
+-- For convenience of public addons.
+function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterateExisting)
 	if iterateExisting then
 		scrollBox:ForEachFrame(callback);
 	end
@@ -12,17 +12,14 @@ function ScrollUtil.AddInitializationCallback(scrollBox, callback, owner, iterat
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, OnAcquired, owner);
 end
 
-function ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar)
-	ScrollUtil.RegisterWithScrollBox(scrollBox, scrollBar);
-	ScrollUtil.RegisterWithScrollBar(scrollBox, scrollBar);
-
-	if not scrollBar:CanInterpolateScroll() or not scrollBox:CanInterpolateScroll() then
-		scrollBar:SetInterpolateScroll(false);
-		scrollBox:SetInterpolateScroll(false);
+function ScrollUtil.AddReleasedFrameCallback(scrollBox, callback, owner)
+	local function OnReleased(o, frame, elementData)
+		callback(frame, elementData);
 	end
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, OnReleased, owner);
 end
 
-function ScrollUtil.RegisterWithScrollBox(scrollBox, scrollBar)
+local function RegisterWithScrollBox(scrollBox, scrollBar)
 	local onScrollBoxScroll = function(o, scrollPercentage, visibleExtentPercentage, panExtentPercentage)
 		scrollBar:SetScrollPercentage(scrollPercentage, ScrollBoxConstants.NoScrollInterpolation);
 		scrollBar:SetVisibleExtentPercentage(visibleExtentPercentage);
@@ -41,7 +38,7 @@ function ScrollUtil.RegisterWithScrollBox(scrollBox, scrollBar)
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnAllowScrollChanged, onScrollBoxAllowScroll, scrollBar);
 end
 
-function ScrollUtil.RegisterWithScrollBar(scrollBox, scrollBar)
+local function RegisterWithScrollBar(scrollBox, scrollBar)
 	local onScrollBarScroll = function(o, scrollPercentage)
 		scrollBox:SetScrollPercentage(scrollPercentage, ScrollBoxConstants.NoScrollInterpolation);
 	end;
@@ -58,20 +55,36 @@ local function InitScrollBar(scrollBox, scrollBar)
 	scrollBar:Init(scrollBox:GetVisibleExtentPercentage(), scrollBox:CalculatePanExtentPercentage());
 end
 
+-- ScrollBoxList variant intended for the majority of registration and initialization cases.
 function ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, scrollBoxView)
 	ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar);
 	scrollBox:Init(scrollBoxView);
 	InitScrollBar(scrollBox, scrollBar);
 end
 
+-- ScrollBox variant intended for the majority of registration and initialization cases. 
+-- Currently implemented identically to InitScrollBoxListWithScrollBar but allows for
+-- changes to be made easier without public deprecation problems.
 function ScrollUtil.InitScrollBoxWithScrollBar(scrollBox, scrollBar, scrollBoxView)
 	ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar);
 	scrollBox:Init(scrollBoxView);
 	InitScrollBar(scrollBox, scrollBar);
 end
 
+-- Rarely used in cases where the ScrollBox was previously initialized.
+function ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar)
+	RegisterWithScrollBox(scrollBox, scrollBar);
+	RegisterWithScrollBar(scrollBox, scrollBar);
+
+	if not scrollBar:CanInterpolateScroll() or not scrollBox:CanInterpolateScroll() then
+		scrollBar:SetInterpolateScroll(false);
+		scrollBox:SetInterpolateScroll(false);
+	end
+end
+
+-- Rarely used in cases where a ScrollBox was previously initialized.
 function ScrollUtil.InitScrollBar(scrollBox, scrollBar)
-	ScrollUtil.RegisterWithScrollBar(scrollBox, scrollBar);
+	RegisterWithScrollBar(scrollBox, scrollBar);
 	InitScrollBar(scrollBox, scrollBar);
 end
 
@@ -85,7 +98,6 @@ ManagedScrollBarVisibilityBehaviorMixin:GenerateCallbackEvents(
 	}
 );
 
-
 function ManagedScrollBarVisibilityBehaviorMixin:Init(scrollBox, scrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar)
 	CallbackRegistryMixin.OnLoad(self);
 
@@ -95,6 +107,11 @@ function ManagedScrollBarVisibilityBehaviorMixin:Init(scrollBox, scrollBar, scro
 	self.scrollBoxAnchorsWithoutBar = scrollBoxAnchorsWithoutBar;
 
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnLayout, self.EvaluateVisibility, self);
+	
+	local onSizeChanged = function(o, width, height, visibleExtentPercentage)
+		self:EvaluateVisibility();
+	end;
+	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnSizeChanged, onSizeChanged, scrollBar);
 
 	self:EvaluateVisibility();
 end
@@ -155,7 +172,7 @@ SelectionBehaviorMixin:GenerateCallbackEvents(
 );
 
 function SelectionBehaviorMixin.IsSelected(frame)
-	return frame and SelectionBehaviorMixin.IsElementDataSelected(frame.elementData) or false;
+	return frame and SelectionBehaviorMixin.IsElementDataSelected(frame:GetElementData()) or false;
 end
 
 function SelectionBehaviorMixin.IsElementDataSelected(elementData)
@@ -263,11 +280,11 @@ function SelectionBehaviorMixin:SetElementDataSelected_Internal(elementData, new
 end
 
 function SelectionBehaviorMixin:Select(frame)
-	self:SelectElementData(frame.elementData);
+	self:SelectElementData(frame:GetElementData());
 end
 
 function SelectionBehaviorMixin:ToggleSelect(frame)
-	self:ToggleSelectElementData(frame.elementData);
+	self:ToggleSelectElementData(frame:GetElementData());
 end
 
 function ScrollUtil.AddSelectionBehavior(scrollBox, selectionPolicy)
@@ -276,6 +293,7 @@ function ScrollUtil.AddSelectionBehavior(scrollBox, selectionPolicy)
 	return behavior;
 end
 
+-- Frame must be a EventButton to support the OnSizeChanged callback.
 function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 	local onSizeChanged = function(o, width, height)
 		scrollBox:QueueUpdate();

@@ -76,6 +76,22 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetAutoMissionTargetingInfoForSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "autoCombatSpellID", Type = "number", Nilable = false },
+				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAutoTroops",
 			Type = "Function",
 
@@ -1287,6 +1303,7 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
+				{ Name = "missionScalar", Type = "number", Nilable = false },
 				{ Name = "isElite", Type = "bool", Nilable = false },
 				{ Name = "isRare", Type = "bool", Nilable = false },
 			},

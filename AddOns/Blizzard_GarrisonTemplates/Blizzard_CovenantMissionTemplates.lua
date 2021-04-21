@@ -519,6 +519,19 @@ function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
 	self.PortraitBorder:SetShown( not encounterIconInfo.isRare and not encounterIconInfo.isElite);
 	self.RareOverlay:SetShown(encounterIconInfo.isRare);
 	self.EliteOverlay:SetShown(encounterIconInfo.isElite);
+
+	if self.LevelFrame ~= nil then
+		local useAtlasSize = false;
+		if encounterIconInfo.isElite then
+			self.LevelFrame:SetAtlas("adventures-mission-frame-elite", useAtlasSize);
+		elseif encounterIconInfo.isRare then
+			self.LevelFrame:SetAtlas("adventures-mission-frame-medium", useAtlasSize);
+		else
+			self.LevelFrame:SetAtlas("adventures-mission-frame-normal", useAtlasSize);
+		end
+		self.Level:SetText(encounterIconInfo.missionScalar);
+	end
+
 	GarrisonPortrait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
 end
 
@@ -725,6 +738,8 @@ end
 
 CovenantPortraitMixin = {};
 
+local CovenantTroopPortraitYAdjustment = -6;
+
 function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	GarrisonPortrait_Set(self.Portrait, followerInfo.portraitIconID);
 	self.HealthBar:Show();
@@ -738,12 +753,16 @@ function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	self.TroopStackBorder2:SetShown(followerInfo.isAutoTroop);
 	self.PuckBorder:SetAtlas(puckBorderAtlas);
 
-	if (followerInfo.isAutoTroop) then 
-		self:SetScale(0.9); 
-		self:SetPoint("TOPLEFT", 10, -4);
-	else 
-		self:SetScale(1);
-		self:SetPoint("TOPLEFT", 10, 2);
+	self:SetScale(followerInfo.isAutoTroop and 0.9 or 1.0);
+
+	local point, relativeTo, relativePoint, x, y = self:GetPoint();
+	if followerInfo.isAutoTroop and (self.yAnchorAdjustment == nil) then 
+		self.yAnchorAdjustment = CovenantTroopPortraitYAdjustment;
+		y = y + CovenantTroopPortraitYAdjustment;
+		self:SetPoint(point, relativeTo, relativePoint, x, y);
+	elseif not followerInfo.isAutoTroop and (self.yAnchorAdjustment ~= nil) then
+		self:SetPoint(point, relativeTo, relativePoint, x, y - self.yAnchorAdjustment);
+		self.yAnchorAdjustment = nil;
 	end
 end
 

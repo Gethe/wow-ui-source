@@ -9,7 +9,7 @@ TEXTTOSPEECH_CONFIG_DEFAULTS = {
 	speechRate = 0,
 	speechVolume = 100,
 	enabledChatTypes = {
-		["CHAT_MSG_TEXT_EMOTE"] = true,
+		["CHAT_MSG_EMOTE"] = true,
 		["CHAT_MSG_WHISPER"] = true,
 		["CHAT_MSG_SAY"] = true,
 		["CHAT_MSG_YELL"] = true,
@@ -32,7 +32,7 @@ local TEXTTOSPEECH_STANDARD_VOICE_COUNT = 2;
 local TextToSpeechChatTypes = {
 	"CHAT_MSG_MONSTER_SAY",
 	"CHAT_MSG_SYSTEM",
-	"CHAT_MSG_TEXT_EMOTE",
+	"CHAT_MSG_EMOTE",
 	"CHAT_MSG_WHISPER",
 	"CHAT_MSG_SAY",
 	"CHAT_MSG_YELL",
@@ -316,9 +316,104 @@ function TextToSpeechFrameAdjustVolumeSlider_OnValueChanged(self, value)
 	self.ValueLabel:SetFormattedText(PERCENTAGE_STRING, math.floor(value));
 end
 
-function TextToSpeechFrame_MessageEventHandler(self, event, ...)
+local lastMessage = nil;
+local lastMessageTime = nil;
+
+function TextToSpeechFrame_PlayMessage(frame, message, id)
+	local type = nil;
+	
+	if id then
+		type = C_ChatInfo.GetChatTypeName(id);
+	end
+
+	-- Any messages missing a type are treated as SYSTEM messages.
+	if ( not type ) then
+		type = "SYSTEM";
+	end
+
+	local chatMsgType = "CHAT_MSG_" .. type;
+	local typeGroup = ChatTypeGroupInverted[chatMsgType];
+
+	-- Check that option is enabled for this type or group of types
+	if ( not TEXTTOSPEECH_CONFIG.enabledChatTypes[chatMsgType] and not TEXTTOSPEECH_CONFIG.enabledChatTypes["CHAT_MSG_" .. typeGroup] ) then
+		return;
+	end
+
+	-- Remove all links and codes, check that a valid message remains
+	if ( not message ) then
+		return;
+	end
+
+	message = string.gsub(message, "|c%x%x%x%x%x%x%x%x", "");
+	message = string.gsub(message, "|H[^|]+|h", "");
+	message = string.gsub(message, "|A[^|]+|a", "");
+	message = string.gsub(message, "|T[^|]+|t", "");
+	message = string.gsub(message, "|[hr]?", "");
+	message = string.gsub(message, "[%[%]]", "");
+
+	if ( message == "" ) then
+		return;
+	end
+
+	-- Avoid spam and speaking the same line multiple times by suppressing duplicate messages
+	local timeNow = GetTime();
+	if ( lastMessageTime == timeNow and message == lastMessage ) then
+		return;
+	end
+
+	lastMessage = message;
+	lastMessageTime = timeNow;
+
+	-- Check for missing required config values
+	if ( TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected == nil ) then
+		TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = TEXTTOSPEECH_CONFIG_DEFAULTS.ttsVoiceOptionSelected;
+	end
+	if ( TEXTTOSPEECH_CONFIG.speechRate == nil ) then
+		TEXTTOSPEECH_CONFIG.speechRate = TEXTTOSPEECH_CONFIG_DEFAULTS.speechRate;
+	end
+	if ( TEXTTOSPEECH_CONFIG.speechVolume == nil ) then
+		TEXTTOSPEECH_CONFIG.speechVolume = TEXTTOSPEECH_CONFIG_DEFAULTS.speechVolume;
+	end
+
+	local voiceOption = TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected;
+	if ( TEXTTOSPEECH_CONFIG.alternateSystemVoice and type == "SYSTEM" ) then
+		local voices = C_VoiceChat.GetTtsVoices() or {};
+		local voiceCount = #voices;
+		if ( voiceCount > 1 and voiceOption == voices[1].voiceID ) then
+			voiceOption = voices[2].voiceID;
+		elseif ( voiceCount > 0 ) then
+			voiceOption = voices[1].voiceID;
+		end
+	end
+
+	if ( TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused and not frame:IsShown() ) then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_STOPTALK);
+	elseif ( TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks ) then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_TALKSTART);
+	end
+
+	C_VoiceChat.SpeakText(
+		voiceOption,
+		message,
+		Enum.VoiceTtsDestination.QueuedLocalPlayback,
+		TEXTTOSPEECH_CONFIG.speechRate,
+		TEXTTOSPEECH_CONFIG.speechVolume
+	);
+end
+
+function TextToSpeechFrame_AddMessageObserver(frame, message, r, g, b, id)
+	if ( GetCVarBool("textToSpeech") ) then
+		TextToSpeechFrame_PlayMessage(frame, message, id);
+	end
+end
+
+function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 	if ( not GetCVarBool("textToSpeech") ) then
-		return
+		return;
+	end
+
+	if ( not frame.addMessageObserver ) then
+		frame.addMessageObserver = TextToSpeechFrame_AddMessageObserver;
 	end
 
 	if ( TEXTTOSPEECH_CONFIG.playSoundWhenEnteringChatWindow and event == "CHAT_MSG_CHANNEL_NOTICE" ) then
@@ -332,54 +427,27 @@ function TextToSpeechFrame_MessageEventHandler(self, event, ...)
 		local message = string.gsub(arg1, "|.+", "");
 		local name = Ambiguate(arg2, "none");
 
+		-- Add optional text
+		if ( TEXTTOSPEECH_CONFIG.addCharacterNameToSpeech and name ~= "" ) then
+			if ( type == "YELL" ) then
+				message = CHAT_YELL_GET:format(name) .. message;
+			else
+				message = CHAT_SAY_GET:format(name) .. message;
+			end
+		end
+
 		-- Check for chat text from the local player and skip it
 		if ( name == UnitName("player") ) then
+			-- Ensure skipped by observer too
+			lastMessage = message;
+			lastMessageTime = GetTime();
 			return
 		end
 
-		-- Check for missing required config values
-		if ( TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected == nil ) then
-			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = TEXTTOSPEECH_CONFIG_DEFAULTS.ttsVoiceOptionSelected;
+		local chatType = strsub(event, 10);
+		local chatTypeInfo = ChatTypeInfo[chatType];
+		if chatTypeInfo and chatTypeInfo.id then
+			TextToSpeechFrame_PlayMessage(frame, message, chatTypeInfo.id);
 		end
-		if ( TEXTTOSPEECH_CONFIG.speechRate == nil ) then
-			TEXTTOSPEECH_CONFIG.speechRate = TEXTTOSPEECH_CONFIG_DEFAULTS.speechRate;
-		end
-		if ( TEXTTOSPEECH_CONFIG.speechVolume == nil ) then
-			TEXTTOSPEECH_CONFIG.speechVolume = TEXTTOSPEECH_CONFIG_DEFAULTS.speechVolume;
-		end
-
-		-- STT option checks
-		if ( TEXTTOSPEECH_CONFIG.addCharacterNameToSpeech and name ~= "" ) then
-			if ( strsub(event, 10) == "YELL" ) then
-				message = CHAT_YELL_GET:format(name) .. message
-			else
-				message = CHAT_SAY_GET:format(name) .. message
-			end
-		end
-
-		local voiceOption = TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected;
-		if ( TEXTTOSPEECH_CONFIG.alternateSystemVoice and strsub(event, 10) == "SYSTEM" ) then
-			local voices = C_VoiceChat.GetTtsVoices() or {};
-			local voiceCount = #voices;
-			if ( voiceCount > 1 and voiceOption == voices[1].voiceID ) then
-				voiceOption = voices[2].voiceID;
-			elseif ( voiceCount > 0 ) then
-				voiceOption = voices[1].voiceID;
-			end
-		end
-
-		if ( TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused and not self:IsShown() ) then
-			PlaySound(SOUNDKIT.UI_VOICECHAT_STOPTALK);
-		elseif ( TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks ) then
-			PlaySound(SOUNDKIT.UI_VOICECHAT_TALKSTART);
-		end
-
-		C_VoiceChat.SpeakText(
-			voiceOption,
-			message,
-			Enum.VoiceTtsDestination.QueuedLocalPlayback,
-			TEXTTOSPEECH_CONFIG.speechRate,
-			TEXTTOSPEECH_CONFIG.speechVolume
-		);
 	end
 end
