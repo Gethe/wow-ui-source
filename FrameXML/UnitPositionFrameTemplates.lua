@@ -73,8 +73,8 @@ function UnitPositionFrameMixin:OnEvent(event, ...)
 end
 
 function UnitPositionFrameMixin:UpdateAppearanceData()
-	self:SetPinTexture("raid", "Interface\\WorldMap\\WorldMapPartyIcon");
-	self:SetPinTexture("party", "Interface\\WorldMap\\WorldMapPartyIcon");
+	self:SetPinTexture("raid", "PlayerRaidBlip");
+	self:SetPinTexture("party", "PlayerControlled");
 	self:SetPinTexture("spectateda", "PlayerPartyBlip");
 	self:SetPinTexture("spectatedb", "PlayerPartyBlip");
 end
@@ -259,7 +259,7 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 				local callAtlasAPI = false;
 				if (unitBase == "party" or unitBase == "raid") then
 					appearance = UnitInSubgroup(unit, overridePartyType) and partyAppearance or raidAppearance;
-					callAtlasAPI = false;
+					callAtlasAPI = true;
 				elseif (unitBase == "spectateda" or unitBase == "spectatedb") then
 					appearance = unitBase == "spectateda" and spectatedaAppearance or spectatedbAppearance;
 					callAtlasAPI = true;

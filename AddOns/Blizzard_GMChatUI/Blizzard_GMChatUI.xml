@@ -215,11 +215,9 @@
 		</Layers>
 		<Scripts>
 			<OnShow>
-				GetGMTicket();
 				UIParent_UpdateTopFramePositions();
 			</OnShow>
 			<OnHide>
-				GetGMTicket();
 				UIParent_UpdateTopFramePositions();
 			</OnHide>
 			<OnClick>

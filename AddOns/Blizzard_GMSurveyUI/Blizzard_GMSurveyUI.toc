@@ -1,4 +1,0 @@
-## Title: Blizzard GM Survey UI
-## LoadOnDemand: 1
-Blizzard_GMSurveyUI.xml
-Localization.lua

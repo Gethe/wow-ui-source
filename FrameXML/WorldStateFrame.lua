@@ -492,14 +492,15 @@ function WorldStateScoreFrame_Resize()
 				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", _G["WorldStateScoreColumn"..j], "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
 			end
 		else
-			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
-			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
-			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
-			scoreButton.honorGained:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorGained", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
-			scoreButton.damageDone:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."DamageDone", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
-			scoreButton.healingDone:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HealingDone", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			local offset = SCORE_BUTTON_HEIGHT - 1;
+			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -offset);
+			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -offset);
+			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -offset);
+			scoreButton.honorGained:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorGained", "CENTER", 0, -offset);
+			scoreButton.damageDone:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."DamageDone", "CENTER", 0, -offset);
+			scoreButton.healingDone:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HealingDone", "CENTER", 0, -offset);
 			for j=1, STAT_COLUMNS_MAX do
-				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -offset);
 			end
 		end
 	end

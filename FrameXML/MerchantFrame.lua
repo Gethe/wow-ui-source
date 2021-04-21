@@ -215,7 +215,7 @@ function MerchantFrame_UpdateMerchantInfo()
 				itemButton.texture = texture;
 				MerchantFrame_UpdateAltCurrency(index, i, canAfford);
 				merchantAltCurrency:ClearAllPoints();
-				merchantAltCurrency:SetPoint("BOTTOMLEFT", "MerchantItem"..i.."NameFrame", "BOTTOMLEFT", 0, 31);
+				merchantAltCurrency:SetPoint("BOTTOMLEFT", "MerchantItem"..i.."NameFrame", "BOTTOMLEFT", 2, 31);
 				merchantMoney:Hide();
 				merchantAltCurrency:Show();
 			elseif ( extendedCost and (price > 0) ) then
@@ -233,7 +233,7 @@ function MerchantFrame_UpdateMerchantInfo()
 				end
 				SetMoneyFrameColor(merchantMoney:GetName(), color);
 				merchantAltCurrency:ClearAllPoints();
-				merchantAltCurrency:SetPoint("LEFT", merchantMoney:GetName(), "RIGHT", -14, 0);
+				merchantAltCurrency:SetPoint("LEFT", merchantMoney:GetName(), "RIGHT", -12, 0);
 				merchantAltCurrency:Show();
 				merchantMoney:Show();
 			else

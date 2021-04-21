@@ -419,10 +419,6 @@ function ItemSocketingFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ItemSocketingUI");
 end
 
-function GMSurveyFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_GMSurveyUI");
-end
-
 function TimeManager_LoadUI()
 	UIParentLoadAddOn("Blizzard_TimeManager");
 end
@@ -560,12 +556,7 @@ function ToggleHelpFrame()
 	if ( HelpFrame:IsShown() ) then
 		HideUIPanel(HelpFrame);
 	else
-		StaticPopup_Hide("HELP_TICKET");
-		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-		StaticPopup_Hide("GM_RESPONSE_NEED_MORE_HELP");
-		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
-		StaticPopup_Hide("GM_RESPONSE_MUST_RESOLVE_RESPONSE");
-		HelpFrame_ShowFrame();
+		HelpFrame:ShowFrame();
 	end
 end
 

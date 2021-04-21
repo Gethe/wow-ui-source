@@ -325,7 +325,8 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.tCoordBottom = 1;
 		end
 
-		if (level == 1 and category ~= "spell") then
+		if ((level == 1 and category ~= "spell") or 
+			(numTracking == 1 and category == "spell")) then -- this is a tracking ability, but you only have one
 			UIDropDownMenu_AddButton(info, level);
 		elseif (level == 2 and category == "spell") then
 			UIDropDownMenu_AddButton(info, level);

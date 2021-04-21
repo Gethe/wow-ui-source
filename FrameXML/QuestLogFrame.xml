@@ -523,7 +523,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(format(QUEST_LOG_DAILY_TOOLTIP, GetMaxDailyQuests(), SecondsToTime(GetQuestResetTime(), nil, 1)));
 							</OnEnter>
 							<OnLeave>

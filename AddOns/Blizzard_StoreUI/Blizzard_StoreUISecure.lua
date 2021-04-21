@@ -1341,6 +1341,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
 	self:RegisterEvent("STORE_REFRESH");
+	self:RegisterEvent("STORE_ENTITLEMENT_NOTIFICATION");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
@@ -1504,7 +1505,7 @@ function StoreFrame_OnEvent(self, event, ...)
 		else
 			StoreFrame_ShowUnrevokeConsumptionDialog();
 		end
-	elseif ( event == "STORE_REFRESH" ) then
+	elseif ( event == "STORE_REFRESH" or event == "STORE_ENTITLEMENT_NOTIFICATION" ) then
 		C_StoreSecure.GetProductList();
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then

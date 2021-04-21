@@ -106,6 +106,7 @@ UIManagerDocumentation.lua
 UIModelInfoDocumentation.lua
 UIWidgetManagerDocumentation.lua
 UnitDocumentation.lua
+UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
 VignetteInfoDocumentation.lua

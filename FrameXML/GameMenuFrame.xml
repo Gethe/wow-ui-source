@@ -25,7 +25,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_HELP">
+			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_SUPPORT">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>
 				</Anchors>
