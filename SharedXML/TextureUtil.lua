@@ -74,7 +74,7 @@ end
 
 function ClearClampedTextureRotation(texture)
 	if (texture.rotationDegrees) then
-		SetClampedTextureRotation(0);
+		SetClampedTextureRotation(texture, 0);
 		texture.origTexCoords = nil;
 		texture.origWidth = nil;
 		texture.origHeight = nil;

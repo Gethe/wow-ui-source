@@ -343,6 +343,8 @@ function UIWidgetContainerMixin:CreateWidget(widgetID, widgetType, widgetTypeInf
 	widgetFrame.inAnimType = widgetInfo.inAnimType;
 	widgetFrame.outAnimType = widgetInfo.outAnimType;
 	widgetFrame.layoutDirection = widgetInfo.layoutDirection; 
+	widgetFrame.modelSceneLayer = widgetInfo.modelSceneLayer;
+	widgetFrame.scriptedAnimationEffectID = widgetInfo.scriptedAnimationEffectID;
 	widgetFrame.markedForRemove = nil;
 
 	-- If this is a widget with a timer, add it from the timer list
@@ -412,7 +414,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	-- Run the Setup function on the widget (could change the orderIndex and/or layoutDirection)
 	widgetFrame:Setup(widgetInfo, self);
-
+	widgetFrame:ApplyEffects(widgetInfo);
 	if WIDGET_DEBUG_TEXTURE_SHOW then
 		if not widgetFrame._debugBGTex then
 			widgetFrame._debugBGTex = widgetFrame:CreateTexture()

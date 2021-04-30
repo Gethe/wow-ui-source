@@ -358,19 +358,11 @@ function CovenantMissionListMixin:Update()
 				end 
 			end 
 		
-			button.Summary:Show();
 			if not mission.encounterIconInfo then
 				mission.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
 			end
 
 			button.info.encounterIconInfo = mission.encounterIconInfo;
-
-			if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
-				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, duration);
-			else
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
-			end
 
 			button.LocBG:Hide();
 
@@ -382,14 +374,20 @@ function CovenantMissionListMixin:Update()
 			button.Overlay:Hide();
 			button.CompleteCheck:SetShown(mission.canBeCompleted);
 
-			if (mission.canBeCompleted) then
-				button.Summary:SetShown(false);
-			elseif (mission.inProgress) then
+			local showSummary = not mission.canBeCompleted;
+			button.Summary:SetShown(showSummary);
+			if (mission.inProgress) then
 				button.Overlay:Show();
-				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR_CODE..GARRISON_MISSION_IN_PROGRESS..FONT_COLOR_CODE_CLOSE);
+				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR:WrapTextInColorCode(GARRISON_MISSION_IN_PROGRESS));
+			elseif ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
+				button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(duration, mission.xp));
+			else
+				button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(mission.duration, mission.xp));
 			end
 
-			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - #mission.rewards * 65 ) then
+			local summaryWidth = showSummary and (button.Summary:GetWidth() + 8) or 0;
+			if ( (button.Title:GetWidth() + summaryWidth) < (655 - (#mission.rewards * 65)) ) then
 				button.Title:SetPoint("LEFT", 165, 0);
 				button.Summary:ClearAllPoints();
 				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
@@ -448,6 +446,8 @@ function CovenantMissionInfoTooltip_OnEnter(self)
 	elseif missionInfo.inProgress then
 		GameTooltip_AddHighlightLine(GameTooltip, IN_PROGRESS);
 	end
+
+	GameTooltip_AddHighlightLine(GameTooltip, COVENANT_MISSION_XP_TOOLTIP_FORMAT:format(missionInfo.xp));
 
 	if(missionInfo.description) then 
 		GameTooltip_AddNormalLine(GameTooltip, missionInfo.description);

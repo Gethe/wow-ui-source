@@ -124,8 +124,6 @@ local CurrencyConstants =
 				{ Name = "ACCOUNT_WIDE_HONOR_LEVEL_CURRENCY_ID", Type = "number", Value = 1586 },
 				{ Name = "CONQUEST_CURRENCY_ID", Type = "number", Value = 1602 },
 				{ Name = "HONOR_CURRENCY_ID", Type = "number", Value = 1792 },
-				{ Name = "CLASSIC_HONOR_CURRENCY_ID", Type = "number", Value = 1901 },
-				{ Name = "CURRENCY_PER_HONOR", Type = "number", Value = 0.1 },
 				{ Name = "ARTIFACT_KNOWLEDGE_CURRENCY_ID", Type = "number", Value = 1171 },
 				{ Name = "WAR_RESOURCES_CURRENCY_ID", Type = "number", Value = 1560 },
 				{ Name = "ECHOES_OF_NYALOTHA_CURRENCY_ID", Type = "number", Value = 1803 },

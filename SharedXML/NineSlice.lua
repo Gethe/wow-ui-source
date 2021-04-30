@@ -78,19 +78,15 @@ local function GetNineSlicePiece(container, pieceName)
 	end
 end
 
-local function PropagateLayoutSettingsToPieceLayout(userLayout, pieceLayout)
-	-- Only apply mirrorLayout if it wasn't explicitly defined
-	if pieceLayout.mirrorLayout == nil then
-		pieceLayout.mirrorLayout = userLayout.mirrorLayout;
-	end
-
-	-- ... and other settings that apply to the whole nine-slice
-end
-
-local function SetupTextureCoordinates(piece, setupInfo, pieceLayout)
+local function SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout)
 	local left, right, top, bottom = 0, 1, 0, 1;
 
-	if pieceLayout.mirrorLayout then
+	local pieceMirrored = pieceLayout.mirrorLayout;
+	if pieceMirrored == nil then
+		pieceMirrored = userLayout and userLayout.mirrorLayout;
+	end
+
+	if pieceMirrored then
 		if setupInfo.mirrorVertical then
 			top, bottom = bottom, top;
 		end
@@ -105,7 +101,7 @@ local function SetupTextureCoordinates(piece, setupInfo, pieceLayout)
 	piece:SetTexCoord(left, right, top, bottom);
 end
 
-local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit)
+local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, userLayout)
 	--- Change texture coordinates before applying atlas.
 	SetupTextureCoordinates(piece, setupInfo, pieceLayout);
 
@@ -397,8 +393,6 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 		local pieceName = setup.pieceName;
 		local pieceLayout = userLayout[pieceName];
 		if pieceLayout then
-			PropagateLayoutSettingsToPieceLayout(userLayout, pieceLayout);
-
 			local piece, pieceAlreadyExisted = GetNineSlicePiece(container, pieceName);
 			if not pieceAlreadyExisted then
 				container[pieceName] = piece;
@@ -408,9 +402,9 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 			-- Piece setup can change arbitrary properties, do it before changing the texture.
 			setup.fn(container, piece, setup, pieceLayout);
 			if userLayout.setupPieceVisualsFunction then
-				userLayout.setupPieceVisualsFunction(container, piece, setup, pieceLayout, textureKit);
+				userLayout.setupPieceVisualsFunction(container, piece, setup, pieceLayout, textureKit, userLayout);
 			else
-				SetupPieceVisuals(piece, setup, pieceLayout, textureKit);
+				SetupPieceVisuals(piece, setup, pieceLayout, textureKit, userLayout);
 			end
 		end
 	end

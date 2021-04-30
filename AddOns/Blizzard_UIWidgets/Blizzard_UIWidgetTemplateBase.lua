@@ -115,6 +115,38 @@ end
 
 UIWidgetBaseTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
+function UIWidgetBaseTemplateMixin:ShouldApplyEffectsToSubFrames()
+	return false;
+end
+
+function UIWidgetBaseTemplateMixin:ClearEffects()
+	local frames = {self:GetChildren()};
+	table.insert(frames, self);
+	for _, frame in ipairs(frames) do
+		if frame.effectController then 
+			frame.effectController:CancelEffect();
+			frame.effectController = nil;
+		end	
+	end
+end 
+
+function UIWidgetBaseTemplateMixin:ApplyEffects(widgetInfo)
+	local applyFrames = self:ShouldApplyEffectsToSubFrames() and {self:GetChildren()} or {self};
+	for _, frame in ipairs(applyFrames) do
+		if(frame.effectController) then 
+			frame.effectController:CancelEffect();
+			frame.effectController = nil;
+		end		
+		if widgetInfo.scriptedAnimationEffectID and widgetInfo.modelSceneLayer ~= Enum.UIWidgetModelSceneLayer.None then
+			if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then 
+				frame.effectController = self.widgetContainer.FrontModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+			elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then 
+				frame.effectController = self.widgetContainer.BackModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+			end 
+		end
+	end
+end
+
 function UIWidgetBaseTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 end
@@ -209,6 +241,7 @@ end
 function UIWidgetBaseTemplateMixin:OnReset()
 	self:Hide();
 	self:ClearAllPoints();
+	self:ClearEffects();
 end
 
 UIWidgetBaseResourceTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
@@ -512,7 +545,6 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 	self:SetTooltip(tooltip);
 	SetupTextureKitOnFrame(frameTextureKit, self.Background, bgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	SetupTextureKitOnFrame(textureKit, self.Foreground, fgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end
 
@@ -724,6 +756,7 @@ local scenarioHeaderTextureKitRegions = {
 local scenarioHeaderTextureKitInfo =
 {
 	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
+	["jailerstower-scenario-nodeaths"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
 	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, headerTextHeight = 20},
 }
 

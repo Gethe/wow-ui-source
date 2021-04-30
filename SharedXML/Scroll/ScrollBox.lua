@@ -271,7 +271,6 @@ function ScrollBoxBaseMixin:SetScrollAllowed(allowScroll)
 	end
 end
 
---here
 function ScrollBoxBaseMixin:GetDerivedScrollRange()
 	return math.max(0, self:GetDerivedExtent() - self:GetVisibleExtent());
 end

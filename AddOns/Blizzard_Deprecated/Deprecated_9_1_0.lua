@@ -15,8 +15,9 @@ end
 do
 	C_TransmogCollection.GetIllusionSourceInfo = function(illusionID)
 		local illusionInfo = C_TransmogCollection.GetIllusionInfo(illusionID);
+		local name, hyperlink = C_TransmogCollection.GetIllusionStrings(illusionID);
 		if illusionInfo then
-			return illusionInfo.visualID, illusionInfo.name, illusionInfo.hyperlink, illusionInfo.icon;
+			return illusionInfo.visualID, name, hyperlink, illusionInfo.icon;
 		end
 	end
 	C_TransmogCollection.GetIllusionFallbackWeaponSource = function()
@@ -70,6 +71,40 @@ do
 	function WardrobeFrame_IsAtTransmogrifier(...)
 		return C_Transmog.IsAtTransmogNPC();
 	end
+	-- transmogrify	
+	C_Transmog.GetCost = function()
+		local cost = C_Transmog.GetApplyCost();
+		if not cost then
+			return 0, 0;
+		else
+			return cost, 1;
+		end
+	end
+	LE_TRANSMOG_SEARCH_TYPE_ITEMS = Enum.TransmogSearchType.Items;
+	LE_TRANSMOG_SEARCH_TYPE_BASE_SETS = Enum.TransmogSearchType.BaseSets;
+	LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS = Enum.TransmogSearchType.UsableSets;
+	-- collection
+	C_TransmogCollection.GetShowMissingSourceInItemTooltips = function()
+		return GetCVarBool("missingTransmogSourceInItemTooltips");
+	end
+	C_TransmogCollection.SetShowMissingSourceInItemTooltips = function(show)
+		SetCVarBool("missingTransmogSourceInItemTooltips", show and true or false);
+	end
+	C_TransmogCollection.CanSetFavoriteInCategory = function()
+		return true;
+	end
+	-- sets
+	C_TransmogSets.GetSetSources = function(setID)
+		local setAppearances = C_TransmogSets.GetSetPrimaryAppearances(setID);
+		if not setAppearances then
+			return nil;
+		end
+		local lookupTable = { };
+		for i, appearanceInfo in ipairs(setAppearances) do
+			lookupTable[appearanceInfo.appearanceID] = appearanceInfo.collected;
+		end
+		return lookupTable;
+	end	
 end
 
 -- Quest log API conversion

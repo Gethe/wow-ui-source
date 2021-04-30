@@ -7,6 +7,20 @@ local Transmog =
 	Functions =
 	{
 		{
+			Name = "ApplyAllPending",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currentSpecOnly", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requestSent", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanHaveSecondaryAppearanceForSlotID",
 			Type = "Function",
 
@@ -21,6 +35,39 @@ local Transmog =
 			},
 		},
 		{
+			Name = "CanTransmogItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeTransmogged", Type = "bool", Nilable = false },
+				{ Name = "selfFailureReason", Type = "string", Nilable = true },
+				{ Name = "canTransmogOthers", Type = "bool", Nilable = false },
+				{ Name = "othersFailureReason", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "CanTransmogItemWithItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetItemInfo", Type = "string", Nilable = false },
+				{ Name = "sourceItemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransmog", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "ClearAllPending",
 			Type = "Function",
 		},
@@ -31,6 +78,28 @@ local Transmog =
 			Arguments =
 			{
 				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "Close",
+			Type = "Function",
+		},
+		{
+			Name = "GetApplyCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetApplyWarnings",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "warnings", Type = "table", InnerType = "TransmogApplyWarningInfo", Nilable = false },
 			},
 		},
 		{
@@ -200,6 +269,15 @@ local Transmog =
 			},
 		},
 		{
+			Name = "LoadOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPending",
 			Type = "Function",
 
@@ -259,8 +337,8 @@ local Transmog =
 			LiteralName = "TRANSMOG_SEARCH_UPDATED",
 			Payload =
 			{
-				{ Name = "searchType", Type = "number", Nilable = false },
-				{ Name = "collectionType", Type = "number", Nilable = true },
+				{ Name = "searchType", Type = "TransmogSearchType", Nilable = false },
+				{ Name = "collectionType", Type = "TransmogCollectionType", Nilable = true },
 			},
 		},
 		{
@@ -372,6 +450,15 @@ local Transmog =
 			{
 				{ Name = "Appearance", Type = "TransmogType", EnumValue = 0 },
 				{ Name = "Illusion", Type = "TransmogType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TransmogApplyWarningInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 	},

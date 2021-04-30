@@ -140,6 +140,11 @@
 						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="-1"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="DungeonScore" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ItemLevel" relativePoint="RIGHT" x="25" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -278,11 +283,20 @@
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button parentKey="InviteButton" inherits="UIMenuButtonStretchTemplate" text="INVITE" motionScriptsWhileDisabled="true">
-				<Size x="80" y="22"/>
+			<Button parentKey="InviteButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+				<Size x="24" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.DeclineButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-icon-greencheckmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -1353,6 +1367,12 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
+					<Button parentKey="DungeonScoreColumnHeader" inherits="LFGListColumnHeaderTemplate" text="Score">
+						<Size x="50" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ItemLevelColumnHeader" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
 					<Button parentKey="RefreshButton">
 						<Size x="32" y="32"/>
 						<Anchors>
@@ -1977,7 +1997,7 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
-				<Size x="118" y="22"/>
+				<Size x="22" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOP" x="-8" y="-165"/>
 				</Anchors>
@@ -1989,7 +2009,7 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
-				<Size x="118" y="22"/>
+				<Size x="22" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOP" x="8" y="-165"/>
 				</Anchors>

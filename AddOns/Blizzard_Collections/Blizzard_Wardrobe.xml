@@ -571,7 +571,7 @@
 
 			<Frame parentKey="ItemsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
 				<KeyValues>
-					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_ITEMS" type="global"/>
+					<KeyValue key="searchType" value="Enum.TransmogSearchType.Items" type="global"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -885,7 +885,7 @@
 			</Frame>
 			<Frame parentKey="SetsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeSetsCollectionMixin" hidden="true">
 				<KeyValues>
-					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_BASE_SETS" type="global"/>
+					<KeyValue key="searchType" value="Enum.TransmogSearchType.BaseSets" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-60" x="4"/>
@@ -1067,7 +1067,7 @@
 			</Frame>
 			<Frame parentKey="SetsTransmogFrame" parentArray="ContentFrames" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsTransmogMixin" hidden="true">
 				<KeyValues>
-					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS" type="global"/>
+					<KeyValue key="searchType" value="Enum.TransmogSearchType.UsableSets" type="global"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1655,7 +1655,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="WardrobeFrame" inherits="PortraitFrameTemplate" toplevel="true" frameStrata="MEDIUM" enableMouse="true" parent="UIParent" hidden="true">
+	<Frame name="WardrobeFrame" inherits="PortraitFrameTemplate" toplevel="true" frameStrata="MEDIUM" enableMouse="true" parent="UIParent" hidden="true" mixin="WardrobeFrameMixin">
 		<Size x="965" y="606"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
@@ -1981,7 +1981,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="WardrobeFrame_OnLoad"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

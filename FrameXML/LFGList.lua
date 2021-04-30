@@ -1406,11 +1406,9 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 	if ( applicantInfo.numMembers > 1 ) then
 		button.DeclineButton:SetHeight(36);
 		button.InviteButton:SetHeight(36);
-		button.InviteButton:SetFormattedText(LFG_LIST_INVITE_GROUP, applicantInfo.numMembers);
 	else
 		button.DeclineButton:SetHeight(22);
 		button.InviteButton:SetHeight(22);
-		button.InviteButton:SetText(INVITE);
 	end
 
 	if ( applicantInfo.applicantInfo or applicantInfo.applicationStatus == "applied" ) then
@@ -1488,7 +1486,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "declined_full" or status == "declined_delisted" or status == "invitedeclined" or status == "timedout");
 	local noTouchy = (status == "invited" or status == "inviteaccepted" or status == "invitedeclined");
 
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
 
 	member.memberIdx = memberIdx;
 
@@ -1502,7 +1500,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 		end
 
 		local classTextColor = grayedOut and GRAY_FONT_COLOR or RAID_CLASS_COLORS[class];
-		member.Name:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
+		--member.Name:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
 	else
 		--We might still be requesting the name and class from the server.
 		member.Name:SetText("");
@@ -1526,6 +1524,8 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 
 	member.ItemLevel:SetShown(not grayedOut);
 	member.ItemLevel:SetText(math.floor(itemLevel));
+	member.DungeonScore:SetText(dungeonScore);
+	member.DungeonScore:SetShown(dungeonScore);
 
 	local mouseFocus = GetMouseFocus();
 	if ( mouseFocus == member ) then
@@ -3226,6 +3226,9 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( searchResultInfo.leaderName ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
 	end
+	if ( searchResultInfo.leaderOverallDungeonScore ) then 
+		tooltip:AddLine(DUNGEON_SCORE_LEADER:format(searchResultInfo.leaderOverallDungeonScore));
+	end 
 	if ( searchResultInfo.age > 0 ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultInfo.age, false, false, 1, false)));
 	end

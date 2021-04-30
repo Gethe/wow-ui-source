@@ -97,6 +97,21 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetSeasonBestAffixScoreInfoForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "affixScores", Type = "table", InnerType = "MythicPlusAffixScoreInfo", Nilable = false },
+				{ Name = "bestOverAllScore", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
 
@@ -216,6 +231,15 @@ local MythicPlusInfo =
 				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+			},
+		},
+		{
+			Name = "MythicPlusAffixScoreInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "score", Type = "number", Nilable = false },
 			},
 		},
 		{

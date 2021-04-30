@@ -42,6 +42,19 @@ local TransmogShared =
 				{ Name = "Paired", Type = "TransmogCollectionType", EnumValue = 29 },
 			},
 		},
+		{
+			Name = "TransmogSearchType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Items", Type = "TransmogSearchType", EnumValue = 1 },
+				{ Name = "BaseSets", Type = "TransmogSearchType", EnumValue = 2 },
+				{ Name = "UsableSets", Type = "TransmogSearchType", EnumValue = 3 },
+			},
+		},
 	},
 };
 

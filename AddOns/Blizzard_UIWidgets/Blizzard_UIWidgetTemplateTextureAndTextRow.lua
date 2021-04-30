@@ -32,6 +32,10 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	self:MarkDirty(); -- Layout visible entries horizontally
 end
 
+function UIWidgetTemplateTextureAndTextRowMixin:ShouldApplyEffectsToSubFrames()
+	return true;
+end
+
 function UIWidgetTemplateTextureAndTextRowMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.entryPool:ReleaseAll();

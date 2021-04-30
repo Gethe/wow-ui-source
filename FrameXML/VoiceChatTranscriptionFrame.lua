@@ -96,7 +96,7 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 		VoiceTranscriptionFrame_UpdateEditBox(self);
-	elseif ( event == "CVAR_UPDATE" and cvarName == "ENABLE_SPEECH_TO_TEXT" ) then
+	elseif ( event == "CVAR_UPDATE" and cvarName == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" ) then
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	elseif ( event == "VOICE_CHAT_MUTED_CHANGED" ) then

@@ -76,6 +76,8 @@ local ChallengeModeInfo =
 				{ Name = "onTime", Type = "bool", Nilable = false },
 				{ Name = "keystoneUpgradeLevels", Type = "number", Nilable = false },
 				{ Name = "practiceRun", Type = "bool", Nilable = false },
+				{ Name = "oldOverallDungeonScore", Type = "number", Nilable = false },
+				{ Name = "newOverallDungeonScore", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -89,12 +91,40 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetDungeonScoreRarityColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dungeonScore", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildLeaders",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "topAttempt", Type = "table", InnerType = "ChallengeModeGuildTopAttempt", Nilable = false },
+			},
+		},
+		{
+			Name = "GetKeystoneLevelRarityColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelScore", Type = "table", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -122,6 +152,15 @@ local ChallengeModeInfo =
 				{ Name = "timeLimit", Type = "number", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = true },
 				{ Name = "backgroundTexture", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverallDungeonScore",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "overallDungeonScore", Type = "number", Nilable = false },
 			},
 		},
 		{

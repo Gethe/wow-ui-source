@@ -103,8 +103,11 @@ function ManagedScrollBarVisibilityBehaviorMixin:Init(scrollBox, scrollBar, scro
 
 	self.scrollBox = scrollBox;
 	self.scrollBar = scrollBar;
-	self.scrollBoxAnchorsWithBar = scrollBoxAnchorsWithBar;
-	self.scrollBoxAnchorsWithoutBar = scrollBoxAnchorsWithoutBar;
+
+	if scrollBoxAnchorsWithBar and scrollBoxAnchorsWithoutBar then
+		self.scrollBoxAnchorsWithBar = scrollBoxAnchorsWithBar;
+		self.scrollBoxAnchorsWithoutBar = scrollBoxAnchorsWithoutBar;
+	end
 
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnLayout, self.EvaluateVisibility, self);
 	
@@ -113,7 +116,8 @@ function ManagedScrollBarVisibilityBehaviorMixin:Init(scrollBox, scrollBar, scro
 	end;
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnSizeChanged, onSizeChanged, scrollBar);
 
-	self:EvaluateVisibility();
+	local force = true;
+	self:EvaluateVisibility(force);
 end
 
 function ManagedScrollBarVisibilityBehaviorMixin:GetScrollBox()
@@ -124,32 +128,31 @@ function ManagedScrollBarVisibilityBehaviorMixin:GetScrollBar()
 	return self.scrollBar;
 end
 
-function ManagedScrollBarVisibilityBehaviorMixin:EvaluateVisibility()
-	local hasScrollableExtent = self:GetScrollBox():HasScrollableExtent();
-	self:SetScrollBarVisible(hasScrollableExtent);
-end
-
-function ManagedScrollBarVisibilityBehaviorMixin:SetScrollBarVisible(visible)
-	self:GetScrollBar():SetShown(visible);
-
-	self:ApplyAnchors(visible and self.scrollBoxAnchorsWithBar or self.scrollBoxAnchorsWithoutBar)
-end
-
-function ManagedScrollBarVisibilityBehaviorMixin:ApplyAnchors(anchors)
-	if self.appliedAnchors == anchors then
+function ManagedScrollBarVisibilityBehaviorMixin:EvaluateVisibility(force)
+	local visible = self:GetScrollBox():HasScrollableExtent();
+	if not force and visible == self:GetScrollBar():IsShown() then
 		return;
 	end
-	self.appliedAnchors = anchors;
 
-	local scrollBox = self:GetScrollBox();
-	scrollBox:ClearAllPoints();
+	self:GetScrollBar():SetShown(visible);
 
-	local clearAllPoints = false;
-	for index, anchor in ipairs(anchors) do
-		anchor:SetPoint(scrollBox, clearAllPoints);
+	if self.scrollBoxAnchorsWithBar and self.scrollBoxAnchorsWithoutBar then
+		local anchors = visible and self.scrollBoxAnchorsWithBar or self.scrollBoxAnchorsWithoutBar;
+		if self.appliedAnchors == anchors then
+			return;
+		end
+		self.appliedAnchors = anchors;
+
+		local scrollBox = self:GetScrollBox();
+		scrollBox:ClearAllPoints();
+
+		local clearAllPoints = false;
+		for index, anchor in ipairs(anchors) do
+			anchor:SetPoint(scrollBox, clearAllPoints);
+		end
 	end
 
-	self:TriggerEvent(ManagedScrollBarVisibilityBehaviorMixin.Event.OnVisibilityChanged, self.scrollBar:IsShown());
+	self:TriggerEvent(ManagedScrollBarVisibilityBehaviorMixin.Event.OnVisibilityChanged, visible);
 end
 
 function ScrollUtil.AddManagedScrollBarVisibilityBehavior(scrollBox, scrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar)

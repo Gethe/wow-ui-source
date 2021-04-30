@@ -17,8 +17,10 @@ local textureKitRegionFormatStrings = {
 	["BGRight"] = "%s-BGRight",
 	["BGCenter"] = "%s-BGCenter",
 	["Spark"] = "%s-Spark",
+	["BackgroundGlow"] = "%s-BackgroundGlow";
 }
 
+local backgroundGlowTextureKitString = "%s-BackgroundGlow";
 local partitionTextureKitString = "%s-BorderTick";
 
 local barColorFromTintValue = {
@@ -35,24 +37,46 @@ local barColorFromTintValue = {
 local fillTextureKitFormatString = "%s-Fill-%s";
 local DEFAULT_BAR_WIDTH = 215;
 
+local textureKitOffsets = {
+	["jailerstower-scorebar"] = {sparkXOffset = -14,},
+	["jailerstower-scorebar-pause"] = {sparkXOffset = -14, },
+	["jailerstower-scorebar-empty"] = {sparkXOffset = -14, },
+	["jailerstower-scorebar-full"] = {sparkXOffset = -14, },
+	["default"] = {sparkXOffset = 0, },
+}
+
 function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
 	local frameTextureKit = widgetInfo.frameTextureKit;
 	local fillTextureKit = widgetInfo.textureKit;
+	local offsets = textureKitOffsets[frameTextureKit] or textureKitOffsets["default"];
 	if frameTextureKit and fillTextureKit then
 		local fillAtlas = fillTextureKitFormatString:format(frameTextureKit, fillTextureKit);
 		self.Bar:SetStatusBarAtlas(fillAtlas);
 	end
 
+	local overrideHeight = nil;
 	local barColor = barColorFromTintValue[widgetInfo.colorTint];
 	if(barColor) then 
 		self.Bar:SetStatusBarColor(barColor:GetRGB());
 		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
 	end 
 
-	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-
+	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	self.Bar.BorderCenter:SetAtlas("jailstower-scorebar-pause-bordercenter", true)
+	if(not self.Bar.BorderLeft:IsShown() and not self.Bar.BorderRight:IsShown()) then 
+		self.Bar.BorderCenter:ClearAllPoints(); 
+		self.Bar.BorderCenter:SetPoint("CENTER", 0);
+		local barInfo = C_Texture.GetAtlasInfo(self.Bar:GetStatusBarAtlas());
+		if(useBarAtlasSizeHeight) then 
+			overrideHeight = self.Bar.BorderCenter:GetHeight(); 
+		end
+	else 
+		self.Bar.BorderCenter:ClearAllPoints();
+		self.Bar.BorderCenter:SetPoint("TOPLEFT", self.Bar.BorderLeft, "TOPRIGHT");
+		self.Bar.BorderCenter:SetPoint("BOTTOMRIGHT", self.Bar.BorderRight, "BOTTOMLEFT");
+	end		
 	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 	self.Bar:SetWidth(barWidth);
 
@@ -68,7 +92,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.Bar.Spark:SetShown(showSpark);
 	if showSpark then
 		self.Bar.Spark:ClearAllPoints();
-		self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
+		self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", offsets.sparkXOffset, 0);
 	end
 
 	self.Label:SetText(widgetInfo.text);
@@ -85,10 +109,17 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	end
 
 	self.partitionPool:ReleaseAll();
+	local backgroundGlowAtlas = backgroundGlowTextureKitString:format(frameTextureKit);
+	local backgroundGlowAtlasInfo = C_Texture.GetAtlasInfo(backgroundGlowAtlas);
+
+	if(backgroundGlowAtlasInfo) then 
+		self.Bar.BackgroundGlow:SetAtlas(backgroundGlowAtlas, TextureKitConstants.UseAtlasSize)
+	end	
 
 	local paritionAtlas = partitionTextureKitString:format(frameTextureKit);
-	if C_Texture.GetAtlasInfo(paritionAtlas) then
-		for _, partitionValue in ipairs(widgetInfo.partitionValues) do
+	local partitionAtlasInfo =  C_Texture.GetAtlasInfo(paritionAtlas);
+	for _, partitionValue in ipairs(widgetInfo.partitionValues) do
+		if partitionAtlasInfo then
 			local partitionTexture = self.partitionPool:Acquire();
 
 			local useAtlasSize = true;
@@ -98,15 +129,15 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 			local xOffset = barWidth * partitionPercent;
 
 			partitionTexture:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "LEFT", xOffset, 0)
-
 			partitionTexture:Show();
 		end
+		self.Bar.BackgroundGlow:SetShown(backgroundGlowAtlasInfo and barVal >= partitionValue)	
 	end
 
 	local totalWidth = math.max(self.Bar:GetWidth() + 16, labelWidth);
 	self:SetWidth(totalWidth);
 
-	local barHeight = self.Bar:GetHeight() + 16;
+	local barHeight = overrideHeight ~= nil and overrideHeight or (self.Bar:GetHeight() + 16);
 
 	local totalHeight = barHeight + labelHeight;
 	self:SetHeight(totalHeight);

@@ -129,6 +129,7 @@ local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
 local EXTRA_GUILD_COLUMN_APPLICANTS = 3;
 local EXTRA_GUILD_COLUMN_PENDING = 4;
+local EXTRA_GUILD_COLUMN_DUNGEON_SCORE = 5;
 
 local COMMUNITY_APPLICANT_LIST_VALUE = 2; 
 
@@ -159,6 +160,13 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "pending",
 		width = 115,
 	};
+	[EXTRA_GUILD_COLUMN_DUNGEON_SCORE] = {
+		dropdownText = DUNGEON_SCORE,
+		title = DUNGEON_SCORE,
+		attribute = "dungeonScore",
+		width = 115,
+	};
+
 };
 
 CommunitiesMemberListMixin = {};
@@ -1127,6 +1135,10 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			GameTooltip:AddLine(COMMUNITY_MEMBER_NOTE_FORMAT:format(memberInfo.memberNote), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		end
 
+		if memberInfo.overallDungeonScore then 
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(memberInfo.overallDungeonScore));
+		end 
+
 		GameTooltip:Show();
 	end
 end
@@ -1236,6 +1248,8 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION then
 		local professionId = self:GetProfessionId();
 		self.GuildInfo:SetText(GUILD_VIEW_RECIPES_LINK);
+	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_DUNGEON_SCORE then
+		self.GuildInfo:SetText(memberInfo.overallDungeonScore);
 	end
 end
 
@@ -1529,6 +1543,7 @@ function GuildMemberListDropDownMenu_Initialize(self)
 	for i, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
 		info.text = extraColumnInfo.dropdownText;
 		info.value = i;
+		info.disabled = false; 
 		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
 			if (self.hasApplicants and canGuildInvite) then 
 				info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);

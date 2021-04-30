@@ -287,6 +287,7 @@ local TradeSkillUI =
 			Fields =
 			{
 				{ Name = "requiredSkillRank", Type = "number", Nilable = false },
+				{ Name = "lockedReason", Type = "string", Nilable = true },
 				{ Name = "slotText", Type = "string", Nilable = true },
 				{ Name = "options", Type = "table", InnerType = "number", Nilable = false },
 			},

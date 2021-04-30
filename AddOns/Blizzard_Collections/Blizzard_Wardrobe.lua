@@ -42,9 +42,17 @@ end
 -- **** MAIN **********************************************************************************************************************************************
 -- ************************************************************************************************************************************************************
 
-function WardrobeFrame_OnLoad(self)
+WardrobeFrameMixin = CreateFromMixins(CallbackRegistryMixin);
+
+WardrobeFrameMixin:GenerateCallbackEvents(
+{
+	"OnCollectionTabChanged",
+});
+
+function WardrobeFrameMixin:OnLoad()
 	self:SetPortraitToAsset("Interface\\Icons\\INV_Arcane_Orb");
 	WardrobeFrameTitleText:SetText(TRANSMOGRIFY);
+	CallbackRegistryMixin.OnLoad(self);
 end
 
 -- ************************************************************************************************************************************************************
@@ -140,6 +148,7 @@ function TransmogFrameMixin:OnShow()
 	end
 	self.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	self:RefreshPlayerModel();
+	WardrobeFrame:RegisterCallback(WardrobeFrameMixin.Event.OnCollectionTabChanged, self.EvaluateSecondaryAppearanceCheckbox, self);
 end
 
 function TransmogFrameMixin:OnHide()
@@ -148,6 +157,7 @@ function TransmogFrameMixin:OnHide()
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 	C_Transmog.Close();
+	WardrobeFrame:UnregisterCallback(WardrobeFrameMixin.Event.OnCollectionTabChanged, self);
 end
 
 function TransmogFrameMixin:MarkDirty()
@@ -320,10 +330,8 @@ function TransmogFrameMixin:SelectSlotButton(slotButton, fromOnClick)
 		self.selectedSlotButton:SetSelected(false);
 	end
 	self.selectedSlotButton = slotButton;
-	local showToggleCheckbox = false;
 	if slotButton then
 		slotButton:SetSelected(true);
-		showToggleCheckbox = C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotButton.transmogLocation.slotID);
 		if (fromOnClick and WardrobeCollectionFrame.activeFrame ~= WardrobeCollectionFrame.ItemsCollectionFrame) then
 			WardrobeCollectionFrame:ClickTab(WardrobeCollectionFrame.ItemsTab);
 		end
@@ -340,6 +348,14 @@ function TransmogFrameMixin:SelectSlotButton(slotButton, fromOnClick)
 		end
 	else
 		WardrobeCollectionFrame.ItemsCollectionFrame:SetTransmogrifierAppearancesShown(false);
+	end
+	self:EvaluateSecondaryAppearanceCheckbox();
+end
+
+function TransmogFrameMixin:EvaluateSecondaryAppearanceCheckbox()
+	local showToggleCheckbox = false;
+	if self.selectedSlotButton and WardrobeCollectionFrame.activeFrame == WardrobeCollectionFrame.ItemsCollectionFrame then
+		showToggleCheckbox = C_Transmog.CanHaveSecondaryAppearanceForSlotID(self.selectedSlotButton.transmogLocation.slotID);
 	end
 	self.ToggleSecondaryAppearanceCheckbox:SetShown(showToggleCheckbox);
 end
@@ -411,20 +427,20 @@ function TransmogFrameMixin:SetPendingTransmog(transmogID, category)
 end
 
 function TransmogFrameMixin:UpdateApplyButton()
-	local cost, numChanges = C_Transmog.GetCost();
+	local cost = C_Transmog.GetApplyCost();
 	local canApply;
-	if ( cost > GetMoney() ) then
+	if cost and cost > GetMoney() then
 		SetMoneyFrameColor("WardrobeTransmogMoneyFrame", "red");
 	else
 		SetMoneyFrameColor("WardrobeTransmogMoneyFrame");
-		if (numChanges > 0 ) then
+		if cost then
 			canApply = true;
 		end
 	end
-	if ( StaticPopup_FindVisible("TRANSMOG_APPLY_WARNING") ) then
+	if StaticPopup_FindVisible("TRANSMOG_APPLY_WARNING") then
 		canApply = false;
 	end
-	MoneyFrame_Update("WardrobeTransmogMoneyFrame", cost, true);	-- always show 0 copper
+	MoneyFrame_Update("WardrobeTransmogMoneyFrame", cost or 0, true);	-- always show 0 copper
 	self.ApplyButton:SetEnabled(canApply);
 	self.ModelScene.ClearAllPendingButton:SetShown(canApply);
 end
@@ -519,8 +535,7 @@ function WardrobeOutfitMixin:GetItemTransmogInfoList()
 end
 
 function WardrobeOutfitMixin:OnOutfitSaved(outfitID)
-	local cost, numChanges = C_Transmog.GetCost();
-	if numChanges == 0 then
+	if C_Transmog.GetApplyCost() then
 		self:OnOutfitApplied(outfitID);
 	end
 end
@@ -617,19 +632,19 @@ function TransmogSlotButtonMixin:OnEnter()
 			GameTooltip:AddLine(TRANSMOGRIFY_ILLUSION_INVALID_ITEM, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b, true);
 		elseif ( hasPending or hasUndo or canTransmogrify ) then
 			if ( baseSourceID > 0 ) then
-				local illusionInfo = C_TransmogCollection.GetIllusionInfo(baseSourceID);
-				GameTooltip:AddLine(illusionInfo and illusionInfo.name, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				local name = C_TransmogCollection.GetIllusionStrings(baseSourceID);
+				GameTooltip:AddLine(name, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 			end
 			if ( hasUndo ) then
 				GameTooltip:AddLine(TRANSMOGRIFY_TOOLTIP_REVERT, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
 			elseif ( pendingSourceID > 0 ) then
 				GameTooltip:AddLine(WILL_BE_TRANSMOGRIFIED_HEADER, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
-				local illusionInfo = C_TransmogCollection.GetIllusionInfo(pendingSourceID);
-				GameTooltip:AddLine(illusionInfo and illusionInfo.name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+				local name = C_TransmogCollection.GetIllusionStrings(pendingSourceID);
+				GameTooltip:AddLine(name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
 			elseif ( appliedSourceID > 0 ) then
 				GameTooltip:AddLine(TRANSMOGRIFIED_HEADER, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
-				local illusionInfo = C_TransmogCollection.GetIllusionInfo(appliedSourceID);
-				GameTooltip:AddLine(illusionInfo and illusionInfo.name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+				local name = C_TransmogCollection.GetIllusionStrings(appliedSourceID);
+				GameTooltip:AddLine(name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
 			end
 		else
 			if not C_Item.DoesItemExist(self.itemLocation) then
@@ -1050,6 +1065,7 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		self.SetsCollectionFrame:SetShown(not atTransmogrifier);
 		self.SetsTransmogFrame:SetShown(atTransmogrifier);
 	end
+	WardrobeFrame:TriggerEvent(WardrobeFrameMixin.Event.OnCollectionTabChanged);
 end
 
 function WardrobeCollectionFrameMixin:OnLoad()
@@ -1713,7 +1729,7 @@ function WardrobeItemsCollectionMixin:OnHide()
 
 	StaticPopup_Hide("TRANSMOG_FAVORITE_WARNING");
 
-	self:GetParent():ClearSearch(LE_TRANSMOG_SEARCH_TYPE_ITEMS);
+	self:GetParent():ClearSearch(Enum.TransmogSearchType.Items);
 
 	for i = 1, #self.Models do
 		self.Models[i]:SetKeepModelOnHide(false);
@@ -2028,14 +2044,21 @@ function WardrobeItemsCollectionMixin:FilterVisuals()
 	local isAtTransmogrifier = C_Transmog.IsAtTransmogNPC();
 	local visualsList = self.visualsList;
 	local filteredVisualsList = { };
-	for i = 1, #visualsList do
-		if ( isAtTransmogrifier ) then
-			if ( (visualsList[i].isUsable and visualsList[i].isCollected) or visualsList[i].alwaysShowItem ) then
-				tinsert(filteredVisualsList, visualsList[i]);
-			end
-		else
-			if ( not visualsList[i].isHideVisual ) then
-				tinsert(filteredVisualsList, visualsList[i]);
+	local slotID = self.transmogLocation.slotID;
+	for i, visualInfo in ipairs(visualsList) do
+		local skip = false;
+		if visualInfo.restrictedSlotID then
+			skip = (slotID ~= visualInfo.restrictedSlotID);
+		end
+		if not skip then
+			if isAtTransmogrifier then
+				if (visualInfo.isUsable and visualInfo.isCollected) or visualInfo.alwaysShowItem then
+					table.insert(filteredVisualsList, visualInfo);
+				end
+			else
+				if not visualInfo.isHideVisual then
+					table.insert(filteredVisualsList, visualInfo);
+				end
 			end
 		end
 	end
@@ -2335,13 +2358,7 @@ function WardrobeItemsCollectionMixin:RefreshVisualsList()
 	if self.transmogLocation:IsIllusion() then
 		self.visualsList = C_TransmogCollection.GetIllusions();
 	else
-		if self.transmogLocation:IsMainHand() then
-			self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory, EXCLUSION_CATEGORY_MAINHAND);
-		elseif self.transmogLocation:IsOffHand() then
-			self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory, EXCLUSION_CATEGORY_OFFHAND);
-		else
-			self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory);
-		end
+		self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory);
 
 	end
 	self:FilterVisuals();
@@ -2543,10 +2560,10 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local link;
 		if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
-			local illusionInfo = C_TransmogCollection.GetIllusionInfo(self.visualInfo.sourceID);
-			link = illusionInfo and illusionInfo.hyperlink;
+			local name;
+			name, link = C_TransmogCollection.GetIllusionStrings(self.visualInfo.sourceID);
 		else
-			local sources = GetSortedAppearanceSources(self.visualInfo.visualID);
+			local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.visualInfo.visualID);
 			if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 				local index = CollectionWardrobeUtil.GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 				link = WardrobeCollectionFrame:GetAppearanceItemHyperlink(sources[index]);
@@ -2594,9 +2611,9 @@ function WardrobeItemsModelMixin:OnEnter()
 		self.NewGlow:Hide();
 	end
 	if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
-		local illusionInfo = C_TransmogCollection.GetIllusionInfo(self.visualInfo.sourceID);
+		local name = C_TransmogCollection.GetIllusionStrings(self.visualInfo.sourceID);
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(illusionInfo and illusionInfo.name);
+		GameTooltip:SetText(name);
 		if ( self.visualInfo.sourceText ) then
 			GameTooltip:AddLine(self.visualInfo.sourceText, 1, 1, 1, 1);
 		end
@@ -2691,9 +2708,10 @@ function WardrobeSetsTransmogModelMixin:RefreshTooltip()
 	local numTotalSlots = 0;
 	local waitingOnQuality = false;
 	local sourceQualityTable = self:GetParent().sourceQualityTable;
-	local sources = C_TransmogSets.GetSetSources(self.setID);
-	for sourceID in pairs(sources) do
+	local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(self.setID);
+	for i, primaryAppearance in pairs(primaryAppearances) do
 		numTotalSlots = numTotalSlots + 1;
+		local sourceID = primaryAppearance.appearanceID;
 		if ( sourceQualityTable[sourceID] ) then
 			totalQuality = totalQuality + sourceQualityTable[sourceID];
 		else
@@ -2777,13 +2795,6 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 		info.text = BATTLE_PET_FAVORITE;
 		info.arg1 = appearanceID;
 		info.arg2 = 1;
-		if ( not C_TransmogCollection.CanSetFavoriteInCategory(WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory()) ) then
-			info.tooltipWhileDisabled = 1
-			info.tooltipTitle = BATTLE_PET_FAVORITE;
-			info.tooltipText = TRANSMOG_CATEGORY_FAVORITE_LIMIT;
-			info.tooltipOnButton = 1;
-			info.disabled = 1;
-		end
 	end
 	info.notCheckable = true;
 	info.func = function(_, visualID, value) WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value); end;
@@ -3027,9 +3038,9 @@ function WardrobeFilterDropDown_Initialize(self, level)
 		return;
 	end
 
-	if ( WardrobeCollectionFrame:GetSearchType() == LE_TRANSMOG_SEARCH_TYPE_ITEMS ) then
+	if ( WardrobeCollectionFrame:GetSearchType() == Enum.TransmogSearchType.Items ) then
 		WardrobeFilterDropDown_InitializeItems(self, level);
-	elseif ( WardrobeCollectionFrame:GetSearchType() == LE_TRANSMOG_SEARCH_TYPE_BASE_SETS ) then
+	elseif ( WardrobeCollectionFrame:GetSearchType() == Enum.TransmogSearchType.BaseSets ) then
 		WardrobeFilterDropDown_InitializeBaseSets(self, level);
 	end
 end
@@ -3305,23 +3316,19 @@ function WardrobeSetsDataProviderMixin:GetSetSourceData(setID)
 
 	local sourceData = self.sourceData[setID];
 	if ( not sourceData ) then
-		local sources = C_TransmogSets.GetSetSources(setID);
+		local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(setID);
 		local numCollected = 0;
 		local numTotal = 0;
-		for sourceID, collected in pairs(sources) do
-			if ( collected ) then
+		for i, primaryAppearance in ipairs(primaryAppearances) do
+			if primaryAppearance.collected then
 				numCollected = numCollected + 1;
 			end
 			numTotal = numTotal + 1;
 		end
-		sourceData = { numCollected = numCollected, numTotal = numTotal, sources = sources };
+		sourceData = { numCollected = numCollected, numTotal = numTotal, primaryAppearances = primaryAppearances };
 		self.sourceData[setID] = sourceData;
 	end
 	return sourceData;
-end
-
-function WardrobeSetsDataProviderMixin:GetSetSources(setID)
-	return self:GetSetSourceData(setID).sources;
 end
 
 function WardrobeSetsDataProviderMixin:GetSetSourceCounts(setID)
@@ -3391,11 +3398,12 @@ end
 function WardrobeSetsDataProviderMixin:GetSortedSetSources(setID)
 	local returnTable = { };
 	local sourceData = self:GetSetSourceData(setID);
-	for sourceID, collected in pairs(sourceData.sources) do
+	for i, primaryAppearance in ipairs(sourceData.primaryAppearances) do
+		local sourceID = primaryAppearance.appearanceID;
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
 		if ( sourceInfo ) then
 			local sortOrder = EJ_GetInvTypeSortOrder(sourceInfo.invType);
-			tinsert(returnTable, { sourceID = sourceID, collected = collected, sortOrder = sortOrder, itemID = sourceInfo.itemID, invType = sourceInfo.invType });
+			tinsert(returnTable, { sourceID = sourceID, collected = primaryAppearance.collected, sortOrder = sortOrder, itemID = sourceInfo.itemID, invType = sourceInfo.invType });
 		end
 	end
 
@@ -3527,7 +3535,7 @@ function WardrobeSetsCollectionMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	SetsDataProvider:ClearSets();
-	self:GetParent():ClearSearch(LE_TRANSMOG_SEARCH_TYPE_BASE_SETS);
+	self:GetParent():ClearSearch(Enum.TransmogSearchType.BaseSets);
 end
 
 function WardrobeSetsCollectionMixin:OnEvent(event, ...)
@@ -4156,18 +4164,16 @@ function WardrobeSetsTransmogMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
 	self.loadingSetID = nil;
 	SetsDataProvider:ClearSets();
-	self:GetParent():ClearSearch(LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS);
+	self:GetParent():ClearSearch(Enum.TransmogSearchType.UsableSets);
 	self.sourceQualityTable = nil;
 end
 
 function WardrobeSetsTransmogMixin:OnEvent(event, ...)
-	if ( event == "TRANSMOGRIFY_UPDATE" and not self.ignoreTransmogrifyUpdateEvent ) then
-		self:Refresh();
-	elseif ( event == "TRANSMOGRIFY_SUCCESS" )  then
-		-- this event fires once per slot so in the case of a set there would be up to 9 of them
-		if ( not self.transmogrifySuccessUpdate ) then
-			self.transmogrifySuccessUpdate = true;
-			C_Timer.After(0, function() self.transmogrifySuccessUpdate = nil; self:Refresh(); end);
+	if ( event == "TRANSMOGRIFY_UPDATE" or event == "TRANSMOGRIFY_SUCCESS" )  then
+		-- these event can fire multiple times for set interaction, once for each slot in the set
+		if ( not self.pendingRefresh ) then
+			self.pendingRefresh = true;
+			C_Timer.After(0, function() self.pendingRefresh = nil; local resetSelection = (event == "TRANSMOGRIFY_UPDATE"); self:Refresh(resetSelection); end);
 		end
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" or event == "TRANSMOG_SETS_UPDATE_FAVORITE" ) then
 		SetsDataProvider:ClearSets();
@@ -4222,8 +4228,8 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 			if ( model.setID ~= set.setID ) then
 				model:Undress();
 				local sourceData = SetsDataProvider:GetSetSourceData(set.setID);
-				for sourceID  in pairs(sourceData.sources) do
-					model:TryOn(sourceID);
+				for i, primaryAppearance in ipairs(sourceData.primaryAppearances) do
+					model:TryOn(primaryAppearance.appearanceID);
 				end
 			end
 			local transmogStateAtlas;
@@ -4281,8 +4287,9 @@ end
 function WardrobeSetsTransmogMixin:LoadSet(setID)
 	local waitingOnData = false;
 	local transmogSources = { };
-	local sources = C_TransmogSets.GetSetSources(setID);
-	for sourceID in pairs(sources) do
+	local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(setID);
+	for i, primaryAppearance in ipairs(primaryAppearances) do
+		local sourceID = primaryAppearance.appearanceID;
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
 		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
 		local slotSources = C_TransmogSets.GetSourcesForSlot(setID, slot);
@@ -4300,12 +4307,6 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 		self.loadingSetID = setID;
 	else
 		self.loadingSetID = nil;
-		-- if we don't ignore the event, clearing will momentarily set the page to the one with the set the user currently has transmogged
-		-- if that's a different page from the current one then the models will flicker as we swap the gear to different sets and back
-		self.ignoreTransmogrifyUpdateEvent = true;
-		C_Transmog.ClearAllPending();
-		self.ignoreTransmogrifyUpdateEvent = false;
-		
 		local transmogLocation, pendingInfo;
 		for slotID, appearanceID in pairs(transmogSources) do
 			if transmogLocation then
@@ -4319,6 +4320,17 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 				pendingInfo = TransmogUtil.CreateTransmogPendingInfo(Enum.TransmogPendingType.Apply, appearanceID);
 			end
 			C_Transmog.SetPending(transmogLocation, pendingInfo);
+			-- for slots that are be split, undo it
+			if C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
+				local secondaryTransmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Secondary);
+				local itemLocation = ItemLocation:CreateFromEquipmentSlot(slotID);
+				if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
+					local secondaryPendingInfo = TransmogUtil.CreateTransmogPendingInfo(Enum.TransmogPendingType.ToggleOff);
+					C_Transmog.SetPending(secondaryTransmogLocation, secondaryPendingInfo);
+				else
+					C_Transmog.ClearPending(secondaryTransmogLocation);
+				end
+			end
 		end
 	end
 end
@@ -4326,9 +4338,11 @@ end
 function WardrobeSetsTransmogMixin:GetFirstMatchingSetID(sourceIndex)
 	local transmogSourceIDs = { };
 	for _, button in ipairs(WardrobeTransmogFrame.SlotButtons) do
-		local sourceID = select(sourceIndex, TransmogUtil.GetInfoForEquippedSlot(button.transmogLocation));
-		if ( sourceID ~= Constants.Transmog.NoTransmogID ) then
-			transmogSourceIDs[button.transmogLocation:GetSlotID()] = sourceID;
+		if not button.transmogLocation:IsSecondary() then
+			local sourceID = select(sourceIndex, TransmogUtil.GetInfoForEquippedSlot(button.transmogLocation));
+			if ( sourceID ~= Constants.Transmog.NoTransmogID ) then
+				transmogSourceIDs[button.transmogLocation:GetSlotID()] = sourceID;
+			end
 		end
 	end
 

@@ -8,6 +8,13 @@
 					<Anchor point="TOP" y="-8"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-2">
+						<Texture parentKey="BackgroundGlow" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="BGLeft" useAtlasSize="true">
 							<Anchors>

@@ -8,7 +8,6 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnSizeChanged method="OnSizeChanged"/>
 			<OnUpdate method="OnUpdate"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>

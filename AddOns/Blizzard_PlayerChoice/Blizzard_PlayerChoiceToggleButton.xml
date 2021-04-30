@@ -6,6 +6,23 @@
 		<Anchors>
 			<Anchor point="CENTER" y="-200" />
 		</Anchors>
+		<Frames>
+			<Button parentKey="RerollButton" mixin="PlayerChoiceRerollButtonMixin" hidden="true">
+				<Size x="227" y="149"/>
+				<NormalTexture atlas="UI-Frame-jailerstower-RerollButton"/>
+				<HighlightTexture atlas="UI-Frame-jailerstower-RerollButtonHighlight"/>
+				<NormalFont style="GameFontNormalLargeOutline"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-60" />
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">

@@ -852,15 +852,22 @@ function VideoOptionsDropDown_OnLoad(self)
 				Graphics_PrepareTooltip(self);
 			end
 
+			local data = self.data;
+			local hasData = data ~= nil;
 			for mode, text in ipairs(self.table) do
+				local modeData = hasData and data[mode] or nil;
+				if ( hasData and modeData.warning ) then
+					text = WARNING_FONT_COLOR:WrapTextInColorCode(text);
+				end
+
 				local info = UIDropDownMenu_CreateInfo();
 				info.text = text;
 				info.value = text;
 				info.func = self.onclickfunction or VideoOptionsDropDown_OnClick;
 				-- disable settings
-				if(self.data ~= nil) then
-					if(self.data[mode].cvars ~= nil) then
-						for cvar_name, cvar_value in pairs(self.data[mode].cvars) do
+				if(hasData) then
+					if(modeData.cvars ~= nil) then
+						for cvar_name, cvar_value in pairs(modeData.cvars) do
 							if(self.validity[cvar_name][cvar_value] ~= 0 and self.validity[cvar_name][cvar_value] ~= VR_WINDOWS_32BIT) then
 								info.notClickable = true;
 								info.disablecolor = GREYCOLORCODE;
@@ -948,14 +955,30 @@ function VideoOptionsSlider_OnLoad(self)
 end
 
 function VideoOptionsControl_OnEnter(self)
-	if(self.tooltip ~= nil) then
-		GetAppropriateTooltip():SetOwner(self);
-		if(self.name == nil) then
+	local hasTooltip = self.tooltip ~= nil;
+	local data = self.data and self.data[self:GetValue()] or nil;
+	local warning = data and data.warning or nil;
+	local hasWarning = warning ~= nil;
+
+	if ( hasTooltip ) then
+		local tooltipFrame = GetAppropriateTooltip();
+		tooltipFrame:SetOwner(self);
+		if ( self.name == nil) then
 			self.name = " ";
 		end
-		GetAppropriateTooltip():SetText(self.name .. ":", nil, nil, nil, nil, 1);
-		GetAppropriateTooltip():AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
-		GetAppropriateTooltip():Show();
+		tooltipFrame:SetText(self.name .. ":", nil, nil, nil, nil, 1);
+
+		if ( hasTooltip ) then
+			tooltipFrame:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
+		end
+
+		if ( hasWarning ) then
+			local r, g, b = WARNING_FONT_COLOR:GetRGB();
+			tooltipFrame:AddLine(" ");
+			tooltipFrame:AddLine(warning, r, g, b, true, 1);
+		end
+
+		tooltipFrame:Show();
 	end
 end
 

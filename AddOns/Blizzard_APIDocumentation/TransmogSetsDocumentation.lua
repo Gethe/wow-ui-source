@@ -30,6 +30,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetAllSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllSourceIDs",
 			Type = "Function",
 
@@ -41,6 +50,29 @@ local TransmogSets =
 			Returns =
 			{
 				{ Name = "sources", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBaseSetID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseTransmogSetID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBaseSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
 			},
 		},
 		{
@@ -102,6 +134,20 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetSetInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "set", Type = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSetNewSources",
 			Type = "Function",
 
@@ -113,6 +159,20 @@ local TransmogSets =
 			Returns =
 			{
 				{ Name = "sourceIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSetPrimaryAppearances",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "apppearances", Type = "table", InnerType = "TransmogSetPrimaryAppearanceInfo", Nilable = false },
 			},
 		},
 		{
@@ -157,6 +217,29 @@ local TransmogSets =
 			Returns =
 			{
 				{ Name = "sources", Type = "table", InnerType = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUsableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetVariantSets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
 			},
 		},
 		{
@@ -253,6 +336,36 @@ local TransmogSets =
 
 	Tables =
 	{
+		{
+			Name = "TransmogSetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "setID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "baseSetID", Type = "number", Nilable = true },
+				{ Name = "description", Type = "string", Nilable = true },
+				{ Name = "label", Type = "string", Nilable = true },
+				{ Name = "expansionID", Type = "number", Nilable = false },
+				{ Name = "patchID", Type = "number", Nilable = false },
+				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "classMask", Type = "number", Nilable = false },
+				{ Name = "hiddenUntilCollected", Type = "bool", Nilable = false },
+				{ Name = "requiredFaction", Type = "string", Nilable = true },
+				{ Name = "collected", Type = "bool", Nilable = false },
+				{ Name = "favorite", Type = "bool", Nilable = false },
+				{ Name = "limitedTimeSet", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TransmogSetPrimaryAppearanceInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "appearanceID", Type = "number", Nilable = false },
+				{ Name = "collected", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

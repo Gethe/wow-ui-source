@@ -89,12 +89,21 @@ function TextToSpeechFrame_Update(self)
 end
 
 function TextToSpeechFrame_UpdateSliders()
+	if ( TEXTTOSPEECH_CONFIG.speechRate == nil ) then
+		TEXTTOSPEECH_CONFIG.speechRate = TEXTTOSPEECH_CONFIG_DEFAULTS.speechRate;
+	end
+	if ( TEXTTOSPEECH_CONFIG.speechVolume == nil ) then
+		TEXTTOSPEECH_CONFIG.speechVolume = TEXTTOSPEECH_CONFIG_DEFAULTS.speechVolume;
+	end
+
 	local rateVolumeEnabled = TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected > TEXTTOSPEECH_STANDARD_VOICE_COUNT;
 	local color = rateVolumeEnabled and WHITE_FONT_COLOR or GRAY_FONT_COLOR;
 	TextToSpeechFrameAdjustRateSlider:SetEnabled(rateVolumeEnabled);
+	TextToSpeechFrameAdjustRateSlider:SetValue(TEXTTOSPEECH_CONFIG.speechRate);
 	TextToSpeechFrameAdjustRateSlider.Label:SetTextColor(color:GetRGB());
 	TextToSpeechFrameAdjustRateSlider.High:SetTextColor(color:GetRGB());
 	TextToSpeechFrameAdjustVolumeSlider:SetEnabled(rateVolumeEnabled);
+	TextToSpeechFrameAdjustVolumeSlider:SetValue(TEXTTOSPEECH_CONFIG.speechVolume);
 	TextToSpeechFrameAdjustVolumeSlider.Label:SetTextColor(color:GetRGB());
 	TextToSpeechFrameAdjustVolumeSlider.Low:SetTextColor(color:GetRGB());
 	TextToSpeechFrameAdjustVolumeSlider.High:SetTextColor(color:GetRGB());
@@ -335,29 +344,21 @@ function TextToSpeechFrame_PlayMessage(frame, message, id)
 	local typeGroup = ChatTypeGroupInverted[chatMsgType];
 
 	-- Check that option is enabled for this type or group of types
-	if ( not TEXTTOSPEECH_CONFIG.enabledChatTypes[chatMsgType] and not TEXTTOSPEECH_CONFIG.enabledChatTypes["CHAT_MSG_" .. typeGroup] ) then
+	if ( not TEXTTOSPEECH_CONFIG.enabledChatTypes[chatMsgType] and (typeGroup and not TEXTTOSPEECH_CONFIG.enabledChatTypes["CHAT_MSG_" .. typeGroup]) ) then
 		return;
 	end
 
-	-- Remove all links and codes, check that a valid message remains
-	if ( not message ) then
-		return;
-	end
-
-	message = string.gsub(message, "|c%x%x%x%x%x%x%x%x", "");
-	message = string.gsub(message, "|H[^|]+|h", "");
-	message = string.gsub(message, "|A[^|]+|a", "");
-	message = string.gsub(message, "|T[^|]+|t", "");
-	message = string.gsub(message, "|[hr]?", "");
-	message = string.gsub(message, "[%[%]]", "");
-
-	if ( message == "" ) then
+	-- Check for a valid message
+	if ( not message or message == "") then
 		return;
 	end
 
 	-- Avoid spam and speaking the same line multiple times by suppressing duplicate messages
 	local timeNow = GetTime();
-	if ( lastMessageTime == timeNow and message == lastMessage ) then
+	if ( lastMessage ~= nil and lastMessageTime == timeNow and 
+		( message == lastMessage
+		or message:sub(-lastMessage:len()) == lastMessage 
+		or lastMessage:sub(-message:len()) == message ) ) then
 		return;
 	end
 
@@ -402,8 +403,11 @@ function TextToSpeechFrame_PlayMessage(frame, message, id)
 end
 
 function TextToSpeechFrame_AddMessageObserver(frame, message, r, g, b, id)
-	if ( GetCVarBool("textToSpeech") ) then
-		TextToSpeechFrame_PlayMessage(frame, message, id);
+	-- Hook any SYSTEM messages added directly by lua
+	if ( id and C_ChatInfo.GetChatTypeName(id) == "SYSTEM" ) then
+		if ( GetCVarBool("textToSpeech") ) then
+			TextToSpeechFrame_PlayMessage(frame, message, id);
+		end
 	end
 end
 
@@ -424,8 +428,13 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 	elseif ( TEXTTOSPEECH_CONFIG.enabledChatTypes[event] ) then
 		local arg1, arg2 = ...;
 
-		local message = string.gsub(arg1, "|.+", "");
+		local message = arg1;
 		local name = Ambiguate(arg2, "none");
+
+		-- Check for empty string before adding any text
+		if ( not message:find("%a") ) then
+			return;
+		end
 
 		-- Add optional text
 		if ( TEXTTOSPEECH_CONFIG.addCharacterNameToSpeech and name ~= "" ) then

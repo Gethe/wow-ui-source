@@ -313,8 +313,16 @@ function CovenantMission:ShowMission(missionInfo)
 		missionDuration = format(PARENS_TEMPLATE, missionInfo.duration);
 	end
 
+	-- First we test if the title and duration fit on one line.
 	local ignoreTruncation = true;
 	self:SetTitle(COVENANT_MISSION_TITLE_FORMAT:format(missionInfo.name, missionDuration), ignoreTruncation);
+
+	local numLines = self:GetNumTitleLines();
+	if numLines > 1 then
+		self:SetTitle(COVENANT_MISSION_TITLE_FORMAT_WITH_XP:format(missionInfo.name, missionDuration, missionInfo.xp), ignoreTruncation);
+	else
+		self:SetTitle(COVENANT_MISSION_TITLE_FORMAT_WITH_XP_SECOND_LINE:format(missionInfo.name, missionDuration, missionInfo.xp), ignoreTruncation);
+	end
 	
 	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
 	missionPage.environment = missionDeploymentInfo.environment;

@@ -26,11 +26,13 @@ function ScriptAnimatedModelSceneMixin:OnShow()
 	self:RefreshModelScene();
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:SetScript("OnSizeChanged", self.OnSizeChanged);
 end
 
 function ScriptAnimatedModelSceneMixin:OnHide()
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:SetScript("OnSizeChanged", nil);
 end
 
 function ScriptAnimatedModelSceneMixin:OnSizeChanged()

@@ -1042,7 +1042,7 @@ function GarrisonMissionList_UpdateMouseOverTooltip(self)
 	local buttons = self.buttons;
 	for i = 1, #buttons do
 		if ( buttons[i]:IsMouseOver() ) then
-			GarrisonMissionButton_OnEnter(buttons[i]);
+			ExecuteFrameScript(buttons[i], "OnEnter");
 			break;
 		end
 	end

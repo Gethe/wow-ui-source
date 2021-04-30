@@ -114,6 +114,11 @@ function GarrisonMission:SetTitle(title, ignoreTruncation)
 	end 
 end
 
+function GarrisonMission:GetNumTitleLines()
+	local missionPage = self:GetMissionPage();
+	return missionPage.Stage.Title:GetNumLines();
+end
+
 function GarrisonMission:SetEnvironmentTexture(environmentTexture)
 	local missionPage = self:GetMissionPage();
 

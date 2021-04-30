@@ -2694,6 +2694,10 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	elseif ( ttsChatCommands[lowerName] ) then
 		local val = TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] or false;
 		TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] = not val;
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_SPEED) then
+		TEXTTOSPEECH_CONFIG.speechRate = num1;
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOLUME) then
+		TEXTTOSPEECH_CONFIG.speechVolume = num1;
 	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICE) then
 		local voices = C_VoiceChat.GetTtsVoices() or {};
 		

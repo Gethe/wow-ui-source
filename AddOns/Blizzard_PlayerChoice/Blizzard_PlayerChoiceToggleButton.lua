@@ -4,6 +4,7 @@ local shownModeButtonInfo =
 	normalAtlas = "UI-Frame-jailerstower-HideButton",
 	highlightAtlas = "UI-Frame-jailerstower-HideButtonHighlight",
 	xOffset = 3,
+	showRerollButton = true;
 };
 
 local hiddenModeButtonInfo = 
@@ -69,6 +70,14 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	self.Text:SetPoint("CENTER", self, "CENTER", buttonInfo.xOffset, -3);
 	self:UpdateEffect(buttonInfo.effectID);
 
+	local numRerolls = C_PlayerChoice.GetNumRerolls();
+	if buttonInfo.showRerollButton and (numRerolls > 0) then
+		self.RerollButton:SetNumRerolls(numRerolls);
+		self.RerollButton:Show();
+	else
+		self.RerollButton:Hide();
+	end
+
 	local normalAtlasInfo = C_Texture.GetAtlasInfo(buttonInfo.normalAtlas);
 	if normalAtlasInfo then
 		self:SetSize(normalAtlasInfo.width, normalAtlasInfo.height);
@@ -84,4 +93,49 @@ function PlayerChoiceToggleButtonMixin:OnClick()
 		PlayerChoiceFrame:TryShow();
 	end
 	self.FadeIn:Restart();
+end
+
+PlayerChoiceRerollButtonMixin = {};
+
+function PlayerChoiceRerollButtonMixin:OnShow()
+	local rerollButtonHelpTipInfo = {
+		text = TORGHAST_REROLL_TIP,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_REROLL,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = -40,
+		checkCVars = true,
+	};
+
+	HelpTip:Show(self, rerollButtonHelpTipInfo);
+end
+
+function PlayerChoiceRerollButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -75, -60);
+
+	GameTooltip_SetTitle(GameTooltip, TORGHAST_REROLL_TOOLTIP_TITLE);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, TORGHAST_REROLL_TOOLTIP_DESCRIPTION);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddInstructionLine(GameTooltip, TORGHAST_REROLL_COUNT:format(self.numRerolls));
+
+	GameTooltip:Show();
+end
+
+function PlayerChoiceRerollButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function PlayerChoiceRerollButtonMixin:OnClick()
+	C_PlayerChoice.RequestRerollPlayerChoice();
+end
+
+function PlayerChoiceRerollButtonMixin:SetNumRerolls(numRerolls)
+	self:SetFormattedText("%d%s", numRerolls, CreateAtlasMarkup("common-icon-undo", 20, 20));
+	self.numRerolls = numRerolls;
+
+	if self:IsMouseOver() then
+		self:OnEnter();
+	end
 end

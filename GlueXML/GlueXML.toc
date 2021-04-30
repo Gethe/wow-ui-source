@@ -8,6 +8,7 @@
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
+..\SharedXML\EnumUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
@@ -56,8 +57,8 @@ GlueLocalization.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\GlobalCallbackRegistry.lua
-..\SharedXML\EventFrame.xml
-..\SharedXML\EventButton.xml
+..\SharedXML\Frame\EventFrame.xml
+..\SharedXML\Frame\EventButton.xml
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
@@ -66,11 +67,11 @@ GlueContextMenu.xml
 
 ..\SharedXML\DataProvider.lua
 ..\SharedXML\Interpolator.lua
-..\SharedXML\ScrollUtil.lua
-..\SharedXML\ScrollController.lua
-..\SharedXML\ScrollBox.xml
-..\SharedXML\ScrollBar.xml
-..\SharedXML\ScrollTemplates.xml
+..\SharedXML\Scroll\ScrollUtil.lua
+..\SharedXML\Scroll\ScrollController.lua
+..\SharedXML\Scroll\ScrollBox.xml
+..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml

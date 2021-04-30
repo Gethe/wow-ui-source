@@ -35,7 +35,7 @@ local customTextureKitInfo = {
 		optionFrameTemplate = "PlayerChoiceTorghastOptionTemplate",
 		optionsTopPadding = 30,
 		optionsBottomPadding = 55,
-		hideNiceSlice = true,
+		showOptionsOnly = true,
 	},
 
 	Oribos = {
@@ -180,14 +180,27 @@ function PlayerChoiceFrameMixin:OnCloseUIFromExitButton()
 	HideUIPanel(self);
 end
 
+local titleTextureKitRegions = {
+	Left = "UI-Frame-%s-TitleLeft",
+	Right = "UI-Frame-%s-TitleRight",
+	Middle = "_UI-Frame-%s-TitleMiddle",
+};
+
+local backgroundTextureKitRegions = {
+	BackgroundTile = "UI-Frame-%s-BackgroundTile",
+};
+
 local borderFrameTextureKitRegions = {
 	Texture = "UI-Frame-%s-Header",
 };
 
-function PlayerChoiceFrameMixin:SetupBorder()
-	if self.textureKitInfo.hideNiceSlice then
+function PlayerChoiceFrameMixin:SetupFrame()
+	if self.textureKitInfo.showOptionsOnly then
 		self.NineSlice:Hide();
 		self.CloseButton:Hide();
+		self.Header:Hide();
+		self.Title:Hide();
+		self.Background:Hide();
 		self:EnableMouse(false);
 	else
 		if self.textureKitInfo.uniqueCorners then
@@ -203,31 +216,18 @@ function PlayerChoiceFrameMixin:SetupBorder()
 		self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", self.textureKitInfo.closeButtonX, self.textureKitInfo.closeButtonY);
 		self.CloseButton:Show();
 		self:EnableMouse(true);
+
+		if self.choiceInfo.hideWarboardHeader or not self.textureKitInfo.headerYoffset then
+			self.Header:Hide();
+		else
+			self:SetupTextureKits(self.Header, borderFrameTextureKitRegions);
+			self.Header:SetPoint("BOTTOM", self, "TOP", 0, self.textureKitInfo.headerYoffset);
+			self.Header:Show();
+		end
+
+		self:SetupTextureKits(self.Title, titleTextureKitRegions);
+		self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 	end
-
-	if self.choiceInfo.hideWarboardHeader or not self.textureKitInfo.headerYoffset then
-		self.Header:Hide();
-	else
-		self:SetupTextureKits(self.Header, borderFrameTextureKitRegions);
-		self.Header:SetPoint("BOTTOM", self, "TOP", 0, self.textureKitInfo.headerYoffset);
-	end
-end
-
-local titleTextureKitRegions = {
-	Left = "UI-Frame-%s-TitleLeft",
-	Right = "UI-Frame-%s-TitleRight",
-	Middle = "_UI-Frame-%s-TitleMiddle",
-};
-
-local backgroundTextureKitRegions = {
-	BackgroundTile = "UI-Frame-%s-BackgroundTile",
-};
-
-function PlayerChoiceFrameMixin:SetupFrame()
-	self:SetupBorder();
-
-	self:SetupTextureKits(self.Title, titleTextureKitRegions);
-	self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 end
 
 local function HideAndAnchorTopLeft(framePool, frame)

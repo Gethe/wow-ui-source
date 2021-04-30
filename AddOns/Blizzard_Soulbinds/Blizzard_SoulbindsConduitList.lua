@@ -723,21 +723,23 @@ function ConduitListMixin:OnCollectionDataUpdated(conduitData)
 	end);
 	
 	if dataIndex then
+		local conduitID = conduitData.conduitID;
+		local existingConduitIndex = FindInTableIf(foundElementData.conduitDatas, function(elementData)
+			return elementData.conduitID == conduitID;
+		end);
+
+		if existingConduitIndex then
+			foundElementData.conduitDatas[existingConduitIndex] = conduitData;
+		else
+			table.insert(foundElementData.conduitDatas, conduitData);
+		end
+
+		foundElementData.newConduitData = conduitData;
+
 		local list = self.ScrollBox:FindFrame(foundElementData);
 		if list then
-			table.insert(foundElementData.conduitDatas, conduitData);
-			foundElementData.newConduitData = conduitData;
 			list:Init(foundElementData);
-		else
-			local conduitID = conduitData.conduitID;
-			local contains = ContainsIf(foundElementData.conduitDatas, function(elementData)
-				return elementData.conduitID == conduitID;
-			end);
-			if not contains then
-				table.insert(foundElementData.conduitDatas, conduitData);
-			end
-			foundElementData.newConduitData = conduitData;
-			end
+		end
 		self.ScrollBox:ScrollToElementDataIndex(dataIndex);
 	else
 		local newElementData = {conduitDatas = {conduitData}, conduitType = conduitType};
@@ -745,7 +747,7 @@ function ConduitListMixin:OnCollectionDataUpdated(conduitData)
 		dataProvider:Insert(newElementData);
 
 		self.ScrollBox:ScrollToElementData(newElementData);
-		end
+	end
 
 	self:UpdateCollectionShown(true);
 end

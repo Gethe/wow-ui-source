@@ -16,6 +16,15 @@ local PlayerChoice =
 			},
 		},
 		{
+			Name = "GetNumRerolls",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numRerolls", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWaitingForPlayerChoiceResponse",
 			Type = "Function",
 
@@ -26,6 +35,10 @@ local PlayerChoice =
 		},
 		{
 			Name = "OnUIClosed",
+			Type = "Function",
+		},
+		{
+			Name = "RequestRerollPlayerChoice",
 			Type = "Function",
 		},
 		{

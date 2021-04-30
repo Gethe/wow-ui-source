@@ -133,6 +133,7 @@ ScrollingEditBoxMixin:GenerateCallbackEvents(
 		"OnCursorChanged",
 		"OnFocusGained",
 		"OnFocusLost",
+		"OnEnterPressed",
 	}
 );
 
@@ -168,6 +169,7 @@ function ScrollingEditBoxMixin:OnLoad()
 
 	editBox:RegisterCallback("OnTabPressed", self.OnEditBoxTabPressed, self);
 	editBox:RegisterCallback("OnTextChanged", self.OnEditBoxTextChanged, self);
+	editBox:RegisterCallback("OnEnterPressed", self.OnEditBoxEnterPressed, self);
 	editBox:RegisterCallback("OnCursorChanged", self.OnEditBoxCursorChanged, self);
 	editBox:RegisterCallback("OnEditFocusGained", self.OnEditBoxFocusGained, self);
 	editBox:RegisterCallback("OnEditFocusLost", self.OnEditBoxFocusLost, self);
@@ -263,6 +265,10 @@ function ScrollingEditBoxMixin:OnEditBoxTextChanged(editBox, userChanged)
 	scrollBox:UpdateImmediately();
 
 	self:TriggerEvent("OnTextChanged", editBox, userChanged);
+end
+
+function ScrollingEditBoxMixin:OnEditBoxEnterPressed(editBox)
+	self:TriggerEvent("OnEnterPressed", editBox);
 end
 
 function ScrollingEditBoxMixin:OnEditBoxCursorChanged(editBox, x, y, width, height, context)

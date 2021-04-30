@@ -319,6 +319,7 @@ local LFGListInfo =
 				{ Name = "isWarMode", Type = "bool", Nilable = false },
 				{ Name = "age", Type = "number", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
+				{ Name = "leaderOverallDungeonScore", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -27,6 +27,28 @@
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
+		<Frames>
+			<ModelScene parentKey="FrontModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="1" y="1"/>
+				<Scripts>
+					<OnLoad>
+						ScriptAnimatedModelSceneMixin.OnLoad(self); 
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 50); 
+						self:SetAllPoints();
+					</OnLoad>
+				</Scripts>
+			</ModelScene>
+			<ModelScene parentKey="BackModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="1" y="1"/>
+				<Scripts>
+					<OnLoad>
+						ScriptAnimatedModelSceneMixin.OnLoad(self);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+						self:SetAllPoints();
+					</OnLoad>
+				</Scripts>
+			</ModelScene>
+		</Frames>
 	</Frame>
 
 

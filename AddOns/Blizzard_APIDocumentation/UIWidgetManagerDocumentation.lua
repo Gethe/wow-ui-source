@@ -577,6 +577,19 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetModelSceneLayer",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "UIWidgetModelSceneLayer", EnumValue = 0 },
+				{ Name = "Front", Type = "UIWidgetModelSceneLayer", EnumValue = 1 },
+				{ Name = "Back", Type = "UIWidgetModelSceneLayer", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -736,6 +749,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -762,6 +777,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -784,6 +801,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -807,6 +826,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -830,6 +851,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -850,6 +873,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -878,6 +903,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -897,6 +924,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -918,6 +947,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -937,6 +968,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -961,6 +994,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -981,6 +1016,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1004,6 +1041,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1024,6 +1063,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1043,6 +1084,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1071,6 +1114,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1095,6 +1140,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1124,6 +1171,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1144,6 +1193,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1163,6 +1214,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1241,6 +1294,8 @@ local UIWidgetManager =
 				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
 				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="EventToastManager.lua"/>
 
-	<Button name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
+	<Frame name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="heightPadding" value="30" type="number"/>
@@ -66,9 +66,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Frame name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
@@ -102,9 +102,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Frame name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT">
@@ -126,9 +126,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Frame name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
@@ -149,9 +149,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastScenarioBaseToastTemplate" inherits="ResizeLayoutFrame" mixin="EventToastScenarioBaseToastMixin" alpha="0" virtual="true">
+	<Button name="EventToastScenarioBaseToastTemplate" inherits="ResizeLayoutFrame" mixin="EventToastScenarioBaseToastMixin" enableMouse="true" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="minimumHeight" value="72" type="number"/>
@@ -320,7 +320,7 @@
 			</Frame>
 		</Frames>
 	</Button>
-	
+
 	<Button name="EventToastScenarioToastTemplate" inherits="EventToastScenarioBaseToastTemplate" mixin="EventToastScenarioToastMixin" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="heightPadding" value="10" type="number"/>
@@ -398,7 +398,7 @@
 		
 	</Button>
 
-	<Button name="EventToastChallengeModeToastTemplate" mixin="EventToastChallengeModeToastMixin" alpha="0" virtual="true">
+	<Frame name="EventToastChallengeModeToastTemplate" mixin="EventToastChallengeModeToastMixin" alpha="0" virtual="true">
 		<Size x="418" y="72"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -485,9 +485,9 @@
 				</Layers>
 			</Frame>
 		</Frames>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
+	<Frame name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="heightPadding" value="20" type="number"/>
@@ -534,9 +534,9 @@
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
 		</Frames>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
@@ -551,9 +551,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="SingleLine" inherits="GameFont_Gigantic">
@@ -570,9 +570,9 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-	</Button>
+	</Frame>
 
-	<Button name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="BlockText" inherits="GameFontNormalHuge">
@@ -589,9 +589,9 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-	</Button>
+	</Frame>
 
-	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
+	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="minimumHeight" value="72" type="number"/>
@@ -617,7 +617,7 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="fastHide">
-				<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1" />
+				<Alpha parentKey="anim1" fromAlpha="1" toAlpha="0" duration=".5" order="1" />
 				<Scripts>
 					<OnFinished>
 						self:GetParent():ToastingEnded();
@@ -711,8 +711,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 
@@ -759,6 +758,10 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
+
+
+
+
 
 
 

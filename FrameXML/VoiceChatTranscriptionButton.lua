@@ -28,7 +28,7 @@ function VoiceChatTranscriptionButtonMixin:OnEvent(event, ...)
 		self:Update();
 	elseif event == "CVAR_UPDATE" then
 		local arg1 = ...;
-		if arg1 == "ENABLE_SPEECH_TO_TEXT" then
+		if arg1 == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" then
 			self:Update();
 		end
 	end

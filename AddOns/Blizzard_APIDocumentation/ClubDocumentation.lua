@@ -1546,6 +1546,7 @@ local Club =
 				{ Name = "guildRank", Type = "string", Nilable = true },
 				{ Name = "guildRankOrder", Type = "number", Nilable = true },
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
+				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -43,7 +43,8 @@ function CovenantUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallbac
 	elseif rewardInfo.transmogIllusionSourceID then
 		local illusionInfo = C_TransmogCollection.GetIllusionInfo(rewardInfo.transmogIllusionSourceID);
 		if illusionInfo then
-			return illusionInfo.icon, illusionInfo.name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
+			local name = C_TransmogCollection.GetIllusionStrings(rewardInfo.transmogIllusionSourceID);
+			return illusionInfo.icon, name, RENOWN_REWARD_ILLUSION_NAME_FORMAT, RENOWN_REWARD_ILLUSION_DESCRIPTION;
 		end
 	end
 end
