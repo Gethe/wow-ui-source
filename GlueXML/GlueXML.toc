@@ -2,7 +2,12 @@
 
 GlueCheck.lua
 ..\SharedXML\C_TimerAugment.lua
+..\SharedXML\TableUtil.lua
+..\SharedXML\CvarUtil.lua
+..\SharedXML\EnumUtil.lua
 ..\SharedXML\Util.lua
+..\SharedXML\MathUtil.lua
+..\SharedXML\TimeUtil.lua
 ..\SharedXML\AnchorUtil.xml
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
@@ -11,6 +16,8 @@ GlueCheck.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
 ..\SharedXML\LinkUtil.lua
+..\SharedXML\PixelUtilSecure.lua
+..\SharedXML\PixelUtil.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\Constants.lua

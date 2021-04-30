@@ -391,6 +391,12 @@
 						<Anchor point="CENTER" x="0" y="12"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="CloneConfirmationTitle" inherits="GameFontWhiteShadowLarge" justifyH="CENTER">
+					<Size x="540" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="12"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="ChoiceConfirmationInstruction" inherits="GameFontNormalLarge" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CONFIRM_TYPE">
 					<Size x="540" y="0"/>
 					<Anchors>

@@ -66,8 +66,9 @@ function WorldStateButtonDropDown_Initialize()
 	UnitPopup_ShowMenu(WorldStateButtonDropDown, "WORLD_STATE_SCORE", nil, WorldStateButtonDropDown.name);
 end
 
-function WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, name, battlefieldScoreIndex)
+function WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, name, teamName, battlefieldScoreIndex)
 	WorldStateButtonDropDown.name = name;
+	WorldStateButtonDropDown.teamName = teamName;
 	WorldStateButtonDropDown.battlefieldScoreIndex = battlefieldScoreIndex;
 	WorldStateButtonDropDown.initialize = WorldStateButtonDropDown_Initialize;
 	ToggleDropDownMenu(1, nil, WorldStateButtonDropDown, self:GetName(), 0, 0);
@@ -300,15 +301,21 @@ function WorldStateScoreFrame_Update()
 			scoreButton.damageDone:SetText(damageDone);
 			scoreButton.healingDone:SetText(healingDone);
 
+			-- Dropdown handler for reporting a team name is on the name button. 
+			scoreButton.name.teamName = nil;
+
 			teamName, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
 			if ( isArena ) then
 				if ( isRanked ) then
 					scoreButton.team:SetText(teamName);
+					scoreButton.name.teamName = teamName;
+
 					scoreButton.team:Show();
-					if ( teamDataFailed ) then
+					if ( teamDataFailed == 1 ) then
 						scoreButton.honorGained:SetText("-------");
 					else
-						scoreButton.honorGained:SetText(tostring(newTeamRating - teamRating));
+						local delta = newTeamRating - teamRating;
+						scoreButton.honorGained:SetText(TEAM_RATING_CHANGE:format(delta, newTeamRating));
 					end
 					scoreButton.honorGained:Show();
 				else
@@ -482,6 +489,7 @@ function WorldStateScoreFrame_Resize()
 		local scoreButton = _G["WorldStateScoreButton"..i];
 		
 		if ( i == 1 ) then
+			scoreButton.team:SetPoint("LEFT", "WorldStateScoreFrameTeam", "LEFT", 0, SCORE_BUTTON_TEXT_OFFSET);
 			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreFrameHK", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
 			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreFrameKB", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
 			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreFrameDeaths", "CENTER", 0, SCORE_BUTTON_TEXT_OFFSET);
@@ -493,6 +501,7 @@ function WorldStateScoreFrame_Resize()
 			end
 		else
 			local offset = SCORE_BUTTON_HEIGHT - 1;
+			scoreButton.team:SetPoint("LEFT", "WorldStateScoreButton"..(i-1).."Team", "LEFT", 0, -offset);
 			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -offset);
 			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -offset);
 			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -offset);
@@ -558,7 +567,7 @@ end
 function ScorePlayer_OnMouseUp(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		if ( not UnitIsUnit(self.name,"player") ) then
-			WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, self.name, self:GetParent().index);
+			WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, self.name, self.teamName, self:GetParent().index);
 		end
 	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		ChatEdit_InsertLink(self.text:GetText());

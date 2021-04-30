@@ -49,6 +49,15 @@
 	<Font name="GameFontBlackTiny2" inherits="SystemFont_Tiny2" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
+	<Font name="GameFontNormalMed1HSpacing" inherits="SystemFont_Med2_HSpacing" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="GameFontNormalMed1" inherits="SystemFont_Med2" virtual="true">
 		<Shadow>
 			<Offset>
@@ -152,6 +161,9 @@
 	</Font>
 	<Font name="GameFontBlackHuge2" inherits="SystemFont_Huge2" virtual="true">
 		<Color r="0" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontWhiteShadowLarge" inherits="SystemFont_Shadow_Large" virtual="true">
+		<Color r="1" g="1" b="1"/>
 	</Font>
 	<Font name="GameFontWhiteShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
 		<Color r="1" g="1" b="1"/>

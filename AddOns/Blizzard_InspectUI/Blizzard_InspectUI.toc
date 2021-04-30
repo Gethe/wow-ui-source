@@ -2,6 +2,6 @@
 ## LoadOnDemand: 1
 Blizzard_InspectUI.xml
 InspectPaperDollFrame.xml
-## InspectPVPFrame.xml
+InspectPVPFrame.xml
 InspectTalentFrame.xml
 Localization.lua

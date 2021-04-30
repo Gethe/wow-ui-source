@@ -21,9 +21,6 @@ function InspectFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
 	PanelTemplates_SetTab(self, 1);
-
-	-- TODO: Remove
-	PanelTemplates_DisableTab(InspectFrame, 2);
 end
 
 function InspectFrame_OnEvent(self, event, unit, ...)

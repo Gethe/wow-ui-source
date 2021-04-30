@@ -1,22 +1,18 @@
 
-function InspectPVPFrame_OnLoad()
+function InspectPVPFrame_OnLoad(self)
 	InspectPVPFrameLine1:SetAlpha(0.3);
 	InspectPVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorHonorLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorTodayLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorYesterdayLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorLifetimeLabel:SetVertexColor(0.6, 0.6, 0.6);
 
-	this:RegisterEvent("INSPECT_HONOR_UPDATE");
+	self:RegisterEvent("INSPECT_HONOR_UPDATE");
 end
 
-function InspectPVPFrame_OnEvent()
+function InspectPVPFrame_OnEvent(self, event, ...)
 	if ( event == "INSPECT_HONOR_UPDATE" ) then
 		InspectPVPFrame_Update();
 	end
 end
 
-function InspectPVPFrame_OnShow()
+function InspectPVPFrame_OnShow(self)
 	InspectPVPFrame_Update();
 	if ( not HasInspectHonorData() ) then
 		RequestInspectHonorData();
@@ -25,7 +21,7 @@ function InspectPVPFrame_OnShow()
 	end
 end
 
-function InspectPVPFrame_SetFaction()
+function InspectPVPFrame_SetFaction(self)
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup ) then
 		InspectPVPFrameHonorIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
@@ -33,16 +29,16 @@ function InspectPVPFrame_SetFaction()
 	end
 end
 
-function InspectPVPFrame_Update()
+function InspectPVPFrame_Update(self)
 	for i=1, MAX_ARENA_TEAMS do
 		GetInspectArenaTeamData(i);
 	end	
-	InspectPVPFrame_SetFaction();
-	InspectPVPHonor_Update();
-	InspectPVPTeam_Update();
+	InspectPVPFrame_SetFaction(self);
+	InspectPVPHonor_Update(self);
+	InspectPVPTeam_Update(self);
 end
 
-function InspectPVPTeam_Update()
+function InspectPVPTeam_Update(self)
 	-- Display Elements
 	local button, buttonName, highlight, data, standard, emblem, border;
 	-- Data Elements
@@ -153,12 +149,11 @@ function InspectPVPTeam_Update()
 end
 
 -- PVP Honor Data
-function InspectPVPHonor_Update()
+function InspectPVPHonor_Update(self)
 	local todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK, lifetimeRank = GetInspectHonorData();
 	
 	-- Yesterday's values
 	InspectPVPHonorYesterdayKills:SetText(yesterdayHK);
-	InspectPVPHonorYesterdayHonor:SetText(yesterdayHonor);
 	
 	-- Lifetime values
 	InspectPVPHonorLifetimeKills:SetText(lifetimeHK);
@@ -171,6 +166,4 @@ function InspectPVPHonor_Update()
 	
 	-- This session's values
 	InspectPVPHonorTodayKills:SetText(todayHK);
-	InspectPVPHonorTodayHonor:SetText(todayHonor);
-	InspectPVPHonorTodayHonor:SetHeight(14);
 end

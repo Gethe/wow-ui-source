@@ -497,6 +497,15 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
+								<FontString name="CraftCooldown" inherits="GameFontRedSmall">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="CraftRequirements" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 								<Texture name="CraftDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
 									<Size>
 										<AbsDimension x="256" y="64"/>
@@ -556,30 +565,25 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="CraftIconCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="-5" y="2"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
 								<Scripts>
-									<OnLoad>
-										self.hasItem = 1;
-										self.UpdateTooltip = function (self)
-											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
-											CursorUpdate(self);
-										end;
-									</OnLoad>
-									<OnClick>
-										HandleModifiedItemClick(GetCraftItemLink(GetCraftSelectionIndex()));
-									</OnClick>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
-										CursorUpdate(self);
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide(self);
-										ResetCursor(self);
-									</OnLeave>
-									<OnUpdate>
-										CursorOnUpdate(self);
-									</OnUpdate>
+									<OnLoad function="CraftIcon_OnLoad"/>
+									<OnClick function="CraftIcon_OnClick"/>
+									<OnEnter function="CraftIcon_OnEnter"/>
+									<OnLeave function="CraftIcon_OnLeave"/>
+									<OnUpdate function="CraftIcon_OnUpdate"/>
 								</Scripts>
 							</Button>
 							<Button name="CraftReagent1" inherits="CraftItemTemplate" id="1">

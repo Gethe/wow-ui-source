@@ -54,7 +54,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTeam" inherits="GameFontNormal" parentKey="team">
+				<FontString name="$parentTeam" inherits="GameFontNormal" justifyH="LEFT" parentKey="team">
 					<Size>
 						<AbsDimension x="175" y="14"/>
 					</Size>

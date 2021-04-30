@@ -736,6 +736,18 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 	"g8",
 };
 
+-- Arena Team Helper Function
+function ArenaTeam_GetTeamSizeID(teamsizearg)
+	local teamname, teamsize, id;
+	for i=1, MAX_ARENA_TEAMS do
+		teamname, teamsize = GetArenaTeam(i)
+		if ( teamsizearg == teamsize ) then
+			id = i;
+		end
+	end
+	return id;
+end
+
 local MAX_COMMUNITY_NAME_LENGTH = 12;
 local MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL = 24;
 function ChatFrame_TruncateToMaxLength(text, maxLength)
@@ -1642,6 +1654,116 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 	end
 end
 
+SecureCmdList["TEAM_INVITE"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamInviteByName(teamsizeID, name);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
+end
+
+SecureCmdList["TEAM_QUIT"] = function(msg)
+	if ( msg ~= "" ) then
+		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
+		if ( team ) then
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamLeave(teamsizeID);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_QUIT);
+end
+
+SecureCmdList["TEAM_UNINVITE"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamUninviteByName(teamsizeID, name);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_UNINVITE);
+end
+
+SecureCmdList["TEAM_CAPTAIN"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamSetLeaderByName(teamsizeID, name);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_CAPTAIN);
+end
+
+SecureCmdList["TEAM_DISBAND"] = function(msg)
+	if ( msg ~= "" ) then
+		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
+		if ( team ) then
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					local teamName, teamSize = GetArenaTeam(teamsizeID);
+					for i = 1, teamSize * 2 do
+						local name, rank = GetArenaTeamRosterInfo(teamsizeID, i);
+						if ( rank == 0 ) then
+							if ( name == UnitName("player") ) then
+								local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", teamName);
+								if ( dialog ) then
+									dialog.data = teamsizeID;
+								end
+							end
+							break;
+						end
+					end
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_DISBAND);
+end
+
+
 SecureCmdList["QUIT"] = function(msg)
 	if (Kiosk.IsEnabled()) then
 		return;
@@ -2216,8 +2338,7 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 end
 
 SlashCmdList["EVENTTRACE"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	EventTraceFrame_HandleSlashCmd(msg);
+	UIParentLoadAddOn("Blizzard_EventTrace");
 end
 
 if IsGMClient() then

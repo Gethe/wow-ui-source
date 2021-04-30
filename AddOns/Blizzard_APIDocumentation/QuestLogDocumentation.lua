@@ -69,6 +69,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestFlaggedCompleted",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCompleted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldShowQuestRewards",
 			Type = "Function",
 

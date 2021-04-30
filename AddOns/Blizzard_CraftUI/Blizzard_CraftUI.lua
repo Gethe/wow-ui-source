@@ -306,6 +306,21 @@ function CraftFrame_SetSelection(id)
 	CraftName:SetText(craftName);
 	CraftIcon:SetNormalTexture(GetCraftIcon(id));
 	
+	-- Set number of items that are generated
+	local minMade,maxMade = GetCraftNumMade(id);
+	if ( maxMade > 1 ) then
+		if ( minMade == maxMade ) then
+			CraftIconCount:SetText(minMade);
+		else
+			CraftIconCount:SetText(minMade.."-"..maxMade);
+		end
+		if ( CraftIconCount:GetWidth() > 39 ) then
+			CraftIconCount:SetText("~"..floor((minMade + maxMade)/2));
+		end
+	else
+		CraftIconCount:SetText("");
+	end
+
 	if ( GetCraftDescription(id) ) then
 		CraftDescription:SetText(GetCraftDescription(id));
 		CraftReagentLabel:SetPoint("TOPLEFT", "CraftDescription", "BOTTOMLEFT", 0, -10);
@@ -314,6 +329,13 @@ function CraftFrame_SetSelection(id)
 		CraftReagentLabel:SetPoint("TOPLEFT", "CraftDescription", "TOPLEFT", 0, 0);
 	end
 	
+	-- Set cooldown data
+	local craftCooldownTime = GetCraftCooldown(id);
+	if craftCooldownTime then
+		CraftCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(craftCooldownTime));
+	else
+		CraftCooldown:SetText("");
+	end
 	
 	-- Reagents
 	local creatable = 1;
@@ -439,4 +461,33 @@ function Craft_SetSubTextColor(button, r, g, b)
 	button.subG = g;
 	button.subB = b;
 	_G[button:GetName().."SubText"]:SetTextColor(r, g, b);
+end
+
+function CraftIcon_OnLoad(self)
+	self.hasItem = 1;
+	self.UpdateTooltip = function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
+		CursorUpdate(self);
+	end;
+end
+
+function CraftIcon_OnClick(self)
+	HandleModifiedItemClick(GetCraftItemLink(GetCraftSelectionIndex()));
+end
+
+function CraftIcon_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local selection = GetCraftSelectionIndex();
+	GameTooltip:SetCraftSpell(selection);
+	CursorUpdate(self);
+end
+
+function CraftIcon_OnLeave(self)
+	GameTooltip:Hide(self);
+	ResetCursor(self);
+end
+
+function CraftIcon_OnUpdate(self)
+	CursorOnUpdate(self);
 end

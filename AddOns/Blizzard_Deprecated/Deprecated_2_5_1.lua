@@ -6,6 +6,22 @@ if not IsPublicBuild() then
 	return;
 end
 
+-- Deprecations related to Classic API updates made to get closer to parity with Retail.
+do
+
+	-- Use C_ChatInfo.SwapChatChannelsByChannelIndex() instead
+	SwapChatChannelByLocalID = C_ChatInfo.SwapChatChannelsByChannelIndex;
+	-- Use C_GuildInfo.CanEditOfficerNote() instead
+	CanEditOfficerNote = C_GuildInfo.CanEditOfficerNote;
+	-- Use C_GuildInfo.CanViewOfficerNote() instead
+	CanViewOfficerNote = C_GuildInfo.CanViewOfficerNote;
+	-- Use C_GuildInfo.GuildRoster() instead
+	GuildRoster = C_GuildInfo.GuildRoster;
+	-- Use C_StableInfo.GetNumStablePets instead
+	GetNumStablePets = C_StableInfo.GetNumStablePets;
+
+end
+
 -- 8.1.0 deprecations related to C_DateAndTime
 do
 	local function ConvertToOldStyleDate(calendarTime)
@@ -36,4 +52,9 @@ do
 		currentCalendarTime = C_DateAndTime.AdjustTimeByDays(currentCalendarTime, -1);
 		return ConvertToOldStyleDate(currentCalendarTime);
 	end
+end
+
+do
+	-- Use CreateFramePoolCollection
+	CreatePoolCollection = CreateFramePoolCollection;
 end

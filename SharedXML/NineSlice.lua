@@ -78,19 +78,15 @@ local function GetNineSlicePiece(container, pieceName)
 	end
 end
 
-local function PropagateLayoutSettingsToPieceLayout(userLayout, pieceLayout)
-	-- Only apply mirrorLayout if it wasn't explicitly defined
-	if pieceLayout.mirrorLayout == nil then
-		pieceLayout.mirrorLayout = userLayout.mirrorLayout;
+local function SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout)
+	local left, right, top, bottom = 0, 1, 0, 1;
+	
+	local pieceMirrored = pieceLayout.mirrorLayout;
+	if pieceMirrored == nil then
+		pieceMirrored = userLayout and userLayout.mirrorLayout;
 	end
 
-	-- ... and other settings that apply to the whole nine-slice
-end
-
-local function SetupTextureCoordinates(piece, setupInfo, pieceLayout)
-	local left, right, top, bottom = 0, 1, 0, 1;
-
-	if pieceLayout.mirrorLayout then
+	if pieceMirrored then
 		if setupInfo.mirrorVertical then
 			top, bottom = bottom, top;
 		end
@@ -105,7 +101,7 @@ local function SetupTextureCoordinates(piece, setupInfo, pieceLayout)
 	piece:SetTexCoord(left, right, top, bottom);
 end
 
-local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit)
+local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, userLayout)
 	--- Change texture coordinates before applying atlas.
 	SetupTextureCoordinates(piece, setupInfo, pieceLayout);
 
@@ -154,130 +150,6 @@ local nineSliceSetup =
 
 local layouts =
 {
-	SimplePanelTemplate =
-	{
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = -5, y = 0, },
-		TopRightCorner = { atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = 2, y = 0, },
-		BottomLeftCorner = { atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = -5, y = -3, },
-		BottomRightCorner =	{ atlas = "UI-Frame-SimpleMetal-CornerTopLeft", x = 2, y = -3, },
-		TopEdge = { atlas = "_UI-Frame-SimpleMetal-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-SimpleMetal-EdgeTop", },
-		LeftEdge = { atlas = "!UI-Frame-SimpleMetal-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-SimpleMetal-EdgeLeft", },
-	},
-
-	PortraitFrameTemplate =
-	{
-		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
-		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
-		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
-		TopEdge = { layer="OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", x = 0, y = 0, x1 = 0, y1 = 0, },
-		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", x = 0, y = 0, x1 = 0, y1 = 0, },
-		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = 0, y = 0, x1 = 0, y1 = 0 },
-		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", x = 0, y = 0, x1 = 0, y1 = 0, },
-	},
-
-	PortraitFrameTemplateMinimizable =
-	{
-		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
-		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRightDouble", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
-		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
-		TopEdge = { layer="OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", x = 0, y = 0, x1 = 0, y1 = 0, },
-		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", x = 0, y = 0, x1 = 0, y1 = 0, },
-		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = 0, y = 0, x1 = 0, y1 = 0 },
-		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", x = 0, y = 0, x1 = 0, y1 = 0, },
-	},
-
-	ButtonFrameTemplateNoPortrait =
-	{
-		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -12, y = 16, },
-		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -12, y = -3, },
-		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
-		TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", },
-		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", },
-		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", },
-		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", },
-	},
-
-	ButtonFrameTemplateNoPortraitMinimizable =
-	{
-		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -12, y = 16, },
-		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRightDouble", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -12, y = -3, },
-		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
-		TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", },
-		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", },
-		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", },
-		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", },
-	},
-
-	InsetFrameTemplate =
-	{
-		TopLeftCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerTopLeft", },
-		TopRightCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerTopRight", },
-		BottomLeftCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerBotLeftCorner", x = 0, y = -1, },
-		BottomRightCorner = { layer = "BORDER", subLevel = -5, atlas = "UI-Frame-InnerBotRight", x = 0, y = -1, },
-		TopEdge = { layer = "BORDER", subLevel = -5, atlas = "_UI-Frame-InnerTopTile", },
-		BottomEdge = { layer = "BORDER", subLevel = -5, atlas = "_UI-Frame-InnerBotTile", },
-		LeftEdge = { layer = "BORDER", subLevel = -5, atlas = "!UI-Frame-InnerLeftTile", },
-		RightEdge = { layer = "BORDER", subLevel = -5, atlas = "!UI-Frame-InnerRightTile", },
-	},
-
-	BFAMissionHorde =
-	{
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "HordeFrame-Corner-TopLeft", x = 6, y = -6, },
-		TopEdge = { atlas = "_HordeFrameTile-Top", },
-		BottomEdge = { atlas = "_HordeFrameTile-Top", },
-		LeftEdge = { atlas = "!HordeFrameTile-Left", },
-		RightEdge = { atlas = "!HordeFrameTile-Left", },
-	},
-
-	BFAMissionAlliance =
-	{
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "AllianceFrameCorner-TopLeft", x = 6, y = -6, },
-		TopEdge = { atlas = "_AllianceFrameTile-Top", },
-		BottomEdge = { atlas = "_AllianceFrameTile-Top", },
-		LeftEdge = { atlas = "!AllianceFrameTile-Left", },
-		RightEdge = { atlas = "!AllianceFrameTile-Left", },
-	},
-
-	CovenantMissionFrame =
-	{
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "Oribos-NineSlice-CornerTopLeft", x = 6, y = -6, },
-		TopEdge = { atlas = "_Oribos-NineSlice-EdgeTop", },
-		BottomEdge = { atlas = "_Oribos-NineSlice-EdgeTop", },
-		LeftEdge = { atlas = "!Oribos-NineSlice-EdgeLeft", },
-		RightEdge = { atlas = "!Oribos-NineSlice-EdgeLeft", },
-	},
-
-	GenericMetal =
-	{
-		TopLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = 6, mirrorLayout = true, },
-		TopRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = 6, mirrorLayout = true, },
-		BottomLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = -6, mirrorLayout = true, },
-		BottomRightCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = 6, y = -6, mirrorLayout = true, },
-		TopEdge = { atlas = "_UI-Frame-GenericMetal-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-GenericMetal-EdgeBottom", },
-		LeftEdge = { atlas = "!UI-Frame-GenericMetal-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-GenericMetal-EdgeRight", },
-	},
-
 	Dialog =
 	{
 		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
@@ -288,57 +160,6 @@ local layouts =
 		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
 		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
 		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
-	},
-
-	WoodenNeutralFrameTemplate =
-	{
-		mirrorLayout = true,
-		TopLeftCorner =	{ atlas = "Neutral-NineSlice-Corner", x = -6, y = 6, },
-		TopRightCorner =	{ atlas = "Neutral-NineSlice-Corner", x = 6, y = 6, },
-		BottomLeftCorner =	{ atlas = "Neutral-NineSlice-Corner", x = -6, y = -6, },
-		BottomRightCorner =	{ atlas = "Neutral-NineSlice-Corner", x = 6, y = -6, },
-		TopEdge = { atlas = "_Neutral-NineSlice-EdgeTop", },
-		BottomEdge = { atlas = "_Neutral-NineSlice-EdgeBottom", mirrorLayout = false, },
-		LeftEdge = { atlas = "!Neutral-NineSlice-EdgeLeft", },
-		RightEdge = { atlas = "!Neutral-NineSlice-EdgeRight", mirrorLayout = false, },
-	},
-
-
-	Runeforge =
-	{
-		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
-		TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
-		BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
-		BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
-		TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
-		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
-	},
-
-	AdventuresMissionComplete =
-	{
-		TopLeftCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
-		TopRightCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
-		BottomLeftCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
-		BottomRightCorner =	{ atlas = "AdventuresFrame-Corner-Small-TopLeft", mirrorLayout = true, },
-		TopEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = 3, x1 = 10, y1 = 3, },
-		BottomEdge = { layer = "BACKGROUND", atlas = "_AdventuresFrame-Small-Top", x = -10, y = -3, x1 = 10, y1 = -3, mirrorLayout = true, },
-		LeftEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Right", x = -3, y = 10, x1 = -3, y1 = -10,},
-		RightEdge = { layer = "BACKGROUND", atlas = "!AdventuresFrame-Left", x = 3, y = 10, x1 = 3, y1 = -10,},
-	},
-
-	CharacterCreateDropdown =
-	{
-		TopLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopLeft", x=-30, y=20 },
-		TopRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopRight", x=30, y=20 },
-		BottomLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomLeft", x=-30, y=-20 },
-		BottomRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomRight", x=30, y=-20 },
-		TopEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeTop", },
-		BottomEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeBottom", },
-		LeftEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeLeft", },
-		RightEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeRight", },
-		Center = { atlas = "CharacterCreateDropdown-NineSlice-Center", },
 	},
 
 	ChatBubble =
@@ -397,8 +218,6 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 		local pieceName = setup.pieceName;
 		local pieceLayout = userLayout[pieceName];
 		if pieceLayout then
-			PropagateLayoutSettingsToPieceLayout(userLayout, pieceLayout);
-
 			local piece, pieceAlreadyExisted = GetNineSlicePiece(container, pieceName);
 			if not pieceAlreadyExisted then
 				container[pieceName] = piece;
@@ -408,9 +227,9 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 			-- Piece setup can change arbitrary properties, do it before changing the texture.
 			setup.fn(container, piece, setup, pieceLayout);
 			if userLayout.setupPieceVisualsFunction then
-				userLayout.setupPieceVisualsFunction(container, piece, setup, pieceLayout, textureKit);
+				userLayout.setupPieceVisualsFunction(container, piece, setup, pieceLayout, textureKit, userLayout);
 			else
-				SetupPieceVisuals(piece, setup, pieceLayout, textureKit);
+				SetupPieceVisuals(piece, setup, pieceLayout, textureKit, userLayout);
 			end
 		end
 	end

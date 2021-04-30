@@ -332,7 +332,7 @@ function FriendsFrame_OnShow()
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 	InGuildCheck();
 	BlizzardGroups_UpdateNotifications();
 	BlizzardGroups_UpdateShowTab();
@@ -848,7 +848,11 @@ end
 
 function WhoFrameColumn_SetWidth(frame, width)
 	frame:SetWidth(width);
-	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
+	local name = frame:GetName().."Middle";
+	local middleFrame = _G[name];
+	if middleFrame then
+		middleFrame:SetWidth(width - 9);
+	end
 end
 
 function WhoFrameDropDown_Initialize()
@@ -942,7 +946,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if ( GuildFrame:IsVisible() ) then
 			local canRequestGuildRoster = ...;
 			if ( canRequestGuildRoster ) then
-				GuildRoster();
+				C_GuildInfo.GuildRoster();
 			end
 			GuildStatus_Update();
 			FriendsFrame_Update();
@@ -2513,7 +2517,7 @@ function GuildFrameControlButton_OnUpdate()
 	if ( GuildControlPopupFrame.update == 1 ) then
 		GuildControlPopupFrame.update = 2;
 	elseif ( GuildControlPopupFrame.update == 2 ) then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		GuildControlPopupFrame.update = nil;
 	end
 end
@@ -2694,8 +2698,8 @@ function GuildStatus_Update()
 		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
 		PersonalNoteText:SetText(note);
 		-- Update officer note
-		if ( CanViewOfficerNote() ) then
-			if ( CanEditOfficerNote() ) then
+		if ( C_GuildInfo.CanViewOfficerNote() ) then
+			if ( C_GuildInfo.CanEditOfficerNote() ) then
 				if ( (not officernote) or (officernote == "") ) then
 					officernote = GUILD_OFFICERNOTE_EDITLABEL;
 				end
@@ -2703,7 +2707,7 @@ function GuildStatus_Update()
 			else
 				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
 			end
-			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+			GuildMemberOfficerNoteBackground:EnableMouse(C_GuildInfo.CanEditOfficerNote());
 			OfficerNoteText:SetText(officernote);
 
 			-- Resize detail frame

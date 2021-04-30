@@ -300,7 +300,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate" hidden="true"/>
+			<Button parentKey="HonorFrame" inherits="QuestHonorFrameTemplate" hidden="true"/>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeQuestRewardItemButtonTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
@@ -491,7 +491,7 @@
 			</Frame>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallQuestRewardItemButtonTemplate" hidden="true"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
-            <Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+            <Button parentKey="HonorFrame" inherits="QuestHonorFrameTemplate" hidden="true"/>
 			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
 				<Layers>
 					<Layer level="BORDER">

@@ -177,7 +177,7 @@ MoneyTypeInfo["BLACKMARKET"] = {
 	collapse = 1,
 };
 
-function MoneyFrame_OnLoad (self)
+function MoneyFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("PLAYER_TRADE_MONEY");
 	self:RegisterEvent("TRADE_MONEY_CHANGED");
@@ -257,7 +257,7 @@ function MoneyFrame_SetType(self, type)
 
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
-		message("Invalid money type: "..type);
+		message("Invalid money type: "..(type or "INVALID TYPE"));
 		return;
 	end
 	self.info = info;

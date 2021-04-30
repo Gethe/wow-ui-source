@@ -60,7 +60,9 @@ function ArenaFrame_Update()
 			battleType = ARENA_CASUAL;
 		else
 			battleType = ARENA_RATED;
-			if (not IsArenaSeasonActive()) then
+			if (IsArenaSeasonActive()) then
+				button:Enable();
+			else
 				button:Disable();
 			end
 		end

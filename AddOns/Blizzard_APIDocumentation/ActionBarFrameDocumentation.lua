@@ -119,6 +119,36 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsHarmfulAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "useNeutral", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHarmful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHelpfulAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "useNeutral", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHelpful", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
 

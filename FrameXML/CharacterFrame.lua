@@ -1,11 +1,8 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame", "HonorFrame" };
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame", "PVPFrame" };
 
 local NUM_CHARACTERFRAME_TABS = 5;
 function ToggleCharacter(tab, onlyShow)
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
-		return;
-	end
-	if ( tab == "HonorFrame" and not HonorSystemEnabled() and not HonorFrame:IsVisible() ) then
 		return;
 	end
 	local subFrame = _G[tab];
@@ -53,7 +50,7 @@ function CharacterFrameTab_OnClick(self, button)
 	elseif ( name == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");
 	elseif ( name == "CharacterFrameTab5" ) then
-		ToggleCharacter("HonorFrame");
+		ToggleCharacter("PVPFrame");
 	end
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -117,8 +114,6 @@ function CharacterFrame_OnShow(self)
 	end
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
-
-	HonorFrame_UpdateShown();
 end
 
 function CharacterFrame_OnHide(self)

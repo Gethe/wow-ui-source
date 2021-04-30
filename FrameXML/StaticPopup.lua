@@ -611,6 +611,102 @@ StaticPopupDialogs["CONFIRM_GUILD_DISBAND"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["ADD_TEAMMEMBER"] = {
+	text = ADD_TEAMMEMBER_LABEL,
+	button1 = INVITE,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
+	maxLetters = 77,
+	OnAccept = function(self)
+		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+	end,
+	OnShow = function(self)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+		parent:Hide();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_DISBAND"] = {
+	text = CONFIRM_TEAM_DISBAND,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self)
+		ArenaTeamDisband(self.data);
+	end,
+	OnCancel = function (self)
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
+	text = CONFIRM_TEAM_LEAVE,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ArenaTeamLeave(PVPTeamDetails.team);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_PROMOTE"] = {
+	text = CONFIRM_TEAM_PROMOTE,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, team, name)
+		ArenaTeamSetLeaderByName(PVPTeamDetails.team, name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_KICK"] = {
+	text = CONFIRM_TEAM_KICK,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, team, name)
+		ArenaTeamUninviteByName(PVPTeamDetails.team, name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["ARENA_TEAM_INVITE"] = {
+	text = ARENA_TEAM_INVITATION,
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	OnAccept = function(self)
+		AcceptArenaTeam();
+	end,
+	OnCancel = function(self)
+		DeclineArenaTeam();
+	end,
+	timeout = STATICPOPUP_TIMEOUT,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 	text = CONFIRM_BUY_BANK_SLOT,
 	button1 = YES,
@@ -841,6 +937,34 @@ StaticPopupDialogs["CONFIRM_GUILD_PROMOTE"] = {
 
 StaticPopupDialogs["RENAME_GUILD"] = {
 	text = RENAME_GUILD_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 24,
+	OnAccept = function(self)
+		local text = self.editBox:GetText();
+		RenamePetition(text);
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local text = self:GetParent().editBox:GetText();
+		RenamePetition(text);
+		self:GetParent():Hide();
+	end,
+	OnShow = function(self)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["RENAME_ARENA_TEAM"] = {
+	text = RENAME_ARENA_TEAM_LABEL,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,

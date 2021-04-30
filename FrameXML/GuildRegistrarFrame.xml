@@ -4,53 +4,41 @@
 	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="70"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="GuildRegistrarFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
+				<Texture name="GuildRegistrarFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
+					<Size x="128" y="256"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
+					<Size x="128" y="256"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
@@ -75,8 +63,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad function="RaiseFrameLevelByTwo"/>
-                </Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
 			</Frame>
 			<Button name="GuildRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -90,7 +78,7 @@
 			<Frame name="GuildRegistrarGreetingFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="AvailableServicesText" inherits="QuestTitleFont" text="AVAILABLE_SERVICES" justifyH="LEFT">
+						<FontString name="GuildAvailableServicesText" inherits="QuestTitleFont" text="AVAILABLE_SERVICES" justifyH="LEFT">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="35" y="-100"/>
@@ -112,7 +100,7 @@
 				</Layers>
 				<Frames>
 					<Button name="GuildRegistrarFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-						<Size x="75" y="22"/>
+						<Size x="78" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-40" y="72"/>
 						</Anchors>
@@ -124,7 +112,7 @@
 					</Button>
 					<Button name="GuildRegistrarButton1" inherits="QuestTitleButtonTemplate" text="GUILD_CHARTER_PURCHASE">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="AvailableServicesText" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+							<Anchor point="TOPLEFT" relativeTo="GuildAvailableServicesText" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GuildRegistrar_ShowPurchaseFrame"/>
@@ -138,18 +126,6 @@
 							<OnClick function="TurnInGuildCharter"/>
 						</Scripts>
 					</Button>
-<!--
-					<Button name="GuildRegistrarButton3" inherits="QuestTitleButtonTemplate" text="GUILD_CREST_DESIGN">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarButton2" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								GetTabardInfo();
-							</OnClick>
-						</Scripts>
-					</Button>
--->
 				</Frames>
 			</Frame>
 			<Frame name="GuildRegistrarPurchaseFrame" setAllPoints="true" hidden="true">
@@ -259,29 +235,10 @@
 			</Frame>
  		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("GUILD_REGISTRAR_SHOW");
-				self:RegisterEvent("GUILD_REGISTRAR_CLOSED");
-			</OnLoad>
-			<OnEvent>
-				if ( event == "GUILD_REGISTRAR_SHOW" ) then
-					ShowUIPanel(GuildRegistrarFrame);
-					if ( not GuildRegistrarFrame:IsShown() ) then
-						CloseGuildRegistrar();
-					end
-				elseif ( event == "GUILD_REGISTRAR_CLOSED" ) then
-					HideUIPanel(GuildRegistrarFrame);
-				end
-			</OnEvent>
-			<OnShow>
-				GuildRegistrar_OnShow();
-				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
-			</OnShow>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-				StaticPopup_Hide("CONFIRM_GUILD_CHARTER_PURCHASE");
-				CloseGuildRegistrar();
-			</OnHide>
+			<OnLoad function="GuildRegistrar_OnLoad"/>
+			<OnEvent function="GuildRegistrar_OnEvent"/>
+			<OnShow function="GuildRegistrar_OnShow"/>
+			<OnHide function="GuildRegistrar_OnHide"/>
 		</Scripts>
  	</Frame>
  </Ui>

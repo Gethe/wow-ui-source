@@ -150,6 +150,26 @@ local Unit =
 	Events =
 	{
 		{
+			Name = "ArenaCooldownsUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_COOLDOWNS_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ArenaCrowdControlSpellUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AutofollowBegin",
 			Type = "Event",
 			LiteralName = "AUTOFOLLOW_BEGIN",

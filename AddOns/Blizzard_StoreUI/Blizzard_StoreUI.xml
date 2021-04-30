@@ -932,7 +932,7 @@
 					<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="BOTTOM">
 						<Size x="250" y="30" />
 						<Anchors>
-							<Anchor point="BOTTOM" relativePoint="CENTER" y="-22"/>
+							<Anchor point="BOTTOM" relativePoint="CENTER" y="-60"/>
 						</Anchors>
 						<Shadow>
 							<Offset>
@@ -967,7 +967,7 @@
 						</Anchors>
 						<Color r="0.1" g="1.0" b="0.1" />
 					</FontString>
-					<FontString parentKey="Description" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+					<FontString parentKey="Description" inherits="GameFontNormalMed1HSpacing" justifyH="LEFT" justifyV="TOP">
 						<Size x="250" y="0" />
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.ProductName" relativePoint="LEFT" />

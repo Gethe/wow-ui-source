@@ -877,6 +877,11 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</FontString>
+								<FontString name="QuestLogSuggestedGroupNum" inherits="QuestFont">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
 								<FontString name="QuestLogDescriptionTitle" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_DESCRIPTION">
 									<Size>
 										<AbsDimension x="285" y="0"/>
@@ -1001,6 +1006,24 @@
 										QuestMoneyFrame_OnLoad(self);
 									</OnLoad>
 								</Scripts>
+							</Frame>
+							<Frame name="QuestLogHonorFrame" inherits="QuestHonorFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="QuestLogPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="QuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
 							</Frame>
 							<Frame name="QuestLogRequiredMoneyFrame" inherits="MoneyFrameTemplate">
 								<Anchors>

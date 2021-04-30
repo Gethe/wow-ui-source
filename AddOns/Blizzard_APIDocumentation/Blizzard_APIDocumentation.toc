@@ -85,6 +85,7 @@ SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
@@ -114,6 +115,7 @@ VoiceChatDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
+CVarDocumentation.lua
 ClubDocumentation.lua
 CommentatorFrameDocumentation.lua
 CraftInfoDocumentation.lua

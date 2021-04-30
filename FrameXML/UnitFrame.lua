@@ -122,15 +122,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
 	self:RegisterEvent("PORTRAITS_UPDATED");
-	if ( self.healAbsorbBar ) then
-		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
-	end
 	if ( self.myHealPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
-		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
-	end
-	if ( self.totalAbsorbBar ) then
-		self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 	end
 	if ( self.myManaCostPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
@@ -145,10 +138,6 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	if ( self.unit ~= unit ) then
 		if ( self.myHealPredictionBar ) then
 			self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
-			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
-		end
-		if ( self.totalAbsorbBar ) then
-			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 		end
 		if ( not healthbar.frequentUpdates ) then
 			healthbar:RegisterUnitEvent("UNIT_HEALTH", unit);
@@ -562,11 +551,16 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 	if ( unit == statusbar.unit ) then
 		local maxValue = UnitHealthMax(unit);
 
+		statusbar.showPercentage = false;
+
 		-- Safety check to make sure we never get an empty bar.
 		statusbar.forceHideText = false;
 		if ( maxValue == 0 ) then
 			maxValue = 1;
 			statusbar.forceHideText = true;
+		elseif ( maxValue == 100 ) then
+			--This should be displayed as percentage.
+			statusbar.showPercentage = true;
 		end
 
 		statusbar:SetMinMaxValues(0, maxValue);

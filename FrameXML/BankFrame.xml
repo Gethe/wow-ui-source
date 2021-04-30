@@ -239,7 +239,7 @@
 					</Frame>
 					<Frame name="BankFrameMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-38" y="102"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="10" y="103"/>
 						</Anchors>
 					</Frame>
 				</Frames>

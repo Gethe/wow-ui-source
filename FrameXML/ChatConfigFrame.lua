@@ -2056,7 +2056,7 @@ function ChatConfigChannelSettings_MoveChannelDown(channelIndex)
 		return;
 	end
 	
-	SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex + 1].channelID);
+	C_ChatInfo.SwapChatChannelsByChannelIndex(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex + 1].channelID);
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
@@ -2067,7 +2067,7 @@ function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
 		return;
 	end
 	
-	SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex - 1].channelID);
+	C_ChatInfo.SwapChatChannelsByChannelIndex(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID, CHAT_CONFIG_CHANNEL_LIST[channelIndex - 1].channelID);
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
@@ -2297,7 +2297,7 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	local channelIndex = self:GetID();
 	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
-			SwapChatChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[i].channelID, CHAT_CONFIG_CHANNEL_LIST[i + 1].channelID);
+			C_ChatInfo.SwapChatChannelsByChannelIndex(CHAT_CONFIG_CHANNEL_LIST[i].channelID, CHAT_CONFIG_CHANNEL_LIST[i + 1].channelID);
 		end
 		
 		CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());

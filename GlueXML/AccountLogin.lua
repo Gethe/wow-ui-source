@@ -10,6 +10,9 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 
 	AccountLogin_CheckLoginState(self);
+
+	local year = date:sub(#date - 3, #date);
+	self.UI.BlizzDisclaimer:SetText(BLIZZ_DISCLAIMER_FORMAT:format(year));
 end
 
 function AccountLogin_OnEvent(self, event, ...)
@@ -49,7 +52,7 @@ function AccountLogin_CheckLoginState(self)
 end
 
 function AccountLogin_OnShow(self)
-	SetClassicLogo(self.UI.GameLogo);
+	SetGameLogo(self.UI.GameLogo);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
 

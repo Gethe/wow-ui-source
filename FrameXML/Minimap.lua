@@ -298,6 +298,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.notCheckable = true;
 			info.keepShownOnClick = false;
 			info.hasArrow = true;
+			info.icon = nil;
 			info.value = HUNTER_TRACKING;
 			UIDropDownMenu_AddButton(info, level)
 		end

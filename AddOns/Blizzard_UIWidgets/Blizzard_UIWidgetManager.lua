@@ -9,7 +9,7 @@ local WIDGET_DEBUG_CUSTOM_TEXTURE_COLOR = CreateColor(1.0, 1.0, 0.0, 0.6);
 UIWidgetManagerMixin = {}
 
 function UIWidgetManagerMixin:OnLoad()
-	self.widgetPools = CreatePoolCollection();
+	self.widgetPools = CreateFramePoolCollection();
 
 	self.widgetVisTypeInfo = {};
 	self.registeredWidgetSetContainers = {};

@@ -937,7 +937,7 @@
 		ToggleCharacter("SkillFrame");
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
-		ToggleCharacter("HonorFrame");
+		ToggleCharacter("PVPFrame");
 	</Binding>
 
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">

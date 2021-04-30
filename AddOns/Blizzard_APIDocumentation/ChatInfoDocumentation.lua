@@ -164,6 +164,16 @@ local ChatInfo =
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SwapChatChannelsByChannelIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "firstChannelIndex", Type = "number", Nilable = false },
+				{ Name = "secondChannelIndex", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

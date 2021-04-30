@@ -50,6 +50,9 @@ UnitPopupButtons = {
 	["PROMOTE_GUIDE"] = { text = PARTY_PROMOTE_GUIDE, },
 	["GUILD_PROMOTE"] = { text = GUILD_PROMOTE, },
 	["GUILD_LEAVE"] = { text = GUILD_LEAVE, },
+	["TEAM_PROMOTE"] = { text = TEAM_PROMOTE, dist = 0 },
+	["TEAM_KICK"] = { text = TEAM_KICK, dist = 0 },
+	["TEAM_LEAVE"] = { text = TEAM_LEAVE, dist = 0 },
 	["LEAVE"] = { text = PARTY_LEAVE, },
 	["INSTANCE_LEAVE"] = { text = INSTANCE_PARTY_LEAVE, },
 	["FOLLOW"] = { text = FOLLOW, dist = 4 },
@@ -220,10 +223,11 @@ UnitPopupMenus = {
 	["OTHERBATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_BATTLE_PET", "CANCEL" },
 	["PARTY"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "UNINVITE", "CANCEL" },
 	["PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" },
-	["ENEMY_PLAYER"] = {"SET_FOCUS", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL"},
+	["ENEMY_PLAYER"] = {"SET_FOCUS", "INSPECT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL"},
 	["RAID_PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "INTERACT_SUBSECTION_TITLE", "RAF_SUMMON", "RAF_GRANT_LEVEL", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "WHISPER", "INSPECT", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
 	["RAID"] = { "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "RAID_LEADER",  "RAID_PROMOTE", "RAID_DEMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" },
 	["FRIEND"] = { "POP_OUT_CHAT", "TARGET", "SET_NOTE", "INTERACT_SUBSECTION_TITLE", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "DELETE_COMMUNITIES_MESSAGE", "IGNORE", "REMOVE_FRIEND", "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
+	["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "CANCEL" },
 	["FRIEND_OFFLINE"] = { "SET_NOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "REMOVE_FRIEND", "CANCEL" },
 	["BN_FRIEND"] = { "POP_OUT_CHAT", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "INTERACT_SUBSECTION_TITLE", "BN_INVITE", "BN_SUGGEST_INVITE", "BN_REQUEST_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "DELETE_COMMUNITIES_MESSAGE", "BN_REMOVE_FRIEND", "REPORT_PLAYER", "CANCEL" },
 	["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "OTHER_SUBSECTION_TITLE", "BN_REMOVE_FRIEND", "REPORT_PLAYER", "CANCEL" },
@@ -236,7 +240,7 @@ UnitPopupMenus = {
 	["ARENAENEMY"] = { "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
 	["FOCUS"] = { "RAID_TARGET_ICON", "CLEAR_FOCUS", "OTHER_SUBSECTION_TITLE", "VOICE_CHAT", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "CANCEL" },
 	["BOSS"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
-	["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "REPORT_BAD_ARENA_TEAM_NAME", "CANCEL" },
+	["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
 	["COMMUNITIES_WOW_MEMBER"] = { "ADD_FRIEND_MENU", "SUBSECTION_SEPARATOR", "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER" },
 	["COMMUNITIES_GUILD_MEMBER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "OTHER_SUBSECTION_TITLE", "GUILD_PROMOTE", "GUILD_LEAVE", "REPORT_PLAYER" },
 	["COMMUNITIES_MEMBER"] = { "COMMUNITIES_BATTLETAG_FRIEND", "SUBSECTION_SEPARATOR", "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER"  },
@@ -1042,6 +1046,22 @@ function UnitPopup_HideButtons ()
 			if ( dropdownMenu.name ~= UnitName("player") ) then
 				shown = false;
 			end
+		elseif ( value == "TEAM_PROMOTE" ) then
+			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "TEAM_KICK" ) then
+			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "TEAM_LEAVE" ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not PVPTeamDetails:IsShown() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		elseif ( value == "UNINVITE" ) then
 			if ( not inParty or not isPlayer or not isLeader or (instanceType == "pvp") or (instanceType == "arena") ) then
 				shown = false;
@@ -1323,7 +1343,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "REPORT_BAD_ARENA_TEAM_NAME" ) then
-			if  (not dropdownMenu.unit or not UnitArenaTeamName(dropdownMenu.unit) ) then
+			if not dropdownMenu.teamName then
 				shown = false;
 			end
 		elseif ( value == "VOICE_CHAT" ) then
@@ -1434,7 +1454,7 @@ local function UnitPopup_IsEnabled(dropdownFrame, unitPopupButton)
 		return false;
 	end
 
-	if unitPopupButton.dist and not CheckInteractDistance(dropdownFrame.unit, unitPopupButton.dist) then
+	if (unitPopupButton.dist and unitPopupButton.dist > 0) and not CheckInteractDistance(dropdownFrame.unit, unitPopupButton.dist) then
 		return false;
 	end
 
@@ -1707,6 +1727,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "REPORT_BAD_GUILD_NAME" ) then
 		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_GUILD_NAME, fullname, playerLocation)
 	elseif ( button == "REPORT_BAD_ARENA_TEAM_NAME" ) then
+		SetPendingReportArenaTeamName(dropdownFrame.teamName);
 		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME, fullname, playerLocation)
 	elseif ( button == "REPORT_PET" ) then
 		SetPendingReportPetTarget(unit);
@@ -1768,6 +1789,23 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "GUILD_LEAVE" ) then
 		local guildName = GetGuildInfo("player");
 		StaticPopup_Show("CONFIRM_GUILD_LEAVE", guildName);
+	elseif ( button == "TEAM_PROMOTE" ) then
+		local arenaName, teamIndex = GetArenaTeam(PVPTeamDetails.team);
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, arenaName, teamIndex );
+		if ( dialog ) then
+			dialog.data = PVPTeamDetails.team;
+			dialog.data2 = name;
+		end
+	elseif ( button == "TEAM_KICK" ) then
+		local arenaName, teamIndex = GetArenaTeam(PVPTeamDetails.team);
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, arenaName, teamIndex );
+		if ( dialog ) then
+			dialog.data = PVPTeamDetails.team;
+			dialog.data2 = name;
+		end
+	elseif ( button == "TEAM_LEAVE" ) then
+		local arenaName = GetArenaTeam(PVPTeamDetails.team);
+		StaticPopup_Show("CONFIRM_TEAM_LEAVE", arenaName );
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "INSTANCE_LEAVE" ) then

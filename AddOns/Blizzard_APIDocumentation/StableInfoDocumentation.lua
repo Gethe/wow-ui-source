@@ -6,6 +6,24 @@ local StableInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetNumActivePets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numActivePets", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumStablePets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numStablePets", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

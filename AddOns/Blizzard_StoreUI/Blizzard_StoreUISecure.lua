@@ -795,9 +795,6 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 		local baseDescription, bullets = description:match("(.-)$bullet(.*)");
 		if not bullets or not card.DescriptionBulletPointContainer then
-			if (card ~= StoreFrame.SplashSingle) then
-				card.Description:SetJustifyH("CENTER");
-			end
 
 			card.Description:SetText(description);
 		else
@@ -946,20 +943,8 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 		return;
 	end
 	products = StoreFrame_FilterEntries(products);
-
 	local isThreeSplash = #products >= 3;
 	local isSplashPair = #products == 2;
-	
-	if (selectedCategoryID == WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID) then
-		isSplashPair = true;
-		isThreeSplash = false;
-
-		-- We want to always show exactly two products.
-		if (#products == 3) then
-			products[2] = products[3];
-			products[3] = nil;
-		end
-	end
 
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
 

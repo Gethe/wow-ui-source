@@ -117,6 +117,15 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetServerExpansionLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "serverExpansionLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsExpansionTrial",
 			Type = "Function",
 

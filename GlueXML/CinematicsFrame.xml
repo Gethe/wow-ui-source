@@ -172,6 +172,14 @@
 				<NormalTexture atlas="StreamCinematic-Classic-Up" />
 				<PushedTexture atlas="StreamCinematic-Classic-Down" />
 			</Button>
+			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-40" y="-44"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-BC-Up" />
+				<PushedTexture atlas="StreamCinematic-BC-Down" />
+			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>

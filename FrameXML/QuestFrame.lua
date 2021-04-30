@@ -132,8 +132,15 @@ function QuestRewardCompleteButton_OnClick()
 	if ( QuestInfoFrame.itemChoice == 0 and GetNumQuestChoices() > 0 ) then
 		QuestChooseRewardError();
 	else
-		GetQuestReward(QuestInfoFrame.itemChoice);
-		PlaySound(SOUNDKIT.IG_QUEST_LIST_COMPLETE);
+		local money = GetQuestMoneyToGet();
+		if ( money and money > 0 ) then
+			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
+			if ( QuestFrame.dialog ) then
+				MoneyFrame_Update(QuestFrame.dialog:GetName().."MoneyFrame", money);
+			end
+		else
+			GetQuestReward(QuestInfoFrame.itemChoice);
+		end
 	end
 end
 
@@ -229,7 +236,7 @@ function QuestFrameProgressItems_Update()
 		end
 
 		-- Show the "Required Items" text if needed.
-		if (actualNumRequiredItems + numRequiredCurrencies > 0) then
+		if (actualNumRequiredItems + numRequiredCurrencies > 0 or GetQuestMoneyToGet() > 0) then
 			QuestProgressRequiredItemsText:Show();
 		else
 			QuestProgressRequiredItemsText:Hide();
@@ -386,18 +393,24 @@ function QuestFrameItems_Update(questState)
 	local numQuestChoices;
 	local numQuestSpellRewards = 0;
 	local money;
+	local honor;
+	local playerTitle;
 	local spacerFrame;
 	if ( isQuestLog == 1 ) then
 		numQuestRewards = GetNumQuestLogRewards();
 		numQuestChoices = GetNumQuestLogChoices();
 		numQuestSpellRewards = GetNumQuestLogRewardSpells();
 		money = GetQuestLogRewardMoney();
+		honor = GetQuestLogRewardHonor();
+		playerTitle = GetQuestLogRewardTitle();
 		spacerFrame = QuestLogSpacerFrame;
 	else
 		numQuestRewards = GetNumQuestRewards();
 		numQuestChoices = GetNumQuestChoices();
 		numQuestSpellRewards = GetNumRewardSpells();
 		money = GetRewardMoney();
+		honor = GetRewardHonor();
+		playerTitle = GetRewardTitle();
 		spacerFrame = QuestSpacerFrame;
 	end
 
@@ -405,7 +418,11 @@ function QuestFrameItems_Update(questState)
 	local questItemName = questState.."Item";
 	local material = QuestFrame_GetMaterial();
 	local questItemReceiveText = _G[questState.."ItemReceiveText"];
-	if ( totalRewards == 0 and money == 0 ) then
+	local honorFrame = _G[questState.."HonorFrame"];
+	local moneyFrame = _G[questState.."MoneyFrame"];
+	local playerTitleFrame = _G[questState.."PlayerTitleFrame"];
+
+	if ( totalRewards == 0 and money == 0 and honor == 0 and not playerTitle ) then
 		_G[questState.."RewardTitleText"]:Hide();
 	else
 		_G[questState.."RewardTitleText"]:Show();
@@ -413,11 +430,34 @@ function QuestFrameItems_Update(questState)
 		QuestFrame_SetAsLastShown(_G[questState.."RewardTitleText"], spacerFrame);
 	end
 	if ( money == 0 ) then
-		_G[questState.."MoneyFrame"]:Hide();
+		moneyFrame:Hide();
 	else
-		_G[questState.."MoneyFrame"]:Show();
-		QuestFrame_SetAsLastShown(_G[questState.."MoneyFrame"], spacerFrame);
+		moneyFrame:Show();
+		QuestFrame_SetAsLastShown(moneyFrame, spacerFrame);
 		MoneyFrame_Update(questState.."MoneyFrame", money);
+	end
+	if (honor == 0) then
+		honorFrame:Hide();
+	else
+		honorFrame:Show();
+		QuestHonorFrame_Update(questState.."HonorFrame", honor);
+		QuestFrame_SetAsLastShown(honorFrame, spacerFrame);
+	end
+	if ( not playerTitle ) then
+		playerTitleFrame:Hide();
+	else
+		local anchorFrame;
+		if ( honor ~= 0 ) then
+			anchorFrame = honorFrame;
+		elseif ( money ~= 0 ) then
+			anchorFrame = moneyFrame;
+		else
+			anchorFrame = getglobal(questState.."RewardTitleText");
+		end
+		playerTitleFrame:SetPoint("TOPLEFT", anchorFrame, "BOTTOMLEFT", 0, -5);
+		getglobal(questState.."PlayerTitleFrameTitle"):SetText(playerTitle);
+		playerTitleFrame:Show();
+		QuestFrame_SetAsLastShown(playerTitleFrame, spacerFrame);
 	end
 	
 	-- Hide unused rewards
@@ -425,7 +465,7 @@ function QuestFrameItems_Update(questState)
 		_G[questItemName..i]:Hide();
 	end
 
-	local questItem, name, texture, isTradeskillSpell, quality, isUsable, numItems = 1;
+	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems = 1;
 	local rewardsCount = 0;
 	
 	-- Setup choosable rewards
@@ -494,13 +534,15 @@ function QuestFrameItems_Update(questState)
 		-- In Classic, there's only ever one spell reward per quest,
 		-- so we can just hardcode index 1.
 		if ( isQuestLog == 1 ) then
-			texture, name, isTradeskillSpell = GetQuestLogRewardSpell(1);
+			texture, name, isTradeskillSpell, isSpellLearned = GetQuestLogRewardSpell(1);
 		else
-			texture, name, isTradeskillSpell = GetRewardSpell(1);
+			texture, name, isTradeskillSpell, isSpellLearned = GetRewardSpell(1);
 		end
 		
 		if ( isTradeskillSpell ) then
 			learnSpellText:SetText(REWARD_TRADESKILL_SPELL);
+		elseif ( not isSpellLearned ) then
+			learnSpellText:SetText(REWARD_AURA);
 		else
 			learnSpellText:SetText(REWARD_SPELL);
 		end

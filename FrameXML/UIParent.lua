@@ -47,7 +47,6 @@ UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["QuestLogPopupDetailFrame"] =	{ area = "left",			pushable = 0,	whileDead = 1 };
-UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0};
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2};
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
@@ -81,6 +80,7 @@ UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0,		xoffset 
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["ArenaRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
@@ -202,6 +202,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PARTY_INVITE_REQUEST");
 	self:RegisterEvent("PARTY_INVITE_CANCEL");
 	self:RegisterEvent("GUILD_INVITE_REQUEST");
+	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	self:RegisterEvent("GUILD_INVITE_CANCEL");
 	self:RegisterEvent("PLAYER_CAMPING");
 	self:RegisterEvent("PLAYER_QUITING");
@@ -436,6 +437,10 @@ function GMChatFrame_LoadUI(...)
 			GMChatFrame_OnEvent(GMChatFrame, ...);
 		end
 	end
+end
+
+function Arena_LoadUI()
+	UIParentLoadAddOn("Blizzard_ArenaUI");
 end
 
 function Store_LoadUI()
@@ -761,6 +766,10 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
+	elseif ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
+		StaticPopup_Show("ARENA_TEAM_INVITE", arg1, arg2);
+	elseif ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
+		StaticPopup_Hide("ARENA_TEAM_INVITE");
 	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
 	elseif ( event == "PLAYER_QUITING" ) then
@@ -838,6 +847,9 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("CONFIRM_LEAVE_BATTLEFIELD");
 
 		local _, instanceType = IsInInstance();
+		if ( instanceType == "arena" or instanceType == "pvp") then
+			Arena_LoadUI();
+		end
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
@@ -2512,6 +2524,20 @@ function ToggleFrame(frame)
 	end
 end
 
+-- We keep direct references to protect against replacement.
+local InCombatLockdown = InCombatLockdown;
+local issecure = issecure;
+
+-- We no longer allow addons to show or hide UI panels in combat.
+local function CheckProtectedFunctionsAllowed()
+	if ( InCombatLockdown() and not issecure() ) then
+		DisplayInterfaceActionBlockedMessage();
+		return false;
+	end
+
+	return true;
+end
+
 function ShowUIPanel(frame, force)
 	if ( CanAutoSetGamePadCursorControl(true) ) then
 		SetGamePadCursorControl(true);
@@ -2520,6 +2546,11 @@ function ShowUIPanel(frame, force)
 	if ( not frame or frame:IsShown() ) then
 		return;
 	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
+		return;
+	end
+
 	if ( not GetUIPanelWindowInfo(frame, "area") ) then
 		frame:Show();
 		return;
@@ -2533,6 +2564,10 @@ end
 
 function HideUIPanel(frame, skipSetPoint)
 	if ( not frame or not frame:IsShown() ) then
+		return;
+	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
 		return;
 	end
 
@@ -3295,7 +3330,9 @@ function getglobal(varr)
 	return _G[varr];
 end
 
+local forceinsecure = forceinsecure;
 function setglobal(varr,value)
+	forceinsecure();
 	_G[varr] = value;
 end
 

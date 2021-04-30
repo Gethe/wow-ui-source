@@ -209,12 +209,7 @@
 					<Anchor point="RIGHT" relativeTo="PetitionFrameCancelButton" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						if ( PetitionFrame.petitionType == "guild" ) then
-							StaticPopup_Show("RENAME_GUILD");
-
-						end
-					</OnClick>
+					<OnClick function="PetitionFrameRenameButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>

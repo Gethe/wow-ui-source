@@ -2488,8 +2488,8 @@ TRAVEL PASS
         </Frames>
         <Scripts>
           <OnShow>
-            GuildRoster();
-          </OnShow>
+						C_GuildInfo.GuildRoster();
+					</OnShow>
           <OnHide>
             GuildControlPopupFrame:Hide();
             GuildMemberDetailFrame:Hide();
