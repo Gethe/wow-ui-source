@@ -379,7 +379,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 	local info;
 	local numShown = 0;
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
+		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
 		-- Inserts a spacer if it's not the first option... to make it look nice.
 		if ( status ~= "none" ) then
 			numShown = numShown + 1;
@@ -396,7 +396,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 
 			info = UIDropDownMenu_CreateInfo();
 			if ( teamSize ~= 0 ) then
-				if ( registeredMatch ) then
+				if ( isRankedArena ) then
 					info.text = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
 				else
 					info.text = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
@@ -491,13 +491,13 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	end
 
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
+		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena = GetBattlefieldStatus(i);
 		if ( mapName ) then
 			if (  instanceID ~= 0 ) then
 				mapName = mapName.." "..instanceID;
 			end
 			if ( teamSize ~= 0 ) then
-				if ( registeredMatch ) then
+				if ( isRankedArena ) then
 					mapName = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
 				else
 					mapName = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
@@ -595,9 +595,8 @@ end
 
 function MiniMapBattlefieldFrame_isArena()
 	-- Set minimap icon here since it bugs out on login
-	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(1);
-	local isArena, isRanked = IsActiveBattlefieldArena();
-	if ( registeredMatch or isRanked ) then
+	local _, _, _, _, _, _, isRankedArena  = GetBattlefieldStatus(1);
+	if (isRankedArena) then
 		MiniMapBattlefieldIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
 		MiniMapBattlefieldIcon:SetWidth(19);
 		MiniMapBattlefieldIcon:SetHeight(19);
