@@ -6,7 +6,9 @@ GlueCheck.lua
 Localization.xml
 Fonts.xml
 FontStyles.xml
-..\SharedXML\AnchorUtil.xml
+..\SharedXML\FunctionUtil.lua
+..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
 ..\SharedXML\TextureUtil.lua
 ..\SharedXML\Util.lua
@@ -17,7 +19,6 @@ FontStyles.xml
 
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\EnumUtil.lua
-..\SharedXML\FunctionUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
@@ -40,9 +41,12 @@ FontStyles.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
 ..\SharedXML\PixelUtil.lua
+..\SharedXML\Dump.lua
 MixinUtil.lua
 ..\SharedXML\LinkUtil.lua
+..\SharedXML\ScriptAnimationUtil.lua
 
+..\SharedXML\GlobalCallbackRegistry.lua
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 ..\SharedXML\Frame\EventEditBox.xml
@@ -87,6 +91,10 @@ ObjectAPI\PlayerLocation.lua
 ChatBubbleTemplates.xml
 WorldFrame.xml
 UIParent.xml
+..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedModelScene.xml
 QuestUtils.lua
 MapUtil.lua
 AuraUtil.lua

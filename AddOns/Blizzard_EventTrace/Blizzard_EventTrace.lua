@@ -102,6 +102,10 @@ function EventTracePanelMixin:OnLoad()
 	self.TitleBar:Init(self);
 	self.ResizeButton:Init(self, MinPanelWidth, MinPanelHeight);
 	self.TitleText:SetText(EVENTTRACE_HEADER);
+
+	hooksecurefunc(EventRegistry, "TriggerEvent", function(registry, event, ...)
+		EventTrace:LogCallbackRegistryEvent(registry, event, ...);
+	end);
 end
 
 function EventTracePanelMixin:OnShow()

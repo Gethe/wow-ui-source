@@ -14,6 +14,7 @@ BATTLENET_FONT_COLOR_CODE	= "|cff82c5ff";
 DISABLED_FONT_COLOR_CODE	= "|cff7f7f7f";
 FONT_COLOR_CODE_CLOSE		= "|r";
 
+WHITE_FONT_COLOR			= CreateColor(1, 1, 1);
 BLACK_FONT_COLOR			= CreateColor(0, 0, 0);
 BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
 BLUE_FONT_COLOR				= CreateColor(0, 0.749, 0.953);
@@ -38,3 +39,7 @@ VERY_LIGHT_GRAY_COLOR		= CreateColor(.9, .9, .9);
 YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);
 TOOLTIP_DEFAULT_COLOR		= CreateColor(1, 1, 1);
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = CreateColor(0.09, 0.09, 0.19);
+
+function GetClassAtlas(className)
+	return ("classicon-%s"):format(className);
+end

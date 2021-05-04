@@ -227,9 +227,9 @@ function UnitPositionFrameMixin:GetUnitColor(timeNow, unit, appearanceData)
 		local r, g, b  = 1, 1, 1;
 
 		if appearanceData.useCommentatorColor and C_Commentator.IsSpectating() then
-			local teamIndex = C_Commentator.GetUnitTeamIndex(unit);
-			if (teamIndex) then
-				r, g, b = C_Commentator.GetTeamHighlightColor(teamIndex);
+			local color = C_Commentator.GetTeamColorByUnit(unit);
+			if (color) then
+				r, g, b = color.r, color.g, color.b;
 			end
 		elseif appearanceData.useClassColor then
 			local class = select(2, UnitClass(unit));
@@ -289,7 +289,7 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 			local unit = unitBase..i;
 
 			-- A bit of a hack. Fixes a race condition where COMMENTATOR_PLAYER_UPDATE fires before UnitExists returns true.
-			local unitExists = UnitExists(unit) or C_Commentator.GetUnitTeamIndex(unit);
+			local unitExists = UnitExists(unit) or C_Commentator.FindSpectatedUnit(unit);
 
 			if unitExists and not UnitIsUnit(unit, "player") then
 				local appearance = raidAppearance;

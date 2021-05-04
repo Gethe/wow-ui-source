@@ -7,9 +7,11 @@ CUF_NAME_SECTION_SIZE = 15;
 CUF_AURA_BOTTOM_OFFSET = 2;
 
 function CompactUnitFrame_OnLoad(self)
-	if ( not self:GetName() ) then
+	-- Names are required for concatenation of compact unit frame names. Search for
+	-- Name.."HealthBar" for examples. This is ignored by nameplates.
+	if not self.ignoreCUFNameRequirement and not self:GetName() then
 		self:Hide();
-		error("CompactUnitFrames must have a name");	--Sorry! Don't feel like re-writing unit popups.
+		error("CompactUnitFrames must have a name");
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -165,12 +167,12 @@ function CompactUnitFrame_SetUnit(frame, unit)
 			CompactUnitFrame_UnregisterEvents(frame);
 		end
 		if ( unit and not frame.optionTable.hideCastbar ) then
-			if ( frame.castBar ) then
-				CastingBarFrame_SetUnit(frame.castBar, unit, false, true);
+			if ( frame.CastBar ) then
+				CastingBarFrame_SetUnit(frame.CastBar, unit, false, true);
 			end
 		else
-			if ( frame.castBar ) then
-				CastingBarFrame_SetUnit(frame.castBar, nil, nil, nil);
+			if ( frame.CastBar ) then
+				CastingBarFrame_SetUnit(frame.CastBar, nil, nil, nil);
 			end
 		end
 		CompactUnitFrame_UpdateAll(frame);
@@ -209,13 +211,17 @@ end
 
 function CompactUnitFrame_SetOptionTable(frame, optionTable)
 	frame.optionTable = optionTable;
-	--CompactUnitFrame_UpdateAll(frame);
+	CompactUnitFrame_UpdateAll(frame);
 end
 
 function CompactUnitFrame_RegisterEvents(frame)
-	frame:SetScript("OnEvent", CompactUnitFrame_OnEvent);
+	local onEventHandler = frame.OnEvent or CompactUnitFrame_OnEvent;
+	frame:SetScript("OnEvent", onEventHandler);
+
 	CompactUnitFrame_UpdateUnitEvents(frame);
-	frame:SetScript("OnUpdate", CompactUnitFrame_OnUpdate);
+
+	local onUpdate = frame.OnUpdate or CompactUnitFrame_OnUpdate;
+	frame:SetScript("OnUpdate", onUpdate);
 end
 
 function CompactUnitFrame_UpdateUnitEvents(frame)
@@ -377,7 +383,12 @@ end
 --]]
 
 function CompactUnitFrame_UpdateHealthColor(frame)
+	if frame.UpdateHealthColorOverride and frame:UpdateHealthColorOverride() then
+		return;
+	end
+
 	local r, g, b;
+
 	if ( not UnitIsConnected(frame.unit) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
@@ -514,6 +525,10 @@ end
 
 local switch = false
 function CompactUnitFrame_UpdateName(frame)
+	if frame.UpdateNameOverride and frame:UpdateNameOverride() then
+		return;
+	end
+
 	if ( not ShouldShowName(frame) ) then
 		frame.name:Hide();
 	else
@@ -596,12 +611,16 @@ end
 
 local function SetBorderColor(frame, r, g, b, a)
 	frame.healthBar.border:SetVertexColor(r, g, b, a);
-	if frame.castBar and frame.castBar.border then
-		frame.castBar.border:SetVertexColor(r, g, b, a);
+	if frame.CastBar.border then
+		frame.CastBar.border:SetVertexColor(r, g, b, a);
 	end
 end
 
 function CompactUnitFrame_UpdateHealthBorder(frame)
+	if frame.UpdateHealthBorderOverride and frame:UpdateHealthBorderOverride() then
+		return;
+	end
+
 	if frame.optionTable.selectedBorderColor and UnitIsUnit(frame.displayedUnit, "target") then
 		SetBorderColor(frame, frame.optionTable.selectedBorderColor:GetRGBA());
 		return;
@@ -1561,24 +1580,28 @@ end
 function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOptions)
 	frame:SetAllPoints(frame:GetParent());
 
-	if setupOptions.useFixedSizeFont then
-		if setupOptions.useLargeNameFont then
-			frame.name:SetFontObject(SystemFont_LargeNamePlateFixed);
-		else
-			frame.name:SetFontObject(SystemFont_NamePlateFixed);
-		end
+	CompactUnitFrame_SetOptionTable(frame, frameOptions);
+
+	if frame.SetupOverride then
+		frame:SetupOverride(setupOptions, frameOptions);
 	else
-		if setupOptions.useLargeNameFont then
-			frame.name:SetFontObject(SystemFont_LargeNamePlate);
+		if setupOptions.useFixedSizeFont then
+			if setupOptions.useLargeNameFont then
+				frame.name:SetFontObject(SystemFont_LargeNamePlateFixed);
+			else
+				frame.name:SetFontObject(SystemFont_NamePlateFixed);
+			end
 		else
-			frame.name:SetFontObject(SystemFont_NamePlate);
+			if setupOptions.useLargeNameFont then
+				frame.name:SetFontObject(SystemFont_LargeNamePlate);
+			else
+				frame.name:SetFontObject(SystemFont_NamePlate);
+			end
 		end
+
+		frame.healthBar:SetShown(not setupOptions.hideHealthbar);
+		frame.healthBar:SetHeight(setupOptions.healthBarHeight);
+
+		frame.selectionHighlight:SetParent(frame.healthBar);
 	end
-
-	frame.healthBar:SetShown(not setupOptions.hideHealthbar);
-	frame.healthBar:SetHeight(setupOptions.healthBarHeight);
-
-	frame.selectionHighlight:SetParent(frame.healthBar);
-
-	CompactUnitFrame_SetOptionTable(frame, frameOptions)
 end

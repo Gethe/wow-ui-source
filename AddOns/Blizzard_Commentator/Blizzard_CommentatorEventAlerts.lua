@@ -1,4 +1,6 @@
-function CommentatorEventAlertsFrame_OnLoad(self)
+CommentatorEventAlertsMixin = {};
+
+function CommentatorEventAlertsMixin:OnLoad()
 	RaidNotice_FadeInit(self.slot1);
 	RaidNotice_FadeInit(self.slot2);
 	self.timings = { };
@@ -11,7 +13,7 @@ function CommentatorEventAlertsFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE");
 end
 
-function CommentatorEventAlertsFrame_OnEvent(self, event, ...)
+function CommentatorEventAlertsMixin:OnEvent(event, ...)
 	if (event == "CHAT_MSG_BG_SYSTEM_ALLIANCE" or event == "CHAT_MSG_BG_SYSTEM_HORDE") then
 		local text = ...;
 		local info = ChatTypeInfo["BG_SYSTEM_NEUTRAL"]
@@ -21,6 +23,6 @@ function CommentatorEventAlertsFrame_OnEvent(self, event, ...)
 			info = ChatTypeInfo["BG_SYSTEM_HORDE"]
 		end
 		local displayTime = 5;
-		RaidNotice_AddMessage( self, text, info, displayTime );
+		RaidNotice_AddMessage(self, text, info, displayTime );
 	end
 end

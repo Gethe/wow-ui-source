@@ -1,0 +1,289 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CommentatorUnitFrame.lua"/>
+
+	<StatusBar name="CommentatorUFStatusBarTemplate" mixin="SmoothStatusBarMixin" drawLayer="BORDER" useParentLevel="true" virtual="true">
+		<BarTexture atlas="_Bar-mid"/>
+	</StatusBar>
+	
+	<StatusBar name="CommentatorUnitFrameStatusBar" inherits="CommentatorUFStatusBarTemplate" virtual="true">
+		<BarTexture atlas="_Bar-mid"/>
+	</StatusBar>
+
+	<Cooldown name="CommentatorRadialCooldownTemplate" virtual="true" >
+		<SwipeTexture file="Interface\PVPFrame\PVP-Separation-Circle-Cooldown-overlay"/>
+	</Cooldown>
+
+	<Texture name="CommentatorTeamOverlayTemplate" atlas="Portrait-frame-color" virtual="true">
+		<Size x="86" y="86"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Texture>
+	
+	<Frame name="CommentatorUnitFrameTemplate" frameStrata="LOW" mixin="CommentatorUnitFrameMixin" virtual="true">
+		<Size x="300" y="100"/>
+		<Frames>
+			<Frame parentKey="Circle" frameLevel="10">
+				<Size x="119" y="119"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="ClassIcon" scale=".6">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="CCIcon" scale=".65" hidden="true">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FeignDeathIcon" file="Interface\Icons\ability_rogue_feigndeath" scale=".65" hidden="true">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<!-- Quickfix until asset replacement -->
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+						<Texture inherits="CommentatorTeamOverlayTemplate" parentArray="TeamOverlays"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="DeathIcon" atlas="Icon-Death" scale=".7" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="TrimOverlay" atlas="Portrait-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="CCText" inherits="CommentatorCCFont" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="100" y="100"/>
+							<Anchors>
+								<Anchor point="CENTER" y="-5"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<MaskTexture atlas="CircleMaskScalable" useAtlasSize="true" scale="1.4">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="ClassIcon"/>
+								<MaskedTexture childKey="CCIcon"/>
+								<MaskedTexture childKey="FeignDeathIcon"/>
+								<MaskedTexture childKey="DeathIcon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="CCCooldown" useParentLevel="true" hideCountdownNumbers="true" inherits="CommentatorRadialCooldownTemplate">
+						<Size x="128" y="128"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Role" frameLevel="12" hidden="true">
+				<Size x="40" y="41"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Circle" relativePoint="TOPLEFT" x="21" y="-26"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="CCRemover" hidden="true" frameLevel="12" >
+				<Size x="42" y="42"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Circle" relativePoint="BOTTOMRIGHT" x="-30" y="21"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon" scale=".9">
+							<Size x="42" y="42"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture atlas="CircleMaskScalable" useAtlasSize="true" scale=".7">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" atlas="Trinket-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" useParentLevel="true" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
+						<Size x="70" y="70"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Bars">
+				<Size x="239" y="80"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Circle" relativePoint="RIGHT" x="-68"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" atlas="Metal-Bar" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<StatusBar parentKey="HealthBar" inherits="CommentatorUnitFrameStatusBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Overlay" relativePoint="TOPLEFT" x="56" y="-21"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Overlay" relativePoint="BOTTOMRIGHT" x="-22" y="36"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Color r="0" g="0" b="0" a=".7"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<StatusBar parentKey="AbsorbBar" inherits="CommentatorUFStatusBarTemplate">
+						<BarTexture atlas="_Armor-Fill-mid"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HealthBar" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="OverAbsorb" file="Interface\RaidFrame\Shield-Overshield" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-10" />
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-10" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<StatusBar parentKey="PowerBar" inherits="CommentatorUnitFrameStatusBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Overlay" relativePoint="TOPLEFT" x="56" y="-45"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Overlay" relativePoint="BOTTOMRIGHT" x="-22" y="22"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Color r="0" g="0" b="0" a=".7"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</StatusBar>
+				</Frames>
+			</Frame>
+			<Frame parentKey="DefensiveSpellTray" inherits="CommentatorDefensiveTrayTemplate" parentArray="spellTrays">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="132" y="-105"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DebuffSpellTray" inherits="CommentatorDebuffTrayTemplate" parentArray="spellTrays">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DefensiveSpellTray" relativePoint="RIGHT" y="0" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="OffensiveSpellTray" inherits="CommentatorOffensiveTrayTemplate" parentArray="spellTrays">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DefensiveSpellTray" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+			</Frame>
+			<ModelScene parentKey="ModelScene" inherits="CommentatorModelSceneTemplate" frameLevel="11">
+				<Size x="740" y="740"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Circle" relativePoint="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlagIconStatic" atlas="Flag-outline" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Bars" relativePoint="RIGHT" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlagIconStatic2" atlas="Flag-1" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FlagIconStatic" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FlagIconStatic" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlagIcon" atlas="Flag-2" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FlagIconStatic" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FlagIconStatic" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="CommentatorFontMedium" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" justifyV="MIDDLE">
+					<Size x="100" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Bars.HealthBar" relativePoint="TOPLEFT" x="0" y="20"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bars.HealthBar" relativePoint="BOTTOMRIGHT" x="0" y="45"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -122,6 +122,7 @@ CraftInfoDocumentation.lua
 DateAndTimeDocumentation.lua
 FriendListDocumentation.lua
 MapDocumentation.lua
+ScriptedAnimationsDocumentation.lua
 SystemDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua

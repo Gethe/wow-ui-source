@@ -2524,7 +2524,7 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 		return;
 	end
 
-	PvPCommentator:SetDefaultCommentatorSettings();
+	C_Commentator.ResetSettings();
 end
 
 SlashCmdList["VOICECHAT"] = function(msg)
@@ -2573,6 +2573,13 @@ SlashCmdList["VOICECHAT"] = function(msg)
 			ChannelFrame:TryJoinCommunityStreamChannel(communityID, streamID);
 		end
 	end
+end
+
+function RegisterNewSlashCommand(callback, command, commandAlias)
+	local name = string.upper(command);
+	_G["SLASH_"..name.."1"] = "/"..command;
+	_G["SLASH_"..name.."2"] = "/"..commandAlias;
+	SlashCmdList[name] = callback;
 end
 
 function ChatFrame_SetupListProxyTable(list)

@@ -946,10 +946,25 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 	local isThreeSplash = #products >= 3;
 	local isSplashPair = #products == 2;
 
+
+	-- hack for the DPP which can be show in the pair layout with only one pane
+	local DARK_PORTAL_PASS_PRODUCT_ID = 680;
+	local darkPortalSingle = false;
+	if #products == 1 then
+		local entryInfo = C_StoreSecure.GetEntryInfo(products[1]);
+		if entryInfo.productID == DARK_PORTAL_PASS_PRODUCT_ID then
+			darkPortalSingle = true;
+		end
+	end
+
+
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
 
 	StoreFrame_HideAllSplashFrames(self);
-	if (isThreeSplash) then
+	if (darkPortalSingle) then
+		self.SplashPairFirst:Show();
+		StoreFrame_UpdateCard(self.SplashPairFirst, products[1], nil, forceModelUpdate);
+	elseif (isThreeSplash) then
 		self.SplashPrimary:Show();
 		self.SplashSecondary1:Show();
 		self.SplashSecondary2:Show();

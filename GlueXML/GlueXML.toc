@@ -8,7 +8,9 @@ GlueCheck.lua
 ..\SharedXML\Util.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\TimeUtil.lua
-..\SharedXML\AnchorUtil.xml
+..\SharedXML\FunctionUtil.lua
+..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua
@@ -18,6 +20,7 @@ GlueCheck.lua
 ..\SharedXML\LinkUtil.lua
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
+..\SharedXML\Dump.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\Constants.lua

@@ -1,7 +1,6 @@
 MacKeyboardOptionsFrameCheckButtons = { };
 MacKeyboardOptionsFrameCheckButtons["MAC_DISABLE_OS_SHORTCUTS"] = { index = 9, cvar = "MacDisableOsShortcuts", tooltipText = MAC_DISABLE_OS_SHORTCUTS_TOOLTIP};
-MacKeyboardOptionsFrameCheckButtons["MAC_USE_COMMAND_AS_CONTROL"] = { index = 10, cvar = "MacUseCommandAsControl", tooltipText = MAC_USE_COMMAND_AS_CONTROL_TOOLTIP};
-MacKeyboardOptionsFrameCheckButtons["MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK"] = { index = 11, cvar = "MacUseCommandLeftClickAsRightClick", tooltipText = MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK_TOOLTIP};
+MacKeyboardOptionsFrameCheckButtons["MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK"] = { index = 10, cvar = "MacUseCommandLeftClickAsRightClick", tooltipText = MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK_TOOLTIP};
 
 local function MacKeyboardOptions_Okay (self)
 	MacKeyboardOptionsFrame_Save()

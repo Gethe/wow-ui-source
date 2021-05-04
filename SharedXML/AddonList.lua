@@ -154,7 +154,7 @@ function AddonList_HasAnyChanged()
 		end
 		local enabled = (GetAddOnEnableState(character, i) > 0);
 		local reason = select(5,GetAddOnInfo(i))
-		if ( enabled ~= AddonList.startStatus[i] and reason ~= "DEP_DISABLED" ) then
+		if ( enabled ~= AddonList.startStatus[i] and reason ~= "DEP_DISABLED" and reason ~= "NOT_AVAILABLE" ) then
 			return true
 		end
 	end
@@ -330,7 +330,7 @@ function AddonList_Update()
 			end
 
 			if ( not InGlue() ) then
-				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" or 
+				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" and reason ~= "NOT_AVAILABLE" or 
 					(reason ~= "INTERFACE_VERSION" and tContains(AddonList.outOfDateIndexes, addonIndex)) or 
 					(reason == "INTERFACE_VERSION" and not tContains(AddonList.outOfDateIndexes, addonIndex))) then
 					if ( enabled ) then
