@@ -45,6 +45,18 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 
 	self.areaPoiID = poiInfo.areaPoiID;
 	MapPinHighlight_CheckHighlightPin(poiInfo.shouldGlow, self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
+
+	if self.textureKit == "OribosGreatVault" then
+		local function OribosGreatVaultPOIOnMouseUp(self, button, upInside)
+			if upInside and (button == "LeftButton") then
+				WeeklyRewards_ShowUI();
+			end
+		end
+
+		self:SetScript("OnMouseUp", OribosGreatVaultPOIOnMouseUp);
+	else
+		self:SetScript("OnMouseUp", nil);
+	end
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
@@ -86,11 +98,16 @@ function AreaPOIPinMixin:TryShowTooltip()
 			end
 		end
 
+		if self.textureKit == "OribosGreatVault" then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddInstructionLine(GameTooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS);
+		end
+
 		if hasWidgetSet then
 			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, 10);
 		end
 
-		if (self.textureKit) then
+		if self.textureKit then
 			local backdropStyle = GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES[self.textureKit];
 			if (backdropStyle) then
 				SharedTooltip_SetBackdropStyle(GameTooltip, backdropStyle);

@@ -19,7 +19,7 @@ local hiddenModeButtonInfo =
 PlayerChoiceToggleButtonMixin = { };
 
 function PlayerChoiceToggleButtonMixin:ShouldShow()
-	return IsInJailersTower() and C_PlayerChoice.IsWaitingForPlayerChoiceResponse();
+	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse();
 end
 
 function PlayerChoiceToggleButtonMixin:TryShow()

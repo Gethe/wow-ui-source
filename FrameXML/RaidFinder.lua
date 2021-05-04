@@ -212,8 +212,8 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 		local id = dungeonInfo[1];
 		local name = dungeonInfo[2];
 		local mapName = dungeonInfo[20];
-		local isAvailable, isAvailableToPlayer, hideIfUnmet = IsLFGDungeonJoinable(id);
-		if( not hideIfUnmet or isAvailable ) then
+		local isAvailable, isAvailableToPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+		if( not hideIfNotJoinable or isAvailable ) then
 			if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
 				InsertDungeonData(id, name, mapName, isAvailable);
 			end

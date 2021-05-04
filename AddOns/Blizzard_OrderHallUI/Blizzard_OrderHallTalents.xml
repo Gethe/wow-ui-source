@@ -95,6 +95,17 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="GarrisonTalentButtonAnimationTemplate" mixin="GarrisonTalentButtonAnimationMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Frames>
+			<Frame parentKey="SwirlContainer" inherits="PowerSwirlAnimationTemplate" scale="0.6">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
 	<Frame name="GarrisonTalentPrerequisiteArrowTemplate" virtual="true">
 		<Size x="31" y="23"/>
 		<Layers>

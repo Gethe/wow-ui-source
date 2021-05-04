@@ -6,43 +6,38 @@ local UIFrameManager =
 
 	Functions =
 	{
+		{
+			Name = "GetFrameVisibilityState",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "frameType", Type = "UIFrameType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
 		{
-			Name = "FrameManagerHideFrame",
+			Name = "FrameManagerUpdateFrame",
 			Type = "Event",
-			LiteralName = "FRAME_MANAGER_HIDE_FRAME",
+			LiteralName = "FRAME_MANAGER_UPDATE_FRAME",
 			Payload =
 			{
 				{ Name = "type", Type = "UIFrameType", Nilable = false },
-			},
-		},
-		{
-			Name = "FrameManagerShowFrame",
-			Type = "Event",
-			LiteralName = "FRAME_MANAGER_SHOW_FRAME",
-			Payload =
-			{
-				{ Name = "type", Type = "UIFrameType", Nilable = false },
+				{ Name = "show", Type = "bool", Nilable = false },
 			},
 		},
 	},
 
 	Tables =
 	{
-		{
-			Name = "UIFrameDataSource",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
-			Fields =
-			{
-				{ Name = "WorldState", Type = "UIFrameDataSource", EnumValue = 0 },
-			},
-		},
 		{
 			Name = "UIFrameType",
 			Type = "Enumeration",

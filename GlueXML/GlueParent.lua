@@ -65,6 +65,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
+	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
 
 	OnDisplaySizeChanged(self);
 end
@@ -108,6 +109,8 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_SetScreen("kioskmodesplash");
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
 		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
+	elseif(event == "SCRIPTED_ANIMATIONS_UPDATE") then 
+		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
 end
 

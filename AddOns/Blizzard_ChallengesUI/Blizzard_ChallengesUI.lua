@@ -510,73 +510,30 @@ function ChallengesDungeonIconMixin:OnEnter()
 	local seasonBestDurationSec, seasonBestLevel, members;
 
 	if(overAllScore and inTimeInfo or overtimeInfo) then 
-		GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(overAllScore), GREEN_FONT_COLOR);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(overAllScore), GREEN_FONT_COLOR);
 	end 
 
 	if(affixScores and #affixScores > 0) then 
-		
-		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BREAKDOWN); 
 		for _, affixInfo in ipairs(affixScores) do 
-			GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name, affixInfo.score), HIGHLIGHT_FONT_COLOR);
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name));
+			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
+			if(affixInfo.overTime) then 
+				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then 
+					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, true)), LIGHTGRAY_FONT_COLOR);
+				else
+					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, false)), LIGHTGRAY_FONT_COLOR);
+				end
+			else
+				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then 
+					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
+				else
+					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, false), HIGHLIGHT_FONT_COLOR);
+				end
+			end
 		end 
 	end		
 
-	--If there is a best overtime run we want to show that as well.
-	if(not inTimeInfo and overtimeInfo) then
-		seasonBestDurationSec = overtimeInfo.durationSec;
-		seasonBestLevel = overtimeInfo.level;
-		members = overtimeInfo.members;
-
-		isOverTimeRun = true;
-	elseif(inTimeInfo) then
-		seasonBestDurationSec = inTimeInfo.durationSec;
-		seasonBestLevel = inTimeInfo.level;
-		members = inTimeInfo.members;
-	end
-
-    if (seasonBestDurationSec and seasonBestLevel) then
-        if (addSpacer) then
-            GameTooltip:AddLine(" ");
-        end
-
-		-- Completed a higher key, but not in time.
-		if (overtimeInfo and inTimeInfo and  overtimeInfo.level > inTimeInfo.level) then
-			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
-			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(overtimeInfo.level), HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(overtimeInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		end
-
-		-- If this is an overtime run we want to display a little bit differently.
-		if (isOverTimeRun) then
-			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
-		else
-			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_SEASON_BEST);
-		end
-
-        GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), HIGHLIGHT_FONT_COLOR);
-        GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(seasonBestDurationSec, true), HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-
-		for i, member in ipairs(members) do
-			if (member.name) then
-				local role = GetSpecializationRoleByID(member.specID);
-				local classInfo = C_CreatureInfo.GetClassInfo(member.classID);
-				local color = (classInfo and RAID_CLASS_COLORS[classInfo.classFile]) or NORMAL_FONT_COLOR;
-				local texture;
-				if (role == "TANK") then
-					texture = CreateAtlasMarkup("roleicon-tiny-tank");
-				elseif (role == "DAMAGER") then
-					texture = CreateAtlasMarkup("roleicon-tiny-dps");
-				elseif (role == "HEALER") then
-					texture = CreateAtlasMarkup("roleicon-tiny-healer");
-				end
-				  GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, member.name), color);
-			end
-		end
-    end
     GameTooltip:Show();
 end
 
@@ -1041,8 +998,7 @@ DungeonScoreInfoMixin = { };
 
 function DungeonScoreInfoMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-	GameTooltip_SetTitle(GameTooltip, DUNGEON_SCORE); 
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_SCORE);
 	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DESC);
 	GameTooltip:Show();
 end 

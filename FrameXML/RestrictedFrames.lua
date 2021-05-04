@@ -46,6 +46,7 @@ local pcall = pcall;
 -- HANDLE is the frame handle method namespace (populated below)
 local HANDLE = {};
 
+local LOCAL_CHECK_Button = CreateFrame("Button");
 local LOCAL_CHECK_Frame = CreateFrame("Frame");
 
 local function CheckForbidden(frame)
@@ -647,7 +648,7 @@ function HANDLE:Disable()
         error("Frame is not a Button");
         return;
     end
-    LOCAL_CHECK_Frame.Disable(frame);
+    LOCAL_CHECK_Button.Disable(frame);
 end
 
 function HANDLE:Enable()
@@ -656,7 +657,7 @@ function HANDLE:Enable()
         error("Frame is not a Button");
         return;
     end
-    LOCAL_CHECK_Frame.Enable(frame);
+    LOCAL_CHECK_Button.Enable(frame);
 end
 
 ---------------------------------------------------------------------------

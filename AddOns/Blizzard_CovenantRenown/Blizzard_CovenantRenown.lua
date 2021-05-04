@@ -18,7 +18,7 @@ local milestonesTextureKitRegions = {
 };
 
 local renownAvailableIconTextureKitRegion = {
-	["Icon"] = "covenantsanctum-renown-icon-available-kyrian",
+	["Icon"] = "covenantsanctum-renown-icon-available-%s",
 }
 
 local finalToastSwirlEffects = {

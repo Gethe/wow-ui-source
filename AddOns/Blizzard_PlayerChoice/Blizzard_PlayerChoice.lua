@@ -117,8 +117,12 @@ local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_CHOICE_CLOSE",
 };
 
-local function JailersTowerBuffsContainerActive()
-	return IsInJailersTower() and ScenarioBlocksFrame and ScenarioBlocksFrame.MawBuffsBlock:IsShown();
+local function GetActiveMawBuffContainer()
+	if ScenarioBlocksFrame and ScenarioBlocksFrame.MawBuffsBlock:IsShown() then
+		return ScenarioBlocksFrame.MawBuffsBlock.Container;
+	elseif MawBuffsBelowMinimapFrame:IsShown() then
+		return MawBuffsBelowMinimapFrame.Container;
+	end
 end
 
 function PlayerChoiceFrameMixin:OnShow()
@@ -130,8 +134,9 @@ function PlayerChoiceFrameMixin:OnShow()
 		PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 	end
 
-	if JailersTowerBuffsContainerActive() then
-		ScenarioBlocksFrame.MawBuffsBlock.Container:UpdateListState(true);
+	local activeMawBuffContainer = GetActiveMawBuffContainer();
+	if activeMawBuffContainer then
+		activeMawBuffContainer:UpdateListState(true);
 	end
 
 	PlayerChoiceToggleButton:ClearAllPoints();
@@ -151,8 +156,9 @@ function PlayerChoiceFrameMixin:OnHide()
 		CovenantPreviewFrame:Hide();
 	end
 
-	if JailersTowerBuffsContainerActive() then
-		ScenarioBlocksFrame.MawBuffsBlock.Container:UpdateListState(false);
+	local activeMawBuffContainer = GetActiveMawBuffContainer();
+	if activeMawBuffContainer then
+		activeMawBuffContainer:UpdateListState(false);
 	end
 
 	if PlayerChoiceToggleButton:IsShown() then

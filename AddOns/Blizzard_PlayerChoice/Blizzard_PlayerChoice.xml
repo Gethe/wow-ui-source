@@ -8,7 +8,7 @@
 			<KeyValue key="expand" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="TOP"/>
+			<Anchor point="TOP" y="-157"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true">

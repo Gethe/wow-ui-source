@@ -1182,8 +1182,9 @@ end
 function LFGListApplicationViewer_UpdateInfo(self)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	assert(activeEntryInfo);
-	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
-	local _, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
+	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, _, _, _, isMythicPlusActivity = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
+	local _, separateRecommended = C_LFGList.GetCategoryInfo(categoryID); 
+	self.DungeonScoreColumnHeader:SetShown(isMythicPlusActivity) 
 	self.EntryName:SetWidth(0);
 	self.EntryName:SetText(activeEntryInfo.name);
 	self.DescriptionFrame.activityName = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
@@ -1440,7 +1441,17 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 	end
 
 	button.numMembers = applicantInfo.numMembers;
-	button.InviteButton:SetShown(not applicantInfo.applicantInfo and applicantInfo.applicationStatus == "applied" and LFGListUtil_IsEntryEmpowered());
+	local useSmallInviteButton = LFGApplicationViewerDungeonScoreColumnHeader:IsShown();
+	button.Status:ClearAllPoints(); 
+
+	if(useSmallInviteButton and (applicantInfo.applicationStatus == "invited" or applicantInfo.applicationStatus == "inviteaccepted")) then 
+		button.Status:SetPoint("RIGHT", button, "RIGHT", 0, -1);
+	else 
+		button.Status:SetPoint("RIGHT", button, "RIGHT", -30, -1);
+	end
+
+	button.InviteButtonSmall:SetShown(useSmallInviteButton and not applicantInfo.applicantInfo and applicantInfo.applicationStatus == "applied" and LFGListUtil_IsEntryEmpowered());
+	button.InviteButton:SetShown(not useSmallInviteButton and not applicantInfo.applicantInfo and applicantInfo.applicationStatus == "applied" and LFGListUtil_IsEntryEmpowered());
 	button.DeclineButton:SetShown(not applicantInfo.applicantInfo and applicantInfo.applicationStatus ~= "invited" and LFGListUtil_IsEntryEmpowered());
 	button.DeclineButton.isAck = (applicantInfo.applicationStatus ~= "applied" and applicantInfo.applicationStatus ~= "invited");
 	button.Spinner:SetShown(applicantInfo.applicantInfo);
@@ -1524,8 +1535,15 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 
 	member.ItemLevel:SetShown(not grayedOut);
 	member.ItemLevel:SetText(math.floor(itemLevel));
-	member.DungeonScore:SetText(dungeonScore);
-	member.DungeonScore:SetShown(dungeonScore);
+	member.DungeonScore:SetShown(not grayedOut and LFGApplicationViewerDungeonScoreColumnHeader:IsShown());
+
+	if(LFGApplicationViewerDungeonScoreColumnHeader:IsShown() and dungeonScore) then 
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end 
+		member.DungeonScore:SetText(color:WrapTextInColorCode(dungeonScore));	
+	end 
 
 	local mouseFocus = GetMouseFocus();
 	if ( mouseFocus == member ) then
@@ -1571,13 +1589,14 @@ function LFGListApplicantMember_OnEnter(self)
 	if ( not activeEntryInfo ) then
 		return;
 	end
-
-	local useHonorLevel = select(11, C_LFGList.GetActivityInfo(activeEntryInfo.activityID));
+	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
 	local applicantInfo = C_LFGList.GetApplicantInfo(applicantID);
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole  = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore  = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local bestDungeonScoreForEntry = C_LFGList.GetApplicantDungeonScoreForListing(applicantID, memberIdx, activeEntryInfo.activityID);
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 105, 0);
+
 	if ( name ) then
 		local classTextColor = RAID_CLASS_COLORS[class];
 		GameTooltip:SetText(name, classTextColor.r, classTextColor.g, classTextColor.b);
@@ -1592,6 +1611,20 @@ function LFGListApplicantMember_OnEnter(self)
 	if ( applicantInfo.comment and applicantInfo.comment ~= "" ) then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, applicantInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
+	end
+
+	if(LFGApplicationViewerDungeonScoreColumnHeader:IsShown()) then 
+		if(dungeonScore) then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip); 
+			local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
+			if(not color) then 
+				color = HIGHLIGHT_FONT_COLOR; 
+			end 
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(dungeonScore)));
+		end	
+		if(bestDungeonScoreForEntry) then
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING:format(bestDungeonScoreForEntry.mapName, bestDungeonScoreForEntry.mapScore));
+		end		
 	end
 
 	--Add statistics
@@ -2131,7 +2164,7 @@ function LFGListSearchEntry_Update(self)
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( appStatus == "declined" or appStatus == "declined_full" or appStatus == "declined_delisted" ) then
-		self.PendingLabel:SetText(LFG_LIST_APP_DECLINED);
+		self.PendingLabel:SetText((appStatus == "declined_full") and LFG_LIST_APP_FULL or LFG_LIST_APP_DECLINED);
 		self.PendingLabel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
@@ -3199,7 +3232,7 @@ LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE = 2;
 
 function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel, _, isMythicPlusActivity = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);
@@ -3226,8 +3259,13 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( searchResultInfo.leaderName ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
 	end
-	if ( searchResultInfo.leaderOverallDungeonScore ) then 
-		tooltip:AddLine(DUNGEON_SCORE_LEADER:format(searchResultInfo.leaderOverallDungeonScore));
+	
+	if ( isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore) then 
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(searchResultInfo.leaderOverallDungeonScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end 
+		tooltip:AddLine(DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore)));	
 	end 
 	if ( searchResultInfo.age > 0 ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultInfo.age, false, false, 1, false)));

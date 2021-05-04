@@ -1737,6 +1737,8 @@ function WardrobeItemsCollectionMixin:OnHide()
 
 	self.visualsList = nil;
 	self.filteredVisualsList = nil;
+	self.activeCategory = nil;
+	self.transmogLocation = nil;
 end
 
 function WardrobeItemsCollectionMixin:DressUpVisual(visualInfo)

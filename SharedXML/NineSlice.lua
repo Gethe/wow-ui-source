@@ -103,7 +103,7 @@ end
 
 local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, userLayout)
 	--- Change texture coordinates before applying atlas.
-	SetupTextureCoordinates(piece, setupInfo, pieceLayout);
+	SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout);
 
 	-- textureKit is optional, that's fine; but if it's nil the caller should ensure that there are no format specifiers in .atlas
 	local atlasName = GetFinalNameFromTextureKit(pieceLayout.atlas, textureKit);

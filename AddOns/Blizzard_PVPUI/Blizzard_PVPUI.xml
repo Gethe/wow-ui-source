@@ -395,6 +395,16 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="PVPQuestRewardTemplate" inherits="PVPRewardTemplate" mixin="PVPQuestRewardMixin" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="PVPAchievementRewardTemplate" mixin="PVPAchievementRewardMixin" inherits="PVPRewardTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="useAchievementDescription" value="true" type="boolean"/>
@@ -625,7 +635,7 @@
 	</Button>
 	<Button name="PVPCasualSpecialEventButtonTemplate" mixin="PVPSpecialEventButtonMixin" inherits="PVPCasualActivityButton" virtual="true">
 		<Frames>
-			<Frame parentKey="Reward" inherits="PVPAchievementRewardTemplate" hidden="true">
+			<Frame parentKey="Reward" inherits="PVPQuestRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-1"/>
 				</Anchors>

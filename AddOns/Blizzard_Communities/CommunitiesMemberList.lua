@@ -1136,7 +1136,11 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 		end
 
 		if memberInfo.overallDungeonScore then 
-			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(memberInfo.overallDungeonScore));
+			local color = C_ChallengeMode.GetDungeonScoreRarityColor(memberInfo.overallDungeonScore);
+			if(not color) then 
+				color = HIGHLIGHT_FONT_COLOR; 
+			end 
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(memberInfo.overallDungeonScore)));
 		end 
 
 		GameTooltip:Show();

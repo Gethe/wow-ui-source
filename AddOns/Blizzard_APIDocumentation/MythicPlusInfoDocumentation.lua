@@ -240,6 +240,9 @@ local MythicPlusInfo =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "score", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "durationSec", Type = "number", Nilable = false },
+				{ Name = "overTime", Type = "bool", Nilable = false },
 			},
 		},
 		{

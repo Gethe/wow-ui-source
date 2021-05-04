@@ -1,5 +1,7 @@
 local next = next;
 local securecall = securecall;
+local unpack = unpack;
+local error = error;
 
 local function SecureNext(elements, key)
     return securecall(next, elements, key);
@@ -18,9 +20,12 @@ AttributeDelegate:SetForbidden();
 AttributeDelegate:SetScript("OnAttributeChanged", function(self, attribute, value)
 	if attribute == InsertEventAttribute then
 		local registry, event = securecall(unpack, value);
+		if type(event) ~= "string" then
+			error("AttributeDelegate OnAttributeChanged 'event' requires string type.")
+		end
 		for callbackType, callbackTable in pairs(registry:GetCallbackTables()) do
 			if not callbackTable[event] then
-				callbackTable[event] = {};
+				rawset(callbackTable, event, {});
 			end
 		end
 	end

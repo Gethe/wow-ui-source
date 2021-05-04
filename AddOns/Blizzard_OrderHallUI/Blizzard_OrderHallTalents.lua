@@ -1,10 +1,12 @@
 
 local TalentUnavailableReasons = {};
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching] = ORDER_HALL_TALENT_UNAVAILABLE_ANOTHER_IS_RESEARCHING;
-TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughGold] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableTierUnavailable] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent] = ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT;
+
+-- This is handled by changing the color of the currency now.
+-- TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
 
 function OrderHallTalentFrame_ToggleFrame()
 	if (not OrderHallTalentFrame:IsShown()) then
@@ -12,11 +14,6 @@ function OrderHallTalentFrame_ToggleFrame()
 	else
 		HideUIPanel(OrderHallTalentFrame);
 	end
-end
-
-local function OnTalentButtonReleased(pool, button)
-	FramePool_HideAndClearAnchors(pool, button);
-	button:OnReleased()
 end
 
 local CHOICE_BACKGROUND_OFFSET_Y = 10;
@@ -27,6 +24,8 @@ local BORDER_ATLAS_NONE = nil;
 local BORDER_ATLAS_UNAVAILABLE = "orderhalltalents-spellborder";
 local BORDER_ATLAS_AVAILABLE = "orderhalltalents-spellborder-green";
 local BORDER_ATLAS_SELECTED = "orderhalltalents-spellborder-yellow";
+
+local TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID = 132;
 
 local TalentTreeLayoutOptions = { };
 
@@ -64,18 +63,24 @@ local TORGHAST_TALENT_TREE_ID = 461;
 local Torghast_TalentTreeLayoutOptions = 
 {
 	buttonInfo = {
-		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 21, spacingY = 37 },
-		[Enum.GarrTalentType.Major] = { size = 46, spacingX = 21, spacingY = 37 },
+		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 21, spacingY = 29 },
+		[Enum.GarrTalentType.Major] = { size = 46, spacingX = 21, spacingY = 29 },
 	},
-	spacingTop = 110,
-	spacingBottom = 36,
+	spacingTop = 97,
+	spacingBottom = 49,
 	spacingHorizontal = 144,
 	minimumWidth = 336,
 	canHaveBackButton = false,
 	singleCost = false,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
 };
+
+local function FramePool_HideAndClearAnchorsWithResetCallback(pool, frame)
+	FramePool_HideAndClearAnchors(pool, frame);
+	frame:OnFramePoolReset();
+end
 
 local function GetTalentTreeLayoutOptions(garrTalentTreeID)
 
@@ -226,11 +231,12 @@ function OrderHallTalentFrameMixin:UpdateThemedFrameVisibility(isThemed)
 end
 
 function OrderHallTalentFrameMixin:OnLoad()
-	self.buttonPool = CreateFramePool("BUTTON", self, "GarrisonTalentButtonTemplate", OnTalentButtonReleased);
+	self.buttonPool = CreateFramePool("BUTTON", self, "GarrisonTalentButtonTemplate", FramePool_HideAndClearAnchorsWithResetCallback);
 	self.prerequisiteArrowPool = CreateFramePool("FRAME", self, "GarrisonTalentPrerequisiteArrowTemplate");	
 	self.talentRankPool = CreateFramePool("FRAME", self, "TalentRankDisplayTemplate");
 	self.choiceTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentChoiceTemplate");
 	self.arrowTexturePool = CreateTexturePool(self, "BACKGROUND", 2, "GarrisonTalentArrowTemplate");
+	self.buttonAnimationPool = CreateFramePool("FRAME", self, "GarrisonTalentButtonAnimationTemplate", FramePool_HideAndClearAnchorsWithResetCallback);
 	self.researchingTalentID = 0;
 end
 
@@ -298,12 +304,38 @@ function OrderHallTalentFrameMixin:OnUpdate()
 	end
 end
 
-function OrderHallTalentFrameMixin:ReleaseAllPools()
+function OrderHallTalentFrameMixin:ReleaseAllBasePools()
 	self.buttonPool:ReleaseAll();
 	self.talentRankPool:ReleaseAll();
 	self.choiceTexturePool:ReleaseAll();
 	self.arrowTexturePool:ReleaseAll();
 	self.prerequisiteArrowPool:ReleaseAll();
+end
+
+function OrderHallTalentFrameMixin:ReleaseAllPools()
+	self:ReleaseAllBasePools();
+	self.buttonAnimationPool:ReleaseAll();
+end
+
+function OrderHallTalentFrameMixin:GetActiveAnimationFrame(talentID)
+	for buttonAnimationFrame in self.buttonAnimationPool:EnumerateActive() do
+		if buttonAnimationFrame:GetTalentID() == talentID then
+			return buttonAnimationFrame;
+		end
+	end
+
+	return nil;
+end
+
+function OrderHallTalentFrameMixin:AcquireAnimationFrame(talentID)
+	local activeAnimationFrame = self:GetActiveAnimationFrame(talentID);
+	if activeAnimationFrame ~= nil then
+		return activeAnimationFrame;
+	end
+
+	local buttonAnimationFrame = self.buttonAnimationPool:Acquire();
+	buttonAnimationFrame:SetTalentID(talentID);
+	return buttonAnimationFrame;
 end
 
 function OrderHallTalentFrameMixin:RefreshCurrency()
@@ -344,7 +376,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	self.triedRefreshing = false;
 	self:SetScript("OnUpdate", nil);
 
-	self:ReleaseAllPools();
+	self:ReleaseAllBasePools();
 
 	self:RefreshCurrency();
 	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
@@ -506,7 +538,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		talentFrame:SetSize(buttonInfo.size, buttonInfo.size);
 		talentFrame.Icon:SetTexture(talent.icon);
 
-		talentFrame.talent = talent;
+		talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect);
 
 		if (talent.isBeingResearched and not talent.hasInstantResearch) then
 			talentFrame.Cooldown:SetCooldownUNIX(talent.startTime, talent.researchDuration);
@@ -682,6 +714,13 @@ end
 
 GarrisonTalentButtonMixin = { }
 
+function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect)
+	self.talent = talent;
+	self.talentSelectedEffect = talentSelectedEffect;
+
+	self:ReacquireAnimationFrame();
+end
+
 function GarrisonTalentButtonMixin:SetBorder(borderAtlas)
 	if borderAtlas then
 		if self.talent.type == Enum.GarrTalentType.Major then
@@ -769,13 +808,14 @@ function GarrisonTalentButtonMixin:OnLeave()
 end
 
 function GarrisonTalentButtonMixin:OnClick()
-	local researchingTalentID = self:GetParent():GetResearchingTalentID();
+	local talentFrame = self:GetTalentFrame();
+	local researchingTalentID = talentFrame:GetResearchingTalentID();
 	if (researchingTalentID and researchingTalentID ~= 0 and researchingTalentID ~= self.talent.id) then
 		UIErrorsFrame:AddMessage(ERR_CANT_DO_THAT_RIGHT_NOW, RED_FONT_COLOR:GetRGBA());
 		--return;
 	end
 	if (self.talent.talentAvailability == Enum.GarrisonTalentAvailability.Available) then
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self:GetParent().currency);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(talentFrame.currency);
 
 		local hasCost = self.talent.researchCost and self.talent.researchCost > 0;
 		local hasTime = self.talent.researchDuration and self.talent.researchDuration > 0;
@@ -793,13 +833,18 @@ function GarrisonTalentButtonMixin:OnClick()
 		else
 			local soundKitID = GetResearchSoundForTalentType(self.talent.type);
 			PlaySound(soundKitID);
+
+			if self.talentSelectedEffect ~= nil then
+				self:StartSelectedAnimation();
+			end
+
 			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
-			self:GetParent():SetResearchingTalentID(self.talent.id);
+			talentFrame:SetResearchingTalentID(self.talent.id);
 		end
 	end
 end
 
-function GarrisonTalentButtonMixin:OnReleased()
+function GarrisonTalentButtonMixin:OnFramePoolReset()
 	self.Cooldown:SetCooldownDuration(0);
 	self.Cooldown:Hide();
 	self.Border:Show();
@@ -813,6 +858,7 @@ function GarrisonTalentButtonMixin:OnReleased()
 		self.timer = nil;
 	end
 	self.TalentDoneAnim:Stop();
+	self:ReleaseAnimationFrame();
 end
 
 function GarrisonTalentButtonMixin:Refresh()
@@ -822,4 +868,90 @@ function GarrisonTalentButtonMixin:Refresh()
 		    self:OnEnter();
 	    end
 	end
+end
+
+function GarrisonTalentButtonMixin:AcquireAnimationFrame()
+	-- Animation frames are separate from talent buttons so that the animation state is preserved
+	-- even if the talent button gets released back to the pool and reacquired (i.e. during a refresh).
+
+	local talentFrame = self:GetTalentFrame();
+	local animationFrame = talentFrame:AcquireAnimationFrame(self.talent.id);
+	animationFrame:Attach(self);
+	self.animationFrame = animationFrame;
+end
+
+function GarrisonTalentButtonMixin:ReleaseAnimationFrame()
+	if self.animationFrame ~= nil then
+		self.animationFrame:Detach();
+		self.animationFrame = nil;
+	end
+end
+
+function GarrisonTalentButtonMixin:ReacquireAnimationFrame()
+	if self.animationFrame ~= nil then
+		return;
+	end
+
+	local animationFrame = self:GetTalentFrame():GetActiveAnimationFrame(self.talent.id);
+	if animationFrame ~= nil then
+		animationFrame:Attach(self);
+		self.animationFrame = animationFrame;
+	end
+end
+
+function GarrisonTalentButtonMixin:StartSelectedAnimation()
+	self:AcquireAnimationFrame();
+
+	if not self.animationFrame:IsPlayingSelectedAnimation() then
+		self.animationFrame:PlaySelectedAnimation(self.talentSelectedEffect);
+	end
+end
+
+function GarrisonTalentButtonMixin:GetTalentFrame()
+	return self:GetParent();
+end
+
+GarrisonTalentButtonAnimationMixin = {};
+
+function GarrisonTalentButtonAnimationMixin:Attach(talentButton)
+	self:SetPoint("CENTER", talentButton, "CENTER");
+	self:Show();
+end
+
+function GarrisonTalentButtonAnimationMixin:Detach()
+	self:ClearAllPoints();
+	self:Hide();
+end
+
+function GarrisonTalentButtonAnimationMixin:PlaySelectedAnimation(scriptedAnimationEffectID)
+	self:CancelEffects();
+
+	self.SwirlContainer:Show();
+	self.SwirlContainer.SelectedAnim:Play();
+
+	self.selectedEffectController = GlobalFXDialogModelScene:AddEffect(scriptedAnimationEffectID, self);
+end
+
+function GarrisonTalentButtonAnimationMixin:IsPlayingSelectedAnimation()
+	return self.SwirlContainer.SelectedAnim:IsPlaying() or ((self.selectedEffectController ~= nil) and self.selectedEffectController:IsActive());
+end
+
+function GarrisonTalentButtonAnimationMixin:CancelEffects()
+	if self.selectedEffectController then
+		self.selectedEffectController:CancelEffect();
+		self.selectedEffectController = nil;
+	end
+end
+
+function GarrisonTalentButtonAnimationMixin:SetTalentID(talentID)
+	self.talentID = talentID;
+end
+
+function GarrisonTalentButtonAnimationMixin:GetTalentID()
+	return self.talentID;
+end
+
+function GarrisonTalentButtonAnimationMixin:OnFramePoolReset()
+	self.talentID = nil;
+	self:CancelEffects();
 end

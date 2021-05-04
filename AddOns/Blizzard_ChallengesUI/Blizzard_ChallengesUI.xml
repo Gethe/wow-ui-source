@@ -898,17 +898,17 @@
 											<Frame parentKey="DungeonScoreInfo" mixin="DungeonScoreInfoMixin" hidden="true">
 												<Size x="200" y="70"/>
 												<Anchors>
-													<Anchor point="TOP" relativeKey="$parent.WeeklyChest" relativePoint="BOTTOM" x="0" y="-25"/>
+													<Anchor point="TOP" relativeKey="$parent.WeeklyChest" relativePoint="BOTTOM" x="0" y="-30"/>
 												</Anchors>
 												<Layers>
 													<Layer level="ARTWORK">
-														<FontString parentKey="Title" justifyV="TOP" inherits="GameFontHighlightLarge" text="DUNGEON_SCORE">
+														<FontString parentKey="Title" justifyV="TOP" inherits="GameFontHighlightMedium" text="DUNGEON_SCORE">
 															<Size x="200" y="0"/>
 															<Anchors>
 																<Anchor point="TOP"/>
 															</Anchors>
 														</FontString>
-														<FontString parentKey="Score" justifyV="TOP" inherits="GameFontHighlightLarge">
+														<FontString parentKey="Score" justifyV="TOP" inherits="SystemFont_Huge2">
 															<Size x="200" y="0"/>
 															<Anchors>
 																<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5"/>

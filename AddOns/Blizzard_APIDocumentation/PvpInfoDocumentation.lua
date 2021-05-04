@@ -1196,7 +1196,7 @@ local PvpInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
-				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},

@@ -159,14 +159,16 @@ end
 -- *****************************************************************************************************
 
 local SCENARIO_TRACKER_WIDGET_SET = 252;
+local SCENARIO_TRACKER_TOP_WIDGET_SET = 514;
 
-local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
+local function WidgetsLayout(widgetContainerFrame, sortedWidgets, containerBlock)
+	local containerBlock = widgetContainerFrame:GetParent(); 
 	DefaultWidgetLayout(widgetContainerFrame, sortedWidgets);
 	local blockHeight = widgetContainerFrame:GetHeight() + 15;
-	ScenarioWidgetContainerBlock.height = blockHeight;
-	ScenarioWidgetContainerBlock:SetHeight(blockHeight);
-	ScenarioWidgetContainerBlock:SetWidth(widgetContainerFrame:GetWidth());
-	ScenarioWidgetContainerBlock:Show();
+	containerBlock.height = blockHeight;
+	containerBlock:SetHeight(blockHeight);
+	containerBlock:SetWidth(widgetContainerFrame:GetWidth());
+	containerBlock:Show();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
 end
 
@@ -182,8 +184,10 @@ function ScenarioBlocksFrame_OnLoad(self)
 	ScenarioProvingGroundsBlock.height = ScenarioProvingGroundsBlock:GetHeight();
 	self.MawBuffsBlock.module = SCENARIO_TRACKER_MODULE;
 	self.MawBuffsBlock.height = self.MawBuffsBlock:GetHeight();
-	ScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
-	ScenarioWidgetContainerBlock.height = 0;
+	BottomScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
+	BottomScenarioWidgetContainerBlock.height = 0;
+	TopScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
+	TopScenarioWidgetContainerBlock.height = 0;
 
 	SCENARIO_TRACKER_MODULE.BlocksFrame = self;
 
@@ -202,7 +206,8 @@ end
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
-		ScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
+		BottomScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
+		TopScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, WidgetsLayout);
 	elseif ( event == "WORLD_STATE_TIMER_START") then
 		local timerID = ...;
 		ScenarioTimer_CheckTimers(timerID);
@@ -1016,10 +1021,12 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	end
 	ScenarioSpellButtons_UpdateCooldowns();
 
+	ObjectiveTracker_AddBlock(TopScenarioWidgetContainerBlock);
+
 	if IsInJailersTower() then
 		ObjectiveTracker_AddBlock(BlocksFrame.MawBuffsBlock);
 	end
-	ObjectiveTracker_AddBlock(ScenarioWidgetContainerBlock);
+	ObjectiveTracker_AddBlock(BottomScenarioWidgetContainerBlock);
 
 	-- add the scenario block
 	if ( BlocksFrame.currentBlock ) then

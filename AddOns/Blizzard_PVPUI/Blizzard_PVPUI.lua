@@ -1021,7 +1021,8 @@ function HonorFrameBonusFrame_Update()
 			button.canQueue = info.canQueue;
 			button.bgID = info.bgID;
 			button.Title:SetText(details.name);
-			button.Reward:Init(details.achievementID, PVP_SPECIAL_EVENT_REWARD);
+			button.Reward.questID = details.questID; 
+			button.Reward:Init(details.questID);
 			local textColor = button.canQueue and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
 			button.Title:SetTextColor(textColor:GetRGB());
 			button:SetEnabled(button.canQueue);
@@ -2117,3 +2118,104 @@ function PVPWeeklyRatedPanelMixin:OnShow()
 	end
 	Label:SetText(RATED_PVP_WEEKLY_VAULT);
 end
+
+local function PVPQuestRewardSortFunction(firstValue, secondValue)
+	return firstValue > secondValue;
+end
+
+PVPQuestRewardMixin = { }; 
+
+function PVPQuestRewardMixin:OnShow()
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+end 
+
+function PVPQuestRewardMixin:OnHide()
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+end
+
+function PVPQuestRewardMixin:OnEvent(event, ...)
+	if(event == "QUEST_LOG_UPDATE") then 
+		self:Init(self.questID);
+	end 
+end 
+
+function PVPQuestRewardMixin:Init(questID)
+	self.questID = questID;
+	self.Icon:Hide(); 
+
+	if (not self.questID) then 
+		return; 
+	end 
+
+	if (not HaveQuestData(self.questID)) then
+		self.questInCache = false; 
+		return;
+	end
+
+	--We already have set up the frame if the quest is set to in your cache. 
+	if (self.questInCache and self.Icon:IsShown()) then 
+		return; 
+	end 
+
+	self.questInCache = true; 
+	local rewards = { };
+	rewards.currencyRewards = { }; 
+	local continuableContainer = ContinuableContainer:Create();
+	local numCurrencies = GetNumQuestLogRewardCurrencies(self.questID);
+	for i = 1, numCurrencies do
+		local name, texture, count, currencyID, quality = GetQuestLogRewardCurrencyInfo(i, questID);
+		local reward = { };
+		reward.texture = texture;
+		reward.quality = quality;
+		tinsert(rewards.currencyRewards, reward);
+	end
+	
+	local numItems = GetNumQuestLogRewards(questID);
+	for i = 1, numItems do
+		local name, texture, count, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+		local item = Item:CreateFromItemID(itemID);
+		continuableContainer:AddContinuable(item);
+	end
+	
+	continuableContainer:ContinueOnLoad(function()
+		rewards.itemRewards = { };
+		local numItems = GetNumQuestLogRewards(questID);
+		for i = 1, numItems do
+			local name, texture, count, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+			local reward = { };
+			reward.texture = texture; 
+			reward.quality = quality;
+		end
+	
+		if (rewards.itemRewards and #rewards.itemRewards > 1) then
+			table.sort(self.itemRewards, function(a, b) 
+				return PVPQuestRewardSortFunction(a.quality, b.quality); 
+			end);
+		end 
+
+		if(rewards.currencyRewards and #rewards.currencyRewards > 1) then 
+			table.sort(rewards.currencyRewards, function(a, b) 
+				return PVPQuestRewardSortFunction(a.quality, b.quality); 
+			end);
+		end
+		if(rewards and rewards.itemRewards and rewards.itemRewards[1]) then 
+			self.Icon:SetTexture(rewards.itemRewards[1].texture);
+			self.Icon:Show(); 
+		elseif(rewards and rewards.currencyRewards and rewards.currencyRewards[1]) then 
+			self.Icon:SetTexture(rewards.currencyRewards[1].texture)
+			self.Icon:Show(); 
+		end 
+	end);
+
+	self:Show(); 
+end 
+
+function PVPQuestRewardMixin:OnEnter()
+	self.shouldShowObjectivesAsStatusBar = true; 
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddQuest(self); 	
+end
+
+function PVPQuestRewardMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 

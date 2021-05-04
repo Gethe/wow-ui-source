@@ -105,8 +105,11 @@
 		<DisabledTexture atlas="jailerstower-animapowerbutton-normal" desaturated="true"/>
 		<PushedTextOffset x="1.25" y="-1"/>
 	</Button>
-	<Frame name="MawBuffsBelowMinimapFrame" mixin="MawBuffsBelowMinimapFrameMixin" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true">
+	<Frame name="MawBuffsBelowMinimapFrame" inherits="UIFrameManager_ManagedFrame" mixin="MawBuffsBelowMinimapFrameMixin" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true">
 		<Size x="243" y="50"/>
+		<KeyValues>
+			<KeyValue key="frameType" value="Enum.UIFrameType.JailersTowerBuffs" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT"/>
 		</Anchors>

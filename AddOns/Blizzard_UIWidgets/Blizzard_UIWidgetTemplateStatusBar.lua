@@ -17,7 +17,10 @@ local textureKitRegionFormatStrings = {
 	["BGRight"] = "%s-BGRight",
 	["BGCenter"] = "%s-BGCenter",
 	["Spark"] = "%s-Spark",
-	["BackgroundGlow"] = "%s-BackgroundGlow";
+	["BackgroundGlow"] = "%s-BackgroundGlow",
+	["GlowLeft"] = "%s-Glow-BorderLeft",
+	["GlowRight"] = "%s-Glow-BorderRight",
+	["GlowCenter"] = "%s-Glow-BorderCenter",
 }
 
 local backgroundGlowTextureKitString = "%s-BackgroundGlow";
@@ -38,11 +41,10 @@ local fillTextureKitFormatString = "%s-Fill-%s";
 local DEFAULT_BAR_WIDTH = 215;
 
 local textureKitOffsets = {
-	["jailerstower-scorebar"] = {sparkXOffset = -14,},
-	["jailerstower-scorebar-pause"] = {sparkXOffset = -14, },
-	["jailerstower-scorebar-empty"] = {sparkXOffset = -14, },
-	["jailerstower-scorebar-full"] = {sparkXOffset = -14, },
-	["default"] = {sparkXOffset = 0, },
+	["jailerstower-scorebar"] = {sparkXOffset = -14, sparkYOffset = 5, borderOffsetX = 5, borderOffsetY = 7, tickOffsetY = 5, },
+	["jailerstower-scorebar-pause"] = {sparkXOffset = -14, sparkYOffset = 5, borderOffsetX = 5, borderOffsetY = 6, tickOffsetY = 5, },
+	["jailerstower-scorebar-full"] = {sparkXOffset = -14, sparkYOffset = 5, borderOffsetX = 5, borderOffsetY = 7, tickOffsetY = 5, },
+	["default"] = {sparkXOffset = 0, sparkYOffset = 0, borderOffsetX = 0, borderOffsetY = 0, tickOffsetY = 0},
 }
 
 function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
@@ -64,19 +66,15 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	end 
 
 	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-	self.Bar.BorderCenter:SetAtlas("jailstower-scorebar-pause-bordercenter", true)
-	if(not self.Bar.BorderLeft:IsShown() and not self.Bar.BorderRight:IsShown()) then 
-		self.Bar.BorderCenter:ClearAllPoints(); 
-		self.Bar.BorderCenter:SetPoint("CENTER", 0);
-		local barInfo = C_Texture.GetAtlasInfo(self.Bar:GetStatusBarAtlas());
-		if(useBarAtlasSizeHeight) then 
-			overrideHeight = self.Bar.BorderCenter:GetHeight(); 
-		end
-	else 
-		self.Bar.BorderCenter:ClearAllPoints();
-		self.Bar.BorderCenter:SetPoint("TOPLEFT", self.Bar.BorderLeft, "TOPRIGHT");
-		self.Bar.BorderCenter:SetPoint("BOTTOMRIGHT", self.Bar.BorderRight, "BOTTOMLEFT");
-	end		
+
+	self.Bar.BorderLeft:ClearAllPoints(); 
+	self.Bar.BorderRight:ClearAllPoints(); 
+	self.Bar.BorderCenter:ClearAllPoints(); 
+
+	self.Bar.BorderLeft:SetPoint("LEFT", self,  -offsets.borderOffsetX, offsets.borderOffsetY);
+	self.Bar.BorderRight:SetPoint("RIGHT", self, offsets.borderOffsetX , offsets.borderOffsetY);
+	self.Bar.BorderCenter:SetPoint("LEFT", self.Bar.BorderLeft, "RIGHT", 0, -offsets.borderOffsetY);
+	self.Bar.BorderCenter:SetPoint("RIGHT", self.Bar.BorderRight, "LEFT", 0, -offsets.borderOffsetY);
 	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 	self.Bar:SetWidth(barWidth);
 
@@ -92,7 +90,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.Bar.Spark:SetShown(showSpark);
 	if showSpark then
 		self.Bar.Spark:ClearAllPoints();
-		self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", offsets.sparkXOffset, 0);
+		self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", offsets.sparkXOffset, offsets.sparkYOffset);
 	end
 
 	self.Label:SetText(widgetInfo.text);
@@ -128,7 +126,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 			local partitionPercent = ClampedPercentageBetween(partitionValue, minVal, maxVal);
 			local xOffset = barWidth * partitionPercent;
 
-			partitionTexture:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "LEFT", xOffset, 0)
+			partitionTexture:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "LEFT", xOffset, offsets.tickOffsetY)
 			partitionTexture:Show();
 		end
 		self.Bar.BackgroundGlow:SetShown(backgroundGlowAtlasInfo and barVal >= partitionValue)	

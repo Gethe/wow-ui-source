@@ -417,6 +417,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questType", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetQuestWatchType",
 			Type = "Function",
 

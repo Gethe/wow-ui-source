@@ -496,19 +496,28 @@
 							</StatusBar>
 						</Frames>
 					</Frame>
-					<Frame name="ScenarioWidgetContainerBlock" hidden="true">
-						<Frames>
-							<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
-								<Anchors>
-									<Anchor point="TOP" x="0" y="-15"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-					</Frame>
 				</Frames>
 			</Frame>
 		</ScrollChild>
 		<Frames>
+			<Frame name="TopScenarioWidgetContainerBlock" hidden="true">
+				<Frames>
+					<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
+						<Anchors>
+							<Anchor point="TOP" x="-5" y="-7"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="BottomScenarioWidgetContainerBlock" hidden="true">
+				<Frames>
+					<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-15"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
 			<Frame parentKey="MawBuffsBlock">
 				<Size x="243" y="50"/>
 				<Frames>
