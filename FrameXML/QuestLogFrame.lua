@@ -683,6 +683,12 @@ function QuestWatch_Update()
 				objectivesCompleted = 0;
 				for j=1, numObjectives do
 					text, type, finished = GetQuestLogLeaderBoard(j, questIndex);
+					if ( text == nil ) then
+						text = "";
+					end
+					if ( finished == nil ) then
+						finished = true;
+					end
 					watchText = _G["QuestWatchLine"..watchTextIndex];
 					-- Set Objective text
 					watchText:SetText(" - "..text);

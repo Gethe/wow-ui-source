@@ -21,6 +21,11 @@ end
 
 function BattlefieldFrame_OnEvent(self, event, ...)
 	if ( event == "BATTLEFIELDS_SHOW" ) then
+		-- BATTLEFIELDS_SHOW is used for both ArenaFrame and BattlefieldFrame.  If this event is for arena, don't open BattlefieldFrame.
+		if ( IsBattlefieldArena() ) then
+			return;
+		end
+
 		ShowUIPanel(BattlefieldFrame);
 		
 		-- Default to first available

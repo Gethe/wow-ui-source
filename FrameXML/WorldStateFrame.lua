@@ -153,10 +153,10 @@ function WorldStateScoreFrame_Update()
 				WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT_ARENA"..battlefieldWinner]);
 			end
 			if ( battlefieldWinner == 0 ) then
-				-- Green Team won
-				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.19, 0.57, 0.11);
-				WorldStateScoreWinnerFrameRight:SetVertexColor(0.19, 0.57, 0.11);
-				WorldStateScoreWinnerFrameText:SetVertexColor(0.1, 1.0, 0.1);	
+				-- Purple Team won
+				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.72, 0.37, 1.0);
+				WorldStateScoreWinnerFrameRight:SetVertexColor(0.72, 0.37, 1.0);
+				WorldStateScoreWinnerFrameText:SetVertexColor(0.72, 0.37, 1.0);	
 			else		
 				-- Gold Team won
 				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.85, 0.71, 0.26);
@@ -374,10 +374,10 @@ function WorldStateScoreFrame_Update()
 			if ( faction ) then
 				if ( faction == 0 ) then
 					if ( isArena ) then
-						-- Green Team 
-						scoreButton.factionLeft:SetVertexColor(0.19, 0.57, 0.11);
-						scoreButton.factionRight:SetVertexColor(0.19, 0.57, 0.11);
-						scoreButton.name.text:SetVertexColor(0.1, 1.0, 0.1);	
+						-- Purple Team 
+						scoreButton.factionLeft:SetVertexColor(0.72, 0.37, 1.0);
+						scoreButton.factionRight:SetVertexColor(0.72, 0.37, 1.0);
+						scoreButton.name.text:SetVertexColor(0.72, 0.37, 1.0);	
 					else
 						-- Horde
 						scoreButton.factionLeft:SetVertexColor(0.52, 0.075, 0.18);

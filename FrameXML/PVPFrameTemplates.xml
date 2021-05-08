@@ -545,7 +545,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont inherits="GameFontHighlightSmall"/>
+		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentLeft">

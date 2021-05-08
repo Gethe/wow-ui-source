@@ -486,7 +486,11 @@ function PVPTeam_OnClick(self, id)
 			PVPTeamDetails.team = id;
 			ArenaTeamRoster(id);
 			PVPTeamDetails_Update(self, id);
-			PVPTeamDetails:Show();
+			if (PVPTeamDetails:IsShown()) then
+				PlaySound(SOUNDKIT.UI_CLASSIC_ARENA_TEAM_SELECT);
+			else 
+				PVPTeamDetails:Show();
+			end
 		end
 	end
 end

@@ -209,8 +209,8 @@ function TargetFrame_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+		TargetFrame_Update(self);
 		if (self.unit == "focus") then
-			TargetFrame_Update(self);
 			-- If this is the focus frame, clear focus if the unit no longer exists
 			if (not UnitExists(self.unit)) then
 				ClearFocus();

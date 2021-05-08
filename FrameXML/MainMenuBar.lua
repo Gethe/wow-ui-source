@@ -122,7 +122,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-	local showXP = newLevel < MAX_PLAYER_LEVEL;
+	local showXP = newLevel < GetMaxPlayerLevel();
 	local showRep = name;
 	local numBarsShowing = 0;
 	--******************* EXPERIENCE **************************************
@@ -348,7 +348,7 @@ function ExhaustionTick_OnEvent(self, event, ...)
 		end
 
 		-- Hide exhaustion tick if player is max level or XP is turned off
-		if ( UnitLevel("player") == MAX_PLAYER_LEVEL ) then
+		if ( UnitLevel("player") == GetMaxPlayerLevel() ) then
 			ExhaustionTick:Hide();
 		end
 	end

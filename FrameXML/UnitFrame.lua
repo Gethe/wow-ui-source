@@ -562,7 +562,7 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 		if ( maxValue == 0 ) then
 			maxValue = 1;
 			statusbar.forceHideText = true;
-		elseif ( maxValue == 100 ) then
+		elseif ( maxValue == 100 or not ShouldKnowUnitHealth(unit) ) then
 			--This should be displayed as percentage.
 			statusbar.showPercentage = true;
 		end

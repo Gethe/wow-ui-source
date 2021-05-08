@@ -491,7 +491,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	end
 
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena = GetBattlefieldStatus(i);
+		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, _, _, bgtype = GetBattlefieldStatus(i);
 		if ( mapName ) then
 			if (  instanceID ~= 0 ) then
 				mapName = mapName.." "..instanceID;
@@ -539,7 +539,13 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)));
 				if ( not tooltipOnly ) then
-					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
+
+					if (bgtype == "WARGAME") then
+						local dialog = StaticPopup_Show("CONFIRM_WARGAME_ENTRY", mapName, nil, i);
+					else
+						local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
+					end
+
 					if ( dialog ) then
 						dialog.data = i;
 					end

@@ -26,6 +26,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "ShouldKnowUnitHealth",
+			Type = "Function",
+			Documentation = { "Whether the player would have been able to know the unit's exact health value in the original game release." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldKnowUnitHealth", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitClass",
 			Type = "Function",
 
@@ -351,6 +366,15 @@ local Unit =
 				{ Name = "staminaDelta", Type = "number", Nilable = false },
 				{ Name = "intellectDelta", Type = "number", Nilable = false },
 				{ Name = "spiritDelta", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerMaxLevelUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_MAX_LEVEL_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 			},
 		},
 		{

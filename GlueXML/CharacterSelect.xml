@@ -2370,12 +2370,12 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" inherits="BackdropTemplate">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-		</KeyValues>
+	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="CharacterRenameBackground">
+			<Frame name="CharacterRenameBackground" inherits="BackdropTemplate">
+			<KeyValues>
+				<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			</KeyValues>
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>

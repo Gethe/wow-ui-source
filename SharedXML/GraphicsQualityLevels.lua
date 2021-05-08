@@ -150,15 +150,15 @@ VideoData["Display_DisplayModeDropDown"]={
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_WINDOWED,
-			cvars =	{
+			cvars =    {
 				gxMaximize = 0,
 			},
 			windowed = true;
 			fullscreen = false;
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_WINDOWED_FULLSCREEN,
-			cvars =	{
+			text = VIDEO_OPTIONS_FULLSCREEN,
+			cvars =    {
 				gxMaximize = 1,
 			},
 			windowed = false;
@@ -182,15 +182,15 @@ VideoData["Display_DisplayModeDropDown"]={
 			return self.data[self:GetSafeValue()].fullscreen;
 		end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_PrimaryMonitorDropDown"]={
 	name = PRIMARY_MONITOR;
 	description = OPTION_TOOLTIP_PRIMARY_MONITOR,
-	
+
 	table = {},
-	tablefunction = 
+	tablefunction =
 		function(self)
 			local count = GetMonitorCount();
 			for i=1, count do
@@ -205,102 +205,72 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 				self.table[i] = name;
 			end
 		end,
-	SetValue = 
+	SetValue =
 		function (self, value)
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value-1);
 		end,
-	doGetValue = 
+	doGetValue =
 		function (self)
 			return 1+BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 		end,
 	cvar = "gxMonitor",
 	dependent = {
 		"Display_DisplayModeDropDown",
-		"Display_ResolutionDropDown",	--resolutions may disappear when we change the monitor
+		"Display_ResolutionDropDown",    --resolutions may disappear when we change the monitor
 	},
 	landscape =
 		function(self)
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
-
--- helper function to deal with decoding the resolution string
-function DecodeResolution(valueString)
-	if(valueString == nil) then
-		return 0,0;
-	end
-	local xIndex = strfind(valueString, "x");
-	local width = strsub(valueString, 1, xIndex-1);
-	local height = strsub(valueString, xIndex+1, strlen(valueString));
-	local widthIndex = strfind(height, " ");
-	if (widthIndex ~= nil) then
-		height = strsub(height, 0, widthIndex-1);
-	end
-	return tonumber(width), tonumber(height);
-end
-
 VideoData["Display_ResolutionDropDown"]={
 	name = WINDOW_SIZE;
-	description = OPTION_TOOLTIP_RESOLUTION,	
-	
-	tablefunction = 
+	description = OPTION_TOOLTIP_RESOLUTION,
+
+	tablefunction =
 		function(self)
-			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue());
-		end,
-	getValues = 
-		function(self)
-			return DecodeResolution(self.table[self:GetValue()]);
-		end,
-	readfilter =
-		function(self, value)
-			local width, height = DecodeResolution(value);
-			return value;
+			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	SetValue =
 		function (self, value)
-			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
+			SetScreenResolution(self.table[value]);
 		end,
-	doGetValue = 
+	doGetValue =
 		function(self)
 			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:fullscreenmode()) then
-			VideoOptions_Disable(self);
-		else
-			VideoOptions_Enable(self);
-		end
+		VideoOptions_Enable(self);
 	end,
 	lookup = Graphics_TableLookupSafe,
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Display_VerticalSyncDropDown"]={
 	name = VERTICAL_SYNC;
 	description = OPTION_TOOLTIP_VERTICAL_SYNC,
-	
+
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
+			cvars =    {
 				vsync = 0,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
+			cvars =    {
 				vsync = 1,
 			},
 		},
 	},
-	restart = true,
+	windowUpdate = true,
 }
 
 -------------------------------------------------------------------------------------------------------

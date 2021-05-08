@@ -100,9 +100,6 @@
 		<Frames>
 			<Frame name="AddonDialogBackground" inherits="DialogBorderTemplate">
 				<Size x="512" y="256"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="AddonDialogText" inherits="GameFontNormalLarge">
@@ -124,6 +121,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				AddonDialogBackground:ClearAllPoints();
+				AddonDialogBackground:SetPoint("CENTER");
+			</OnLoad>
 			<OnShow>
 				self:Raise();
 			</OnShow>

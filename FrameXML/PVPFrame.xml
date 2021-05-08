@@ -432,7 +432,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="GameFontNormalSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
@@ -801,8 +801,8 @@
 					<OnEnter function="PVPTeamDetailsAddTeamMember_OnEnter"/>
 					<OnLeave function="PVPTeamDetailsAddTeamMember_OnLeave"/>
 				</Scripts>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="PVPTeamDetailsToggleButton">
 				<Size>
@@ -834,7 +834,7 @@
 						</Anchor>
 					</Anchors>
 				</ButtonText>
-				<NormalFont inherits="GameFontNormalSmall"/>
+				<NormalFont style="GameFontNormalSmall"/>
 				<PushedTextOffset>
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>

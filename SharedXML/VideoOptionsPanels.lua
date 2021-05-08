@@ -260,12 +260,18 @@ function ControlGetActiveCvarValue(self, checkCvar)
 end
 
 local function FinishChanges(self)
-	if ( VideoOptionsFrame.gxRestart ) then
+	if ( VideoOptionsFrame.gxRestart or VideoOptionsFrame.windowUpdate ) then
+		if ( VideoOptionsFrame.gxRestart ) then
+			RestartGx();
+		else
+			UpdateWindow();
+		end
 		VideoOptionsFrame.gxRestart = nil;
-		RestartGx();
+		VideoOptionsFrame.windowUpdate = nil;
+
 		-- reload some tables and redisplay
-		Display_DisplayModeDropDown.selectedID = nil; 							 	-- invalidates cached value
-		BlizzardOptionsPanel_RefreshControlSingle(Display_DisplayModeDropDown);		-- hardware may not have set this, so we need to refresh
+		Display_DisplayModeDropDown.selectedID = nil;                                  -- invalidates cached value
+		BlizzardOptionsPanel_RefreshControlSingle(Display_DisplayModeDropDown);        -- hardware may not have set this, so we need to refresh
 
 		Display_ResolutionDropDown.tablerefresh = true;
 		Display_PrimaryMonitorDropDown.tablerefresh = true;
@@ -289,6 +295,9 @@ local function CommitChange(self)
 			end
 			if ( self.restart ) then
 				VideoOptionsFrame.gxRestart = true;
+			end
+			if ( self.windowUpdate ) then
+				VideoOptionsFrame.windowUpdate = true;
 			end
 		end
 	end
@@ -321,10 +330,14 @@ function VideoOptionsPanel_Cancel (self)
 			if ( control.restart ) then
 				VideoOptionsFrame.gxRestart = true;
 			end
+			if ( control.windowUpdate ) then
+				VideoOptionsFrame.windowUpdate = true;
+			end
 		end
 		-- we need to force-set the value here just in case the control was doing dynamic updating
 		ControlSetValue(control, control.value);
 	end
+	VideoOptionsFrame.windowUpdate = nil;
 	VideoOptionsFrame.gxRestart = nil;
 	VideoOptionsFrame.gameRestart = nil;
 end

@@ -86,6 +86,7 @@ UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0,		xoffset
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["ArenaFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -975,11 +976,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
-		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-			INTERFACE_ACTION_BLOCKED_SHOWN = true;
-		end
+		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
@@ -4570,7 +4567,7 @@ end
  -- takes into account the current expansion
  -- NOTE: it's not safe to cache this value as it could change in the middle of the session
 function GetEffectivePlayerMaxLevel()
-	return MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+	return GetMaxPlayerLevel();
 end
 
 function IsLevelAtEffectiveMaxLevel(level)
@@ -4613,4 +4610,12 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	end
 
 	return name, FRIENDS_WOW_NAME_COLOR_CODE, nil, playerLink;
+end
+
+function DisplayInterfaceActionBlockedMessage()
+	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
+		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
 end

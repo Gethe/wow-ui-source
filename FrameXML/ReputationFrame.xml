@@ -851,6 +851,7 @@
 				self:RegisterEvent("DISABLE_XP_GAIN");
 				self:RegisterEvent("CVAR_UPDATE");
 				self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+				self:RegisterEvent("PLAYER_MAX_LEVEL_UPDATE");
 			</OnLoad>
 			<OnEvent>
 				local arg1, arg2 = ...;
@@ -859,7 +860,7 @@
 						ReputationFrame_Update();
 					end
 					MainMenuBar_UpdateExperienceBars();
-				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" ) then
+				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" or event == "PLAYER_MAX_LEVEL_UPDATE" ) then
 					ReputationWatchBar_UpdateMaxLevel();
 					
 					if event == "PLAYER_LEVEL_UP" then

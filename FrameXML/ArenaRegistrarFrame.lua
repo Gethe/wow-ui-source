@@ -135,6 +135,7 @@ function PVPBannerFrame_OpenColorPicker(button, texture)
 		ColorPickerFrame.func = PVPBannerFrame_SetBorderColor;
 	end
 	ColorPickerFrame:SetColorRGB(r, g, b);
+	PlaySound(SOUNDKIT.UI_CLASSIC_ARENA_TEAM_COLOR_PICKER);
 	ShowUIPanel(ColorPickerFrame);
 end
 
