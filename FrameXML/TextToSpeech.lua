@@ -1,19 +1,29 @@
 -- Toggle button for the text to speech config window
-TextToSpeechButtonMixin = {}
+TextToSpeechButtonMixin = {};
 
-function TextToSpeechButtonMixin:OnLoad()
-	self:RegisterForClicks("AnyUp");
-	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("CVAR_UPDATE");
-
+function TextToSpeechButtonFrame_OnLoad(self)
 	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
 	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
-
-	self:UpdateVisibility();
 end
 
-function TextToSpeechButtonMixin:UpdateVisibility()
-	if (self.cvarsLoaded and GetCVarBool("textToSpeech")) then
+function TextToSpeechButtonMixin:OnLoad()
+	self:RegisterStateUpdateEvent("VARIABLES_LOADED");
+	self:RegisterStateUpdateEvent("CVAR_UPDATE");
+	self:AddStateAtlasFallback("chatframe-button-icon-TTS");
+	self:SetAccessorFunction(function() return true; end);
+	self:SetMutatorFunction(self.OnClick);
+	self:SetVisibilityQueryFunction(self.IsTextToSpeechEnabled);
+	VoiceToggleButtonMixin.OnLoad(self);
+
+	self:UpdateVisibleState();
+end
+
+function TextToSpeechButtonMixin:IsTextToSpeechEnabled()
+	return GetCVarBool("textToSpeech");
+end
+
+function TextToSpeechButtonMixin:ShowHint()
+	if (self.cvarsLoaded and self:IsTextToSpeechEnabled()) then
 		if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TEXT_TO_SPEECH)) then
 			local helpTipInfo = {
 				text = TEXT_TO_SPEECH_TUTORIAL,
@@ -25,14 +35,12 @@ function TextToSpeechButtonMixin:UpdateVisibility()
 			};
 			HelpTip:Show(self, helpTipInfo);
 		end
-
-		self:SetAlpha(1);
-	else
-		self:SetAlpha(0);
 	end
 end
 
 function TextToSpeechButtonMixin:OnEvent(event, ...)
+	PropertyBindingMixin.OnEvent(self, event, ...);
+
 	local arg1 = ...;
 
 	if ( event == "VARIABLES_LOADED" ) then
@@ -41,7 +49,7 @@ function TextToSpeechButtonMixin:OnEvent(event, ...)
 
 	if ( event == "VARIABLES_LOADED" or
 		(event == "CVAR_UPDATE" and arg1 == "ENABLE_TEXT_TO_SPEECH") ) then
-		TextToSpeechButton:UpdateVisibility();
+		TextToSpeechButton:ShowHint();
 	end
 end
 

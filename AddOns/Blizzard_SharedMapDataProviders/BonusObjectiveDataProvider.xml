@@ -37,7 +37,7 @@
 				<Texture parentKey="Icon" atlas="worldquest-icon-nzoth">
 					<Size x="33" y="33"/>
 					<Anchors>
-						<Anchor point="CENTER" x="-1"/>
+						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
 			</Layer>

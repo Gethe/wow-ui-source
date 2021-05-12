@@ -12,7 +12,7 @@ function AdventuresPuckAbilityMixin:OnEnter()
 		if (board ~= nil) and not board:IsShowingActiveCombat() then
 			local missionID = board:GetMainFrame():GetActiveMissionID();
 			if missionID ~= nil then
-				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatSpellID, self:GetPuck().boardIndex);
+				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatSpellID, self:GetPuck():GetBoardIndex());
 				local useLoop = true;
 				board:TriggerTargetingReticles(abilityTargetInfos, useLoop);
 			end
@@ -60,6 +60,10 @@ function AdventuresPuckAbilityMixin:AdvanceCooldown()
 	end
 
 	self:RefreshCooldown();
+end
+
+function AdventuresPuckAbilityMixin:GetCurrentCooldown()
+	return self.currentCooldown;
 end
 
 function AdventuresPuckAbilityMixin:RefreshCooldown()
@@ -132,9 +136,13 @@ end
 
 function AdventuresPuckMixin:StartCooldown(autoCombatSpellID)
 	if self.AbilityOne:GetAutoCombatSpellID() == autoCombatSpellID then
-		self.AbilityOne:StartCooldown();
+		if self.AbilityOne:GetCurrentCooldown() == nil then
+			self.AbilityOne:StartCooldown();
+		end
 	elseif self.AbilityTwo:GetAutoCombatSpellID() == autoCombatSpellID then
-		self.AbilityTwo:StartCooldown();
+		if self.AbilityTwo:GetCurrentCooldown() == nil then
+			self.AbilityTwo:StartCooldown();
+		end
 	end
 end
 
@@ -211,7 +219,7 @@ function AdventuresPuckMixin:ShowAutoAttackTargetingReticles()
 		if (board ~= nil) and not board:IsShowingActiveCombat() then
 			local missionID = board:GetMainFrame():GetActiveMissionID();
 			if missionID ~= nil then
-				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatAutoAttack.autoCombatSpellID, self.boardIndex);
+				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatAutoAttack.autoCombatSpellID, self:GetBoardIndex());
 				local useLoop = true;
 				board:TriggerTargetingReticles(abilityTargetInfos, useLoop);
 			end
@@ -223,6 +231,10 @@ function AdventuresPuckMixin:OnLeave()
 	GameTooltip_Hide();
 	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 	self:GetBoard():HideHealthValues();
+end
+
+function AdventuresPuckMixin:GetBoardIndex()
+	return self.boardIndex;
 end
 
 function AdventuresPuckMixin:GetBoard()

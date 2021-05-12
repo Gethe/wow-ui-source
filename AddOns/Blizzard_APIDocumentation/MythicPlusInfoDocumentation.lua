@@ -285,6 +285,7 @@ local MythicPlusInfo =
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "thisWeek", Type = "bool", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
+				{ Name = "runScore", Type = "number", Nilable = false },
 			},
 		},
 	},

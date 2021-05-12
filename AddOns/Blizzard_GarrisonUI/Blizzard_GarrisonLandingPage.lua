@@ -624,9 +624,12 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 				Reward.bonusAbilityDescription = nil;
 				Reward.currencyID = nil;
 				Reward.currencyQuantity = nil;
+				Reward.itemLink = nil;
+				SetItemButtonQuality(Reward, nil);
 				if (reward.itemID) then
 					Reward.itemID = reward.itemID;
-					local _, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+					Reward.itemLink = reward.itemLink;
+					local _, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemLink or reward.itemID);
 					Reward.Icon:SetTexture(itemTexture);
 					SetItemButtonQuality(Reward, quality, reward.itemID);
 					if ( not quality ) then
@@ -930,6 +933,7 @@ end
 
 function GarrisonLandingPageReportMissionReward_OnEnter(self)
 	if (self.bonusAbilityID) then
+		self.UpdateTooltip = nil;
 		local tooltip = GarrisonBonusAreaTooltip;
 		GarrisonBonusArea_Set(tooltip.BonusArea, GARRISON_BONUS_EFFECT_TIME_ACTIVE, self.bonusAbilityDuration, self.bonusAbilityIcon, self.bonusAbilityName, self.bonusAbilityDescription);
 
@@ -940,6 +944,11 @@ function GarrisonLandingPageReportMissionReward_OnEnter(self)
 		return;
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		self.UpdateTooltip = GarrisonLandingPageReportMissionReward_OnEnter;
+		if (self.itemLink) then
+			GameTooltip:SetHyperlink(self.itemLink);
+			return;
+		end
 		if (self.itemID) then
 			GameTooltip:SetItemByID(self.itemID);
 			return;

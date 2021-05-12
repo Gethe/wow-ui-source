@@ -83,9 +83,10 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 
 	local itemTransmogInfo;
 	-- if the equipped item has an active secondary appearance then only change the correct appearance
+	-- at the transmogrifier check the checkbox state
 	if C_Transmog.CanHaveSecondaryAppearanceForSlotID(transmogLocation.slotID) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(transmogLocation.slotID);
-		if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
+		if (C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:HasActiveSecondaryAppearance()) or TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
 			itemTransmogInfo = playerActor:GetItemTransmogInfo(transmogLocation.slotID);
 			if transmogLocation:IsSecondary() then
 				itemTransmogInfo.secondaryAppearanceID = appearanceID;

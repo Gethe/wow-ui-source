@@ -557,6 +557,7 @@ function QuestMapFrame_AdjustPathButtons()
 end
 
 function QuestDetailsFrame_OnShow(self)
+	QuestMapFrame.DetailsFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestMapBackgroundTexture());
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(true);
 end
 

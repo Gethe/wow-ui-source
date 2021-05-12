@@ -193,13 +193,13 @@
 				<FontString parentKey="Unlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_UNLOCKED">
 					<Size x="200" y="12"/>
 					<Anchors>
-						<Anchor point="TOP" x="7" y="-24"/>
+						<Anchor point="TOP" x="7" y="-23"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyH="CENTER" justifyV="TOP">
-					<Size x="155" y="0"/>
+				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="155" y="36"/>
 					<Anchors>
-						<Anchors point="TOP" relativeKey="$parent.Unlocked" relativePoint="BOTTOM" x="0" y="-5"/>
+						<Anchor point="TOP" relativeKey="$parent.Unlocked" relativePoint="BOTTOM"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="GuildName" inherits="GameFontNormal" hidden="true">
@@ -306,9 +306,8 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="Points" inherits="GameFontNormal">
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER" x="3" y="-2"/>
 							</Anchors>
-							<Size x="64" y="64"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -346,26 +345,26 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="ui-achievement-alert-background-mini" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" x="23" y="0"/>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Unlocked" inherits="GameFontBlackTiny" justifyH="CENTER" text="ACHIEVEMENT_PROGRESSED">
 					<Size x="170" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="45" y="-18"/>
+						<Anchor point="TOP" x="22" y="-18"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyV="TOP" justifyH="LEFT">
 					<Size x="160" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="50" y="-35"/>
+						<Anchor point="TOP" x="27" y="-35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture atlas="ui-achievement-alert-background-mini-glow" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
 					<Anchors>
-						<Anchor point="CENTER" x="23" y="0"/>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="animIn">
@@ -381,7 +380,7 @@
 				</Texture>
 				<Texture atlas="ui-achievement-alert-background-mini-glow-shine"  useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="shine">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="23" y="0"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="animIn">
@@ -402,7 +401,7 @@
 			<Frame parentKey="Icon">
 				<Size x="116" y="116"/>
 				<Anchors>
-					<Anchor point="LEFT" x="5" y="-1"/>
+					<Anchor point="LEFT" x="-18" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">

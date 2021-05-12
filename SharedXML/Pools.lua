@@ -174,6 +174,29 @@ function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFun
 	return texturePool;
 end
 
+MaskPoolMixin = CreateFromMixins(ObjectPoolMixin);
+
+local function MaskPoolFactory(maskPool)
+	return maskPool.parent:CreateMaskTexture(nil, maskPool.layer, maskPool.maskTemplate, maskPool.subLayer);
+end
+
+function MaskPoolMixin:OnLoad(parent, layer, subLayer, maskTemplate, resetterFunc)
+	ObjectPoolMixin.OnLoad(self, MaskPoolFactory, resetterFunc);
+	self.parent = parent;
+	self.layer = layer;
+	self.subLayer = subLayer;
+	self.maskTemplate = maskTemplate;
+end
+
+MaskPool_Hide = FramePool_Hide;
+MaskPool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
+
+function CreateMaskPool(parent, layer, subLayer, maskTemplate, resetterFunc)
+	local maskPool = CreateFromMixins(MaskPoolMixin);
+	maskPool:OnLoad(parent, layer, subLayer, maskTemplate, resetterFunc or MaskPool_HideAndClearAnchors);
+	return maskPool;
+end
+
 FontStringPoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function FontStringPoolFactory(fontStringPool)

@@ -4,7 +4,7 @@
 
 function VoiceTranscriptionFrame_UpdateVisibility(self)
 	local id = self:GetID();
-	local showVoice = GetCVarBool("speechToText");
+	local showVoice = (GetCVarBool("speechToText") and self.isTranscribing) or GetCVarBool("remoteTextToSpeech");
 	local shown, _, docked = select(7, GetChatWindowInfo(id));
 	local update = false;
 
@@ -65,10 +65,6 @@ function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 	tab.sizePadding = 12;
 	FCFTab_UpdateColors(tab, not self.isDocked or self == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK))
 
-	-- Set tab text with colored icon
-	local voiceIconMarkup = CreateAtlasMarkup("speechtotext-chaticon-neutral", 12, 12, 0, 0, chatInfo.r * 255, chatInfo.g * 255, chatInfo.b * 255);
-	tab:SetText(voiceIconMarkup .. VOICE);
-
 	-- Set chat type to the appropriate remote text to speech type if enabled
 	if ( GetCVarBool("remoteTextToSpeech") ) then
 		self.editBox:SetAttribute("chatType", chatType);
@@ -96,7 +92,7 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 		VoiceTranscriptionFrame_UpdateEditBox(self);
-	elseif ( event == "CVAR_UPDATE" and cvarName == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" ) then
+	elseif ( event == "CVAR_UPDATE" and ( cvarName == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" or cvarName == "ENABLE_REMOTE_TEXT_TO_SPEECH" ) ) then
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	elseif ( event == "VOICE_CHAT_MUTED_CHANGED" ) then
@@ -118,6 +114,8 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 		end
 
 		self.isTranscribing = isNowTranscribing;
+		VoiceTranscriptionFrame_UpdateVisibility(self);
+		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	end
 
 	-- Continue processing other handlers

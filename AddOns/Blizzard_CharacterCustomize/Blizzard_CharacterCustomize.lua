@@ -10,7 +10,7 @@ end
 function CharCustomizeParentFrameBaseMixin:PreviewCustomizationChoice(optionID, choiceID)
 end
 
-function CharCustomizeParentFrameBaseMixin:ResetCustomizationPreview()
+function CharCustomizeParentFrameBaseMixin:ResetCustomizationPreview(clearSavedChoices)
 end
 
 function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
@@ -728,7 +728,8 @@ function CharCustomizeMixin:OnEvent(event, ...)
 end
 
 function CharCustomizeMixin:OnHide()
-	self:ResetCustomizationPreview();
+	local clearSavedChoices = true;
+	self:ResetCustomizationPreview(clearSavedChoices);
 end
 
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
@@ -748,8 +749,8 @@ function CharCustomizeMixin:PreviewCustomizationChoice(optionID, choiceID)
 	self.parentFrame:PreviewCustomizationChoice(optionID, choiceID);
 end
 
-function CharCustomizeMixin:ResetCustomizationPreview()
-	self.parentFrame:ResetCustomizationPreview();
+function CharCustomizeMixin:ResetCustomizationPreview(clearSavedChoices)
+	self.parentFrame:ResetCustomizationPreview(clearSavedChoices);
 end
 
 function CharCustomizeMixin:Reset()

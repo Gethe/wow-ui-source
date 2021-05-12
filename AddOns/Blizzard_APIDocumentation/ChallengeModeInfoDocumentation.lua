@@ -190,6 +190,20 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetSpecificDungeonScoreRarityColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelScore", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSlottedKeystone",
 			Type = "Function",
 

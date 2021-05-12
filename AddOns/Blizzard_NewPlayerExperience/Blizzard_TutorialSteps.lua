@@ -733,7 +733,9 @@ function Class_AddSpellToActionBarService:SpellBookFrameShow()
 	EventRegistry:RegisterCallback("SpellBookFrame.Hide", self.SpellBookFrameHide, self);
 	self:HidePointerTutorials();
 	ActionButton_HideOverlayGlow(SpellbookMicroButton);
-	self:RemindAbility();
+	C_Timer.After(0.1, function()
+		self:RemindAbility();
+	end);
 end
 
 function Class_AddSpellToActionBarService:SpellBookFrameHide()
@@ -742,7 +744,9 @@ end
 
 function Class_AddSpellToActionBarService:ACTIONBAR_SHOW_BOTTOMLEFT()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-	self:RemindAbility();
+	C_Timer.After(0.1, function()
+		self:RemindAbility();
+	end);
 end
 
 function Class_AddSpellToActionBarService:RemindAbility()

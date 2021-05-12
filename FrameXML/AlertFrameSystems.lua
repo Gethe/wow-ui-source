@@ -297,77 +297,72 @@ end
 function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 
-	local displayName = frame.Name;
 	local shieldPoints = frame.Shield.Points;
 	local shieldIcon = frame.Shield.Icon;
 	local unlocked = frame.Unlocked;
 
-	displayName:SetText(name);
+	unlocked:SetPoint("TOP", 7, -23);
+
+	frame.Name:SetText(name);
 
 	AchievementShield_SetPoints(points, shieldPoints, GameFontNormal, GameFontNormalSmall);
 	if ( isGuildAch ) then
 		local guildName = frame.GuildName;
 		local guildBorder = frame.GuildBorder;
 		local guildBanner = frame.GuildBanner;
-		if ( not frame.guildDisplay ) then
-			shieldPoints:Show();
-			shieldIcon:Show();
-			frame.guildDisplay = true;
-			frame:SetHeight(104);
-			local background = frame.Background;
-			background:SetAtlas("ui-achievement-guild-background", TextureKitConstants.UseAtlasSize);
-			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetAtlas("ui-achievement-guild-iconframe", TextureKitConstants.UseAtlasSize);
-			iconBorder:SetPoint("CENTER", 0, 0);
-			frame.Icon:SetPoint("TOPLEFT", 0, -25);
-			frame.Icon.Texture:SetPoint("CENTER", -1, -2);
-			displayName:SetPoint("TOP", unlocked, "BOTTOM", 0, -5);
-			frame.Shield:SetPoint("TOPRIGHT", -12, -25);
-			shieldPoints:SetPoint("CENTER", 7, 5);
-			shieldPoints:SetVertexColor(0, 1, 0);
-			unlocked:SetPoint("TOP", 0, -38);
-			unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
-			guildName:Show();
-			guildBanner:Show();
-			guildBorder:Show();
-			frame.glow:SetAtlas("ui-achievement-guild-glow", TextureKitConstants.UseAtlasSize);
-			frame.shine:SetAtlas("ui-achievement-guild-shine", TextureKitConstants.UseAtlasSize);
-			frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
-		end
+
+		shieldPoints:Show();
+		shieldIcon:Show();
+		frame:SetHeight(104);
+		local background = frame.Background;
+		background:SetAtlas("ui-achievement-guild-background", TextureKitConstants.UseAtlasSize);
+		local iconBorder = frame.Icon.Overlay;
+		iconBorder:SetAtlas("ui-achievement-guild-iconframe", TextureKitConstants.UseAtlasSize);
+		iconBorder:SetPoint("CENTER", 0, 0);
+		frame.Icon:SetPoint("TOPLEFT", 0, -25);
+		frame.Icon.Texture:SetPoint("CENTER", -1, -2);
+		frame.Shield:SetPoint("TOPRIGHT", -12, -25);
+		shieldPoints:SetPoint("CENTER", 2, -2);
+		shieldPoints:SetVertexColor(0, 1, 0);
+		unlocked:SetPoint("TOP", 0, -38);
+		unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
+		guildName:Show();
+		guildBanner:Show();
+		guildBorder:Show();
+		frame.glow:SetAtlas("ui-achievement-guild-glow", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetAtlas("ui-achievement-guild-shine", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
+
 		guildName:SetText(GetGuildInfo("player"));
 		SetSmallGuildTabardTextures("player", nil, guildBanner, guildBorder);
 	else
-		if ( frame.guildDisplay ) then
-			shieldPoints:Show();
-			shieldIcon:Show();
-			frame.guildDisplay = nil;
-			frame:SetHeight(101);
-			local background = frame.Background;
-			background:SetAtlas("ui-achievement-alert-background", TextureKitConstants.UseAtlasSize);
-			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetAtlas("ui-achievement-iconframe", TextureKitConstants.UseAtlasSize);
-			iconBorder:SetPoint("CENTER", -1, 1);
-			frame.Icon:SetPoint("TOPLEFT", -4, -15);
-			displayName:SetPoint("BOTTOMLEFT", 72, 36);
-			displayName:SetPoint("BOTTOMRIGHT", -60, 36);
-			frame.Shield:SetPoint("TOPRIGHT", -10, -13);
-			shieldPoints:SetPoint("CENTER", 7, 2);
-			shieldPoints:SetVertexColor(1, 1, 1);
-			unlocked:SetPoint("TOP", 7, -23);
-			unlocked:SetText(ACHIEVEMENT_UNLOCKED);
-			frame.GuildName:Hide();
-			frame.GuildBorder:Hide();
-			frame.GuildBanner:Hide();
-			frame.glow:SetAtlas("ui-achievement-glow-glow", TextureKitConstants.UseAtlasSize);
-			frame.shine:SetAtlas("ui-achievement-glow-shine", TextureKitConstants.UseAtlasSize);
-			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
-		end
+		shieldPoints:Show();
+		shieldIcon:Show();
+		frame:SetHeight(101);
+		local background = frame.Background;
+		background:SetAtlas("ui-achievement-alert-background", TextureKitConstants.UseAtlasSize);
+		local iconBorder = frame.Icon.Overlay;
+		iconBorder:SetAtlas("ui-achievement-iconframe", TextureKitConstants.UseAtlasSize);
+		iconBorder:SetPoint("CENTER", -1, 1);
+		frame.Icon:SetPoint("TOPLEFT", -4, -15);
+		frame.Shield:SetPoint("TOPRIGHT", -8, -15);
+		shieldPoints:SetPoint("CENTER", 2, -2);
+		shieldPoints:SetVertexColor(1, 1, 1);
+		unlocked:SetPoint("TOP", 7, -23);
+		unlocked:SetText(ACHIEVEMENT_UNLOCKED);
+		frame.GuildName:Hide();
+		frame.GuildBorder:Hide();
+		frame.GuildBanner:Hide();
+		frame.glow:SetAtlas("ui-achievement-glow-glow", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetAtlas("ui-achievement-glow-shine", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
 
+		shieldPoints:SetShown(not alreadyEarned);
+		shieldIcon:SetShown(not alreadyEarned);
+
+		-- Center all text horizontally if the achievement has been earned and there's no points display
 		if (alreadyEarned) then
-			shieldPoints:Hide();
-			shieldIcon:Hide();
-			unlocked:SetPoint("TOP", 15, -23);
-			displayName:SetPoint("TOP", unlocked, "BOTTOM", 0, -10);
+			unlocked:SetPoint("TOP", 27, -23);
 		end
 	end
 

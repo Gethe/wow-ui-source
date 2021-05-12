@@ -420,7 +420,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 	self:UpdateSupertrackedHighlight();
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID);
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID, self.questID);
 	self.Texture:SetAtlas(atlas);
 	if self.worldQuestType == Enum.QuestTagType.PetBattle then
 		self.Texture:SetSize(26, 22);

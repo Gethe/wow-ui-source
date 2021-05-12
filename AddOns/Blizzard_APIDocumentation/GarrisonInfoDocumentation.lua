@@ -1052,6 +1052,7 @@ local GarrisonInfo =
 				{ Name = "previewMask", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "spellTutorialFlag", Type = "number", Nilable = false },
+				{ Name = "hasThornsEffect", Type = "bool", Nilable = false },
 			},
 		},
 		{

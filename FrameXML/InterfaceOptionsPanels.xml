@@ -767,25 +767,9 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
-      <CheckButton name="$parentSpamFilter" inherits="InterfaceOptionsCheckButtonTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-8"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_CHECKBOX;
-            self.cvar = "spamFilter";
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-          </OnLoad>
-        </Scripts>
-      </CheckButton>
       <CheckButton name="$parentGuildMemberAlert" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentSpamFilter" relativePoint="BOTTOMLEFT">
+          <Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="BOTTOMLEFT">
             <Offset>
               <AbsDimension x="0" y="-8"/>
             </Offset>

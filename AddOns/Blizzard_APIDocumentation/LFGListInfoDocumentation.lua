@@ -289,6 +289,8 @@ local LFGListInfo =
 			{
 				{ Name = "mapScore", Type = "number", Nilable = false },
 				{ Name = "mapName", Type = "string", Nilable = false },
+				{ Name = "bestRunLevel", Type = "number", Nilable = false },
+				{ Name = "finishedSuccess", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -345,6 +347,7 @@ local LFGListInfo =
 				{ Name = "age", Type = "number", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "leaderOverallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "leaderDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },
 			},
 		},
 		{

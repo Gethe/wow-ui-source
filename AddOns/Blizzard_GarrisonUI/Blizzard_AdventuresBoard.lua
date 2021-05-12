@@ -358,19 +358,20 @@ function AdventuresBoardCombatMixin:OnLoad()
 end
 
 function AdventuresBoardCombatMixin:UpdateCooldownsFromEvent(combatLogEvent)
+	if not GarrAutoCombatUtil.IsAbilityEvent(combatLogEvent) then
+		return;
+	end
+
 	local sourceFrame = self:GetFrameByBoardIndex(combatLogEvent.casterBoardIndex);
 	if sourceFrame then
 		sourceFrame:StartCooldown(combatLogEvent.spellID);
 	end
 end
 
-function AdventuresBoardCombatMixin:UpdateCooldownsFromNewRound()
-	for enemyFrame in self.enemyFramePool:EnumerateActive() do
-		enemyFrame:AdvanceCooldowns();
-	end
-
-	for followerFrame in self.followerFramePool:EnumerateActive() do
-		followerFrame:AdvanceCooldowns();
+function AdventuresBoardCombatMixin:AdvanceCooldowns(boardIndices)
+	for i, boardIndex in ipairs(boardIndices) do
+		local frame = self:GetFrameByBoardIndex(boardIndex);
+		frame:AdvanceCooldowns();
 	end
 end
 

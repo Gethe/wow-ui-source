@@ -1614,16 +1614,26 @@ function LFGListApplicantMember_OnEnter(self)
 	end
 
 	if(LFGApplicationViewerDungeonScoreColumnHeader:IsShown()) then 
-		if(dungeonScore) then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip); 
-			local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
-			if(not color) then 
-				color = HIGHLIGHT_FONT_COLOR; 
+		if(not dungeonScore) then 
+			dungeonScore = 0; 
+		end
+		GameTooltip_AddBlankLineToTooltip(GameTooltip); 
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end 
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(dungeonScore)));
+
+		if(bestDungeonScoreForEntry) then 
+			local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(bestDungeonScoreForEntry.mapScore);
+			if (not color) then 
+				color = HIGHLIGHT_FONT_COLOR;
 			end 
-			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(dungeonScore)));
-		end	
-		if(bestDungeonScoreForEntry) then
-			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING:format(bestDungeonScoreForEntry.mapName, bestDungeonScoreForEntry.mapScore));
+			if (bestDungeonScoreForEntry.finishedSuccess) then 
+				GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING:format(bestDungeonScoreForEntry.mapName, color:WrapTextInColorCode(bestDungeonScoreForEntry.mapScore), bestDungeonScoreForEntry.bestRunLevel));
+			else 
+				GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(bestDungeonScoreForEntry.mapName, color:WrapTextInColorCode(bestDungeonScoreForEntry.mapScore), bestDungeonScoreForEntry.bestRunLevel));
+			end 			
 		end		
 	end
 
@@ -3267,6 +3277,19 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		end 
 		tooltip:AddLine(DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore)));	
 	end 
+
+	if(isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then 
+		local leaderDungeonScoreInfo = searchResultInfo.leaderDungeonScoreInfo; 
+		local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(leaderDungeonScoreInfo.mapScore);
+		if (not color) then 
+			color = HIGHLIGHT_FONT_COLOR;
+		end 
+		if (leaderDungeonScoreInfo.finishedSuccess) then 
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
+		else 
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
+		end 	
+	end		
 	if ( searchResultInfo.age > 0 ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultInfo.age, false, false, 1, false)));
 	end

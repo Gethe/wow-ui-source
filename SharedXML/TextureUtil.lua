@@ -122,7 +122,8 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 end
 
 function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
-	if ( bVertexColor ) then
+	-- Setting any vertex color will override existing colors
+	if ( rVertexColor or gVertexColor or bVertexColor ) then
 		return ("|A:%s:%d:%d:%d:%d:%d:%d:%d|a"):format(
 			  atlasName
 			, height or 0

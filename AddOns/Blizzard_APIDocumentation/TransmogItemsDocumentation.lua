@@ -815,7 +815,7 @@ local TransmogItems =
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
-				{ Name = "isHiddenVisual", Type = "bool", Nilable = false },
+				{ Name = "isHideVisual", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -760,7 +760,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
 			local info = C_QuestLog.GetQuestTagInfo(questID);
-			local inProgress = questLogIndex ~= 0;
+			local inProgress = questLogIndex ~= nil;
 			QuestUtil.SetupWorldQuestButton(block.TrackedQuest, info, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
 
 			block.TrackedQuest:SetScale(.9);

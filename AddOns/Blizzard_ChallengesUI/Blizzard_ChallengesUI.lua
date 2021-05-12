@@ -481,12 +481,14 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
     self.Icon:SetTexture(texture);
     self.Icon:SetDesaturated(mapInfo.level == 0);
 
-	local color; 
-	if(not mapInfo.inTime) then 
-		color = COMMON_GRAY_COLOR;
-	else 
-		color = C_ChallengeMode.GetKeystoneLevelRarityColor(mapInfo.level);
+	local _, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(mapInfo.id);
+	local color;
+	if(overAllScore) then	
+		color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(overAllScore);
 	end
+	if(not color) then 
+		color = HIGHLIGHT_FONT_COLOR; 
+	end		
 
     if (mapInfo.level > 0) then
         self.HighestLevel:SetText(mapInfo.level);
@@ -510,7 +512,11 @@ function ChallengesDungeonIconMixin:OnEnter()
 	local seasonBestDurationSec, seasonBestLevel, members;
 
 	if(overAllScore and inTimeInfo or overtimeInfo) then 
-		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(overAllScore), GREEN_FONT_COLOR);
+		local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(overAllScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR;
+		end 
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overAllScore)), GREEN_FONT_COLOR);
 	end 
 
 	if(affixScores and #affixScores > 0) then 

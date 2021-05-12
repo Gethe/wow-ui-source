@@ -594,24 +594,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentSunshaftsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SUNSHAFTS">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentParticleDensityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -654,9 +639,24 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentOutlineModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+					<Frame name="$parentComputeEffectsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="COMPUTE_EFFECTS">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentOutlineModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentComputeEffectsDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -930,24 +930,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentSunshaftsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SUNSHAFTS">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentParticleDensityDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -990,9 +975,24 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentOutlineModeDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
+					<Frame name="$parentComputeEffectsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="COMPUTE_EFFECTS">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentOutlineModeDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentComputeEffectsDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

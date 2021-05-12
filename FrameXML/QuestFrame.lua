@@ -188,7 +188,6 @@ local function QuestFrameProgressPanel_SetupBG(self)
 		end
 	end
 
-	self.Bg:SetAtlas("QuestBG-Parchment", true);
 	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	return material;
 end
@@ -550,22 +549,24 @@ end
 
 function QuestFrame_SetMaterial(frame, material)
 	local hasMaterial = material ~= "Parchment";
-	_G[frame:GetName().."MaterialTopLeft"]:SetShown(hasMaterial);
-	_G[frame:GetName().."MaterialTopRight"]:SetShown(hasMaterial);
-	_G[frame:GetName().."MaterialBotLeft"]:SetShown(hasMaterial);
-	_G[frame:GetName().."MaterialBotRight"]:SetShown(hasMaterial);
+	frame.MaterialTopLeft:SetShown(hasMaterial);
+	frame.MaterialTopRight:SetShown(hasMaterial);
+	frame.MaterialBotLeft:SetShown(hasMaterial);
+	frame.MaterialBotRight:SetShown(hasMaterial);
 
 	if hasMaterial then
-		_G[frame:GetName().."MaterialTopLeft"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopLeft");
-		_G[frame:GetName().."MaterialTopRight"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopRight");
-		_G[frame:GetName().."MaterialBotLeft"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
-		_G[frame:GetName().."MaterialBotRight"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
+		frame.MaterialTopLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopLeft");
+		frame.MaterialTopRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopRight");
+		frame.MaterialBotLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
+		frame.MaterialBotRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
 	end
+	frame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
 end
 
 function QuestFrame_GetMaterial()
+	local questTextContrastEnabled = QuestUtil.QuestTextContrastEnabled();
 	local material = GetQuestBackgroundMaterial();
-	if not material then
+	if questTextContrastEnabled or not material then
 		return "Parchment", true;
 	end
 

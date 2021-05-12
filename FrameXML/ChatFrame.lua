@@ -4465,7 +4465,6 @@ function ChatEdit_ActivateChat(editBox)
 	editBox:Raise();
 
 	editBox.header:Show();
-	editBox.prompt:Hide();
 	ChatEdit_UpdateNewcomerEditBoxHint(editBox);
 	editBox.focusLeft:Show();
 	editBox.focusRight:Show();
@@ -4486,7 +4485,6 @@ local function ChatEdit_SetDeactivated(editBox)
 	else
 		editBox:SetText("");
 		editBox.header:Hide();
-		editBox.prompt:Show();
 		if ( not editBox.isGM ) then
 			editBox:SetAlpha(0.35);
 		end
@@ -4831,6 +4829,8 @@ function ChatEdit_UpdateNewcomerEditBoxHint(editBox, excludeChannel)
 	else
 		editBox.NewcomerHint:Hide();
 	end
+
+	editBox.prompt:SetShown(not editBox.header:IsShown() and not editBox.NewcomerHint:IsShown());
 end
 
 function ChatEdit_CheckUpdateNewcomerEditBoxHint()

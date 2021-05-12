@@ -79,7 +79,7 @@
 					</Anchors>
 					<Color color="DISABLED_FONT_COLOR"/>
 				</FontString>
-				<FontString name="$parentPrompt" inherits="ChatFontNormal" hidden="true" parentKey="prompt">
+				<FontString name="$parentPrompt" inherits="ChatFontNormal" hidden="true" ignoreParentAlpha="true" parentKey="prompt">
 					<Size x="0" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT" x="15" y="0"/>

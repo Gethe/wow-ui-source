@@ -55,6 +55,23 @@ local TransmogShared =
 				{ Name = "UsableSets", Type = "TransmogSearchType", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "TransmogUseErrorType",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "None", Type = "TransmogUseErrorType", EnumValue = 0 },
+				{ Name = "PlayerCondition", Type = "TransmogUseErrorType", EnumValue = 1 },
+				{ Name = "Skill", Type = "TransmogUseErrorType", EnumValue = 2 },
+				{ Name = "Ability", Type = "TransmogUseErrorType", EnumValue = 3 },
+				{ Name = "Faction", Type = "TransmogUseErrorType", EnumValue = 4 },
+				{ Name = "Holiday", Type = "TransmogUseErrorType", EnumValue = 5 },
+				{ Name = "ArtifactSpec", Type = "TransmogUseErrorType", EnumValue = 6 },
+			},
+		},
 	},
 };
 

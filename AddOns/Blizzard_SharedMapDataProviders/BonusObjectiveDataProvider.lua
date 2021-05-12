@@ -67,7 +67,9 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 							info.x = x;
 							info.y = y;
 						end
-						self:GetMap():AcquirePin("ThreatObjectivePinTemplate", info);
+						local pin = self:GetMap():AcquirePin("ThreatObjectivePinTemplate", info);
+						local iconAtlas = QuestUtil.GetThreatPOIIcon(info.questId);
+						pin.Icon:SetAtlas(iconAtlas);
 					else
 						self:GetMap():AcquirePin("BonusObjectivePinTemplate", info);
 					end
@@ -168,7 +170,7 @@ end
 function ThreatObjectivePinMixin:OnMouseDownAction()
 	self.Texture:Hide();
 	self.PushedTexture:Show();
-	self.Icon:SetPoint("CENTER", 0, -1);
+	self.Icon:SetPoint("CENTER", 1, -1);
 	if self.moveHighlightOnMouseDown then
 		self.Highlight:SetPoint("CENTER", 2, -2);
 	end
@@ -177,7 +179,7 @@ end
 function ThreatObjectivePinMixin:OnMouseUpAction()
 	self.Texture:Show();
 	self.PushedTexture:Hide();
-	self.Icon:SetPoint("CENTER", -1, 0);
+	self.Icon:SetPoint("CENTER", 0, 0);
 	if self.moveHighlightOnMouseDown then
 		self.Highlight:SetPoint("CENTER", 0, 0);
 	end

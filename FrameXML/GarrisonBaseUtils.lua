@@ -518,7 +518,15 @@ function GetGarrisonTalentCostString(talentInfo, abbreviate, colorCode)
 	end
 
 	for i, researchCostInfo in ipairs(talentInfo.researchCurrencyCosts) do
-		AddCost(GetCurrencyString(researchCostInfo.currencyType, researchCostInfo.currencyQuantity, colorCode, abbreviate));
+		local cost = researchCostInfo.currencyQuantity;
+		local currencyColorCode = colorCode;
+		if currencyColorCode == nil then
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(researchCostInfo.currencyType);
+			if currencyInfo and (currencyInfo.quantity < cost) then
+				currencyColorCode = RED_FONT_COLOR_CODE;
+			end
+		end
+		AddCost(GetCurrencyString(researchCostInfo.currencyType, cost, currencyColorCode, abbreviate));
 	end
 	if talentInfo.researchGoldCost > 0 then
 		AddCost(talentInfo.researchGoldCost.."|TINTERFACE\\MONEYFRAME\\UI-MoneyIcons.blp:16:16:2:0:64:16:0:16:0:16|t");
@@ -587,4 +595,29 @@ function GarrAutoCombatUtil.AddAuraToTooltip(tooltip, auraSpellID, dynamicPrevie
 		
 		GameTooltip_AddColoredDoubleLine(tooltip, leftText, previewTypeMarkup, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
 	end
+end
+
+local AbilityEventTypes = {
+	Enum.GarrAutoMissionEventType.MeleeDamage,
+	Enum.GarrAutoMissionEventType.RangeDamage,
+	Enum.GarrAutoMissionEventType.SpellMeleeDamage,
+	Enum.GarrAutoMissionEventType.SpellRangeDamage,
+	Enum.GarrAutoMissionEventType.Heal,
+	Enum.GarrAutoMissionEventType.ApplyAura,
+};
+
+function GarrAutoCombatUtil.IsAbilityEvent(event)
+	local eventType = event.type;
+	if not tContains(AbilityEventTypes, eventType) then
+		return false;
+	end
+
+	-- Thorns damage effects apply outside the normal "turn" for the combatant so
+	-- we don't want to include them outside of the initial application of the thorns buff.
+	local spellInfo = C_Garrison.GetCombatLogSpellInfo(event.spellID);
+	if (spellInfo == nil) or (spellInfo.hasThornsEffect and (eventType ~= Enum.GarrAutoMissionEventType.ApplyAura)) then
+		return false;
+	end
+
+	return true;
 end

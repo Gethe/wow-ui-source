@@ -142,8 +142,8 @@ function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
-function BarberShopMixin:ResetCustomizationPreview()
-	C_BarberShop.ClearPreviewChoices();
+function BarberShopMixin:ResetCustomizationPreview(clearSavedChoices)
+	C_BarberShop.ClearPreviewChoices(clearSavedChoices);
 end
 
 function BarberShopMixin:PreviewCustomizationChoice(optionID, choiceID)

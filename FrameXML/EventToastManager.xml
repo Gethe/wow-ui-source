@@ -2,30 +2,39 @@
 ..\FrameXML\UI.xsd">
 	<Script file="EventToastManager.lua"/>
 
-	<Frame name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="fixedWidth" value="418" type="number"/>
-			<KeyValue key="heightPadding" value="30" type="number"/>
-		</KeyValues>
+	<Frame name="EventToastAnimationsTemplate" alpha="0" mixin="EventToastAnimationsMixin" virtual="true">
 		<Animations>
-			<AnimationGroup parentKey="sideAnimIn" setToFinalAlpha="true">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.4" order="2"/>
+			<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
+				<Alpha parentKey="anim1" startDelay="1.8" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
 				<Scripts>
 					<OnFinished>
-						self:GetParent():OnAnimFinished();
+						if( not self:GetParent().isSideDisplayToast) then 
+							self:GetParent():AnimOut();
+						end
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
-			<AnimationGroup parentKey="showAnim">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1" />
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="2" parentKey="anim2"/>
+			<AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim1"/>
 				<Scripts>
 					<OnFinished>
-						self:GetParent():GetParent():DisplayNextToast(); 
+						self:GetParent():AnimatedOut();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="418" type="number"/>
+			<KeyValue key="heightPadding" value="30" type="number"/>
+      <KeyValue key="animOutStartDelay" value="1.8" type="number"/>
+      <KeyValue key="animInStartDelay" value="0" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
 		</Frames>
@@ -151,42 +160,22 @@
 		</Layers>
 	</Frame>
 
-	<Button name="EventToastScenarioBaseToastTemplate" inherits="ResizeLayoutFrame" mixin="EventToastScenarioBaseToastMixin" enableMouse="true" alpha="0" virtual="true">
+	<Button name="EventToastScenarioBaseToastTemplate" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" mixin="EventToastScenarioBaseToastMixin" enableMouse="true" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="minimumHeight" value="72" type="number"/>
 			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
+			<KeyValue key="animOutStartDelay" value="4.5" type="number"/>
+      <KeyValue key="animInStartDelay" value="0" type="number"/>
 		</KeyValues>
 		<Animations>
-			<AnimationGroup parentKey="NewStage">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="4.5" order="1"/>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Topper" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Footer" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Background" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 
 				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" order="1"/>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4.5" order="1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Frames>
@@ -213,7 +202,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
+				<Texture parentKey="BG1" hidden="false" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -223,7 +212,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
+				<Texture parentKey="BG2" hidden="false" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -233,7 +222,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="Topper" hidden="true" alpha="0" alphaMode="BLEND">
+				<Texture parentKey="Topper" hidden="true" alphaMode="BLEND">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -241,7 +230,7 @@
 						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Footer" hidden="true" alpha="0" alphaMode="BLEND">
+				<Texture parentKey="Footer" hidden="true" alphaMode="BLEND">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -251,7 +240,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" hidden="true" alpha="0" alphaMode="BLEND">
+				<Texture parentKey="Background" hidden="true" alphaMode="BLEND">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -259,20 +248,22 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="BannerFrame" setAllPoints="true" hidden="true">
+			<Frame parentKey="BannerFrame" alpha="0" setAllPoints="true" hidden="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Animations>
-					<AnimationGroup parentKey="fadeIn">
+					<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" endDelay="3.8" order="1"/>
-						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-						<Scripts>
-							<OnFinished>
-								self:GetParent():Hide();
-							</OnFinished>
-						</Scripts>
 					</AnimationGroup>
+          <AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
+            <Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+            <Scripts>
+              <OnFinished>
+                self:GetParent():Hide();
+              </OnFinished>
+            </Scripts>
+          </AnimationGroup>
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -325,17 +316,6 @@
 		<KeyValues>
 			<KeyValue key="heightPadding" value="10" type="number"/>
 		</KeyValues>
-		<Animations>
-			<AnimationGroup parentKey="NewStage">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="4.5" order="1"/>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="CENTER">
@@ -359,24 +339,14 @@
 	</Button>
 
 	<Button name="EventToastScenarioExpandToastTemplate" inherits="EventToastScenarioBaseToastTemplate" mixin="EventToastScenarioExpandToastMixin" alpha="0" virtual="true">
-		<Animations>
-			<AnimationGroup parentKey="NewStage">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="4.5" order="1"/>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Description" inherits="Number13FontGray" justifyH="CENTER">
+				<FontString parentKey="Description" inherits="Game13Font" justifyH="CENTER">
 					<Size x="300" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-30"/>
+						<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-15"/>
 					</Anchors>
+        	<Color r="0.6" g="0.6" b="0.6"/>/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -398,26 +368,16 @@
 		
 	</Button>
 
-	<Frame name="EventToastChallengeModeToastTemplate" mixin="EventToastChallengeModeToastMixin" alpha="0" virtual="true">
+	<Frame name="EventToastChallengeModeToastTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastChallengeModeToastMixin" enableMouse="true" alpha="0" virtual="true">
 		<Size x="418" y="72"/>
+    <KeyValues>
+      <KeyValue key="animOutStartDelay" value="0" type="number"/>
+      <KeyValue key="animInStartDelay" value="10" type="number"/>
+    </KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
-		<Animations>
-			<AnimationGroup parentKey="challengeComplete">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.5" order="1"/>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-				<Scripts>
-					<OnPlay>
-						self:GetParent():OnAnimationPlay(); 
-					</OnPlay>
-					<OnFinished>
-						self:GetParent():GetParent():DisplayNextToast();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
@@ -435,15 +395,17 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="BannerFrame" setAllPoints="true" alpha="0" hidden="true">
+			<Frame parentKey="BannerFrame" setAllPoints="true" alpha="0" hidden="false">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Animations>
-					<AnimationGroup parentKey="fadeIn">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1"/>
-						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+					<AnimationGroup parentKey="showAnim">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1" parentKey="anim1"/>
 					</AnimationGroup>
+          <AnimationGroup parentKey="hideAnim">
+            <Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2" parentKey="anim1"/>
+          </AnimationGroup>
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -487,56 +449,19 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
+	<Frame name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="heightPadding" value="20" type="number"/>
-			<KeyValue key="animStartDelay" value="1.5" type="number"/>
+			<KeyValue key="animInStartDelay" value="1.5" type="number"/>
+			<KeyValue key="animOutStartDelay" value="4" type="number"/>
 		</KeyValues>
-		<Animations>
-			<AnimationGroup parentKey="sideAnim" setToFinalAlpha="true">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.4" order="2"/>
-				<Scripts>
-					<OnFinished>
-							self:GetParent():OnAnimFinished(); 
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="levelUp">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="1.5" order="1" parentKey="anim1" />
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished(); 
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="fastReveal">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.5" order="1" />
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimFinished();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="immediateReveal">
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0" order="1">
-					<Scripts>
-						<OnFinished>
-							self:GetParent():OnAnimFinished();
-						</OnFinished>
-					</Scripts>
-				</Alpha>
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
-			</AnimationGroup>
-		</Animations>
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
 		</Frames>
 	</Frame>
 
-	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
@@ -553,7 +478,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal"  alpha="0" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="SingleLine" inherits="GameFont_Gigantic">
@@ -572,7 +497,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="BlockText" inherits="GameFontNormalHuge">
@@ -708,6 +633,29 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="HideButton" hidden="true" mixin="EventToastHideButtonMixin">
+				<Size x="277" y="130"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontNormal" text="HIDE" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="CENTER"/>
+								</Anchors>
+							</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
@@ -758,12 +706,4 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
-
-
-
-
-
-
-
-
 </Ui>

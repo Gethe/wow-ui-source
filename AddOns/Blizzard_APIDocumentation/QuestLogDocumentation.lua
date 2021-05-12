@@ -1306,6 +1306,7 @@ local QuestLog =
 				{ Name = "background", Type = "string", Nilable = false },
 				{ Name = "seal", Type = "string", Nilable = false },
 				{ Name = "signature", Type = "string", Nilable = false },
+				{ Name = "poiIcon", Type = "string", Nilable = false },
 			},
 		},
 	},

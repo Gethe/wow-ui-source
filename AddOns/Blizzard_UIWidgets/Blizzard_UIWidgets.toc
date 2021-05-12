@@ -2,6 +2,7 @@
 ## LoadOnDemand: 0
 Blizzard_UIWidgetManager.lua
 Blizzard_UIWidgetManager.xml
+Blizzard_UIWidgetAnimationTemplates.xml
 Blizzard_UIWidgetTemplateBase.lua
 Blizzard_UIWidgetTemplateBase.xml
 Blizzard_UIWidgetTemplateIconAndText.lua

@@ -545,8 +545,8 @@ function CharacterCreateMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
-function CharacterCreateMixin:ResetCustomizationPreview()
-	C_CharacterCreation.ClearPreviewChoices();
+function CharacterCreateMixin:ResetCustomizationPreview(clearSavedChoices)
+	C_CharacterCreation.ClearPreviewChoices(clearSavedChoices);
 end
 
 function CharacterCreateMixin:PreviewCustomizationChoice(optionID, choiceID)

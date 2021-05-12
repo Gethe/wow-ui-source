@@ -72,6 +72,7 @@ local Torghast_TalentTreeLayoutOptions =
 	minimumWidth = 336,
 	canHaveBackButton = false,
 	singleCost = false,
+	showUnffordableAsAvailable = true,
 	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
@@ -264,6 +265,19 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RegisterEvent("GARRISON_TALENT_NPC_CLOSED");
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
 	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_OPEN);
+
+	local helpTipInfo = {
+		text = self:GetFormattedCurrencyTooltipText(TORGHAST_EARN_TOWER_KNOWLEDGE_TUTORIAL_TEXT),
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_EARN_TOWER_KNOWLEDGE,
+		checkCVars = true,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = -5,
+		onAcknowledgeCallback = GenerateClosure(self.CheckSpendTutorial, self),
+	};
+
+	HelpTip:Show(self, helpTipInfo, self.Currency);
 end
 
 function OrderHallTalentFrameMixin:OnHide()
@@ -317,6 +331,25 @@ function OrderHallTalentFrameMixin:ReleaseAllPools()
 	self.buttonAnimationPool:ReleaseAll();
 end
 
+function OrderHallTalentFrameMixin:GetFormattedCurrencyTooltipText(tooltipFormat)
+	return tooltipFormat:format(C_CurrencyInfo.GetCurrencyInfo(self.currency).name);
+end
+
+function OrderHallTalentFrameMixin:CheckSpendTutorial()
+	local helpTipInfo = {
+		text = self:GetFormattedCurrencyTooltipText(TORGHAST_SPEND_TOWER_KNOWLEDGE_TUTORIAL_TEXT),
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_SPEND_TOWER_KNOWLEDGE,
+		checkCVars = true,
+		targetPoint = HelpTip.Point.RightEdgeTop,
+		offsetX = -50,
+		offsetY = -115,
+	};
+
+	HelpTip:Show(self, helpTipInfo, self);
+end
+
 function OrderHallTalentFrameMixin:GetActiveAnimationFrame(talentID)
 	for buttonAnimationFrame in self.buttonAnimationPool:EnumerateActive() do
 		if buttonAnimationFrame:GetTalentID() == talentID then
@@ -344,7 +377,6 @@ function OrderHallTalentFrameMixin:RefreshCurrency()
 	self.Currency.Text:SetText(amount);
 	self.Currency.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Currency:MarkDirty();
-	TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES_MULTI_RESOURCE:format(currencyInfo.name);
 end
 
 local function SortTree(talentA, talentB)
@@ -561,6 +593,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		end
 
 		local isAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.Available;
+		local overrideDisplayAsAvailable = layoutOptions.showUnffordableAsAvailable and (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources);
 		local isZeroRank = talent.talentRank == 0;
 
 		local borderAtlas = BORDER_ATLAS_NONE;
@@ -574,7 +607,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			-- We check for Enum.GarrisonTalentAvailability.UnavailableAlreadyHave to avoid a bug with
 			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
 			local canDisplayAsAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching or talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave;
-			local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
+			local shouldDisplayAsAvailable = (canDisplayAsAvailable or overrideDisplayAsAvailable) and talent.hasInstantResearch;
 			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
 			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
 			if (isAvailable or shouldDisplayAsAvailable) then
@@ -596,11 +629,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 		-- Show the current talent rank if the talent had multiple ranks
 		if talent.talentMaxRank > 1 then
-			local isDisabled = (isZeroRank and not isAvailable);
+			local isDisabled = (isZeroRank and not isAvailable and not overrideDisplayAsAvailable);
 			local talentRankFrame = self.talentRankPool:Acquire();
 			talentRankFrame:SetPoint("BOTTOMRIGHT", talentFrame, 15, -12);
 			talentRankFrame:SetFrameLevel(10);
-			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled, isAvailable);
+			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled, isAvailable or overrideDisplayAsAvailable);
 			talentRankFrame:Show();
 		end
 

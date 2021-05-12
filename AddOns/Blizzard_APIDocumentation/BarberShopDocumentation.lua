@@ -22,6 +22,11 @@ local BarberShop =
 		{
 			Name = "ClearPreviewChoices",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clearSavedChoices", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "GetAvailableCustomizations",

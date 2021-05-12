@@ -1068,6 +1068,14 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 	WardrobeFrame:TriggerEvent(WardrobeFrameMixin.Event.OnCollectionTabChanged);
 end
 
+function WardrobeCollectionFrameMixin:GetActiveTab()
+	if C_Transmog.IsAtTransmogNPC() then
+		return self.selectedTransmogTab;
+	else
+		return self.selectedCollectionTab;
+	end
+end
+
 function WardrobeCollectionFrameMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, TAB_ITEMS);
@@ -1316,6 +1324,7 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 	end
 
 	local useError;
+	local inItemsTab = self:GetActiveTab() == TAB_ITEMS;
 	local appearanceCollected = sources[headerIndex].isCollected
 	if ( #sources > 1 and not appearanceCollected ) then
 		-- only add "Other items using this appearance" if we're continuing to the same visualID
@@ -1335,7 +1344,9 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 			local sourceText, sourceColor = self:GetAppearanceSourceTextAndColor(sources[i]);
 			if ( i == headerIndex ) then
 				name = WARDROBE_TOOLTIP_CYCLE_ARROW_ICON..name;
-				useError = sources[i].useError;
+				if not inItemsTab or not self.ItemsCollectionFrame:IsAppearanceUsableForActiveCategory(sources[i]) then
+					useError = sources[i].useError;
+				end
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
@@ -1345,7 +1356,9 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 		GameTooltip:AddLine(WARDROBE_TOOLTIP_CYCLE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		self.tooltipCycle = true;
 	else
-		useError = sources[headerIndex].useError;
+		if not inItemsTab or not self.ItemsCollectionFrame:IsAppearanceUsableForActiveCategory(sources[headerIndex]) then
+			useError = sources[headerIndex].useError;
+		end
 		self.tooltipCycle = nil;
 	end
 
@@ -1395,7 +1408,7 @@ function WardrobeCollectionFrameMixin:GetAppearanceNameTextAndColor(appearanceIn
 		text = RETRIEVING_ITEM_INFO;
 		color = RED_FONT_COLOR;
 	end
-	if self.selectedTransmogTab == TAB_ITEMS and self.ItemsCollectionFrame:GetActiveCategory() == Enum.TransmogCollectionType.Paired then
+	if self:GetActiveTab() == TAB_ITEMS and self.ItemsCollectionFrame:GetActiveCategory() == Enum.TransmogCollectionType.Paired then
 		local artifactName = C_TransmogCollection.GetArtifactAppearanceStrings(appearanceInfo.sourceID);
 		if artifactName then
 			text = artifactName;
@@ -2378,7 +2391,7 @@ function WardrobeItemsCollectionMixin:GetAnAppearanceSourceFromVisual(visualID, 
 		local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(visualID);
 		for i = 1, #sources do
 			-- first 1 if it doesn't have to be usable
-			if ( not mustBeUsable or not sources[i].useError ) then
+			if ( not mustBeUsable or self:IsAppearanceUsableForActiveCategory(sources[i]) ) then
 				sourceID = sources[i].sourceID;
 				break;
 			end
@@ -2523,6 +2536,17 @@ function WardrobeItemsCollectionMixin:OnSearchUpdate(category)
 	else
 		self:UpdateItems();
 	end
+end
+
+function WardrobeItemsCollectionMixin:IsAppearanceUsableForActiveCategory(appearanceInfo)
+	if not appearanceInfo.useErrorType then
+		return true;
+	end
+	if appearanceInfo.useErrorType == Enum.TransmogUseErrorType.ArtifactSpec then
+		-- artifact appearances don't need to match spec when in normal weapon categories
+		return not TransmogUtil.IsCategoryLegionArtifact(self.activeCategory);
+	end
+	return false;
 end
 
 TransmogToggleSecondaryAppearanceCheckboxMixin = { }
@@ -2812,7 +2836,7 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 	local chosenSourceID = WardrobeCollectionFrame.ItemsCollectionFrame:GetChosenVisualSource(appearanceID);
 	info.func = WardrobeCollectionFrameModelDropDown_SetSource;
 	for i = 1, #sources do
-		if ( sources[i].isCollected and not sources[i].useError ) then
+		if ( sources[i].isCollected and WardrobeCollectionFrame.ItemsCollectionFrame:IsAppearanceUsableForActiveCategory(sources[i]) ) then
 			if ( not headerInserted ) then
 				headerInserted = true;
 				-- space

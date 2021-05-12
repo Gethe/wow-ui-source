@@ -778,8 +778,6 @@ TwitterData = {
 
 SocialPanelOptions = {
 	profanityFilter = { text = "PROFANITY_FILTER" },
-
-	spamFilter = { text="SPAM_FILTER" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
 	blockTrades = { text = "BLOCK_TRADES" },
 	blockChannelInvites = { text = "BLOCK_CHAT_CHANNEL_INVITE" },

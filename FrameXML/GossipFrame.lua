@@ -101,7 +101,6 @@ function GossipFrame_HandleShow(self, textureKit)
 end
 
 local backgroundTextureKit = "QuestBG-%s";
-local defaultBackgroundTexture = "QuestBG-Parchment";
 
 function GossipFrame_GetBackgroundTexture(self, textureKit)
 	if (textureKit) then 
@@ -111,7 +110,7 @@ function GossipFrame_GetBackgroundTexture(self, textureKit)
 			return backgroundAtlas; 
 		end
 	end
-	return defaultBackgroundTexture; 
+	return QuestUtil.GetDefaultQuestBackgroundTexture(); 
 end 
 
 function GossipFrame_HandleHide(self)
