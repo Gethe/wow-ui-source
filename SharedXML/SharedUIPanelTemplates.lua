@@ -1022,3 +1022,132 @@ end
 function DefaultScaleFrameMixin:UpdateScale()
 	ApplyDefaultScale(self, self.minScale, self.maxScale);
 end
+
+
+UIMenuButtonStretchMixin = {}
+
+function UIMenuButtonStretchMixin:SetTextures(texture)
+	self.TopLeft:SetTexture(texture);
+	self.TopRight:SetTexture(texture);
+	self.BottomLeft:SetTexture(texture);
+	self.BottomRight:SetTexture(texture);
+	self.TopMiddle:SetTexture(texture);
+	self.MiddleLeft:SetTexture(texture);
+	self.MiddleRight:SetTexture(texture);
+	self.BottomMiddle:SetTexture(texture);
+	self.MiddleMiddle:SetTexture(texture);
+end
+
+function UIMenuButtonStretchMixin:OnMouseDown(button)
+	if ( self:IsEnabled() ) then
+		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Down");
+		if ( self.Icon ) then
+			if ( not self.Icon.oldPoint ) then
+				local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
+				self.Icon.oldPoint = point;
+				self.Icon.oldX = x;
+				self.Icon.oldY = y;
+			end
+			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
+		end
+	end
+end
+
+function UIMenuButtonStretchMixin:OnMouseUp(button)
+	if ( self:IsEnabled() ) then
+		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
+		if ( self.Icon ) then
+			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
+		end
+	end
+end
+
+function UIMenuButtonStretchMixin:OnShow()
+	-- we need to reset our textures just in case we were hidden before a mouse up fired
+	self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
+end
+
+function UIMenuButtonStretchMixin:OnEnable()
+	self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
+end
+
+function UIMenuButtonStretchMixin:OnEnter()
+	if(self.tooltipText ~= nil) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+		GameTooltip:Show();
+	end
+end
+
+function UIMenuButtonStretchMixin:OnLeave()
+	if(self.tooltipText ~= nil) then
+		GameTooltip:Hide();
+	end
+end
+
+
+-- Click to drag attached to a subframe. For example, a title bar.
+PanelDragBarMixin = {};
+
+function PanelDragBarMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function PanelDragBarMixin:Init(target)
+	self.target = target;
+end
+
+function PanelDragBarMixin:OnDragStart()
+	self.target:StartMoving();
+end
+
+function PanelDragBarMixin:OnDragStop()
+	self.target:StopMovingOrSizing();
+end
+
+PanelResizeButtonMixin = {};
+
+function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxHeight)
+	self.target = target;
+	self.minWidth = minWidth;
+	self.minHeight = minHeight;
+	self.maxWidth = maxWidth;
+	self.maxHeight = maxHeight;
+
+	local originalTargetOnSizeChanged = target:GetScript("OnSizeChanged") or nop;
+	target:SetScript("OnSizeChanged", function(target, width, height)
+		originalTargetOnSizeChanged(target, width, height);
+
+		if width < self.minWidth then
+			target:SetWidth(self.minWidth);
+		elseif self.maxWidth and width > self.maxWidth then
+			target:SetWidth(self.maxWidth);
+		end
+
+		if height < self.minHeight then
+			target:SetHeight(self.minHeight);
+		elseif self.maxHeight and height > self.maxHeight then
+			target:SetHeight(self.maxHeight);
+		end
+	end);
+end
+
+function PanelResizeButtonMixin:OnMouseDown()
+	if self.target then
+		self.target:StartSizing("BOTTOMRIGHT");
+	end
+end
+
+function PanelResizeButtonMixin:OnMouseUp()
+	if self.target then
+		self.target:StopMovingOrSizing();
+
+		if self.resizeStoppedCallback ~= nil then
+			self.resizeStoppedCallback(self.target);
+		end
+	end
+end
+
+function PanelResizeButtonMixin:SetOnResizeStoppedCallback(resizeStoppedCallback)
+	self.resizeStoppedCallback = resizeStoppedCallback;
+end

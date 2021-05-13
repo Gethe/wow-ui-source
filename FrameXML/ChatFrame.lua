@@ -2217,7 +2217,9 @@ end
 
 SlashCmdList["EVENTTRACE"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
-	EventTraceFrame_HandleSlashCmd(msg);
+	if EventTrace then
+		EventTrace:Show();
+	end
 end
 
 if IsGMClient() then

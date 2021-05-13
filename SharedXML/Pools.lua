@@ -64,7 +64,7 @@ function ObjectPoolMixin:Acquire()
 	end
 
 	local newObj = self.creationFunc(self);
-	if self.resetterFunc then
+	if self.resetterFunc and not self.disallowResetIfNew then
 		self.resetterFunc(self, newObj);
 	end
 	self.activeObjects[newObj] = true;
@@ -91,6 +91,10 @@ function ObjectPoolMixin:ReleaseAll()
 	for obj in pairs(self.activeObjects) do
 		self:Release(obj);
 	end
+end
+
+function ObjectPoolMixin:SetResetDisallowedIfNew(disallowed)
+	self.disallowResetIfNew = disallowed;
 end
 
 function ObjectPoolMixin:EnumerateActive()
@@ -221,36 +225,58 @@ function CreateActorPool(parent, actorTemplate, resetterFunc)
 	return actorPool;
 end
 
-PoolCollection = {};
+FramePoolCollectionMixin = {};
 
-function CreatePoolCollection()
-	local poolCollection = CreateFromMixins(PoolCollection);
+function CreateFramePoolCollection()
+	local poolCollection = CreateFromMixins(FramePoolCollectionMixin);
 	poolCollection:OnLoad();
 	return poolCollection;
 end
 
-function PoolCollection:OnLoad()
+function FramePoolCollectionMixin:OnLoad()
 	self.pools = {};
 end
 
-function PoolCollection:CreatePool(frameType, parent, template, resetterFunc)
+function FramePoolCollectionMixin:GetNumActive()
+	local numTotalActive = 0;
+	for _, pool in pairs(self.pools) do
+		numTotalActive = numTotalActive + pool:GetNumActive();
+	end
+	return numTotalActive;
+end
+
+function FramePoolCollectionMixin:GetOrCreatePool(frameType, parent, template, resetterFunc, forbidden)
+	local pool = self:GetPool(template);
+	if not pool then
+		pool = self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+	end
+	return pool;
+end
+
+function FramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden)
 	assert(self:GetPool(template) == nil);
-	local pool = CreateFramePool(frameType, parent, template, resetterFunc);
+	local pool = CreateFramePool(frameType, parent, template, resetterFunc, forbidden);
 	self.pools[template] = pool;
 	return pool;
 end
 
-function PoolCollection:GetPool(template)
+function FramePoolCollectionMixin:CreatePoolIfNeeded(frameType, parent, template, resetterFunc, forbidden)
+	if not self:GetPool(template) then
+		self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+	end
+end
+
+function FramePoolCollectionMixin:GetPool(template)
 	return self.pools[template];
 end
 
-function PoolCollection:Acquire(template)
+function FramePoolCollectionMixin:Acquire(template)
 	local pool = self:GetPool(template);
 	assert(pool);
 	return pool:Acquire();
 end
 
-function PoolCollection:Release(object)
+function FramePoolCollectionMixin:Release(object)
 	for _, pool in pairs(self.pools) do
 		if pool:Release(object) then
 			-- Found it! Just return
@@ -262,20 +288,20 @@ function PoolCollection:Release(object)
 	assert(false);
 end
 
-function PoolCollection:ReleaseAllByTemplate(template)
+function FramePoolCollectionMixin:ReleaseAllByTemplate(template)
 	local pool = self:GetPool(template);
 	if pool then
 		pool:ReleaseAll();
 	end
 end
 
-function PoolCollection:ReleaseAll()
+function FramePoolCollectionMixin:ReleaseAll()
 	for key, pool in pairs(self.pools) do
 		pool:ReleaseAll();
 	end
 end
 
-function PoolCollection:EnumerateActiveByTemplate(template)
+function FramePoolCollectionMixin:EnumerateActiveByTemplate(template)
 	local pool = self:GetPool(template);
 	if pool then
 		return pool:EnumerateActive();
@@ -284,7 +310,7 @@ function PoolCollection:EnumerateActiveByTemplate(template)
 	return nop;
 end
 
-function PoolCollection:EnumerateActive()
+function FramePoolCollectionMixin:EnumerateActive()
 	local currentPoolKey, currentPool = next(self.pools, nil);
 	local currentObject = nil;
 	return function()
@@ -304,10 +330,36 @@ function PoolCollection:EnumerateActive()
 	end, nil;
 end
 
-function PoolCollection:GetNumActive()
-	local count = 0;
-	for _, pool in pairs(self.pools) do
-		count = count + pool:GetNumActive();
+function FramePoolCollectionMixin:EnumerateInactiveByTemplate(template)
+	local pool = self:GetPool(template);
+	if pool then
+		return pool:EnumerateInactive();
 	end
-	return count;
+
+	return nop;
+end
+
+function FramePoolCollectionMixin:EnumerateInactive()
+	local currentPoolKey, currentPool = next(self.pools, nil);
+	local currentObject = nil;
+	return function()
+		if currentPool then
+			currentObject = currentPool:GetNextInactive(currentObject);
+			while not currentObject do
+				currentPoolKey, currentPool = next(self.pools, currentPoolKey);
+				if currentPool then
+					currentObject = currentPool:GetNextInactive();
+				else
+					break;
+				end
+			end
+		end
+
+		return currentObject;
+	end, nil;
+end
+
+do
+	-- Use CreateFramePoolCollection
+	CreatePoolCollection = CreateFramePoolCollection;
 end

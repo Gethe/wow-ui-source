@@ -2420,7 +2420,8 @@ function CloneConfirmation_OnShow(self)
 	if (not formattedDate) then
 		formattedDate = BURNING_CRUSADE_TRANSITION_DEFAULT_CLONE_DATE;
 	end
-	self.ChoiceConfirmationTitle:SetText(string.format(BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_CONFIRM, selectedCharName, formattedDate));
+	self.CloneConfirmationTitle:SetText(string.format(BURNING_CRUSADE_TRANSITION_ACTIVATECHARACTER_CONFIRM, selectedCharName, formattedDate));
+	self.ChoiceConfirmationInstruction:SetPoint("TOP", self.CloneConfirmationTitle, "BOTTOM", 0, -37);
 end
 
 function CloneConfirmation_OnConfirm(self)

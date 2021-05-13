@@ -2,32 +2,6 @@ function CanAccessObject(obj)
 	return issecure() or not obj:IsForbidden();
 end
 
-function GetTextureInfo(obj)
-	if obj:GetObjectType() == "Texture" then
-		local assetName = obj:GetAtlas();
-		local assetType = "Atlas";
-
-		if not assetName then
-			assetName = obj:GetTextureFilePath();
-			assetType = "File";
-		end
-
-		if not assetName then
-			assetName = obj:GetTextureFileID();
-			assetType = "FileID";
-		end
-
-
-		if not assetName then
-			assetName = "UnknownAsset";
-			assetType = "Unknown";
-		end
-
-		local ulX, ulY, blX, blY, urX, urY, brX, brY = obj:GetTexCoord();
-		return assetName, assetType, ulX, ulY, blX, blY, urX, urY, brX, brY;
-	end
-end
-
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},
 	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
@@ -43,88 +17,6 @@ CLASS_ICON_TCOORDS = {
 	["DEMONHUNTER"]	= {0.7421875, 0.98828125, 0.5, 0.75},
 };
 
-function SetClampedTextureRotation(texture, rotationDegrees)
-	if (rotationDegrees ~= 0 and rotationDegrees ~= 90 and rotationDegrees ~= 180 and rotationDegrees ~= 270) then
-		error("SetRotation: rotationDegrees must be 0, 90, 180, or 270");
-		return;
-	end
-
-	if not (texture.rotationDegrees) then
-		texture.origTexCoords = {texture:GetTexCoord()};
-		texture.origWidth = texture:GetWidth();
-		texture.origHeight = texture:GetHeight();
-	end
-
-	if (texture.rotationDegrees == rotationDegrees) then
-		return;
-	end
-
-	texture.rotationDegrees = rotationDegrees;
-
-	if (rotationDegrees == 0 or rotationDegrees == 180) then
-		texture:SetWidth(texture.origWidth);
-		texture:SetHeight(texture.origHeight);
-	else
-		texture:SetWidth(texture.origHeight);
-		texture:SetHeight(texture.origWidth);
-	end
-
-	if (rotationDegrees == 0) then
-		texture:SetTexCoord( texture.origTexCoords[1], texture.origTexCoords[2],
-											texture.origTexCoords[3], texture.origTexCoords[4],
-											texture.origTexCoords[5], texture.origTexCoords[6],
-											texture.origTexCoords[7], texture.origTexCoords[8] );
-	elseif (rotationDegrees == 90) then
-		texture:SetTexCoord( texture.origTexCoords[3], texture.origTexCoords[4],
-											texture.origTexCoords[7], texture.origTexCoords[8],
-											texture.origTexCoords[1], texture.origTexCoords[2],
-											texture.origTexCoords[5], texture.origTexCoords[6] );
-	elseif (rotationDegrees == 180) then
-		texture:SetTexCoord( texture.origTexCoords[7], texture.origTexCoords[8],
-											texture.origTexCoords[5], texture.origTexCoords[6],
-											texture.origTexCoords[3], texture.origTexCoords[4],
-											texture.origTexCoords[1], texture.origTexCoords[2] );
-	elseif (rotationDegrees == 270) then
-		texture:SetTexCoord( texture.origTexCoords[5], texture.origTexCoords[6],
-											texture.origTexCoords[1], texture.origTexCoords[2],
-											texture.origTexCoords[7], texture.origTexCoords[8],
-											texture.origTexCoords[3], texture.origTexCoords[4] );
-	end
-end
-
-function ClearClampedTextureRotation(texture)
-	if (texture.rotationDegrees) then
-		SetClampedTextureRotation(0);
-		texture.origTexCoords = nil;
-		texture.origWidth = nil;
-		texture.origHeight = nil;
-	end
-end
-
-
-function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
-	local widthPerGrid = gridWidth/textureWidth;
-	local heightPerGrid = gridHeight/textureHeight;
-	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
-end
-
-function GetTexCoordsForRole(role)
-	local textureHeight, textureWidth = 256, 256;
-	local roleHeight, roleWidth = 67, 67;
-
-	if ( role == "GUIDE" ) then
-		return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "TANK" ) then
-		return GetTexCoordsByGrid(1, 2, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "HEALER" ) then
-		return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "DAMAGER" ) then
-		return GetTexCoordsByGrid(2, 2, textureWidth, textureHeight, roleWidth, roleHeight);
-	else
-		error("Unknown role: "..tostring(role));
-	end
-end
-
 function ConvertPixelsToUI(pixels, frameScale)
 	local physicalScreenHeight = select(2, GetPhysicalScreenSize());
 	return (pixels * 768.0)/(physicalScreenHeight * frameScale);
@@ -132,81 +24,6 @@ end
 
 function ReloadUI()
 	C_UI.Reload();
-end
-
-function tDeleteItem(tbl, item)
-	local index = 1;
-	while tbl[index] do
-		if ( item == tbl[index] ) then
-			tremove(tbl, index);
-		else
-			index = index + 1;
-		end
-	end
-end
-
-function tIndexOf(tbl, item)
-	for i, v in ipairs(tbl) do
-		if item == v then
-			return i;
-		end
-	end
-end
-
-function tContains(tbl, item)
-	return tIndexOf(tbl, item) ~= nil;
-end
-
-function tInvert(tbl)
-	local inverted = {};
-	for k, v in pairs(tbl) do
-		inverted[v] = k;
-	end
-	return inverted;
-end
-
-function tFilter(tbl, pred, isIndexTable)
-	local out = {};
-
-	if (isIndexTable) then
-		local currentIndex = 1;
-		for i, v in ipairs(tbl) do
-			if (pred(v)) then
-				out[currentIndex] = v;
-				currentIndex = currentIndex + 1;
-			end
-		end
-	else
-		for k, v in pairs(tbl) do
-			if (pred(v)) then
-				out[k] = v;
-			end
-		end
-	end
-
-	return out;
-end
-
-function CopyTable(settings)
-	local copy = {};
-	for k, v in pairs(settings) do
-		if ( type(v) == "table" ) then
-			copy[k] = CopyTable(v);
-		else
-			copy[k] = v;
-		end
-	end
-	return copy;
-end
-
-function FindInTableIf(tbl, pred)
-	for k, v in pairs(tbl) do
-		if (pred(v)) then
-			return k, v;
-		end
-	end
-
-	return nil;
 end
 
 function ExtractHyperlinkString(linkString)
@@ -307,63 +124,6 @@ function GetMoneyString(money, separateThousands)
 	end
 
 	return moneyString;
-end
-
-function Lerp(startValue, endValue, amount)
-	return (1 - amount) * startValue + amount * endValue;
-end
-
-function Clamp(value, min, max)
-	if value > max then
-		return max;
-	elseif value < min then
-		return min;
-	end
-	return value;
-end
-
-function Saturate(value)
-	return Clamp(value, 0.0, 1.0);
-end
-
-function Wrap(value, max)
-	return (value - 1) % max + 1;
-end
-
-function ClampDegrees(value)
-	return ClampMod(value, 360);
-end
-
-function ClampMod(value, mod)
-	return ((value % mod) + mod) % mod;
-end
-
-function NegateIf(value, condition)
-	return condition and -value or value;
-end
-
-function PercentageBetween(value, startValue, endValue)
-	if startValue == endValue then
-		return 0.0;
-	end
-	return (value - startValue) / (endValue - startValue);
-end
-
-function ClampedPercentageBetween(value, startValue, endValue)
-	return Saturate(PercentageBetween(value, startValue, endValue));
-end
-
-local TARGET_FRAME_PER_SEC = 60.0;
-function DeltaLerp(startValue, endValue, amount, timeSec)
-	return Lerp(startValue, endValue, Saturate(amount * timeSec * TARGET_FRAME_PER_SEC));
-end
-
-function FrameDeltaLerp(startValue, endValue, amount)
-	return DeltaLerp(startValue, endValue, amount, GetTickTime());
-end
-
-function RandomFloatInRange(minValue, maxValue)
-	return Lerp(minValue, maxValue, math.random());
 end
 
 function GetNavigationButtonEnabledStates(count, index)
@@ -755,114 +515,6 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 	self:ApplyFontObjects();
 end
 
--- Time --
-function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
-	local time = "";
-	local count = 0;
-	local tempTime;
-	seconds = roundUp and ceil(seconds) or floor(seconds);
-	maxCount = maxCount or 2;
-	if ( seconds >= 86400  ) then
-		count = count + 1;
-		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / 86400);
-		else
-			tempTime = floor(seconds / 86400);
-		end
-		if ( notAbbreviated ) then
-			time = D_DAYS:format(tempTime);
-		else
-			time = DAYS_ABBR:format(tempTime);
-		end
-		seconds = mod(seconds, 86400);
-	end
-	if ( count < maxCount and seconds >= 3600  ) then
-		count = count + 1;
-		if ( time ~= "" ) then
-			time = time..TIME_UNIT_DELIMITER;
-		end
-		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / 3600);
-		else
-			tempTime = floor(seconds / 3600);
-		end
-		if ( notAbbreviated ) then
-			time = time..D_HOURS:format(tempTime);
-		else
-			time = time..HOURS_ABBR:format(tempTime);
-		end
-		seconds = mod(seconds, 3600);
-	end
-	if ( count < maxCount and seconds >= 60  ) then
-		count = count + 1;
-		if ( time ~= "" ) then
-			time = time..TIME_UNIT_DELIMITER;
-		end
-		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / 60);
-		else
-			tempTime = floor(seconds / 60);
-		end
-		if ( notAbbreviated ) then
-			time = time..D_MINUTES:format(tempTime);
-		else
-			time = time..MINUTES_ABBR:format(tempTime);
-		end
-		seconds = mod(seconds, 60);
-	end
-	if ( count < maxCount and seconds > 0 and not noSeconds ) then
-		if ( time ~= "" ) then
-			time = time..TIME_UNIT_DELIMITER;
-		end
-		if ( notAbbreviated ) then
-			time = time..D_SECONDS:format(seconds);
-		else
-			time = time..SECONDS_ABBR:format(seconds);
-		end
-	end
-	return time;
-end
-
-function SecondsToTimeAbbrev(seconds)
-	local tempTime;
-	if ( seconds >= 86400  ) then
-		tempTime = ceil(seconds / 86400);
-		return DAY_ONELETTER_ABBR, tempTime;
-	end
-	if ( seconds >= 3600  ) then
-		tempTime = ceil(seconds / 3600);
-		return HOUR_ONELETTER_ABBR, tempTime;
-	end
-	if ( seconds >= 60  ) then
-		tempTime = ceil(seconds / 60);
-		return MINUTE_ONELETTER_ABBR, tempTime;
-	end
-	return SECOND_ONELETTER_ABBR, seconds;
-end
-
-function FormatShortDate(day, month, year)
-	if (year) then
-		if (LOCALE_enGB) then
-			return SHORTDATE_EU:format(day, month, year);
-		else
-			return SHORTDATE:format(day, month, year);
-		end
-	else
-		if (LOCALE_enGB) then
-			return SHORTDATENOYEAR_EU:format(day, month);
-		else
-			return SHORTDATENOYEAR:format(day, month);
-		end
-	end
-end
-
-function Round(value)
-	if value < 0.0 then
-		return math.ceil(value - .5);
-	end
-	return math.floor(value + .5);
-end
-
 function FormatPercentage(percentage, roundToNearestInteger)
 	if roundToNearestInteger then
 		percentage = Round(percentage * 100);
@@ -873,75 +525,9 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	return PERCENTAGE_STRING:format(percentage);
 end
 
-function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)
-	return ("|T%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d|t"):format(
-		  file
-		, height
-		, width
-		, xOffset or 0
-		, yOffset or 0
-		, fileWidth
-		, fileHeight
-		, left * fileWidth
-		, right * fileWidth
-		, top * fileHeight
-		, bottom * fileHeight
-	);
-end
-
-function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
-	return ("|A:%s:%d:%d:%d:%d|a"):format(
-		  atlasName
-		, height or 0
-		, width or 0
-		, offsetX or 0
-		, offsetY or 0
-	);
-end
-
-function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
-	for region, atlas in pairs(regionsToAtlases) do
-		if frame[region] then
-			if frame[region]:GetObjectType() == "StatusBar" then
-				frame[region]:SetStatusBarAtlas(atlas);
-			elseif frame[region].SetAtlas then
-				frame[region]:SetAtlas(atlas, useAtlasSize);
-			end
-		end
-	end
-end
-
 function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
 	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
-end
-
-function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasSize)
-	if not frame then
-		return;
-	end
-
-	if setVisibility then
-		frame:SetShown(textureKit ~= nil);
-	end
-
-	if textureKit then
-		if frame:GetObjectType() == "StatusBar" then
-			frame:SetStatusBarAtlas(fmt:format(textureKit));
-		elseif frame.SetAtlas then
-			frame:SetAtlas(fmt:format(textureKit), useAtlasSize);
-		end
-	end
-end
-
-function SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize)
-	if not textureKit and not setVisibilityOfRegions then
-		return;
-	end
-
-	for frame, fmt in pairs(frames) do
-		SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
-	end
 end
 
 function SetupTextureKitsOnFrames(textureKitID, frames, setVisibilityOfRegions, useAtlasSize)
@@ -949,41 +535,7 @@ function SetupTextureKitsOnFrames(textureKitID, frames, setVisibilityOfRegions, 
 	SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
-function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize)
-	if not textureKit and not setVisibilityOfRegions then
-		return;
-	end
-
-	local frames = {};
-	for region, fmt in pairs(regions) do
-		if frame[region] then
-			frames[frame[region]] = fmt;
-		end
-	end
-
-	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
-end
-
-function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
-	local textureKit = GetUITextureKitInfo(textureKitID);
-	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
-end
-
-function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
-	if not frame or not regionInfoList then
-		return;
-	end
-
-	for region, regionInfo in pairs(regionInfoList) do
-		SetupTextureKitOnFrame(textureKit, frame[region], regionInfo.formatString, regionInfo.setVisibility, regionInfo.useAtlasSize);
-	end
-end
-
-function SetupTextureKitsFromRegionInfoByID(textureKitID, frame, regionInfoList)
-	local textureKit = GetUITextureKitInfo(textureKitID);
-	SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList);
-end
-
+-- Note this is deprecated in favor of CallbackRegistryMixin.
 CallbackRegistryBaseMixin = {};
 
 function CallbackRegistryBaseMixin:OnLoad()
@@ -1389,10 +941,4 @@ end
 
 function GetClampedCurrentExpansionLevel()
 	return math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));
-end
-
-function tAppendAll(table, addedArray)
-	for i, element in ipairs(addedArray) do
-		tinsert(table, element);
-	end
 end

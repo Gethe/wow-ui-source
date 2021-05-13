@@ -1,7 +1,10 @@
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\Util.lua
-..\SharedXML\AnchorUtil.xml
+..\SharedXML\FunctionUtil.lua
+..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSlice.lua
+..\SharedXML\TextureUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua
@@ -9,6 +12,11 @@
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
 ..\SharedXML\LinkUtil.lua
+..\SharedXML\TableUtil.lua
+..\SharedXML\EnumUtil.lua
+..\SharedXML\MathUtil.lua
+..\SharedXML\TimeUtil.lua
+
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 Constants.lua

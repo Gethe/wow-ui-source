@@ -887,7 +887,7 @@
 	<Texture name="UIPanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Button name="UIMenuButtonStretchTemplate" virtual="true">
+	<Button name="UIMenuButtonStretchTemplate" mixin="UIMenuButtonStretchMixin" virtual="true">
 		<Size x="40" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -962,79 +962,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					if ( self.Icon ) then
-						if ( not self.Icon.oldPoint ) then
-							local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
-							self.Icon.oldPoint = point;
-							self.Icon.oldX = x;
-							self.Icon.oldY = y;
-						end
-						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
-					end
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ) then
-					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					if ( self.Icon ) then
-						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
-					end
-				end
-			</OnMouseUp>
-			<OnShow>
-				if ( self:IsEnabled() ) then
-					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				end
-			</OnShow>
-			<OnEnable>
-				self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-			</OnEnable>
-			<OnEnter>
-				if(self.tooltipText ~= nil) then
-					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-				end
-			</OnEnter>
-			<OnLeave>
-				if(self.tooltipText ~= nil) then
-					GameTooltip:Hide();
-				end
-			</OnLeave>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnShow method="OnShow"/>
+			<OnEnable method="OnEnable"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<ButtonText parentKey="Text" name="$parentText">
 			<Anchors>
@@ -1989,4 +1922,24 @@
 			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
 		</Scripts>
 	</Frame>
+
+
+	<Frame name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="PanelResizeButtonTemplate" mixin="PanelResizeButtonMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+		<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
+		<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
+		<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
+	</Button>
 </Ui>
