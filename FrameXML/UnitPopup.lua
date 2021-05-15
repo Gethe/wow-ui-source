@@ -1736,7 +1736,7 @@ function UnitPopup_OnClick (self)
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
-		HelpFrame_ShowReportCheatingDialog(playerLocation);
+		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_CHEATING, fullname, playerLocation);
 	elseif ( button == "POP_OUT_CHAT" ) then
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
 	elseif ( button == "DUEL" ) then

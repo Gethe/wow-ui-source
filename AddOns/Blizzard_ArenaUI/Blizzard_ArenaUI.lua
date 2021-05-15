@@ -251,7 +251,7 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 		elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
 			ArenaEnemyFrame_UpdateCrowdControl(self);
 		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
-			local spellID, itemID = ...;
+			local unitTarget, spellID, itemID = ...;
 			if (spellID ~= self.CC.spellID) then
 				self.CC.spellID = spellID;
 

@@ -363,8 +363,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	elseif ( classification == "worldboss" or classification == "elite" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
 	elseif ( classification == "rareelite" ) then
-		--self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
-		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite"); -- Just use the Elite border for Classic.
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
 	elseif ( classification == "rare" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 	else

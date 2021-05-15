@@ -128,9 +128,13 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 			self:InitSpells();
 		end
 	elseif event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" then
-		local unitToken, spellID = ...;
+		local unitToken, spellID, itemID = ...;
 		if unitToken == self.unitToken then
-			self:SetCCRemoverIcon(spellID);
+			if itemID ~= 0 then
+				self:SetCCRemoverItemIcon(itemID);
+			else
+				self:SetCCRemoverSpellIcon(spellID);
+			end
 		end
 	elseif event == "LOSS_OF_CONTROL_COMMENTATOR_ADDED" then
 		local guid , index = ...;
@@ -380,22 +384,43 @@ function CommentatorUnitFrameMixin:SetSpellActive(trackedSpellID, isActive)
 	end
 end
 
-function CommentatorUnitFrameMixin:SetCCRemoverIcon(spellID)
-	self.CCRemover:SetShown(spellID > 0);
+function CommentatorUnitFrameMixin:SetCCRemoverSpellIcon(spellID)
+	local spellValid = spellID > 0;
+	self.CCRemover:SetShown(spellValid);
 
-	if spellID ~= self.CCRemover.Icon.spellID then
+	if spellValid then
 		local textureID = select(3, GetSpellInfo(spellID));
-		local icon = self.CCRemover.Icon;
-		icon.spellID = spellID;
+		self:SetCCRemoverIcon(textureID);
+	end
+end
+
+function CommentatorUnitFrameMixin:SetCCRemoverItemIcon(itemID)
+	local itemValid = itemID > 0;
+	self.CCRemover:SetShown(itemValid);
+
+	if itemValid then
+		local textureID = GetItemIcon(itemID);
+		self:SetCCRemoverIcon(textureID);
+	end
+end
+
+function CommentatorUnitFrameMixin:SetCCRemoverIcon(textureID)
+	local icon = self.CCRemover.Icon;
+	if textureID ~= icon.textureID then
+		icon.textureID = textureID;
 		icon:SetTexture(textureID);
 	end
 end
 
 function CommentatorUnitFrameMixin:UpdateCCRemover()
 	if self.unitToken then
-		local spellID, startTimeMs, durationMs = C_PvP.GetArenaCrowdControlInfo(self.unitToken);
+		local spellID, itemID, startTimeMs, durationMs = C_PvP.GetArenaCrowdControlInfo(self.unitToken);
 		if spellID then
-			self:SetCCRemoverIcon(spellID);
+			if(itemID ~= 0) then
+				self:SetCCRemoverItemIcon(itemID);
+			else
+				self:SetCCRemoverSpellIcon(spellID);
+			end
 			
 			if (startTimeMs ~= 0 and durationMs ~= 0) then
 				self.CCRemover.Cooldown:SetCooldown(startTimeMs / 1000.0, durationMs / 1000.0);

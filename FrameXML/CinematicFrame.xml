@@ -63,7 +63,10 @@
 					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentCloseDialog" parentKey="closeDialog">
+			<Frame name="$parentCloseDialog" inherits="BackdropTemplate" parentKey="closeDialog">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
 				<Size x="320" y="84"/>
 				<Anchors>
 					<Anchor point="CENTER"/>

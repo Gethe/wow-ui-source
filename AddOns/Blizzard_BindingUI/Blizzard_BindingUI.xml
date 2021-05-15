@@ -198,16 +198,14 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentCategoryList" parentKey="categoryList" inherits="OptionsFrameListTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="KeyBindingsCategoryListButtonTemplate" type="string"/>
+				</KeyValues>
 				<Size x="175" y="569"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = CATEGORY;
-						OptionsList_OnLoad(self, "KeyBindingsCategoryListButtonTemplate");
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="bindingsContainer" inherits="BackdropTemplate">
 				<KeyValues>

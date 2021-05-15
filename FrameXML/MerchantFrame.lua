@@ -739,7 +739,7 @@ function MerchantFrame_UpdateCanRepairAll()
 end
 
 function MerchantFrame_UpdateRepairButtons()
-	if ( CanMerchantRepair() ) then
+	if ( MerchantFrame.selectedTab == 1 and CanMerchantRepair() ) then
 
 		MerchantRepairAllButton:SetWidth(36);
 		MerchantRepairAllButton:SetHeight(36);

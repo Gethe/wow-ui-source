@@ -6,7 +6,16 @@ MIN_CHAR_NAME_LENGTH = 2;
 CHARACTER_CREATE_ROTATION_START_X = nil;
 CHARACTER_CREATE_INITIAL_FACING = nil;
 
-FACTION_BACKDROP_COLOR_TABLE = { Alliance = GLUE_ALLIANCE_COLOR, Horde = GLUE_HORDE_COLOR };
+FACTION_BACKDROP_COLOR_TABLE = {
+	Alliance = {
+		color = GLUE_ALLIANCE_COLOR,
+		borderColor = GLUE_ALLIANCE_BORDER_COLOR,
+	},
+	Horde = {
+		color = GLUE_HORDE_COLOR,
+		borderColor = GLUE_HORDE_BORDER_COLOR,
+	},
+};
 
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
@@ -76,6 +85,11 @@ function CharacterCreate_OnLoad(self)
 	for i=1, NUM_CHAR_CUSTOMIZATIONS, 1 do
 		_G["CharacterCustomizationButtonFrame"..i.."Text"]:SetText(_G["CHAR_CUSTOMIZATION"..i.."_DESC"]);
 	end
+
+	-- Color edit box backdrop
+	local backdropColor = FACTION_BACKDROP_COLOR_TABLE["Alliance"];
+	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor.color:GetRGB());
+	CharacterCreateNameEdit:SetBackdropColor(backdropColor.borderColor:GetRGB());
 end
 
 function CharacterCreate_OnShow(self)
@@ -361,7 +375,7 @@ function SetCharacterRace(id)
 	-- Set backdrop colors based on faction
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE[faction];
 	for index, value in ipairs(FRAMES_TO_BACKDROP_COLOR) do
-		_G[value]:SetBackdropColor(backdropColor:GetRGB());
+		_G[value]:SetBackdropColor(backdropColor.borderColor:GetRGB());
 	end
 
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel());

@@ -120,14 +120,6 @@ function HelpFrame_IsGMTicketQueueActive()
 	return ticketQueueActive;
 end
 
-function HelpFrame_ShowReportCheatingDialog(playerLocation)
-	local frame = ReportCheatingDialog;
-	frame.CommentFrame.EditBox:SetText("");
-	frame.CommentFrame.EditBox.InformationText:Show();
-	frame.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_CHEATING, playerLocation);
-	StaticPopupSpecial_Show(frame);
-end
-
 --
 -- HelpOpenWebTicketButton
 --
