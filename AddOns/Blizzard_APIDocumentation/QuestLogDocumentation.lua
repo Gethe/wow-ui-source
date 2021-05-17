@@ -174,7 +174,7 @@ local QuestLog =
 			LiteralName = "QUEST_WATCH_UPDATE",
 			Payload =
 			{
-				{ Name = "questIndex", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = false },
 			},
 		},
 		{

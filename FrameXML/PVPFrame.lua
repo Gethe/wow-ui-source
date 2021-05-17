@@ -47,13 +47,11 @@ function PVPFrame_OnEvent(self, event, ...)
 			PVPTeamDetails_Update(self, PVPTeamDetails.team);
 			PVPFrame_Update();
 		end
-	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
-		-- PVPFrame.season = GetCurrentArenaSeason();
 		if ( PVPTeamDetails:IsShown() ) then
-			ArenaTeamRoster(PVPTeamDetails.team);
-		end
-		if ( PVPFrame:IsShown() ) then
-			PVPFrame_Update();
+			local team = GetArenaTeam(PVPTeamDetails.team);
+			if ( not team ) then
+				PVPTeamDetails:Hide();
+			end
 		end
 	end
 end
