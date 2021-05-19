@@ -2085,7 +2085,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								_G[self:GetName().."Text"]:SetText("2 "..GetText("HOURS", nil, 2));
+								_G[self:GetName().."Text"]:SetText(AUCTION_DURATION_ONE);
 							</OnLoad>
 							<OnClick>
 								AuctionsRadioButton_OnClick(self:GetID())
@@ -2102,7 +2102,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								_G[self:GetName().."Text"]:SetText("8 "..GetText("HOURS", nil, 8));
+								_G[self:GetName().."Text"]:SetText(AUCTION_DURATION_TWO);
 							</OnLoad>
 							<OnClick>
 								AuctionsRadioButton_OnClick(self:GetID())
@@ -2119,7 +2119,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								_G[self:GetName().."Text"]:SetText("24 "..GetText("HOURS", nil, 24));
+								_G[self:GetName().."Text"]:SetText(AUCTION_DURATION_THREE);
 							</OnLoad>
 							<OnClick>
 								AuctionsRadioButton_OnClick(self:GetID())

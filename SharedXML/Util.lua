@@ -437,8 +437,7 @@ RAID_CLASS_COLORS = {
 	["MAGE"] = CreateColor(0.25, 0.78, 0.92),
 	["ROGUE"] = CreateColor(1.0, 0.96, 0.41),
 	["DRUID"] = CreateColor(1.0, 0.49, 0.04),
-	--["SHAMAN"] = CreateColor(0.0, 0.44, 0.87),
-	["SHAMAN"] = CreateColor(0.96, 0.55, 0.73),
+	["SHAMAN"] = CreateColor(0.0, 0.44, 0.87),
 	["WARRIOR"] = CreateColor(0.78, 0.61, 0.43),
 	["DEATHKNIGHT"] = CreateColor(0.77, 0.12 , 0.23),
 	["MONK"] = CreateColor(0.0, 1.00 , 0.59),
@@ -523,50 +522,6 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	end
 
 	return PERCENTAGE_STRING:format(percentage);
-end
-
-function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)
-	local textureKit = GetUITextureKitInfo(textureKitID);
-	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
-end
-
-function SetupTextureKitsOnFrames(textureKitID, frames, setVisibilityOfRegions, useAtlasSize)
-	local textureKit = GetUITextureKitInfo(textureKitID);
-	SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
-end
-
--- Note this is deprecated in favor of CallbackRegistryMixin.
-CallbackRegistryBaseMixin = {};
-
-function CallbackRegistryBaseMixin:OnLoad()
-	self.callbackRegistry = {};
-end
-
-function CallbackRegistryBaseMixin:RegisterCallback(event, callback)
-	if not self.callbackRegistry[event] then
-		self.callbackRegistry[event] = {};
-	end
-
-	self.callbackRegistry[event][callback] = true;
-end
-
-function CallbackRegistryBaseMixin:UnregisterCallback(event, callback)
-	if self.callbackRegistry[event] then
-		self.callbackRegistry[event][callback] = nil;
-	end
-end
-
-function CallbackRegistryBaseMixin:TriggerEvent(event, ...)
-	local registry = self.callbackRegistry[event];
-	if registry then
-		for callback in pairs(registry) do
-			callback(event, ...);
-		end
-	end
-end
-
---[[static]] function CallbackRegistryBaseMixin:GenerateCallbackEvents(events)
-	self.Event = tInvert(events);
 end
 
 EventRegistrationHelper = {};

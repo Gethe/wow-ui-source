@@ -300,7 +300,7 @@ function QuestInfo_ShowRequiredMoney()
 end
 
 function QuestInfo_ShowGroupSize()
-	--[[local groupNum;
+	local groupNum;
 	if ( QuestInfoFrame.questLog ) then
 		groupNum = GetQuestLogGroupNum();
 	else
@@ -314,7 +314,7 @@ function QuestInfo_ShowGroupSize()
 	else
 		QuestInfoGroupSize:Hide();
 		return nil;
-	end]]
+	end
 end
 
 function QuestInfo_ShowDescriptionHeader()
@@ -464,7 +464,7 @@ function QuestInfo_ShowRewards()
 		-- Don't show XP rewards in Classic.
 		xp = 0; --GetRewardXP();
 		artifactXP, artifactCategory = 0, nil;--GetRewardArtifactXP();
-		honor = 0;--GetRewardHonor();
+		honor = GetRewardHonor();
 		playerTitle = nil;--GetRewardTitle();
 		numSpellRewards = GetNumRewardSpells();
 		spellGetter = GetRewardSpell;
@@ -836,14 +836,13 @@ function QuestInfo_ShowRewards()
         if ( honor > 0 ) then
             local icon;
             if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-                icon = "Interface\\Icons\\PVPCurrency-Honor-Horde";
+                icon = "Interface\\TargetingFrame\\UI-PVP-Horde";
             else
-                icon = "Interface\\Icons\\PVPCurrency-Honor-Alliance";
+                icon = "Interface\\TargetingFrame\\UI-PVP-Alliance";
             end
 
             rewardsFrame.HonorFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
-            rewardsFrame.HonorFrame.Count:SetText(BreakUpLargeNumbers(honor));
-            rewardsFrame.HonorFrame.Name:SetText(HONOR);
+            rewardsFrame.HonorFrame.Points:SetText(BreakUpLargeNumbers(honor));
             rewardsFrame.HonorFrame.Icon:SetTexture(icon);
             rewardsFrame.HonorFrame:Show();
 

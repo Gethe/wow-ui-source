@@ -2,19 +2,12 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StaticPopupSpecial.lua"/>
 
-	<Frame name="PetBattleQueueReadyFrame" hidden="true" parent="UIParent" frameStrata="DIALOG">
+	<Frame name="PetBattleQueueReadyFrame" inherits="BackdropTemplate" hidden="true" parent="UIParent" frameStrata="DIALOG">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="hideOnEscape" value="1" type="number"/>
+		</KeyValues>
 		<Size x="320" y="200"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Art" file="Interface\PetBattles\PetBattlesQueue">
@@ -58,9 +51,6 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.hideOnEscape = 1;
-			</OnLoad>
 			<OnUpdate>
 				if ( C_PetBattles.CanAcceptQueuedPVPMatch() == true ) then
 				  self.AcceptButton:Enable();
@@ -71,19 +61,11 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PlayerReportFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="PlayerReportFrameMixin">
+	<Frame name="PlayerReportFrame" inherits="BackdropTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="PlayerReportFrameMixin">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size x="344" y="224"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT">
@@ -249,7 +231,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

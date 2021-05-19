@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="AnimationTemplates.lua"/>
+	
+	<AnimationGroup name="VisibleWhilePlayingAnimGroupTemplate" mixin="VisibleWhilePlayingAnimGroupMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="Hide"/>
+			<OnPlay method="Show"/>
+			<OnStop method="Hide"/>
+			<OnFinished method="Hide"/>
+		</Scripts>
+	</AnimationGroup>
+</Ui>

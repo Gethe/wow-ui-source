@@ -8,11 +8,6 @@
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
-			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-				<TileSize val="32"/>
-				<EdgeSize val="32"/>
-			</Backdrop>
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="DialogLabel" text="COMMUNITIES_ADD_DIALOG_LABEL" inherits="GameFontHighlight">
@@ -56,6 +51,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
 				<EditBox parentKey="InviteLinkBox" autoFocus="false" inherits="InputBoxTemplate">
 					<Size x="288" y="22"/>
 					<Anchors>
@@ -144,11 +140,6 @@
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
-			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-				<TileSize val="32"/>
-				<EdgeSize val="32"/>
-			</Backdrop>
 			<Layers>
 				<Layer level="OVERLAY">
 					<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
@@ -204,6 +195,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
 				<EditBox parentKey="NameBox" autoFocus="false" inherits="InputBoxTemplate" letters="50">
 					<Size x="0" y="22"/>
 					<Anchors>

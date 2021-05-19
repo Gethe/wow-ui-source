@@ -155,5 +155,5 @@ end
 
 function ReputationWatchBar_UpdateMaxLevel()
 	-- Initialize max player level
-	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+	MAX_PLAYER_LEVEL = GetMaxPlayerLevel();
 end

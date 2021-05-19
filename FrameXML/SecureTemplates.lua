@@ -482,10 +482,10 @@ SECURE_ACTIONS.target =
         end
     end;
 
---[[SECURE_ACTIONS.focus =
+SECURE_ACTIONS.focus =
     function (self, unit, button)
         return FocusUnit(unit);
-    end;]]
+    end;
 
 SECURE_ACTIONS.assist =
     function (self, unit, button)

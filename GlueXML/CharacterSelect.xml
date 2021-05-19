@@ -356,7 +356,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TBCIcon" useAtlasSize="true"/>
-			</Layer>
+				</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="TBCInfoPaneTemplate_OnLoad"/>
@@ -371,22 +371,12 @@
 		</HighlightTexture>	
 	</Button>
 
-	<Frame name="ChoiceConfirmationTemplate" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden="true" virtual="true">
+	<Frame name="ChoiceConfirmationTemplate" inherits="DefaultScaleFrame, BackdropTemplate" frameStrata="DIALOG" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 		</KeyValues>
 		<Size x="700" y="525"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ConfirmationLogo">
@@ -1126,8 +1116,14 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterSelectCharacterFrame">
+					<Frame name="CharacterSelectCharacterFrame" inherits="BackdropTemplate">
 						<Size x="260" y="642"/>
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+							<KeyValue key="backdropColorAlpha" value=".85" type="number"/>
+							<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-5" y="-15"/>
 						</Anchors>
@@ -1149,17 +1145,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Frames>
 							<Slider name="$parentScrollBar" parentKey="scrollBar" inherits="GlueScrollBarTemplate" hidden="true">
 								<Anchors>
@@ -1743,22 +1728,14 @@
 									<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER" x="0" y="0"/>
 								</Anchors>
 								<Frames>
-									<Frame name="CharacterUpgradeSecondChanceWarningBackground">
+									<Frame name="CharacterUpgradeSecondChanceWarningBackground" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+										</KeyValues>
 										<Size x="412" y="146"/>
 										<Anchors>
 											<Anchor point="CENTER" x="0" y="0"/>
 										</Anchors>
-										<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="11" right="12" top="12" bottom="11"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="32"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="32"/>
-											</EdgeSize>
-										</Backdrop>
 										<Layers>
 											<Layer level="ARTWORK">
 												<FontString parentKey="Text" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT">
@@ -1795,7 +1772,7 @@
 											</Button>
 										</Frames>
 										<Scripts>
-											<OnLoad>
+											<OnLoad inherit="prepend">
 												self.Text:SetSpacing(4);
 											</OnLoad>
 										</Scripts>
@@ -1837,22 +1814,14 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterTemplatesFrame" hidden="true">
+					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+						</KeyValues>
 						<Size x="220" y="150"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOMLEFT" x="-5" y="-4"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString inherits="GlueFontNormal" text="TEMPLATE_CHARACTER">
@@ -1891,22 +1860,14 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame name="PlayersOnServer" hidden="true">
+					<Frame name="PlayersOnServer" hidden="true" inherits="BackdropTemplate">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+						</KeyValues>
 						<Size x="220" y="88"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="CharacterTemplatesFrame" relativePoint="TOP" x="0" y="0"/>
 						</Anchors>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString inherits="GlueFontNormal" text="PLAYERS_ON_SERVER">
@@ -1997,7 +1958,7 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-570"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								ServerAlert_OnLoad(self);
 								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 								if ( not C_Login.IsLauncherLogin() ) then
@@ -2065,7 +2026,10 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true">
+			<Frame name="GameRoomBillingFrame" hidden="true" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+				</KeyValues>
 				<Size x="255" y="60"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
@@ -2080,17 +2044,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="10" right="5" top="4" bottom="9"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-				</Backdrop>
 			</Frame>
 			<Frame name ="TBCInfoPane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
 				<KeyValues>
@@ -2102,14 +2055,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level ="OVERLAY">
-						<Texture name="TBCInfoPaneBG" atlas="classic-announcementpopup-frame" useAtlasSize="true"/>
+						<Texture name="TBCInfoPaneBG" useAtlasSize="true"/>
 						<FontString name="TBCInfoPaneTitle" inherits="GameFontOffBlack30" justifyH="CENTER" text="BURNING_CRUSADE_PREVIEW_TITLE">
 							<Size x="450" y ="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-77"/>
 							</Anchors>
 						</FontString>
-						<Texture name="TBCInfoPaneSeparator" atlas="classic-announcementpopup-line" useAtlasSize="true">
+						<Texture name="TBCInfoPaneSeparator" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativeTo="TBCInfoPaneTitle" relativePoint="BOTTOM" x="0" y="-12"/>
 							</Anchors>						
@@ -2157,10 +2110,9 @@
 				</Frames>
 				<Scripts>
 					<OnShow function ="TBCInfoPane_OnShow"/>
-					<OnHide function ="TBCInfoPane_OnHide"/>
 				</Scripts>
 			</Frame>
-			<Frame name="ChoicePane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
+		<Frame name="ChoicePane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
 				<KeyValues>
 					<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
 				</KeyValues>
@@ -2170,25 +2122,25 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="ChoicePaneBG" atlas="classic-burningcrusadetransition-choice-frame-classic" useAtlasSize="true"/>
+						<Texture name="ChoicePaneBG" atlas="classic-burningcrusadetransition-choice-frame" useAtlasSize="true"/>
 						<Texture parentKey="CurrentLogo">
 							<Size x="294" y="202"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="TOPLEFT" x="389" y="-164"/>
 							</Anchors>
 						</Texture>
-						<Texture name="CurrentSeparator" atlas="classic-burningcrusadetransition-choice-line-classic" useAtlasSize="true">
+						<Texture name="CurrentSeparator" atlas="classic-burningcrusadetransition-choice-line-current" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="LEFT" x="389" y="-69"/>
 							</Anchors>
 						</Texture>
-						<FontString name="ChoicePaneCurrentTitle" inherits="GameFontWhiteOutline30" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_TITLE">
+						<FontString name="ChoicePaneCurrentTitle" inherits="GameFontWhiteOutline30" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CURRENT_TITLE">
 							<Size x="500" y="0"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="CurrentSeparator" relativePoint="CENTER" x="0" y="71"/>
 							</Anchors>
 						</FontString>
-						<FontString name="ChoicePaneCurrentDesc" inherits="ChoicePaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_DESCRIPTION">
+						<FontString name="ChoicePaneCurrentDesc" inherits="ChoicePaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_CURRENT_DESCRIPTION">
 							<Size x="500" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="CurrentSeparator" relativePoint="BOTTOM" x="0" y="-40"/>
@@ -2200,18 +2152,18 @@
 								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="TOPLEFT" x="1035" y="-164"/>
 							</Anchors>
 						</Texture>
-						<Texture name="OtherSeparator" atlas="classic-burningcrusadetransition-choice-line-bc" useAtlasSize="true">
+						<Texture name="OtherSeparator" atlas="classic-burningcrusadetransition-choice-line-other" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="ChoicePaneBG" relativePoint="LEFT" x="1035" y="-69"/>
 							</Anchors>
 						</Texture>
-						<FontString name="ChoicePaneOtherTitle" inherits="GameFontWhiteOutline30" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_BURNINGCRUSADE_TITLE">
+						<FontString name="ChoicePaneOtherTitle" inherits="GameFontWhiteOutline30" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_OTHER_TITLE">
 							<Size x="450" y="0"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="OtherSeparator" relativePoint="CENTER" x="0" y="71"/>
 							</Anchors>
 						</FontString>
-						<FontString name="ChoicePaneOtherDesc" inherits="ChoicePaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_BURNINGCRUSADE_DESCRIPTION">
+						<FontString name="ChoicePaneOtherDesc" inherits="ChoicePaneMedFont" justifyH="CENTER" text="BURNING_CRUSADE_TRANSITION_CHOICE_OTHER_DESCRIPTION">
 							<Size x="380" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="OtherSeparator" relativePoint="BOTTOM" x="0" y="-40"/>
@@ -2238,7 +2190,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Button name="ChoicePanePlayButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_BUTTON">
+					<Button name="ChoicePanePlayButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_TRANSITION_CHOICE_CURRENT_BUTTON">
 						<Size x="300" y="63"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="ChoicePaneBG" relativePoint="BOTTOMLEFT" x="389" y="56"/>
@@ -2247,7 +2199,7 @@
 							<OnClick function="ChoicePane_OnPlay"/>
 						</Scripts>
 					</Button>
-					<Button name="ChoicePaneExitGameButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_TRANSITION_CHOICE_BURNINGCRUSADE_BUTTON">
+					<Button name="ChoicePaneExitGameButton" inherits="GlueButtonTemplateLarge" text="BURNING_CRUSADE_TRANSITION_CHOICE_OTHER_BUTTON">
 						<Size x="240" y="63"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="ChoicePaneBG" relativePoint="BOTTOMLEFT" x="1035" y="56"/>
@@ -2274,7 +2226,7 @@
 					<Anchor point="CENTER" relativeTo="CharacterSelectUI" relativePoint="CENTER" x="0" y="146"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function ="ChoiceConfirmation_OnLoad"/>
+					<OnLoad inherit="prepend" function ="ChoiceConfirmation_OnLoad"/>
 					<OnShow function ="ChoiceConfirmation_OnShow"/>
 				</Scripts>
 			</Frame>
@@ -2283,13 +2235,13 @@
 					<Anchor point="CENTER" relativeTo="CharacterSelectUI" relativePoint="CENTER" x="0" y="146"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function ="CloneConfirmation_OnLoad"/>
+					<OnLoad inherit="prepend" function ="CloneConfirmation_OnLoad"/>
 					<OnShow function ="CloneConfirmation_OnShow"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CharacterSelect_OnLoad"/>
+			<OnLoad inherit="prepend" function="CharacterSelect_OnLoad"/>
 			<OnShow function="CharacterSelect_OnShow"/>
 			<OnHide function="CharacterSelect_OnHide"/>
 			<OnUpdate function="CharacterSelect_OnUpdate"/>
@@ -2303,22 +2255,14 @@
 	</Frame>
 	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="CharacterDeleteBackground">
+			<Frame name="CharacterDeleteBackground" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterDeleteText1" inherits="GlueFontNormalLarge">
@@ -2428,22 +2372,14 @@
 	</Frame>
 	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="CharacterRenameBackground">
+			<Frame name="CharacterRenameBackground" inherits="BackdropTemplate">
+			<KeyValues>
+				<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			</KeyValues>
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterRenameText1" inherits="GlueFontNormalLarge" text="CHAR_RENAME_DESCRIPTION">

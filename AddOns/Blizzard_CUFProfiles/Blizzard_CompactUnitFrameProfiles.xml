@@ -118,21 +118,13 @@
 		</Scripts>
 	</Slider>
 
-	<Frame name="CompactUnitFrameProfileDialogWithCoverTemplate" frameStrata="DIALOG" hidden="true" virtual="true">
+	<Frame name="CompactUnitFrameProfileDialogWithCoverTemplate" inherits="BackdropTemplate" frameStrata="DIALOG" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Frames>
 			<Frame name="$parentCover" parentKey="cover" useParentLevel="true" enableMouse="true">
 				<Layers>
@@ -627,7 +619,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="10" y="-15"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								CompactUnitFrameProfilesSlider_InitializeWidget(self, "frameHeight", SHORT, TALL);
 							</OnLoad>
 						</Scripts>
@@ -637,7 +629,7 @@
 							<Anchor point="LEFT" relativeTo="$parentHeightSlider" relativePoint="RIGHT" x="40" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								CompactUnitFrameProfilesSlider_InitializeWidget(self, "frameWidth", NARROW, WIDE);
 							</OnLoad>
 						</Scripts>

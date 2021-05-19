@@ -419,6 +419,42 @@ local Map =
 			},
 		},
 		{
+			Name = "UIMapFlag",
+			Type = "Enumeration",
+			NumValues = 13,
+			MinValue = 1,
+			MaxValue = 4096,
+			Fields =
+			{
+				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
+				{ Name = "ShowOverlays", Type = "UIMapFlag", EnumValue = 2 },
+				{ Name = "ShowTaxiNodes", Type = "UIMapFlag", EnumValue = 4 },
+				{ Name = "GarrisonMap", Type = "UIMapFlag", EnumValue = 8 },
+				{ Name = "FallbackToParentMap", Type = "UIMapFlag", EnumValue = 16 },
+				{ Name = "NoHighlightTexture", Type = "UIMapFlag", EnumValue = 32 },
+				{ Name = "ShowTaskObjectives", Type = "UIMapFlag", EnumValue = 64 },
+				{ Name = "NoWorldPositions", Type = "UIMapFlag", EnumValue = 128 },
+				{ Name = "HideArchaeologyDigs", Type = "UIMapFlag", EnumValue = 256 },
+				{ Name = "Deprecated", Type = "UIMapFlag", EnumValue = 512 },
+				{ Name = "HideIcons", Type = "UIMapFlag", EnumValue = 1024 },
+				{ Name = "HideVignettes", Type = "UIMapFlag", EnumValue = 2048 },
+				{ Name = "ForceAllOverlayExplored", Type = "UIMapFlag", EnumValue = 4096 },
+			},
+		},
+		{
+			Name = "UIMapSystem",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "World", Type = "UIMapSystem", EnumValue = 0 },
+				{ Name = "Taxi", Type = "UIMapSystem", EnumValue = 1 },
+				{ Name = "Adventure", Type = "UIMapSystem", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIMapType",
 			Type = "Enumeration",
 			NumValues = 7,
@@ -436,33 +472,6 @@ local Map =
 			},
 		},
 		{
-			Name = "UIMapSystem",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "World", Type = "UIMapSystem", EnumValue = 0 },
-				{ Name = "Taxi", Type = "UIMapSystem", EnumValue = 1 },
-				{ Name = "Adventure", Type = "UIMapSystem", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "UiMapLayerInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "layerWidth", Type = "number", Nilable = false },
-				{ Name = "layerHeight", Type = "number", Nilable = false },
-				{ Name = "tileWidth", Type = "number", Nilable = false },
-				{ Name = "tileHeight", Type = "number", Nilable = false },
-				{ Name = "minScale", Type = "number", Nilable = false },
-				{ Name = "maxScale", Type = "number", Nilable = false },
-				{ Name = "additionalZoomSteps", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "MapBannerInfo",
 			Type = "Structure",
 			Fields =
@@ -470,6 +479,18 @@ local Map =
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "MapLinkInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -494,15 +515,17 @@ local Map =
 			},
 		},
 		{
-			Name = "MapLinkInfo",
+			Name = "UiMapLayerInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "atlasName", Type = "string", Nilable = false },
-				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
+				{ Name = "layerWidth", Type = "number", Nilable = false },
+				{ Name = "layerHeight", Type = "number", Nilable = false },
+				{ Name = "tileWidth", Type = "number", Nilable = false },
+				{ Name = "tileHeight", Type = "number", Nilable = false },
+				{ Name = "minScale", Type = "number", Nilable = false },
+				{ Name = "maxScale", Type = "number", Nilable = false },
+				{ Name = "additionalZoomSteps", Type = "number", Nilable = false },
 			},
 		},
 	},

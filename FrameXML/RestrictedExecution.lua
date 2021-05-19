@@ -17,7 +17,7 @@ local error = error;
 local scrub = scrub;
 local issecure = issecure;
 local setfenv = setfenv;
-local loadstring = loadstring;
+local loadstring_untainted = loadstring_untainted;
 local setmetatable = setmetatable;
 local getmetatable = getmetatable;
 local pcall = pcall;
@@ -76,7 +76,7 @@ local function BuildRestrictedClosure(body, env, signature)
 
     -- Include a \n before end to stop shenanigans with comments
     local def, err =
-        loadstring("return function (" .. signature .. ") " .. body .. "\nend", body);
+        loadstring_untainted("return function (" .. signature .. ") " .. body .. "\nend", body);
     if (def == nil) then
         return nil, err;
     end

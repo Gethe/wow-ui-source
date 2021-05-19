@@ -118,7 +118,11 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmallLeft"/>
 	</Button>
-	<Frame name="DockManagerOverflowListTemplate" hidden="true" clampedToScreen="true" virtual="true">
+	<Frame name="DockManagerOverflowListTemplate" inherits="TooltipBackdropTemplate" hidden="true" clampedToScreen="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="TOOLTIP_BACKDROP_STYLE_DEFAULT" type="global"/>
+			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+		</KeyValues>
 		<Size x="160" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -129,13 +133,8 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="4" right="5" top="5" bottom="4"/>
-		</Backdrop>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:SetBackdropColor(0.05, 0.05, 0.11);
 				self.buttons = {};
 			</OnLoad>
@@ -835,24 +834,24 @@
 			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="ChatMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="ChatMenu_OnLoad"/>
 			<OnShow function="ChatMenu_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="EmoteMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad function="EmoteMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="EmoteMenu_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad function="LanguageMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="LanguageMenu_OnLoad"/>
 			<OnEvent function="LanguageMenu_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
 		<Scripts>
-			<OnLoad function="VoiceMacroMenu_OnLoad"/>
+			<OnLoad inherit="prepend" function="VoiceMacroMenu_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="ChatAlertFrame" mixin="ChatAlertFrameMixin" inherits="AlertContainerTemplate">

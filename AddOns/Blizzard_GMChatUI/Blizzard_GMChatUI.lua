@@ -34,8 +34,6 @@ function GMChatFrame_OnLoad(self)
 	self.flashTimer = 0;
 	self.lastGM = {};
 
-	GMChatOpenLog:Enable();
-
 	self:SetClampRectInsets(-35, 0, 30, 0);
 
 	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
@@ -85,7 +83,6 @@ function GMChatFrame_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b, info.id);
 			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
 			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
-			SetButtonPulse(GMChatOpenLog, 3600, 1.0);
 		else
 			ChatEdit_SetLastTellTarget(arg2, "WHISPER");
 		end
@@ -137,7 +134,6 @@ end
 
 function GMChatFrame_OnShow(self)
 	GMChatStatusFrame:Hide();
-	GMChatOpenLog:Disable();
 	for _,gmName in ipairs(self.lastGM) do
 		ChatEdit_SetLastTellTarget(gmName, "WHISPER");
 	end
@@ -158,7 +154,6 @@ function GMChatFrame_OnShow(self)
 end
 
 function GMChatFrame_OnHide(self)
-	GMChatOpenLog:Enable();
 	SetCVar("lastTalkedToGM", "");
 	self.editBox:Hide();
 

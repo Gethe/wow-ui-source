@@ -618,7 +618,10 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Frame name="ReputationDetailFrame" enableMouse="true" hidden="true">
+			<Frame name="ReputationDetailFrame" inherits="BackdropTemplate" enableMouse="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
 				<Size>
 					<AbsDimension x="212" y="203"/>
 				</Size>
@@ -629,17 +632,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
@@ -859,6 +851,7 @@
 				self:RegisterEvent("DISABLE_XP_GAIN");
 				self:RegisterEvent("CVAR_UPDATE");
 				self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+				self:RegisterEvent("PLAYER_MAX_LEVEL_UPDATE");
 			</OnLoad>
 			<OnEvent>
 				local arg1, arg2 = ...;
@@ -867,7 +860,7 @@
 						ReputationFrame_Update();
 					end
 					MainMenuBar_UpdateExperienceBars();
-				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" ) then
+				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" or event == "PLAYER_MAX_LEVEL_UPDATE" ) then
 					ReputationWatchBar_UpdateMaxLevel();
 					
 					if event == "PLAYER_LEVEL_UP" then

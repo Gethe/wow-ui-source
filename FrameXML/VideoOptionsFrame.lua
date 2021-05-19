@@ -19,8 +19,6 @@ function VideoOptionsFrame_SetCurrentToClassic ()
 end
 
 function VideoOptionsFrame_OnLoad (self)
-	OptionsFrame_OnLoad(self);
-
 	_G[self:GetName().."HeaderText"]:SetText(SYSTEMOPTIONS_MENU);
 end
 

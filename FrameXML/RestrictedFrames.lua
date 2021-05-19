@@ -138,6 +138,14 @@ function HANDLE:IsKeyboardEnabled()
     return GetHandleFrame(self):IsKeyboardEnabled();
 end
 
+function HANDLE:IsGamePadButtonEnabled()
+    return LOCAL_CHECK_Frame.IsGamePadButtonEnabled(GetHandleFrame(self));
+end
+
+function HANDLE:IsGamePadStickEnabled()
+    return LOCAL_CHECK_Frame.IsGamePadStickEnabled(GetHandleFrame(self));
+end
+
 function HANDLE:GetObjectType()
     return GetUnprotectedHandleFrame(self):GetObjectType()
 end
@@ -581,6 +589,14 @@ end
 
 function HANDLE:EnableKeyboard(isEnabled)
     GetHandleFrame(self):EnableKeyboard((isEnabled and true) or false);
+end
+
+function HANDLE:EnableGamePadButton(isEnabled)
+    LOCAL_CHECK_Frame.EnableGamePadButton(GetHandleFrame(self), (isEnabled and true) or false);
+end
+
+function HANDLE:EnableGamePadStick(isEnabled)
+    LOCAL_CHECK_Frame.EnableGamePadStick(GetHandleFrame(self), (isEnabled and true) or false);
 end
 
 function HANDLE:RegisterAutoHide(duration)

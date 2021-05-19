@@ -3,6 +3,7 @@ INTERFACEOPTIONS_ADDONCATEGORIES = {};
 
 local blizzardCategories = {};
 
+local securecall = securecall;
 local next = next;
 local function SecureNext(elements, key)
 	return securecall(next, elements, key);
@@ -155,8 +156,6 @@ function InterfaceAddOnsList_Update ()
 
 	-- Show the AddOns tab if it's not empty.
 	if ( ( InterfaceOptionsFrameTab2 and not InterfaceOptionsFrameTab2:IsShown() ) and numAddOnCategories > 0 ) then
-		InterfaceOptionsFrameCategoriesTop:Hide();
-		InterfaceOptionsFrameAddOnsTop:Hide();
 		InterfaceOptionsFrameTab1:Show();
 		InterfaceOptionsFrameTab2:Show();
 	end
@@ -309,7 +308,7 @@ function InterfaceOptionsOptionsFrame_RefreshAddOns ()
 	end
 end
 
-UVARINFO = {
+local UVARINFO = {
 	["REMOVE_CHAT_DELAY"] = { default = "0", cvar = "removeChatDelay", event = "REMOVE_CHAT_DELAY_TEXT" },
 	["LOCK_ACTIONBAR"] = { default = "0", cvar = "lockActionBars", event = "LOCK_ACTIONBAR_TEXT" },
 	["SHOW_BUFF_DURATIONS"] = { default = "1", cvar = "buffDurations", event = "SHOW_BUFF_DURATION_TEXT", func = function () SHOW_BUFF_DURATIONS = GetCVar("buffDurations"); BuffFrame_UpdatePositions(); end},
@@ -334,7 +333,8 @@ UVARINFO = {
 	["COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"] = { default = "0", cvar = "floatingCombatTextPeriodicEnergyGains", event = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE_TEXT" },
 	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "floatingCombatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
 	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "0", cvar = "floatingCombatTextHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
-	["SHOW_DAMAGE_TEXT"] = { default = "1", cvar = "floatingCombatTextCombatDamage" },
+	["SHOW_DAMAGE"] = { default = "1", cvar = "floatingCombatTextCombatDamage" },
+	["SHOW_COMBAT_HEALING"] = { default = "1", cvar = "floatingCombatTextCombatHealing" },
 	["LOG_PERIODIC_EFFECTS"] = { default = "1", cvar = "floatingCombatTextCombatLogPeriodicSpells" },
 	["SHOW_PET_MELEE_DAMAGE"] = { default = "1", cvar = "floatingCombatTextCombatLogPeriodicSpells" },
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", },
@@ -414,15 +414,9 @@ function InterfaceOptionsFrame_TabOnClick ()
 	if ( InterfaceOptionsFrame.selectedTab == 1 ) then
 		InterfaceOptionsFrameCategories:Show();
 		InterfaceOptionsFrameAddOns:Hide();
-		InterfaceOptionsFrameTab1TabSpacer:Show();
-		InterfaceOptionsFrameTab2TabSpacer1:Hide();
-		InterfaceOptionsFrameTab2TabSpacer2:Hide();		
 	else
 		InterfaceOptionsFrameCategories:Hide();
 		InterfaceOptionsFrameAddOns:Show();
-		InterfaceOptionsFrameTab1TabSpacer:Hide();
-		InterfaceOptionsFrameTab2TabSpacer1:Show();
-		InterfaceOptionsFrameTab2TabSpacer2:Show();
 	end
 end
 

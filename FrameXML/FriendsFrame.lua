@@ -71,7 +71,8 @@ local INVITE_RESTRICTION_INFO = 5;
 local INVITE_RESTRICTION_WOW_PROJECT_ID = 6;
 local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
-local INVITE_RESTRICTION_NONE = 8;
+local INVITE_RESTRICTION_WOW_PROJECT_BCC = 9;
+local INVITE_RESTRICTION_NONE = 10;
 
 local FriendListEntries = { };
 local playerRealmID;
@@ -281,7 +282,6 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_INFO_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
-	self:RegisterEvent("PARTY_REFER_A_FRIEND_UPDATED");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
@@ -333,7 +333,7 @@ function FriendsFrame_OnShow()
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	GuildRoster();
+	C_GuildInfo.GuildRoster();
 	InGuildCheck();
 	BlizzardGroups_UpdateNotifications();
 	BlizzardGroups_UpdateShowTab();
@@ -420,15 +420,10 @@ function FriendsTabHeader_ClickTab(tab)
 end
 
 function FriendsTabHeader_ResizeTabs()
-	local availableWidth = FRIEND_TABS_MAX_WIDTH;
-	if ( FriendsTabHeaderSoRButton:IsShown() ) then
-		availableWidth = availableWidth - 30;
-	end
-	PanelTemplates_ResizeTabsToFit(FriendsTabHeader, availableWidth);
+	PanelTemplates_ResizeTabsToFit(FriendsTabHeader, FRIEND_TABS_MAX_WIDTH);
 end
 
 function FriendsListFrame_OnShow(self)
-	RecruitAFriend_OnFriendsListShown();
 	ProductChoiceFrame_OnFriendsListShown();
 end
 
@@ -854,7 +849,11 @@ end
 
 function WhoFrameColumn_SetWidth(frame, width)
 	frame:SetWidth(width);
-	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
+	local name = frame:GetName().."Middle";
+	local middleFrame = _G[name];
+	if middleFrame then
+		middleFrame:SetWidth(width - 9);
+	end
 end
 
 function WhoFrameDropDown_Initialize()
@@ -887,13 +886,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 				if ( button.summonButton:IsShown() ) then
 					FriendsFrame_SummonButton_Update(button.summonButton);
 				end
-			end
-		end
-	elseif ( event == "PARTY_REFER_A_FRIEND_UPDATED" ) then
-		if ( self:IsShown() ) then
-			local buttons = FriendsFrameFriendsScrollFrame.buttons;
-			for _, button in pairs(buttons) do
-				FriendsFrame_SummonButton_Update(button.summonButton);
 			end
 		end
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
@@ -955,7 +947,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if ( GuildFrame:IsVisible() ) then
 			local canRequestGuildRoster = ...;
 			if ( canRequestGuildRoster ) then
-				GuildRoster();
+				C_GuildInfo.GuildRoster();
 			end
 			GuildStatus_Update();
 			FriendsFrame_Update();
@@ -1310,7 +1302,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 	if (client ~= BNET_CLIENT_WOW) or (wowProjectID ~= WOW_PROJECT_ID) then
 		-- If they are not in wow or in a different version of wow, always show rich presence only
 		return true;
-	elseif (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
+	elseif ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
 		-- If we are both in wow classic and our factions or realms don't match, show rich presence only
 		return true;
 	else
@@ -2289,6 +2281,8 @@ function FriendsFrame_GetInviteRestriction(index)
 			if ( wowProjectID ~= WOW_PROJECT_ID ) then
 				if (wowProjectID == WOW_PROJECT_CLASSIC) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
+				elseif(wowProjectID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_BCC, restriction);
 				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
@@ -2298,7 +2292,8 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif ( realmID ~= playerRealmID ) then
+				-- The Classics don't allow grouping across realms
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			else
 				-- there is at lease 1 game account that can be invited
@@ -2328,6 +2323,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_MAINLINE_OVERRIDE;
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CLASSIC ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_BCC ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_BCC_OVERRIDE
 	else
 		return "";
 	end
@@ -2402,7 +2399,8 @@ function TravelPassDropDown_Initialize(self)
 				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
 			elseif ( realmID == 0 ) then
 				restriction = INVITE_RESTRICTION_INFO;
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif ( realmID ~= playerRealmID ) then
+				-- The Classics don't allow grouping across realms
 				restriction = INVITE_RESTRICTION_REALM;
 			end
 			if ( restriction == INVITE_RESTRICTION_NONE ) then
@@ -2434,31 +2432,6 @@ function BattleTagInviteFrame_Show(name)
 	BattleTagInviteFrame.BattleTag:SetText(name);
 	if ( not BattleTagInviteFrame:IsShown() ) then
 		StaticPopupSpecial_Show(BattleTagInviteFrame);
-	end
-end
-
-function RAFButton_Update(self)
-	self.suppressedRewards = C_ProductChoice.GetNumSuppressed();
-	if ( #C_ProductChoice.GetChoices() > 0 ) then
-		self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_mobilebanking");
-		self.rewards = true;
-		self:Show();
-		self:Enable();
-		self.Icon:SetDesaturated(false);
-	elseif ( C_RecruitAFriend.IsSendingEnabled() ) then
-		self.rewards = false;
-		self.Icon:SetTexture("Interface\\Icons\\Raf-Icon");
-		local faction = UnitFactionGroup("player");
-		if ( faction ~= "Alliance" and faction ~= "Horde" ) then
-			self:Disable();
-			self.Icon:SetDesaturated(true);
-		else
-			self:Enable();
-			self.Icon:SetDesaturated(false);
-		end
-		self:Show();
-	else
-		self:Hide();
 	end
 end
 
@@ -2551,7 +2524,7 @@ function GuildFrameControlButton_OnUpdate()
 	if ( GuildControlPopupFrame.update == 1 ) then
 		GuildControlPopupFrame.update = 2;
 	elseif ( GuildControlPopupFrame.update == 2 ) then
-		GuildRoster();
+		C_GuildInfo.GuildRoster();
 		GuildControlPopupFrame.update = nil;
 	end
 end
@@ -2732,8 +2705,8 @@ function GuildStatus_Update()
 		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
 		PersonalNoteText:SetText(note);
 		-- Update officer note
-		if ( CanViewOfficerNote() ) then
-			if ( CanEditOfficerNote() ) then
+		if ( C_GuildInfo.CanViewOfficerNote() ) then
+			if ( C_GuildInfo.CanEditOfficerNote() ) then
 				if ( (not officernote) or (officernote == "") ) then
 					officernote = GUILD_OFFICERNOTE_EDITLABEL;
 				end
@@ -2741,7 +2714,7 @@ function GuildStatus_Update()
 			else
 				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
 			end
-			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+			GuildMemberOfficerNoteBackground:EnableMouse(C_GuildInfo.CanEditOfficerNote());
 			OfficerNoteText:SetText(officernote);
 
 			-- Resize detail frame

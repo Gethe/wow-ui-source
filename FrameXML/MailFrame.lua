@@ -57,7 +57,7 @@ function MailFrame_OnEvent(self, event, ...)
 
 		-- Update the roster so auto-completion works
 		if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
-			GuildRoster();
+			C_GuildInfo.GuildRoster();
 		end
 
 		OpenAllBags(self);

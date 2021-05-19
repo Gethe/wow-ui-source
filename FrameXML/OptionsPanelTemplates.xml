@@ -129,7 +129,12 @@
 			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
 		</KeyValues>
 	</Frame>
-	<Frame name="OptionsBoxTemplate" virtual="true">
+	<Frame name="OptionsBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
+			<KeyValue key="backdropColor" value="GRAY_FONT_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentTitle" inherits="GameFontHighlightSmall">
@@ -143,22 +148,5 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-				self:SetBackdropColor(0.5, 0.5, 0.5);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

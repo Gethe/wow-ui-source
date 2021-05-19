@@ -47,7 +47,6 @@ UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["QuestLogPopupDetailFrame"] =	{ area = "left",			pushable = 0,	whileDead = 1 };
-UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0};
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2};
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
@@ -68,7 +67,7 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 -- The offset and width values help the Classic frames blend in with modern frames that use ButtonFrameTemplate.
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	height = 424,	whileDead = 1 };
-UIPanelWindows["TalentFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["PlayerTalentFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestLogFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
@@ -81,11 +80,13 @@ UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0,		xoffset 
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["ArenaRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["ArenaFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -157,8 +158,6 @@ end
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
-	"ScrollOfResurrectionFrame",
-	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
 	"FloatingGarrisonShipyardFollowerTooltip"
@@ -204,6 +203,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PARTY_INVITE_REQUEST");
 	self:RegisterEvent("PARTY_INVITE_CANCEL");
 	self:RegisterEvent("GUILD_INVITE_REQUEST");
+	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	self:RegisterEvent("GUILD_INVITE_CANCEL");
 	self:RegisterEvent("PLAYER_CAMPING");
 	self:RegisterEvent("PLAYER_QUITING");
@@ -266,8 +266,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
-	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
-	self:RegisterEvent("SOR_START_EXPERIENCE_INCOMPLETE");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
@@ -289,6 +287,9 @@ function UIParent_OnLoad(self)
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
+
+	-- Events for Item socketing UI
+	self:RegisterEvent("SOCKET_INFO_UPDATE");
 
 	-- Events for craft UI handling
 	self:RegisterEvent("CRAFT_SHOW");
@@ -416,8 +417,8 @@ function TradeSkillFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TradeSkillUI");
 end
 
-function GMSurveyFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_GMSurveyUI");
+function ItemSocketingFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemSocketingUI");
 end
 
 function TimeManager_LoadUI()
@@ -437,6 +438,10 @@ function GMChatFrame_LoadUI(...)
 			GMChatFrame_OnEvent(GMChatFrame, ...);
 		end
 	end
+end
+
+function Arena_LoadUI()
+	UIParentLoadAddOn("Blizzard_ArenaUI");
 end
 
 function Store_LoadUI()
@@ -495,26 +500,24 @@ function ToggleTalentFrame()
 	end
 
 	TalentFrame_LoadUI();
-	if ( TalentFrame:IsShown() ) then
-		HideUIPanel(TalentFrame);
+	if ( PlayerTalentFrame:IsShown() ) then
+		HideUIPanel(PlayerTalentFrame);
 	else
-		ShowUIPanel(TalentFrame);
+		ShowUIPanel(PlayerTalentFrame);
 	end
 end
 
-function BattlefieldMapAllowed()
-	return UIWidgetManager.widgetPools:GetNumActive() > 0 or (MiniMapBattlefieldFrame and MiniMapBattlefieldFrame.status == "active");
+function GetBattlefieldMapInstanceType()
+	local _, instanceType = IsInInstance();
+	if instanceType == "pvp" or instanceType == "none" then
+		return instanceType;
+	end
+	return nil;
 end
 
 function ToggleBattlefieldMap()
 	BattlefieldMap_LoadUI();
-	if ( BattlefieldMapFrame ) then
-		if (BattlefieldMapAllowed()) then
-			BattlefieldMapFrame:Toggle();
-		else
-			BattlefieldMapFrame:Hide();
-		end
-	end
+	BattlefieldMapFrame:Toggle();
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
@@ -559,12 +562,7 @@ function ToggleHelpFrame()
 	if ( HelpFrame:IsShown() ) then
 		HideUIPanel(HelpFrame);
 	else
-		StaticPopup_Hide("HELP_TICKET");
-		StaticPopup_Hide("HELP_TICKET_ABANDON_CONFIRM");
-		StaticPopup_Hide("GM_RESPONSE_NEED_MORE_HELP");
-		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
-		StaticPopup_Hide("GM_RESPONSE_MUST_RESOLVE_RESPONSE");
-		HelpFrame_ShowFrame();
+		HelpFrame:ShowFrame();
 	end
 end
 
@@ -644,7 +642,7 @@ local function PlayBattlefieldBanner(self)
 		local bannerName, bannerDescription;
 
 		for i=1, GetMaxBattlefieldID() do
-			local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			local status, _, _, _, _, _, _, _, _, _, _, _, asGroup, shortDescription = GetBattlefieldStatus(i);
 			if ( status and status == "active" ) then
 				bannerName = mapName;
 				bannerDescription = shortDescription;
@@ -769,6 +767,10 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
+	elseif ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
+		StaticPopup_Show("ARENA_TEAM_INVITE", arg1, arg2);
+	elseif ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
+		StaticPopup_Hide("ARENA_TEAM_INVITE");
 	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
 	elseif ( event == "PLAYER_QUITING" ) then
@@ -846,6 +848,9 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("CONFIRM_LEAVE_BATTLEFIELD");
 
 		local _, instanceType = IsInInstance();
+		if ( instanceType == "arena" or instanceType == "pvp") then
+			Arena_LoadUI();
+		end
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
@@ -971,11 +976,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
-		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-			INTERFACE_ACTION_BLOCKED_SHOWN = true;
-		end
+		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
@@ -2520,10 +2521,33 @@ function ToggleFrame(frame)
 	end
 end
 
+-- We keep direct references to protect against replacement.
+local InCombatLockdown = InCombatLockdown;
+local issecure = issecure;
+
+-- We no longer allow addons to show or hide UI panels in combat.
+local function CheckProtectedFunctionsAllowed()
+	if ( InCombatLockdown() and not issecure() ) then
+		DisplayInterfaceActionBlockedMessage();
+		return false;
+	end
+
+	return true;
+end
+
 function ShowUIPanel(frame, force)
+	if ( CanAutoSetGamePadCursorControl(true) ) then
+		SetGamePadCursorControl(true);
+	end
+
 	if ( not frame or frame:IsShown() ) then
 		return;
 	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
+		return;
+	end
+
 	if ( not GetUIPanelWindowInfo(frame, "area") ) then
 		frame:Show();
 		return;
@@ -2537,6 +2561,10 @@ end
 
 function HideUIPanel(frame, skipSetPoint)
 	if ( not frame or not frame:IsShown() ) then
+		return;
+	end
+
+	if ( not CheckProtectedFunctionsAllowed() ) then
 		return;
 	end
 
@@ -2747,7 +2775,11 @@ function CloseAllWindows(ignoreCenter)
 		end
 	end
 	windowsVisible = CloseWindows(ignoreCenter);
-	return (bagsVisible or windowsVisible);
+	local anyClosed = (bagsVisible or windowsVisible);
+	if (anyClosed and CanAutoSetGamePadCursorControl(false)) then
+		SetGamePadCursorControl(false);
+	end
+	return anyClosed;
 end
 
 -- this function handles possibly tainted values and so
@@ -3295,7 +3327,9 @@ function getglobal(varr)
 	return _G[varr];
 end
 
+local forceinsecure = forceinsecure;
 function setglobal(varr,value)
+	forceinsecure();
 	_G[varr] = value;
 end
 
@@ -3328,11 +3362,19 @@ end
 
 -- Function that handles the escape key functions
 function ToggleGameMenu()
-	if ( not UIParent:IsShown() ) then
+	if ( CanAutoSetGamePadCursorControl(true) and (not IsModifierKeyDown()) ) then
+		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
+		if ( SpellStopCasting() ) then
+		elseif ( SpellStopTargeting() ) then
+		elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
+		else
+			SetGamePadCursorControl(true);
+		end
+	elseif ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
 	elseif ( C_Commentator.IsSpectating() and IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") ) then
-		PvPCommentator:SetFrameLock(false);
+		Commentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
@@ -3377,6 +3419,8 @@ function ToggleGameMenu()
 		OpacityFrame:Hide();
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
+	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
+		SetGamePadCursorControl(false);
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
@@ -4389,10 +4433,6 @@ function GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSe
 	end
 end
 
-function InGlue()
-	return false;
-end
-
 function RGBToColorCode(r, g, b)
 	return format("|cff%02x%02x%02x", r*255, g*255, b*255);
 end
@@ -4412,7 +4452,7 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		local status, _, _, _, _, _, _, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
 		if ( ( status == "queued" or status == "confirmed" ) and asGroup ) then
 			return true;
 		end
@@ -4527,7 +4567,7 @@ end
  -- takes into account the current expansion
  -- NOTE: it's not safe to cache this value as it could change in the middle of the session
 function GetEffectivePlayerMaxLevel()
-	return MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+	return GetMaxPlayerLevel();
 end
 
 function IsLevelAtEffectiveMaxLevel(level)
@@ -4570,4 +4610,12 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	end
 
 	return name, FRIENDS_WOW_NAME_COLOR_CODE, nil, playerLink;
+end
+
+function DisplayInterfaceActionBlockedMessage()
+	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
+		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
 end

@@ -1,4 +1,4 @@
- <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GossipFrame.lua"/>
 	<Frame name="GossipFramePanelTemplate" virtual="true">
@@ -121,24 +121,24 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-                <Texture name="GossipFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
-		</Layers> 
- 		<Frames>
+				<Texture name="GossipFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
 			<Frame name="GossipNpcNameFrame">
-				<Size x="3000" y="14"/>
+				<Size x="250" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GossipFrame" relativePoint="TOP" x="0" y="-23"/>
+					<Anchor point="TOPLEFT" relativeTo="GossipFrame" relativePoint="TOPLEFT" x="75" y="-24"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="GossipFrameNpcNameText" inherits="GameFontHighlight">
-							<Size x="235" y="20"/>
+							<Size y="20"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
 								<Anchor point="RIGHT"/>
@@ -147,8 +147,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-                     <OnLoad function="RaiseFrameLevelByTwo"/>
-                </Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
 			</Frame>
 			<Button name="GossipFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -159,7 +159,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
- 			<Frame name="GossipFrameGreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+			<Frame name="GossipFrameGreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
@@ -405,14 +405,14 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
- 			</Frame>
- 		</Frames>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad function="GossipFrame_OnLoad"/>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 				if ( StaticPopup_Visible("XP_LOSS") ) then
-					StaticPopup_Hide("XP_LOSS");
+				StaticPopup_Hide("XP_LOSS");
 				end
 			</OnShow>
 			<OnEvent function="GossipFrame_OnEvent"/>
@@ -422,7 +422,7 @@
 			</OnHide>
 			<OnMouseWheel function=""/>
 		</Scripts>
- 	</Frame>
+	</Frame>
 
 	<StatusBar name="NPCFriendshipStatusBar" parent="GossipFrame" hidden="true">
 		<Size x="230" y="14"/>
@@ -434,7 +434,8 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\Common\friendship-parts">  <!-- the bar itself -->
+				<Texture file="Interface\Common\friendship-parts">
+					<!-- the bar itself -->
 					<Size x="267" y="38"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-31" y="18"/>
@@ -479,7 +480,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">  <!-- bar fill background -->
+				<Texture setAllPoints="true">
+					<!-- bar fill background -->
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
@@ -496,4 +498,4 @@
 			</OnLeave>
 		</Scripts>
 	</StatusBar>
- </Ui>
+</Ui>

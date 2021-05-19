@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CommentatorEventAlerts.lua"/>
+
+	<Frame name="CommentatorEventAlertsFrameFrameTemplate" inherits="RaidBossEmoteFrameTemplate" mixin="CommentatorEventAlertsMixin" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CommentatorEventAlertsFrame" inherits="CommentatorEventAlertsFrameFrameTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIWidgetTopCenterContainerFrame" relativePoint="BOTTOM" x="0" y="-10"/>
+		</Anchors>
+	</Frame>
+</Ui>

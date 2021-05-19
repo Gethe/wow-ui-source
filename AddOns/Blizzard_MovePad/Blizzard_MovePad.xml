@@ -7,31 +7,25 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="MovePadFrame" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND">
+	<Frame name="MovePadFrame" inherits="BackdropTemplate" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+		</KeyValues>
 		<Size x="126" y="124" />
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-90" y="-180"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-			<Color r="0.09" g="0.09" b="0.19" a="0.5"/>
-			<BorderColor r="1.0" g="1.0" b="1.0"/>
-		</Backdrop>
 		<Frames>
 			<CheckButton name="MovePadLock">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Buttons\LockButton-Border"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\LockButton-Border"/>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						self:SetChecked(false);

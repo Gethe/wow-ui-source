@@ -358,8 +358,3 @@ function FramePoolCollectionMixin:EnumerateInactive()
 		return currentObject;
 	end, nil;
 end
-
-do
-	-- Use CreateFramePoolCollection
-	CreatePoolCollection = CreateFramePoolCollection;
-end

@@ -343,12 +343,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT1_NAME..":");
-								self.stat = "STRENGTH";
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Frame name="PetStatFrame2" inherits="AttributeFrameTemplate" id="2">
 						<Anchors>
@@ -358,12 +352,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT2_NAME..":");
-								self.stat = "AGILITY";
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Frame name="PetStatFrame3" inherits="AttributeFrameTemplate" id="3">
 						<Anchors>
@@ -373,12 +361,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT3_NAME..":");
-								self.stat = "STAMINA";
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Frame name="PetStatFrame4" inherits="AttributeFrameTemplate" id="4">
 						<Anchors>
@@ -388,12 +370,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT4_NAME..":");
-								self.stat = "INTELLECT";
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Frame name="PetStatFrame5" inherits="AttributeFrameTemplate" id="5">
 						<Anchors>
@@ -403,14 +379,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(SPELL_STAT5_NAME..":");
-								self.stat = "SPIRIT";
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Frame name="PetAttackFrame" inherits="StatFrameTemplate">
+					<Frame name="PetAttackPowerFrame" inherits="StatFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetAttributesFrame" relativePoint="TOPLEFT">
 								<Offset>
@@ -418,31 +388,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(ATTACK_COLON);
-							</OnLoad>
-							<OnEnter>
-								<!-- The 1.12.0 PetAttackFrame doesn't have a description in its tooltip. This recreates that. -->
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(ATTACK_TOOLTIP, 1.0, 1.0, 1.0);
-								GameTooltip:Show();
-							</OnEnter>
-						</Scripts>
-					</Frame>
-					<Frame name="PetAttackPowerFrame" inherits="StatFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PetAttackFrame" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(ATTACK_POWER_COLON);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Frame name="PetDamageFrame" inherits="StatFrameTemplate">
 						<Anchors>
@@ -453,15 +398,12 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								self.Label:SetText(DAMAGE_COLON);
-							</OnLoad>
 							<OnEnter>
 								CharacterDamageFrame_OnEnter(self);
 							</OnEnter>
 						</Scripts>
 					</Frame>
-					<Frame name="PetDefenseFrame" inherits="StatFrameTemplate">
+					<Frame name="PetSpellDamageFrame" inherits="StatFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetDamageFrame" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -469,30 +411,15 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(DEFENSE_COLON);
-							</OnLoad>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(DEFENSE_TOOLTIP, 1.0, 1.0, 1.0);
-								GameTooltip:Show();
-							</OnEnter>
-						</Scripts>
 					</Frame>
 					<Frame name="PetArmorFrame" inherits="StatFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PetDefenseFrame" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="PetSpellDamageFrame" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="-1"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.Label:SetText(ARMOR_COLON);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 			</Frame>

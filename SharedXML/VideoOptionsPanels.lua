@@ -14,19 +14,22 @@ VideoOptionsFrameCategoryFrame:SetSize(175,569);
 local DefaultVideoOptions = {};
 local ErrorCodes =
 {
-	VRN_NOMULTISAMPLE,
 	VRN_ILLEGAL,
 	VRN_UNSUPPORTED,
 	VRN_GRAPHICS,
 	VRN_DUALCORE,
 	VRN_CPUMEM_2GB,
-	VRN_NEEDS_2_0,
-	VRN_NEEDS_3_0,
-	VRN_NEEDS_4_0,
+	VRN_CPUMEM_4GB,
 	VRN_NEEDS_5_0,
+	VRN_NEEDS_6_0,
+	VRN_NEEDS_RT,
+	VRN_NEEDS_MACOS_10_13,
+	VRN_NEEDS_MACOS_10_14,
+	VRN_NEEDS_MACOS_10_15,
+	VRN_NEEDS_MACOS_11_0,
+	VRN_NEEDS_WINDOWS_10,
 	VRN_MACOS_UNSUPPORTED,
 	VRN_WINDOWS_UNSUPPORTED,
-	VRN_WINDOWS_32BIT,
 	VRN_GPU_DRIVER,
 };
 
@@ -257,12 +260,18 @@ function ControlGetActiveCvarValue(self, checkCvar)
 end
 
 local function FinishChanges(self)
-	if ( VideoOptionsFrame.gxRestart ) then
+	if ( VideoOptionsFrame.gxRestart or VideoOptionsFrame.windowUpdate ) then
+		if ( VideoOptionsFrame.gxRestart ) then
+			RestartGx();
+		else
+			UpdateWindow();
+		end
 		VideoOptionsFrame.gxRestart = nil;
-		RestartGx();
+		VideoOptionsFrame.windowUpdate = nil;
+
 		-- reload some tables and redisplay
-		Display_DisplayModeDropDown.selectedID = nil; 							 	-- invalidates cached value
-		BlizzardOptionsPanel_RefreshControlSingle(Display_DisplayModeDropDown);		-- hardware may not have set this, so we need to refresh
+		Display_DisplayModeDropDown.selectedID = nil;                                  -- invalidates cached value
+		BlizzardOptionsPanel_RefreshControlSingle(Display_DisplayModeDropDown);        -- hardware may not have set this, so we need to refresh
 
 		Display_ResolutionDropDown.tablerefresh = true;
 		Display_PrimaryMonitorDropDown.tablerefresh = true;
@@ -286,6 +295,9 @@ local function CommitChange(self)
 			end
 			if ( self.restart ) then
 				VideoOptionsFrame.gxRestart = true;
+			end
+			if ( self.windowUpdate ) then
+				VideoOptionsFrame.windowUpdate = true;
 			end
 		end
 	end
@@ -318,10 +330,14 @@ function VideoOptionsPanel_Cancel (self)
 			if ( control.restart ) then
 				VideoOptionsFrame.gxRestart = true;
 			end
+			if ( control.windowUpdate ) then
+				VideoOptionsFrame.windowUpdate = true;
+			end
 		end
 		-- we need to force-set the value here just in case the control was doing dynamic updating
 		ControlSetValue(control, control.value);
 	end
+	VideoOptionsFrame.windowUpdate = nil;
 	VideoOptionsFrame.gxRestart = nil;
 	VideoOptionsFrame.gameRestart = nil;
 end

@@ -2,11 +2,27 @@
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
-..\SharedXML\Util.lua
+GlueCheck.lua
+Localization.xml
+Fonts.xml
+FontStyles.xml
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
 ..\SharedXML\NineSlice.lua
+..\SharedXML\Backdrop.xml
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\Util.lua
+..\SharedXML\Constants.lua
+..\SharedXML\SecureUIPanelTemplates.xml
+..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\SharedBasicControls.xml
+
+..\SharedXML\TableUtil.lua
+..\SharedXML\EnumUtil.lua
+..\SharedXML\MathUtil.lua
+..\SharedXML\CallbackRegistry.lua
+..\SharedXML\CvarUtil.lua
+..\SharedXML\TimeUtil.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
@@ -20,18 +36,17 @@
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
+..\SharedXML\PixelUtil.lua
+..\SharedXML\Dump.lua
 MixinUtil.lua
 ..\SharedXML\LinkUtil.lua
-..\SharedXML\TableUtil.lua
-..\SharedXML\EnumUtil.lua
-..\SharedXML\MathUtil.lua
-..\SharedXML\TimeUtil.lua
-..\SharedXML\CallbackRegistry.lua
-..\SharedXML\GlobalCallbackRegistry.lua
+..\SharedXML\ScriptAnimationUtil.lua
 
+..\SharedXML\GlobalCallbackRegistry.lua
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 ..\SharedXML\Frame\EventEditBox.xml
@@ -60,9 +75,6 @@ PlayerMovementFrameFader.lua
 
 ..\SharedXML\SoundKitConstants.lua
 Constants.lua
-Localization.xml
-Fonts.xml
-FontStyles.xml
 
 ..\SharedXML\PropertyBindingMixin.lua
 ..\SharedXML\PropertyButton.xml
@@ -76,8 +88,13 @@ ObjectAPI\Spell.lua
 ObjectAPI\PlayerLocation.lua
 
 ## add new modules below here
+ChatBubbleTemplates.xml
 WorldFrame.xml
 UIParent.xml
+..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
+..\SharedXML\ScriptedAnimations\ScriptAnimatedModelScene.xml
 QuestUtils.lua
 MapUtil.lua
 AuraUtil.lua
@@ -88,9 +105,6 @@ MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
-..\SharedXML\SecureUIPanelTemplates.xml
-..\SharedXML\SharedUIPanelTemplates.xml
-..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\CustomBindingButtonTemplate.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
@@ -159,6 +173,7 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 TargetFrame.xml
+TotemFrame.xml
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
@@ -167,7 +182,6 @@ PaperDollFrame.xml
 PetPaperDollFrame.xml
 SkillFrame.xml
 ReputationFrame.xml
-HonorFrame.xml
 QuestFrame.xml
 QuestLogFrame.xml
 QuestTimerFrame.xml
@@ -179,7 +193,6 @@ LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
-ScrollOfResurrection.xml
 ItemRef.xml
 FriendsFrame.xml
 RaidFrame.xml
@@ -201,6 +214,8 @@ DurabilityFrame.xml
 BattlegroundChatFilters.xml
 WorldStateFrame.xml
 RatingMenuFrame.xml
+TalentFrameBase.lua
+Blizzard_TalentUITemplates.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
@@ -209,7 +224,6 @@ CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
 StreamingFrame.xml
-RecruitAFriendFrame.xml
 LootHistory.xml
 StaticPopupSpecial.xml
 PVPHelper.xml
@@ -217,6 +231,10 @@ ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
+ArenaFrame.xml
+ArenaRegistrarFrame.xml
+PVPFrame.xml
+
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

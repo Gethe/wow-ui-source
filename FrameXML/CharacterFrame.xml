@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-    <Script file="CharacterFrame.lua"/>
+	<Script file="CharacterFrame.lua"/>
 
 	<Texture name="Char-Stat-Bottom" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
 		<Size x="169" y="46"/>
@@ -100,47 +100,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="CharacterStatFrameTemplate" virtual="true">
-		<Size x="187" y="15"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="UI-Character-Info-Line-Bounce" useAtlasSize="true" alpha="0.3">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="LEFT" x="11" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Value" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="RIGHT" x="-8" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				if ( self.onEnterFunc ) then
-					self:onEnterFunc();
-				else
-					PaperDollStatTooltip(self);
-				end
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnLoad>
-				if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
-					self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
-				end
-			</OnLoad>
-		</Scripts>
-	</Frame>
-
-    <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
+	<Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="384" y="512"/>
 		</Size>
@@ -215,7 +175,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-            <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER" motionScriptsWhileDisabled="false">
+			<Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER" motionScriptsWhileDisabled="false">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -223,19 +183,19 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-                <Scripts>
+				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(CHARACTER_INFO, "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-            </Button>
+				</Scripts>
+			</Button>
 			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PET" motionScriptsWhileDisabled="false">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-16" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -251,7 +211,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-16" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -264,33 +224,33 @@
 				</Scripts>
 			</Button>
 			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS" motionScriptsWhileDisabled="false">
-                <Anchors>
-					<Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-16" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-            </Button>
-			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="HONOR">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-16" y="0"/>
+							<AbsDimension x="-15" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(HONOR, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="PVP">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
@@ -298,9 +258,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="CharacterFrame_OnLoad"/>
-            <OnEvent function="CharacterFrame_OnEvent"/>
-            <OnShow function="CharacterFrame_OnShow"/>
+			<OnEvent function="CharacterFrame_OnEvent"/>
+			<OnShow function="CharacterFrame_OnShow"/>
 			<OnHide function="CharacterFrame_OnHide"/>
-        </Scripts>
-    </Frame>
+		</Scripts>
+	</Frame>
 </Ui>

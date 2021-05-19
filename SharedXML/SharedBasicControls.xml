@@ -1,10 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<!-- This script turns on verbose messages in the FrameXML log -->
-	<Script>
-		--FrameXML_Debug(1);
-	</Script>
-
 	<Script file="SharedBasicControls.lua"/>
 
 	<!-- These are basic attributes for dialogs -->
@@ -20,21 +16,13 @@
 	<Texture name="DialogButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Frame name="DialogBoxFrame" virtual="true" toplevel="true" frameStrata="DIALOG" hidden="true">
+	<Frame name="DialogBoxFrame" inherits="BackdropTemplate" virtual="true" toplevel="true" frameStrata="DIALOG" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Frames>
 			<Button name="$parentButton">
 				<Size x="128" y="32"/>
@@ -186,7 +174,7 @@
 	</Frame>
 
 	<Frame name="ScriptErrorsFrame" inherits="UIPanelDialogTemplate" mixin="ScriptErrorsFrameMixin" frameStrata="TOOLTIP" movable="true" clampedToScreen="true" hidden="true" toplevel="true">
-		<Size x="384" y="260"/>
+		<Size x="784" y="260"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -208,13 +196,13 @@
 				</Anchors>
 			</Frame>
 			<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size x="343" y="194"/>
+				<Size x="743" y="194"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="-30"/>
 				</Anchors>
 				<ScrollChild>
 					<EditBox parentKey="Text" multiLine="true" letters="4000" autoFocus="false">
-						<Size x="343" y="194"/>
+						<Size x="743" y="194"/>
 						<Scripts>
 							<OnLoad function="ScrollingEdit_OnLoad"/>
 							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>

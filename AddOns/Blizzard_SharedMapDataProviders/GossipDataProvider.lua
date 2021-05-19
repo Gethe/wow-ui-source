@@ -22,10 +22,10 @@ function GossipDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	local mapID = self:GetMap():GetMapID();
-	local gossipPoiID = C_GossipInfo.GetGossipPoiForUiMapID(mapID);
+	local gossipPoiID = C_GossipInfo.GetPoiForUiMapID(mapID);
 
 	if gossipPoiID then
-		local gossipInfo = C_GossipInfo.GetGossipPoiInfo(mapID, gossipPoiID);
+		local gossipInfo = C_GossipInfo.GetPoiInfo(mapID, gossipPoiID);
 		if gossipInfo then
 			self:GetMap():AcquirePin("GossipPinTemplate", gossipInfo);
 		end

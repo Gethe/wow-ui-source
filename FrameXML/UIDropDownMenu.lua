@@ -756,9 +756,7 @@ function UIDropDownMenu_GetButtonWidth(button)
 
 	return math.max(minWidth, width);
 end
-
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
-	local button, checked, checkImage, uncheckImage, normalText, width;
 	local maxWidth = 0;
 	local somethingChecked = nil;
 	if ( not dropdownLevel ) then
@@ -769,8 +767,8 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	listFrame.numButtons = listFrame.numButtons or 0;
 	-- Just redraws the existing menu
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = _G["DropDownList"..dropdownLevel.."Button"..i];
-		checked = nil;
+		local button = _G["DropDownList"..dropdownLevel.."Button"..i];
+		local checked = nil;
 
 		if(i <= listFrame.numButtons) then
 			-- See if checked or not
@@ -794,19 +792,21 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 
 		if not button.notCheckable and button:IsShown() then
 			-- If checked show check image
-			checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
-			uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
+			local checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
+			local uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
 			if ( checked ) then
-				somethingChecked = true;
-				local icon = GetChild(frame, frame:GetName(), "Icon");
-				if (button.iconOnly and icon and button.icon) then
-					UIDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
-				elseif ( useValue ) then
-					UIDropDownMenu_SetText(frame, button.value);
-					icon:Hide();
-				else
-					UIDropDownMenu_SetText(frame, button:GetText());
-					icon:Hide();
+				if not button.ignoreAsMenuSelection then
+					somethingChecked = true;
+					local icon = GetChild(frame, frame:GetName(), "Icon");
+					if (button.iconOnly and icon and button.icon) then
+						UIDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
+					elseif ( useValue ) then
+						UIDropDownMenu_SetText(frame, button.value);
+						icon:Hide();
+					else
+						UIDropDownMenu_SetText(frame, button:GetText());
+						icon:Hide();
+					end
 				end
 				button:LockHighlight();
 				checkImage:Show();
@@ -819,7 +819,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 
 		if ( button:IsShown() ) then
-			width = UIDropDownMenu_GetButtonWidth(button);
+			local width = UIDropDownMenu_GetButtonWidth(button);
 			if ( width > maxWidth ) then
 				maxWidth = width;
 			end
@@ -827,10 +827,12 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	end
 	if(somethingChecked == nil) then
 		UIDropDownMenu_SetText(frame, VIDEO_QUALITY_LABEL6);
+		local icon = GetChild(frame, frame:GetName(), "Icon");
+		icon:Hide();
 	end
 	if (not frame.noResize) then
 		for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-			button = _G["DropDownList"..dropdownLevel.."Button"..i];
+			local button = _G["DropDownList"..dropdownLevel.."Button"..i];
 			button:SetWidth(maxWidth);
 		end
 		UIDropDownMenu_RefreshDropDownSize(_G["DropDownList"..dropdownLevel]);

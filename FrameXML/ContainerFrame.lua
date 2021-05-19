@@ -121,6 +121,10 @@ function ToggleBag(id)
 			end
 		end
 		if ( not containerShowing ) then
+			if ( CanAutoSetGamePadCursorControl(true) ) then
+				SetGamePadCursorControl(true);
+			end
+
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
 			-- Stop keyring button pulse
 			if (id == KEYRING_CONTAINER) then 
@@ -286,7 +290,7 @@ function ContainerFrame_OnShow(self)
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
 	end
  	ContainerFrame_Update(self);
-	
+	UpdateContainerFrameAnchors();
 	-- If there are tokens watched then decide if we should show the bar
 	--[[if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
@@ -977,7 +981,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 	-- Add the bag to the baglist
 	frame:Show();
-	UpdateContainerFrameAnchors();
 	frame:Raise();
 	if (ContainerFrame1.isHelpBoxShown and ContainerFrame1.helpBoxFrame) then
 		ContainerFrame1.helpBoxFrame:Raise();
@@ -1254,6 +1257,15 @@ function ContainerFrameItemButton_OnClick(self, button)
 end
 
 function ContainerFrameItemButton_OnModifiedClick(self, button)
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+		if C_Item.DoesItemExist(itemLocation) then
+			if SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+				return;
+			end
+		end
+	end
+
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end

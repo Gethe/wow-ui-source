@@ -7,12 +7,30 @@ local GuildInfo =
 	Functions =
 	{
 		{
+			Name = "CanEditOfficerNote",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canEditOfficerNote", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanSpeakInGuildChat",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "canSpeakInGuildChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanViewOfficerNote",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canViewOfficerNote", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -30,6 +48,20 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GetGuildTabardInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "tabardInfo", Type = "GuildTabardInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GuildControlGetRankFlags",
 			Type = "Function",
 
@@ -44,6 +76,19 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GuildRoster",
+			Type = "Function",
+		},
+		{
+			Name = "IsGuildOfficer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isOfficer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildRankAssignmentAllowed",
 			Type = "Function",
 
@@ -51,6 +96,27 @@ local GuildInfo =
 			{
 				{ Name = "guid", Type = "string", Nilable = false },
 				{ Name = "rankOrder", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isGuildRankAssignmentAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QueryGuildMembersForRecipe",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "updatedRecipeSpellID", Type = "number", Nilable = false },
 			},
 		},
 		{

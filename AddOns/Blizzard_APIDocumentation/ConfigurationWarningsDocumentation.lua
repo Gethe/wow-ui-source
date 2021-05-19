@@ -75,11 +75,11 @@ local ConfigurationWarnings =
 			{
 				{ Name = "ShaderModelWillBeOutdated", Type = "ConfigurationWarning", EnumValue = 0 },
 				{ Name = "ShaderModelIsOutdated", Type = "ConfigurationWarning", EnumValue = 1 },
-				{ Name = "ConsoleDeviceSseoUtdated", Type = "ConfigurationWarning", EnumValue = 2 },
+				{ Name = "ConsoleDeviceSseOutdated", Type = "ConfigurationWarning", EnumValue = 2 },
 				{ Name = "DriverBlacklisted", Type = "ConfigurationWarning", EnumValue = 3 },
 				{ Name = "DriverOutOfDate", Type = "ConfigurationWarning", EnumValue = 4 },
 				{ Name = "DeviceBlacklisted", Type = "ConfigurationWarning", EnumValue = 5 },
-				{ Name = "GraphicsApiwIllBeOutdated", Type = "ConfigurationWarning", EnumValue = 6 },
+				{ Name = "GraphicsApiWillBeOutdated", Type = "ConfigurationWarning", EnumValue = 6 },
 				{ Name = "OsBitsWillBeOutdated", Type = "ConfigurationWarning", EnumValue = 7 },
 			},
 		},

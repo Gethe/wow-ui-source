@@ -3,7 +3,6 @@ MAX_QUESTS = 20;
 MAX_OBJECTIVES = 10;
 QUESTLOG_QUEST_HEIGHT = 16;
 UPDATE_DELAY = 0.1;
-MAX_QUESTLOG_QUESTS = 20;
 MAX_QUESTWATCH_LINES = 30;
 MAX_WATCHABLE_QUESTS = 5;
 MAX_NUM_PARTY_MEMBERS = 4;
@@ -68,7 +67,8 @@ function QuestLog_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if ( GetCVar("autoQuestWatch") == "1" ) then
-			AutoQuestWatch_Update(arg1);
+			local questIndex = GetQuestLogIndexByID(arg1);
+			AutoQuestWatch_Update(questIndex);
 		end
 	elseif ( eventy == "PLAYER_LEVEL_UP" ) then
 		QuestLog_Update();
@@ -124,8 +124,7 @@ function QuestLog_Update(self)
 	end
 
 	-- Update Quest Count
-	QuestLogQuestCount:SetText(format(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS));
-	QuestLogCountMiddle:SetWidth(QuestLogQuestCount:GetWidth());
+	QuestLogUpdateQuestCount(numQuests);
 
 	-- ScrollFrame update
 	FauxScrollFrame_Update(QuestLogListScrollFrame, numEntries, QUESTS_DISPLAYED, QUESTLOG_QUEST_HEIGHT, nil, nil, nil, QuestLogHighlightFrame, 293, 316 )
@@ -190,6 +189,12 @@ function QuestLog_Update(self)
 				questTag = FAILED;
 			elseif ( isComplete and isComplete > 0 ) then
 				questTag = COMPLETE;
+			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY ) then
+				if ( questTag ) then
+					questTag = format(DAILY_QUEST_TAG_TEMPLATE, questTag);
+				else
+					questTag = DAILY;
+				end
 			end
 			if ( questTag ) then
 				questTitleTag:SetText("("..questTag..")");
@@ -234,7 +239,6 @@ function QuestLog_Update(self)
 			end
 
 			-- Color the quest title and highlight according to the difficulty level
-			local playerLevel = UnitLevel("player");
 			if ( isHeader ) then
 				color = QuestDifficultyColors["header"];
 			else
@@ -290,7 +294,6 @@ function QuestLog_Update(self)
 
 	-- Update Quest Count
 	QuestLogQuestCount:SetText(format(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS));
-	QuestLogCountMiddle:SetWidth(QuestLogQuestCount:GetWidth());
 
 	-- If no selection then set it to the first available quest
 	if ( GetQuestLogSelection() == 0 ) then
@@ -438,6 +441,38 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
 		end
 	end
+
+	if ( GetQuestLogGroupNum() > 0 ) then
+		local suggestedGroupString = format(QUEST_SUGGESTED_GROUP_NUM, GetQuestLogGroupNum());
+		QuestLogSuggestedGroupNum:SetText(suggestedGroupString);
+		QuestLogSuggestedGroupNum:Show();
+		QuestLogSuggestedGroupNum:ClearAllPoints();
+		if ( GetQuestLogRequiredMoney() > 0 ) then
+			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -4);
+		elseif ( numObjectives > 0 ) then
+			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -4);
+		elseif ( questTimer ) then
+			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
+		else
+			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
+		end
+	else
+		QuestLogSuggestedGroupNum:Hide();
+	end
+
+	if ( GetQuestLogGroupNum() > 0 ) then
+		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogSuggestedGroupNum", "BOTTOMLEFT", 0, -10);
+	elseif ( GetQuestLogRequiredMoney() > 0 ) then
+		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -10);
+	elseif ( numObjectives > 0 ) then
+		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -10);
+	else
+		if ( questTimer ) then
+			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
+		else
+			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
+		end
+	end
 	if ( questDescription ) then
 		QuestLogQuestDescription:SetText(questDescription);
 		QuestFrame_SetAsLastShown(QuestLogQuestDescription);
@@ -445,8 +480,10 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 	local numRewards = GetNumQuestLogRewards();
 	local numChoices = GetNumQuestLogChoices();
 	local money = GetQuestLogRewardMoney();
+	local honor = GetQuestLogRewardHonor();
+	local playerTitle = GetQuestLogRewardTitle();
 
-	if ( (numRewards + numChoices + money) > 0 ) then
+	if ( playerTitle or (numRewards + numChoices + money + honor) > 0 ) then
 		QuestLogRewardTitleText:Show();
 		QuestFrame_SetAsLastShown(QuestLogRewardTitleText);
 	else
@@ -647,6 +684,12 @@ function QuestWatch_Update()
 				objectivesCompleted = 0;
 				for j=1, numObjectives do
 					text, type, finished = GetQuestLogLeaderBoard(j, questIndex);
+					if ( text == nil ) then
+						text = "";
+					end
+					if ( finished == nil ) then
+						finished = true;
+					end
 					watchText = _G["QuestWatchLine"..watchTextIndex];
 					-- Set Objective text
 					watchText:SetText(" - "..text);
@@ -788,6 +831,34 @@ function AutoQuestWatch_OnUpdate(self, elapsed)
 end
 
 function GetQuestIDFromLogIndex(questIndex)
-	_, _, _, _, _, _, _, questID = GetQuestLogTitle(questIndex);
+	questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questIndex);
 	return questID;
+end
+
+function QuestLogUpdateQuestCount(numQuests)
+	QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS);
+	local width = QuestLogQuestCount:GetWidth();
+	local textHeight = 12;
+	local hPadding = 15;
+	local vPadding = 8;
+	local dailyQuestsComplete = GetDailyQuestsCompleted();
+	
+	if ( dailyQuestsComplete > 0 ) then
+		QuestLogDailyQuestCount:SetFormattedText(QUEST_LOG_DAILY_COUNT_TEMPLATE, dailyQuestsComplete, GetMaxDailyQuests());
+		QuestLogDailyQuestCount:Show();
+		DailyQuestCountButton:Show();
+		-- Use this width
+		if ( QuestLogDailyQuestCount:GetWidth() > width ) then
+			width = QuestLogDailyQuestCount:GetWidth();
+		end
+		QuestLogCount:SetHeight(textHeight*2+vPadding);
+		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -38);
+	else
+		QuestLogDailyQuestCount:Hide();
+		DailyQuestCountButton:Hide();
+		width = QuestLogQuestCount:GetWidth();
+		QuestLogCount:SetHeight(textHeight+vPadding);
+		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -41);
+	end
+	QuestLogCount:SetWidth(width+hPadding);
 end

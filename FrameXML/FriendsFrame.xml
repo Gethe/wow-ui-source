@@ -776,22 +776,14 @@ TRAVEL PASS
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Frame parentKey="BroadcastFrame" frameStrata="HIGH" enableMouse="true" hidden="true">
+							<Frame parentKey="BroadcastFrame" inherits="BackdropTemplate" frameStrata="HIGH" enableMouse="true" hidden="true">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
 								<Size x="338" y="100"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="-110" y="-24"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="BACKGROUND" textureSubLevel="1">
 										<Texture>
@@ -955,22 +947,14 @@ TRAVEL PASS
 									</ScrollFrame>
 								</Frames>
 							</Frame>
-							<Frame parentKey="UnavailableInfoFrame" hidden="true">
+							<Frame parentKey="UnavailableInfoFrame" inherits="BackdropTemplate" hidden="true">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
 								<Size x="306" y="100"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-2" y="-18"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Label" inherits="FriendsFont_Large" text="BATTLENET_UNAVAILABLE">
@@ -1169,106 +1153,6 @@ TRAVEL PASS
 						<Scripts>
 							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
-					</Button>
-					<Button name="$parentRecruitAFriendButton" motionScriptsWhileDisabled="true" parentKey="RaFButton" hidden="true">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="Icon"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self:RegisterEvent("RECRUIT_A_FRIEND_SYSTEM_STATUS");
-								self:RegisterEvent("PLAYER_ENTERING_WORLD");
-								self:RegisterEvent("PRODUCT_CHOICE_UPDATE");
-								RAFButton_Update(self);
-							</OnLoad>
-							<OnClick>
-								if ( #C_ProductChoice.GetChoices() > 0 ) then
-									ProductChoiceFrame_SetUp(ProductChoiceFrame);
-									ProductChoiceFrame:Show();
-								else
-									StaticPopupSpecial_Show(RecruitAFriendFrame);
-								end
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								if ( self.rewards ) then
-									GameTooltip:SetText(RAF_BUTTON_REWARD_TOOLTIP_TITLE);
-									GameTooltip:AddLine(RAF_BUTTON_REWARD_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
-								else
-									GameTooltip:SetText(RAF_BUTTON_TOOLTIP_TITLE);
-									GameTooltip:AddLine(RAF_BUTTON_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
-									if ( self.suppressedRewards and self.suppressedRewards > 0 ) then
-										local color = RED_FONT_COLOR;
-										local text = string.format(RAF_REWARD_SUPPRESSED, self.suppressedRewards);
-										GameTooltip:AddLine(text, color.r, color.g, color.b, 1);
-									end
-									if ( not self:IsEnabled() ) then
-										local color = RED_FONT_COLOR;
-										GameTooltip:AddLine(RAF_BUTTON_DISABLED_FACTION, color.r, color.g, color.b, 1);
-									end
-								end
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnEvent>
-								RAFButton_Update(self);
-							</OnEvent>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
-					</Button>
-					<Button name="$parentSoRButton" parentKey="soRButton" hidden="true">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.RaFButton" relativePoint="LEFT" x="-4" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="icon"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
-								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
-								if ( CanSendSoRByText() ) then
-									self:Show();
-								else
-									self:Hide();
-								end
-							</OnLoad>
-							<OnClick>
-								ScrollOfResurrectionButton_OnClick(self);
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
-								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, true);
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnEvent>
-								if ( CanSendSoRByText() ) then
-									self:Show();
-								else
-									self:Hide();
-								end
-							</OnEvent>
-							<OnShow function="FriendsTabHeader_ResizeTabs"/>
-							<OnHide function="FriendsTabHeader_ResizeTabs"/>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
 					</Button>
 					<!--<Button name="$parentGroupsButton" motionScriptsWhileDisabled="true" parentKey="groupsButton">
 						<Size x="26" y="26"/>
@@ -2466,6 +2350,7 @@ TRAVEL PASS
               <AbsDimension x="0" y="0"/>
             </PushedTextOffset>
           </Button>
+
 					<Button name="GuildFrameImpeachButton" inherits="UIPanelButtonTemplate" text="GUILD_IMPEACH_POPUP_CONFIRM" hidden="true">
 						<Size x="104" y="22"/>
 						<Anchors>
@@ -2495,7 +2380,8 @@ TRAVEL PASS
 						<HighlightFont style="GameFontHighlightSmall"/>
 						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
-          <Button name="GuildFrameControlButton" inherits="UIPanelButtonTemplate" text="GUILDCONTROL">
+
+					<Button name="GuildFrameControlButton" inherits="UIPanelButtonTemplate" text="GUILDCONTROL">
             <Size>
               <AbsDimension x="104" y="22"/>
             </Size>
@@ -2602,8 +2488,8 @@ TRAVEL PASS
         </Frames>
         <Scripts>
           <OnShow>
-            GuildRoster();
-          </OnShow>
+						C_GuildInfo.GuildRoster();
+					</OnShow>
           <OnHide>
             GuildControlPopupFrame:Hide();
             GuildMemberDetailFrame:Hide();
@@ -3010,8 +2896,11 @@ TRAVEL PASS
           </OnHide>
         </Scripts>
       </Frame>
-      <Frame name="GuildInfoFrame" toplevel="true" enableMouse="true" hidden="true">
-        <Size>
+      <Frame name="GuildInfoFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
+				<Size>
           <AbsDimension x="297" y="298"/>
         </Size>
         <Anchors>
@@ -3059,7 +2948,7 @@ TRAVEL PASS
           </Layer>
         </Layers>
         <Frames>
-          <Frame name="GuildInfoTextBackground">
+          <Frame name="GuildInfoTextBackground" inherits="TooltipBackdropTemplate">
             <Size>
               <AbsDimension x="276" y="230"/>
             </Size>
@@ -3070,17 +2959,6 @@ TRAVEL PASS
                 </Offset>
               </Anchor>
             </Anchors>
-            <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-              <EdgeSize>
-                <AbsValue val="16"/>
-              </EdgeSize>
-              <TileSize>
-                <AbsValue val="16"/>
-              </TileSize>
-              <BackgroundInsets>
-                <AbsInset left="5" right="5" top="5" bottom="5"/>
-              </BackgroundInsets>
-            </Backdrop>
             <Frames>
               <ScrollFrame name="GuildInfoFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
                 <Size>
@@ -3136,10 +3014,6 @@ TRAVEL PASS
               </ScrollFrame>
             </Frames>
             <Scripts>
-              <OnLoad>
-                self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-                self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-              </OnLoad>
               <OnShow>
                 local guildInfoText = GetGuildInfoText();
                 if ( not guildInfoText ) then
@@ -3214,20 +3088,12 @@ TRAVEL PASS
             <DisabledFont style="GameFontDisableSmall"/>
           </Button>
         </Frames>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-          <BackgroundInsets>
-            <AbsInset left="11" right="12" top="12" bottom="11"/>
-          </BackgroundInsets>
-          <TileSize>
-            <AbsValue val="32"/>
-          </TileSize>
-          <EdgeSize>
-            <AbsValue val="32"/>
-          </EdgeSize>
-        </Backdrop>
       </Frame>
-      <Frame name="GuildMemberDetailFrame" toplevel="true" enableMouse="true" hidden="true">
-        <Size>
+      <Frame name="GuildMemberDetailFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
+				<Size>
           <AbsDimension x="212" y="270"/>
         </Size>
         <Anchors>
@@ -3237,17 +3103,6 @@ TRAVEL PASS
             </Offset>
           </Anchor>
         </Anchors>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-          <BackgroundInsets>
-            <AbsInset left="11" right="12" top="12" bottom="11"/>
-          </BackgroundInsets>
-          <TileSize>
-            <AbsValue val="32"/>
-          </TileSize>
-          <EdgeSize>
-            <AbsValue val="32"/>
-          </EdgeSize>
-        </Backdrop>
         <Layers>
           <Layer level="ARTWORK">
             <FontString name="GuildMemberDetailName" inherits="GameFontNormal">
@@ -3507,7 +3362,7 @@ TRAVEL PASS
             <DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
             <HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
           </Button>
-          <Frame name="GuildMemberNoteBackground" enableMouse="true">
+          <Frame name="GuildMemberNoteBackground" inherits="TooltipBackdropTemplate" enableMouse="true">
             <Size>
               <AbsDimension x="181" y="40"/>
             </Size>
@@ -3534,28 +3389,13 @@ TRAVEL PASS
                 </FontString>
               </Layer>
             </Layers>
-            <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-              <EdgeSize>
-                <AbsValue val="16"/>
-              </EdgeSize>
-              <TileSize>
-                <AbsValue val="16"/>
-              </TileSize>
-              <BackgroundInsets>
-                <AbsInset left="5" right="5" top="5" bottom="5"/>
-              </BackgroundInsets>
-            </Backdrop>
             <Scripts>
-              <OnLoad>
-                self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-                self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
-              </OnLoad>
               <OnMouseUp>
                 StaticPopup_Show("SET_GUILDPLAYERNOTE");
               </OnMouseUp>
             </Scripts>
           </Frame>
-          <Frame name="GuildMemberOfficerNoteBackground">
+          <Frame name="GuildMemberOfficerNoteBackground" inherits="TooltipBackdropTemplate">
             <Size>
               <AbsDimension x="181" y="40"/>
             </Size>
@@ -3566,38 +3406,23 @@ TRAVEL PASS
                 </Offset>
               </Anchor>
             </Anchors>
-            <Layers>
-              <Layer level="ARTWORK">
-                <FontString name="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-                  <Size>
-                    <AbsDimension x="165" y="32"/>
-                  </Size>
-                  <Anchors>
-                    <Anchor point="TOP">
-                      <Offset>
-                        <AbsDimension x="1" y="-6"/>
-                      </Offset>
-                    </Anchor>
-                  </Anchors>
-                </FontString>
-              </Layer>
-            </Layers>
-            <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-              <EdgeSize>
-                <AbsValue val="16"/>
-              </EdgeSize>
-              <TileSize>
-                <AbsValue val="16"/>
-              </TileSize>
-              <BackgroundInsets>
-                <AbsInset left="5" right="5" top="5" bottom="5"/>
-              </BackgroundInsets>
-            </Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="165" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="1" y="-6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
             <Scripts>
-              <OnLoad>
-                self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-                self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.25);
-              </OnLoad>
               <OnMouseUp>
                 StaticPopup_Show("SET_GUILDOFFICERNOTE");
               </OnMouseUp>
@@ -3698,20 +3523,8 @@ TRAVEL PASS
 					</Frame>
 				</Frames>
 			</Button>
-			<Frame name="FriendsTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
+			<Frame name="FriendsTooltip" inherits="TooltipBackdropTemplate" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
 				<Size x="200" y="200"/>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<Color r="0" b="0" g="0"/>
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="4" right="4" top="4" bottom="4"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentHeader" inherits="FriendsFont_Normal" justifyH="LEFT">
@@ -3869,19 +3682,13 @@ TRAVEL PASS
 			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
-	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+	<Frame name="AddFriendFrame" inherits="BackdropTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="exclusive" value="true" type="boolean"/>
+			<KeyValue key="hideOnEscape" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="446" y="272"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Frames>
 			<Frame name="AddFriendInfoFrame" hidden="true">
 				<Size x="446" y="272"/>
@@ -4248,10 +4055,6 @@ TRAVEL PASS
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
 			<OnShow function="AddFriendFrame_OnShow"/>
 			<OnHide>
 				AddFriendFrame.editFocus = nil;
@@ -4259,22 +4062,16 @@ TRAVEL PASS
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="FriendsFriendsFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+	<Frame name="FriendsFriendsFrame" inherits="BackdropTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="exclusive" value="true" type="boolean"/>
+			<KeyValue key="hideOnEscape" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="314" y="345"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="FriendsFont_Large" justifyH="LEFT">
@@ -4292,28 +4089,14 @@ TRAVEL PASS
 					<Anchor point="TOPLEFT" x="8" y="-40"/>
 				</Anchors>
 			</Frame>
-			<Frame name="FriendsFriendsList">
+			<Frame name="FriendsFriendsList" inherits="TooltipBackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Size x="266" y="215"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-74"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(0, 0, 0);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="FriendsFriendsButton1" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
@@ -4424,12 +4207,10 @@ TRAVEL PASS
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:RegisterEvent("BN_REQUEST_FOF_SUCCEEDED");
 				self:RegisterEvent("BN_DISCONNECTED");
 				self.requested = { };
-				self.hideOnEscape = true;
-				self.exclusive = true;
 				UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
 			</OnLoad>
 			<OnShow>
@@ -4442,19 +4223,13 @@ TRAVEL PASS
 		</Scripts>
 	</Frame>
 
-	<Frame name="BattleTagInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true">
+	<Frame name="BattleTagInviteFrame" inherits="BackdropTemplate" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="exclusive" value="true" type="boolean"/>
+			<KeyValue key="hideOnEscape" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="357" y="150"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="12" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="FriendsFont_Normal" text="BATTLE_TAG_REQUEST">
@@ -4503,11 +4278,5 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

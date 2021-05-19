@@ -135,72 +135,6 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Frame name="MiniMapTrackingFrame" enableMouse="true" hidden="true">
-						<Size>
-							<AbsDimension x="33" y="33"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-15" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="MiniMapTrackingIcon">
-									<Size>
-										<AbsDimension x="26" y="26"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="7" y="-6"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture name="MiniMapTrackingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self:RegisterEvent("UNIT_AURA");
-							</OnLoad>
-							<OnEvent>
-								if ( event == "UNIT_AURA" ) then
-									local icon = GetTrackingTexture();
-									if ( icon ) then
-										MiniMapTrackingIcon:SetTexture(icon);
-										MiniMapTrackingFrame:Show();
-									else
-										MiniMapTrackingFrame:Hide();
-									end
-								end
-							</OnEvent>
-							<OnMouseUp>
-								if ( button == "RightButton" ) then
-									CancelTrackingBuff();			
-								end
-							</OnMouseUp> 
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-								GameTooltip:SetTrackingSpell();
-							</OnEnter>							
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Frame>
 					<Frame name="MiniMapMailFrame" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="33" y="33"/>
@@ -445,113 +379,95 @@
 									<Anchors>
 										<Anchor point="TOPRIGHT" x="2" y="-2"/>
 									</Anchors>
-								</HighlightTexture>									
+								</HighlightTexture>
 							</Button>
-<!--
-							<Frame name="MiniMapTracking">
-								<Size x="32" y="32"/>
+
+							<Button name="MiniMapTracking" enableMouse="true">
+								<Size x="33" y="33"/>
 								<Anchors>
 									<Anchor point="TOPLEFT">
-										<Offset x="9" y="-45"/>
+										<Offset x="11" y="-26"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
-											<Size x="25" y="25"/>
+											<Size x="30" y="30"/>
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset x="2" y="-4"/>
+												<Anchor point="CENTER">
+													<Offset x="0" y="0"/>
 												</Anchor>
 											</Anchors>
-											<Color r="1" g="1" b="1" a="0.6"/>
+										</Texture>
+									</Layer>
+									<Layer level="BORDER">
+										<Texture name="$parentIcon" file="Interface\Minimap\Tracking\None">
+											<Size>
+												<AbsDimension x="24" y="24"/>
+											</Size>
+											<Anchors>
+												<Anchor point="CENTER">
+													<Offset x="2" y="-2"/>
+												</Anchor>
+											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<Texture name="$parentIcon" file="Interface\Minimap\Tracking\None">
-											<Size x="20" y="20"/>
+										<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+											<Size x="64" y="64"/>
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset x="6" y="-6"/>
-												</Anchor>
+												<Anchor point="TOPLEFT"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<Texture name="$parentIconOverlay" hidden="true">
+										<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+											<Size x="32" y="32"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentIcon"/>
-												<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon"/>
+												<Anchor point="CENTER">
+													<Offset x="3" y="3"/>
+												</Anchor>
 											</Anchors>
-											<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+											<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
 										</Texture>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
+										MiniMapTracking_Update();
+										MiniMapTrackingBackground:SetAlpha(0.6);
+									</OnLoad>
+									<OnEvent>
+										if ( event == "MINIMAP_UPDATE_TRACKING" ) then
+											MiniMapTracking_Update();
+										end
+									</OnEvent>
+									<OnMouseUp>
+										if ( GameTooltip:GetOwner() == this ) then
+											GameTooltip:Hide();
+										end
+										ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
+									</OnMouseUp>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+										GameTooltip:SetText(TRACKING, 1, 1, 1);
+										GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
 								<Frames>
 									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
 										<Scripts>
 											<OnLoad function="MiniMapTrackingDropDown_OnLoad"/>
+											<OnEvent function="MiniMapTrackingDropDown_OnEvent"/>
 										</Scripts>
 									</Frame>
-									<Button name="$parentButton">
-										<Size x="32" y="32"/>
-										<Anchors>
-											<Anchor point="TOPLEFT"/>
-										</Anchors>
-										<Layers>
-											<Layer level="BORDER">
-												<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-													<Size x="54" y="54"/>
-													<Anchors>
-														<Anchor point="TOPLEFT"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY">
-												<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
-													<Size x="27" y="27"/>
-													<Anchors>
-														<Anchor point="TOPLEFT">
-															<Offset x="2" y="-2"/>
-														</Anchor>
-													</Anchors>
-													<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnLoad>
-												self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
-												MiniMapTracking_Update();
-											</OnLoad>
-											<OnEvent function="MiniMapTracking_Update"/>
-											<OnClick>
-												ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-											</OnClick>
-											<OnMouseDown>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
-												MiniMapTrackingIconOverlay:Show();
-											</OnMouseDown>
-											<OnMouseUp>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
-												MiniMapTrackingIconOverlay:Hide();
-											</OnMouseUp>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-												GameTooltip:SetText(TRACKING, 1, 1, 1);
-												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
-												GameTooltip:Show();
-											</OnEnter>
-											<OnLeave>
-												GameTooltip:Hide();
-											</OnLeave>
-										</Scripts>
-										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-									</Button>
 								</Frames>
-							</Frame>
--->
+							</Button>
 							<Button name="MinimapZoomIn">
 								<Size>
 									<AbsDimension x="32" y="32"/>

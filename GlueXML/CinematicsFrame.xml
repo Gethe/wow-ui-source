@@ -120,16 +120,14 @@
 		<PushedTextOffset x="-3" y="-3"/> 
 	</Button>
 	
-	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate, BackdropTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_EDGE_32" type="global"/>
+		</KeyValues>
 		<Size x="450" y="430"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-50"/>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="CinematicsFrameBg" alpha="0.8">
@@ -174,6 +172,14 @@
 				<NormalTexture atlas="StreamCinematic-Classic-Up" />
 				<PushedTexture atlas="StreamCinematic-Classic-Down" />
 			</Button>
+			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-40" y="-44"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-BC-Up" />
+				<PushedTexture atlas="StreamCinematic-BC-Down" />
+			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
@@ -190,7 +196,7 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CinematicsFrame_OnLoad"/>
+			<OnLoad inherit="prepend" function="CinematicsFrame_OnLoad"/>
 			<OnShow function="CinematicsFrame_OnShow"/>
 			<OnKeyDown function="CinematicsFrame_OnKeyDown"/>
 			<OnChar function="nop"/>

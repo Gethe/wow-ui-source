@@ -39,6 +39,10 @@ PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
 
+function GetPowerBarColor(powerType)
+	return PowerBarColor[powerType];
+end
+
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
 	This "Initialize" function registers the events to handle.
@@ -122,15 +126,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
 	self:RegisterEvent("PORTRAITS_UPDATED");
-	if ( self.healAbsorbBar ) then
-		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
-	end
 	if ( self.myHealPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
-		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
-	end
-	if ( self.totalAbsorbBar ) then
-		self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 	end
 	if ( self.myManaCostPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
@@ -145,10 +142,6 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	if ( self.unit ~= unit ) then
 		if ( self.myHealPredictionBar ) then
 			self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
-			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
-		end
-		if ( self.totalAbsorbBar ) then
-			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 		end
 		if ( not healthbar.frequentUpdates ) then
 			healthbar:RegisterUnitEvent("UNIT_HEALTH", unit);
@@ -212,7 +205,7 @@ function UnitFrame_OnEvent(self, event, ...)
 				UnitFrameManaBar_UpdateType(self.manabar);
 			end
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
-			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill, castID--[[, notInterruptible]], spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then
@@ -562,11 +555,16 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 	if ( unit == statusbar.unit ) then
 		local maxValue = UnitHealthMax(unit);
 
+		statusbar.showPercentage = false;
+
 		-- Safety check to make sure we never get an empty bar.
 		statusbar.forceHideText = false;
 		if ( maxValue == 0 ) then
 			maxValue = 1;
 			statusbar.forceHideText = true;
+		elseif ( maxValue == 100 or not ShouldKnowUnitHealth(unit) ) then
+			--This should be displayed as percentage.
+			statusbar.showPercentage = true;
 		end
 
 		statusbar:SetMinMaxValues(0, maxValue);

@@ -48,6 +48,11 @@ local function take(name)
 	_G[name] = nil;
 end
 
+--Removes something from the global environment entirely (note: make sure that any saved references are local and will not be returned or otherwise exposed under any circumstances)
+local function remove(name)
+	_G[name] = nil;
+end
+
 -- We create the "Enum" table directly in contents because we dont want the reference from _G in the secure environment
 local function retainenum(name)
 	if (not contents["Enum"]) then
@@ -500,6 +505,7 @@ takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
+takeenum("PurchaseEligibility");
 retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
@@ -534,5 +540,10 @@ end
 take("SecureMixin");
 take("CreateFromSecureMixins");
 
+retain("GetFinalNameFromTextureKit");
+retain("C_Texture");
+
 retain("ShrinkUntilTruncateFontStringMixin");
 retain("PortraitFrameTemplateMixin");
+
+remove("loadstring_untainted");

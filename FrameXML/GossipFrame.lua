@@ -82,7 +82,13 @@ function GossipFrameAvailableQuestsUpdate(...)
 		local titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
 		local titleText, level, isTrivial, frequency, isRepeatable, isLegendary, isIgnored = select(i, ...);
 		titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
-		titleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, titleText);
+		if (isTrivial) then
+			titleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, titleText);
+			titleButtonIcon:SetVertexColor(0.5,0.5,0.5);
+		else
+			titleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, titleText);
+			titleButtonIcon:SetVertexColor(1,1,1);
+		end
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Available";

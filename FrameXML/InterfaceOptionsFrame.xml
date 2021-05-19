@@ -16,24 +16,16 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="InterfaceOptionsFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+	<Frame name="InterfaceOptionsFrame" inherits="BackdropTemplate" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="858" y="660"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -60,33 +52,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-<!--
-			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						InterfaceOptionsFrameOkay_OnClick(self, true);
-					</OnClick>
-				</Scripts>
-			</Button>
--->
 			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="96" y="22"/>
 				</Size>
 				<Anchors>
-					<!--
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
-					-->
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
 							<AbsDimension x="-16" y="16"/>
@@ -124,6 +94,11 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentCategories" inherits="OptionsFrameListTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="InterfaceOptionsListButtonTemplate" type="string"/>
+					<KeyValue key="update" value="InterfaceCategoryList_Update" type="global"/>
+				</KeyValues>
 				<Size>
 					<AbsDimension x="175" y="569"/>
 				</Size>
@@ -134,15 +109,13 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = CATEGORY;
-						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
-						self.update = InterfaceCategoryList_Update;
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame name="$parentAddOns" inherits="OptionsFrameListTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="labelText" value="ADDONS" type="global"/>
+					<KeyValue key="buttonTemplate" value="InterfaceOptionsListButtonTemplate" type="string"/>
+					<KeyValue key="update" value="InterfaceAddOnsList_Update" type="global"/>
+				</KeyValues>
 				<Size>
 					<AbsDimension x="175" y="569"/>
 				</Size>
@@ -153,15 +126,12 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.labelText = ADDONS
-						OptionsList_OnLoad(self, "InterfaceOptionsListButtonTemplate");
-						self.update = InterfaceAddOnsList_Update;
-					</OnLoad>
-				</Scripts>
 			</Frame>
-			<Frame name="$parentPanelContainer">
+			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
 						<Offset>
@@ -179,22 +149,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button name="$parentTab1" inherits="OptionsFrameTabButtonTemplate" text="GAME" id="1" hidden="true">
 				<Anchors>
@@ -211,23 +165,6 @@
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
 				</Scripts>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTabSpacer" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer">	
-							<Size>
-								<AbsDimension x="85" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-10" y="-6"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameCategoriesTopRight" relativePoint="LEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Button>
 			<Button name="$parentTab2" inherits="OptionsFrameTabButtonTemplate" text="ADDONS" id="2" hidden="true">
 				<Anchors>
@@ -243,43 +180,13 @@
 						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
-				</Scripts>				
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTabSpacer1" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
-							<Size>
-								<AbsDimension x="64" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="11" y="-6"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="LEFT" relativeTo="InterfaceOptionsFrameAddOnsTopLeft" relativePoint="RIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentTabSpacer2" file="Interface\OptionsFrame\UI-OptionsFrame-Spacer" hidden="true">	
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-9" y="-6"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT" relativeTo="InterfaceOptionsFrameAddOnsTopRight" relativePoint="LEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>				
+				</Scripts>	
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnShow function="InterfaceOptionsFrame_OnShow"/>
 			<OnHide function="InterfaceOptionsFrame_OnHide"/>
-			<OnLoad function="InterfaceOptionsFrame_OnLoad"/>
+			<OnLoad inherit="prepend" function="InterfaceOptionsFrame_OnLoad"/>
 			<OnEvent function="InterfaceOptionsFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

@@ -184,6 +184,7 @@ function RaidGroupFrame_OnEvent(self, event, ...)
 		RaidClassButton_Update();
 		RaidPullout_RenewFrames();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		RaidFrameReadyCheckButton_Update();
 		RaidPullout_RenewFrames();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		RaidFrame.showRange = GetCVarBool("showRaidRange");
@@ -250,6 +251,7 @@ function RaidGroupFrame_Update()
 		end
 	end
 
+	RaidFrameReadyCheckButton_Update();
 
 	-- Reset group index counters;
 	for i=1, NUM_RAID_GROUPS do
@@ -1360,4 +1362,10 @@ function RaidPulloutDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-
+function RaidFrameReadyCheckButton_Update()
+	if ( IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
+		RaidFrameReadyCheckButton:Show();
+	else
+		RaidFrameReadyCheckButton:Hide();
+	end
+end

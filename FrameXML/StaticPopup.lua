@@ -575,23 +575,6 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	hideOnEscape = 1,
 };
 
-StaticPopupDialogs["TAKE_GM_SURVEY"] = {
-	text = TAKE_GM_SURVEY,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		GMSurveyFrame_LoadUI();
-		ShowUIPanel(GMSurveyFrame);
-		TicketStatusFrame:Hide();
-	end,
-	OnCancel = function(self)
-		TicketStatusFrame.hasGMSurvey = false;
-		TicketStatusFrame:Hide();
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
-};
-
 StaticPopupDialogs["CONFIRM_RESET_INSTANCES"] = {
 	text = CONFIRM_RESET_INSTANCES,
 	button1 = YES,
@@ -626,6 +609,102 @@ StaticPopupDialogs["CONFIRM_GUILD_DISBAND"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["ADD_TEAMMEMBER"] = {
+	text = ADD_TEAMMEMBER_LABEL,
+	button1 = INVITE,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
+	maxLetters = 77,
+	OnAccept = function(self)
+		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+	end,
+	OnShow = function(self)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+		parent:Hide();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_DISBAND"] = {
+	text = CONFIRM_TEAM_DISBAND,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self)
+		ArenaTeamDisband(self.data);
+	end,
+	OnCancel = function (self)
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
+	text = CONFIRM_TEAM_LEAVE,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ArenaTeamLeave(PVPTeamDetails.team);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_PROMOTE"] = {
+	text = CONFIRM_TEAM_PROMOTE,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, team, name)
+		ArenaTeamSetLeaderByName(PVPTeamDetails.team, name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_TEAM_KICK"] = {
+	text = CONFIRM_TEAM_KICK,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, team, name)
+		ArenaTeamUninviteByName(PVPTeamDetails.team, name);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["ARENA_TEAM_INVITE"] = {
+	text = ARENA_TEAM_INVITATION,
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	OnAccept = function(self)
+		AcceptArenaTeam();
+	end,
+	OnCancel = function(self)
+		DeclineArenaTeam();
+	end,
+	timeout = STATICPOPUP_TIMEOUT,
+	whileDead = 1,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
@@ -698,6 +777,28 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	hideOnEscape = 1,
 	noCancelOnEscape = 1,
 	noCancelOnReuse = 1,
+	multiple = 1
+};
+
+StaticPopupDialogs["CONFIRM_WARGAME_ENTRY"] = {
+	text = CONFIRM_BATTLEFIELD_ENTRY,
+	button1 = ENTER_BATTLE,
+	button2 = LEAVE_QUEUE,
+	OnAccept = function(self, data)
+		if ( not AcceptBattlefieldPort(data, true) ) then
+			return 1;
+		end
+		if( StaticPopup_Visible( "DEATH" ) ) then
+			StaticPopup_Hide( "DEATH" );
+		end
+	end,
+	OnCancel = function(self, data)
+		AcceptBattlefieldPort(data,false);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	noCancelOnReuse = 1,
+	noCancelOnEscape = 1,
 	multiple = 1
 };
 
@@ -858,6 +959,34 @@ StaticPopupDialogs["CONFIRM_GUILD_PROMOTE"] = {
 
 StaticPopupDialogs["RENAME_GUILD"] = {
 	text = RENAME_GUILD_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 24,
+	OnAccept = function(self)
+		local text = self.editBox:GetText();
+		RenamePetition(text);
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local text = self:GetParent().editBox:GetText();
+		RenamePetition(text);
+		self:GetParent():Hide();
+	end,
+	OnShow = function(self)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["RENAME_ARENA_TEAM"] = {
+	text = RENAME_ARENA_TEAM_LABEL,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
@@ -1165,87 +1294,6 @@ StaticPopupDialogs["RESET_CHAT"] = {
 	end,
 	hideOnEscape = 1,
 	exclusive = 1,
-};
-
-StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
-	text = HELP_TICKET_ABANDON_CONFIRM,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self, prevFrame)
-		DeleteGMTicket();
-	end,
-	OnCancel = function(self, prevFrame)
-	end,
-	OnShow = function(self)
-		HideUIPanel(HelpFrame);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["HELP_TICKET"] = {
-	text = HELP_TICKET_EDIT_ABANDON,
-	button1 = HELP_TICKET_EDIT,
-	button2 = HELP_TICKET_ABANDON,
-	OnAccept = function(self)
-		if ( HelpFrame_IsGMTicketQueueActive() ) then
-			HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
-		else
-			HideUIPanel(HelpFrame);
-			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
-		end
-	end,
-	OnCancel = function(self)
-		local currentFrame = self:GetParent();
-		local dialogFrame = StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");
-		dialogFrame.data = currentFrame;
-	end,
-	timeout = 0,
-	whileDead = 1,
-	closeButton = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_NEED_MORE_HELP"] = {
-	text = GM_RESPONSE_POPUP_NEED_MORE_HELP_WARNING,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		HelpFrame_GMResponse_Acknowledge();
-	end,
-	OnCancel = function(self)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_RESOLVE_CONFIRM"] = {
-	text = GM_RESPONSE_POPUP_RESOLVE_CONFIRM,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		HelpFrame_GMResponse_Acknowledge(true);
-	end,
-	OnCancel = function(self)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_MUST_RESOLVE_RESPONSE"] = {
-	text = GM_RESPONSE_POPUP_MUST_RESOLVE_RESPONSE,
-	button1 = GM_RESPONSE_POPUP_VIEW_RESPONSE,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		HelpFrame_ShowFrame(HELPFRAME_GM_RESPONSE);
-	end,
-	OnCancel = function(self)
-	end,
-	OnShow = function(self)
-		HideUIPanel(HelpFrame);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
 };
 StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	text = PET_RENAME_CONFIRMATION,
@@ -4266,8 +4314,6 @@ function StaticPopup_Resize(dialog, which)
 			width = 420;
 		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
 			width = width + (info.editBoxWidth - 260);
-		elseif ( which == "HELP_TICKET" ) then
-			width = 350;
 		elseif ( which == "GUILD_IMPEACH" ) then
 			width = 375;
 		end

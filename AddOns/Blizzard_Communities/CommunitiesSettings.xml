@@ -2,16 +2,14 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesSettings.lua"/>
 	
-	<Frame name="CommunitiesSettingsDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesSettingsDialogMixin" topLevel="true" hidden="true">
+	<Frame name="CommunitiesSettingsDialog" inherits="BackdropTemplate" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesSettingsDialogMixin" topLevel="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size x="412" y="515"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="11" bottom="11"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
 		<Layers>
 			<Layer level="BORDER">
 				<FontString parentKey="DialogLabel" inherits="GameFontHighlight" text="COMMUNITIES_SETTINGS_LABEL">
@@ -188,7 +186,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>

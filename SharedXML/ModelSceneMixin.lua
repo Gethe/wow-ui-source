@@ -55,9 +55,9 @@ function ModelSceneMixin:GetModelSceneID()
 end
 
 -- Adjusts this scene to mirror a model scene from static data without transition
-function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame)
+function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame, noAutoCreateActors)
 	local modelSceneType, cameraIDs, actorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
-	if not modelSceneType or #cameraIDs == 0 or #actorIDs == 0 then
+	if not modelSceneType then
 		return;
 	end
 
@@ -66,8 +66,10 @@ function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame)
 		self:ReleaseAllActors();
 		self:ReleaseAllCameras();
 
+		if not noAutoCreateActors then
 		for actorIndex, actorID in ipairs(actorIDs) do
 			self:CreateActorFromScene(actorID);
+		end
 		end
 
 		for cameraIndex, cameraID in ipairs(cameraIDs) do
@@ -162,6 +164,21 @@ function ModelSceneMixin:AcquireActor()
 		self.actorPool = CreateActorPool(self, self.actorTemplate, OnReleased);
 	end
 	return self.actorPool:Acquire();
+end
+
+function ModelSceneMixin:ReleaseActor(actor)
+	if not self.actorPool then
+		return;
+	end
+
+	for tag, taggedActor in pairs(self.tagToActor) do
+		if actor == taggedActor then
+			self.tagToActor[tag] = nil;
+			break;
+		end
+	end
+	
+	return self.actorPool:Release(actor);
 end
 
 function ModelSceneMixin:AcquireAndInitializeActor(actorInfo)

@@ -114,7 +114,7 @@
 				-- also called by $childButton
 				VideoOptionsTooltip:Hide();
 			</OnLeave>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				VideoOptionsSlider_OnLoad(self);
 			</OnLoad>
 		</Scripts>
@@ -176,22 +176,15 @@
 		</Scripts>
 		<Frames>
 			<!-- Display -->
-			<Frame name="Display_">
+			<Frame name="Display_" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="420"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentDisplayHeader" text="DISPLAY_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -261,7 +254,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
                 self:SetMinMaxValues(GetMinRenderScale(), GetMaxRenderScale());
                 self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 
@@ -391,30 +384,20 @@
 					</CheckButton>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
 					<OnShow function="VideoOptionsPanel_OnShow"/>
 				</Scripts>
 			</Frame>
 
 			<!-- Graphics -->
-			<Frame name="Graphics_">
+			<Frame name="Graphics_" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-185"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="40"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -533,25 +516,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentFilteringDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="14">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTextureResolutionDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
 					<Frame name="$parentProjectedTexturesDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="8">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentFilteringDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTextureResolutionDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -580,7 +547,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="Graphics_SliderOnLoad"/>
+							<OnLoad inherit="prepend" function="Graphics_SliderOnLoad"/>
 							<OnValueChanged function="Graphics_SliderOnValueChanged"/>
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
@@ -600,7 +567,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="Graphics_SliderOnLoad"/>
+							<OnLoad inherit="prepend" function="Graphics_SliderOnLoad"/>
 							<OnValueChanged function="Graphics_SliderOnValueChanged"/>
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
@@ -687,31 +654,20 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 
 
 			<!-- Raid Panel -->
-			<Frame name="RaidGraphics_" hidden="true">
+			<Frame name="RaidGraphics_" hidden="true" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="raid" value="true" type="boolean"/>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-185"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="40"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 
@@ -832,26 +788,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentFilteringDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="14">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTextureResolutionDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentProjectedTexturesDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="8">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentFilteringDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTextureResolutionDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -880,7 +819,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="Graphics_SliderOnLoad"/>
+							<OnLoad inherit="prepend" function="Graphics_SliderOnLoad"/>
 							<OnValueChanged function="Graphics_SliderOnValueChanged"/>
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
@@ -900,7 +839,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="Graphics_SliderOnLoad"/>
+							<OnLoad inherit="prepend" function="Graphics_SliderOnLoad"/>
 							<OnValueChanged function="Graphics_SliderOnValueChanged"/>
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
@@ -987,12 +926,6 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.raid = true;
-						self:SetBackdropBorderColor(.6, .6, .6, 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 
 			<Button name="GraphicsButton" inherits="TabButtonTemplate" text="BASE_SETTINGS">
@@ -1101,7 +1034,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentLagDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentFilteringDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentBufferingDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1111,7 +1044,25 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="FIX_LAG">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentRTShadowQualityDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFilteringDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RT_SHADOW_QUALITY" >
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
@@ -1121,7 +1072,7 @@
 			</Frame>
 			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLagDropDown" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentRTShadowQualityDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1187,9 +1138,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame name="$parentGraphicsAPIDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResampleQualityDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GXAPI" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="$parentAdapterDropDown" inherits="VideoOptionsDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentResampleQualityDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -1223,6 +1192,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						BackdropTemplateMixin.OnBackdropLoaded(self);
 						if(InGlue()) then
 							self:Hide();
 						else
@@ -1300,7 +1270,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "maxfps";
@@ -1369,7 +1339,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "maxfpsbk";
@@ -1436,7 +1406,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Contrast";
@@ -1480,7 +1450,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Brightness";
@@ -1524,7 +1494,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "Gamma";
@@ -1620,6 +1590,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						BackdropTemplateMixin.OnBackdropLoaded(self);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.tooltip = OPTION_STEREO_CONVERGENCE;
@@ -1654,6 +1625,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						BackdropTemplateMixin.OnBackdropLoaded(self);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.tooltip = OPTION_STEREO_SEPARATION;

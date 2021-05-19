@@ -1,39 +1,53 @@
 CHARACTER_FACING_INCREMENT = 2;
-MAX_RACES = 8;
+MAX_RACES = 10;
 MAX_CLASSES_PER_RACE = 8;
 NUM_CHAR_CUSTOMIZATIONS = 5;
 MIN_CHAR_NAME_LENGTH = 2;
 CHARACTER_CREATE_ROTATION_START_X = nil;
 CHARACTER_CREATE_INITIAL_FACING = nil;
+
 FACTION_BACKDROP_COLOR_TABLE = {
-	["Alliance"] = {0.5, 0.5, 0.5, 0.09, 0.09, 0.19},
-	["Horde"] = {0.5, 0.2, 0.2, 0.19, 0.05, 0.05},
+	Alliance = {
+		color = GLUE_ALLIANCE_COLOR,
+		borderColor = GLUE_ALLIANCE_BORDER_COLOR,
+	},
+	Horde = {
+		color = GLUE_HORDE_COLOR,
+		borderColor = GLUE_HORDE_BORDER_COLOR,
+	},
 };
+
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
 	"CharacterCreateCharacterClass",
 	"CharacterCreateCharacterFaction",
 };
 RACE_ICON_TCOORDS = {
-	["HUMAN_MALE"]		= {0, 0.25, 0, 0.25},
-	["DWARF_MALE"]		= {0.25, 0.5, 0, 0.25},
-	["GNOME_MALE"]		= {0.5, 0.75, 0, 0.25},
-	["NIGHTELF_MALE"]	= {0.75, 1.0, 0, 0.25},
+	["HUMAN_MALE"]		= {0, 0.125, 0, 0.25},
+	["DWARF_MALE"]		= {0.125, 0.25, 0, 0.25},
+	["GNOME_MALE"]		= {0.25, 0.375, 0, 0.25},
+	["NIGHTELF_MALE"]	= {0.375, 0.5, 0, 0.25},
 	
-	["TAUREN_MALE"]		= {0, 0.25, 0.25, 0.5},
-	["SCOURGE_MALE"]	= {0.25, 0.5, 0.25, 0.5},
-	["TROLL_MALE"]		= {0.5, 0.75, 0.25, 0.5},
-	["ORC_MALE"]		= {0.75, 1.0, 0.25, 0.5},
+	["TAUREN_MALE"]		= {0, 0.125, 0.25, 0.5},
+	["SCOURGE_MALE"]	= {0.125, 0.25, 0.25, 0.5},
+	["TROLL_MALE"]		= {0.25, 0.375, 0.25, 0.5},
+	["ORC_MALE"]		= {0.375, 0.5, 0.25, 0.5},
 
-	["HUMAN_FEMALE"]	= {0, 0.25, 0.5, 0.75},  
-	["DWARF_FEMALE"]	= {0.25, 0.5, 0.5, 0.75},
-	["GNOME_FEMALE"]	= {0.5, 0.75, 0.5, 0.75},
-	["NIGHTELF_FEMALE"]	= {0.75, 1.0, 0.5, 0.75},
+	["HUMAN_FEMALE"]	= {0, 0.125, 0.5, 0.75},  
+	["DWARF_FEMALE"]	= {0.125, 0.25, 0.5, 0.75},
+	["GNOME_FEMALE"]	= {0.25, 0.375, 0.5, 0.75},
+	["NIGHTELF_FEMALE"]	= {0.375, 0.5, 0.5, 0.75},
 	
-	["TAUREN_FEMALE"]	= {0, 0.25, 0.75, 1.0},   
-	["SCOURGE_FEMALE"]	= {0.25, 0.5, 0.75, 1.0}, 
-	["TROLL_FEMALE"]	= {0.5, 0.75, 0.75, 1.0}, 
-	["ORC_FEMALE"]		= {0.75, 1.0, 0.75, 1.0}, 
+	["TAUREN_FEMALE"]	= {0, 0.125, 0.75, 1.0},   
+	["SCOURGE_FEMALE"]	= {0.125, 0.25, 0.75, 1.0}, 
+	["TROLL_FEMALE"]	= {0.25, 0.375, 0.75, 1.0}, 
+	["ORC_FEMALE"]		= {0.375, 0.5, 0.75, 1.0}, 
+
+	["BLOODELF_MALE"]	= {0.5, 0.625, 0.25, 0.5},
+	["BLOODELF_FEMALE"]	= {0.5, 0.625, 0.75, 1.0}, 
+
+	["DRAENEI_MALE"]	= {0.5, 0.625, 0, 0.25},
+	["DRAENEI_FEMALE"]	= {0.5, 0.625, 0.5, 0.75}, 								   
 };
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]	= {0, 0.25, 0, 0.25},
@@ -74,8 +88,8 @@ function CharacterCreate_OnLoad(self)
 
 	-- Color edit box backdrop
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE["Alliance"];
-	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
+	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor.color:GetRGB());
+	CharacterCreateNameEdit:SetBackdropColor(backdropColor.borderColor:GetRGB());
 end
 
 function CharacterCreate_OnShow(self)
@@ -101,7 +115,7 @@ function CharacterCreate_OnShow(self)
 		CharacterCreateRandomName:Show();
 	end
 
-	SetClassicLogo(CharacterCreateLogo);
+	SetGameLogo(CharacterCreateLogo);
 
 	if( IsKioskGlueEnabled() ) then
 		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
@@ -193,6 +207,19 @@ function CharacterCreateFrame_OnUpdate(self, elapsed)
 	end
 end
 
+function CharacterCreateRaceButton_OnEnter(self)
+	if(self:IsEnabled()) then
+		return;
+	end
+	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, -8);
+	GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
+	GlueTooltip:Show();
+end
+
+function CharacterCreateRaceButton_OnLeave(self)
+	GlueTooltip:Hide();
+end
+
 function CharacterCreateEnumerateRaces()
 	local races = C_CharacterCreation.GetAvailableRaces();
 	CharacterCreate.numRaces = #races;
@@ -201,6 +228,7 @@ function CharacterCreateEnumerateRaces()
 		return;
 	end
 
+	local isBoostedCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local coords;
 	local button;
 	local gender;
@@ -214,7 +242,23 @@ function CharacterCreateEnumerateRaces()
 		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
-		button.tooltip = raceData.name;
+		local isNewTBCRace = raceData.fileName == "BloodElf" or raceData.fileName == "Draenei";
+		if isBoostedCharacter and isNewTBCRace then
+			button:Disable();
+			local texture = button:GetNormalTexture();
+			if ( texture ) then
+				texture:SetDesaturated(true);
+			end
+			button:SetText("");
+			button.tooltip = CHAR_CREATE_NO_BOOST;
+		else
+			button:Enable();
+			local texture = button:GetNormalTexture();
+			if ( texture ) then
+				texture:SetDesaturated(false);
+			end
+			button.tooltip = raceData.name;
+		end
 		button.raceID = raceData.raceID;
 	end
 	for i=#races + 1, MAX_RACES, 1 do
@@ -330,11 +374,8 @@ function SetCharacterRace(id)
 
 	-- Set backdrop colors based on faction
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE[faction];
-	local frame;
 	for index, value in ipairs(FRAMES_TO_BACKDROP_COLOR) do
-		frame = _G[value];
-		--frame:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-		frame:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
+		_G[value]:SetBackdropColor(backdropColor.borderColor:GetRGB());
 	end
 
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel());

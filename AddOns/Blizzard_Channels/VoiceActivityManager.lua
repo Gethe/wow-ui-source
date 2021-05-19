@@ -20,7 +20,7 @@ function VoiceActivityManagerMixin:OnLoad()
 
 	self.notificationTemplates = { "VoiceActivityNotificationTemplate" };
 	self.externalNotificationTemplates = {};
-	self.notificationPools = CreatePoolCollection();
+	self.notificationPools = CreateFramePoolCollection();
 
 	for index, templateType in ipairs(self.notificationTemplates) do
 		self.notificationPools:CreatePool("ContainedAlertFrame", self, templateType);

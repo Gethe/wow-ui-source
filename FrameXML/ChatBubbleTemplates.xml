@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="ChatBubbleTemplate" inherits="NineSlicePanelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="ChatBubble" type="string"/>
+			<KeyValue key="inset" value="16" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="String" inherits="ChatBubbleFont"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSublevel="8">
+				<Texture parentKey="Tail" atlas="ChatBubble-Tail" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="append">
+				self.String:SetNonSpaceWrap(true);
+				self:ClearAllPoints();
+				self.String:ClearAllPoints();
+				self:SetPoint("TOPLEFT", self.String, "TOPLEFT", -self.inset, self.inset);
+				self:SetPoint("BOTTOMRIGHT", self.String, "BOTTOMRIGHT", self.inset, -self.inset);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

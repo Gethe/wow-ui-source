@@ -1,0 +1,132 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CommentatorScoreboard.lua"/>
+
+	<Frame name="CommentatorScoreboardScoreTemplate" virtual="true">
+		<Size x="52" y="52"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="Score-Team" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="CommentatorTeamScoreFont" text="0">
+					<Anchors>
+						<Anchor point="CENTER" x="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<FontString name="CommentatorTeamNameFontString" inherits="CommentatorTeamNameFont" justifyV="MIDDLE" virtual="true">
+		<Size x="200" y="40" />
+		<Color color="WHITE_FONT_COLOR"/>
+	</FontString>
+	
+	<Frame name="CommentatorScoreboardTemplate" mixin="CommentatorScoreboardMixin" virtual="true">
+		<Size x="500" y="50" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Bar" atlas="_Score-Team-mid" useAtlasSize="true">
+					<Size x="500"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScoreLeft" inherits="CommentatorScoreboardScoreTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Bar" relativePoint="LEFT" x="10"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ScoreRight" inherits="CommentatorScoreboardScoreTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Bar" relativePoint="RIGHT" x="-10"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Clock" useParentLevel="true">
+				<Size x="118" y="52"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Frame-Timer" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Label" inherits="CommentatorTeamScoreFont" justifyH="CENTER" >
+							<Anchors>
+								<Anchor point="CENTER" y="-2"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Dampener" hidden="true">
+				<Size x="75" y="76"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="1" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Background" atlas="Healing-BG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon">
+						<!--<Texture parentKey="Icon" atlas="Healing_Red" useAtlasSize="true">-->
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" font="CommentatorDampeningFont">
+							<Anchors>
+								<Anchor point="CENTER" x="1"/>
+							</Anchors>
+							<Color r="1" g="0" b="0" a="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FadeCycle" looping="REPEAT">
+						<Alpha fromAlpha="1" toAlpha="1" duration="0" order="1" childKey="Icon"/>
+						<Alpha fromAlpha="0" toAlpha="0" duration="0" order="1" childKey="Label"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="2" startDelay="2" childKey="Icon"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.25" order="2" startDelay="2" childKey="Label"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.25" order="3" startDelay="15" setToFinalAlpha="1" childKey="Icon"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="3" startDelay="15" setToFinalAlpha="1" childKey="Label"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Team1Name" inherits="CommentatorTeamNameFontString" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" x="10" relativeKey="$parent.ScoreLeft" relativePoint="RIGHT" y="0" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Team2Name" inherits="CommentatorTeamNameFontString" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" relativeKey="$parent.ScoreRight" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Logo" atlas="Icon-WoW" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

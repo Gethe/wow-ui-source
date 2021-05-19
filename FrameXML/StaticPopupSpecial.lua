@@ -35,6 +35,8 @@ function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLoc
 		reportReason = REPORT_PET_NAME;
 	elseif reportType == PLAYER_REPORT_TYPE_CHEATING then
 		reportReason = REPORT_CHEATING;
+	elseif reportType == PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME then
+		reportReason = REPORT_BAD_ARENA_TEAM_NAME;
 	else
 		error("Unsupported report type");
 		return;

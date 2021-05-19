@@ -166,11 +166,6 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("TBC_INFO_PANE_PRICE_UPDATE");
     SetCharSelectModelFrame("CharacterSelectModel");
 
-    -- Color edit box backdrops
-    local backdropColor = DEFAULT_TOOLTIP_COLOR;
-    CharacterSelectCharacterFrame:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-    CharacterSelectCharacterFrame:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6], 0.85);
-
     CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
     CHARACTER_LIST_OFFSET = 0;
@@ -1700,7 +1695,7 @@ end
 
 function AccountUpgradePanel_Update(isExpanded)
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-	SetClassicLogo(CharacterSelectLogo);
+	SetGameLogo(CharacterSelectLogo);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
         CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
@@ -2277,32 +2272,25 @@ end
 -- Global because of localization
 tbcInfoPaneInfographicAtlas = "classic-announcementpopup-bcinfographic";
 function TBCInfoPane_OnShow(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	self.TBCInfoPaneDiagram:SetAtlas(tbcInfoPaneInfographicAtlas, true);
 end
 
-function TBCInfoPane_OnHide(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
 function TBCInfoPane_RefreshPrice()
-	local formattedPrice = BURNING_CRUSADE_TRANSITION_DEFAULT_PRICE;
-	if ( GetTBCInfoPanePriceEnabled() ) then
-		formattedPrice = GetFormattedClonePrice();
-	end
+	if( BURNING_CRUSADE_PREVIEW_DESCRIPTION2 ) then
+		local formattedPrice = BURNING_CRUSADE_TRANSITION_DEFAULT_PRICE;
+		if ( GetTBCInfoPanePriceEnabled() ) then
+			formattedPrice = GetFormattedClonePrice();
+		end
 
-	local formatString = BURNING_CRUSADE_PREVIEW_DESCRIPTION2;
-	if ( GetCurrentRegionName() == "CN" ) then
-		formatString = BURNING_CRUSADE_PREVIEW_DESCRIPTION2_CN;
+		TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(BURNING_CRUSADE_PREVIEW_DESCRIPTION2, formattedPrice));
 	end
-	TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(formatString, formattedPrice));
 end
 
 function TBCInfoPaneHTMLDesc_OnLoad(self)
 	TBCInfoPane_RefreshPrice();
 end
 
-local cloneServiceProductId = 682
+local cloneServiceProductId = 679
 function GetFormattedClonePrice()
 	local formattedPrice = SecureCurrencyUtil.GetFormattedPrice(cloneServiceProductId);
 
@@ -2315,7 +2303,7 @@ end
 
 function ChoicePane_OnPlay()
 	if (GetCVar("heardChoiceSFX") == "0") then
-		PlaySound(SOUNDKIT.LET_THE_GAMES_BEGIN);
+		PlaySound(SOUNDKIT.YOU_ARE_NOT_PREPARED);
 	else
 		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	end
@@ -2333,13 +2321,13 @@ function ChoicePane_Toggle()
 end
 
 -- Global because of localization
-choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-classic";
-choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-bc";
+choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-current";
+choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-other";
 function ChoicePane_OnShow(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
 	
 	local selectedCharName = GetCharacterInfo(GetCharacterSelection());
-	ChoicePaneCurrentDesc:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_DESCRIPTION, selectedCharName, selectedCharName, GetFormattedClonePrice()));
+	ChoicePaneCurrentDesc:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CURRENT_DESCRIPTION, selectedCharName, selectedCharName, GetFormattedClonePrice()));
 
 	self.CurrentLogo:SetAtlas(choicePaneCurrentLogoAtlas);
 	self.OtherLogo:SetAtlas(choicePaneOtherLogoAtlas);
@@ -2388,7 +2376,7 @@ end
 
 function ChoiceConfirmation_OnConfirm(self)
 	if (GetCVar("heardChoiceSFX") == "0") then
-		PlaySound(SOUNDKIT.MURLOC_AGGRO);
+		PlaySound(SOUNDKIT.FELREAVER);
 		SetCVar("heardChoiceSFX", 1);
 	else
 		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);

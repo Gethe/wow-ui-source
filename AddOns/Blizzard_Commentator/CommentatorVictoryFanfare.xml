@@ -28,7 +28,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PvPCommentator:ExitInstance();
+						Commentator:ExitInstance();
 					</OnClick>
 				</Scripts>
 			</Button>

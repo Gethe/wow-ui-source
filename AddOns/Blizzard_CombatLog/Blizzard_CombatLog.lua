@@ -94,16 +94,16 @@ COMBATLOG_DEFAULT_SETTINGS = {
 	noMeleeSwingColoring = false;
 	missColoring = true;
 	braces = false;
-	unitBraces = false;
-	sourceBraces = false;
-	destBraces = false;
+	unitBraces = true;
+	sourceBraces = true;
+	destBraces = true;
 	spellBraces = false;
-	itemBraces = false;
+	itemBraces = true;
 	showHistory = true;
 	lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
 	unitIcons = true;
-	hideBuffs = true;
-	hideDebuffs = true;
+	hideBuffs = false;
+	hideDebuffs = false;
 	--unitTokens = true;
 };
 
@@ -1334,6 +1334,15 @@ do
 				checked = function() return filter.missColoring; end;
 				func = function(self, arg1, arg2, checked)
 					filter.missColoring = checked;
+					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
+				end;
+				keepShownOnClick = true;
+			},
+			{
+				text = "Braces";
+				checked = function() return filter.braces; end;
+				func = function(self, arg1, arg2, checked)
+					filter.braces = checked;
 					Blizzard_CombatLog_QuickButton_OnClick(currentFilter)
 				end;
 				keepShownOnClick = true;
@@ -3394,11 +3403,6 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 
 		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
 		return hide and hide(self)
-	end)
-
-	-- Disable Combat Log Hyperlinks
-	COMBATLOG:SetScript("OnHyperlinkClick", function(self)
-		return;
 	end)
 
 	if ( COMBATLOG:IsShown() ) then

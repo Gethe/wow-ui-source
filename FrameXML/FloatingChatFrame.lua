@@ -27,6 +27,8 @@ CHAT_FRAME_MIN_WIDTH = 296;
 
 CURRENT_CHAT_FRAME_ID = nil;
 
+CHAT_FRAME_DEFAULT_FONT_SIZE = 14;
+
 CHAT_FRAME_TEXTURES = {
 	"Background",
 	"TopLeftTexture",
@@ -157,7 +159,11 @@ function FCF_GetChatWindowInfo(id)
 			--This is a temporary chat window. Pass this to whatever handles those options.
 		end
 	else
-		return GetChatWindowInfo(id);
+		local name, size, r, g, b, a, isShown, isLocked, isDocked, isUninteractable = GetChatWindowInfo(id);
+		if size == 0 then
+			size = CHAT_FRAME_DEFAULT_FONT_SIZE;
+		end
+		return name, size, r, g, b, a, isShown, isLocked, isDocked, isUninteractable;
 	end
 end
 

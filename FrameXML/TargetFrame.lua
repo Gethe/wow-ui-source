@@ -25,6 +25,11 @@ local PLAYER_UNITS = {
 };
 
 function TargetFrame_OnLoad(self, unit, menuFunc)
+	self.HealthBar.LeftText = self.textureFrame.HealthBarTextLeft;
+	self.HealthBar.RightText = self.textureFrame.HealthBarTextRight;
+	self.PowerBar.LeftText = self.textureFrame.ManaBarTextLeft;
+	self.PowerBar.RightText = self.textureFrame.ManaBarTextRight;
+
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
@@ -55,9 +60,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		portraitFrame = _G[thisName.."Portrait"];
 	end
 
-	UnitFrame_Initialize(self, unit, _G[thisName.."TextureFrameName"], portraitFrame,
-						 _G[thisName.."HealthBar"], nil,
-						 _G[thisName.."ManaBar"], nil,
+	UnitFrame_Initialize(self, unit, self.textureFrame.Name, portraitFrame,
+						self.HealthBar, self.textureFrame.HealthBarText,
+						self.PowerBar, self.textureFrame.ManaBarText,
 	                     nil, "player", nil,
 						 nil, nil,
 						 nil, nil, nil,
@@ -118,7 +123,6 @@ function TargetFrame_Update (self)
 			TargetFrame_CheckClassification(self);
 		end
 		TargetFrame_CheckDead(self);
-		TargetFrame_CheckDishonorableKill(self);
 		if ( self.showLeader ) then
 			if ( UnitLeadsAnyGroup(self.unit) ) then
 				self.leaderIcon:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
@@ -205,12 +209,12 @@ function TargetFrame_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+		TargetFrame_Update(self);
 		if (self.unit == "focus") then
-			--[[TargetFrame_Update(self);
 			-- If this is the focus frame, clear focus if the unit no longer exists
 			if (not UnitExists(self.unit)) then
 				ClearFocus();
-			end]]
+			end
 		else
 			if ( self.totFrame ) then
 				TargetofTarget_Update(self.totFrame);
@@ -235,8 +239,8 @@ function TargetFrame_OnVariablesLoaded()
 	TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	TargetFrame_UpdateBuffsOnTop();
 
-	--[[FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
-	FocusFrame_UpdateBuffsOnTop();]]
+	FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
+	FocusFrame_UpdateBuffsOnTop();
 end
 
 function TargetFrame_OnHide (self)
@@ -359,8 +363,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	elseif ( classification == "worldboss" or classification == "elite" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
 	elseif ( classification == "rareelite" ) then
-		--self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
-		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite"); -- Just use the Elite border for Classic.
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
 	elseif ( classification == "rare" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 	else
@@ -408,13 +411,6 @@ function TargetFrame_CheckDead (self)
 	end
 end
 
-function TargetFrame_CheckDishonorableKill(self)
-	if ( UnitIsCivilian("target") ) then
-		-- Is a dishonorable kill
-		TargetFrameNameBackground:SetVertexColor(1.0, 1.0, 1.0);
-	end
-end
-
 function TargetFrame_OnUpdate (self, elapsed)
 	if ( self.totFrame and self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit) ) then
 		TargetofTarget_Update(self.totFrame);
@@ -424,8 +420,15 @@ end
 local largeBuffList = {};
 local largeDebuffList = {};
 local function ShouldAuraBeLarge(caster)
-	-- In Classic, all auras will be the same size.
-	return true;
+	if not caster then
+		return false;
+	end
+
+	for token, value in pairs(PLAYER_UNITS) do
+		if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
+			return value;
+		end
+	end
 end
 
 function TargetFrame_UpdateAuras (self)
@@ -466,8 +469,8 @@ function TargetFrame_UpdateAuras (self)
                 end
 
                 -- Handle cooldowns
-                --frameCooldown = _G[frameName.."Cooldown"];
-                --CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
+                frameCooldown = _G[frameName.."Cooldown"];
+                CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
                 -- Show stealable frame if the target is not the current player and the buff is stealable.
                 local frameStealable = _G[frameName.."Stealable"];
@@ -535,8 +538,8 @@ function TargetFrame_UpdateAuras (self)
 					end
 
 					-- Handle cooldowns
-					--frameCooldown = _G[frameName.."Cooldown"];
-					--CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
+					frameCooldown = _G[frameName.."Cooldown"];
+					CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
 					-- set debuff type color
 					if ( debuffType ) then
@@ -993,7 +996,11 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 end
 
 function Target_Spellbar_OnEvent(self, event, ...)
-	--[[local arg1 = ...
+	if( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE ) then 
+		return;
+	end
+
+	local arg1 = ...
 
 	--	Check for target specific events
 	if ( (event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR")) ) then
@@ -1030,7 +1037,7 @@ function Target_Spellbar_OnEvent(self, event, ...)
 		-- The position depends on the classification of the target
 		Target_Spellbar_AdjustPosition(self);
 	end
-	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));]]
+	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));
 end
 
 function Target_Spellbar_AdjustPosition(self)
@@ -1124,7 +1131,7 @@ end
 -- Focus Frame
 -- *********************************************************************************
 
---[[function FocusFrameDropDown_Initialize(self)
+function FocusFrameDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
 end
 
@@ -1229,4 +1236,4 @@ function FocusFrame_UpdateBuffsOnTop()
 		FocusFrame.buffsOnTop = false;
 	end
 	TargetFrame_UpdateAuras(FocusFrame);
-end]]
+end

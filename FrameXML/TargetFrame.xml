@@ -166,10 +166,10 @@
 			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" parentKey="texture"  file="Interface\TargetingFrame\UI-TargetingFrame">
+						<Texture name="$parentTexture" parentKey="texture" file="Interface\TargetingFrame\UI-TargetingFrame">
 							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
 						</Texture>
-						<FontString name="$parentName" inherits="GameFontNormalSmall">
+						<FontString name="$parentName" parentKey="Name" inherits="GameFontNormalSmall">
 							<Size x="100" y="10"/>
 							<Anchors>
 								<Anchor point="CENTER" x="-50" y="19"/>
@@ -179,6 +179,36 @@
 							<!--WARNING:: This is re-anchored in code.-->
 							<Anchors>
 								<Anchor point="CENTER" x="63" y="-16"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER" x="-50" y="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="HealthBarTextLeft" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="LEFT" x="6" y="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="HealthBarTextRight" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="RIGHT" x="-110" y="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ManaBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER" x="-50" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ManaBarTextLeft" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="LEFT" x="6" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ManaBarTextRight" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="RIGHT" x="-110" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
@@ -252,7 +282,7 @@
 					<Anchor point="TOP" x="10" y="-60"/>
 				</Anchors>
 			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" useParentLevel="true">
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" parentKey="HealthBar" useParentLevel="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-106" y="-41"/>
@@ -272,7 +302,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar" useParentLevel="true">
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar" parentKey="PowerBar" useParentLevel="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-106" y="-52"/>
@@ -459,7 +489,7 @@
 			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<!--<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="250" y="-240"/>
 		</Anchors>
@@ -481,7 +511,7 @@
 			<OnDragStart function="FocusFrame_OnDragStart"/>
 			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
-	</Button>-->
+	</Button>
 	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="55" y="-236"/>

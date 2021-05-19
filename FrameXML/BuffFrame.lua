@@ -87,7 +87,7 @@ function BuffFrame_Update()
 	-- Handle Buffs
 	BUFF_ACTUAL_DISPLAY = 0;
 	for i=1, BUFF_MAX_DISPLAY do
-		if ( AuraButton_Update("BuffButton", i, "HELPFUL_NOT_PASSIVE") ) then
+		if ( AuraButton_Update("BuffButton", i, "HELPFUL") ) then
 			BUFF_ACTUAL_DISPLAY = BUFF_ACTUAL_DISPLAY + 1;
 		end
 	end
@@ -95,7 +95,7 @@ function BuffFrame_Update()
 	-- Handle debuffs
 	DEBUFF_ACTUAL_DISPLAY = 0;
 	for i=1, DEBUFF_MAX_DISPLAY do
-		if ( AuraButton_Update("DebuffButton", i, "HARMFUL_NOT_PASSIVE") ) then
+		if ( AuraButton_Update("DebuffButton", i, "HARMFUL") ) then
 			DEBUFF_ACTUAL_DISPLAY = DEBUFF_ACTUAL_DISPLAY + 1;
 		end
 	end
@@ -126,7 +126,7 @@ function AuraButton_Update(buttonName, index, filter)
 		end
 		return nil;
 	else
-		local helpful = (filter == "HELPFUL" or filter == "HELPFUL_NOT_PASSIVE");
+		local helpful = (filter == "HELPFUL" or filter == "HELPFUL");
 
 		-- If button doesn't exist make it
 		if ( not buff ) then

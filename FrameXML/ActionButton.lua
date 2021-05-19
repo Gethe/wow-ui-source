@@ -519,8 +519,7 @@ end
 function ActionButton_UpdateCount(self)
 	local text = self.Count;
 	local action = self.action;
-	-- In Classic, we only want to show usage counts for item actions.
-	if ( IsItemAction(action) and (IsConsumableAction(action) or IsStackableAction(action)) ) then
+	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
 		local count = GetActionCount(action);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");

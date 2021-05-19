@@ -17,6 +17,8 @@
 			<OnMouseWheel method="OnMouseWheel"/>
 			<OnKeyDown method="OnKeyDown"/>
 			<OnKeyUp method="OnKeyUp"/>
+			<OnGamePadButtonDown method="OnKeyDown"/>
+			<OnGamePadButtonUp method="OnKeyUp"/>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisable"/>

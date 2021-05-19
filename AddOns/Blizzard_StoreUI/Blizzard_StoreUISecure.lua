@@ -90,6 +90,7 @@ Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
 Import("PortraitFrameTemplateMixin");
 Import("SecondsToTime");
+Import("BackdropTemplateMixin");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -289,6 +290,7 @@ Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
+local WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID = 161;
 
 -- Mirror of the same variables in GlueParent.lua and UIParent.lua
 local WOW_GAMES_CATEGORY_ID = 33;
@@ -323,11 +325,23 @@ local function GetStoreProductGroups()
 		return { selectedCategoryID };
 	end
 
+	local function ShouldDisplayProductGroup(categoryID)
+		-- WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID only appears as an exclusive category.
+		if categoryID == WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID then
+			return false;
+
+		-- WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID should go away once you've purchased everything.
+		elseif categoryID == WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID then
+			return C_StorePublic.DoesGroupHavePurchaseableProducts(categoryID);
+		end
+
+		return true;
+	end
+
 	local categories = C_StoreSecure.GetProductGroups();
 	local i = 1;
 	while i <= #categories do
-		-- WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID only appears as an exclusive category.
-		if categories[i] == WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID then
+		if not ShouldDisplayProductGroup(categories[i]) then
 			table.remove(categories, i);
 		else
 			i = i + 1;
@@ -566,7 +580,7 @@ local vasErrorData = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
 		notUserFixable = true,
 	},
-	[Enum.VasError.PveToPvpTransferNotAllowed] = {
+	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
 	},
 	[Enum.VasError.NeedsEraChoice] = {
@@ -606,6 +620,11 @@ function StoreFrame_GetDiscountInformation(data)
 end
 
 function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
+	if entryID == nil then
+		card:Hide();
+		return;
+	end
+
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 	if entryInfo.sharedData.tooltip ~= "" then
 		card.productTooltipTitle = entryInfo.sharedData.name;
@@ -780,9 +799,6 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 		local baseDescription, bullets = description:match("(.-)$bullet(.*)");
 		if not bullets or not card.DescriptionBulletPointContainer then
-			if (card ~= StoreFrame.SplashSingle) then
-				card.Description:SetJustifyH("CENTER");
-			end
 
 			card.Description:SetText(description);
 		else
@@ -927,18 +943,32 @@ function StoreFrame_SetSplashCategory(forceModelUpdate)
 	self.Notice:Hide();
 
 	local products = C_StoreSecure.GetProducts(selectedCategoryID);
-
-	if (#products == 0) then
+	if #products == 0 then
 		return;
 	end
-
+	products = StoreFrame_FilterEntries(products);
 	local isThreeSplash = #products >= 3;
 	local isSplashPair = #products == 2;
+
+
+	-- hack for the DPP which can be show in the pair layout with only one pane
+	local DARK_PORTAL_PASS_PRODUCT_ID = 680;
+	local darkPortalSingle = false;
+	if #products == 1 then
+		local entryInfo = C_StoreSecure.GetEntryInfo(products[1]);
+		if entryInfo.productID == DARK_PORTAL_PASS_PRODUCT_ID then
+			darkPortalSingle = true;
+		end
+	end
+
 
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
 
 	StoreFrame_HideAllSplashFrames(self);
-	if (isThreeSplash) then
+	if (darkPortalSingle) then
+		self.SplashPairFirst:Show();
+		StoreFrame_UpdateCard(self.SplashPairFirst, products[1], nil, forceModelUpdate);
+	elseif (isThreeSplash) then
 		self.SplashPrimary:Show();
 		self.SplashSecondary1:Show();
 		self.SplashSecondary2:Show();
@@ -980,7 +1010,11 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 
 	local currencyFormat = info.formatShort;
 
-	local products = C_StoreSecure.GetProducts(id);
+	local products = C_StoreSecure.GetProducts(selectedCategoryID);
+	if #products == 0 then
+		return;
+	end
+	products = StoreFrame_FilterEntries(products);
 	local numTotal = #products;
 
 	for i = 1, numCardsPerPage do
@@ -1009,6 +1043,40 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 	end
 
 	StoreFrame_UpdateBuyButton();
+end
+
+function StoreFrame_IsCompletelyOwned(entryInfo)
+	return entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.Owned;
+end
+
+function StoreFrame_IsPartiallyOwned(entryInfo)
+	return entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.PartiallyOwned;
+end
+
+function StoreFrame_FilterEntries(entries)
+	local filteredEntries = {};
+	for entryIndex = 1, #entries do
+		local entryID = entries[entryIndex];
+
+		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+		local sharedData = entryInfo.sharedData;
+
+		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
+		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
+
+		if completelyOwned or partiallyOwned then
+			local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlag.HideWhenOwned) ~= 0;
+			if not hideWhenOwned then
+				table.insert(filteredEntries, entryID);
+			end
+		else
+			local missingRequirement = sharedData.eligibility == Enum.PurchaseEligibility.MissingRequiredDeliverable;
+			if not missingRequirement then
+				table.insert(filteredEntries, entryID);
+			end
+		end
+	end
+	return filteredEntries;
 end
 
 function StoreFrame_SetCategory(forceModelUpdate)
@@ -1277,6 +1345,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
 	self:RegisterEvent("STORE_REFRESH");
+	self:RegisterEvent("STORE_ENTITLEMENT_NOTIFICATION");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
@@ -1440,7 +1509,7 @@ function StoreFrame_OnEvent(self, event, ...)
 		else
 			StoreFrame_ShowUnrevokeConsumptionDialog();
 		end
-	elseif ( event == "STORE_REFRESH" ) then
+	elseif ( event == "STORE_REFRESH" or event == "STORE_ENTITLEMENT_NOTIFICATION" ) then
 		C_StoreSecure.GetProductList();
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
@@ -1970,22 +2039,20 @@ function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 	if ( entryInfo.alreadyOwned ) then
 		StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "FakeOwned");
-	else
-		if ( C_StoreSecure.PurchaseProduct(entryInfo.productID) ) then
-			if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) then
-				WaitingOnVASToComplete = WaitingOnVASToComplete + 1;
-			else
-				WaitingOnVASToComplete = 0;
-				WaitingOnVASToCompleteToken = nil;
-			end
-			WaitingOnConfirmation = true;
-			WaitingOnConfirmationTime = GetTime();
-			StoreFrame_UpdateActivePanel(StoreFrame);
+	elseif ( C_StoreSecure.PurchaseProduct(entryInfo.productID) ) then
+		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) then
+			WaitingOnVASToComplete = WaitingOnVASToComplete + 1;
 		else
-			local productInfo = C_StoreSecure.GetProductInfo(entryInfo.productID);
-			if (productInfo and productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion) then
-				StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "Expansion");
-			end
+			WaitingOnVASToComplete = 0;
+			WaitingOnVASToCompleteToken = nil;
+		end
+		WaitingOnConfirmation = true;
+		WaitingOnConfirmationTime = GetTime();
+		StoreFrame_UpdateActivePanel(StoreFrame);
+	else
+		local productInfo = C_StoreSecure.GetProductInfo(entryInfo.productID);
+		if (productInfo and productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion) then
+			StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "Expansion");
 		end
 	end
 end
@@ -2059,7 +2126,7 @@ local StoreDropdownLists = {};
 local SelectedDestinationWowAccount = nil;
 local SelectedDestinationBnetAccount = nil;
 local SelectedDestinationBnetWowAccount = nil;
-local CharacterTransferFactionChangeBundle = nil;
+local CharacterTransferFactionChangeBundle = false;
 local RealmAutoCompleteList;
 local IsVasBnetTransferValidated = false;
 local RealmAutoCompleteIndexByKey = {};
@@ -2391,7 +2458,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
 	SelectedDestinationBnetWowAccount = nil;
-	CharacterTransferFactionChangeBundle = nil;
+	CharacterTransferFactionChangeBundle = false;
 	IsVasBnetTransferValidated = false;
 	RealmAutoCompleteList = nil;
 	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
@@ -2474,13 +2541,13 @@ if (IsOnGlueScreen()) then
 		[Enum.VasQueueStatus.ThreeToSixHours] = "THREE_SIX_HOURS",
 		[Enum.VasQueueStatus.SixToTwelveHours] = "SIX_TWELVE_HOURS",
 		[Enum.VasQueueStatus.OverTwelveHours] = "TWELVE_HOURS",
-		[Enum.VasQueueStatus.Over1Days] = "ONE_DAY",
-		[Enum.VasQueueStatus.Over2Days] = "TWO_DAY",
-		[Enum.VasQueueStatus.Over3Days] = "THREE_DAY",
-		[Enum.VasQueueStatus.Over4Days] = "FOUR_DAY",
-		[Enum.VasQueueStatus.Over5Days] = "FIVE_DAY",
-		[Enum.VasQueueStatus.Over6Days] = "SIX_DAY",
-		[Enum.VasQueueStatus.Over7Days] = "SEVEN_DAY",
+		[Enum.VasQueueStatus.Over_1_Days] = "ONE_DAY",
+		[Enum.VasQueueStatus.Over_2_Days] = "TWO_DAY",
+		[Enum.VasQueueStatus.Over_3_Days] = "THREE_DAY",
+		[Enum.VasQueueStatus.Over_4_Days] = "FOUR_DAY",
+		[Enum.VasQueueStatus.Over_5_Days] = "FIVE_DAY",
+		[Enum.VasQueueStatus.Over_6_Days] = "SIX_DAY",
+		[Enum.VasQueueStatus.Over_7_Days] = "SEVEN_DAY",
 	}
 end
 
@@ -2509,7 +2576,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			local isVas = entryInfo and (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) or false;
 			-- If we've already targeted a character GUID, skip the normal VAS steps and go straight to checkout.
 			if ( isVas and VasTargetedCharacterGUID ) then
-				C_StoreSecure.PurchaseVASProduct(entryInfo.productID, VasTargetedCharacterGUID);
+				C_StoreSecure.PurchaseVASProduct(entryInfo.productID, VasTargetedCharacterGUID, nil, nil, nil, nil, false);
 				return;
 			end
 		end
@@ -3305,12 +3372,6 @@ function StoreCategory_OnClick(self,button,down)
 
 	StoreProductCard_UpdateAllStates();
 	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
-end
-
-----------------------------------
-function StoreTooltip_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.9);
 end
 
 function StoreTooltip_Show(name, description, isToken)
@@ -4226,7 +4287,8 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationWowAccount, true);
 		end
 	end
-	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], CharacterTransferFactionChangeBundle, wowAccountGUID, bnetAccountGUID) ) then
+	
+	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		WaitingOnVASToCompleteToken = WaitingOnVASToComplete;

@@ -404,12 +404,15 @@ function ChannelFrameMixin:OnVoiceChannelDisplayNameChanged(channelID, channelNa
 end
 
 function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
-	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
 	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
 	if errorString then
-		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 		ChatFrame_DisplayUsageError(errorString);
 		self.lastError = statusCode;
+	end
+
+	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
+	if errorCode then
+		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 	end
 end
 
@@ -628,8 +631,8 @@ end
 
 local channelTypeToNameLookup =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHANNEL_NAME_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHANNEL_NAME_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHANNEL_NAME_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHANNEL_NAME_INSTANCE,
 };
 
 function ChannelFrame_GetIdealChannelName(channel)

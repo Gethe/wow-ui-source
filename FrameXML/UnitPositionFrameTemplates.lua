@@ -1,13 +1,50 @@
-UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
-UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
-UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "Interface\\WorldMap\\WorldMapPartyIcon";
-UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
-UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = false;
-UNIT_POSITION_FRAME_DEFAULT_USE_COMMENTATOR_COLOR = true;
+
+local type = type;
+local setmetatable = setmetatable;
 
 -- NOTE: This is only using a single set of PVPQuery timers.  There's no reason to have a different set per-instance.
 PVPAFK_QUERY_DELAY_SECONDS = 5;
 local pvpAFKQueryTimers = {}
+
+
+local Private_UnitAppearanceData = {};
+setmetatable(Private_UnitAppearanceData, { __metatable = false });
+
+local function GetOrCreateUnitAppearanceData(frame, unitType)
+	-- Global access should be avoided to expose as few attack vectors as possible.
+	local UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
+	local UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
+	local UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
+	local UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
+	local UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+
+	if Private_UnitAppearanceData[frame] == nil then
+		local newUnitAppearanceData = {};
+		setmetatable(newUnitAppearanceData, { __metatable = false });
+		Private_UnitAppearanceData[frame] = newUnitAppearanceData;
+	end
+
+	local data = Private_UnitAppearanceData[frame][unitType];
+	if data == nil then
+		-- Note: We only allow changes to existing keys with values that match the type of the default value.
+		-- We should not add any function or table values to this default set.
+		data = {
+			size = UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE,
+			sublevel = UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL,
+			texture = UNIT_POSITION_FRAME_DEFAULT_TEXTURE,
+			shouldShow = UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS,
+			useClassColor = unitType ~= "player", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
+			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
+		};
+
+		setmetatable(data, { __metatable = false });
+
+		Private_UnitAppearanceData[frame][unitType] = data;
+	end
+
+	return data;
+end
+
 
 function SetPVPAFKQueryDelaySeconds(seconds)
 	PVPAFK_QUERY_DELAY_SECONDS = seconds;
@@ -73,8 +110,8 @@ function UnitPositionFrameMixin:OnEvent(event, ...)
 end
 
 function UnitPositionFrameMixin:UpdateAppearanceData()
-	self:SetPinTexture("raid", "Interface\\WorldMap\\WorldMapPartyIcon");
-	self:SetPinTexture("party", "Interface\\WorldMap\\WorldMapPartyIcon");
+	self:SetPinTexture("raid", "PlayerRaidBlip");
+	self:SetPinTexture("party", "PlayerControlled");
 	self:SetPinTexture("spectateda", "PlayerPartyBlip");
 	self:SetPinTexture("spectatedb", "PlayerPartyBlip");
 end
@@ -190,9 +227,9 @@ function UnitPositionFrameMixin:GetUnitColor(timeNow, unit, appearanceData)
 		local r, g, b  = 1, 1, 1;
 
 		if appearanceData.useCommentatorColor and C_Commentator.IsSpectating() then
-			local teamIndex = C_Commentator.GetUnitTeamIndex(unit);
-			if (teamIndex) then
-				r, g, b = C_Commentator.GetTeamHighlightColor(teamIndex);
+			local color = C_Commentator.GetTeamColorByUnit(unit);
+			if (color) then
+				r, g, b = color.r, color.g, color.b;
 			end
 		elseif appearanceData.useClassColor then
 			local class = select(2, UnitClass(unit));
@@ -238,28 +275,28 @@ end
 function UnitPositionFrameMixin:UpdateFull(timeNow)
 	assert(self:NeedsFullUpdate());
 	self:ClearUnits();
-	self:AddUnitInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
+	self:AddUnitInternal(timeNow, "player", GetOrCreateUnitAppearanceData(self, "player"));
 
 	local memberCount, unitBases = self:GetMemberCountAndUnitTokenPrefix();
 	local overridePartyType = (InActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
-	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
-	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
-	local spectatedaAppearance = self:GetOrCreateUnitAppearanceData("spectateda");
-	local spectatedbAppearance = self:GetOrCreateUnitAppearanceData("spectatedb");
+	local partyAppearance = GetOrCreateUnitAppearanceData(self, "party");
+	local raidAppearance = GetOrCreateUnitAppearanceData(self, "raid");
+	local spectatedaAppearance = GetOrCreateUnitAppearanceData(self, "spectateda");
+	local spectatedbAppearance = GetOrCreateUnitAppearanceData( self, "spectatedb");
 
 	for i = 1, memberCount do
 		for _, unitBase in pairs(unitBases) do
 			local unit = unitBase..i;
 
 			-- A bit of a hack. Fixes a race condition where COMMENTATOR_PLAYER_UPDATE fires before UnitExists returns true.
-			local unitExists = UnitExists(unit) or C_Commentator.GetUnitTeamIndex(unit);
+			local unitExists = UnitExists(unit) or C_Commentator.FindSpectatedUnit(unit);
 
 			if unitExists and not UnitIsUnit(unit, "player") then
 				local appearance = raidAppearance;
 				local callAtlasAPI = false;
 				if (unitBase == "party" or unitBase == "raid") then
 					appearance = UnitInSubgroup(unit, overridePartyType) and partyAppearance or raidAppearance;
-					callAtlasAPI = false;
+					callAtlasAPI = true;
 				elseif (unitBase == "spectateda" or unitBase == "spectatedb") then
 					appearance = unitBase == "spectateda" and spectatedaAppearance or spectatedbAppearance;
 					callAtlasAPI = true;
@@ -274,14 +311,14 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 end
 
 function UnitPositionFrameMixin:UpdatePeriodic(timeNow)
-	self:SetUnitAppearanceInternal(timeNow, "player", self:GetOrCreateUnitAppearanceData("player"));
+	self:SetUnitAppearanceInternal(timeNow, "player", GetOrCreateUnitAppearanceData(self, "player"));
 
 	local memberCount, unitBases = self:GetMemberCountAndUnitTokenPrefix();
 	local overridePartyType = (InActiveBattlefield() and IsInRaid() and IsInGroup(LE_PARTY_CATEGORY_HOME)) and LE_PARTY_CATEGORY_HOME or nil;
-	local partyAppearance = self:GetOrCreateUnitAppearanceData("party");
-	local raidAppearance = self:GetOrCreateUnitAppearanceData("raid");
-	local spectatedaAppearance = self:GetOrCreateUnitAppearanceData("spectateda");
-	local spectatedbAppearance = self:GetOrCreateUnitAppearanceData("spectatedb");
+	local partyAppearance = GetOrCreateUnitAppearanceData(self, "party");
+	local raidAppearance = GetOrCreateUnitAppearanceData(self, "raid");
+	local spectatedaAppearance = GetOrCreateUnitAppearanceData(self, "spectateda");
+	local spectatedbAppearance = GetOrCreateUnitAppearanceData(self, "spectatedb");
 
 	for i = 1, memberCount do
 		for _, unitBase in pairs(unitBases) do
@@ -322,34 +359,19 @@ function UnitPositionFrameUpdateSecureMixin:SetupSecureData()
 end
 
 function UnitPositionFrameUpdateSecureMixin:UpdatePlayerPins()
-	if self:NeedsFullUpdate() then
+	if self:NeedsFullUpdate()then
 		self:UpdateFull(GetTime());	
 	elseif self:NeedsPeriodicUpdate() then
 		self:UpdatePeriodic(GetTime());
 	end
 end
 
-function UnitPositionFrameUpdateSecureMixin:GetOrCreateUnitAppearanceData(unitType)
-	local data = self.unitAppearanceData[unitType];
-	if not data then
-		data = {
-			size = UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE,
-			sublevel = UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL,
-			texture = UNIT_POSITION_FRAME_DEFAULT_TEXTURE,
-			shouldShow = UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS,
-			useClassColor = UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR,
-			useCommentatorColor = UNIT_POSITION_FRAME_DEFAULT_USE_COMMENTATOR_COLOR,
-			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
-
-		};
-
-		self.unitAppearanceData[unitType] = data;
+function UnitPositionFrameUpdateSecureMixin:SetAppearanceField(unitType, fieldName, fieldValue)
+	local data = GetOrCreateUnitAppearanceData(self, unitType);
+	if type(data[fieldName]) ~= type(fieldValue) then
+		return;
 	end
 
-	return data;
-end
-
-function UnitPositionFrameUpdateSecureMixin:SetAppearanceField(unitType, fieldName, fieldValue)
-	self:GetOrCreateUnitAppearanceData(unitType)[fieldName] = fieldValue;
+	data[fieldName] = fieldValue;
 	self:SetNeedsFullUpdate();
 end
