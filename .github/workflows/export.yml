@@ -36,7 +36,7 @@ jobs:
       env:
         LUA_PATH: "./InterfaceExport/libs/?.lua;./InterfaceExport/libs/?/init.lua"
       run: |
-        lua InterfaceExport/export.lua classic ${{ github.event.inputs.branch }} code
+        lua InterfaceExport/export.lua classic_era ${{ github.event.inputs.branch }} code
 
     - name: Get build version
       id: version
