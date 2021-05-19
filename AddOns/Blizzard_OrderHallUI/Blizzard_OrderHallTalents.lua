@@ -74,6 +74,7 @@ local Torghast_TalentTreeLayoutOptions =
 	singleCost = false,
 	showUnffordableAsAvailable = true,
 	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	customUnavailableTalentError = ERR_TORGHAST_TALENT_CANT_AFFORD_TALENT,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
 };
@@ -570,7 +571,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		talentFrame:SetSize(buttonInfo.size, buttonInfo.size);
 		talentFrame.Icon:SetTexture(talent.icon);
 
-		talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect);
+		talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect, layoutOptions.customUnavailableTalentError);
 
 		if (talent.isBeingResearched and not talent.hasInstantResearch) then
 			talentFrame.Cooldown:SetCooldownUNIX(talent.startTime, talent.researchDuration);
@@ -747,9 +748,10 @@ end
 
 GarrisonTalentButtonMixin = { }
 
-function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect)
+function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect, customUnavailableTalentError)
 	self.talent = talent;
 	self.talentSelectedEffect = talentSelectedEffect;
+	self.customUnavailableTalentError = customUnavailableTalentError;
 
 	self:ReacquireAnimationFrame();
 end
@@ -832,6 +834,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 	end
 	self.tooltip = GameTooltip;
 	GameTooltip:Show();
+	EventRegistry:TriggerEvent("GarrisonTalentButtonMixin.TalentTooltipShown", GameTooltip, talent, garrTalentTreeID);
 end
 
 function GarrisonTalentButtonMixin:OnLeave()
@@ -874,6 +877,8 @@ function GarrisonTalentButtonMixin:OnClick()
 			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
 			talentFrame:SetResearchingTalentID(self.talent.id);
 		end
+	elseif (self.customUnavailableTalentError) then
+		UIErrorsFrame:AddMessage(self.customUnavailableTalentError, RED_FONT_COLOR:GetRGBA());
 	end
 end
 

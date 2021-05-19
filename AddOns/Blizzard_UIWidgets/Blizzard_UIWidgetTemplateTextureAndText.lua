@@ -16,4 +16,5 @@ end
 function UIWidgetTemplateTextureAndTextMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	UIWidgetBaseTextureAndTextTemplateMixin.Setup(self, widgetContainer, widgetInfo.text, widgetInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit);
+	self:SetTooltipLocation(widgetInfo.tooltipLoc);
 end

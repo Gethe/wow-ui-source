@@ -4,6 +4,63 @@
 
 	<!-- Text To Speech Frame Templates -->
 
+	<Button name="TextToSpeechVoicePickerButtonTemplate" virtual="true">
+		<Size y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Check" file="Interface\Common\UI-DropDownRadioChecks">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="UnCheck" file="Interface\Common\UI-DropDownRadioChecks">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Icon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self.Highlight:Show();
+			</OnEnter>
+			<OnLeave>
+				self.Highlight:Hide();
+			</OnLeave>
+		</Scripts>
+		<ButtonText name="$parentNormalText">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset x="20" y="0"/>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmallLeft"/>
+		<HighlightFont style="GameFontHighlightSmallLeft"/>
+		<DisabledFont style="GameFontDisableSmallLeft"/>
+	</Button>
+	
 	<CheckButton name="TextToSpeechCheckButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
@@ -95,7 +152,7 @@
 					<OnClick function="TextToSpeechFrameDefaults_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
+			<Frame parentKey="PanelContainer" name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
 				<Size x="175" y="569"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="36" y="-36"/>
@@ -152,6 +209,9 @@
 						</KeyValues>
 					</Frame>
 					<Frame name="TextToSpeechFrameTtsVoiceDropdown" parentKey="TtsVoiceDropdown" inherits="UIDropDownMenuTemplate">
+						<KeyValues>
+							<KeyValue key="hideBackdrops" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentChatTypeContainer" relativePoint="TOPRIGHT" x="50" y="20" />
 						</Anchors>
@@ -167,6 +227,36 @@
 						<Scripts>
 							<OnLoad function="TextToSpeechFrameTtsVoiceDropdown_OnLoad"/>
 							<OnEvent function="TextToSpeechFrameTtsVoiceDropdown_OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="TextToSpeechFrameTtsVoicePicker" inherits="UIDropDownCustomMenuEntryTemplate" parentKey="VoicePicker" enableMouse="true" hidden="true">
+						<Size x="350" y="115"/>
+						<Frames>
+							<Frame inherits="TooltipBorderedFrameTemplate" useParentLevel="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="-10" y="10"/>
+									<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" x="-25"/>
+								</Anchors>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+								<KeyValues>
+									<KeyValue key="hideBackground" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+								</Anchors>
+							</EventFrame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="TextToSpeechFrameTtsVoicePicker_OnLoad"/>
+							<OnShow function="TextToSpeechFrameTtsVoicePicker_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Button name="TextToSpeechFramePlaySampleButton" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">

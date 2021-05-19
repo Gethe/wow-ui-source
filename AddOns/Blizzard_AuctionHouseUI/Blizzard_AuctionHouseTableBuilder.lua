@@ -507,6 +507,7 @@ function AuctionHouseTableCellAuctionsBidMixin:Populate(rowData, dataIndex)
 		self.MoneyDisplay:SetShown(not sold);
 		if sold then
 			self.Text:SetText(AUCTION_HOUSE_INCOMING_AMOUNT);
+			self.Checkmark:Hide();
 		else
 			AuctionHouseTableCellBidMixin.Populate(self, rowData, dataIndex);
 		end

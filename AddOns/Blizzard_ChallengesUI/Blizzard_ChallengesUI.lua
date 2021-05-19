@@ -831,17 +831,17 @@ end
 ChallengeModeCompleteBannerMixin = {};
 
 function ChallengeModeCompleteBannerMixin:OnLoad()
-    self.timeToHold = 5;
+    self.timeToHold = 8;
     self.unitTokens = { "player", "party1", "party2", "party3", "party4" };
     self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
 end
 
 function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
     if (event == "CHALLENGE_MODE_COMPLETED") then
-        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun, oldDungeonScore, newDungeonScore = C_ChallengeMode.GetCompletionInfo();
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun, oldDungeonScore, newDungeonScore, isAffixRecord, isMapRecord, primaryAffix = C_ChallengeMode.GetCompletionInfo();
 
 		if not practiceRun then
-			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels });
+			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels, isMapRecord = isMapRecord, isAffixRecord = isAffixRecord, primaryAffix = primaryAffix });
 		end
     end
 end
@@ -860,15 +860,38 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     end
 
 	self.Level:Show();
-
+	local timeRemaining = timeLimit - (data.time / 1000);
     if (data.onTime) then
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
+		local chatPrintText; 
+		if (data.isAffixRecord) then 
+			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_AFFIX_RECORD:format(name, data.level, SecondsToClock(data.time / 1000, true), SecondsToClock(timeRemaining, true), affixName)
+		elseif (data.isMapRecord) then 
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_RECORD:format(name, data.level, SecondsToClock(data.time / 1000, true), SecondsToClock(timeRemaining, true))
+		else
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK:format(name, data.level, SecondsToClock(data.time / 1000, true), SecondsToClock(timeRemaining, true))
+		end		
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
     else
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_TIME_EXPIRED);
         self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_COMPLETE_NO_UPGRADE);
+
+		local chatPrintText; 
+		if (data.isAffixRecord) then 
+			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_AFFIX_RECORD:format(name, data.level, SecondsToClock(data.time / 1000, true), SecondsToClock(timeRemaining, true), affixName)
+		elseif (data.isMapRecord) then 
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_RECORD:format(name, data.level, SecondsToClock(data.time / 1000, true), SecondsToClock(timeRemaining, true))
+		else
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_OVERTIME_CHAT_LINK:format(name, data.level, SecondsToClock(data.time / 1000, true), SecondsToClock(timeRemaining, true))
+		end	
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
     end
 
 	local gainedScore = data.newDungeonScore - data.oldDungeonScore;
@@ -942,7 +965,7 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
 end
 
 function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
-	local frameWidth, spacing, distance = 61, 22, -100;
+	local frameWidth, spacing, distance = 61, 22, -131;
 
     CreateFrames(self, "PartyMembers", num, "ChallengeModeBannerPartyMemberTemplate");
     ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);

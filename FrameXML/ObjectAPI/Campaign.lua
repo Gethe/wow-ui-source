@@ -5,8 +5,6 @@ function CampaignMixin:Init(campaignID)
 	self.chapterIDs = C_CampaignInfo.GetChapterIDs(campaignID) or {};
 	self.usesNormalQuestIcons = C_CampaignInfo.UsesNormalQuestIcons(campaignID);
 	Mixin(self, C_CampaignInfo.GetCampaignInfo(campaignID));
-
-	self:SortQuestLines();
 end
 
 function CampaignMixin:GetState()
@@ -32,21 +30,6 @@ end
 
 function CampaignMixin:GetID()
 	return self.campaignID;
-end
-
-local function CompareQuestLines(line1, line2)
-	local info1 = CampaignChapterCache:Get(line1);
-	local info2 = CampaignChapterCache:Get(line2);
-
-	if info1 and info2 then
-		return info1.orderIndex < info2.orderIndex;
-	end
-
-	return info1 ~= nil;
-end
-
-function CampaignMixin:SortQuestLines()
-	table.sort(self.chapterIDs, CompareQuestLines);
 end
 
 function CampaignMixin:GetChapterCount()

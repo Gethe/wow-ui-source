@@ -871,15 +871,18 @@ function TransmogSlotButtonMixin:RefreshItemModel()
 		local slotID = self.transmogLocation.slotID;
 		local itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID);
 		local currentItemTransmogInfo = actor:GetItemTransmogInfo(slotID);
-		if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) then
-			local canRecurse = false;
+		-- need the main category for mainhand
+		local mainHandCategoryID;
+		local canRecurse = false;
+		if self.transmogLocation:IsMainHand() then
+			mainHandCategoryID = C_Transmog.GetSlotEffectiveCategory(self.transmogLocation);
+			canRecurse = TransmogUtil.IsCategoryLegionArtifact(mainHandCategoryID);
+		end
+		-- update only if there is a change or it can recurse (offhand is processed first and mainhand might override offhand)
+		if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) or canRecurse then
 			-- don't specify a slot for ranged weapons
-			if self.transmogLocation:IsMainHand() then
-				local categoryID = C_Transmog.GetSlotEffectiveCategory(self.transmogLocation);
-				if TransmogUtil.IsCategoryRangedWeapon(categoryID) then
-					slotID = nil;
-				end
-				canRecurse = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+			if mainHandCategoryID and TransmogUtil.IsCategoryRangedWeapon(mainHandCategoryID) then
+				slotID = nil;
 			end
 			actor:SetItemTransmogInfo(itemTransmogInfo, slotID, canRecurse);
 		end
@@ -1945,7 +1948,7 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(transmogLocation, category, 
 	-- set only if category is different or slot is different
 	if ( category ~= self.activeCategory or slotChanged ) then
 		CloseDropDownMenus();
-		self:SetActiveCategory(category);
+		self:SetActiveCategory(category, slotChanged);
 	end
 end
 
@@ -1981,10 +1984,10 @@ function WardrobeItemsCollectionMixin:UpdateWeaponDropDown()
 	end
 end
 
-function WardrobeItemsCollectionMixin:SetActiveCategory(category)
+function WardrobeItemsCollectionMixin:SetActiveCategory(category, slotChanged)
 	local previousCategory = self.activeCategory;
 	self.activeCategory = category;
-	if previousCategory ~= category then
+	if previousCategory ~= category or slotChanged then
 		if ( self.transmogLocation:IsAppearance() ) then
 			C_TransmogCollection.SetSearchAndFilterCategory(category);
 			local name, isWeapon = C_TransmogCollection.GetCategoryInfo(category);

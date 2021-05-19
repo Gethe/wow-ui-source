@@ -447,28 +447,30 @@ function CharacterSelect_OnUpdate(self, elapsed)
 end
 
 function CharacterSelect_OnKeyDown(self,key)
-    if ( key == "ESCAPE" ) then
-        if ( C_Login.IsLauncherLogin() ) then
+    if key == "ESCAPE" then
+        if GlueParent_IsSecondaryScreenOpen("options") then
+            GlueParent_CloseSecondaryScreen();
+        elseif C_Login.IsLauncherLogin() then
             GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
-        elseif (CharSelectServicesFlowFrame:IsShown()) then
+        elseif CharSelectServicesFlowFrame:IsShown() then
             CharSelectServicesFlowFrame:Hide();
-        elseif ( CopyCharacterFrame:IsShown() ) then
+        elseif CopyCharacterFrame:IsShown() then
             CopyCharacterFrame:Hide();
-        elseif (CharacterSelect.undeleting) then
+        elseif CharacterSelect.undeleting then
             CharacterSelect_EndCharacterUndelete();
-		elseif ( GlobalGlueContextMenu_IsShown() ) then
+		elseif GlobalGlueContextMenu_IsShown() then
 			GlobalGlueContextMenu_Release();
         else
             CharacterSelect_Exit();
         end
-    elseif ( key == "ENTER" ) then
-        if (CharacterSelect_AllowedToEnterWorld()) then
+    elseif key == "ENTER" then
+        if CharacterSelect_AllowedToEnterWorld() then
             CharacterSelect_EnterWorld();
         end
-    elseif ( key == "PRINTSCREEN" ) then
+    elseif key == "PRINTSCREEN" then
         Screenshot();
-    elseif ( key == "UP" or key == "LEFT" ) then
-        if (CharSelectServicesFlowFrame:IsShown()) then
+    elseif key == "UP" or key == "LEFT" then
+        if CharSelectServicesFlowFrame:IsShown() then
             return;
         end
         CharacterSelectScrollUp_OnClick();

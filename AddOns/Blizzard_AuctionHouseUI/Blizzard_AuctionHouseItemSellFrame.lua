@@ -81,6 +81,8 @@ function AuctionHouseItemSellFrameMixin:OnHide()
 		C_AuctionHouse.CancelSell();
 		self:SetMultiSell(false);
 	end
+
+	self.listDisplayedItemKey = nil;
 end
 
 function AuctionHouseItemSellFrameMixin:OnEvent(event, ...)

@@ -1965,15 +1965,13 @@ end
 AccessibilityPanelOptions = {
 	enableMovePad = { text = "MOVE_PAD" },
     movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
-	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	motionSickness = { text = "MOTION_SICKNESS_DROPDOWN" },
 	shakeStrengthCamera = { text = "ADJUST_MOTION_SICKNESS_SHAKE" },
-	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
-	colorblindSimulator = { text = "COLORBLIND_FILTER" },
 	overrideScreenFlash = { text = "ALTERNATE_SCREEN_EFFECTS" },
 	speechToText = { text = "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" },
 	textToSpeech = { text = "ENABLE_TEXT_TO_SPEECH" },
 	remoteTextToSpeech = { text = "ENABLE_REMOTE_TEXT_TO_SPEECH" },
+	questTextContrast = { text = "ENABLE_QUEST_TEXT_CONTRAST" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)
@@ -1988,90 +1986,22 @@ function InterfaceOptionsAccessibilityPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.cvar = "colorblindSimulator";
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnLoad(self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
+end
 
-		local value = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		self.defaultValue = GetCVarDefault(self.cvar);
-		self.value = value;
-		self.oldValue = value;
-
-		UIDropDownMenu_SetWidth(self, 130);
-		UIDropDownMenu_Initialize(self,InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
-		UIDropDownMenu_SetSelectedValue(self, value);
-
-		function self:SetValue(value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			UIDropDownMenu_SetSelectedValue(self, value);
-
-			if self.value == 0 then
-				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Disable();
-			else
-				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Enable();
-			end
-		end
-
-		function self:GetValue()
-			return UIDropDownMenu_GetSelectedValue(self);
-		end
-
-		function self:RefreshValue()
-			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, self.value);
-		end
-
-		self:UnregisterEvent(event);
-
-		-- create and set colorblind item quality display string
-		local self = InterfaceOptionsAccessibilityPanel;
-		local qualityIdTable = {2,3,4,5,7}; -- UNCOMMON, RARE, EPIC, LEGENDARY, HEIRLOOM
-		local examples = self.ColorblindFilterExamples;
-		for i = 1, #qualityIdTable do
-			local fontstring = examples.ItemQuality[i];
-			if ( not fontstring ) then
-				fontstring = examples:CreateFontString(nil, "ARTWORK", "ColorblindItemQualityTemplate");
-				fontstring:SetPoint("TOPLEFT", examples.ItemQuality[i-1], "TOPRIGHT", 8, 0);
-			end
-
-			local qualityId = qualityIdTable[i];
-			fontstring:SetText(_G["ITEM_QUALITY"..qualityId.."_DESC"]);
-			local color = ITEM_QUALITY_COLORS[qualityId];
-			fontstring:SetTextColor(color.r, color.g, color.b);
-		end
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "VARIABLES_LOADED" or
+		(event == "CVAR_UPDATE" and arg1 == "ENABLE_TEXT_TO_SPEECH") ) then
+		self:SetEnabled(GetCVarBool("textToSpeech"));
 	end
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelColorFilterDropDown);
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.func = InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick;
-
-	info.text = COLORBLIND_OPTION_NONE;
-	info.value = 0;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = COLORBLIND_OPTION_PROTANOPIA;
-	info.value = 1;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = COLORBLIND_OPTION_DEUTERANOPIA;
-	info.value = 2;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = COLORBLIND_OPTION_TRITANOPIA;
-	info.value = 3;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-end
-
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick(self)
-	InterfaceOptionsAccessibilityPanelColorFilterDropDown:SetValue(self.value);
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnClick(self)
+	ToggleTextToSpeechFrame();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 local cameraKeepCharacterCentered = "CameraKeepCharacterCentered";
@@ -2204,4 +2134,108 @@ end
 
 function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick(self)
 	InterfaceOptionsAccessibilityPanelShakeIntensityDropdown:SetValue(self.value);
+end
+
+ColorblindPanelOptions = {
+	colorblindMode = { text = "USE_COLORBLIND_MODE" },
+	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
+	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+}
+
+function InterfaceOptionsColorblindPanel_OnLoad(self)
+	self.name = "   "..COLORBLIND_MODE_TAB;
+	self.options = ColorblindPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsAccessibilityPanel_OnEvent);
+end
+
+function InterfaceOptionsColorblindPanel__OnEvent(self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "colorblindSimulator";
+
+		local value = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self,InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		function self:SetValue(value)
+			self.value = value;
+			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+
+			if self.value == 0 then
+				InterfaceOptionsColorblindPanelColorblindStrengthSlider:Disable();
+			else
+				InterfaceOptionsColorblindPanelColorblindStrengthSlider:Enable();
+			end
+		end
+
+		function self:GetValue()
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+
+		function self:RefreshValue()
+			UIDropDownMenu_Initialize(self, InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+
+		self:UnregisterEvent(event);
+
+		-- create and set colorblind item quality display string
+		local self = InterfaceOptionsColorblindPanel;
+		local qualityIdTable = {2,3,4,5,7}; -- UNCOMMON, RARE, EPIC, LEGENDARY, HEIRLOOM
+		local examples = self.ColorblindFilterExamples;
+		for i = 1, #qualityIdTable do
+			local fontstring = examples.ItemQuality[i];
+			if ( not fontstring ) then
+				fontstring = examples:CreateFontString(nil, "ARTWORK", "ColorblindItemQualityTemplate");
+				fontstring:SetPoint("TOPLEFT", examples.ItemQuality[i-1], "TOPRIGHT", 8, 0);
+			end
+
+			local qualityId = qualityIdTable[i];
+			fontstring:SetText(_G["ITEM_QUALITY"..qualityId.."_DESC"]);
+			local color = ITEM_QUALITY_COLORS[qualityId];
+			fontstring:SetTextColor(color.r, color.g, color.b);
+		end
+	end
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsColorblindPanelColorFilterDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsColorblindPanelColorFilterDropDown_OnClick;
+
+	info.text = COLORBLIND_OPTION_NONE;
+	info.value = 0;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_PROTANOPIA;
+	info.value = 1;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_DEUTERANOPIA;
+	info.value = 2;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_TRITANOPIA;
+	info.value = 3;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_OnClick(self)
+	InterfaceOptionsColorblindPanelColorFilterDropDown:SetValue(self.value);
 end

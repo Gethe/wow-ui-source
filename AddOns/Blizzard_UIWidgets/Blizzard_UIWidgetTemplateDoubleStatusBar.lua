@@ -51,7 +51,9 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.RightBar:SetWidth(barWidth);
 
 	self.LeftBar:Setup(widgetContainer, widgetInfo.leftBarMin, widgetInfo.leftBarMax, widgetInfo.leftBarValue, widgetInfo.barValueTextType, widgetInfo.leftBarTooltip);
+	self.LeftBar:SetTooltipLocation(widgetInfo.leftBarTooltipLoc);
 	self.RightBar:Setup(widgetContainer, widgetInfo.rightBarMin, widgetInfo.rightBarMax, widgetInfo.rightBarValue, widgetInfo.barValueTextType, widgetInfo.rightBarTooltip);
+	self.RightBar:SetTooltipLocation(widgetInfo.rightBarTooltipLoc);
 
 	local showSpark = widgetInfo.leftBarValue > widgetInfo.leftBarMin and widgetInfo.leftBarValue < widgetInfo.leftBarMax;
 	self.LeftBar.Spark:SetShown(showSpark);

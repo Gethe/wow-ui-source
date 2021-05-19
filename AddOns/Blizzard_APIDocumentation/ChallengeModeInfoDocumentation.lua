@@ -78,6 +78,9 @@ local ChallengeModeInfo =
 				{ Name = "practiceRun", Type = "bool", Nilable = false },
 				{ Name = "oldOverallDungeonScore", Type = "number", Nilable = false },
 				{ Name = "newOverallDungeonScore", Type = "number", Nilable = false },
+				{ Name = "IsMapRecord", Type = "bool", Nilable = false },
+				{ Name = "IsAffixRecord", Type = "bool", Nilable = false },
+				{ Name = "PrimaryAffix", Type = "number", Nilable = false },
 			},
 		},
 		{

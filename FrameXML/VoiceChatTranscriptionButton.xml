@@ -3,6 +3,7 @@
 
 	<Button name="VoiceChatTranscriptionButtonTemplate" mixin="VoiceChatTranscriptionButtonMixin" registerForClicks="LeftButtonUp" motionScriptsWhileDisabled="true" hidden="true" virtual="true">
 		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-icon-STT-off"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.3"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

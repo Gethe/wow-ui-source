@@ -21,7 +21,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetCont
 	self.Text:SetText(widgetInfo.text);
 	local enabledState = widgetInfo.enabledState;
 	if widgetInfo.enabledState == Enum.WidgetEnabledState.Enabled then
-		enabledState = Enum.WidgetEnabledState.Highlight;
+		enabledState = Enum.WidgetEnabledState.White;
 	end
 	self.Text:SetEnabledState(enabledState);
 
@@ -37,6 +37,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetCont
 		currencyFrame:Show();
 
 		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState);
+		currencyFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);

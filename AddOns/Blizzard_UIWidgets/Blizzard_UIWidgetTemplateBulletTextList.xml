@@ -4,12 +4,12 @@
 		<Size x="237" y="32"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Bullet" mixin="UIWidgetBaseColoredTextMixin" inherits="NumberFont_Small" text="RANGE_INDICATOR">
+				<FontString parentKey="Bullet" mixin="UIWidgetBaseEnabledFrameMixin" inherits="NumberFont_Small" text="RANGE_INDICATOR">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
+				<FontString parentKey="Text" mixin="UIWidgetBaseEnabledFrameMixin" inherits="GameTooltipText">
 					<Size x="227"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12"/>

@@ -392,6 +392,40 @@ function PTR_IssueReporter.CreateReports()
     azeriteEssenceReport:AddDataCollection(collector.FromDataPackage, "ID") 
 
     azeriteEssenceReport:RegisterPopEvent(event.Tooltip, tooltips.azerite)
+    --------------------------------------- Garrison Talent Bug Reporting ----------------------------------------------
+    local GetIconFromGarrTalentID = function(talentID)
+        local talentInfo = C_Garrison.GetTalentInfo(talentID)
+        if (talentInfo) and (talentInfo.icon) then
+            return talentInfo.icon
+        else
+            return 0
+        end
+    end
+    
+    local GetCurrentTalentTreeStateFromTalentID = function(dataPackage)
+        local talentTreeStateString = ""
+        if (dataPackage) and (dataPackage.Additional) then
+            local talentTreeInfo = C_Garrison.GetTalentTreeInfo(dataPackage.Additional)
+            talentTreeStateString = dataPackage.Additional
+            for key, talent in pairs (talentTreeInfo.talents) do
+                talentTreeStateString = string.format("%s:%s.%s", talentTreeStateString, talent.id, talent.talentRank)
+            end
+        end
+        
+        return talentTreeStateString
+    end
+    
+    local garrTalentReport = PTR_IssueReporter.CreateSurvey(14, "Bug Report: %s")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(garrTalentReport)
+    garrTalentReport:PopulateDynamicTitleToken(1, "Name")
+    garrTalentReport:AttachIconViewer("ID", GetIconFromGarrTalentID)
+    
+    garrTalentReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this Talent?")
+    garrTalentReport:AddDataCollection(collector.FromDataPackage, "ID") 
+    garrTalentReport:AddDataCollection(collector.RunFunction, GetCurrentTalentTreeStateFromTalentID) 
+    
+    garrTalentReport:RegisterPopEvent(event.Tooltip, tooltips.talent)
+    
     --------------------------------------- Character Customization Bug Reporting ----------------------------------------------
     local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Bug Report")
     

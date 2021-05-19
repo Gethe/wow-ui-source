@@ -175,19 +175,19 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="AnimTopLine" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
+				<Texture parentKey="AnimTopLine" parentArray="AlphaTextures" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
 					<Size x="60" y="10"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="10"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="AnimBottomLine" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
+				<Texture parentKey="AnimBottomLine" parentArray="AlphaTextures" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
 					<Size x="60" y="10"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-10"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="AnimBarGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+				<Texture parentKey="AnimBarGlow" parentArray="AlphaTextures" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
 					<Size x="100" y="38"/>
 					<Anchors>
 						<Anchor point="CENTER" x="5" y="0"/>
@@ -219,7 +219,7 @@
 		<Size x="128" y="128"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="BarGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="OBJFX-BarGlow">
+				<Texture parentKey="BarGlow" parentArray="AlphaTextures" hidden="false" alpha="0" alphaMode="BLEND" atlas="OBJFX-BarGlow">
 					<Size x="300" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -242,7 +242,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="BarGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+				<Texture parentKey="BarGlow" parentArray="AlphaTextures" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
 					<Size x="100" y="30"/>
 					<Anchors>
 						<Anchor point="CENTER" x="5" y="0"/>
@@ -270,7 +270,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
-			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
+			<StatusBar parentKey="Bar" parentArray="AnimatableFrames" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
 				<Size x="191" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" x="10" y="0"/>
@@ -294,14 +294,14 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="BarFrame2" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame2" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="BarFrame3" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame3" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>
@@ -319,12 +319,12 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="BarGlow" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-glow" useAtlasSize="true">
+						<Texture parentKey="BarGlow" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-glow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" x="-8" y="-1"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Sheen" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-sheen">
+						<Texture parentKey="Sheen" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-sheen">
 							<Size x="97" y="22"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.BarFrame" x="-60" y="0"/>
@@ -332,7 +332,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="Starburst" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-starburst" useAtlasSize="true">
+						<Texture parentKey="Starburst" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-starburst" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.BarFrame" x="1" y="6"/>
 							</Anchors>
@@ -363,19 +363,19 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.26" g="0.42" b="1"/>
 			</StatusBar>
-			<Frame parentKey="Flare1" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
-			<Frame parentKey="Flare2" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
+			<Frame parentKey="Flare1" parentArray="AnimatableFrames" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
+			<Frame parentKey="Flare2" parentArray="AnimatableFrames" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
 
-			<Frame parentKey="SmallFlare1" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
-			<Frame parentKey="SmallFlare2" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			<Frame parentKey="SmallFlare1" parentArray="AnimatableFrames" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			<Frame parentKey="SmallFlare2" parentArray="AnimatableFrames" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
 
-			<Frame parentKey="FullBarFlare1" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+			<Frame parentKey="FullBarFlare1" parentArray="AnimatableFrames" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="FullBarFlare2" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+			<Frame parentKey="FullBarFlare2" parentArray="AnimatableFrames" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
 				</Anchors>

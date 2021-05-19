@@ -414,7 +414,10 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	-- Run the Setup function on the widget (could change the orderIndex and/or layoutDirection)
 	widgetFrame:Setup(widgetInfo, self);
-	widgetFrame:ApplyEffects(widgetInfo);
+	if(isNewWidget) then 
+		--Only Apply the effects when the widget is first added.
+		widgetFrame:ApplyEffects(widgetInfo); 
+	end		
 	if WIDGET_DEBUG_TEXTURE_SHOW then
 		if not widgetFrame._debugBGTex then
 			widgetFrame._debugBGTex = widgetFrame:CreateTexture()

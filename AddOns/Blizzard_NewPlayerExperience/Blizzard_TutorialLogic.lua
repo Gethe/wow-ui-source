@@ -63,16 +63,16 @@ end
 function TutorialLogic:Begin()
 	Class_TutorialBase:GlobalEnable()
 
+	self.playerClass = TutorialHelper:GetClass();-- player's class
+	self.factionData = TutorialHelper:GetFactionData();-- get the data for the player's faction
+	self.vendorQuestID = self.factionData.UseVendorQuest;
+	self.specQuestID = TutorialHelper:FilterByClass(self.factionData.SpecQuests);
+
 	-- Certain tutorials kick off when quests are accepted
 	NPE_QuestManager:RegisterForCallbacks(self);
 
 	-- many tutorials can occur at the same time, the queue system helps manage it so you get one at a time
 	TutorialQueue:Initialize();
-
-	self.playerClass = TutorialHelper:GetClass();-- player's class
-	self.factionData = TutorialHelper:GetFactionData();-- get the data for the player's faction
-	self.vendorQuestID = self.factionData.UseVendorQuest;
-	self.specQuestID = TutorialHelper:FilterByClass(self.factionData.SpecQuests);
 
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);

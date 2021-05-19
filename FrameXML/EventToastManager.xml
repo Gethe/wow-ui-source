@@ -23,6 +23,44 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Frames>
+			<Frame parentKey="TitleTextMouseOverFrame" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnShow>
+						if(self:GetParent().Title) then
+							self:SetAllPoints(self:GetParent().Title);
+						end
+					</OnShow>
+					<OnEnter>
+						self:GetParent():MouseOverTitle();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():MouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="SubTitleMouseOverFrame" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnShow>
+							if(self:GetParent().SubTitle) then 
+								self:SetAllPoints(self:GetParent().SubTitle);
+							end 
+					</OnShow>
+					<OnEnter>
+						self:GetParent():MouseOverSubTitle();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():MouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
@@ -80,12 +118,12 @@
 	<Frame name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SubText" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
+				<FontString parentKey="SubTitle" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="10" y="1"/>
 					</Anchors>
@@ -106,7 +144,7 @@
 				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -116,21 +154,21 @@
 	<Frame name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"  relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="10" y="3"/>
 				</Anchors>
 				</FontString>
-				<FontString parentKey="SubText" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="TOPLEFT" x="0" y="1"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Title" relativePoint="TOPLEFT" x="0" y="1"/>
 					</Anchors>
 					<Color color="GREEN_FONT_COLOR"/>
 				</FontString>
 				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SubText" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -140,12 +178,12 @@
 	<Frame name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.Icon" x="10" y="6"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SubText" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="BOTTOM">
+				<FontString parentKey="SubTitle" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon" x="10" y="-6"/>
 					</Anchors>
@@ -153,7 +191,7 @@
 				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SubText" relativePoint="BOTTOM" x="0" y="-10"/>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -194,7 +232,7 @@
 					</Anchors>
 					<Color color="SCENARIO_STAGE_COLOR"/>
 				</FontString>
-				<FontString parentKey="Subtitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
@@ -344,7 +382,7 @@
 				<FontString parentKey="Description" inherits="Game13Font" justifyH="CENTER">
 					<Size x="300" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-15"/>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="-15"/>
 					</Anchors>
         	<Color r="0.6" g="0.6" b="0.6"/>/>
 				</FontString>
@@ -364,6 +402,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 		
 	</Button>
@@ -481,7 +520,7 @@
 	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal"  alpha="0" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="SingleLine" inherits="GameFont_Gigantic">
+				<FontString parentKey="Title" inherits="GameFont_Gigantic">
 					<Anchors>
 						<Anchor point="CENTER" y="-4"/>
 					</Anchors>
@@ -491,7 +530,7 @@
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.SingleLine" relativePoint="BOTTOM"/>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -500,7 +539,7 @@
 	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="BlockText" inherits="GameFontNormalHuge">
+				<FontString parentKey="Title" inherits="GameFontNormalHuge">
 					<Anchors>
 						<Anchor point="CENTER" y="-4"/>
 					</Anchors>

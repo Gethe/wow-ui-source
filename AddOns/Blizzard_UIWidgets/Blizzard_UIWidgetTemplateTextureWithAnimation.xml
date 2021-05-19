@@ -3,7 +3,7 @@
 	<Frame name="UIWidgetTemplateTextureWithAnimation" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateTextureWithAnimationMixin">
 		<Size x="120" y="120"/>
 		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
 			<KeyValue key="tooltipYOffset" value="-20" type="number"/>
 		</KeyValues>
 		<Layers>

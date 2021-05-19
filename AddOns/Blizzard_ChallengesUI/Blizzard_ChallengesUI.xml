@@ -558,7 +558,7 @@
     </Frame>
 
     <Frame name="ChallengeModeCompleteBanner" parent="UIParent" hidden="true" alpha="1" mixin="ChallengeModeCompleteBannerMixin">
-		<Size x="128" y="336"/>
+		<Size x="128" y="356"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-120"/>
 		</Anchors>
@@ -630,22 +630,22 @@
 				</Texture>
 				<FontString parentKey="Title" inherits="QuestFont_Enormous" justifyH="CENTER" alpha="0">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.BannerTop" x="0" y="-67"/>
+						<Anchor point="TOP" relativeKey="$parent.BannerTop" x="0" y="-61"/>
 					</Anchors>
 				</FontString>
         <FontString parentKey="DescriptionLineOne" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
             <Anchors>
-                <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+                <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-8"/>
             </Anchors>
         </FontString>
         <FontString parentKey="DescriptionLineTwo" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
           <Anchors>
-              <Anchor point="TOP" relativeKey="$parent.DescriptionLineOne" relativePoint="BOTTOM" x="0" y="-10"/>
+              <Anchor point="TOP" relativeKey="$parent.DescriptionLineOne" relativePoint="BOTTOM" x="0" y="-2"/>
           </Anchors>
         </FontString>
 				<FontString parentKey="DescriptionLineThree" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.DescriptionLineTwo" relativePoint="BOTTOM" x="0" y="-10"/>
+						<Anchor point="TOP" relativeKey="$parent.DescriptionLineTwo" relativePoint="BOTTOM" x="0" y="-21"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -697,7 +697,7 @@
 				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="DescriptionLineOne" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
-        <Alpha childKey="DescriptionLineTwo" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DescriptionLineTwo" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="DescriptionLineThree" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Glow" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scripts>

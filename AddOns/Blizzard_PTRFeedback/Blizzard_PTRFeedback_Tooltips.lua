@@ -9,6 +9,7 @@ PTR_IssueReporter.TooltipTypes = {
     petBattleAbility = "Pet Battle Ability",
     petBattleCreature = "Pet Battle Creature",
     azerite = "Azerite Essence",
+    talent = "Talent",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -31,13 +32,16 @@ function PTR_IssueReporter.SetupSpellTooltips()
             PTR_IssueReporter.HookIntoTooltip(ItemRefTooltip, PTR_IssueReporter.TooltipTypes.spell, id, name)
         end
     end)
-
-    GameTooltip:HookScript("OnTooltipSetSpell", function(self)
+    
+    local onTooltipSetSpellFunction = function(self)
         local name, id = self:GetSpell()
         if (id) then
             PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.spell, id, name)
         end
-    end)
+    end
+
+    GameTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
+    EmbeddedItemTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupItemTooltips()
@@ -163,6 +167,16 @@ function PTR_IssueReporter.SetupMapPinTooltips()
     -- EventRegistry:RegisterCallback("AreaPOIPin.MouseOver", OnAreaPOIPinMouseOver, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupGarrisonTalentTooltips()
+    local bindingFunc = function(self, tooltip, talent, talentTreeID)
+        if (tooltip) and (talent) and (talent.id) and (talent.name) and (talentTreeID) then
+            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.talent, talent.id, talent.name, nil, nil, talentTreeID)
+        end
+    end
+    
+    EventRegistry:RegisterCallback("GarrisonTalentButtonMixin.TalentTooltipShown", bindingFunc, "PTR_IssueReporter")
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -172,5 +186,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupCurrencyTooltips()
     PTR_IssueReporter.SetupAzeriteTooltips()
     PTR_IssueReporter.SetupMapPinTooltips()
+    PTR_IssueReporter.SetupGarrisonTalentTooltips()
 end
 ----------------------------------------------------------------------------------------------------

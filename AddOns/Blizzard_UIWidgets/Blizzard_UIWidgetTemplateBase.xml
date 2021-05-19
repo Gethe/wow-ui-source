@@ -3,7 +3,7 @@
 	<Frame name="UIWidgetTemplateTooltipFrame" virtual="true" mixin="UIWidgetTemplateTooltipFrameMixin">
 		<!--Change this on inheriting frames to adjust where the tooltip anchors to-->
 		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 			<KeyValue key="tooltipYOffset" value="0" type="number"/>
 		</KeyValues>

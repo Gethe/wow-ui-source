@@ -88,6 +88,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetPlayerMythicPlusRatingSummary",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ratingSummary", Type = "MythicPlusRatingSummary", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerEligibleForNPE",
 			Type = "Function",
 
@@ -133,6 +147,29 @@ local PlayerInfo =
 
 	Tables =
 	{
+		{
+			Name = "MythicPlusRatingMapSummary",
+			Type = "Structure",
+			Documentation = { "Specific information about a completed mythic plus run." },
+			Fields =
+			{
+				{ Name = "challengeModeID", Type = "number", Nilable = false },
+				{ Name = "mapScore", Type = "number", Nilable = false },
+				{ Name = "bestRunLevel", Type = "number", Nilable = false },
+				{ Name = "bestRunDurationMS", Type = "number", Nilable = false },
+				{ Name = "finishedSuccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MythicPlusRatingSummary",
+			Type = "Structure",
+			Documentation = { "The current season rating and well as a list of completed mythic plus runs." },
+			Fields =
+			{
+				{ Name = "currentSeasonScore", Type = "number", Nilable = false },
+				{ Name = "runs", Type = "table", InnerType = "MythicPlusRatingMapSummary", Nilable = false },
+			},
+		},
 	},
 };
 

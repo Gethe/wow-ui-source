@@ -15,20 +15,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "GetPlayerUnitDungeonScore",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "string", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "dungeonScore", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetUnitChargedPowerPoints",
 			Type = "Function",
 

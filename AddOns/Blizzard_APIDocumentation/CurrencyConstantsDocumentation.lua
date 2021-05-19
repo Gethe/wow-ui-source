@@ -84,6 +84,19 @@ local CurrencyConstants =
 			},
 		},
 		{
+			Name = "LinkedCurrencyFlags",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "IgnoreAdd", Type = "LinkedCurrencyFlags", EnumValue = 1 },
+				{ Name = "IgnoreSubtract", Type = "LinkedCurrencyFlags", EnumValue = 2 },
+				{ Name = "SuppressChatLog", Type = "LinkedCurrencyFlags", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "PlayerCurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 2,

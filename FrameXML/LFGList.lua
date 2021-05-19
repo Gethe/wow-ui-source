@@ -1623,13 +1623,14 @@ function LFGListApplicantMember_OnEnter(self)
 			color = HIGHLIGHT_FONT_COLOR; 
 		end 
 		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(dungeonScore)));
-
 		if(bestDungeonScoreForEntry) then 
 			local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(bestDungeonScoreForEntry.mapScore);
 			if (not color) then 
 				color = HIGHLIGHT_FONT_COLOR;
 			end 
-			if (bestDungeonScoreForEntry.finishedSuccess) then 
+			if(bestDungeonScoreForEntry.mapScore == 0) then 
+				GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_PER_DUNGEON_NO_RATING:format(bestDungeonScoreForEntry.mapName, bestDungeonScoreForEntry.mapScore));
+			elseif (bestDungeonScoreForEntry.finishedSuccess) then 
 				GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING:format(bestDungeonScoreForEntry.mapName, color:WrapTextInColorCode(bestDungeonScoreForEntry.mapScore), bestDungeonScoreForEntry.bestRunLevel));
 			else 
 				GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(bestDungeonScoreForEntry.mapName, color:WrapTextInColorCode(bestDungeonScoreForEntry.mapScore), bestDungeonScoreForEntry.bestRunLevel));
@@ -3284,7 +3285,9 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		if (not color) then 
 			color = HIGHLIGHT_FONT_COLOR;
 		end 
-		if (leaderDungeonScoreInfo.finishedSuccess) then 
+		if(leaderDungeonScoreInfo.mapScore == 0) then 
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_PER_DUNGEON_NO_RATING:format(leaderDungeonScoreInfo.mapName, leaderDungeonScoreInfo.mapScore));
+		elseif (leaderDungeonScoreInfo.finishedSuccess) then 
 			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
 		else 
 			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));

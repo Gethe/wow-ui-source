@@ -109,7 +109,7 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_SetScreen("kioskmodesplash");
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
 		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
-	elseif(event == "SCRIPTED_ANIMATIONS_UPDATE") then 
+	elseif(event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
 end
@@ -279,7 +279,7 @@ function GlueParent_UpdateDialogs()
 		-- JS_TODO: make it so this only cancels state dialogs, like "Connecting"
 		GlueDialog_Hide();
 	end
-	
+
 	if not errorID then
 		currentlyShowingErrorID = nil;
 	end
@@ -324,6 +324,14 @@ end
 
 function GlueParent_GetCurrentScreen()
 	return GlueParent.currentScreen;
+end
+
+function GlueParent_GetSecondaryScreen()
+	return GlueParent.currentSecondaryScreen;
+end
+
+function GlueParent_IsSecondaryScreenOpen(screen)
+	return GlueParent_GetSecondaryScreen() == screen;
 end
 
 function GlueParent_SetScreen(screen)

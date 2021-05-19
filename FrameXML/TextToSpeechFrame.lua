@@ -47,6 +47,26 @@ local TextToSpeechChatTypes = {
 	"CHAT_MSG_BN_WHISPER",
 };
 
+local function GetVoices()
+	return C_VoiceChat.GetTtsVoices() or {};
+end
+
+local function UseShortVoiceNames()
+	return TextToSpeechFramePanelContainer.VoicePicker.useShortNames;
+end
+
+local function FindVoiceByID(voiceID)
+	local index, value = FindInTableIf(GetVoices(), function(voice)
+		return voice.voiceID == voiceID;
+	end);
+	return index, value;
+end
+
+local function FormatVoiceText(voice)
+	local index = FindVoiceByID(voice.voiceID);
+	return UseShortVoiceNames() and (("%s %d"):format(VOICE, index)) or voice.name;
+end
+
 -- [[ TextToSpeechFrame ]] --
 
 function TextToSpeechFrame_Show()
@@ -229,58 +249,77 @@ function TextToSpeechChatTypeCheckButton_OnClick(self, button)
 end
 
 local function TextToSpeechFrameTtsVoiceDropdown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(TextToSpeechFrameTtsVoiceDropdown);
 	local info = UIDropDownMenu_CreateInfo();
-
-	info.func = TextToSpeechFrameTtsVoiceDropdown_OnClick;
-
-	local voices = C_VoiceChat.GetTtsVoices() or {};
-
-	for index, value in ipairs(voices) do
-		if (index <= TEXTTOSPEECH_STANDARD_VOICE_COUNT) then
-			info.text = ("%s %d"):format(VOICE, index);
-		else
-			info.text = value.name;
-		end
-		info.value = value.voiceID;
-		info.checked = value.voiceID == selectedValue;
-		UIDropDownMenu_AddButton(info);
-	end
+	info.customFrame = TextToSpeechFramePanelContainer.VoicePicker;
+	UIDropDownMenu_AddButton(info);
 end
 
 function TextToSpeechFrameTtsVoiceDropdown_OnLoad(self)
 	C_VoiceChat.GetTtsVoices();
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	
+	UIDropDownMenu_SetInitializeFunction(self, TextToSpeechFrameTtsVoiceDropdown_Initialize);
+end
+
+function TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self)
+	local index, voice = FindVoiceByID(TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected);
+	if voice then
+		UIDropDownMenu_SetText(self, FormatVoiceText(voice));
+	end
+
+	TextToSpeechFrame_UpdateSliders();
+end
+
+function TextToSpeechFrameTtsVoiceDropdown_SetVoiceID(self, voiceID)
+	TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voiceID;
+	TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
 end
 
 function TextToSpeechFrameTtsVoiceDropdown_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		function self:SetValue(value)
-			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = value;
-			UIDropDownMenu_SetSelectedValue(self, value);
-			TextToSpeechFrame_UpdateSliders();
-		end
-
-		function self:GetValue()
-			return UIDropDownMenu_GetSelectedValue(self);
-		end
-
-		function self:RefreshValue()
-			UIDropDownMenu_Initialize(self, TextToSpeechFrameTtsVoiceDropdown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected);
-			TextToSpeechFrame_UpdateSliders();
-		end
+		TextToSpeechFramePanelContainer.VoicePicker.useShortNames = #GetVoices() <= TEXTTOSPEECH_STANDARD_VOICE_COUNT;
 
 		UIDropDownMenu_SetWidth(self, 200);
 		
-		self:RefreshValue();
+		TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
 
 		self:UnregisterEvent(event);
 	end
 end
 
-function TextToSpeechFrameTtsVoiceDropdown_OnClick(self)
-	TextToSpeechFrameTtsVoiceDropdown:SetValue(self.value);
+function TextToSpeechFrameTtsVoicePicker_OnLoad(self)
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementExtent(18);
+	view:SetElementInitializer("Button", "TextToSpeechVoicePickerButtonTemplate", function(button, voice)
+		local checked = voice.voiceID == TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected; 
+		button.Check:SetShown(checked);
+		button.UnCheck:SetShown(not checked);
+
+		button:SetText(FormatVoiceText(voice));
+		
+		button:SetScript("OnClick", function(button, buttonName)
+			TextToSpeechFrameTtsVoiceDropdown_SetVoiceID(TextToSpeechFrameTtsVoiceDropdown, voice.voiceID);
+			CloseDropDownMenus();
+		end);
+	end);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function TextToSpeechFrameTtsVoicePicker_OnShow(self)
+	local dataProvider = CreateDataProvider(GetVoices());
+
+	local elementHeight = 18;
+	local maxVisibleLines = 6;
+	local maxHeight = maxVisibleLines * elementHeight;
+	local utilizedHeight = elementHeight * dataProvider:GetSize();
+	
+	TextToSpeechFramePanelContainer.VoicePicker:SetHeight(math.min(utilizedHeight, maxHeight));
+	TextToSpeechFramePanelContainer.VoicePicker:SetWidth(UseShortVoiceNames() and 150 or 350);
+	
+	local scrollBarShown = dataProvider:GetSize() > maxVisibleLines;
+	self.ScrollBar:SetShown(scrollBarShown);
+	self.ScrollBox:SetPoint("BOTTOMRIGHT", (scrollBarShown and -25 or 0), 0);
+	TextToSpeechFramePanelContainer.VoicePicker.ScrollBox:SetDataProvider(dataProvider);
 end
 
 function TextToSpeechFramePlaySampleButton_OnClick(self)
@@ -378,7 +417,7 @@ function TextToSpeechFrame_PlayMessage(frame, message, id)
 
 	local voiceOption = TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected;
 	if ( TEXTTOSPEECH_CONFIG.alternateSystemVoice and type == "SYSTEM" ) then
-		local voices = C_VoiceChat.GetTtsVoices() or {};
+		local voices = GetVoices();
 		local voiceCount = #voices;
 		if ( voiceCount > 1 and voiceOption == voices[1].voiceID ) then
 			voiceOption = voices[2].voiceID;

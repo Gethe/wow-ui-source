@@ -1,0 +1,44 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateTextColumnRowColumnTemplate" inherits="ResizeLayoutFrame" virtual="true" mixin="UIWidgetTemplateTextColumnRowColumnMixin">
+		<KeyValues>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameTooltipText" mixin="UIWidgetBaseTextMixin" maxLines="1">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="UIWidgetTemplateTextColumnRow" inherits="UIWidgetBaseTemplate, HorizontalLayoutFrame" virtual="true" mixin="UIWidgetTemplateTextColumnRowMixin">
+		<KeyValues>
+			<KeyValue key="leftPadding" value="15" type="number"/>
+			<KeyValue key="rightPadding" value="15" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightLeft" >
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightRight" >
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightCenter" horizTile="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HighlightLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.HighlightRight" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

@@ -329,21 +329,6 @@ local ContributionCollector =
 			},
 		},
 		{
-			Name = "ContributionState",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "None", Type = "ContributionState", EnumValue = 0 },
-				{ Name = "Building", Type = "ContributionState", EnumValue = 1 },
-				{ Name = "Active", Type = "ContributionState", EnumValue = 2 },
-				{ Name = "UnderAttack", Type = "ContributionState", EnumValue = 3 },
-				{ Name = "Destroyed", Type = "ContributionState", EnumValue = 4 },
-			},
-		},
-		{
 			Name = "ContributionAppearance",
 			Type = "Structure",
 			Fields =

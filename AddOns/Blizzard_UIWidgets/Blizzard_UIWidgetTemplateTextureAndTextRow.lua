@@ -39,6 +39,8 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 		local entryFrame = self.entryPool:Acquire();
 		entryFrame:Show();	
 		entryFrame:Setup(widgetContainer, entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, index);
+		entryFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
+
 		if(self.animationsPool) then 
 			entryFrame.FadeIn:Play(); 
 			local animationFrame = self.animationsPool:Acquire(); 

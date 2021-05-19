@@ -254,6 +254,10 @@ function CovenantMission:SetupTabs()
 		if (not defaultTab) then
 			defaultTab = 3;
 		end
+
+		self.MapTab:Show();
+	else
+		self.MapTab:Hide();
 	end
 
    self.Tab1:Hide();

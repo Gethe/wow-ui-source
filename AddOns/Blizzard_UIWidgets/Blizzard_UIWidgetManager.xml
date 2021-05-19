@@ -30,21 +30,27 @@
 		<Frames>
 			<ModelScene parentKey="FrontModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
 				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="bool"/>
+				</KeyValues>
 				<Scripts>
 					<OnLoad>
-						ScriptAnimatedModelSceneMixin.OnLoad(self); 
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 50); 
-						self:SetAllPoints();
+						ScriptAnimatedModelSceneMixin.OnLoad(self);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 50);
+						self:SetAllPoints(UIParent);
 					</OnLoad>
 				</Scripts>
 			</ModelScene>
 			<ModelScene parentKey="BackModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
 				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="bool"/>
+				</KeyValues>
 				<Scripts>
 					<OnLoad>
 						ScriptAnimatedModelSceneMixin.OnLoad(self);
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
-						self:SetAllPoints();
+						self:SetAllPoints(UIParent);
 					</OnLoad>
 				</Scripts>
 			</ModelScene>

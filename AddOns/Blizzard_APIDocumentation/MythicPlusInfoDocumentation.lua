@@ -196,17 +196,6 @@ local MythicPlusInfo =
 			LiteralName = "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE",
 		},
 		{
-			Name = "MythicPlusNewSeasonRecord",
-			Type = "Event",
-			LiteralName = "MYTHIC_PLUS_NEW_SEASON_RECORD",
-			Payload =
-			{
-				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
-				{ Name = "completionMilliseconds", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "MythicPlusNewWeeklyRecord",
 			Type = "Event",
 			LiteralName = "MYTHIC_PLUS_NEW_WEEKLY_RECORD",
