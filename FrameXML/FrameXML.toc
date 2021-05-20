@@ -6,6 +6,7 @@ GlueCheck.lua
 Localization.xml
 Fonts.xml
 FontStyles.xml
+..\SharedXML\Mixin.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
 ..\SharedXML\NineSlice.lua

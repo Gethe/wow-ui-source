@@ -2,6 +2,7 @@
 
 GlueCheck.lua
 ..\SharedXML\C_TimerAugment.lua
+..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\EnumUtil.lua
