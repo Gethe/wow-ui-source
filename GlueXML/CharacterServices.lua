@@ -525,7 +525,7 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not C_CharacterServices.IsTrialBoostEnabled() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function IsBoostFlowValidForCharacter(flowData, class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
+local function IsBoostFlowValidForCharacter(flowData, class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState)
 	if (boostInProgress or vasServiceInProgress) then
 		return false;
 	end
@@ -535,6 +535,10 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, raceFilename
 	end
 
 	if raceFilename == "BloodElf" or raceFilename == "Draenei" then
+		return false;
+	end
+	
+	if IsEraChoiceStateLocked(eraChoiceState) or DoesEraChoiceStateRequireDecision(eraChoiceState) then
 		return false;
 	end
 
@@ -557,8 +561,8 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, raceFilename
 	return true;
 end
 
-local function CanBoostCharacter(class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
-	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
+local function CanBoostCharacter(class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState);
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
@@ -597,9 +601,9 @@ function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
 	local availableBoosts = {};
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
 	if upgradeDistributions then
-		local _, _, raceFileName, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfoByGUID(characterGUID);
+		local _, _, raceFileName, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfoByGUID(characterGUID);
 		for boostType, data in pairs(upgradeDistributions) do
-			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
+			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState) then
 				availableBoosts[#availableBoosts + 1] = boostType;
 			end
 		end
@@ -762,7 +766,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		CHARACTER_LIST_OFFSET = max(numCharacters - MAX_CHARACTERS_DISPLAYED, 0);
 
 		if (self.createNum < numCharacters) then
-			CharacterSelect.selectedIndex = numCharacters;
+			CharacterSelect.selectedIndex = GetNumCharactersActiveForEra();
 
 			CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;
 			CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
@@ -770,7 +774,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 			UpdateCharacterSelection(CharacterSelect);
 
-			self.index = CharacterSelect.selectedIndex;
+			self.index = CharacterSelect.selectedIndex - CHARACTER_LIST_OFFSET;
 			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex);
 			self.playerguid = select(15, GetCharacterInfo(self.charid));
 
@@ -818,8 +822,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
-		local canBoostCharacter = CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
+		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local canBoostCharacter = CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -849,8 +853,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i));
-		if CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
+		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfo(GetCharIDFromIndex(i));
+		if CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end
@@ -991,6 +995,7 @@ function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 	local numDisplayedCharacters = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
 	for buttonIndex = 1, numDisplayedCharacters do
+		_G["CharSelectPaidService"..buttonIndex]:Hide();
 		if (buttonIndex ~= selectedButtonIndex) then
 			local button = _G["CharSelectCharacterButton"..buttonIndex];
 			SetCharacterButtonEnabled(button, false);
@@ -1009,7 +1014,7 @@ end
 
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
 	if characterType == Enum.CharacterCreateType.Boost then
-		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
+		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharactersActiveForEra();
 
 		if CharacterServicesMaster.flow then
 			CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;

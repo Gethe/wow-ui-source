@@ -997,7 +997,7 @@ function UpdateCharacterList(skipSelect)
         elseif ( CharacterSelect.undeleting ) then
             paidServiceButton:Hide();
             paidServiceButton.serviceType = nil;
-		elseif ( IsEraChoiceStateLocked(eraChoiceState) ) then
+		elseif ( IsEraChoiceStateLocked(eraChoiceState) and not CharSelectServicesFlowFrame:IsShown() ) then
             serviceType = PAID_CHARACTER_CLONE;
             paidServiceButton.GoldBorder:Hide();
 			paidServiceButton.VASIcon:SetAtlas("ui-paidcharactercustomization-button-activatecharacter");
