@@ -2114,11 +2114,11 @@
 			</Frame>
 		<Frame name="ChoicePane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
 				<KeyValues>
-					<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
+					<KeyValue key="maxScale" value="CHOICE_PANE_MAX_SCALE" type="global"/>
 				</KeyValues>
 				<Size x="1316" y="757"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterSelectUI" relativePoint="TOPLEFT" x="181" y="-78"/>
+					<Anchor point="CENTER" relativeTo="CharacterSelectUI" relativePoint="CENTER" x="-125" y="85"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

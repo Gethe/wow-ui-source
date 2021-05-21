@@ -245,6 +245,7 @@ end
 -- [[ Combat Options Panel ]] --
 
 CombatPanelOptions = {
+	autoRangedCombat = { text = "AUTO_RANGED_COMBAT_TEXT" },
 	autoSelfCast = { text = "AUTO_SELF_CAST_TEXT" },
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
 	doNotFlashLowHealthWarning = { text = "FLASH_LOW_HEALTH_WARNING" },

@@ -27,6 +27,7 @@ PAID_CHARACTER_CLONE = 4;
 FRAME_TYPE_TBC_INFO_PANE = "FrameType_InfoPane";
 
 INFO_PANE_MAX_SCALE = 0.75;
+CHOICE_PANE_MAX_SCALE = 0.75;
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
@@ -2331,6 +2332,8 @@ function ChoicePane_OnShow(self)
 
 	self.CurrentLogo:SetAtlas(choicePaneCurrentLogoAtlas);
 	self.OtherLogo:SetAtlas(choicePaneOtherLogoAtlas);
+
+	FitToParent(GlueParent, self);
 end
 
 function ChoicePane_OnClose(self)

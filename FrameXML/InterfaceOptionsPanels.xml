@@ -732,9 +732,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<CheckButton name="$parentAutoRange" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentFlashLowHealthWarning" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoRangedCombat";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoRange" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-28"/>
 						</Offset>

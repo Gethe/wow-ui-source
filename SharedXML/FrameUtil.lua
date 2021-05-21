@@ -33,19 +33,6 @@ function FrameUtil.UnregisterFrameForEvents(frame, events)
 		frame:UnregisterEvent(event);
 	end
 end
-function ApplyDefaultScale(frame, minScale, maxScale)
-	local scale = GetDefaultScale();
-	
-	if minScale then
-		scale = math.max(scale, minScale);
-	end
-
-	if maxScale then
-		scale = math.min(scale, maxScale);
-	end
-	
-	frame:SetScale(scale);
-end
 
 function DoesAncestryInclude(ancestry, frame)
 	if ancestry then
@@ -81,6 +68,17 @@ function ApplyDefaultScale(frame, minScale, maxScale)
 	end
 
 	frame:SetScale(scale);
+end
+
+function FitToParent(parent, frame)
+	local horizRatio = parent:GetWidth() / frame:GetWidth();
+	local vertRatio = parent:GetHeight() / frame:GetHeight();
+
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+		frame:SetPoint("CENTER", 0, 0);
+	end
+
 end
 
 function UpdateScaleForFit(frame)
