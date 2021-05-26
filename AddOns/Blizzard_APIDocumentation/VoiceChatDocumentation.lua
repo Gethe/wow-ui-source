@@ -341,12 +341,21 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetRemoteTtsVoices",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ttsVoices", Type = "table", InnerType = "VoiceTtsVoiceType", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTtsVoices",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "ttsVoices", Type = "table", InnerType = "VoiceTtsVoiceType", Nilable = true },
+				{ Name = "ttsVoices", Type = "table", InnerType = "VoiceTtsVoiceType", Nilable = false },
 			},
 		},
 		{
@@ -692,6 +701,15 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "shouldDiscoverChannels", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpeakRemoteTextSample",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 		{

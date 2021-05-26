@@ -4,16 +4,25 @@ function UIFrameManagerMixin:OnLoad()
 	self.registeredFrames = {};
 	self.registeredFrameTypeToFrames = {};
 
+	self:RegisterEvent("FRAME_MANAGER_UPDATE_ALL");
 	self:RegisterEvent("FRAME_MANAGER_UPDATE_FRAME");
 end
 
 function UIFrameManagerMixin:OnEvent(event, ...)
-	local frameType, show = ...;
-	local frames = self.registeredFrameTypeToFrames[frameType];
+	if event == "FRAME_MANAGER_UPDATE_ALL" then
+		for frameType, frames in pairs(self.registeredFrameTypeToFrames) do
+			for frame, _ in pairs(frames) do
+				frame:UpdateFrameState(C_FrameManager.GetFrameVisibilityState(frameType));
+			end
+		end
+	else
+		local frameType, show = ...;
+		local frames = self.registeredFrameTypeToFrames[frameType];
 
-	if frames then
-		for frame, _ in pairs(frames) do
-			frame:UpdateFrameState(show);
+		if frames then
+			for frame, _ in pairs(frames) do
+				frame:UpdateFrameState(show);
+			end
 		end
 	end
 end

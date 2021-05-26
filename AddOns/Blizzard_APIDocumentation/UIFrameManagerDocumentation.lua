@@ -25,6 +25,11 @@ local UIFrameManager =
 	Events =
 	{
 		{
+			Name = "FrameManagerUpdateAll",
+			Type = "Event",
+			LiteralName = "FRAME_MANAGER_UPDATE_ALL",
+		},
+		{
 			Name = "FrameManagerUpdateFrame",
 			Type = "Event",
 			LiteralName = "FRAME_MANAGER_UPDATE_FRAME",

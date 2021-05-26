@@ -452,14 +452,14 @@ function AdventuresCompleteScreenMixin:OnReplayEffectResolved()
 end
 
 function AdventuresCompleteScreenMixin:AdvanceReplay()
-	local currentRound = self:GetReplayRound(self.replayRoundIndex);
 	if self:IsReplayEventFinished() then
 		local cooldownUpdates = self.eventIndexToCooldownUpdates[self.replayEventIndex];
 		if cooldownUpdates ~= nil then
 			self.Board:AdvanceCooldowns(cooldownUpdates);
 		end
 
-		if self.replayEventIndex < #currentRound.events then
+		local currentRound = self:GetReplayRound(self.replayRoundIndex);
+		if (currentRound ~= nil) and (self.replayEventIndex < #currentRound.events) then
 			self:StartReplayEvent(self.replayRoundIndex, self.replayEventIndex + 1);
 		elseif self.replayRoundIndex < self:GetNumReplayRounds() then
 			self:StartReplayRound(self.replayRoundIndex + 1);

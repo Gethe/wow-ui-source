@@ -376,14 +376,16 @@ function CovenantMissionListMixin:Update()
 
 			local showSummary = not mission.canBeCompleted;
 			button.Summary:SetShown(showSummary);
-			if (mission.inProgress) then
-				button.Overlay:Show();
-				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR:WrapTextInColorCode(GARRISON_MISSION_IN_PROGRESS));
-			elseif ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
-				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
-				button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(duration, mission.xp));
-			else
-				button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(mission.duration, mission.xp));
+			if (showSummary) then
+				if (mission.inProgress) then
+					button.Overlay:Show();
+					button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR:WrapTextInColorCode(GARRISON_MISSION_IN_PROGRESS));
+				elseif ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+					local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
+					button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(duration, mission.xp));
+				else
+					button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(mission.duration, mission.xp));
+				end
 			end
 
 			local summaryWidth = showSummary and (button.Summary:GetWidth() + 8) or 0;

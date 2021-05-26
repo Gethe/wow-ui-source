@@ -2004,6 +2004,59 @@ function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnClick(s
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize()
+	local selectedValue = tonumber(GetCVar("remoteTextToSpeechVoice"));
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnClick;
+
+	for index, voice in ipairs(C_VoiceChat.GetRemoteTtsVoices()) do
+		info.text = VOICE_GENERIC_FORMAT:format(voice.voiceID);
+		info.value = voice.voiceID;
+		info.checked = voice.voiceID == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self)
+	local value = GetCVar("remoteTextToSpeechVoice");
+	UIDropDownMenu_SetText(self, VOICE_GENERIC_FORMAT:format(value));
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self)
+	if ( GetCVarBool("remoteTextToSpeech") ) then
+		UIDropDownMenu_EnableDropDown(self);
+	else
+		UIDropDownMenu_DisableDropDown(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnClick(self)
+	SetCVar("remoteTextToSpeechVoice", self.value);
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown, self.value);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		UIDropDownMenu_SetWidth(self, 160);
+		UIDropDownMenu_SetInitializeFunction(self, InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize);
+		
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self);
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
+
+		self:RegisterEvent("CVAR_UPDATE");
+		self:RegisterEvent("VARIABLES_LOADED");
+
+	elseif ( event == "VARIABLES_LOADED" or ( event == "CVAR_UPDATE" and arg1 == "ENABLE_REMOTE_TEXT_TO_SPEECH" ) ) then
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick(self)
+	C_VoiceChat.SpeakRemoteTextSample(TEXT_TO_SPEECH_SAMPLE_TEXT);
+end
+
 local cameraKeepCharacterCentered = "CameraKeepCharacterCentered";
 local cameraReduceUnexpectedMovement = "CameraReduceUnexpectedMovement";
 local motionSicknessOptions = {

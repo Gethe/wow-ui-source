@@ -124,9 +124,7 @@ ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flas
 ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["GUILD_ITEM_LOOTED"]						= ChatTypeInfo["GUILD_ACHIEVEMENT"];
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PARTY_VOICE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD_VOICE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["COMMUNITIES_VOICE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -293,14 +291,8 @@ ChatTypeGroup["PET_BATTLE_COMBAT_LOG"] = {
 ChatTypeGroup["PET_BATTLE_INFO"] = {
 	"CHAT_MSG_PET_BATTLE_INFO",
 };
-ChatTypeGroup["PARTY_VOICE"] = {
-	"CHAT_MSG_PARTY_VOICE",
-};
-ChatTypeGroup["GUILD_VOICE"] = {
-	"CHAT_MSG_GUILD_VOICE",
-};
-ChatTypeGroup["COMMUNITIES_VOICE"] = {
-	"CHAT_MSG_COMMUNITIES_VOICE",
+ChatTypeGroup["VOICE_TEXT"] = {
+	"CHAT_MSG_VOICE_TEXT",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.
@@ -2648,7 +2640,6 @@ end
 
 local ttsConfigCommands = { }
 
-AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_PLAYENTER,		"playSoundWhenEnteringChatWindow");
 AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_PLAYLINE,		"playSoundSeparatingChatLineBreaks");
 AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_PLAYACTIVITY,	"playActivitySoundWhenNotFocused");
 AddOptionCommand(ttsConfigCommands, SLASH_TEXTTOSPEECH_SAYNAME,			"addCharacterNameToSpeech");
@@ -2672,16 +2663,22 @@ AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_INSTANCELEADER,	"CHAT_MSG_I
 AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_INSTANCE,		"CHAT_MSG_INSTANCE_CHAT");
 AddOptionCommand(ttsChatCommands,	SLASH_TEXTTOSPEECH_BLIZZARD,		"CHAT_MSG_BN_WHISPER");
 
+local function GetOptionConfirmation(name, enabled)
+	if enabled then
+		return SLASH_TEXTTOSPEECH_CONFIRMATION:format(name, SLASH_TEXTTOSPEECH_ENABLED);
+	else
+		return SLASH_TEXTTOSPEECH_CONFIRMATION:format(name, SLASH_TEXTTOSPEECH_DISABLED);
+	end
+end
+
+local function SpeakConfirmation(text)
+	ChatFrame_DisplaySystemMessageInPrimary(text);
+	TextToSpeech_Speak(text);
+end
+
 SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	if msg == "" then
 		ChatFrame_DisplaySystemMessageInPrimary(TEXTTOSPEECH_COMMAND_SYNTAX);
-		C_VoiceChat.SpeakText(
-			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected, 
-			TEXTTOSPEECH_COMMAND_SYNTAX, 
-			Enum.VoiceTtsDestination.QueuedLocalPlayback,
-			TEXTTOSPEECH_CONFIG.speechRate,
-			TEXTTOSPEECH_CONFIG.speechVolume
-		);
 		ToggleTextToSpeechFrame();
 		return;
 	end
@@ -2691,16 +2688,20 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	if ( ttsConfigCommands[lowerName] ) then
 		local val = TEXTTOSPEECH_CONFIG[ttsConfigCommands[lowerName]] or false;
 		TEXTTOSPEECH_CONFIG[ttsConfigCommands[lowerName]] = not val;
+		SpeakConfirmation(GetOptionConfirmation(name, not val));
 	elseif ( ttsChatCommands[lowerName] ) then
 		local val = TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] or false;
 		TEXTTOSPEECH_CONFIG.enabledChatTypes[ttsChatCommands[lowerName]] = not val;
+		SpeakConfirmation(GetOptionConfirmation(name, not val));
 	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_SPEED) then
 		TEXTTOSPEECH_CONFIG.speechRate = num1;
+		SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, num1));
 	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOLUME) then
 		TEXTTOSPEECH_CONFIG.speechVolume = num1;
+		SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, num1));
 	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_VOICE) then
-		local voices = C_VoiceChat.GetTtsVoices() or {};
-		
+		local voices = C_VoiceChat.GetTtsVoices();
+
 		if num1 and num1 ~= "" then
 			local newVoice = tonumber(num1);
 			for index, voice in ipairs(voices) do
@@ -2721,8 +2722,36 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 				TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[nextVoice].voiceID;
 			end
 		end
+
+		local _, voice = TextToSpeech_FindVoiceByID(TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected);
+		if voice then
+			SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(VOICE, voice.name));
+		end
 	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_DEFAULT) then
 		TEXTTOSPEECH_CONFIG = CopyTable(TEXTTOSPEECH_CONFIG_DEFAULTS);
+		SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION_RESET);
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_ON) then
+		SetCVar("textToSpeech", "1");
+		SpeakConfirmation(GetOptionConfirmation(TEXT_TO_SPEECH, true));
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_OFF) then
+		SetCVar("textToSpeech", "0");
+		SpeakConfirmation(GetOptionConfirmation(TEXT_TO_SPEECH, false));
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_SAMPLE) then
+		TextToSpeech_Speak(TEXT_TO_SPEECH_SAMPLE_TEXT);
+	elseif lowerName == string.lower(SLASH_TEXTTOSPEECH_SETTINGS) then
+		SpeakConfirmation(GetOptionConfirmation(TEXT_TO_SPEECH, GetCVarBool("textToSpeech")));
+		SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, TEXTTOSPEECH_CONFIG.speechVolume));
+		SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, TEXTTOSPEECH_CONFIG.speechRate));
+		local _, voice = TextToSpeech_FindVoiceByID(TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected);
+		if voice then
+			SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(VOICE, voice.name));
+		end
+		for name, setting in pairs(ttsConfigCommands) do
+			SpeakConfirmation(GetOptionConfirmation(name, TEXTTOSPEECH_CONFIG[setting]));
+		end
+		for name, setting in pairs(ttsChatCommands) do
+			SpeakConfirmation(GetOptionConfirmation(name, TEXTTOSPEECH_CONFIG.enabledChatTypes[setting]));
+		end
 	end
 
 	TextToSpeechFrame_Update(TextToSpeechFrame);
@@ -3356,7 +3385,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
 				local levelstring = format(LEVEL_UP, newLevel, newLevel);
-				local info = ChatTypeInfo["SYSTEM"];	
+				local info = ChatTypeInfo["SYSTEM"];
 				self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 			end
 
@@ -3429,7 +3458,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 				end
 			end
 		end
-	elseif(event == "DISPLAY_EVENT_TOAST_LINK") then 
+	elseif(event == "DISPLAY_EVENT_TOAST_LINK") then
 		EventToastManagerFrame:DisplayToastLink(self, ...);
 	end
 end
@@ -3511,6 +3540,21 @@ function IsActivePlayerNewcomer()
 	return C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player")) == Enum.PlayerMentorshipStatus.Newcomer;
 end
 
+function ChatFrame_GetMentorChannelStatus(entityStatus, channelRuleSet)
+	if entityStatus == Enum.PlayerMentorshipStatus.Mentor then
+		local shouldShowGuideStatus = C_PlayerMentorship.IsActivePlayerConsideredNewcomer() or (IsActivePlayerGuide() and channelRuleSet == Enum.ChatChannelRuleset.Mentor);
+		if shouldShowGuideStatus then
+			return Enum.PlayerMentorshipStatus.Mentor;
+		end
+	elseif entityStatus == Enum.PlayerMentorshipStatus.Newcomer then
+		if IsActivePlayerGuide() then
+			return Enum.PlayerMentorshipStatus.Newcomer;
+		end
+	end
+
+	return Enum.PlayerMentorshipStatus.None;
+end
+
 local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
 	-- Renaming for clarity:
 	local specialFlag = arg6;
@@ -3522,12 +3566,11 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 			-- Add Blizzard Icon if  this was sent by a GM/DEV
 			return "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 		elseif specialFlag == "GUIDE" then
-			local shouldShowGuideStatus = C_PlayerMentorship.IsActivePlayerConsideredNewcomer() or (IsActivePlayerGuide() and C_ChatInfo.GetChannelRulesetForChannelID(zoneChannelID) == Enum.ChatChannelRuleset.Mentor);
-			if shouldShowGuideStatus then
+			if ChatFrame_GetMentorChannelStatus(Enum.PlayerMentorshipStatus.Mentor, C_ChatInfo.GetChannelRulesetForChannelID(zoneChannelID)) == Enum.PlayerMentorshipStatus.Mentor then
 				return NPEV2_CHAT_USER_TAG_GUIDE .. " "; -- possibly unable to save global string with trailing whitespace...
 			end
 		elseif specialFlag == "NEWCOMER" then
-			if IsActivePlayerGuide() then
+			if ChatFrame_GetMentorChannelStatus(Enum.PlayerMentorshipStatus.Newcomer, C_ChatInfo.GetChannelRulesetForChannelID(zoneChannelID)) == Enum.PlayerMentorshipStatus.Newcomer then
 				return NPEV2_CHAT_USER_TAG_NEWCOMER;
 			end
 		else
@@ -3575,6 +3618,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		local type = strsub(event, 10);
+
+		if type == "VOICE_TEXT" then
+			type = VoiceTranscription_DetermineChatType(UnitIsGroupLeader(arg2));
+		end
+
 		local info = ChatTypeInfo[type];
 
 		--If it was a GM whisper, dispatch it to the GMChat addon.
@@ -4718,6 +4766,10 @@ function ChatEdit_UpdateHeader(editBox)
 	local type = editBox:GetAttribute("chatType");
 	if ( not type ) then
 		return;
+	end
+
+	if ( type == "VOICE_TEXT" ) then
+		type = VoiceTranscription_DetermineChatType(false);
 	end
 
 	local info = ChatTypeInfo[type];

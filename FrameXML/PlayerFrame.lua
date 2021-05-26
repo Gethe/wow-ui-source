@@ -109,10 +109,14 @@ function PlayerFrame_UpdatePartyLeader()
 	end
 end
 
+function PlayerFrame_CanPlayPVPUpdateSound()
+	return not PlayerPVPIcon:IsShown() and not PlayerPrestigePortrait:IsShown();
+end
+
 function PlayerFrame_UpdatePvPStatus()
 	local factionGroup, factionName = UnitFactionGroup("player");
 	if ( UnitIsPVPFreeForAll("player") ) then
-		if ( not PlayerPVPIcon:IsShown() ) then
+		if ( PlayerFrame_CanPlayPVPUpdateSound() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 		local honorLevel = UnitHonorLevel("player");
@@ -138,7 +142,7 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPTimerText:Hide();
 		PlayerPVPTimerText.timeLeft = nil;
 	elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player") ) then
-		if ( not PlayerPVPIcon:IsShown() ) then
+		if ( PlayerFrame_CanPlayPVPUpdateSound() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 

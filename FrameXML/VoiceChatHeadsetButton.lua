@@ -92,6 +92,7 @@ function VoiceChatHeadsetButtonMixin:OnVoiceChatError(platformCode, statusCode)
 end
 
 function VoiceChatHeadsetButtonMixin:OnClick()
+	local operationRequested = true;
 	local voiceChannel = self:GetVoiceChannel();
 	if voiceChannel then
 		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannel.channelID;
@@ -101,10 +102,16 @@ function VoiceChatHeadsetButtonMixin:OnClick()
 			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
 		end
 	elseif self:IsCommunityChannel() then
-		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
+		operationRequested = ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
 	else
 		local activate = true;
-		ChannelFrame:TryJoinVoiceChannelByType(self:GetChannelType(), activate);
+		operationRequested = ChannelFrame:TryJoinVoiceChannelByType(self:GetChannelType(), activate);
+	end
+
+	-- If a request wasn't made yet because something else needed to happen first, at least acknowledge that the user clicked
+	-- something while the initial operation happens (usually it's a login)
+	if not operationRequested then
+		self:GetParent():SetPendingState(true);
 	end
 
 	if self.onClickFn then

@@ -142,6 +142,7 @@ local MythicPlusInfo =
 				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+				{ Name = "dungeonScore", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -220,6 +221,7 @@ local MythicPlusInfo =
 				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+				{ Name = "dungeonScore", Type = "number", Nilable = false },
 			},
 		},
 		{

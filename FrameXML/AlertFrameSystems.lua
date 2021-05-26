@@ -367,7 +367,7 @@ function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	end
 
 	if ( points == 0 ) then
-		shieldIcon:SetAtlas("ui-achievement-shield-2-desaturated", TextureKitConstants.UseAtlasSize);
+		shieldIcon:SetAtlas("UI-Achievement-Shield-NoPoints", TextureKitConstants.UseAtlasSize);
 	else
 		shieldIcon:SetAtlas("ui-achievement-shield-2", TextureKitConstants.UseAtlasSize);
 	end

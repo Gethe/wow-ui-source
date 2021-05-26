@@ -238,28 +238,30 @@ function ScenarioObjectiveStageBlock_OnEnter(self)
 	GameTooltip:SetPoint("RIGHT", self, "LEFT", 0, 0);
 	local _, currentStage, numStages, flags, _, _, _, xp, money = C_Scenario.GetInfo();
 	local name, description = C_Scenario.GetStepInfo();
-	if( name and bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
-	  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
-	  GameTooltip:AddLine(description, 1, 1, 1, true);
+	if name and (bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+		GameTooltip_SetTitle(GameTooltip, name);
+		GameTooltip_AddNormalLine(GameTooltip, description);
 
-	  local blankLineAdded = false;
-	  if ( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
-		blankLineAdded = true;
-	  end
-	  if ( money > 0 ) then
-		if not blankLineAdded then
+		local blankLineAdded = false;
+		if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp));
+			blankLineAdded = true;
 		end
-		SetTooltipMoney(GameTooltip, money, nil);
-	  end
-	  GameTooltip:Show();
-	elseif( currentStage <= numStages ) then
-		GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
-		GameTooltip:AddLine(name, 1, 0.831, 0.380, true);
+
+		if money > 0 then
+			if not blankLineAdded then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			end
+			SetTooltipMoney(GameTooltip, money, nil);
+		end
+
+		GameTooltip:Show();
+	elseif currentStage <= numStages then
+		GameTooltip_SetTitle(GameTooltip, SCENARIO_STAGE_STATUS:format(currentStage, numStages));
+		GameTooltip_AddNormalLine(GameTooltip, name);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip:AddLine(description, 1, 1, 1, true);
+		GameTooltip_AddNormalLine(GameTooltip, description);
 		GameTooltip:Show();
 	end
 end

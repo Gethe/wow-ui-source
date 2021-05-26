@@ -81,6 +81,7 @@ local ChallengeModeInfo =
 				{ Name = "IsMapRecord", Type = "bool", Nilable = false },
 				{ Name = "IsAffixRecord", Type = "bool", Nilable = false },
 				{ Name = "PrimaryAffix", Type = "number", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "ChallengeModeCompletionMemberInfo", Nilable = false },
 			},
 		},
 		{
@@ -328,6 +329,15 @@ local ChallengeModeInfo =
 
 	Tables =
 	{
+		{
+			Name = "ChallengeModeCompletionMemberInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "memberGUID", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
 		{
 			Name = "ChallengeModeGuildAttemptMember",
 			Type = "Structure",

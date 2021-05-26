@@ -96,24 +96,6 @@ CHAT_CONFIG_CHAT_LEFT = {
 	},
 };
 
-CHAT_CONFIG_VOICE = {
-	[1] = {
-		type = "PARTY_VOICE",
-		checked = function () return IsListeningForMessageType("PARTY_VOICE"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_VOICE"); end;
-	},
-	[2] = {
-		type = "GUILD_VOICE",
-		checked = function () return IsListeningForMessageType("GUILD_VOICE"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_VOICE"); end;
-	},
-	[3] = {
-		type = "COMMUNITIES_VOICE",
-		checked = function () return IsListeningForMessageType("COMMUNITIES_VOICE"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "COMMUNITIES_VOICE"); end;
-	},
-};
-
 CHAT_CONFIG_CHAT_CREATURE_LEFT = {
 	[1] = {
 		text = SAY;
@@ -727,9 +709,6 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesRight, COMBAT_CONFIG_MESSAGETYPES_RIGHT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 		ChatConfig_CreateColorSwatches(CombatConfigColorsUnitColors, COMBAT_CONFIG_UNIT_COLORS, "ChatConfigSwatchTemplate", UNIT_COLORS);
-
-		-- Voice Settings
-		ChatConfig_CreateCheckboxes(ChatConfigVoiceSettingsVoice, CHAT_CONFIG_VOICE, "ChatConfigCheckBoxWithSwatchTemplate", VOICE);
 
 		if ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
 			CombatConfig_SetCombatFiltersToDefault();
@@ -1530,7 +1509,6 @@ CHAT_CONFIG_CATEGORIES = {
 	[2] = "ChatConfigCombatSettings",
 	[3] = "ChatConfigChannelSettings",
 	[4] = "ChatConfigOtherSettings",
-	[5] = "ChatConfigVoiceSettings",
 };
 
 function ChatConfigCategory_OnClick(self)
@@ -1748,8 +1726,6 @@ function ChatConfig_UpdateChatSettings()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
-
-	ChatConfig_UpdateCheckboxes(ChatConfigVoiceSettingsVoice);
 
 	ChatConfigFrame.ChatTabManager:UpdateTabDisplay();
 end
@@ -1993,27 +1969,19 @@ end
 
 function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
 	local currentChatFrame = FCF_GetCurrentChatFrame();
-
 	if ( currentChatFrame ~= nil and IsCombatLog(currentChatFrame) ) then
 		ChatConfigCategoryFrameButton2:Show();
 		ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 		ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
 	else
 		ChatConfigCategoryFrameButton2:Hide();
 		ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);
 		ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton1, "BOTTOMRIGHT", 0, -1);
+		if ( not preserveCategorySelection or _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() ) then
+			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
+		end
 	end
-
-	ChatConfigCategoryFrameButton5:SetShown( currentChatFrame ~= nil and IsVoiceTranscription(currentChatFrame) );
-
-	if ( currentChatFrame ~= nil and IsCombatLog(currentChatFrame) ) then
-		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
-	elseif ( currentChatFrame ~= nil and IsVoiceTranscription(currentChatFrame) ) then
-		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton5);
-	elseif ( not preserveCategorySelection or _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() or _G[CHAT_CONFIG_CATEGORIES[5]]:IsShown() ) then
-		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
-	end
-
 	ChatConfigFrame.Header:Setup(currentChatFrame ~= nil and CHATCONFIG_HEADER:format(currentChatFrame.name) or "");
 	ChatConfigCategory_UpdateEnabled();
 end
@@ -2027,8 +1995,6 @@ function ChatConfig_RefreshCurrentChatCategory(preserveCategorySelection)
 		ChatConfigChannelSettings_UpdateCheckboxes();
 	elseif _G[CHAT_CONFIG_CATEGORIES[4]]:IsShown() then
 		ChatConfigOtherSettings_UpdateCheckboxes();
-	elseif _G[CHAT_CONFIG_CATEGORIES[5]]:IsShown() then
-		ChatConfigVoiceSettings_UpdateCheckboxes();
 	end
 
 	ChatConfigCategoryFrame_Refresh(preserveCategorySelection);
@@ -2081,15 +2047,6 @@ end
 
 function ChatConfigOtherSettings_OnShow()
 	ChatConfigOtherSettings_UpdateCheckboxes();
-	UpdateDefaultButtons(false);
-end
-
-function ChatConfigVoiceSettings_UpdateCheckboxes()
-	ChatConfig_UpdateCheckboxes(ChatConfigVoiceSettingsVoice);
-end
-
-function ChatConfigVoiceSettings_OnShow()
-	ChatConfigVoiceSettings_UpdateCheckboxes();
 	UpdateDefaultButtons(false);
 end
 

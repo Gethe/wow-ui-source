@@ -427,7 +427,8 @@ function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 		return "";
 	end
 
-	return ("|cff4e96f7%s|r"):format(FormatLink("battlePetAbil", name, abilityID, maxHealth or 100, power or 0, speed or 0));
+	local linkDisplayText = ("[%s]"):format(name);
+	return ("|cff4e96f7%s|r"):format(FormatLink("battlePetAbil", linkDisplayText, abilityID, maxHealth or 100, power or 0, speed or 0));
 end
 
 function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)

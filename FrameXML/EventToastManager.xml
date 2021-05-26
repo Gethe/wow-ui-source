@@ -70,8 +70,8 @@
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="heightPadding" value="30" type="number"/>
-      <KeyValue key="animOutStartDelay" value="1.8" type="number"/>
-      <KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="animOutStartDelay" value="1.8" type="number"/>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
@@ -204,14 +204,13 @@
 			<KeyValue key="minimumHeight" value="72" type="number"/>
 			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
 			<KeyValue key="animOutStartDelay" value="4.5" type="number"/>
-      <KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
 		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Background" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-
 				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 			</AnimationGroup>
@@ -294,14 +293,14 @@
 					<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" endDelay="3.8" order="1"/>
 					</AnimationGroup>
-          <AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
-            <Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-            <Scripts>
-              <OnFinished>
-                self:GetParent():Hide();
-              </OnFinished>
-            </Scripts>
-          </AnimationGroup>
+					<AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -384,14 +383,14 @@
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="-15"/>
 					</Anchors>
-        	<Color r="0.6" g="0.6" b="0.6"/>/>
+					<Color r="0.6" g="0.6" b="0.6"/>/>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="ExpandWidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
@@ -404,15 +403,14 @@
 			<OnClick method="OnClick"/>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-		
 	</Button>
 
 	<Frame name="EventToastChallengeModeToastTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastChallengeModeToastMixin" enableMouse="true" alpha="0" virtual="true">
 		<Size x="418" y="72"/>
-    <KeyValues>
-      <KeyValue key="animOutStartDelay" value="0" type="number"/>
-      <KeyValue key="animInStartDelay" value="10" type="number"/>
-    </KeyValues>
+		<KeyValues>
+			<KeyValue key="animOutStartDelay" value="0" type="number"/>
+			<KeyValue key="animInStartDelay" value="10" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 			<Anchor point="BOTTOMRIGHT"/>
@@ -442,9 +440,9 @@
 					<AnimationGroup parentKey="showAnim">
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1" parentKey="anim1"/>
 					</AnimationGroup>
-          <AnimationGroup parentKey="hideAnim">
-            <Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2" parentKey="anim1"/>
-          </AnimationGroup>
+					<AnimationGroup parentKey="hideAnim">
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2" parentKey="anim1"/>
+					</AnimationGroup>
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -494,6 +492,7 @@
 			<KeyValue key="heightPadding" value="20" type="number"/>
 			<KeyValue key="animInStartDelay" value="1.5" type="number"/>
 			<KeyValue key="animOutStartDelay" value="4" type="number"/>
+			<KeyValue key="hideParentAnim" value="false" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
@@ -527,13 +526,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 	</Frame>
 
 	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
@@ -546,13 +538,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.BlockText" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 	</Frame>
 
 	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
@@ -681,13 +666,13 @@
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
-					<Layers>
-						<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontNormal" text="HIDE" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="CENTER"/>
-								</Anchors>
-							</FontString>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" text="CLOSE" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

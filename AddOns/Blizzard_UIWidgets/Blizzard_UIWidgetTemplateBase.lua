@@ -121,7 +121,7 @@ local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor
 	elseif enabledState == Enum.WidgetEnabledState.Green then
 		return GREEN_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Gold then
-		return GOLD_FONT_COLOR;
+		return CHALLENGE_MODE_TOAST_TITLE_COLOR;
 	else
 		return overrideNormalFontColor or NORMAL_FONT_COLOR;
 	end
@@ -173,20 +173,24 @@ function UIWidgetBaseTemplateMixin:ClearEffects()
 	end
 end 
 
+function UIWidgetBaseTemplateMixin:ApplyEffectToFrame(widgetInfo, widgetContainer, frame) 
+	if frame.effectController then 
+		frame.effectController:CancelEffect();
+		frame.effectController = nil;
+	end
+	if widgetInfo.scriptedAnimationEffectID and widgetInfo.modelSceneLayer ~= Enum.UIWidgetModelSceneLayer.None then
+		if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then 
+			frame.effectController = widgetContainer.FrontModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+		elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then 
+			frame.effectController = widgetContainer.BackModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+		end 
+	end
+end	
+
 function UIWidgetBaseTemplateMixin:ApplyEffects(widgetInfo)
 	local applyFrames = self:ShouldApplyEffectsToSubFrames() and {self:GetChildren()} or {self};
 	for _, frame in ipairs(applyFrames) do
-		if(frame.effectController) then 
-			frame.effectController:CancelEffect();
-			frame.effectController = nil;
-		end		
-		if widgetInfo.scriptedAnimationEffectID and widgetInfo.modelSceneLayer ~= Enum.UIWidgetModelSceneLayer.None then
-			if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then 
-				frame.effectController = self.widgetContainer.FrontModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
-			elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then 
-				frame.effectController = self.widgetContainer.BackModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
-			end 
-		end
+		self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, frame);
 	end
 end
 

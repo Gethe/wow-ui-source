@@ -247,19 +247,19 @@ function ChannelFrameMixin:ShouldShowTutorial()
 end
 
 function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
-	self:TryExecuteCommand(function()
+	return self:TryExecuteCommand(function()
 		self:CreateVoiceChannel(channelName);
 	end);
 end
 
 function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType, autoActivate)
-	self:TryExecuteCommand(function()
+	return self:TryExecuteCommand(function()
 		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
 	end);
 end
 
 function ChannelFrameMixin:TryJoinCommunityStreamChannel(clubId, streamId)
-	self:TryExecuteCommand(function()
+	return self:TryExecuteCommand(function()
 		C_VoiceChat.RequestJoinAndActivateCommunityStreamChannel(clubId, streamId);
 	end);
 end
@@ -301,9 +301,11 @@ end
 function ChannelFrameMixin:TryExecuteCommand(cmd)
 	if C_VoiceChat.IsLoggedIn() then
 		cmd();
-	else
-		self:QueueVoiceChannelCommand(cmd);
+		return true;
 	end
+
+	self:QueueVoiceChannelCommand(cmd);
+	return false;
 end
 
 function ChannelFrameMixin:Toggle()
@@ -408,7 +410,8 @@ function ChannelFrameMixin:OnVoiceChannelRemoved(channelID)
 		if button:ChannelIsCommunity() then
 			-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
 			button:ClearVoiceChannel();
-		else
+		elseif not button:ChannelSupportsText() then
+			-- For other chat channels channels, they only need to update if they're voice-only.
 			button:SetActive(false);
 			button:SetRemoved(true);
 			button:Update();

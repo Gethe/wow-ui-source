@@ -128,6 +128,7 @@ function PlayerChoiceRerollButtonMixin:OnLeave()
 end
 
 function PlayerChoiceRerollButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_REROLL_POWERS);
 	C_PlayerChoice.RequestRerollPlayerChoice();
 end
 

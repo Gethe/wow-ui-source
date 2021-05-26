@@ -3345,31 +3345,20 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 
-	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
+	-- BelowMinimap Widgets - need to move below buffs/debuffs
 	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetNumWidgetsShowing() > 0 then
-		if rightActionBars > 0 then
-			anchorY = min(anchorY, buffsAnchorY);
-		end
+		anchorY = min(anchorY, buffsAnchorY);
 
-		UIWidgetBelowMinimapContainerFrame:ClearAllPoints();
 		UIWidgetBelowMinimapContainerFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
 	end
 
-	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
+	-- MawBuffsBelowMinimapFrame - need to move below buffs/debuffs
 	if MawBuffsBelowMinimapFrame and MawBuffsBelowMinimapFrame:IsShown() then
-		if rightActionBars > 0 then
-			anchorY = min(anchorY, buffsAnchorY);
-		end
+		anchorY = min(anchorY, buffsAnchorY);
 
-		if(UIWidgetBelowMinimapContainerFrame) then 
-			MawBuffsBelowMinimapFrame:ClearAllPoints();
-			MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", UIWidgetBelowMinimapContainerFrame, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-		else
-			MawBuffsBelowMinimapFrame:ClearAllPoints();
-			MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-		end 
+		MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 
 		anchorY = anchorY - MawBuffsBelowMinimapFrame:GetHeight() - 4;
 	end

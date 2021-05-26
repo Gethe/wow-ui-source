@@ -354,7 +354,7 @@
 						<Anchor point="TOP" x="22" y="-18"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyV="TOP" justifyH="LEFT">
+				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyV="TOP" justifyH="CENTER">
 					<Size x="160" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" x="27" y="-35"/>

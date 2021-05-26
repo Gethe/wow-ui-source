@@ -43,6 +43,7 @@ local TransmogConstants =
 			Values =
 			{
 				{ Name = "NoTransmogID", Type = "number", Value = 0 },
+				{ Name = "MainHandTransmogFromPairedCategory", Type = "number", Value = -1 },
 			},
 		},
 	},

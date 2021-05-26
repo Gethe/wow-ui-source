@@ -162,18 +162,9 @@
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 				</KeyValues>
 				<Frames>
-					<CheckButton parentKey="PlaySoundWhenEnteringChatWindowCheckButton" inherits="TextToSpeechCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parentPanelContainer" relativePoint="TOPLEFT" x="32" y="-32"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="PlaySoundWhenEnteringChatWindowCheckButton_OnLoad"/>
-							<OnClick function="PlaySoundWhenEnteringChatWindowCheckButton_OnClick"/>
-						</Scripts>
-					</CheckButton>
 					<CheckButton parentKey="PlaySoundSeparatingChatLinesCheckButton" inherits="TextToSpeechCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.PlaySoundWhenEnteringChatWindowCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							<Anchor point="TOPLEFT" relativeKey="$parentPanelContainer" relativePoint="TOPLEFT" x="32" y="-32"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="PlaySoundSeparatingChatLinesCheckButton_OnLoad"/>
@@ -191,7 +182,7 @@
 					</CheckButton>
 					<CheckButton parentKey="PlayActivitySoundWhenNotFocusedCheckButton" inherits="TextToSpeechCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.PlaySoundWhenEnteringChatWindowCheckButton" relativePoint="TOP"/>
+							<Anchor point="TOP" relativeKey="$parent.PlaySoundSeparatingChatLinesCheckButton" relativePoint="TOP"/>
 							<Anchor point="RIGHT" relativeKey="$parent" relativePoint="CENTER" x="64" y="0"/>
 						</Anchors>
 						<Scripts>

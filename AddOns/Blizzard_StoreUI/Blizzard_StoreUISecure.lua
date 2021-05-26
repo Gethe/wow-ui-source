@@ -4108,16 +4108,18 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 
 	local descStr = "";
 	local seenAlliedRace = false;
-	for i = 1, #races do
-		local raceInfo = races[i];
-		if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
-			seenAlliedRace = true;
-		else
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
-		end
-		if (i ~= #races) then
-			descStr = descStr .. "|n";
+	if races then
+		for i = 1, #races do
+			local raceInfo = races[i];
+			if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
+				descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
+				seenAlliedRace = true;
+			else
+				descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
+			end
+			if (i ~= #races) then
+				descStr = descStr .. "|n";
+			end
 		end
 	end
 	if (seenAlliedRace) then

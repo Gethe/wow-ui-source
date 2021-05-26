@@ -178,11 +178,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
-				<Alpha childKey="fadeIn" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-			</AnimationGroup>
-		</Animations>
 	</Frame>
 
 	<Frame name="UIWidgetBaseControlZoneTemplate" inherits="UIWidgetTemplateTooltipFrame, ResizeLayoutFrame" mixin="UIWidgetBaseControlZoneTemplateMixin" virtual="true">

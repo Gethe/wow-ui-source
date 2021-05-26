@@ -2271,7 +2271,7 @@
 				</Scripts>
 			</CheckButton>
 			<Button name="$parentConfigureTextToSpeech" inherits="UIPanelButtonTemplate" text="CONFIGURE_TEXT_TO_SPEECH">
-				<Size x="220" y="21"/>
+				<Size x="200" y="21"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTextToSpeech" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
@@ -2293,16 +2293,38 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
+			<Frame name="$parentRemoteTextToSpeechVoiceDropdown" parentKey="RemoteTextToSpeechVoiceDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentQuestTextContrast" relativePoint="BOTTOMLEFT" x="90" y="-8" />
+					<Anchor point="TOPLEFT" relativeTo="$parentRemoteTextToSpeech" relativePoint="BOTTOMLEFT" x="-16" y="-8" />
 				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Button name="$parentRemoteTextToSpeechVoicePlaySample" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">
+				<Size x="140" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRemoteTextToSpeechVoiceDropdown" relativePoint="BOTTOMLEFT" x="16" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentQuestTextContrast" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
+                </Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MOTION_SICKNESS_DROPDOWN">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT"/>
-							</Anchors>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="3"/>
+                            </Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -2316,15 +2338,15 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentShakeIntensityDropdown" parentKey="ShakeIntensityDropdown" inherits="UIDropDownMenuTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="TOPRIGHT" x="90" y="0" />
-				</Anchors>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+                </Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ADJUST_MOTION_SICKNESS_SHAKE">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT"/>
-							</Anchors>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="2"/>
+                            </Anchors>
 						</FontString>
 					</Layer>
 				</Layers>

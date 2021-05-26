@@ -460,6 +460,8 @@ function CharacterSelect_OnKeyDown(self,key)
             CharacterSelect_EndCharacterUndelete();
 		elseif GlobalGlueContextMenu_IsShown() then
 			GlobalGlueContextMenu_Release();
+        elseif GlueMenuFrame:IsShown() then
+            GlueMenuFrame:Hide();
         else
             CharacterSelect_Exit();
         end

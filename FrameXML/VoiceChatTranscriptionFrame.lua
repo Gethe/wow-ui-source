@@ -43,20 +43,48 @@ function VoiceTranscriptionFrame_UpdateVisibility(self)
 	end
 end
 
-function VoiceTranscriptionFrame_UpdateVoiceTab(self)
-	-- Determine tab color based on channel type
+function VoiceTranscription_DetermineChatType(isLeader)
+	local chatType = "PARTY";
 	local channelType = C_VoiceChat.GetActiveChannelType();
-	local chatType = "PARTY_VOICE";
-	if (channelType == Enum.ChatChannelType.Communities) then
-		local channel = C_VoiceChat.GetChannel(C_VoiceChat.GetActiveChannelID()) or {};
-		local clubInfo = C_Club.GetClubInfo(channel.clubId)
-		if (clubInfo and clubInfo.clubType == Enum.ClubType.Guild) then
-			chatType = "GUILD_VOICE";
+
+	if (channelType == Enum.ChatChannelType.Private_Party) then
+		if (IsInRaid()) then
+			if (isLeader) then
+				chatType = "RAID_LEADER";
+			else
+				chatType = "RAID";
+			end
 		else
-			chatType = "COMMUNITIES_VOICE";
+			if (isLeader) then
+				chatType = "PARTY_LEADER";
+			else
+				chatType = "PARTY";
+			end
+		end
+	elseif (channelType == Enum.ChatChannelType.Public_Party) then
+		if (isLeader) then
+			chatType = "INSTANCE_CHAT_LEADER";
+		else
+			chatType = "INSTANCE_CHAT";
+		end
+	elseif (channelType == Enum.ChatChannelType.Communities) then
+		local channel = C_VoiceChat.GetChannel(C_VoiceChat.GetActiveChannelID()) or {};
+		local streamInfo = C_Club.GetStreamInfo(channel.clubId, channel.streamId);
+		if (streamInfo and streamInfo.streamType == Enum.ClubStreamType.Guild) then
+			chatType = "GUILD";
+		elseif (streamInfo and streamInfo.streamType == Enum.ClubStreamType.Officer) then
+			chatType = "OFFICER";
+		else
+			chatType = "COMMUNITIES_CHANNEL";
 		end
 	end
 
+	return chatType;
+end
+
+function VoiceTranscriptionFrame_UpdateVoiceTab(self)
+	-- Determine tab color based on channel type
+	local chatType = VoiceTranscription_DetermineChatType(false);
 	local chatInfo = ChatTypeInfo[chatType];
 	
 	-- Set tab texture vertex colors
@@ -67,8 +95,8 @@ function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 
 	-- Set chat type to the appropriate remote text to speech type if enabled
 	if ( GetCVarBool("remoteTextToSpeech") ) then
-		self.editBox:SetAttribute("chatType", chatType);
-		self.editBox:SetAttribute("stickyType", chatType);
+		self.editBox:SetAttribute("chatType", "VOICE_TEXT");
+		self.editBox:SetAttribute("stickyType", "VOICE_TEXT");
 	end
 end
 
@@ -99,7 +127,7 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 		VoiceTranscriptionFrame_UpdateEditBox(self);
 	elseif ( event == "VOICE_CHAT_CHANNEL_ACTIVATED" ) then
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
-	elseif ( event == "UPDATE_CHAT_COLOR" ) then
+	elseif ( event == "UPDATE_CHAT_COLOR" or event == "GROUP_ROSTER_UPDATE" ) then
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	elseif ( event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" ) then
 		local channelID, isNowTranscribing = ...
@@ -128,6 +156,7 @@ function VoiceTranscriptionFrame_Init(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");

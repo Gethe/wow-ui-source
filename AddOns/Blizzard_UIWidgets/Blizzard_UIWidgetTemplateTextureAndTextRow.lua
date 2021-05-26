@@ -12,56 +12,73 @@ UIWidgetTemplateTextureAndTextRowMixin = CreateFromMixins(UIWidgetBaseTemplateMi
 function UIWidgetTemplateTextureAndTextRowMixin:OnLoad()
 	UIWidgetBaseTemplateMixin.OnLoad(self); 
 	self.entryPool = CreateFramePool("FRAME", self, "UIWidgetBaseTextureAndTextTemplate");
+	self.animationPools = CreateFramePoolCollection();
 end
 
 local DEFAULT_SPACING = 10;
 
-local texturekitAnimationTemplates = {
-	["jailerstower-score-gem-icon"] = "TorghastGemsAnimationTemplate";
+local texturekitAnimationTemplatesInfo = {
+	["jailerstower-score-gem-icon"] = {template = "TorghastGemsAnimationTemplate", animationDelayModifier = .5, effectDelay = .25};
 }
 
 function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
 	self.entryPool:ReleaseAll();
-	local animationTemplate = texturekitAnimationTemplates[widgetInfo.frameTextureKit]; 
-
-	if(self.animationsPool) then 
-		self.animationsPool:ReleaseAll(); 
-	end 
-
-	if (animationTemplate) then		
-		self.animationsPool = CreateFramePool("FRAME", self, animationTemplate);
-	end
+	self.animationPools:ReleaseAll();
 	self.spacing = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_SPACING;
 
+	self.animationInfo = texturekitAnimationTemplatesInfo[widgetInfo.frameTextureKit];
+	self.animatedEntries = self.animationInfo and {} or nil;
 	for index, entryInfo in ipairs(widgetInfo.entries) do
 		local entryFrame = self.entryPool:Acquire();
-		entryFrame:Show();	
 		entryFrame:Setup(widgetContainer, entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, index);
 		entryFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
+		entryFrame:SetAlpha(1);
+		entryFrame:Show();
 
-		if(self.animationsPool) then 
-			entryFrame.FadeIn:Play(); 
-			local animationFrame = self.animationsPool:Acquire(); 
-			animationFrame:SetPoint("CENTER", entryFrame);
-			animationFrame:SetFrameLevel(entryFrame:GetFrameLevel() - 1);
-			animationFrame:Show(); 
-			animationFrame.Anim1:Play();
+		if self.animationInfo then
+			table.insert(self.animatedEntries, entryFrame);
 		end
 	end
 
-	self:MarkDirty(); -- Layout visible entries horizontally
+	self:Layout(); -- Layout visible entries horizontally
 end
 
-function UIWidgetTemplateTextureAndTextRowMixin:ShouldApplyEffectsToSubFrames()
-	return true;
+local function ResetAnimationFrame(framePool, frame)
+	frame:Reset();
+	frame:Hide();
+end
+
+function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index)
+	if self.animationInfo then
+		local animationPool = self.animationPools:GetOrCreatePool("FRAME", self, self.animationInfo.template);
+		if animationPool then 
+			local animationFrame = animationPool:Acquire(); 
+			animationFrame:SetPoint("CENTER", entryFrame);
+			animationFrame:SetFrameLevel(entryFrame:GetFrameLevel() + 1);
+			animationFrame:Reset();
+			animationFrame:Show();
+			C_Timer.After(index * self.animationInfo.animationDelayModifier, function() animationFrame:Play(); C_Timer.After(self.animationInfo.effectDelay, function() self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame) end); end);
+		end
+	end
+end
+
+function UIWidgetTemplateTextureAndTextRowMixin:ApplyEffects(widgetInfo)
+	if self.animatedEntries then
+		for index, entryFrame in ipairs(self.animatedEntries) do
+			entryFrame:SetAlpha(0);
+			self:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index);
+		end
+	else
+		UIWidgetBaseTemplateMixin.ApplyEffects(self, widgetInfo);
+	end
 end
 
 function UIWidgetTemplateTextureAndTextRowMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.entryPool:ReleaseAll();
-	if (self.animationsPool) then 
-		self.animationsPool:ReleaseAll();
-	end 
+	self.animationPools:ReleaseAll();
+	self.animationInfo = nil;
+	self.animatedEntries = nil;
 end
