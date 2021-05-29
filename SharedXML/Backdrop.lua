@@ -100,7 +100,7 @@ BACKDROP_DARK_DIALOG_32_32 = {
 	tileEdge = true,
 	tileSize = 32,
 	edgeSize = 32,
-	insets = { left = 11, right = 12, top = 12, bottom = 11 },
+	insets = { left = 11, right = 11, top = 11, bottom = 10 },
 };
 
 BACKDROP_DIALOG_EDGE_32  = {

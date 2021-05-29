@@ -382,7 +382,7 @@ function SetCharacterRace(id)
 	--twainUpdateCustomizationBackground();
 	
 	CharacterCreateEnumerateClasses();
-	SetDefaultClass()
+	SetDefaultClass();
 
 	-- Hair customization stuff
 	CharacterCreate_UpdateFacialHairCustomization();
@@ -390,11 +390,6 @@ function SetCharacterRace(id)
 end
 
 function SetDefaultClass()
-	-- In Classic, changing race will default the Class to the first available one (i.e. Warrior).
-	local classID = _G["CharacterCreateClassButton1"].classID;
-	C_CharacterCreation.SetSelectedClass(classID);
-
-	-- This should be the same as the classID above. Just making sure we stay consistent!
 	local classData = C_CharacterCreation.GetSelectedClass();
 	SetCharacterClass(classData.classID);
 end

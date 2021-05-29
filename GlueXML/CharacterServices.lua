@@ -360,6 +360,7 @@ function CharacterUpgradeFlow:Advance(controller)
 end
 
 function CharacterUpgradeFlow:Finish(controller)
+	local results = self:BuildResults(self.numSteps);
 	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
 
@@ -377,11 +378,13 @@ function CharacterUpgradeFlow:Finish(controller)
 			end
 		end
 
+		local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost, _, revokedCharacterUpgrade = GetCharacterInfo(results.charid);
+		CharacterUpgradeSecondChanceWarningBackground.CharacterDetails:SetText(SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFileName].colorStr, name, level, class));
+
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
 	end
 	
-	local results = self:BuildResults(self.numSteps);
 	if self:IsUnrevoke() then
 		local guid = select(15, GetCharacterInfo(results.charid));
 		C_CharacterServices.RequestManualUnrevoke(guid);

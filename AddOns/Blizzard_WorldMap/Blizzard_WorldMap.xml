@@ -261,7 +261,7 @@
 						WorldMapZoneDropDown_OnLoad(self);
 					</OnLoad>
 					<OnShow>
-						WorldMapZoneDropDown_Initialize(self);
+						UIDropDownMenu_Initialize(self, WorldMapZoneDropDown_Initialize);
 					</OnShow>
 				</Scripts>
 			</Frame>

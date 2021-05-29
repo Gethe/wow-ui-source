@@ -122,15 +122,6 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="BrowseTabText" inherits="GameFontHighlightSmall" text="FILTERS">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="85" y="-85"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
 						<FontString name="BrowseNameText" inherits="GameFontHighlightSmall" text="NAME">
 							<Anchors>
 								<Anchor point="TOPLEFT">
@@ -1153,6 +1144,26 @@
 								AuctionFrameBrowse_Search();
 							</OnClick>
 							<OnUpdate function="BrowseSearchButton_OnUpdate"/>
+						</Scripts>
+					</Button>
+					<Button name="BrowseResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="78" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								AuctionFrameBrowse_Reset(self);
+							</OnClick>
+							<OnUpdate>
+								BrowseResetButton_OnUpdate(self, elapsed);
+							</OnUpdate>
 						</Scripts>
 					</Button>
 					<Button name="BrowseCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">

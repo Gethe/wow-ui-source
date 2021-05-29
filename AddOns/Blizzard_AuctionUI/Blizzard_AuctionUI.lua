@@ -256,7 +256,7 @@ function AuctionFrameBrowse_OnLoad(self)
 	self:RegisterEvent("AUCTION_ITEM_LIST_UPDATE");
 
 	-- set default sort
-	AuctionFrame_SetSort("list", "level", false);
+	AuctionFrame_SetSort("list", "quality", false);
 end
 
 function AuctionFrameBrowse_OnShow()
@@ -299,6 +299,7 @@ end
 
 function BrowseDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, BrowseDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 end
 
 function BrowseDropDown_Initialize()
@@ -327,12 +328,6 @@ function AuctionFrameBrowse_Reset(self)
 	BrowseMaxLevel:SetText("");
 	IsUsableCheckButton:SetChecked(false);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
-	BrowseNoResultsText:Show();
-	BrowseQualitySort:Show();
-	BrowseLevelSort:Show();
-	BrowseDurationSort:Show();
-	BrowseHighBidderSort:Show();
-	BrowseCurrentBidSort:Show();
 
 	-- reset the filters
 	OPEN_FILTER_LIST = {};
@@ -1247,7 +1242,7 @@ function AuctionFrameAuctions_OnLoad(self)
 	self:RegisterEvent("AUCTION_MULTISELL_FAILURE");
 	self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
 	-- set default sort
-	AuctionFrame_SetSort("owner", "status", false);
+	AuctionFrame_SetSort("owner", "duration", false);
 	AuctionsRadioButton_OnClick(2);
 end
 

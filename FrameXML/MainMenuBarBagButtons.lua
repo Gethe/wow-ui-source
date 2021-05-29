@@ -66,7 +66,7 @@ end
 function PutKeyInKeyRing()
 	local texture;
 	local emptyKeyRingSlot;
-	for i=1, GetContainerNumSlots(KEYRING_CONTAINER) do
+	for i=1, GetKeyRingSize() do
 		texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
 		if ( not texture ) then
 			emptyKeyRingSlot = i;
@@ -78,6 +78,36 @@ function PutKeyInKeyRing()
 	else
 		UIErrorsFrame:AddMessage(NO_EMPTY_KEYRING_SLOTS, 1.0, 0.1, 0.1, 1.0);
 	end
+end
+
+function GetKeyRingSize()
+	local numKeyringSlots = GetContainerNumSlots(KEYRING_CONTAINER);
+	local maxSlotNumberFilled = 0;
+	local numItems = 0;
+	for i=1, numKeyringSlots do
+		local texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
+		-- Update max slot
+		if ( texture and i > maxSlotNumberFilled) then
+			maxSlotNumberFilled = i;
+		end
+		-- Count how many items you have
+		if ( texture ) then
+			numItems = numItems + 1;
+		end
+	end
+
+	-- Round to the nearest 4 rows that will hold the keys
+	local modulo = maxSlotNumberFilled % 4;
+	local size;
+	if ( (modulo == 0) and (numItems < maxSlotNumberFilled) ) then
+		size = maxSlotNumberFilled;
+	else
+		-- Only expand if the number of keys in the keyring exceed or equal the max slot filled
+		size = maxSlotNumberFilled + (4 - modulo);
+	end	
+	size = min(size, numKeyringSlots);
+
+	return size;
 end
 
 function ItemAnim_OnLoad(self)

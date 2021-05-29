@@ -16,166 +16,154 @@ AuctionSort = { };
 
 -- owner sorts
 AuctionSort["owner_status"] = {
-	{ column = "seller",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
-	{ column = "quality",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = false	},
+	{ column = "quantity",	reverse = true	},
 	{ column = "bid",		reverse = false	},
+	{ column = "name",		reverse = false	},
+	{ column = "level",		reverse = true	},
+	{ column = "quality",	reverse = false	},
 	{ column = "duration",	reverse = false	},
 	{ column = "status",	reverse = false	},
 };
 
 AuctionSort["owner_bid"] = {
-	{ column = "seller",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
-	{ column = "quality",	reverse = false	},
+	{ column = "quantity",	reverse = true	},
 	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = false	},
+	{ column = "level",		reverse = true	},
+	{ column = "quality",	reverse = false	},
 	{ column = "duration",	reverse = false	},
 	{ column = "status",	reverse = false	},
 	{ column = "bid",		reverse = false	},
 };
 
 AuctionSort["owner_quality"] = {
-	{ column = "seller",	reverse = false	},
+	{ column = "bid",		reverse = false	},
+	{ column = "quantity",	reverse = true	},
 	{ column = "buyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = false	},
-	{ column = "bid",		reverse = false	},
-	{ column = "duration",	reverse = false	},
-	{ column = "status",	reverse = false	},
+	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
 };
 
 AuctionSort["owner_duration"] = {
-	{ column = "seller",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
-	{ column = "quality",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = false	},
+	{ column = "quantity",	reverse = true	},
 	{ column = "bid",		reverse = false	},
+	{ column = "name",		reverse = false	},
+	{ column = "level",		reverse = true	},
+	{ column = "quality",	reverse = false	},
 	{ column = "status",	reverse = false	},
 	{ column = "duration",	reverse = false	},
 };
 
 -- bidder sorts
 AuctionSort["bidder_quality"] = {
-	{ column =  "seller",	reverse = false	},
+	{ column =  "bid",		reverse = false	},
+	{ column =  "quantity",	reverse = true	},
 	{ column =  "buyout",	reverse = false	},
 	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration", reverse = false	},
-	{ column =  "status",	reverse = false	},
+	{ column =  "level",	reverse = true	},
 	{ column =  "quality",	reverse = false	},
 };
 
 AuctionSort["bidder_level"] = {
-	{ column =  "seller",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration", reverse = false	},
-	{ column =  "status",	reverse = false	},
+	{ column =  "buyout",	reverse = true	},
+	{ column =  "status",	reverse = true	},
+	{ column =  "bid",		reverse = true	},
+	{ column =  "duration",	reverse = true	},
+	{ column =  "quantity",	reverse = false	},
+	{ column =  "name",		reverse = true	},
+	{ column =  "quality",	reverse = true	},
 	{ column =  "level",	reverse = false	},
 };
 
 AuctionSort["bidder_buyout"] = {
-	{ column =  "seller",	reverse = false	},
-	{ column =  "quality",	reverse = false	},
+	{ column =  "quantity",	reverse = true	},
 	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration", reverse = false	},
+	{ column =  "level",	reverse = true	},
+	{ column =  "quality",	reverse = false	},
 	{ column =  "status",	reverse = false	},
+	{ column =  "bid",		reverse = false	},
+	{ column =  "duration",	reverse = false	},
 	{ column =  "buyout",	reverse = false	},
 };
  
 AuctionSort["bidder_status"] = {
-	{ column =  "seller",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
-	{ column =  "quality",	reverse = false	},
+	{ column =  "quantity",	reverse = true	},
 	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = false	},
+	{ column =  "level",	reverse = true	},
+	{ column =  "quality",	reverse = false	},
+	{ column =  "buyout",	reverse = false	},
 	{ column =  "bid",		reverse = false	},
 	{ column =  "duration", reverse = false	},
 	{ column =  "status",	reverse = false	},
 };
 
 AuctionSort["bidder_bid"] = {
-	{ column =  "seller",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
-	{ column =  "quality",	reverse = false	},
+	{ column =  "quantity",	reverse = true	},
 	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = false	},
-	{ column =  "duration", reverse = false	},
+	{ column =  "level",	reverse = true	},
+	{ column =  "quality",	reverse = false	},
+	{ column =  "buyout",	reverse = false	},
 	{ column =  "status",	reverse = false	},
+	{ column =  "duration",	reverse = false	},
 	{ column =  "bid",		reverse = false	},
 };
 
 AuctionSort["bidder_duration"] = {
-	{ column =  "seller",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
-	{ column =  "quality",	reverse = false	},
+	{ column =  "quantity",	reverse = true	},
 	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
+	{ column =  "level",	reverse = true	},
+	{ column =  "quality",	reverse = false	},
+	{ column =  "buyout",	reverse = false	},
 	{ column =  "status",	reverse = false	},
-	{ column =  "duration", reverse = false	},
+	{ column =  "bid",		reverse = false	},
+	{ column =  "duration",	reverse = false	},
 };
 
 -- list sorts
 AuctionSort["list_level"] = {
-	{ column = "seller",	reverse = false },
-	{ column = "name",		reverse = false },
-	{ column = "status",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false	},
-	{ column = "quality",	reverse = false	},
+	{ column = "duration",	reverse = true	},
+	{ column = "bid",		reverse = true	},
+	{ column = "quantity",	reverse = false	},
+	{ column = "buyout",	reverse = true	},
+	{ column = "name",		reverse = true	},
+	{ column = "quality",	reverse = true	},
 	{ column = "level",		reverse = false	},
 };
 AuctionSort["list_duration"] = {
-	{ column = "seller",	reverse = false },
-	{ column = "name",		reverse = false },
-	{ column = "status",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
 	{ column = "bid",		reverse = false	},
-	{ column = "quality",	reverse = true	},
-	{ column = "level",		reverse = false	},
+	{ column = "quantity",	reverse = true	},
+	{ column = "buyout",	reverse = false	},
+	{ column = "name",		reverse = false	},
+	{ column = "level",		reverse = true	},
+	{ column = "quality",	reverse = false	},
 	{ column = "duration",	reverse = false	},
 };
 AuctionSort["list_seller"] = {
-	{ column = "name",		reverse = false },
-	{ column = "status",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
 	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false	},
-	{ column = "quality",	reverse = true	},
-	{ column = "level",		reverse = false	},
-	{ column = "seller",	reverse = false },
+	{ column = "bid",		reverse = false },
+	{ column = "quantity",	reverse = true	},
+	{ column = "buyout",	reverse = false	},
+	{ column = "name",		reverse = false	},
+	{ column = "level",		reverse = true	},
+	{ column = "quality",	reverse = false	},
+	{ column = "seller",	reverse = false	},
 };
 AuctionSort["list_bid"] = {
-	{ column = "seller",	reverse = false },
-	{ column = "name",		reverse = false },
-	{ column = "status",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
 	{ column = "duration",	reverse = false	},
-	{ column = "quality",	reverse = true	},
-	{ column = "level",		reverse = false	},
+	{ column = "quantity",	reverse = true	},
+	{ column = "name",		reverse = false	},
+	{ column = "level",		reverse = true	},
+	{ column = "quality",	reverse = false	},
 	{ column = "bid",		reverse = false	},
 };
 
 AuctionSort["list_quality"] = {
-	{ column = "seller",	reverse = false },
-	{ column = "name",		reverse = false },
-	{ column = "status",	reverse = false	},
-	{ column = "buyout",	reverse = false	},
 	{ column = "duration",	reverse = false	},
 	{ column = "bid",		reverse = false	},
-	{ column = "level",		reverse = false	},
+	{ column = "quantity",	reverse = true	},
+	{ column = "buyout",	reverse = false	},
+	{ column = "name",		reverse = false	},
+	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
 };
 
@@ -356,30 +344,45 @@ do -- Weapons
 end
 
 do -- Armor
-	local ArmorInventoryTypes = {
+	local MiscArmorInventoryTypes = {
 		LE_INVENTORY_TYPE_HEAD_TYPE,
 		LE_INVENTORY_TYPE_NECK_TYPE,
-		LE_INVENTORY_TYPE_SHOULDER_TYPE,
 		LE_INVENTORY_TYPE_BODY_TYPE,
+		LE_INVENTORY_TYPE_FINGER_TYPE,
+		LE_INVENTORY_TYPE_TRINKET_TYPE,
+		LE_INVENTORY_TYPE_HOLDABLE_TYPE,
+	};
+
+	local ClothArmorInventoryTypes = {
+		LE_INVENTORY_TYPE_HEAD_TYPE,
+		LE_INVENTORY_TYPE_SHOULDER_TYPE,
 		LE_INVENTORY_TYPE_CHEST_TYPE,
 		LE_INVENTORY_TYPE_WAIST_TYPE,
 		LE_INVENTORY_TYPE_LEGS_TYPE,
 		LE_INVENTORY_TYPE_FEET_TYPE,
 		LE_INVENTORY_TYPE_WRIST_TYPE,
 		LE_INVENTORY_TYPE_HAND_TYPE,
-		LE_INVENTORY_TYPE_FINGER_TYPE,
-		LE_INVENTORY_TYPE_TRINKET_TYPE,
-		LE_INVENTORY_TYPE_CLOAK_TYPE,
-		LE_INVENTORY_TYPE_HOLDABLE_TYPE,
+		LE_INVENTORY_TYPE_CLOAK_TYPE, -- Only for Cloth.
+	};
+
+	local ArmorInventoryTypes = {
+		LE_INVENTORY_TYPE_HEAD_TYPE,
+		LE_INVENTORY_TYPE_SHOULDER_TYPE,
+		LE_INVENTORY_TYPE_CHEST_TYPE,
+		LE_INVENTORY_TYPE_WAIST_TYPE,
+		LE_INVENTORY_TYPE_LEGS_TYPE,
+		LE_INVENTORY_TYPE_FEET_TYPE,
+		LE_INVENTORY_TYPE_WRIST_TYPE,
+		LE_INVENTORY_TYPE_HAND_TYPE,
 	};
 
 	local armorCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ARMOR);
 
 	local miscCategory = armorCategory:CreateSubCategory(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC);
-	miscCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, ArmorInventoryTypes);
+	miscCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, MiscArmorInventoryTypes);
 
 	local clothCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH);
-	clothCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, ArmorInventoryTypes);
+	clothCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, ClothArmorInventoryTypes);
 
 	local clothChestCategory = clothCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
 	clothChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_INVENTORY_TYPE_ROBE_TYPE);
@@ -416,12 +419,12 @@ end
 
 do -- Consumables
 	local consumablesCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_CONSUMABLES);
-	consumablesCategory:AddFilter(LE_ITEM_CLASS_CONSUMABLE);
+	consumablesCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_CONSUMABLE);
 end
 
 do -- Trade Goods
 	local tradeGoodsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_TRADE_GOODS);
-	tradeGoodsCategory:AddFilter(LE_ITEM_CLASS_TRADEGOODS);
+	tradeGoodsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_TRADEGOODS);
 end
 
 do -- Projectile
@@ -439,14 +442,26 @@ do -- Recipes
 	recipesCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_RECIPE);
 end
 
-do -- Reagent
-	local reagentCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_REAGENT);
-	reagentCategory:AddFilter(LE_ITEM_CLASS_REAGENT);
+do -- Gems
+	local gemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GEMS);
+	gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_GEM);
 end
 
 do -- Miscellaneous
 	local miscellaneousCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_MISCELLANEOUS);
 	miscellaneousCategory:AddFilter(LE_ITEM_CLASS_MISCELLANEOUS);
+
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_JUNK);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_REAGENT);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_COMPANION_PET);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_HOLIDAY);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_OTHER);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_MOUNT);
+end
+
+do -- Quest Items
+	local questItemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_QUEST_ITEMS);
+	questItemsCategory:AddFilter(LE_ITEM_CLASS_QUESTITEM);
 end
 
 do -- WoW Token

@@ -248,6 +248,51 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="QuestTimer21" inherits="QuestTimerTemplate" hidden="true" id="21">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer20" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer22" inherits="QuestTimerTemplate" hidden="true" id="22">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer21" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer23" inherits="QuestTimerTemplate" hidden="true" id="23">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer22" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer24" inherits="QuestTimerTemplate" hidden="true" id="24">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer23" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer25" inherits="QuestTimerTemplate" hidden="true" id="25">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer24" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="prepend" function="QuestTimerFrame_OnLoad" />

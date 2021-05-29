@@ -110,7 +110,13 @@ function ToggleBag(id)
 		return;
 	end
 	
-	local size = ContainerFrame_GetContainerNumSlots(id);
+	local size = 0;
+	if (id == KEYRING_CONTAINER ) then
+		size = GetKeyRingSize();
+	else
+		size = ContainerFrame_GetContainerNumSlots(id);
+	end
+
 	if ( size > 0 or id == KEYRING_CONTAINER ) then
 		local containerShowing;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do

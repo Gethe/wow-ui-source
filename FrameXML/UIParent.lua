@@ -305,6 +305,9 @@ function UIParent_OnLoad(self)
 	-- Events for WoW Mouse
 	self:RegisterEvent("WOW_MOUSE_NOT_FOUND");
 
+	-- Events for talent wipes
+	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
+
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
@@ -3494,7 +3497,7 @@ end
 function GetBindingFromClick(input)
 	local fullInput = "";
 
-	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT)
+	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT, META)
 	if ( IsAltKeyDown() ) then
 		fullInput = fullInput.."ALT-";
 	end
@@ -3506,6 +3509,10 @@ function GetBindingFromClick(input)
 	if ( IsShiftKeyDown() ) then
 		fullInput = fullInput.."SHIFT-"
 	end
+
+	if ( IsMetaKeyDown() ) then
+		 fullInput = fullInput.."META-"
+	 end
 
 	if ( input == "LeftButton" ) then
 		fullInput = fullInput.."BUTTON1";

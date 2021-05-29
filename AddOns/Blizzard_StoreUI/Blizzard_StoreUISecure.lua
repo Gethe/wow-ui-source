@@ -517,7 +517,7 @@ local vasErrorData = {
 		msg = function(character)
 			local str = "";
 			if (character.level > 50) then
-				str = GetSecureMoneyString(2000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+				str = GetSecureMoneyString(5000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			elseif (character.level > 30) then
 				str = GetSecureMoneyString(500 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			elseif (character.level >= 10) then
