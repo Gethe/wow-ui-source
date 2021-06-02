@@ -151,7 +151,12 @@ function VoiceChatTranscriptionButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+function VoiceChatTranscriptionButtonMixin:OnShow()
+	self:Update();
+end
+
 function VoiceChatTranscriptionButtonMixin:OnHide()
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEECH_TO_TEXT, true);
 	HelpTip:Hide(UIParent, SPEECH_TO_TEXT_TUTORIAL);
 end
 
@@ -196,18 +201,15 @@ function VoiceChatTranscriptionButtonMixin:Update()
 			self:ShowTooltip();
 		end
 
-		if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEECH_TO_TEXT)) then
+		if(self:IsVisible() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEECH_TO_TEXT)) then
 			local helpTipInfo = {
 				text = SPEECH_TO_TEXT_TUTORIAL,
 				buttonStyle = HelpTip.ButtonStyle.Close,
 				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = LE_FRAME_TUTORIAL_TEXT_TO_SPEECH,
+				bitfieldFlag = LE_FRAME_TUTORIAL_SPEECH_TO_TEXT,
 				targetPoint = HelpTip.Point.TopEdgeCenter,
 			};
 			HelpTip:Show(UIParent, helpTipInfo, self);
-
-			-- Ensure to only show once
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEECH_TO_TEXT, true);
 		end
 	else
 		self:SetShown(false);

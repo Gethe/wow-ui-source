@@ -465,6 +465,9 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 		self.newValue = dropdownIndex;
 		self.selectedID = dropdownIndex;
 		if(self.type == CONTROLTYPE_DROPDOWN) then
+			if self.data[dropdownIndex].warning then
+				value = WARNING_FONT_COLOR:WrapTextInColorCode(value);
+			end
 			UIDropDownMenu_SetText(self, value);
 		elseif(self.type == CONTROLTYPE_SLIDER) then
 			self:SetDisplayValue(dropdownIndex);

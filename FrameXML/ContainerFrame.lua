@@ -418,29 +418,68 @@ function ContainerFrame_CloseTutorial(ownerFrame)
 	end
 end
 
--- Returns whether further buttons should be considered
-function ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID)
-	if itemID and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemID) then
-		if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, true);
-			return false;
-		end
+function ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialText, tutorialFlag)
+	local helpTipInfo = {
+		text = tutorialText,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = tutorialFlag,
+		targetPoint = HelpTip.Point.LeftEdgeCenter,
+		offsetX = -3,
+		system = CONTAINER_HELPTIP_SYSTEM,
+	};
+	HelpTip:Show(UIParent, helpTipInfo, itemButton);
+	local containerFrame = itemButton:GetParent();
+	containerFrame.helpTipSystem = CONTAINER_HELPTIP_SYSTEM;
+end
 
-		local helpTipInfo = {
-			text = AZERITE_TUTORIAL_ITEM_IN_SLOT,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT,
-			targetPoint = HelpTip.Point.LeftEdgeCenter,
-			offsetX = -3,
-			system = CONTAINER_HELPTIP_SYSTEM,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, itemButton);
-		local containerFrame = itemButton:GetParent();
-		containerFrame.helpTipSystem = CONTAINER_HELPTIP_SYSTEM;
+function ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID)
+	if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, true);
 		return false;
 	end
-	return true;
+
+	return C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemID);
+end
+
+function ContainerFrame_ConsiderItemButtonForUpgradeTutorial(itemButton, itemID)
+	local containerFrame = itemButton:GetParent();
+	return C_ItemUpgrade.CanUpgradeItem(ItemLocation:CreateFromBagAndSlot(containerFrame:GetID(), itemButton:GetID()));
+end
+
+local ContainerFrameTutorialInfo = {
+	{ considerFunction = ContainerFrame_ConsiderItemButtonForAzeriteTutorial, tutorialText = AZERITE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, },
+	{ considerFunction = ContainerFrame_ConsiderItemButtonForUpgradeTutorial, tutorialText = ITEM_UPGRADE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_UPGRADEABLE_ITEM_IN_SLOT, },
+};
+
+function ContainerFrame_HasUnacknowledgedItemTutorial()
+	for i, tutorialInfo in ipairs(ContainerFrameTutorialInfo) do
+		if not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorialFlag) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function ContainerFrame_ShouldDoTutorialChecks()
+	return not Kiosk.IsEnabled() and not ContainerFrame_IsTutorialShown() and ContainerFrame_HasUnacknowledgedItemTutorial();
+end
+
+function ContainerFrame_CheckItemButtonForTutorials(itemButton, itemID)
+	if itemID == nil then
+		return false;
+	end
+
+	for i, tutorialInfo in ipairs(ContainerFrameTutorialInfo) do
+		local tutorialFlag = tutorialInfo.tutorialFlag;
+		if not GetCVarBitfield("closedInfoFrames", tutorialFlag) and tutorialInfo.considerFunction(itemButton, itemID) then
+			ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialInfo.tutorialText, tutorialFlag)
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function ContainerFrame_UpdateItemUpgradeIcons(frame)
@@ -498,7 +537,7 @@ function ContainerFrame_Update(self)
 
 	ContainerFrame_CloseTutorial(self);
 
-	local shouldDoAzeriteChecks = not Kiosk.IsEnabled() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT) and not ContainerFrame_IsTutorialShown();
+	local shouldDoTutorialChecks = ContainerFrame_ShouldDoTutorialChecks();
 
 	for i=1, self.size, 1 do
 		itemButton = _G[name.."Item"..i];
@@ -592,8 +631,10 @@ function ContainerFrame_Update(self)
 		
 		itemButton:SetMatchesSearch(not isFiltered);
 		if ( not isFiltered ) then
-			if shouldDoAzeriteChecks then
-				shouldDoAzeriteChecks = ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID);
+			if shouldDoTutorialChecks then
+				if ContainerFrame_CheckItemButtonForTutorials(itemButton, itemID) then
+					shouldDoTutorialChecks = false;
+				end
 			end
 		end
 	end

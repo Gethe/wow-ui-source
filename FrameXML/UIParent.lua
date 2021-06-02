@@ -280,6 +280,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("LEAVING_TUTORIAL_AREA");
+	self:RegisterEvent("UI_ERROR_POPUP");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -1462,6 +1463,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif event == "LEAVING_TUTORIAL_AREA" then
 		StaticPopup_Show("LEAVING_TUTORIAL_AREA");
+	elseif event == "UI_ERROR_POPUP" then
+		local errorType, errorMessage = ...;
+		local systemPrefix = "UI_ERROR_";
+		StaticPopup_ShowNotification(systemPrefix, errorType, errorMessage);
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
 

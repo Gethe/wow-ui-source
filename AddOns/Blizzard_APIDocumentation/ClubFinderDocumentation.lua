@@ -345,6 +345,7 @@ local ClubFinder =
 				{ Name = "itemLevelRequirement", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "avatarId", Type = "number", Nilable = false },
 				{ Name = "specs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
 			},

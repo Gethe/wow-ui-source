@@ -97,6 +97,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetDungeonScoreRarityColor",
 			Type = "Function",
+			Documentation = { "Returns a color value from the passed in overall season M+ rating." },
 
 			Arguments =
 			{
@@ -120,6 +121,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetKeystoneLevelRarityColor",
 			Type = "Function",
+			Documentation = { "Returns a color value from the passed in keystone level." },
 
 			Arguments =
 			{
@@ -161,6 +163,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetOverallDungeonScore",
 			Type = "Function",
+			Documentation = { "Gets the overall season mythic+ rating for the player." },
 
 			Returns =
 			{
@@ -196,15 +199,16 @@ local ChallengeModeInfo =
 		{
 			Name = "GetSpecificDungeonScoreRarityColor",
 			Type = "Function",
+			Documentation = { "Returns a color value from the passed in mythic+ rating for a specific dungeon." },
 
 			Arguments =
 			{
-				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "specificDungeonScore", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "levelScore", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "specificDungeonScoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{

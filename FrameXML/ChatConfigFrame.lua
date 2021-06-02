@@ -1231,14 +1231,6 @@ function ToggleChatColorNamesByClassGroup(checked, group)
 	end
 end
 
-function ToggleChatChannel(checked, channel)
-	if ( checked ) then
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
-	else
-		ChatFrame_RemoveChannel(FCF_GetCurrentChatFrame(), channel);
-	end
-end
-
 function ToggleMessageSource(checked, filter)
 	if ( not CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) then
 		CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags = {};
@@ -1591,7 +1583,7 @@ function CreateChatChannelList(self, ...)
 		CHAT_CONFIG_CHANNEL_LIST[count].checked = checked;
 		CHAT_CONFIG_CHANNEL_LIST[count].disabled = disabled;
 		CHAT_CONFIG_CHANNEL_LIST[count].func = function (self, checked)
-							ToggleChatChannel(checked, CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName);
+							ChatFrame_SetChannelEnabled(FCF_GetCurrentChatFrame(), CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName, checked);
 							end;
 		count = count+1;
 	end

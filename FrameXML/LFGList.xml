@@ -126,24 +126,23 @@
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 	<DropDownToggleButton name="LFGListApplicantMemberTemplate" virtual="true">
-		<Size x="190" y="20"/>
+		<Size x="250" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT" text="NAME">
 					<Size x="100" y="10"/>
 					<Anchors>
-						<Anchor point="LEFT" x="7" y="-1"/>
+						<Anchor point="LEFT" x="7" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="-1"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="DungeonScore" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
-					<Size x="45" y="10"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.ItemLevel" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="218" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -244,10 +243,10 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Status" inherits="GameFontNormalSmall" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
-					<Size x="75" y="24"/>
+				<FontString parentKey="Status" inherits="GameFontNormalSmall" justifyH="RIGHT" justifyV="MIDDLE" hidden="true">
+					<Size x="0" y="24"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-30" y="-1"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-30" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -738,6 +737,11 @@
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
+		<Scripts>
+			<OnLoad>
+				self:Disable();
+			</OnLoad>
+		</Scripts>
 	</Button>
 	<Button name="LFGListSearchEntryTemplate" virtual="true">
 		<Size x="312" y="36"/>
@@ -1384,7 +1388,7 @@
 							<Anchor point="LEFT" relativeKey="$parent.RoleColumnHeader" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								--The ItemLevel tab will increase in width as needed
 								local overBy = self.Label:GetWidth() + 15 - self:GetWidth();
 								if ( overBy > 0 ) then

@@ -270,6 +270,7 @@ RoleSelectionTemplate.xml
 ItemRef.xml
 SocialQueue.xml
 QuickJoinToast.xml
+TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
 FriendsFrame.xml

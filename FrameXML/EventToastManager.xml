@@ -531,9 +531,10 @@
 	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontNormalHuge">
+				<FontString parentKey="Title" JustifyV="CENTER" justifyH="CENTER" inherits="GameFontNormalHuge">
+					<Size x="400" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER" y="-4"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
 			</Layer>

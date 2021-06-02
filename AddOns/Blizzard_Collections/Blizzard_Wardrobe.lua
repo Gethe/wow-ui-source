@@ -103,6 +103,8 @@ function TransmogFrameMixin:OnEvent(event, ...)
 						cvarBitfield = "closedInfoFrames",
 						bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON,
 						targetPoint = HelpTip.Point.BottomEdgeCenter,
+						onAcknowledgeCallback = function() WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
+						acknowledgeOnHide = true,
 					};
 					HelpTip:Show(self, helpTipInfo, self.SpecButton);
 				end
@@ -486,6 +488,8 @@ function TransmogFrameMixin:ApplyPending(lastAcceptedWarningIndex)
 						bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN,
 						targetPoint = HelpTip.Point.RightEdgeCenter,
 						offsetX = -18,
+						onAcknowledgeCallback = function() WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
+						acknowledgeOnHide = true,
 					};
 					HelpTip:Show(self, helpTipInfo, self.OutfitDropDown);
 				end
@@ -2348,6 +2352,8 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK,
 			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			onAcknowledgeCallback = function() WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
+			acknowledgeOnHide = true,
 		};
 		HelpTip:Show(self, helpTipInfo, tutorialAnchorFrame);
 	else

@@ -4323,6 +4323,28 @@ function StaticPopup_Resize(dialog, which)
 	end
 end
 
+function StaticPopup_ShowNotification(systemPrefix, notificationType, message)
+	local staticPopupToken = (systemPrefix or "NOTIFICATION_")..(notificationType or "GENERIC");
+
+	if StaticPopupDialogs[staticPopupToken] == nil then
+		StaticPopupDialogs[staticPopupToken] = {
+			text = "",
+			
+			OnShow = function(self, popupMessage)
+				self.text:SetText(popupMessage);
+			end,
+
+			button1 = OKAY,
+			timeout = 0,
+			whileDead = 1,
+		};
+	end
+
+	local text_arg1 = nil;
+	local text_arg2 = nil;
+	StaticPopup_Show(staticPopupToken, text_arg1, text_arg2, message);
+end
+
 local tempButtonLocs = {};	--So we don't make a new table each time.
 function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	local info = StaticPopupDialogs[which];

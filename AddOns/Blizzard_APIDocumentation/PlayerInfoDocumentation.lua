@@ -90,6 +90,7 @@ local PlayerInfo =
 		{
 			Name = "GetPlayerMythicPlusRatingSummary",
 			Type = "Function",
+			Documentation = { "Returns the players mythic+ rating summary which includes the runs they've completed as well as their current season m+ rating" },
 
 			Arguments =
 			{

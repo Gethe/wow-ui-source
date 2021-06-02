@@ -580,7 +580,7 @@ function CovenantMission:UpdateCurrencyInfo()
 	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetSize(18, 18);
 	self.FollowerTab.HealFollowerFrame.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon, "LEFT", -8, -1);
 
-	self.FollowerList.HealAllButton.currencyInfo = currencyInfo;
+	self.FollowerList.HealAllButton.currencyID = secondaryCurrency;
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
@@ -1095,7 +1095,6 @@ end
 function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 	local healAllCost = 0;
 	self.HealAllButton.tooltip = nil;
-	self:SetScript("OnUpdate", nil);
 
 	for _, follower in ipairs(self.followers) do
 		if follower.status ~= GARRISON_FOLLOWER_ON_MISSION then
@@ -1114,12 +1113,11 @@ function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 	if healAllCost == 0 then
 		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_ALL_ADVENTURERS_FULL;
 		self.HealAllButton:SetEnabled(false);
-	elseif healAllCost > self.HealAllButton.currencyInfo.quantity then
-		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
-		self.HealAllButton:SetEnabled(false)
-	else	
-		self:SetScript("OnUpdate", self.OnUpdate);
-		self.HealAllButton:SetEnabled(true);
+	else
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.HealAllButton.currencyID);
+		local healAllDisabled = currencyInfo and (healAllCost > currencyInfo.quantity);
+		self.HealAllButton.tooltip = healAllDisabled and COVENANT_MISSIONS_HEAL_ERROR_RESOURCES or nil;
+		self.HealAllButton:SetEnabled(not healAllDisabled)
 	end
 end
 

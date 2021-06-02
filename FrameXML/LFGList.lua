@@ -84,7 +84,7 @@ local function ResolveCategoryFilters(categoryID, filters)
 	return filters;
 end
 
-local function GetStartGroupRestriction()
+local function GetFindGroupRestriction()
 	if ( C_SocialRestrictions.IsSilenced() ) then
 		return "SILENCED", RED_FONT_COLOR:WrapTextInColorCode(ERR_ACCOUNT_SILENCED);
 	elseif ( C_SocialRestrictions.IsSquelched() ) then
@@ -92,6 +92,10 @@ local function GetStartGroupRestriction()
 	end
 
 	return nil, nil;
+end
+
+local function GetStartGroupRestriction()
+	return GetFindGroupRestriction();
 end
 
 -------------------------------------------------------
@@ -544,10 +548,16 @@ function LFGListCategorySelection_UpdateNavButtons(self)
 		self.StartGroupButton.tooltip = messageStart;
 	end
 
-	local startError, errorText = GetStartGroupRestriction();
+	local findError, findErrorText = GetFindGroupRestriction();
+	if ( findError ~= nil ) then
+		findEnabled = false;
+		self.FindGroupButton.tooltip = findErrorText;
+	end
+
+	local startError, startErrorText = GetStartGroupRestriction();
 	if ( startError ~= nil ) then
 		startEnabled = false;
-		self.StartGroupButton.tooltip = errorText;
+		self.StartGroupButton.tooltip = startErrorText;
 	end
 
 	self.FindGroupButton:SetEnabled(findEnabled);
@@ -1126,9 +1136,6 @@ function LFGListApplicationViewer_OnLoad(self)
 	self.ScrollFrame.update = function() LFGListApplicationViewer_UpdateResults(self); end;
 	self.ScrollFrame.dynamic = function(offset) return LFGListApplicationViewer_GetScrollOffset(self, offset) end
 	self.ScrollFrame.scrollBar.doNotHide = true;
-	self.NameColumnHeader:Disable();
-	self.RoleColumnHeader:Disable();
-	self.ItemLevelColumnHeader:Disable();
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListApplicantTemplate");
 end
 
@@ -1444,16 +1451,15 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 	local useSmallInviteButton = LFGApplicationViewerDungeonScoreColumnHeader:IsShown();
 	button.Status:ClearAllPoints(); 
 
-	if(useSmallInviteButton and (applicantInfo.applicationStatus == "invited" or applicantInfo.applicationStatus == "inviteaccepted")) then 
-		button.Status:SetPoint("RIGHT", button, "RIGHT", 0, -1);
-	else 
-		button.Status:SetPoint("RIGHT", button, "RIGHT", -30, -1);
-	end
-
 	button.InviteButtonSmall:SetShown(useSmallInviteButton and not applicantInfo.applicantInfo and applicantInfo.applicationStatus == "applied" and LFGListUtil_IsEntryEmpowered());
 	button.InviteButton:SetShown(not useSmallInviteButton and not applicantInfo.applicantInfo and applicantInfo.applicationStatus == "applied" and LFGListUtil_IsEntryEmpowered());
 	button.DeclineButton:SetShown(not applicantInfo.applicantInfo and applicantInfo.applicationStatus ~= "invited" and LFGListUtil_IsEntryEmpowered());
 	button.DeclineButton.isAck = (applicantInfo.applicationStatus ~= "applied" and applicantInfo.applicationStatus ~= "invited");
+	if(button.DeclineButton:IsShown()) then 
+		button.Status:SetPoint("RIGHT", button.DeclineButton, "LEFT", -14, 0);
+	else
+		button.Status:SetPoint("CENTER", button, "RIGHT", -37, 0);
+	end
 	button.Spinner:SetShown(applicantInfo.applicantInfo);
 end
 
@@ -1494,8 +1500,8 @@ function LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, heale
 end
 
 function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx, status, pendingStatus)
-	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "declined_full" or status == "declined_delisted" or status == "invitedeclined" or status == "timedout");
-	local noTouchy = (status == "invited" or status == "inviteaccepted" or status == "invitedeclined");
+	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "declined_full" or status == "declined_delisted" or status == "invitedeclined" or status == "timedout" or status == "inviteaccepted" or status == "invitedeclined");
+	local noTouchy = (status == "invited");
 
 	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
 
@@ -1535,15 +1541,16 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 
 	member.ItemLevel:SetShown(not grayedOut);
 	member.ItemLevel:SetText(math.floor(itemLevel));
-	member.DungeonScore:SetShown(not grayedOut and LFGApplicationViewerDungeonScoreColumnHeader:IsShown());
 
-	if(LFGApplicationViewerDungeonScoreColumnHeader:IsShown() and dungeonScore) then 
-		local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
-		if(not color) then 
-			color = HIGHLIGHT_FONT_COLOR; 
-		end 
+	if not grayedOut and LFGApplicationViewerDungeonScoreColumnHeader:IsShown() and dungeonScore then
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore) or HIGHLIGHT_FONT_COLOR;
 		member.DungeonScore:SetText(color:WrapTextInColorCode(dungeonScore));	
-	end 
+		member.DungeonScore:Show();
+		member:SetWidth(256);
+	else
+		member.DungeonScore:Hide();
+		member:SetWidth(200);
+	end
 
 	local mouseFocus = GetMouseFocus();
 	if ( mouseFocus == member ) then

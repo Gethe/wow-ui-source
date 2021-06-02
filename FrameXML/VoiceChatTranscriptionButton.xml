@@ -9,6 +9,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnClick method="OnClick"/>
 		</Scripts>

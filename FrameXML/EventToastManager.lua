@@ -357,6 +357,10 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandBackgroundFormatStrings, TextureKitConstants.SetVisibility, false);
 		self:SetupTextureKitOffsets(toastInfo.uiTextureKit);
+	elseif(toastInfo.hideDefaultAtlas) then 
+		self.BG1:SetAlpha(0);
+		self.BG2:SetAlpha(0);
+		self.hideParentAnim = false; 
 	else
 		SetupAtlasesOnRegions(self, defaultAtlases, true);
 	end 
@@ -407,6 +411,10 @@ function EventToastScenarioToastMixin:OnAnimFinished()
 	EventToastScenarioBaseToastMixin.OnAnimFinished(self);
 	self.WidgetContainer:UnregisterForWidgetSet();
 end		
+
+local scenarioExpandSoundKitIDs = {
+	["jailerstower-score"] = 183163;
+}
 
 EventToastScenarioExpandToastMixin = { };
 function EventToastScenarioBaseToastMixin:OnLoad()
@@ -476,6 +484,10 @@ function EventToastScenarioExpandToastMixin:OnClick(button, ...)
 	self.ExpandWidgetContainer:SetShown(self.expanded);
 	self:GetParent():Layout();
 	self:SetupTextureKitOffsets(toastInfo.uiTextureKit);
+	local expandClickSoundkit = scenarioExpandSoundKitIDs[toastInfo.uiTextureKit]; 
+	if (expandClickSoundkit) then 
+		PlaySound(expandClickSoundkit);
+	end		
 end
 
 EventToastWithIconBaseMixin = { }; 
@@ -665,6 +677,12 @@ function EventToastAnimationsMixin:BannerPlay()
 		self.BannerFrame.showAnim:Play();
 	end
 
+	C_Timer.After(self.animInStartDelay and self.animInStartDelay or 0, 
+	function() 
+		if (self.toastInfo and self.toastInfo.showSoundKitID) then
+			PlaySound(self.toastInfo.showSoundKitID);
+		end
+	end);
 	self.showAnim:Play();
 	self:GetParent():PlayAnim();
 end		
@@ -678,6 +696,13 @@ end
 function EventToastAnimationsMixin:AnimOut()
 	if (not self:GetParent():AreAnimationsPaused() and self.hideAutomatically) then 	
 		self.hideAnim:Play();
+		C_Timer.After(self.hideAnim.anim1:GetStartDelay(), 
+		function() 
+			if (self.toastInfo and self.toastInfo.hideSoundKitID) then
+				PlaySound(self.toastInfo.hideSoundKitID);
+			end
+		end);
+
 		if(self.BannerFrame) then 
 			self.BannerFrame.hideAnim:Play();
 		end

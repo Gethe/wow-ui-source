@@ -1971,6 +1971,7 @@ function Class_ChangeEquipment:Start(args)
 
 	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+	Dispatcher:RegisterEvent("ZONE_CHANGED_NEW_AREA", self);
 	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 
 	EventRegistry:RegisterCallback("ContainerFrame.AllBagsClosed", self.BagClosed, self);
@@ -1991,6 +1992,15 @@ function Class_ChangeEquipment:PLAYER_DEAD()
 	TutorialQueue:NotifyDone(self);
 
 	-- the player died in the middle of the tutorial, requeue it so that when the player is alive, they can try again
+	self.Timer = C_Timer.NewTimer(0.1, function()
+		TutorialQueue:Add(TutorialLogic.Tutorials.ItemUpgradeCheckingService);
+	end);
+end
+
+function Class_ChangeEquipment:ZONE_CHANGED_NEW_AREA()
+	TutorialQueue:NotifyDone(self);
+
+	-- the player changed zones in the middle of the tutorial, requeue it so that when the player can try again
 	self.Timer = C_Timer.NewTimer(0.1, function()
 		TutorialQueue:Add(TutorialLogic.Tutorials.ItemUpgradeCheckingService);
 	end);
@@ -2255,6 +2265,8 @@ function Class_ChangeEquipment:Finish()
 	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
 	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 	Dispatcher:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", self);
+	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+	Dispatcher:UnregisterEvent("ZONE_CHANGED_NEW_AREA", self);
 end
 
 function Class_ChangeEquipment:OnComplete()

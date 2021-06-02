@@ -264,11 +264,9 @@ function ClubsRecruitmentDialogMixin:PostClub()
 	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.EnableListing, self.ShouldListClub.Button:GetChecked());
 
 	if (clubInfo) then
-		local autoAcceptApplicants = false; -- Guild finder should never have the ability to auto-accept.
-		C_ClubFinder.PostClub(clubId, minItemLevel, clubInfo.name, description, specsInList, Enum.ClubFinderRequestType.Guild);
+		C_ClubFinder.PostClub(clubId, minItemLevel, clubInfo.name, description, clubInfo.avatarId, specsInList, Enum.ClubFinderRequestType.Guild);
 	elseif (self.clubName) then
-		local autoAcceptApplicants = false; -- Guild finder should never have the ability to auto-accept.
-		C_ClubFinder.PostClub(clubId, minItemLevel, self.clubName, description, specsInList, Enum.ClubFinderRequestType.Guild);
+		C_ClubFinder.PostClub(clubId, minItemLevel, self.clubName, description, self.clubAvatarId, specsInList, Enum.ClubFinderRequestType.Guild);
 	end
 end
 

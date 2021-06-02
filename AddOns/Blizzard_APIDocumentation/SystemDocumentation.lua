@@ -167,6 +167,16 @@ local System =
 			},
 		},
 		{
+			Name = "UiErrorPopup",
+			Type = "Event",
+			LiteralName = "UI_ERROR_POPUP",
+			Payload =
+			{
+				{ Name = "errorType", Type = "number", Nilable = false },
+				{ Name = "message", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UiInfoMessage",
 			Type = "Event",
 			LiteralName = "UI_INFO_MESSAGE",

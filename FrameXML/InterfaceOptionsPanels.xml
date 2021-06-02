@@ -2312,6 +2312,8 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRemoteTextToSpeechVoiceDropdown" relativePoint="BOTTOMLEFT" x="16" y="-8" />
 				</Anchors>
 				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnLoad"/>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnEvent"/>
 					<OnClick function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick"/>
 				</Scripts>
 			</Button>

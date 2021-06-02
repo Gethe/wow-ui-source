@@ -54,6 +54,7 @@ function TextToSpeechButtonMixin:OnEvent(event, ...)
 end
 
 function TextToSpeechButtonMixin:OnClick(button)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TEXT_TO_SPEECH, true);
 	HelpTip:Hide(self, TEXT_TO_SPEECH_TUTORIAL);
 	ToggleTextToSpeechFrame();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

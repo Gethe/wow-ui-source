@@ -138,10 +138,10 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="AccountEditBox" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="345"/>
+							<Anchor point="BOTTOM" x="-2" y="345"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -197,10 +197,10 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="PasswordEditBox" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="275"/>
+							<Anchor point="BOTTOM" x="-2" y="275"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -234,7 +234,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="LOG_IN">
+					<Button parentKey="LoginButton" parentArray="ManualLoginRegions" inherits="GlueButtonTemplate" text="LOG_IN">
 						<Size x="200" y="30"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="185"/>
@@ -250,7 +250,7 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="NormalLoginRegions">
+					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="ManualLoginRegions">
 						<Size x="20" y="20"/>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -298,6 +298,38 @@
 						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
+					<Button parentKey="ReconnectLoginButton" parentArray="ReconnectLoginRegions" inherits="GlueButtonTemplate" text="RECONNECT_BUTTON">
+						<Size x="226" y="48"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="300"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ReconnectLogin"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button parentKey="ReconnectSwitchButton" parentArray="ReconnectLoginRegions" inherits="GlueButtonSmallTemplate" text="SWITCH_ACCOUNTS_BUTTON">
+						<Size x="180" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="180"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ClearReconnectLogin"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
 					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-12" y="34"/>
@@ -707,6 +739,7 @@
 			<OnLoad function="AccountLogin_OnLoad"/>
 			<OnEvent function="AccountLogin_OnEvent"/>
 			<OnShow function="AccountLogin_OnShow"/>
+			<OnKeyDown function="AccountLogin_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

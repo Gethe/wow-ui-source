@@ -1641,7 +1641,7 @@ function QuestMapLog_ShowStoryTooltip(self)
 	local maxWidth = 0;
 	local totalHeight = 0;
 
-	local mapInfo = C_Map.GetMapInfo(QuestMapFrame:GetParent():GetMapID());
+	local mapInfo = C_Map.GetMapInfo(storyMapID);
 	tooltip.Title:SetText(mapInfo.name);
 	totalHeight = totalHeight + tooltip.Title:GetHeight();
 	maxWidth = tooltip.Title:GetWidth();

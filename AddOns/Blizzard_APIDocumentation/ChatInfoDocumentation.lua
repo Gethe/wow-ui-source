@@ -7,6 +7,20 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "GetChannelInfoFromIdentifier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIdentifier", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ChatChannelInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
 
@@ -2187,6 +2201,18 @@ local ChatInfo =
 
 	Tables =
 	{
+		{
+			Name = "ChatChannelInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortcut", Type = "string", Nilable = false },
+				{ Name = "localID", Type = "number", Nilable = false },
+				{ Name = "instanceID", Type = "number", Nilable = false },
+				{ Name = "isCommunity", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

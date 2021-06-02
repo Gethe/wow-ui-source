@@ -46,6 +46,7 @@ end
 function VoiceTranscription_DetermineChatType(isLeader)
 	local chatType = "PARTY";
 	local channelType = C_VoiceChat.GetActiveChannelType();
+	local infoType = nil;
 
 	if (channelType == Enum.ChatChannelType.Private_Party) then
 		if (IsInRaid()) then
@@ -70,16 +71,23 @@ function VoiceTranscription_DetermineChatType(isLeader)
 	elseif (channelType == Enum.ChatChannelType.Communities) then
 		local channel = C_VoiceChat.GetChannel(C_VoiceChat.GetActiveChannelID()) or {};
 		local streamInfo = C_Club.GetStreamInfo(channel.clubId, channel.streamId);
-		if (streamInfo and streamInfo.streamType == Enum.ClubStreamType.Guild) then
-			chatType = "GUILD";
-		elseif (streamInfo and streamInfo.streamType == Enum.ClubStreamType.Officer) then
-			chatType = "OFFICER";
-		else
-			chatType = "COMMUNITIES_CHANNEL";
+		if streamInfo then
+			if streamInfo.streamType == Enum.ClubStreamType.Guild then
+				chatType = "GUILD";
+			elseif streamInfo.streamType == Enum.ClubStreamType.Officer then
+				chatType = "OFFICER";
+			else
+				chatType = "COMMUNITIES_CHANNEL";
+				infoType = Chat_GetCommunitiesChannel(channel.clubId, channel.streamId);
+			end
 		end
 	end
 
-	return chatType;
+	if infoType == nil then
+		infoType = chatType;
+	end;
+
+	return infoType, chatType;
 end
 
 function VoiceTranscriptionFrame_UpdateVoiceTab(self)
@@ -165,6 +173,8 @@ function VoiceTranscriptionFrame_Init(self)
 	VoiceTranscriptionFrame_UpdateVisibility(self);
 	VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	VoiceTranscriptionFrame_UpdateEditBox(self);
+
+	self.editBox:SetMaxLetters(100);
 end
 
 local VoiceTranscriptionFrame = ChatFrame3;

@@ -2053,6 +2053,19 @@ function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEve
 	end
 end
 
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnLoad(self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "VARIABLES_LOADED" or
+		(event == "CVAR_UPDATE" and arg1 == "ENABLE_REMOTE_TEXT_TO_SPEECH") ) then
+		self:SetEnabled(GetCVarBool("remoteTextToSpeech"));
+	end
+end
+
 function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick(self)
 	C_VoiceChat.SpeakRemoteTextSample(TEXT_TO_SPEECH_SAMPLE_TEXT);
 end

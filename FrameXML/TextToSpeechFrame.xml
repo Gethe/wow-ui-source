@@ -104,6 +104,37 @@
 			<OnClick function="TextToSpeechChatTypeCheckButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
+	
+	<Frame name="TextToSpeechFrameTtsVoicePickerTemplate" inherits="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" virtual="true">
+		<Size x="350" y="115"/>
+		<Frames>
+			<Frame inherits="TooltipBorderedFrameTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="10"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-25"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<KeyValues>
+					<KeyValue key="hideBackground" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="TextToSpeechFrameTtsVoicePicker_OnLoad"/>
+			<OnShow function="TextToSpeechFrameTtsVoicePicker_OnShow"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="TextToSpeechFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size x="858" y="660"/>
@@ -199,16 +230,21 @@
 							<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 						</KeyValues>
 					</Frame>
-					<Frame name="TextToSpeechFrameTtsVoiceDropdown" parentKey="TtsVoiceDropdown" inherits="UIDropDownMenuTemplate">
+					<Frame name="TextToSpeechFrameTtsVoiceDropdown" hyperlinksEnabled="true" parentKey="TtsVoiceDropdown" inherits="UIDropDownMenuTemplate">
 						<KeyValues>
 							<KeyValue key="hideBackdrops" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentChatTypeContainer" relativePoint="TOPRIGHT" x="50" y="20" />
+							<Anchor point="TOPLEFT" relativeTo="$parentChatTypeContainer" relativePoint="TOPRIGHT" x="0" y="10" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="GameFontHighlightLeft" text="TEXT_TO_SPEECH_VOICE_OPTION">
+								<FontString name="$parentLabel" inherits="GameFontHighlightLeft" text="TEXT_TO_SPEECH_VOICE_OPTIONS">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="28"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentMoreVoicesLabel" inherits="GameFontHighlightLeft" text="TEXT_TO_SPEECH_MORE_VOICES">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="8"/>
 									</Anchors>
@@ -218,33 +254,10 @@
 						<Scripts>
 							<OnLoad function="TextToSpeechFrameTtsVoiceDropdown_OnLoad"/>
 							<OnEvent function="TextToSpeechFrameTtsVoiceDropdown_OnEvent"/>
+							<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
 						</Scripts>
 					</Frame>
-					<Frame name="TextToSpeechFrameTtsVoicePicker" inherits="UIDropDownCustomMenuEntryTemplate" parentKey="VoicePicker" enableMouse="true" hidden="true">
-						<Size x="350" y="115"/>
-						<Frames>
-							<Frame inherits="TooltipBorderedFrameTemplate" useParentLevel="true">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="-10" y="10"/>
-									<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-									<Anchor point="BOTTOMRIGHT" x="-25"/>
-								</Anchors>
-							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-								<KeyValues>
-									<KeyValue key="hideBackground" value="true" type="boolean"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-								</Anchors>
-							</EventFrame>
-						</Frames>
+					<Frame name="TextToSpeechFrameTtsVoicePicker" inherits="TextToSpeechFrameTtsVoicePickerTemplate" parentKey="VoicePicker">
 						<Scripts>
 							<OnLoad function="TextToSpeechFrameTtsVoicePicker_OnLoad"/>
 							<OnShow function="TextToSpeechFrameTtsVoicePicker_OnShow"/>
@@ -268,10 +281,37 @@
 							<OnClick function="UseAlternateVoiceForSystemMessagesCheckButton_OnClick"/>
 						</Scripts>
 					</CheckButton>
+					<Frame name="TextToSpeechFrameTtsVoiceAlternateDropdown" parentKey="TtsVoiceAlternateDropdown" inherits="UIDropDownMenuTemplate">
+						<KeyValues>
+							<KeyValue key="hideBackdrops" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.UseAlternateVoiceForSystemMessagesCheckButton" relativePoint="BOTTOMLEFT" x="-20" y="-10" />
+						</Anchors>
+						<Scripts>
+							<OnLoad function="TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad"/>
+							<OnEvent function="TextToSpeechFrameTtsVoiceAlternateDropdown_OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="TextToSpeechFrameTtsVoiceAlternatePicker" inherits="TextToSpeechFrameTtsVoicePickerTemplate" parentKey="VoiceAlternatePicker">
+						<Scripts>
+							<OnLoad function="TextToSpeechFrameTtsVoiceAlternatePicker_OnLoad"/>
+							<OnShow function="TextToSpeechFrameTtsVoicePicker_OnShow"/>
+						</Scripts>
+					</Frame>
+					<Button name="TextToSpeechFramePlaySampleAlternateButton" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">
+						<Size x="96" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFrameTtsVoiceAlternateDropdown" relativePoint="BOTTOMLEFT" x="20" y="-10" />
+						</Anchors>
+						<Scripts>
+							<OnClick function="TextToSpeechFramePlaySampleAlternateButton_OnClick"/>
+						</Scripts>
+					</Button>
 					<Slider name="TextToSpeechFrameAdjustRateSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
 						<Size x="200" y="17"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.UseAlternateVoiceForSystemMessagesCheckButton" relativePoint="BOTTOMLEFT" y="-40" />
+							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFramePlaySampleAlternateButton" relativePoint="BOTTOMLEFT" x="0" y="-40" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
