@@ -1723,7 +1723,7 @@
 								</Scripts>
 							</Button>
 							<Frame name="CharacterUpgradeSecondChanceWarningFrame" frameStrata="DIALOG" hidden="true">
-								<Size x="412" y="176"/>
+								<Size x="480" y="199"/>
 								<Anchors>
 									<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER" x="0" y="0"/>
 								</Anchors>
@@ -1732,21 +1732,21 @@
 										<KeyValues>
 											<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
 										</KeyValues>
-										<Size x="412" y="176"/>
+										<Size x="480" y="199"/>
 										<Anchors>
 											<Anchor point="CENTER" x="0" y="0"/>
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
 												<FontString parentKey="Text" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT">
-													<Size x="360" y="0"/>
+													<Size x="430" y="0"/>
 													<Anchors>
 														<Anchor point="TOP" x="0" y="-24"/>
 													</Anchors>
 													<Color r="1" g="1" b="1"/>
 												</FontString>
 												<FontString parentKey="CharacterDetails" inherits="GlueFontNormalHuge" text="Thrall Level 1 Orc Warrior">
-													<Size x="360" y="0"/>
+													<Size x="430" y="0"/>
 													<Anchors>
 														<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-23"/>
 													</Anchors>
@@ -1763,8 +1763,11 @@
 													</Anchor>
 												</Anchors>
 												<Scripts>
+													<OnShow function="CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnShow"/>
 													<OnClick function="CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick"/>
-													<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
+													<OnUpdate>
+														CharacterUpgradeSecondChanceWarningFrameConfirmButton_Update(self, elapsed);
+													</OnUpdate>
 												</Scripts>
 											</Button>
 											<Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">

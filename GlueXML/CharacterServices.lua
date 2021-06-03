@@ -363,6 +363,7 @@ function CharacterUpgradeFlow:Finish(controller)
 	local results = self:BuildResults(self.numSteps);
 	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
+		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:Disable();
 
 		if ( self:IsTrialBoost() ) then
 			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
@@ -378,8 +379,9 @@ function CharacterUpgradeFlow:Finish(controller)
 			end
 		end
 
+		local realmName = GetServerName();
 		local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost, _, revokedCharacterUpgrade = GetCharacterInfo(results.charid);
-		CharacterUpgradeSecondChanceWarningBackground.CharacterDetails:SetText(SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFileName].colorStr, name, level, class));
+		CharacterUpgradeSecondChanceWarningBackground.CharacterDetails:SetText(SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFileName].colorStr, name .. " - " .. realmName .. "\n", level, class));
 
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;

@@ -2896,6 +2896,19 @@ function CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick(self)
     CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
 end
 
+function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnShow(self)
+	self.hideTimer = 0;
+end
+
+BOOST_BUTTON_DELAY = 2;
+function CharacterUpgradeSecondChanceWarningFrameConfirmButton_Update(self, elapsed)
+	if(self.hideTimer == nil) then self.hideTimer = 0 end;
+	self.hideTimer = math.min(self.hideTimer + elapsed, BOOST_BUTTON_DELAY);
+	if(self.hideTimer >= BOOST_BUTTON_DELAY and not CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:IsEnabled()) then
+		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:Enable();
+	end
+end
+
 -- CHARACTER UNDELETE
 
 GlueDialogTypes["UNDELETE_FAILED"] = {
