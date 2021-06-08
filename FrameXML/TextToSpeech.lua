@@ -32,6 +32,8 @@ function TextToSpeechButtonMixin:ShowHint()
 				bitfieldFlag = LE_FRAME_TUTORIAL_TEXT_TO_SPEECH,
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				offsetX = -2,
+				system = "Chat",
+				systemPriority = 20,
 			};
 			HelpTip:Show(self, helpTipInfo);
 		end

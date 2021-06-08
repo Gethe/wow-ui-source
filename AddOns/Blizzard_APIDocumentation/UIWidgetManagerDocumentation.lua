@@ -1229,6 +1229,7 @@ local UIWidgetManager =
 				{ Name = "fontType", Type = "UIWidgetFontType", Nilable = false },
 				{ Name = "bottomPadding", Type = "number", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "hAlign", Type = "WidgetTextHorizontalAlignmentType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },

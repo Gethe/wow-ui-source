@@ -197,6 +197,21 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetSpecificDungeonOverallScoreRarityColor",
+			Type = "Function",
+			Documentation = { "Returns a color value from the passed in mythic+ rating from the combined affix scores for a specific dungeon" },
+
+			Arguments =
+			{
+				{ Name = "specificDungeonOverallScore", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specificDungeonOverallScoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpecificDungeonScoreRarityColor",
 			Type = "Function",
 			Documentation = { "Returns a color value from the passed in mythic+ rating for a specific dungeon." },

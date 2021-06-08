@@ -126,9 +126,9 @@ local ScenarioInfo =
 		{
 			Name = "JailersTowerType",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 13,
 			Fields =
 			{
 				{ Name = "TwistingCorridors", Type = "JailersTowerType", EnumValue = 0 },
@@ -144,6 +144,7 @@ local ScenarioInfo =
 				{ Name = "TormentChamberAnduin", Type = "JailersTowerType", EnumValue = 10 },
 				{ Name = "AdamantVaults", Type = "JailersTowerType", EnumValue = 11 },
 				{ Name = "ForgottenCatacombs", Type = "JailersTowerType", EnumValue = 12 },
+				{ Name = "Ossuary", Type = "JailersTowerType", EnumValue = 13 },
 			},
 		},
 		{

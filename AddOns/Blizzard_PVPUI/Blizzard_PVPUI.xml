@@ -23,6 +23,11 @@
 		</Scripts>
 	</Frame>
 
+	<FontString name="PVPSeasonChangesDescriptionTemplate" parentArray="SeasonDescriptions" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" virtual="true">
+		<Size x="380" y="0"/>
+		<Color r="0.2824" g="0.0157" b="0.0157"/>
+	</FontString>
+
 	<Frame name="PVPSeasonChangesNoticeTemplate" hidden="true" mixin="NewPvpSeasonMixin" enableMouse="true" virtual="true">
 		<Size x="398" y="548"/>
 		<Layers>
@@ -135,17 +140,10 @@
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
+				<FontString parentKey="SeasonDescriptionHeader" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
 					<Size x="380" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NewSeason" relativePoint="BOTTOM" y="-14"/>
-					</Anchors>
-					<Color r="0.2824" g="0.0157" b="0.0157"/>
-				</FontString>
-				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
-					<Size x="380" y="0"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" y="-14"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>

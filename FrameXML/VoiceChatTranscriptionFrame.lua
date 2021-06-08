@@ -109,17 +109,24 @@ function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 end
 
 function VoiceTranscriptionFrame_UpdateEditBox(self)
+	local speakForMeEnabled = GetCVarBool("remoteTextToSpeech");
 	local muted = C_VoiceChat.IsMuted();
 	local prompt = self.editBox.prompt;
 	if muted then
 		prompt:SetText(VOICE_TRANSCRIPTION_MUTED);
 		prompt:SetTextColor(RED_FONT_COLOR:GetRGB());
-	else
+	elseif speakForMeEnabled then
 		prompt:SetText(REMOTE_TEXT_TO_SPEECH);
 		prompt:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+	else
+		prompt:SetText("");
 	end
 
-	self.editBox.disableActivate = muted;
+	self.editBox.disableActivate = muted or not speakForMeEnabled;
+
+	if not speakForMeEnabled then
+		self.editBox:Hide();
+	end
 end
 
 function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
@@ -131,6 +138,7 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 	elseif ( event == "CVAR_UPDATE" and ( cvarName == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" or cvarName == "ENABLE_REMOTE_TEXT_TO_SPEECH" ) ) then
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
+		VoiceTranscriptionFrame_UpdateEditBox(self);
 	elseif ( event == "VOICE_CHAT_MUTED_CHANGED" ) then
 		VoiceTranscriptionFrame_UpdateEditBox(self);
 	elseif ( event == "VOICE_CHAT_CHANNEL_ACTIVATED" ) then
@@ -179,3 +187,5 @@ end
 
 local VoiceTranscriptionFrame = ChatFrame3;
 VoiceTranscriptionFrame_Init(VoiceTranscriptionFrame);
+
+VOICE_WINDOW_ID = VoiceTranscriptionFrame:GetID();

@@ -512,6 +512,10 @@
 			<Frame name="BottomScenarioWidgetContainerBlock" hidden="true">
 				<Frames>
 					<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate">
+						<KeyValues>
+							<KeyValue key="horizontalRowAnchorPoint" value="TOPLEFT" type="string"/>
+							<KeyValue key="horizontalRowRelativePoint" value="BOTTOMLEFT" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-15"/>
 						</Anchors>

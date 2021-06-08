@@ -174,8 +174,8 @@ function TorghastLevelPickerFrameMixin:ScrollAndSelectHighestAvailableLayer()
 	-- Select the option that is the highest available layer. 
 	for layer in self.gossipOptionsPool:EnumerateActive() do 
 		if (layer.index == highestAvailableLayerIndex) then 
+			layer:SetSelectionGlow(true);
 			self:SelectLevel(layer);
-			layer:SetState(self.gossipOptions[highestAvailableLayerIndex].status);
 			return; 
 		end 
 	end 
@@ -234,7 +234,6 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 	self.Background:SetDesaturated(lockedState);
 	self.Icon:SetDesaturated(lockedState); 
 	local parent = self:GetParent():GetParent(); 
-	local isHighestAvailableLayer = self.index == parent.highestAvailableLayerIndex;
 	local isChecked = (self == parent.currentSelectedButton) and (self.index == parent.currentSelectedButtonIndex);
 
 	self.RewardBanner.Banner:SetShown(not lockedState);
@@ -253,13 +252,19 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 		fontColor = LIGHTGRAY_FONT_COLOR;
 	end 
 	self.Title:SetTextColor(fontColor:GetRGB());
-	self.RewardBanner.Reward.HighlightGlow:SetShown(isHighestAvailableLayer);
-	self.RewardBanner.Reward.HighlightGlow2:SetShown(isHighestAvailableLayer);
-	if(self.RewardBanner.Reward.HighlightGlow:IsShown()) then 
-		self.RewardBanner.Reward.PulseAnim:Play();
-	end
 	self:SetEnabled(not lockedState);
+	self:SetSelectionGlow(false);
 end
+
+function TorghastLevelPickerOptionButtonMixin:SetSelectionGlow(shouldShow)
+	self.RewardBanner.Reward.HighlightGlow:SetShown(shouldShow);
+	self.RewardBanner.Reward.HighlightGlow2:SetShown(shouldShow);
+	if(shouldShow) then 
+		self.RewardBanner.Reward.PulseAnim:Play();
+	else 
+		self.RewardBanner.Reward.PulseAnim:Stop();
+	end
+end		
 
 function TorghastLevelPickerOptionButtonMixin:UpdateSelectionState()
 	local isChecked = self:GetChecked(); 

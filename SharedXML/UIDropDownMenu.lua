@@ -1380,6 +1380,14 @@ function UIDropDownMenu_EnableDropDown(dropDown)
 	dropDown.isDisabled = nil;
 end
 
+function UIDropDownMenu_SetDropDownEnabled(dropDown, enabled)
+	if enabled then
+		return UIDropDownMenu_EnableDropDown(dropDown);
+	else
+		return UIDropDownMenu_DisableDropDown(dropDown);
+	end
+end
+
 function UIDropDownMenu_IsEnabled(dropDown)
 	return not dropDown.isDisabled;
 end

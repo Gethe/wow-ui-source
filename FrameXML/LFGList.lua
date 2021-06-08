@@ -1517,7 +1517,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 		end
 
 		local classTextColor = grayedOut and GRAY_FONT_COLOR or RAID_CLASS_COLORS[class];
-		--member.Name:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
+		member.Name:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
 	else
 		--We might still be requesting the name and class from the server.
 		member.Name:SetText("");

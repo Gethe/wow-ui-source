@@ -1930,16 +1930,52 @@ end
 
 NewPvpSeasonMixin = { };
 
+local MAX_NUMBER_OF_PVP_SEASON_DESCRIPTIONS = 2;
+local PVP_SEASON_DESCRIPTION_FORMAT = "SL_PVP_SEASON_DESCRIPTION%s";
+local PVP_SEASON_DESCRIPTION_VERTICAL_SPACING = 14;
+
 function NewPvpSeasonMixin:OnShow()
+	if self.SeasonDescriptions == nil then
+		self.SeasonDescriptions = {};
+	end
+
 	local currentSeason = GetCurrentArenaSeason();
 	if currentSeason == SL_START_SEASON then
-		self.SeasonDescription:SetText(SL_PVP_FIRST_SEASON_DESCRIPTION);
-		self.SeasonDescription2:SetText(nil);
-		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescription, "BOTTOM", 0, -14);
+		self.SeasonDescriptionHeader:SetText(SL_PVP_FIRST_SEASON_DESCRIPTION);
+		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescriptionHeader, "BOTTOM", 0, -14);
+
+		for i, seasonDescription in ipairs(self.SeasonDescriptions) do
+			seasonDescription:Hide();
+		end
 	else
-		self.SeasonDescription:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
-		self.SeasonDescription2:SetText(SL_PVP_SEASON_DESCRIPTION);
-		self.SeasonRewardText:SetPoint("TOP", self.SeasonDescription2, "BOTTOM", 0, -14);
+		self.SeasonDescriptionHeader:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
+
+		local rewardTextAnchor = self.SeasonDescriptionHeader;
+		for i = 1, MAX_NUMBER_OF_PVP_SEASON_DESCRIPTIONS do
+			local seasonDescriptionText = _G[PVP_SEASON_DESCRIPTION_FORMAT:format(i)];
+			local hasText = (seasonDescriptionText ~= nil);
+
+			local seasonDescription = self.SeasonDescriptions[i];
+			if seasonDescription == nil then
+				if not hasText then
+					break;
+				end
+
+				local fontStringName = nil;
+				seasonDescription = self:CreateFontString(fontStringName, "ARTWORK", "PVPSeasonChangesDescriptionTemplate");
+
+				local relativeFontString = (i > 1) and self.SeasonDescriptions[i - 1] or self.SeasonDescriptionHeader;
+				seasonDescription:SetPoint("TOP", relativeFontString, "BOTTOM", 0, -PVP_SEASON_DESCRIPTION_VERTICAL_SPACING);
+			end
+
+			seasonDescription:SetShown(hasText);
+			if hasText then
+				seasonDescription:SetText(seasonDescriptionText);
+				rewardTextAnchor = seasonDescription;
+			end
+		end
+
+		self.SeasonRewardText:SetPoint("TOP", rewardTextAnchor, "BOTTOM", 0, -PVP_SEASON_DESCRIPTION_VERTICAL_SPACING);
 	end
 
 	local achievementID = GetPVPSeasonAchievementID(currentSeason);

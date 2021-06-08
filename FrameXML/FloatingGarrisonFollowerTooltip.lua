@@ -217,7 +217,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 
 	local includeAutoAttack = true;
 	local autoSpells = GarrAutoCombatUtil.GetFollowerAutoCombatSpells(data.garrisonFollowerID, data.level, includeAutoAttack);
-	local autoSpellCount = #autoSpells;
+	local autoSpellCount = autoSpells and #autoSpells or 0;
 
 	if abilityCount > 0 or autoSpellCount > 0 then 
 		if specializationCount > 0 then

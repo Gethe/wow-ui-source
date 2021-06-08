@@ -27,6 +27,12 @@ local BORDER_ATLAS_SELECTED = "orderhalltalents-spellborder-yellow";
 
 local TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID = 132;
 
+local function CustomTorghastTalentErrorCallback(talent)
+	if (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources) then
+		return ERR_TORGHAST_TALENT_CANT_AFFORD_TALENT;
+	end
+end
+
 local TalentTreeLayoutOptions = { };
 
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
@@ -74,7 +80,7 @@ local Torghast_TalentTreeLayoutOptions =
 	singleCost = false,
 	showUnffordableAsAvailable = true,
 	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
-	customUnavailableTalentError = ERR_TORGHAST_TALENT_CANT_AFFORD_TALENT,
+	customUnavailableTalentErrorCallback = CustomTorghastTalentErrorCallback,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
 };
@@ -117,12 +123,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		local soundKitID = GetResearchSoundForTalentType(self.data.talentType);
-		PlaySound(soundKitID);
-		C_Garrison.ResearchTalent(self.data.id, self.data.rank);
-		if (not self.data.hasTime) then
-			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
-		end
+		self.data.button:ActivateTalent();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -571,7 +572,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		talentFrame:SetSize(buttonInfo.size, buttonInfo.size);
 		talentFrame.Icon:SetTexture(talent.icon);
 
-		talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect, layoutOptions.customUnavailableTalentError);
+		talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect, layoutOptions.customUnavailableTalentErrorCallback);
 
 		if (talent.isBeingResearched and not talent.hasInstantResearch) then
 			talentFrame.Cooldown:SetCooldownUNIX(talent.startTime, talent.researchDuration);
@@ -748,10 +749,10 @@ end
 
 GarrisonTalentButtonMixin = { }
 
-function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect, customUnavailableTalentError)
+function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect, customUnavailableTalentErrorCallback)
 	self.talent = talent;
 	self.talentSelectedEffect = talentSelectedEffect;
-	self.customUnavailableTalentError = customUnavailableTalentError;
+	self.customUnavailableTalentErrorCallback = customUnavailableTalentErrorCallback;
 
 	self:ReacquireAnimationFrame();
 end
@@ -853,32 +854,56 @@ function GarrisonTalentButtonMixin:OnClick()
 	if (self.talent.talentAvailability == Enum.GarrisonTalentAvailability.Available) then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(talentFrame.currency);
 
-		local hasCost = self.talent.researchCost and self.talent.researchCost > 0;
-		local hasTime = self.talent.researchDuration and self.talent.researchDuration > 0;
+		local currencyCostQuantity = nil;
+		for i, currencyCost in ipairs(self.talent.researchCurrencyCosts) do
+			if currencyCost.currencyType == talentFrame.currency then
+				currencyCostQuantity = currencyCost.currencyQuantity;
+				break;
+			end
+		end
 
-		if (hasCost or hasTime) then
+		local showCurrencyCost = (currencyCostQuantity ~= nil);
+
+		local hasTime = self:HasResearchTime();
+
+		if (showCurrencyCost or hasTime) then
 			local str;
-			if (hasCost and hasTime) then
-				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), currencyInfo.iconFileID, SecondsToTime(self.talent.researchDuration, false, true));
-			elseif (hasCost) then
-				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_TIME, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), currencyInfo.iconFileID);
+			if (showCurrencyCost and hasTime) then
+				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(currencyCostQuantity), currencyInfo.iconFileID, SecondsToTime(self.talent.researchDuration, false, true));
+			elseif (showCurrencyCost) then
+				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_TIME, self.talent.name, BreakUpLargeNumbers(currencyCostQuantity), currencyInfo.iconFileID);
 			elseif (hasTime) then
 				str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION_NO_COST, self.talent.name, SecondsToTime(self.talent.researchDuration, false, true));
 			end
-			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, rank = self.talent.talentRank + 1,  hasTime = hasTime,  button = self, talentType = self.talent.type });
+			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { button = self, });
 		else
-			local soundKitID = GetResearchSoundForTalentType(self.talent.type);
-			PlaySound(soundKitID);
-
-			if self.talentSelectedEffect ~= nil then
-				self:StartSelectedAnimation();
-			end
-
-			C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
-			talentFrame:SetResearchingTalentID(self.talent.id);
+			self:ActivateTalent();
 		end
-	elseif (self.customUnavailableTalentError) then
-		UIErrorsFrame:AddMessage(self.customUnavailableTalentError, RED_FONT_COLOR:GetRGBA());
+	else
+		local errorCallback = self.customUnavailableTalentErrorCallback;
+		local customError = (errorCallback ~= nil) and errorCallback(self.talent) or nil;
+		if (customError ~= nil) then
+			UIErrorsFrame:AddMessage(customError, RED_FONT_COLOR:GetRGBA());
+		end
+	end
+end
+
+function GarrisonTalentButtonMixin:HasResearchTime()
+	return self.talent.researchDuration and self.talent.researchDuration > 0;
+end
+
+function GarrisonTalentButtonMixin:ActivateTalent()
+	local soundKitID = GetResearchSoundForTalentType(self.talent.type);
+	PlaySound(soundKitID);
+
+	if (self.talentSelectedEffect ~= nil) then
+		self:StartSelectedAnimation();
+	end
+
+	C_Garrison.ResearchTalent(self.talent.id, self.talent.talentRank + 1);
+
+	if (not self:HasResearchTime()) then
+		self:GetTalentFrame():SetResearchingTalentID(self.talent.id);
 	end
 end
 

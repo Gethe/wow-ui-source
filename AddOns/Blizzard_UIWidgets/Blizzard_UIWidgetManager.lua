@@ -41,6 +41,8 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
 	local widgetContainerFrameLevel = widgetContainerFrame:GetFrameLevel();
+	local horizontalRowAnchorPoint = widgetContainerFrame.horizontalRowAnchorPoint or widgetContainerFrame.verticalAnchorPoint;
+	local horizontalRowRelativePoint = widgetContainerFrame.horizontalRowRelativePoint or widgetContainerFrame.verticalRelativePoint;
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		widgetFrame:ClearAllPoints();
@@ -115,7 +117,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 				else 
 					-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
 					local relative = horizontalRowContainer or sortedWidgets[index - 1];
-					newHorizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
 				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
 				widgetFrame:SetParent(newHorizontalRowContainer);

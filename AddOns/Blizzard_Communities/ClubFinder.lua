@@ -1246,10 +1246,13 @@ function CardRightClickOptionsMenuInitialize(self, level)
 		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostersName, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
 		UIDropDownMenu_AddButton(info, level);
 
-		info.text = CLUB_FINDER_REPORT_DESCRIPTION;
-		info.notCheckable = true;
-		info.func = function() 	ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostingDescription, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-		UIDropDownMenu_AddButton(info, level);
+		local guildDescrip = self:GetParent().cardInfo.comment;
+		if(guildDescrip:gsub("%s", "") ~= "") then 
+			info.text = CLUB_FINDER_REPORT_DESCRIPTION;
+			info.notCheckable = true;
+			info.func = function() 	ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostingDescription, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
 
 	if (level == 1) then
@@ -2227,6 +2230,9 @@ function ClubFinderInvitationsFrameMixin:DisplayInvitation(clubInfo, isLinkInvit
 	if(not clubInfo) then
 		return;
 	end
+
+	self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
+	self:GetParent():SelectClub(nil);
 
 	local isGuild = clubInfo.isGuild;
 	self.isLinkInvitation = isLinkInvitation;

@@ -359,13 +359,6 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogBackground:SetPoint("CENTER");
 	end
 
-	-- Dialog background
-	if (dialogInfo.darken) then
-		GlueDialogBackground:SetBackdrop(BACKDROP_DARK_DIALOG_32_32);
-	else
-		GlueDialogBackground:SetBackdrop(BACKDROP_DIALOG_32_32);
-	end
-
 	GlueDialog.data = data;
 	local glueText;
 	if ( dialogInfo.html ) then

@@ -13,7 +13,7 @@ function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
 
-	self.Text:Setup(widgetInfo.text, widgetInfo.fontType, widgetInfo.textSizeType, widgetInfo.enabledState);
+	self.Text:Setup(widgetInfo.text, widgetInfo.fontType, widgetInfo.textSizeType, widgetInfo.enabledState, widgetInfo.hAlign);
 
 	if self.fontColor then
 		self.Text:SetTextColor(self.fontColor:GetRGB());

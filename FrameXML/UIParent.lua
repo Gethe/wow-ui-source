@@ -28,7 +28,6 @@ UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead
 UIPanelWindows["VideoOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["AudioOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["TextToSpeechFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 1 };
 
 -- Frames using the new Templates

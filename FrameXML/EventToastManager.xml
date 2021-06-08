@@ -8,9 +8,7 @@
 				<Alpha parentKey="anim1" startDelay="1.8" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
 				<Scripts>
 					<OnFinished>
-						if( not self:GetParent().isSideDisplayToast) then 
-							self:GetParent():AnimOut();
-						end
+						self:GetParent():OnAnimatedIn();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -18,7 +16,7 @@
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim1"/>
 				<Scripts>
 					<OnFinished>
-						self:GetParent():AnimatedOut();
+						self:GetParent():OnAnimatedOut();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -68,10 +66,8 @@
 
 	<Frame name="EventToastWithIconBaseTemplate" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" alpha="0" mixin="EventToastWithIconBaseMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="418" type="number"/>
-			<KeyValue key="heightPadding" value="30" type="number"/>
-			<KeyValue key="animOutStartDelay" value="1.8" type="number"/>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="animInEndDelay" value="1.8" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate"/>
@@ -81,7 +77,7 @@
 				<Texture parentKey="Icon">
 					<Size x="36" y="36"/>
 					<Anchors>
-						<Anchor point="TOP" x="-80" y="-20"/>
+						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="middleName" inherits="GameFontNormalLarge" justifyH="LEFT">
@@ -93,8 +89,8 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -115,12 +111,12 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="EventToastWithIconWithRarityTemplate" alpha="0" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Frame name="EventToastWithIconWithRarityTemplate" mixin="EventToastWithIconWithRarityMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="12"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SubTitle" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
@@ -151,7 +147,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="EventToastWithIconNormalTemplate" alpha="0" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Frame name="EventToastWithIconNormalTemplate" mixin="EventToastWithIconNormalMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT">
@@ -166,16 +162,18 @@
 					<Color color="GREEN_FONT_COLOR"/>
 				</FontString>
 				<FontString parentKey="InstructionalText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
-					<Size x="0" y="0"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="-45"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
 
-	<Frame name="EventToastWithIconLargeTextTemplate" alpha="0" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
+	<Frame name="EventToastWithIconLargeTextTemplate" mixin="EventToastWithIconLargeTextMixin" inherits="EventToastWithIconBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
@@ -203,8 +201,8 @@
 			<KeyValue key="fixedWidth" value="418" type="number"/>
 			<KeyValue key="minimumHeight" value="72" type="number"/>
 			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
-			<KeyValue key="animOutStartDelay" value="4.5" type="number"/>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="animInEndDelay" value="4.5" type="number"/>
 		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
@@ -408,8 +406,8 @@
 	<Frame name="EventToastChallengeModeToastTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastChallengeModeToastMixin" enableMouse="true" alpha="0" virtual="true">
 		<Size x="418" y="72"/>
 		<KeyValues>
-			<KeyValue key="animOutStartDelay" value="0" type="number"/>
 			<KeyValue key="animInStartDelay" value="10" type="number"/>
+			<KeyValue key="animInEndDelay" value="0" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -488,10 +486,8 @@
 
 	<Frame name="EventToastManagerFrameTemplateNormal" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" mixin="EventToastManagerNormalMixin" alpha="0" virtual="true">
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="418" type="number"/>
-			<KeyValue key="heightPadding" value="20" type="number"/>
 			<KeyValue key="animInStartDelay" value="1.5" type="number"/>
-			<KeyValue key="animOutStartDelay" value="4" type="number"/>
+			<KeyValue key="animInEndDelay" value="4" type="number"/>
 			<KeyValue key="hideParentAnim" value="false" type="boolean"/>
 		</KeyValues>
 		<Frames>
@@ -499,36 +495,36 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
+	<Frame name="EventToastManagerNormalTitleAndSubtitleTemplate" mixin="EventToastManagerNormalTitleAndSubtitleMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-10"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM"/>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
 
-	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal"  alpha="0" virtual="true">
+	<Frame name="EventToastManagerNormalSingleLineTemplate" mixin="EventToastManagerNormalSingleLineMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFont_Gigantic">
 					<Anchors>
-						<Anchor point="CENTER" y="-4"/>
+						<Anchor point="TOP"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
 
-	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" alpha="0" virtual="true">
+	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" JustifyV="CENTER" justifyH="CENTER" inherits="GameFontNormalHuge">
@@ -577,7 +573,7 @@
 		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BlackBG" atlas="levelup-shadow-upper" useAtlasSize="true">
+				<Texture parentKey="BlackBG" atlas="levelup-shadow-upper" useAtlasSize="true" alpha="0.6">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -688,14 +684,14 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="EventToastManagerSideDisplay" mixin="EventToastManagerSideDisplayMixin" inherits="ResizeLayoutFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
+	<Button name="EventToastManagerSideDisplay" mixin="EventToastManagerSideDisplayMixin" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="fadeIn">
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.0" order="1" />
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="2" />
 				<Scripts>
 					<OnFinished>
-						self:GetParent():DisplayToastAtIndex(1);
+						self:GetParent():DisplayToastAtIndex(2);
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -708,8 +704,9 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Size x="270" y="65"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT"  relativeTo="EventToastManagerFrame" relativePoint="TOPLEFT" x="20" y="20"/>
+			<Anchor point="TOPRIGHT" relativePoint="TOP" x="-189" y="-170"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -718,9 +715,14 @@
 						<Anchor point="TOP" x="0" y="53"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BlackBG" atlas="levelup-shadow-lower" useAtlasSize="true">
+				<Texture parentKey="BlackBG" atlas="levelup-shadow-lower" useAtlasSize="true" alpha="0.6">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.GoldBG" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dot" atlas="levelup-dot-gold" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.GoldBG" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
 			</Layer>

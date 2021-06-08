@@ -241,7 +241,7 @@ function QuestPOI_UpdateNormalStyleTexture(poiButton)
 		poiButton.Display:SetAtlas(24, 29, "QuestSharing-QuestLog-Padlock");
 	elseif style == "threat" then
 		local iconAtlas = QuestUtil.GetThreatPOIIcon(poiButton.questID);
-		poiButton.Display:SetAtlas(14, 14, iconAtlas);
+		poiButton.Display:SetAtlas(18, 18, iconAtlas);
 		poiButton.Display:SetOffset(0, 0);
 	end
 end

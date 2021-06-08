@@ -349,6 +349,25 @@
 							<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
+					<!-- Text to speech categories -->
+					<Button name="$parentButton5" inherits="ConfigCategoryButtonTemplate" text="SETTINGS" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-7"/>
+							<Anchor point="TOPRIGHT" x="-5" y="-7"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentButton6" inherits="ConfigCategoryButtonTemplate" text="CHAT" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton5" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentButton7" inherits="ConfigCategoryButtonTemplate" text="GLOBAL_CHANNELS" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton6" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
+					</Button>
 				</Frames>
 				<Scripts>
 					<OnShow>
@@ -439,6 +458,65 @@
 				</Frames>
 				<Scripts>
 					<OnShow function="ChatConfigOtherSettings_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ChatConfigTextToSpeechSettings">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+				</Anchors>
+				<Frames>
+					<Frame name="TextToSpeechFrame" inherits="TextToSpeechFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow function="ChatConfigTextToSpeechSettings_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ChatConfigTextToSpeechMessageSettings">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSubTitle" text="TEXT_TO_SPEECH_CHAT_MESSAGE_TYPES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="ChatConfigTextToSpeechMessageSettingsChatTypeContainer">
+						<Size x="450" y="300"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="16" y="-32"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="ChatConfigTextToSpeechChannelSettings">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentLeft" inherits="ChatConfigBoxWithHeaderTemplate">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="13" y="-30"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow function="ChatConfigTextToSpeechChannelSettings_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigCombatSettings">
@@ -1407,6 +1485,15 @@
 					<OnClick>
 						StaticPopup_Show("CONFIRM_COMBAT_FILTER_DEFAULTS");
 					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TextToSpeechDefaultButton" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_DEFAULTS">
+				<Size x="170" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefaultButton"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TextToSpeechFrameDefaults_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL" hidden="true">

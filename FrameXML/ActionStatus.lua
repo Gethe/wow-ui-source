@@ -20,7 +20,7 @@ function ActionStatusMixin:OnEvent(event, ...)
 			-- Append [Share] hyperlink
 			if ( C_Social.IsSocialEnabled() ) then
 				local screenshotText = SCREENSHOT_SUCCESS .. " " .. Social_GetShareScreenshotLink();
-				DEFAULT_CHAT_FRAME:AddMessage(screenshotText, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+				ChatFrame_DisplaySystemMessageInPrimary(screenshotText);
 			end
 		end
 		if ( event == "SCREENSHOT_FAILED" ) then

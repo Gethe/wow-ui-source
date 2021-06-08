@@ -104,7 +104,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.partitionPool:ReleaseAll();
 	local backgroundGlowAtlas = backgroundGlowTextureKitString:format(frameTextureKit);
 	local backgroundGlowAtlasInfo = C_Texture.GetAtlasInfo(backgroundGlowAtlas);
-	self.Bar.BackgroundGlow:Hide();
+	self.Bar.BackgroundGlow:SetShown(backgroundGlowAtlasInfo);
 
 	local hasSoloPartition = (#widgetInfo.partitionValues == 1);
 	self.soloPartitionXOffset = nil;
@@ -126,10 +126,6 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 			if hasSoloPartition then
 				self.soloPartitionXOffset = xOffset - (barWidth / 2);
-				if backgroundGlowAtlasInfo then
-					self.Bar.BackgroundGlow:SetAtlas(backgroundGlowAtlas, TextureKitConstants.UseAtlasSize);
-					self.Bar.BackgroundGlow:SetShown(barVal >= partitionValue);
-				end
 			end
 		end
 	end

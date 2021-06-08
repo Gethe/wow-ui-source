@@ -170,7 +170,7 @@
 						</Layers>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
-							<OnEscapePressed function="AccountLogin_Exit"/>
+							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();
@@ -220,7 +220,7 @@
 						</Layers>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
-							<OnEscapePressed function="AccountLogin_Exit"/>
+							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();

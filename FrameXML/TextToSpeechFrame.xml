@@ -60,13 +60,13 @@
 		<HighlightFont style="GameFontHighlightSmallLeft"/>
 		<DisabledFont style="GameFontDisableSmallLeft"/>
 	</Button>
-	
+
 	<CheckButton name="TextToSpeechCheckButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="text" justifyH="LEFT">
-					<Size x="300" y="100"/>
+				<FontString inherits="GameFontHighlightLeft" parentKey="text" justifyH="LEFT">
+					<Size x="240"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="1"/>
 					</Anchors>
@@ -84,8 +84,8 @@
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="text" justifyH="LEFT">
-					<Size x="150" y="100"/>
+				<FontString name="$parentText" inherits="GameFontHighlightSmallLeft" parentKey="text" justifyH="LEFT">
+					<Size x="150"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="1"/>
 					</Anchors>
@@ -104,7 +104,7 @@
 			<OnClick function="TextToSpeechChatTypeCheckButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
-	
+
 	<Frame name="TextToSpeechFrameTtsVoicePickerTemplate" inherits="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" virtual="true">
 		<Size x="350" y="115"/>
 		<Frames>
@@ -136,58 +136,24 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TextToSpeechFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
-		<Size x="858" y="660"/>
+	<Frame name="TextToSpeechFrameTemplate" virtual="true">
+		<Size x="600" y="500"/>
 		<Layers>
 			<Layer level="ARTWORK">
         <Texture parentKey="TextToSpeechFrameSeparator">
-          <Size x="760" y="1"/>
+          <Size x="530" y="1"/>
           <Anchors>
-            <Anchor point="LEFT" relativePoint="TOPLEFT" x="50" y="-220"/>
+            <Anchor point="LEFT" relativePoint="TOPLEFT" x="30" y="-120"/>
           </Anchors>
           <Color r="0.25" g="0.25" b="0.25"/>
         </Texture>
-				<FontString name="$parentSubTitle" text="TEXT_TO_SPEECH_CHAT_MESSAGE_TYPES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TextToSpeechFrameSeparator" relativePoint="TOPLEFT" x="32" y="-32"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Frames>
-			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
-				<KeyValues>
-					<KeyValue key="headerTextPadding" value="100" type="number"/>
-					<KeyValue key="textString" value="TEXT_TO_SPEECH_CONFIG" type="global"/>
-				</KeyValues>
-			</Frame>
-			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="TextToSpeechFrameOkay_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="16" y="16"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="TextToSpeechFrameDefaults_OnClick"/>
-				</Scripts>
-			</Button>
-			<Frame parentKey="PanelContainer" name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
+			<Frame parentKey="PanelContainer" name="$parentPanelContainer">
 				<Size x="175" y="569"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="36" y="-36"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentOkay" relativePoint="TOPRIGHT" x="-16" y="16"/>
+					<Anchor point="TOPLEFT" x="0" y="-16"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
@@ -195,7 +161,7 @@
 				<Frames>
 					<CheckButton parentKey="PlaySoundSeparatingChatLinesCheckButton" inherits="TextToSpeechCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parentPanelContainer" relativePoint="TOPLEFT" x="32" y="-32"/>
+							<Anchor point="TOPLEFT" relativeKey="$parentPanelContainer" relativePoint="TOPLEFT" x="16" y="-16"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="PlaySoundSeparatingChatLinesCheckButton_OnLoad"/>
@@ -213,38 +179,38 @@
 					</CheckButton>
 					<CheckButton parentKey="PlayActivitySoundWhenNotFocusedCheckButton" inherits="TextToSpeechCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.PlaySoundSeparatingChatLinesCheckButton" relativePoint="TOP"/>
-							<Anchor point="RIGHT" relativeKey="$parent" relativePoint="CENTER" x="64" y="0"/>
+							<Anchor point="TOP" relativeKey="$parent.PlaySoundSeparatingChatLinesCheckButton" relativePoint="TOP" x="0" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.PlaySoundSeparatingChatLinesCheckButton.text" relativePoint="RIGHT" x="16" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="PlayActivitySoundWhenNotFocusedCheckButton_OnLoad"/>
 							<OnClick function="PlayActivitySoundWhenNotFocusedCheckButton_OnClick"/>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentChatTypeContainer" inherits="TooltipBorderBackdropTemplate">
-						<Size x="450" y="300"/>
+					<CheckButton parentKey="NarrateMyMessagesCheckButton" inherits="TextToSpeechCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="32" y="-250"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlayActivitySoundWhenNotFocusedCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-						<KeyValues>
-							<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
-						</KeyValues>
-					</Frame>
+						<Scripts>
+							<OnLoad function="NarrateMyMessagesCheckButton_OnLoad"/>
+							<OnClick function="NarrateMyMessagesCheckButton_OnClick"/>
+						</Scripts>
+					</CheckButton>
 					<Frame name="TextToSpeechFrameTtsVoiceDropdown" hyperlinksEnabled="true" parentKey="TtsVoiceDropdown" inherits="UIDropDownMenuTemplate">
 						<KeyValues>
 							<KeyValue key="hideBackdrops" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentChatTypeContainer" relativePoint="TOPRIGHT" x="0" y="10" />
+							<Anchor point="TOPLEFT" x="16" y="-180"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentLabel" inherits="GameFontHighlightLeft" text="TEXT_TO_SPEECH_VOICE_OPTIONS">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="28"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="32"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentMoreVoicesLabel" inherits="GameFontHighlightLeft" text="TEXT_TO_SPEECH_MORE_VOICES">
+								<FontString name="$parentMoreVoicesLabel" inherits="GameFontHighlightSmallLeft" text="TEXT_TO_SPEECH_MORE_VOICES">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="8"/>
 									</Anchors>
@@ -252,8 +218,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="TextToSpeechFrameTtsVoiceDropdown_OnLoad"/>
-							<OnEvent function="TextToSpeechFrameTtsVoiceDropdown_OnEvent"/>
 							<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
 						</Scripts>
 					</Frame>
@@ -288,10 +252,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.UseAlternateVoiceForSystemMessagesCheckButton" relativePoint="BOTTOMLEFT" x="-20" y="-10" />
 						</Anchors>
-						<Scripts>
-							<OnLoad function="TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad"/>
-							<OnEvent function="TextToSpeechFrameTtsVoiceAlternateDropdown_OnEvent"/>
-						</Scripts>
 					</Frame>
 					<Frame name="TextToSpeechFrameTtsVoiceAlternatePicker" inherits="TextToSpeechFrameTtsVoicePickerTemplate" parentKey="VoiceAlternatePicker">
 						<Scripts>
@@ -311,7 +271,7 @@
 					<Slider name="TextToSpeechFrameAdjustRateSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
 						<Size x="200" y="17"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFramePlaySampleAlternateButton" relativePoint="BOTTOMLEFT" x="0" y="-40" />
+							<Anchor point="TOPLEFT" x="330" y="-150"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

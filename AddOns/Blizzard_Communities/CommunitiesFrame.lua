@@ -48,6 +48,7 @@ local COMMUNITIES_STATIC_POPUPS = {
 local CLUB_FINDER_APPLICANT_LIST_EVENTS = {
 	"GUILD_ROSTER_UPDATE",
 	"CLUB_FINDER_RECRUITS_UPDATED",
+	"CLUB_FINDER_APPLICATIONS_UPDATED",
 };
 
 
@@ -259,7 +260,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(ERR_GUILD_NAME_INVALID);
 		end
-	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" then
+	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" or event == "CLUB_FINDER_APPLICATIONS_UPDATED" then
 		if(C_ClubFinder.IsEnabled()) then
 			local clubId = self:GetSelectedClubId();
 			if (clubId) then
@@ -466,8 +467,6 @@ function CommunitiesFrameMixin:ClubFinderHyperLinkClicked(clubFinderId)
 		ShowUIPanel(self);
 	end
 
-	self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
-	self:SelectClub(nil);
 	self.CommunityFinderFrame:ClubFinderOnClickHyperLink(clubFinderId);
 end
 

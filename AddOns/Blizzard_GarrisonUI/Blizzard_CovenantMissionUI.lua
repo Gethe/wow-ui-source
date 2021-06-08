@@ -1138,7 +1138,8 @@ function CovenantMissionHealAllButton_OnLeave(self)
 end
 
 function CovenantMissionHealAllButton_OnClick(self)
-	local currencyString = CreateTextureMarkup(self.currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, self.currencyInfo.name);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyID);
+	local currencyString = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, currencyInfo.name);
 	StaticPopup_Show("COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION", currencyString, "", {followerType = self.followerType});
 end
 

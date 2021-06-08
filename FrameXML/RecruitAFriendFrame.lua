@@ -80,6 +80,8 @@ function RecruitAFriendFrameMixin:UpdateRAFTutorialTips()
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			autoEdgeFlipping = true,
 			useParentStrata = true,
+			system = "Chat",
+			systemPriority = 30,
 		};
 		HelpTip:Show(QuickJoinToastButton, rewardHelpTipInfo);
 		self.shownRewardTutorial = true;

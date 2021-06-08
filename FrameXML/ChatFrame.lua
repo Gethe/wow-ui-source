@@ -2932,11 +2932,13 @@ function ChatFrame_AddCommunitiesChannel(chatFrame, channelName, channelColor, s
 	end
 end
 
-function ChatFrame_GetChannelShortcutAndReadableNameFromIdentifier(channelIdentifier)
+function ChatFrame_GetFullChannelInfo(channelIdentifier)
 	local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(channelIdentifier);
 	if channelInfo then
-		return channelInfo.shortcut, ChatFrame_ResolveChannelName(channelInfo.name);
+		channelInfo.humanReadableName = ChatFrame_ResolveChannelName(channelInfo.name);
 	end
+
+	return channelInfo;
 end
 
 function ChatFrame_CanAddChannel()
@@ -4374,7 +4376,7 @@ function ChatEdit_OnHide(self)
 		ChatEdit_DeactivateChat(self);
 	end
 
-	if ( LAST_ACTIVE_CHAT_EDIT_BOX == self and self:IsShown() ) then	--Our parent was hidden. Let's find a new default frame.
+	if ( LAST_ACTIVE_CHAT_EDIT_BOX == self and ( self.disableActivate or self:IsShown() ) ) then	--Our parent was hidden. Let's find a new default frame.
 		--We'll go with the active dock frame since people think of that as the primary chat.
 		ChatEdit_SetLastActiveWindow(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox);
 	end
@@ -4429,7 +4431,7 @@ end
 
 local function ChatEdit_SetDeactivated(editBox)
 	editBox:SetFrameStrata("LOW");
-	if ( GetCVar("chatStyle") == "classic" and not editBox.isGM ) then
+	if ( editBox.disableActivate or ( GetCVar("chatStyle") == "classic" and not editBox.isGM ) ) then
 		editBox:Hide();
 	else
 		editBox:SetText("");
@@ -4470,6 +4472,10 @@ function ChatEdit_ChooseBoxForSend(preferredChatFrame)
 end
 
 function ChatEdit_SetLastActiveWindow(editBox)
+	if ( editBox.disableActivate ) then
+		return;
+	end
+
 	local previousValue = LAST_ACTIVE_CHAT_EDIT_BOX;
 	if ( LAST_ACTIVE_CHAT_EDIT_BOX and not LAST_ACTIVE_CHAT_EDIT_BOX.isGM and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		if ( GetCVar("chatStyle") == "im" ) then

@@ -3,8 +3,10 @@ TEXTTOSPEECH_CONFIG_DEFAULTS = {
 	playSoundSeparatingChatLineBreaks = true,
 	addCharacterNameToSpeech = true,
 	playActivitySoundWhenNotFocused = true,
-	ttsVoiceOptionSelected = 0,
-	ttsVoiceOptionSelectedAlternate = 1,
+	ttsVoiceOptionStandardDefault = 0,
+	ttsVoiceOptionStandard = nil,
+	ttsVoiceOptionAlternateDefault = 1,
+	ttsVoiceOptionAlternate = nil,
 	alternateSystemVoice = true,
 	narrateMyMessages = false,
 	speechRate = 0,
@@ -27,10 +29,14 @@ TEXTTOSPEECH_CONFIG_DEFAULTS = {
 		["CHAT_MSG_INSTANCE_CHAT_LEADER"] = true,
 		["CHAT_MSG_INSTANCE_CHAT"] = true,
 		["CHAT_MSG_BN_WHISPER"] = true,
-	}
+	},
+	enabledChannelTypes = {},
 };
 
 TEXTTOSPEECH_CONFIG = CopyTable(TEXTTOSPEECH_CONFIG_DEFAULTS);
+
+local playbackActive = false;
+local queuedMessages = {};
 
 local TextToSpeechChatTypes = {
 	"CHAT_MSG_MONSTER_SAY",
@@ -53,33 +59,108 @@ local TextToSpeechChatTypes = {
 	"CHAT_MSG_BN_WHISPER",
 };
 
-local function GetVoices()
-	return C_VoiceChat.GetTtsVoices();
-end
-
-local function FindVoiceByID(voiceID)
-	local index, value = FindInTableIf(GetVoices(), function(voice)
-		return voice.voiceID == voiceID;
-	end);
-	return index, value;
-end
-
 local function FormatVoiceText(voice)
-	local index = FindVoiceByID(voice.voiceID);
 	return voice.name;
 end
 
-TextToSpeech_FindVoiceByID = FindVoiceByID;
+local function FindVoiceByName(voices, voiceName)
+	return FindInTableIf(voices, function(voice) return voice.name == voiceName; end);
+end
+
+local function FindVoiceByID(voices, voiceID)
+	return FindInTableIf(voices, function(voice) return voice.voiceID == voiceID; end);
+end
+
+local function FindVoiceBySetting(voiceNameKey, voiceDefaultIDKey)
+	local voices = C_VoiceChat.GetTtsVoices();
+	local index, voice = FindVoiceByName(voices, TEXTTOSPEECH_CONFIG[voiceNameKey]);
+	if not voice then
+		index, voice = FindVoiceByID(voices, TEXTTOSPEECH_CONFIG[voiceDefaultIDKey]);
+	end
+
+	return voice;
+end
+
+local cachedVoices = {};
+local function CacheVoice(voiceType, voice)
+	cachedVoices[voiceType] = voice;
+	return voice;
+end
+
+local function GetSelectedVoiceBySettings(settingName, settingDefaultID)
+	local cachedVoice = cachedVoices[settingName];
+	if cachedVoice then
+		return cachedVoice;
+	end
+
+	return CacheVoice(settingName, FindVoiceBySetting(settingName, settingDefaultID));
+end
+
+local function GetSettingNamesByVoiceType(voiceType)
+	if voiceType == "alternate" then
+		return "ttsVoiceOptionAlternate", "ttsVoiceOptionAlternateDefault";
+	end
+
+	return "ttsVoiceOptionStandard", "ttsVoiceOptionStandardDefault";
+end
+
+function TextToSpeech_GetSelectedVoice(voiceType)
+	return GetSelectedVoiceBySettings(GetSettingNamesByVoiceType(voiceType));
+end
+
+function TextToSpeech_IsSelectedVoice(voice, voiceType)
+	if voice then
+		local selectedVoice = TextToSpeech_GetSelectedVoice(voiceType);
+		if selectedVoice then
+			return selectedVoice.name == voice.name;
+		end
+	end
+
+	return false;
+end
+
+function TextToSpeech_SetSelectedVoice(voice, voiceType)
+	local settingName = GetSettingNamesByVoiceType(voiceType);
+	TEXTTOSPEECH_CONFIG[settingName] = voice.name;
+	CacheVoice(settingName, voice);
+end
 
 function TextToSpeech_GetSetting(setting)
 	-- TODO: Moving this to chat settings soon.
-	return TEXTTOSPEECH_CONFIG[setting] or TEXTTOSPEECH_CONFIG.enabledChatTypes[setting];
+	return TEXTTOSPEECH_CONFIG[setting] or TextToSpeechFrame_GetChatTypeEnabled(setting);
 end
 
-function TextToSpeech_Speak(text, optionalVoiceOption)
-	local voiceOption = optionalVoiceOption or TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected;
+function TextToSpeech_IsUsingAlternateSystemVoice()
+	return TextToSpeech_GetSetting("alternateSystemVoice");
+end
+
+function TextToSpeech_SetUseAlternateSystemVoice(enabled)
+	TEXTTOSPEECH_CONFIG.alternateSystemVoice = enabled;
+end
+
+local function TextToSpeech_PlaySampleInternal(self, voice)
+	TextToSpeech_Speak(TEXT_TO_SPEECH_SAMPLE_TEXT, voice);
+end
+
+function TextToSpeech_PlaySample(self)
+	TextToSpeech_PlaySampleInternal(self, TextToSpeech_GetSelectedVoice("standard"));
+end
+
+function TextToSpeech_PlaySampleAlternate(self)
+	TextToSpeech_PlaySampleInternal(self, TextToSpeech_GetSelectedVoice("alternate"));
+end
+
+function TextToSpeech_Speak(text, voice)
+	-- Queue messages
+	if playbackActive then
+		table.insert(queuedMessages, {text=text, voice=voice});
+		return;
+	end
+
+	playbackActive = true;
+
 	C_VoiceChat.SpeakText(
-		voiceOption,
+		voice.voiceID,
 		text,
 		Enum.VoiceTtsDestination.QueuedLocalPlayback,
 		TEXTTOSPEECH_CONFIG.speechRate,
@@ -109,18 +190,11 @@ function TextToSpeechFrame_Update(self)
 	checkBoxParent.PlaySoundSeparatingChatLinesCheckButton:SetChecked(TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks);
 	checkBoxParent.AddCharacterNameToSpeechCheckButton:SetChecked(TEXTTOSPEECH_CONFIG.addCharacterNameToSpeech);
 	checkBoxParent.PlayActivitySoundWhenNotFocusedCheckButton:SetChecked(TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused);
-	checkBoxParent.UseAlternateVoiceForSystemMessagesCheckButton:SetChecked(TEXTTOSPEECH_CONFIG.alternateSystemVoice);
+	checkBoxParent.NarrateMyMessagesCheckButton:SetChecked(TEXTTOSPEECH_CONFIG.narrateMyMessages);
+	checkBoxParent.UseAlternateVoiceForSystemMessagesCheckButton:SetChecked(TextToSpeech_IsUsingAlternateSystemVoice());
 
-	local checkBoxNameString = TextToSpeechFramePanelContainerChatTypeContainer:GetName().."CheckBox";
-	local checkBoxName, checkBox;
-
-	local checkBoxTable = TextToSpeechFramePanelContainerChatTypeContainer.checkBoxTable or {}
-	for index, value in ipairs(checkBoxTable) do
-		checkBoxName = checkBoxNameString..index;
-		checkBox = _G[checkBoxName];
-		if ( checkBox ~= nil ) then
-			checkBox:SetChecked(TEXTTOSPEECH_CONFIG.enabledChatTypes[value]);
-		end
+	if ChatConfigTextToSpeechMessageSettingsChatTypeContainer then
+		TextToSpeechFrame_UpdateMessageCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer);
 	end
 
 	-- Update dropdown
@@ -131,22 +205,32 @@ function TextToSpeechFrame_Update(self)
 	TextToSpeechFrame_UpdateSliders();
 end
 
+function TextToSpeechFrame_UpdateMessageCheckboxes(frame)
+	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxName, checkBox;
+
+	local checkBoxTable = frame.checkBoxTable or {}
+	for index, value in ipairs(checkBoxTable) do
+		checkBoxName = checkBoxNameString..index;
+		checkBox = _G[checkBoxName];
+		if ( checkBox ~= nil ) then
+			checkBox:SetChecked(TextToSpeechFrame_GetChatTypeEnabled(value));
+		end
+	end
+end
+
 function TextToSpeechFrame_UpdateAlternate()
 	TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(TextToSpeechFrameTtsVoiceAlternateDropdown);
 
 	-- Update enabled state
-	local systemEnabled = TEXTTOSPEECH_CONFIG.enabledChatTypes["CHAT_MSG_SYSTEM"];
+	local systemEnabled = TextToSpeechFrame_GetChatTypeEnabled("CHAT_MSG_SYSTEM");
 	local color = systemEnabled and WHITE_FONT_COLOR or GRAY_FONT_COLOR;
 	TextToSpeechFramePanelContainer.UseAlternateVoiceForSystemMessagesCheckButton:SetEnabled(systemEnabled);
 	TextToSpeechFramePanelContainer.UseAlternateVoiceForSystemMessagesCheckButton.text:SetTextColor(color:GetRGB());
 
-	if systemEnabled and TEXTTOSPEECH_CONFIG.alternateSystemVoice then
-		UIDropDownMenu_EnableDropDown(TextToSpeechFrameTtsVoiceAlternateDropdown);
-	else
-		UIDropDownMenu_DisableDropDown(TextToSpeechFrameTtsVoiceAlternateDropdown);
-	end
-
-	TextToSpeechFramePlaySampleAlternateButton:SetEnabled(systemEnabled and TEXTTOSPEECH_CONFIG.alternateSystemVoice);
+	local enabled = systemEnabled and TextToSpeech_IsUsingAlternateSystemVoice();
+	UIDropDownMenu_SetDropDownEnabled(TextToSpeechFrameTtsVoiceAlternateDropdown, enabled);
+	TextToSpeechFramePlaySampleAlternateButton:SetEnabled(enabled);
 end
 
 function TextToSpeechFrame_UpdateSliders()
@@ -161,26 +245,76 @@ function TextToSpeechFrame_UpdateSliders()
 	TextToSpeechFrameAdjustVolumeSlider:SetValue(TEXTTOSPEECH_CONFIG.speechVolume);
 end
 
-function TextToSpeechFrameOkay_OnClick(self, button)
-	ToggleTextToSpeechFrame();
-end
-
 function TextToSpeechFrameDefaults_OnClick(self, button)
 	StaticPopup_Show("CONFIRM_RESET_TEXTTOSPEECH_SETTINGS");
 end
 
+local loadEvents = {
+	"PLAYER_ENTERING_WORLD",
+	"VARIABLES_LOADED",
+	"ADDON_LOADED",
+};
+
+local function IsReadyToLoad(loadedEvents)
+	for index, event in pairs(loadEvents) do
+		if not loadedEvents[event] then
+			return false;
+		end
+	end
+
+	return true;
+end
+
 function TextToSpeechFrame_OnLoad(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("VARIABLES_LOADED");
-	TextToSpeechFrame_Update(self);
+	self.loadedEvents = {};
+	FrameUtil.RegisterFrameForEvents(self, loadEvents);
+
+	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FAILED");
+	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FINISHED");
+end
+
+function TextToSpeechFrame_CheckLoad(self)
+	if IsReadyToLoad(self.loadedEvents) then
+		C_VoiceChat.GetTtsVoices();
+
+		TextToSpeechFrameTtsVoiceDropdown_OnLoad(self.PanelContainer.TtsVoiceDropdown);
+		TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self.PanelContainer.TtsVoiceAlternateDropdown);
+		TextToSpeechFrame_Update(self);
+		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TextToSpeechChatTypes, "TextToSpeechChatTypeCheckButtonTemplate");
+		TextToSpeech_CheckConfig();
+	end
 end
 
 function TextToSpeechFrame_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		TextToSpeechFrame_CreateCheckboxes(TextToSpeechFramePanelContainerChatTypeContainer, TextToSpeechChatTypes, "TextToSpeechChatTypeCheckButtonTemplate");
-	elseif ( event == "VARIABLES_LOADED" ) then
-		TextToSpeech_CheckConfig();
+	if event == "ADDON_LOADED" then
+		local addonName = ...;
+		if addonName == "Blizzard_ClientSavedVariables" then
+			self.loadedEvents[event] = true;
+		end
+	elseif event == "VOICE_CHAT_TTS_PLAYBACK_FINISHED" or event == "VOICE_CHAT_TTS_PLAYBACK_FAILED" then
+		playbackActive = false;
+
+		if ( TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks ) then
+			PlaySound(SOUNDKIT.UI_VOICECHAT_TTSMESSAGE);
+		end
+
+		if #queuedMessages > 0 then
+			local queuedMessage = table.remove(queuedMessages, 1);
+
+			-- Add short delay for message sound if enabled, otherwise play next immediately
+			if ( TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks ) then
+				C_Timer.After(1, function() 
+					TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
+				end);
+			else
+				TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
+			end
+		end
+	else
+		self.loadedEvents[event] = true;
 	end
+
+	TextToSpeechFrame_CheckLoad(self);
 end
 
 function TextToSpeechFrame_OnShow(self)
@@ -193,11 +327,12 @@ function TextToSpeechFrame_SetToDefaults()
 end
 
 function ToggleTextToSpeechFrame()
-	if ( TextToSpeechFrame:IsShown() ) then
-		HideUIPanel(TextToSpeechFrame);
+	if ( ChatConfigFrame:IsShown() ) then
+		HideUIPanel(ChatConfigFrame);
         return false;
 	else
-		ShowUIPanel(TextToSpeechFrame);
+		ShowUIPanel(ChatConfigFrame);
+		ChatConfigFrameChatTabManager:UpdateSelection(VOICE_WINDOW_ID);
         return true;
 	end
 end
@@ -229,13 +364,22 @@ function PlayActivitySoundWhenNotFocusedCheckButton_OnClick(self)
 	TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused = self:GetChecked();
 end
 
+function NarrateMyMessagesCheckButton_OnLoad(self)
+	self.text:SetText(TEXT_TO_SPEECH_NARRATE_MY_MESSAGES);
+end
+
+function NarrateMyMessagesCheckButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	TEXTTOSPEECH_CONFIG.narrateMyMessages = self:GetChecked();
+end
+
 function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate)
 	local checkBoxNameString = frame:GetName().."CheckBox";
 	local checkBoxName, checkBox, check;
 	local width, height;
 	local text;
 	local checkBoxFontString;
-	local secondColIndex = 11;
+	local secondColIndex = 15;
 
 	frame.checkBoxTable = checkBoxTable;
 	for index, value in ipairs(checkBoxTable) do
@@ -259,8 +403,8 @@ function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTempla
 			checkBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, -8);
 		end
 		checkBox.type = value;
-		checkBox:SetChecked(TEXTTOSPEECH_CONFIG.enabledChatTypes[type]);
-		checkBoxFontString = _G[checkBoxName.."Text"];
+		checkBox:SetChecked(TextToSpeechFrame_GetChatTypeEnabled(type));
+		checkBoxFontString = checkBox.text;
 		checkBoxFontString:SetText(_G[strsub(value, 10)] or _G[value] or value);
 		checkBoxFontString:SetVertexColor(GetMessageTypeColor(value));
 		checkBoxFontString:SetMaxLines(1);
@@ -269,7 +413,7 @@ end
 
 function TextToSpeechChatTypeCheckButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	TEXTTOSPEECH_CONFIG.enabledChatTypes[self.type] = self:GetChecked();
+	TextToSpeechFrame_SetChatTypeEnabled(self.type, self:GetChecked());
 
 	if self.type == "CHAT_MSG_SYSTEM" then
 		TextToSpeechFrame_Update(TextToSpeechFrame);
@@ -283,32 +427,21 @@ local function TextToSpeechFrameTtsVoiceDropdown_Initialize()
 end
 
 function TextToSpeechFrameTtsVoiceDropdown_OnLoad(self)
-	C_VoiceChat.GetTtsVoices();
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-
 	UIDropDownMenu_SetInitializeFunction(self, TextToSpeechFrameTtsVoiceDropdown_Initialize);
+	UIDropDownMenu_SetWidth(self, 200);
+	TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
 end
 
 function TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self)
-	local index, voice = FindVoiceByID(TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected);
+	local voice = TextToSpeech_GetSelectedVoice("standard");
 	if voice then
 		UIDropDownMenu_SetText(self, FormatVoiceText(voice));
 	end
 end
 
-function TextToSpeechFrameTtsVoiceDropdown_SetVoiceID(self, voiceID)
-	TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voiceID;
+function TextToSpeechFrameTtsVoiceDropdown_SetSelectedVoice(self, voice)
+	TextToSpeech_SetSelectedVoice(voice);
 	TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
-end
-
-function TextToSpeechFrameTtsVoiceDropdown_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		UIDropDownMenu_SetWidth(self, 200);
-
-		TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
-
-		self:UnregisterEvent(event);
-	end
 end
 
 local function TextToSpeechFrameTtsVoiceAlternateDropdown_Initialize()
@@ -318,46 +451,35 @@ local function TextToSpeechFrameTtsVoiceAlternateDropdown_Initialize()
 end
 
 function TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self)
-	C_VoiceChat.GetTtsVoices();
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-
 	UIDropDownMenu_SetInitializeFunction(self, TextToSpeechFrameTtsVoiceAlternateDropdown_Initialize);
+	UIDropDownMenu_SetWidth(self, 200);
+	TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self);
 end
 
 function TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self)
-	local index, voice = FindVoiceByID(TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelectedAlternate);
+	local voice = TextToSpeech_GetSelectedVoice("alternate");
 	if voice then
 		UIDropDownMenu_SetText(self, FormatVoiceText(voice));
 	end
 end
 
-function TextToSpeechFrameTtsVoiceAlternateDropdown_SetVoiceID(self, voiceID)
-	TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelectedAlternate = voiceID;
+function TextToSpeechFrameTtsVoiceAlternateDropdown_SetSelectedVoice(self, voice)
+	TextToSpeech_SetSelectedVoice(voice, "alternate");
 	TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self);
-end
-
-function TextToSpeechFrameTtsVoiceAlternateDropdown_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		UIDropDownMenu_SetWidth(self, 200);
-
-		TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self);
-
-		self:UnregisterEvent(event);
-	end
 end
 
 function TextToSpeechFrameTtsVoicePicker_OnLoad(self)
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtent(18);
 	view:SetElementInitializer("Button", "TextToSpeechVoicePickerButtonTemplate", function(button, voice)
-		local checked = voice.voiceID == TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected;
+		local checked = TextToSpeech_IsSelectedVoice(voice);
 		button.Check:SetShown(checked);
 		button.UnCheck:SetShown(not checked);
 
 		button:SetText(FormatVoiceText(voice));
 
 		button:SetScript("OnClick", function(button, buttonName)
-			TextToSpeechFrameTtsVoiceDropdown_SetVoiceID(TextToSpeechFrameTtsVoiceDropdown, voice.voiceID);
+			TextToSpeechFrameTtsVoiceDropdown_SetSelectedVoice(TextToSpeechFrameTtsVoiceDropdown, voice);
 			CloseDropDownMenus();
 		end);
 	end);
@@ -368,14 +490,14 @@ function TextToSpeechFrameTtsVoiceAlternatePicker_OnLoad(self)
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtent(18);
 	view:SetElementInitializer("Button", "TextToSpeechVoicePickerButtonTemplate", function(button, voice)
-		local checked = voice.voiceID == TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelectedAlternate;
+		local checked = TextToSpeech_IsSelectedVoice("alternate");
 		button.Check:SetShown(checked);
 		button.UnCheck:SetShown(not checked);
 
 		button:SetText(FormatVoiceText(voice));
 
 		button:SetScript("OnClick", function(button, buttonName)
-			TextToSpeechFrameTtsVoiceAlternateDropdown_SetVoiceID(TextToSpeechFrameTtsVoiceAlternateDropdown, voice.voiceID);
+			TextToSpeechFrameTtsVoiceAlternateDropdown_SetSelectedVoice(TextToSpeechFrameTtsVoiceAlternateDropdown, voice);
 			CloseDropDownMenus();
 		end);
 	end);
@@ -383,7 +505,7 @@ function TextToSpeechFrameTtsVoiceAlternatePicker_OnLoad(self)
 end
 
 function TextToSpeechFrameTtsVoicePicker_OnShow(self)
-	local dataProvider = CreateDataProvider(GetVoices());
+	local dataProvider = CreateDataProvider(C_VoiceChat.GetTtsVoices());
 
 	local elementHeight = 18;
 	local maxVisibleLines = 6;
@@ -400,11 +522,11 @@ function TextToSpeechFrameTtsVoicePicker_OnShow(self)
 end
 
 function TextToSpeechFramePlaySampleButton_OnClick(self)
-	TextToSpeech_Speak(TEXT_TO_SPEECH_SAMPLE_TEXT);
+	TextToSpeech_PlaySample();
 end
 
 function TextToSpeechFramePlaySampleAlternateButton_OnClick(self)
-	TextToSpeech_Speak(TEXT_TO_SPEECH_SAMPLE_TEXT, TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelectedAlternate);
+	TextToSpeech_PlaySampleAlternate();
 end
 
 function UseAlternateVoiceForSystemMessagesCheckButton_OnLoad(self)
@@ -413,7 +535,7 @@ end
 
 function UseAlternateVoiceForSystemMessagesCheckButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	TEXTTOSPEECH_CONFIG.alternateSystemVoice = self:GetChecked();
+	TextToSpeech_SetUseAlternateSystemVoice(self:GetChecked());
 	TextToSpeechFrame_UpdateAlternate();
 end
 
@@ -430,6 +552,8 @@ function TextToSpeech_SetRate(rate)
 end
 
 function TextToSpeechFrameAdjustRateSlider_OnLoad(self)
+	self.Low:SetText(SLOW);
+	self.High:SetText(FAST);
 	self:SetMinMaxValues(TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX);
 	self:SetValueStep(1);
 	self:SetValue(TEXTTOSPEECH_CONFIG.speechRate);
@@ -440,6 +564,7 @@ function TextToSpeechFrameAdjustRateSlider_OnValueChanged(self, value)
 end
 
 function TextToSpeech_SetVolume(volume)
+	volume = tonumber(volume);
 	if type(volume) == "number" then
 		if volume >= TEXTTOSPEECH_VOLUME_MIN and volume <= TEXTTOSPEECH_VOLUME_MAX then
 			TextToSpeechFrameAdjustVolumeSlider:SetValue(Clamp(volume, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX));
@@ -463,32 +588,40 @@ function TextToSpeechFrameAdjustVolumeSlider_OnValueChanged(self, value)
 	self.ValueLabel:SetFormattedText(PERCENTAGE_STRING, math.floor(value));
 end
 
-function TextToSpeech_SetVoice(newVoice)
-	newVoice = (newVoice and newVoice ~= "") and tonumber(newVoice);
-	local voices = C_VoiceChat.GetTtsVoices();
-
-	if newVoice then
-		for index, voice in ipairs(voices) do
-			if voice.voiceID == newVoice then
-				TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = newVoice;
-				break;
-			end
-		end
-	else
-		local nextVoice = 1;
-		for index, voice in ipairs(voices) do
-			if voice.voiceID == TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected and index < #voices then
-				nextVoice = index + 1;
-				break;
-			end
-		end
-		if nextVoice <= #voices then
-			TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected = voices[nextVoice].voiceID;
+local function TextToSpeech_GetNextVoice(voices, voiceType)
+	local selectedVoice = TextToSpeech_GetSelectedVoice(voiceType);
+	if selectedVoice then
+		local index, voice = FindVoiceByName(voices, selectedVoice.name);
+		if index + 1 <= #voices then
+			return voices[index + 1];
 		end
 	end
 
-	local _, voice = TextToSpeech_FindVoiceByID(TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected);
-	return voice;
+	-- Default to voice 1.
+	if #voices > 0 then
+		return voices[1];
+	end
+end
+
+function TextToSpeech_SetVoice(newVoiceID, voiceType)
+	newVoiceID = (newVoiceID and newVoiceID ~= "") and tonumber(newVoiceID);
+	local voices = C_VoiceChat.GetTtsVoices();
+
+	if newVoiceID then
+		local _, voice = FindVoiceByID(voices, newVoiceID);
+		if voice then
+			TextToSpeech_SetSelectedVoice(voice, voiceType);
+			return TextToSpeech_GetSelectedVoice(voiceType);
+		end
+	else
+		local nextVoice = TextToSpeech_GetNextVoice(voices, voiceType);
+		if nextVoice then
+			TextToSpeech_SetSelectedVoice(nextVoice, voiceType);
+			return TextToSpeech_GetSelectedVoice(voiceType);
+		end
+	end
+
+	return nil;
 end
 
 function TextToSpeech_ResetDefaults()
@@ -498,6 +631,25 @@ end
 
 local lastMessage = nil;
 local lastMessageTime = nil;
+
+local function IsMessageTypeEnabled(messageType)
+	local chatMsgType = "CHAT_MSG_" .. messageType;
+
+	if messageType == "CHANNEL" or messageType == "COMMUNITIES_CHANNEL" then
+		return true; -- These are always enabled, if we make it this far then the other filters passed.
+	end
+
+	if TextToSpeechFrame_GetChatTypeEnabled(chatMsgType) then
+		return true;
+	end
+
+	local typeGroup = ChatTypeGroupInverted[chatMsgType];
+	if typeGroup and TextToSpeechFrame_GetChatTypeEnabled("CHAT_MSG_" .. typeGroup) then
+		return true;
+	end
+
+	return false;
+end
 
 function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters)
 	local type = nil;
@@ -516,7 +668,7 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters)
 
 	-- Check that option is enabled for this type or group of types
 	if not ignoreTypeFilters then
-		if ( not TEXTTOSPEECH_CONFIG.enabledChatTypes[chatMsgType] and (typeGroup and not TEXTTOSPEECH_CONFIG.enabledChatTypes["CHAT_MSG_" .. typeGroup]) ) then
+		if not IsMessageTypeEnabled(type) then
 			return;
 		end
 	end
@@ -540,18 +692,19 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters)
 
 	TextToSpeech_CheckConfig();
 
-	local voiceOption = TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelected;
-	if ( TEXTTOSPEECH_CONFIG.alternateSystemVoice and type == "SYSTEM" ) then
-		voiceOption = TEXTTOSPEECH_CONFIG.ttsVoiceOptionSelectedAlternate;
+	local voice = TextToSpeech_GetSelectedVoice("standard");
+	if type == "SYSTEM" and TextToSpeech_IsUsingAlternateSystemVoice() then
+		local alternateVoice = TextToSpeech_GetSelectedVoice("alternate");
+		if alternateVoice then
+			voice = alternateVoice;
+		end
 	end
 
 	if ( TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused and not frame:IsShown() ) then
 		PlaySound(SOUNDKIT.UI_VOICECHAT_TTSACTIVITY);
-	elseif ( TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks ) then
-		PlaySound(SOUNDKIT.UI_VOICECHAT_TTSMESSAGE);
 	end
 
-	TextToSpeech_Speak(message, voiceOption);
+	TextToSpeech_Speak(message, voice);
 end
 
 function TextToSpeechFrame_AddMessageObserver(frame, message, r, g, b, id)
@@ -580,12 +733,44 @@ function TextToSpeechFrame_SetChatTypeEnabled(msgType, enabled)
 	end
 end
 
+local chatTypeMappings = {
+	CHAT_MSG_TEXT_EMOTE = "CHAT_MSG_EMOTE";
+};
+
 function TextToSpeechFrame_GetChatTypeEnabled(msgType)
-	return msgType and TEXTTOSPEECH_CONFIG.enabledChatTypes[msgType];
+	if msgType then
+		return TEXTTOSPEECH_CONFIG.enabledChatTypes[chatTypeMappings[msgType] or msgType];
+	end
+
+	return false;
 end
 
 function TextToSpeechFrame_ToggleChatTypeEnabled(msgType)
 	return TextToSpeechFrame_SetChatTypeEnabled(msgType, not TextToSpeechFrame_GetChatTypeEnabled(msgType));
+end
+
+local CHANNEL_KEY_FORMAT = "%s:%s";
+local function GetChannelKey(channelInfo)
+	if channelInfo.channelType == Enum.PermanentChatChannelType.Zone then
+		return CHANNEL_KEY_FORMAT:format(tostring(channelInfo.channelType), tostring(channelInfo.zoneChannelID));
+	end
+
+	return CHANNEL_KEY_FORMAT:format(tostring(channelInfo.channelType), tostring(channelInfo.name));
+end
+
+function TextToSpeechFrame_SetChannelEnabled(channelInfo, enabled)
+	if channelInfo then
+		TEXTTOSPEECH_CONFIG.enabledChannelTypes[GetChannelKey(channelInfo)] = enabled;
+		return enabled;
+	end
+end
+
+function TextToSpeechFrame_GetChannelEnabled(channelInfo)
+	return channelInfo and TEXTTOSPEECH_CONFIG.enabledChannelTypes[GetChannelKey(channelInfo)];
+end
+
+function TextToSpeechFrame_ToggleChannelEnabled(channelInfo)
+	return TextToSpeechFrame_SetChannelEnabled(channelInfo, not TextToSpeechFrame_GetChannelEnabled(channelInfo));
 end
 
 function TextToSpeechFrame_DisplaySilentSystemMessage(text)
@@ -593,6 +778,25 @@ function TextToSpeechFrame_DisplaySilentSystemMessage(text)
 	TextToSpeechFrame_SetChatTypeEnabled("CHAT_MSG_SYSTEM", false);
 	ChatFrame_DisplaySystemMessageInPrimary(text);
 	TextToSpeechFrame_SetChatTypeEnabled("CHAT_MSG_SYSTEM", wasEnabled);
+end
+
+function TextToSpeechFrame_IsEventNarrationEnabled(event, ...)
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
+
+	if TextToSpeechFrame_GetChatTypeEnabled(event) then
+		return true;
+	end
+
+	if event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_COMMUNITIES_CHANNEL" then
+		local localID = tostring(arg8);
+		local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(localID);
+		return TextToSpeechFrame_GetChannelEnabled(channelInfo);
+	end
+
+	local typeGroup = ChatTypeGroupInverted[event];
+	if typeGroup and TextToSpeechFrame_GetChatTypeEnabled("CHAT_MSG_" .. typeGroup) then
+		return true;
+	end
 end
 
 function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
@@ -604,10 +808,8 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		frame.addMessageObserver = TextToSpeechFrame_AddMessageObserver;
 	end
 
-	local typeGroup = ChatTypeGroupInverted[event];
-	if TEXTTOSPEECH_CONFIG.enabledChatTypes[event] or (typeGroup and TextToSpeechFrame_GetChatTypeEnabled("CHAT_MSG_" .. typeGroup)) then
-		local arg1, arg2 = ...;
-
+	if TextToSpeechFrame_IsEventNarrationEnabled(event, ...) then
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
 		local message = arg1;
 		local name = Ambiguate(arg2 or "", "none");
 

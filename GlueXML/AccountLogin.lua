@@ -175,6 +175,14 @@ function AccountLogin_ClearReconnectLogin()
 	AccountLogin_Update();
 end
 
+function AccountLogin_OnEscapePressed()
+	if GlueParent_IsSecondaryScreenOpen("options") then
+		GlueParent_CloseSecondaryScreen();
+	else
+		AccountLogin_Exit();
+	end
+end
+
 function AccountLogin_Exit()
 	QuitGame();
 end

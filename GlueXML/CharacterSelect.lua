@@ -1472,7 +1472,7 @@ function CharacterSelectButton_OnDragUpdate(self)
         return;
     end
 	if ( CharacterSelect.dragToIndex and CharacterSelect.dragToIndex ~= CharacterSelect.draggedIndex ) then
-		local button = _G["CharSelectCharacterButton"..CharacterSelect.dragToIndex];
+		local button = _G["CharSelectCharacterButton"..CharacterSelect.dragToIndex - CHARACTER_LIST_OFFSET];
 		if ( button and button:IsShown() ) then
 			MoveCharacter(CharacterSelect.draggedIndex, CharacterSelect.dragToIndex, true);
 		end

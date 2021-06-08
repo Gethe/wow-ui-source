@@ -137,17 +137,14 @@ function GuildControlUI_BankTabPermissions_Update(self)
 		else
 			button.tabIndex = index;
 			local name, icon = GetGuildBankTabInfo(index);												-- returns info and permissions for player's rank
-			local isViewable, canDeposit, editText, numWithdrawals = GetGuildBankTabPermissions(index);	-- returns permissions for the selected rank
+			local isViewable, canDeposit, _, numWithdrawals = GetGuildBankTabPermissions(index);	-- returns permissions for the selected rank
 			button:Show();
 			local ownedTab = button.owned;
 			ownedTab.tabName:SetText(name);	
 			ownedTab.tabIcon:SetTexture(icon);
 			ownedTab.viewCB:SetChecked(isViewable);
-			ownedTab.infoCB:SetChecked(editText);
 			ownedTab.depositCB:SetChecked(canDeposit);
 			if ( isViewable ) then
-				ownedTab.infoCB:Enable();
-				ownedTab.infoCB.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				ownedTab.depositCB:Enable();
 				ownedTab.depositCB.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				ownedTab.editBox.mask:Hide();
@@ -159,8 +156,6 @@ function GuildControlUI_BankTabPermissions_Update(self)
 					ownedTab.editBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				end
 			else
-				ownedTab.infoCB:Disable();
-				ownedTab.infoCB.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 				ownedTab.depositCB:Disable();
 				ownedTab.depositCB.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 				if ( ownedTab.editBox:HasFocus() ) then

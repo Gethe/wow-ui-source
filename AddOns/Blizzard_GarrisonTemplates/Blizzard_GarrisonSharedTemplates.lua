@@ -161,8 +161,6 @@ function GarrisonFollowerList:StopAnimations()
 end
 
 function GarrisonFollowerList:OnHide()
-	self.followers = nil;
-
 	self:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
 	self:UnregisterEvent("GARRISON_FOLLOWER_REMOVED");
 	self:UnregisterEvent("GARRISON_FOLLOWER_XP_CHANGED");

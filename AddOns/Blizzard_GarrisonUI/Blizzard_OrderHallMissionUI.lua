@@ -1034,6 +1034,35 @@ local function WriteTutorialCVAR(lastTutorial, tutorialFlags)
 	SetCVar("orderHallMissionTutorial", cvarVal);
 end
 
+function OrderHallMission:TryShowTutorial(tutorial)
+	if tutorial and tutorial.openConditionFunc and tutorial.openConditionFunc(self) then
+		local targetPoint, offsetX, offsetY, relativeFrame = tutorial.positionFunc(self);
+		if targetPoint then
+			local helpTipInfo = {
+				text = tutorial.textFunc and tutorial.textFunc(self, tutorial) or tutorial.text,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = targetPoint,
+				offsetX = offsetX,
+				offsetY = offsetY,
+				onHideCallback = GenerateClosure(self.CheckTutorials, self),
+			};
+			HelpTip:Show(OrderHallMissionTutorialFrame, helpTipInfo, relativeFrame);
+
+			-- parent frame
+			OrderHallMissionTutorialFrame:SetParent(self.MissionTab[tutorial.parent]);
+			OrderHallMissionTutorialFrame:SetFrameStrata("DIALOG");
+			OrderHallMissionTutorialFrame:SetPoint("TOPLEFT", self, 0, -21);
+			OrderHallMissionTutorialFrame:SetPoint("BOTTOMRIGHT", self);
+			OrderHallMissionTutorialFrame.id = tutorial.id;
+			OrderHallMissionTutorialFrame:Show();
+
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function OrderHallMission:CheckTutorials(advance)
 	if (not OrderHallMissionTutorialFrame) then
 		return;
@@ -1043,7 +1072,8 @@ function OrderHallMission:CheckTutorials(advance)
 		return;
 	end
 
-	local tutorial = tutorials[lastTutorial + 1];
+	local nextTutorial = lastTutorial + 1;
+	local tutorial = tutorials[nextTutorial];
 
 	if (OrderHallMissionTutorialFrame.id) then
 		tutorial = tutorials[OrderHallMissionTutorialFrame.id];
@@ -1055,23 +1085,26 @@ function OrderHallMission:CheckTutorials(advance)
 		if ( advance ) then
 			if (tutorial.advanceOnClick) then
 				lastTutorial = OrderHallMissionTutorialFrame.id;
+				nextTutorial = lastTutorial + 1;
 			else
 				tutorialFlags = bit.bor(tutorialFlags, OrderHallMissionTutorialFrame.id);
 			end
 			WriteTutorialCVAR(lastTutorial, tutorialFlags);
 			OrderHallMissionTutorialFrame:Hide();
 			OrderHallMissionTutorialFrame.id = nil;
+		elseif (tutorial.cancelConditionFunc and tutorial.cancelConditionFunc(self, tutorial)) then
+			OrderHallMissionTutorialFrame:Hide();
+			OrderHallMissionTutorialFrame.id = nil;
 		else
-			if (tutorial.cancelConditionFunc and tutorial.cancelConditionFunc(self, tutorial)) then
-				OrderHallMissionTutorialFrame:Hide();
-				OrderHallMissionTutorialFrame.id = nil;
-			end
+			-- We have a tutorial showing already, and it's not ready to close or advance, so just call TryShowTutorial on that (it may have been hidden by other means)
+			self:TryShowTutorial(tutorial);
+			return;
 		end
 	end
 
 	local eligibleTutorialIDs = { }
-	if (tutorials[lastTutorial + 1]) then
-		tinsert(eligibleTutorialIDs, lastTutorial + 1);
+	if (tutorials[nextTutorial]) then
+		tinsert(eligibleTutorialIDs, nextTutorial);
 	end
 
 	local tutorialFlag = 0x10000;
@@ -1084,33 +1117,8 @@ function OrderHallMission:CheckTutorials(advance)
 
 	for _, id in ipairs(eligibleTutorialIDs) do
 		tutorial = tutorials[id];
-		if (tutorial.openConditionFunc and tutorial.openConditionFunc(self)) then
-			-- parent frame
-			OrderHallMissionTutorialFrame:SetParent(self.MissionTab[tutorial.parent]);
-			OrderHallMissionTutorialFrame:SetFrameStrata("DIALOG");
-			OrderHallMissionTutorialFrame:SetPoint("TOPLEFT", self, 0, -21);
-			OrderHallMissionTutorialFrame:SetPoint("BOTTOMRIGHT", self);
-			OrderHallMissionTutorialFrame.id = id;
-
-			local text = tutorial.text;
-			if tutorial.textFunc then
-				text = tutorial.textFunc(self, tutorial);
-			end
-			local targetPoint, offsetX, offsetY, relativeFrame = tutorial.positionFunc(self);
-			if targetPoint then
-				local helpTipInfo = {
-					text = text,
-					buttonStyle = HelpTip.ButtonStyle.Close,
-					targetPoint = targetPoint,
-					offsetX = offsetX,
-					offsetY = offsetY,
-					onHideCallback = GenerateClosure(self.CheckTutorials, self),
-				};
-				HelpTip:Show(OrderHallMissionTutorialFrame, helpTipInfo, relativeFrame);
-
-				OrderHallMissionTutorialFrame:Show();
-				break;
-			end
+		if self:TryShowTutorial(tutorial) then
+			break;
 		end
 	end
 end

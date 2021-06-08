@@ -972,7 +972,7 @@
                         <Anchor point="TOPLEFT" relativeTo="$parentInset"/>
                         <Anchor point="BOTTOMRIGHT" relativeTo="$parentInset"/>
                     </Anchors>
-                    <TexCoords left="0.365" right="0.636" top="0.352" bottom="0.742"/>
+					<TexCoords left="0.057" right="0.705" top="0.092" bottom="0.564"/>
 					<Gradient orientation="VERTICAL">
 						<MinColor r="0" g="0" b="0" a="0"/>
 						<MaxColor r="1" g="1" b="1" a="0.5"/>

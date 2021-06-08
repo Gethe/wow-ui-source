@@ -216,7 +216,7 @@
 					CharSelectAccountUpgradeButtonPointerFrame:Show();
 					CharSelectAccountUpgradeButtonGlow:Show();
 				end
-				CharacterSelect.dragToIndex = self:GetID();
+				CharacterSelect.dragToIndex = self:GetID() + CHARACTER_LIST_OFFSET;
 			</OnEnter>
 			<OnLeave>
 				if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then

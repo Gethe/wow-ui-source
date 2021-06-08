@@ -168,7 +168,7 @@ function PetBattleFrame_PetSelectionFrameUpdateVisible(showFrame)
 	local selectionFrame = PetBattleFrame.BottomFrame.PetSelectionFrame;
 	local battleState = C_PetBattles.GetBattleState();
 	local selectedActionType = C_PetBattles.GetSelectedAction();
-	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType == BATTLE_PET_ACTION_NONE ) ) and ( battleState == Enum.PetBattleState.WaitingPreBattle ) or ( battleState == Enum.PetBattleState.WaitingForFrontPets );
+	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType ==  Enum.BattlePetAction.None ) ) and ( battleState == Enum.PetBattleState.WaitingPreBattle ) or ( battleState == Enum.PetBattleState.WaitingForFrontPets );
 	if ( selectionFrame:IsShown() and ( not mustSwap ) ) then
 		PetBattlePetSelectionFrame_Hide(selectionFrame);
 	elseif (showFrame) then

@@ -478,7 +478,7 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
 	local _, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(mapInfo.id);
 	local color;
 	if(overAllScore) then	
-		color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(mapInfo.dungeonScore);
+		color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
 	end
 	if(not color) then 
 		color = HIGHLIGHT_FONT_COLOR; 
@@ -506,7 +506,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 	local seasonBestDurationSec, seasonBestLevel, members;
 
 	if(overAllScore and inTimeInfo or overtimeInfo) then 
-		local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(overAllScore);
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
 		if(not color) then 
 			color = HIGHLIGHT_FONT_COLOR;
 		end 
@@ -841,7 +841,7 @@ function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
 end
 
 local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
-timeFormatter:Init(1, SecondsFormatter.Abbreviation.Truncate, false);
+timeFormatter:Init(1, SecondsFormatter.Abbreviation.Truncate, false, true, true);
 
 function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(data.mapID);
@@ -858,19 +858,21 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 
 	self.Level:Show();
 	local timeRemaining = math.abs(timeLimit - (data.time / 1000));
-	
+	local timeText = (data.time / 1000) >= SECONDS_PER_HOUR and SecondsToClock(data.time / 1000, true) or SecondsToClock(data.time / 1000, false);
+
     if (data.onTime) then
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
 		local chatPrintText; 
+
 		if (data.isAffixRecord) then 
 			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_AFFIX_RECORD:format(name, data.level, timeFormatter:Format(data.time / 1000), timeFormatter:Format(timeRemaining), affixName)
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
 		elseif (data.isMapRecord) then 
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_RECORD:format(name, data.level, timeFormatter:Format(data.time / 1000), timeFormatter:Format(timeRemaining))
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		else
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK:format(name, data.level, timeFormatter:Format(data.time / 1000), timeFormatter:Format(timeRemaining))
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		end		
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
@@ -882,11 +884,11 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		local chatPrintText; 
 		if (data.isAffixRecord) then 
 			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_AFFIX_RECORD:format(name, data.level, timeFormatter:Format(data.time / 1000), timeFormatter:Format(timeRemaining), affixName)
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
 		elseif (data.isMapRecord) then 
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_RECORD:format(name, data.level, timeFormatter:Format(data.time / 1000), timeFormatter:Format(timeRemaining))
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		else
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_OVERTIME_CHAT_LINK:format(name, data.level, timeFormatter:Format(data.time / 1000), timeFormatter:Format(timeRemaining))
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_OVERTIME_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		end	
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
