@@ -1182,10 +1182,16 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	for i=1, currencyCount, 1 do
 		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
 		if ( currencyName ) then
+			local extraArgs = "";
+			if ( currencyTexture == HONOR_POINT_TEXTURES[1] or currencyTexture == HONOR_POINT_TEXTURES[2] ) then
+				-- Honor Point textures have some funky coordinates, so we'll fix them up here.
+				extraArgs = ":64:64:0:40:0:40";
+			end
+
 			if ( itemsString ) then
-				itemsString = itemsString .. ", |T"..currencyTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = itemsString .. ", |T"..currencyTexture..":0:0:0:-1"..extraArgs.."|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			else
-				itemsString = " |T"..currencyTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = " |T"..currencyTexture..":0:0:0:-1"..extraArgs.."|t "..format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			end
 		end
 	end

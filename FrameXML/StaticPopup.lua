@@ -1907,6 +1907,24 @@ StaticPopupDialogs["EQUIP_BIND"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["EQUIP_BIND_REFUNDABLE"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self, slot)
+		EquipPendingItem(slot);
+	end,
+	OnCancel = function(self, slot)
+		CancelPendingEquip(slot);
+	end,
+	OnHide = function(self, slot)
+		CancelPendingEquip(slot);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["EQUIP_BIND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
 	button1 = OKAY,

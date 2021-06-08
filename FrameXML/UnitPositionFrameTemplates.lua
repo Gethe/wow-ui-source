@@ -16,7 +16,7 @@ local function GetOrCreateUnitAppearanceData(frame, unitType)
 	local UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
 	local UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
 	local UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
-	local UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = true;
+	local UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = false;
 
 	if Private_UnitAppearanceData[frame] == nil then
 		local newUnitAppearanceData = {};
@@ -33,7 +33,7 @@ local function GetOrCreateUnitAppearanceData(frame, unitType)
 			sublevel = UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL,
 			texture = UNIT_POSITION_FRAME_DEFAULT_TEXTURE,
 			shouldShow = UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS,
-			useClassColor = unitType ~= "player", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
+			useClassColor = unitType == "spectateda" or unitType == "spectatedb", -- UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR
 			showRotation = unitType == "player"; -- There's no point in trying to show rotation for anything except the local player.
 		};
 
@@ -110,8 +110,8 @@ function UnitPositionFrameMixin:OnEvent(event, ...)
 end
 
 function UnitPositionFrameMixin:UpdateAppearanceData()
-	self:SetPinTexture("raid", "PlayerRaidBlip");
-	self:SetPinTexture("party", "PlayerControlled");
+	self:SetPinTexture("party", "Interface\\WorldMap\\WorldMapPartyIcon");
+	self:SetPinTexture("raid", "Interface\\WorldMap\\WorldMapPartyIcon");
 	self:SetPinTexture("spectateda", "PlayerPartyBlip");
 	self:SetPinTexture("spectatedb", "PlayerPartyBlip");
 end
@@ -296,7 +296,7 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 				local callAtlasAPI = false;
 				if (unitBase == "party" or unitBase == "raid") then
 					appearance = UnitInSubgroup(unit, overridePartyType) and partyAppearance or raidAppearance;
-					callAtlasAPI = true;
+					callAtlasAPI = false;
 				elseif (unitBase == "spectateda" or unitBase == "spectatedb") then
 					appearance = unitBase == "spectateda" and spectatedaAppearance or spectatedbAppearance;
 					callAtlasAPI = true;

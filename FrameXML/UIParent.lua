@@ -210,6 +210,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOGOUT_CANCEL");
 	self:RegisterEvent("LOOT_BIND_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_CONFIRM");
+	self:RegisterEvent("EQUIP_BIND_REFUNDABLE_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_TRADEABLE_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
 	self:RegisterEvent("USE_NO_REFUND_CONFIRM");
@@ -788,13 +789,22 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 		end
 	elseif ( event == "EQUIP_BIND_CONFIRM" ) then
+		StaticPopup_Hide("EQUIP_BIND_REFUNDABLE");
 		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		local dialog = StaticPopup_Show("EQUIP_BIND");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
+	elseif ( event == "EQUIP_BIND_REFUNDABLE_CONFIRM" ) then
+		StaticPopup_Hide("EQUIP_BIND");
+		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
+		local dialog = StaticPopup_Show("EQUIP_BIND_REFUNDABLE");
+		if ( dialog ) then
+			dialog.data = arg1;
+		end
 	elseif ( event == "EQUIP_BIND_TRADEABLE_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
+		StaticPopup_Hide("EQUIP_BIND_REFUNDABLE");
 		local dialog = StaticPopup_Show("EQUIP_BIND_TRADEABLE");
 		if ( dialog ) then
 			dialog.data = arg1;

@@ -559,7 +559,6 @@ function SetMoneyFrameColor(frameName, color)
 	copperButton:SetNormalFontObject(fontObject);
 end
 
-local HONOR_POINT_TEXTURES = { 136998, 137000 };
 function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	local iconWidth;
 	local button = _G[frameName];

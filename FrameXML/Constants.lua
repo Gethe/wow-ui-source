@@ -634,6 +634,9 @@ JUSTICE_CURRENCY = 395;
 VALOR_CURRENCY = 396;
 SHOW_CONQUEST_LEVEL = 70;
 
+-- Honor Point texture file IDs. These files have some weird sizing, so they need som special handling.
+HONOR_POINT_TEXTURES = { 136998, 137000 };
+
 -- Looking for Guild Parameters
 LFGUILD_PARAM_QUESTS 	= 1;
 LFGUILD_PARAM_DUNGEONS	= 2;

@@ -655,10 +655,17 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		costItemCount = costItemCount * (numToPurchase / stackCount); -- cost per stack times number of stacks
 		if ( currencyName ) then
 			usingCurrency = true;
+
+			local extraArgs = "";
+			if ( itemTexture == HONOR_POINT_TEXTURES[1] or itemTexture == HONOR_POINT_TEXTURES[2] ) then
+				-- Honor Point textures have some funky coordinates, so we'll fix them up here.
+				extraArgs = ":64:64:0:40:0:40";
+			end
+
 			if ( itemsString ) then
-				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
+				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1"..extraArgs.."|t ".. format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			else
-				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
+				itemsString = " |T"..itemTexture..":0:0:0:-1"..extraArgs.."|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
 		elseif ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
