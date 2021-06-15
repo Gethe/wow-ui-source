@@ -520,6 +520,24 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsSpeakForMeActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpeakForMeAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LeaveChannel",
 			Type = "Function",
 
@@ -724,6 +742,10 @@ local VoiceChat =
 				{ Name = "rate", Type = "number", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "StopSpeakingText",
+			Type = "Function",
 		},
 		{
 			Name = "ToggleDeafened",
@@ -1094,6 +1116,16 @@ local VoiceChat =
 			{
 				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "VoiceChatSpeakForMeActiveStatusUpdated",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED",
+		},
+		{
+			Name = "VoiceChatSpeakForMeFeatureStatusUpdated",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED",
 		},
 		{
 			Name = "VoiceChatTtsPlaybackFailed",

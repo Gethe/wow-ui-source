@@ -2004,6 +2004,32 @@ function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnClick(s
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "remoteTextToSpeech";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED");
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnShow(self)
+	InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnEvent(self, event, ...)
+	if event == "VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED" then
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self)
+	local parent = self:GetParent();
+	local speakForMeAllowed = C_VoiceChat.IsSpeakForMeAllowed();
+	self:SetShown(speakForMeAllowed);
+	parent.RemoteTextToSpeechVoiceDropdown:SetShown(speakForMeAllowed);
+	parent.RemoteTextToSpeechVoicePlaySample:SetShown(speakForMeAllowed);
+end
+
 function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize()
 	local selectedValue = tonumber(GetCVar("remoteTextToSpeechVoice"));
 	local info = UIDropDownMenu_CreateInfo();
@@ -2024,7 +2050,7 @@ function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Refre
 end
 
 function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self)
-	if ( GetCVarBool("remoteTextToSpeech") ) then
+	if ( C_VoiceChat.IsSpeakForMeActive() ) then
 		UIDropDownMenu_EnableDropDown(self);
 	else
 		UIDropDownMenu_DisableDropDown(self);
@@ -2037,7 +2063,6 @@ function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnCli
 end
 
 function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent(self, event, ...)
-	local arg1 = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		UIDropDownMenu_SetWidth(self, 160);
 		UIDropDownMenu_SetInitializeFunction(self, InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize);
@@ -2045,24 +2070,22 @@ function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEve
 		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self);
 		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
 
-		self:RegisterEvent("CVAR_UPDATE");
+		self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
 		self:RegisterEvent("VARIABLES_LOADED");
 
-	elseif ( event == "VARIABLES_LOADED" or ( event == "CVAR_UPDATE" and arg1 == "ENABLE_REMOTE_TEXT_TO_SPEECH" ) ) then
+	elseif ( event == "VARIABLES_LOADED" or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
 		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
 	end
 end
 
 function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
 end
 
 function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnEvent(self, event, ...)
-	local arg1 = ...;
-	if ( event == "VARIABLES_LOADED" or
-		(event == "CVAR_UPDATE" and arg1 == "ENABLE_REMOTE_TEXT_TO_SPEECH") ) then
-		self:SetEnabled(GetCVarBool("remoteTextToSpeech"));
+	if ( event == "VARIABLES_LOADED" or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
+		self:SetEnabled(C_VoiceChat.IsSpeakForMeActive());
 	end
 end
 

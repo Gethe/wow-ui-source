@@ -42,7 +42,7 @@
 				<Texture name="$parentGossipIcon" parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" x="3" y="1"/>
+						<Anchor point="TOPLEFT" x="3" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>

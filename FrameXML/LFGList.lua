@@ -1631,7 +1631,7 @@ function LFGListApplicantMember_OnEnter(self)
 		end 
 		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(dungeonScore)));
 		if(bestDungeonScoreForEntry) then 
-			local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(bestDungeonScoreForEntry.mapScore);
+			local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(bestDungeonScoreForEntry.mapScore);
 			if (not color) then 
 				color = HIGHLIGHT_FONT_COLOR;
 			end 
@@ -3288,7 +3288,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 
 	if(isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then 
 		local leaderDungeonScoreInfo = searchResultInfo.leaderDungeonScoreInfo; 
-		local color = C_ChallengeMode.GetSpecificDungeonScoreRarityColor(leaderDungeonScoreInfo.mapScore);
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(leaderDungeonScoreInfo.mapScore);
 		if (not color) then 
 			color = HIGHLIGHT_FONT_COLOR;
 		end 

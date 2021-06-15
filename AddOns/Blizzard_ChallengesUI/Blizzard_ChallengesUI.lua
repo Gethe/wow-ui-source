@@ -149,7 +149,7 @@ function ChallengesFrame_Update(self)
 		if(inTimeInfo and overtimeInfo) then 
 			local inTimeScoreIsBetter = inTimeInfo.dungeonScore > overtimeInfo.dungeonScore; 
 			level = inTimeScoreIsBetter and inTimeInfo.level or overTimeInfo.level; 
-			dungeonScore = inTimeScoreIsBetter and inTimeInfo.dungeonScore or overTimeInfo.dungeonScore; 
+			dungeonScore = inTimeScoreIsBetter and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore; 
         elseif(inTimeInfo or overtimeInfo) then 
 			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level; 
 			dungeonScore = inTimeInfo and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore;

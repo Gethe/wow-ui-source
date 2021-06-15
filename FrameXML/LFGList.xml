@@ -175,7 +175,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="RoleIcon1">
+			<Button parentKey="RoleIcon1" motionScriptsWhileDisabled="true">
 				<Size x="18" y="18"/>
 				<Anchors>
 					<Anchor point="LEFT" x="104" y="0"/>
@@ -183,13 +183,17 @@
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
+					<OnEnter>
+						LFGListApplicantMember_OnEnter(self:GetParent());
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="RoleIcon2">
+			<Button parentKey="RoleIcon2" motionScriptsWhileDisabled="true">
 				<Size x="18" y="18"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="1" y="0"/>
@@ -197,13 +201,17 @@
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
+					<OnEnter>
+						LFGListApplicantMember_OnEnter(self:GetParent());
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="RoleIcon3">
+			<Button parentKey="RoleIcon3" motionScriptsWhileDisabled="true">
 				<Size x="18" y="18"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.RoleIcon2" relativePoint="RIGHT" x="1" y="0"/>
@@ -211,6 +219,10 @@
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
+					<OnEnter>
+						LFGListApplicantMember_OnEnter(self:GetParent());
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
@@ -219,6 +231,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnEnter>
+				LFGListApplicantMember_OnEnter(self:GetParent());
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnLoad>
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>

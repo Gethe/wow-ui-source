@@ -6,11 +6,36 @@ local WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW = false;
 local WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR = CreateColor(1.0, 0.1, 0.1, 0.6);
 local WIDGET_DEBUG_CUSTOM_TEXTURE_COLOR = CreateColor(1.0, 1.0, 0.0, 0.6);
 
-UIWidgetContainerMixin = {}
+UIWidgetHorizontalWidgetContainerMixin = {};
+
+function UIWidgetHorizontalWidgetContainerMixin:OnLoad()
+	self.parentWidgetContainer = self:GetParent();
+	self.childWidgets = {};
+end
+
+function UIWidgetHorizontalWidgetContainerMixin:ResetChildWidgets()
+	for _, widgetFrame in ipairs(self.childWidgets) do
+		widgetFrame:SetParent(self.parentWidgetContainer);
+	end
+
+	self.childWidgets = {};
+end
+
+function UIWidgetHorizontalWidgetContainerMixin:AddChildWidget(widgetFrame)
+	table.insert(self.childWidgets, widgetFrame);
+	widgetFrame:SetParent(self);
+end
+
+UIWidgetContainerMixin = {};
+
+local function ResetHorizontalWidgetContainer(framePool, frame)
+	frame:ResetChildWidgets();
+	FramePool_HideAndClearAnchors(framePool, frame);
+end
 
 function UIWidgetContainerMixin:OnLoad()
 	self.widgetPools = CreateFramePoolCollection();
-	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate");
+	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate", ResetHorizontalWidgetContainer);
 	if WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW then
 		self._debugBGTex = self:CreateTexture()
 		self._debugBGTex:SetColorTexture(WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR:GetRGBA());
@@ -120,7 +145,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
 				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
-				widgetFrame:SetParent(newHorizontalRowContainer);
+				newHorizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 
 				-- The old horizontalRowContainer is no longer needed for anchoring, so set it to newHorizontalRowContainer
@@ -128,7 +153,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 			else
 				-- horizontalRowContainer already existed, so we just keep going in it, anchoring to the previous widget
 				local relative = sortedWidgets[index - 1];
-				widgetFrame:SetParent(horizontalRowContainer);
+				horizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
 			end
@@ -471,6 +496,10 @@ end
 
 function UIWidgetContainerMixin:GetNumWidgetsShowing()
 	return self.numWidgetsShowing or 0;
+end
+
+function UIWidgetContainerMixin:HasAnyWidgetsShowing()
+	return (self:GetNumWidgetsShowing() > 0);
 end
 
 function UIWidgetContainerMixin:UpdateWidgetLayout()

@@ -1245,7 +1245,11 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		local professionId = self:GetProfessionId();
 		self.GuildInfo:SetText(GUILD_VIEW_RECIPES_LINK);
 	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_DUNGEON_SCORE then
-		self.GuildInfo:SetText(memberInfo.overallDungeonScore);
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(memberInfo.overallDungeonScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end 
+		self.GuildInfo:SetText(color:WrapTextInColorCode(memberInfo.overallDungeonScore));
 	end
 end
 

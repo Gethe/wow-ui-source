@@ -306,13 +306,27 @@ TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_DEFAULT,
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SAMPLE,
 	function(cmd)
-		TextToSpeech_PlaySample();
+		TextToSpeech_PlaySample("standard");
 		return true;
 	end, nil, SLASH_TEXTTOSPEECH_HELP_SAMPLE
 );
 
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ALTSAMPLE,
+	function(cmd)
+		TextToSpeech_PlaySample("alternate");
+		return true;
+	end, nil, SLASH_TEXTTOSPEECH_HELP_ALTSAMPLE
+);
+
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_STOP,
+	function(cmd)
+		C_VoiceChat.StopSpeakingText();
+		return true;
+	end, nil, SLASH_TEXTTOSPEECH_HELP_STOP
+);
+
 do
-	local function DisplaySelectedVoice(voiceType, displayText)
+	local function DisplaySelectedVoice(commands, voiceType, displayText)
 		local voice = TextToSpeech_GetSelectedVoice(voiceType);
 		if voice then
 			commands:SpeakConfirmation(displayText:format(voice.name));
@@ -326,8 +340,8 @@ do
 			commands:SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, TEXTTOSPEECH_CONFIG.speechVolume));
 			commands:SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, TEXTTOSPEECH_CONFIG.speechRate));
 
-			DisplaySelectedVoice("standard", SLASH_TEXTTOSPEECH_VOICE_CHANGED_CONFIRMATION);
-			DisplaySelectedVoice("alternate", SLASH_TEXTTOSPEECH_ALTVOICE_CHANGED_CONFIRMATION);
+			DisplaySelectedVoice(commands, "standard", SLASH_TEXTTOSPEECH_VOICE_CHANGED_CONFIRMATION);
+			DisplaySelectedVoice(commands, "alternate", SLASH_TEXTTOSPEECH_ALTVOICE_CHANGED_CONFIRMATION);
 
 			local entries = {};
 			local individualCommands = commands:GetCommands();

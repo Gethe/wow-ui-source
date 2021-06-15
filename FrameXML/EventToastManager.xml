@@ -77,7 +77,7 @@
 				<Texture parentKey="Icon">
 					<Size x="36" y="36"/>
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" y="-2"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="middleName" inherits="GameFontNormalLarge" justifyH="LEFT">
@@ -152,7 +152,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT"  relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="10" y="3"/>
+					<Anchor point="BOTTOMLEFT"  relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="10" y="4"/>
 				</Anchors>
 				</FontString>
 				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT">
@@ -215,7 +215,7 @@
 		</Animations>
 		<Frames>
 			<Frame parentKey="PaddingFrame">
-				<Size x="300" y="20"/>
+				<Size x="300" y="16"/>
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
@@ -223,13 +223,16 @@
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
+				<FontString parentKey="Title" inherits="Fancy30Font" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.PaddingFrame" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 					<Color color="SCENARIO_STAGE_COLOR"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
-				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Med3" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
@@ -289,15 +292,10 @@
 				</KeyValues>
 				<Animations>
 					<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" endDelay="3.8" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" order="1" parentKey="anim1"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
-						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-						<Scripts>
-							<OnFinished>
-								self:GetParent():Hide();
-							</OnFinished>
-						</Scripts>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" parentKey="anim1"/>
 					</AnimationGroup>
 				</Animations>
 				<Layers>
@@ -350,17 +348,19 @@
 	<Button name="EventToastScenarioToastTemplate" inherits="EventToastScenarioBaseToastTemplate" mixin="EventToastScenarioToastMixin" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="heightPadding" value="10" type="number"/>
+			<KeyValue key="useWhiteGlineAtlas" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="CENTER">
+				<FontString parentKey="Description" inherits="SystemFont_Shadow_Med3" justifyH="CENTER">
 					<Size x="300" y="0"/>
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-16"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-22"/>
 					</Anchors>
+					<Color color="SCENARIO_STAGE_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -439,7 +439,7 @@
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1" parentKey="anim1"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="hideAnim">
-						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2" parentKey="anim1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" parentKey="anim1"/>
 					</AnimationGroup>
 				</Animations>
 				<Layers>
@@ -500,12 +500,12 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="TOP" y="-3"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="-5"/>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -517,7 +517,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFont_Gigantic">
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="TOP" y="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -530,7 +530,7 @@
 				<FontString parentKey="Title" JustifyV="CENTER" justifyH="CENTER" inherits="GameFontNormalHuge">
 					<Size x="400" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" y="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>

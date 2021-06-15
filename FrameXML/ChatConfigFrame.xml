@@ -137,6 +137,9 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
+	<Frame name="ChatConfigCheckBoxSmallTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
+		<Size x="200" y="23"/>
+	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentColorSwatch" parentKey="ColorSwatch" inherits="ColorSwatchTemplate">

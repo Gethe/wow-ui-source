@@ -90,7 +90,7 @@ function RuneforgePowerBaseMixin:OnEnter()
 			local covenantData = isCovenantPower and C_Covenants.GetCovenantData(powerInfo.covenantID) or nil
 			local covenantName = covenantData and covenantData.name or "";
 
-			local matchesRequirement = isCovenantPower and powerInfo.matchesCovenant or powerInfo.matchesSpecSet;
+			local matchesRequirement = isCovenantPower and powerInfo.matchesCovenant or powerInfo.matchesSpec;
 			local requirementText = isCovenantPower and covenantName or specName;
 			if matchesRequirement then
 				local requiresText = RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(requirementText));

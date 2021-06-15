@@ -313,3 +313,8 @@ do
 	LE_PET_BATTLE_STATE_FINAL_ROUND = Enum.PetBattleState.FinalRound;
 	LE_PET_BATTLE_STATE_FINISHED = Enum.PetBattleState.Finished;
 end
+
+-- Dressing room updates
+do
+	IsDressableItem = C_Item.IsDressableItemByID;
+end

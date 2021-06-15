@@ -1522,6 +1522,7 @@ end
 
 function UpdateDefaultButtons(combatLogSelected, textToSpeechSelected)
 	TextToSpeechDefaultButton:SetShown(textToSpeechSelected);
+	TextToSpeechDefaultButton:SetWidth(TextToSpeechDefaultButton.Text:GetWidth() + 32);
 	CombatLogDefaultButton:SetShown(combatLogSelected);
 	ChatConfigFrame.DefaultButton:SetShown(not combatLogSelected and not textToSpeechSelected);
 	ChatConfigFrame.RedockButton:SetShown(not combatLogSelected and not textToSpeechSelected);
@@ -2117,7 +2118,7 @@ end
 
 function ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes()
 	CreateChatTextToSpeechChannelList(ChatConfigTextToSpeechChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft, CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST, "ChatConfigCheckBoxTemplate", CHANNELS);
+	ChatConfig_CreateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft, CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST, "ChatConfigCheckBoxSmallTemplate", CHANNELS);
 	ChatConfig_UpdateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft);
 end
 

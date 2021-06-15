@@ -138,16 +138,8 @@ function TextToSpeech_SetUseAlternateSystemVoice(enabled)
 	TEXTTOSPEECH_CONFIG.alternateSystemVoice = enabled;
 end
 
-local function TextToSpeech_PlaySampleInternal(self, voice)
-	TextToSpeech_Speak(TEXT_TO_SPEECH_SAMPLE_TEXT, voice);
-end
-
-function TextToSpeech_PlaySample(self)
-	TextToSpeech_PlaySampleInternal(self, TextToSpeech_GetSelectedVoice("standard"));
-end
-
-function TextToSpeech_PlaySampleAlternate(self)
-	TextToSpeech_PlaySampleInternal(self, TextToSpeech_GetSelectedVoice("alternate"));
+function TextToSpeech_PlaySample(voiceType)
+	TextToSpeech_Speak(TEXT_TO_SPEECH_SAMPLE_TEXT, TextToSpeech_GetSelectedVoice(voiceType));
 end
 
 function TextToSpeech_Speak(text, voice)
@@ -303,7 +295,7 @@ function TextToSpeechFrame_OnEvent(self, event, ...)
 
 			-- Add short delay for message sound if enabled, otherwise play next immediately
 			if ( TEXTTOSPEECH_CONFIG.playSoundSeparatingChatLineBreaks ) then
-				C_Timer.After(1, function() 
+				C_Timer.After(1, function()
 					TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
 				end);
 			else
@@ -522,11 +514,11 @@ function TextToSpeechFrameTtsVoicePicker_OnShow(self)
 end
 
 function TextToSpeechFramePlaySampleButton_OnClick(self)
-	TextToSpeech_PlaySample();
+	TextToSpeech_PlaySample("standard");
 end
 
 function TextToSpeechFramePlaySampleAlternateButton_OnClick(self)
-	TextToSpeech_PlaySampleAlternate();
+	TextToSpeech_PlaySample("alternate");
 end
 
 function UseAlternateVoiceForSystemMessagesCheckButton_OnLoad(self)
@@ -822,6 +814,8 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 				message = CHAT_YELL_GET:format(name) .. message;
 			elseif ( type == "WHISPER" or type == "BN_WHISPER" ) then
 				message = CHAT_WHISPER_GET:format(name) .. message;
+			elseif ( type == "WHISPER_INFORM" ) then
+				message = CHAT_WHISPER_INFORM_GET:format(name) .. message;
 			else
 				message = CHAT_SAY_GET:format(name) .. message;
 			end

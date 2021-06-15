@@ -330,6 +330,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsDressableItemByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDressableItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemConduit",
 			Type = "Function",
 

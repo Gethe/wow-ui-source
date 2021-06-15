@@ -127,6 +127,12 @@ function EventToastManagerFrameMixin:Reset()
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
+function EventToastManagerFrameMixin:SetupGLineAtlas(useWhiteGLineAtlas)
+	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
+	self.GLine:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.GLine2:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+end		
+
 function EventToastManagerFrameMixin:AreAnimationsPaused()
 	return self.animationsPaused; 
 end
@@ -188,6 +194,17 @@ function EventToastManagerFrameMixin:SetAnimationState(hidden)
 	self.shouldAnim = not hidden; 
 end
 
+function EventToastManagerFrameMixin:SetColorTint(colorTint)
+
+	if(colorTint) then 
+		self.GLine:SetVertexColor(colorTint.r, colorTint.g, colorTint.b);
+		self.GLine2:SetVertexColor(colorTint.r, colorTint.g, colorTint.b);
+	else 
+		self.GLine:SetVertexColor(1, 1, 1);
+		self.GLine2:SetVertexColor(1, 1, 1)
+	end 
+end 
+
 function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 	self.HideButton:SetShown(not self.hideAutomatically);
 
@@ -244,7 +261,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 			toast:SetPoint("TOP", self, "TOP", 0, -2);
 		end
 		toast:Setup(toastInfo);
-
+		self:SetColorTint(toastInfo.colorTint);
 		self:SetupButton(toastInfo.uiTextureKit);
 		self:Show();
 	elseif(self:IsShown()) then 
@@ -408,7 +425,6 @@ EventToastScenarioToastMixin = { };
 
 function EventToastScenarioToastMixin:Setup(toastInfo)
 	EventToastScenarioBaseToastMixin.Setup(self, toastInfo);
-
 	self.SubTitle:ClearAllPoints();
 
 	if(toastInfo.uiWidgetSetID) then 
@@ -677,10 +693,16 @@ end
 
 function EventToastAnimationsMixin:SetAnimInStartDelay(delay)
 	self.showAnim.anim1:SetStartDelay(delay);
+	if(self.BannerFrame) then 
+		self.BannerFrame.showAnim.anim1:SetStartDelay(delay);
+	end 
 end
 
 function EventToastAnimationsMixin:SetAnimInEndDelay(delay)
 	self.showAnim.anim1:SetEndDelay(delay);
+	if(self.BannerFrame) then 
+		self.BannerFrame.showAnim.anim1:SetEndDelay(delay);
+	end 
 end
 
 function EventToastAnimationsMixin:SetOutStartDelay(delay)
@@ -691,6 +713,10 @@ function EventToastAnimationsMixin:ResetAnimations()
 	self:SetAnimInStartDelay(0);
 	self.hideAnim:Stop();
 	self.showAnim:Stop();
+	if(self.BannerFrame) then 
+		self.BannerFrame.hideAnim:Stop();
+		self.BannerFrame.showAnim:Stop();
+	end		
 	self:BannerPlay();
 end
 
@@ -698,23 +724,30 @@ function EventToastAnimationsMixin:PauseAnimations()
 	self.hideAnim:Stop();
 	self.showAnim:Stop();
 	self:SetAlpha(1);
+
+	if(self.BannerFrame) then
+		self.BannerFrame.hideAnim:Stop();
+		self.BannerFrame.showAnim:Stop();
+		self.BannerFrame:SetAlpha(1);
+	end 
 end
 
 function EventToastAnimationsMixin:ResumeAnimations()
 	self.hideAnim:Play();
+	if(self.BannerFrame) then 
+		self.BannerFrame.hideAnim:Play();
+	end 
 end
 
 function EventToastAnimationsMixin:BannerPlay()
+	self:GetParent():SetupGLineAtlas(self.useWhiteGlineAtlas);
+
 	if(self.animInStartDelay) then 
 		self:SetAnimInStartDelay(self.animInStartDelay);
 		self:GetParent():SetAnimStartDelay(self.animInStartDelay);
 	end
 	if (self.animInEndDelay) then 
 		self:SetAnimInEndDelay(self.animInEndDelay);
-	end
-
-	if(self.BannerFrame) then 
-		self.BannerFrame.showAnim:Play();
 	end
 
 	C_Timer.After(self.animInStartDelay and self.animInStartDelay or 0, 
@@ -724,6 +757,9 @@ function EventToastAnimationsMixin:BannerPlay()
 		end
 	end);
 	self.showAnim:Play();
+	if(self.BannerFrame) then 
+		self.BannerFrame.showAnim:Play();
+	end
 	self:GetParent():PlayAnim();
 end
 
@@ -762,6 +798,7 @@ function EventToastAnimationsMixin:AnimOut()
 		end);
 
 		if(self.BannerFrame) then 
+			self.BannerFrame.hideAnim.anim1:SetStartDelay(self.hideAnim.anim1:GetStartDelay());
 			self.BannerFrame.hideAnim:Play();
 		end
 	end

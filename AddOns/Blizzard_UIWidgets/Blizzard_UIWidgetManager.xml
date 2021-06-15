@@ -6,10 +6,13 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="UIWidgetHorizontalWidgetContainerTemplate" inherits="ResizeLayoutFrame" virtual="true">
+	<Frame name="UIWidgetHorizontalWidgetContainerTemplate" inherits="ResizeLayoutFrame" mixin="UIWidgetHorizontalWidgetContainerMixin" virtual="true">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="UIWidgetContainerNoResizeTemplate" virtual="true" mixin="UIWidgetContainerMixin">

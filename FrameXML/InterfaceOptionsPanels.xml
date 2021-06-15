@@ -20,6 +20,7 @@
     <Layers>
       <Layer level="ARTWORK">
         <FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="Text">
+          <Size x="275"/>
           <Anchors>
             <Anchor point="LEFT" relativePoint="RIGHT">
               <Offset>
@@ -2239,15 +2240,16 @@
 			<CheckButton name="$parentSpeechToText" hyperlinksEnabled="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="SubText" text="SPEECH_TO_TEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="2" justifyH="LEFT" justifyV="TOP">
+						<FontString name="$parentSubText" parentKey="SubText" text="SPEECH_TO_TEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="2" justifyH="LEFT" justifyV="TOP">
+							<Size x="275"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="28" y="6"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="TOPRIGHT" x="250"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="TOPRIGHT" x="275"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -2255,12 +2257,12 @@
 						self.cvar = "speechToText";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+					<OnHyperlinkClick function="GetURLIndexAndLoadURLWithSound" />
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentTextToSpeech" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSpeechToText" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+					<Anchor point="TOPLEFT" relativeTo="$parentSpeechToTextSubText" relativePoint="BOTTOMLEFT" x="-28" y="-4" />
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -2271,7 +2273,7 @@
 				</Scripts>
 			</CheckButton>
 			<Button name="$parentConfigureTextToSpeech" inherits="UIPanelButtonTemplate" text="CONFIGURE_TEXT_TO_SPEECH">
-				<Size x="200" y="21"/>
+				<Size x="225" y="21"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTextToSpeech" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
@@ -2286,11 +2288,9 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentConfigureTextToSpeech" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "remoteTextToSpeech";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnLoad"/>
+					<OnShow function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnShow"/>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnEvent"/>
 				</Scripts>
 			</CheckButton>
 			<Frame name="$parentRemoteTextToSpeechVoiceDropdown" parentKey="RemoteTextToSpeechVoiceDropdown" inherits="UIDropDownMenuTemplate">
@@ -2306,8 +2306,8 @@
 					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Button name="$parentRemoteTextToSpeechVoicePlaySample" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">
-				<Size x="140" y="21"/>
+			<Button name="$parentRemoteTextToSpeechVoicePlaySample" parentKey="RemoteTextToSpeechVoicePlaySample" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">
+				<Size x="175" y="21"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRemoteTextToSpeechVoiceDropdown" relativePoint="BOTTOMLEFT" x="16" y="-8" />
 				</Anchors>

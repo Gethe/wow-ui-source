@@ -161,15 +161,28 @@ end
 local SCENARIO_TRACKER_WIDGET_SET = 252;
 local SCENARIO_TRACKER_TOP_WIDGET_SET = 514;
 
-local function WidgetsLayout(widgetContainerFrame, sortedWidgets, containerBlock)
+local function WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, containerOffset)
 	local containerBlock = widgetContainerFrame:GetParent(); 
 	DefaultWidgetLayout(widgetContainerFrame, sortedWidgets);
-	local blockHeight = widgetContainerFrame:GetHeight() + 15;
+
+	local blockHeight = 0;
+	if widgetContainerFrame:HasAnyWidgetsShowing() then
+		blockHeight = widgetContainerFrame:GetHeight() + containerOffset;
+		containerBlock:SetWidth(widgetContainerFrame:GetWidth());
+	end
+
 	containerBlock.height = blockHeight;
 	containerBlock:SetHeight(blockHeight);
-	containerBlock:SetWidth(widgetContainerFrame:GetWidth());
 	containerBlock:Show();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
+end
+
+local function TopWidgetLayout(widgetContainerFrame, sortedWidgets)
+	WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, 7);
+end
+
+local function BottomWidgetLayout(widgetContainerFrame, sortedWidgets)
+	WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, 15);
 end
 
 function ScenarioBlocksFrame_OnLoad(self)
@@ -206,8 +219,8 @@ end
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
-		BottomScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
-		TopScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, WidgetsLayout);
+		BottomScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, TopWidgetLayout);
+		TopScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, BottomWidgetLayout);
 	elseif ( event == "WORLD_STATE_TIMER_START") then
 		local timerID = ...;
 		ScenarioTimer_CheckTimers(timerID);

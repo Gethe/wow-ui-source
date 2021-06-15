@@ -473,7 +473,7 @@ function PlayerChoiceBaseOptionItemRewardMixin:OnLoad()
 end
 
 function PlayerChoiceBaseOptionItemRewardMixin:IsDressupReward(itemRewardInfo)
-	if IsDressableItem(self.itemButton.itemLink) then
+	if C_Item.IsDressableItemByID(self.itemButton.itemLink) then
 		return true;
 	end
 

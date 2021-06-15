@@ -4,7 +4,7 @@
 
 function VoiceTranscriptionFrame_UpdateVisibility(self)
 	local id = self:GetID();
-	local showVoice = (GetCVarBool("speechToText") and self.isTranscribing) or GetCVarBool("remoteTextToSpeech");
+	local showVoice = (GetCVarBool("speechToText") and self.isTranscribing) or C_VoiceChat.IsSpeakForMeActive();
 	local shown, _, docked = select(7, GetChatWindowInfo(id));
 	local update = false;
 
@@ -102,14 +102,14 @@ function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 	FCFTab_UpdateColors(tab, not self.isDocked or self == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK))
 
 	-- Set chat type to the appropriate remote text to speech type if enabled
-	if ( GetCVarBool("remoteTextToSpeech") ) then
+	if ( C_VoiceChat.IsSpeakForMeActive() ) then
 		self.editBox:SetAttribute("chatType", "VOICE_TEXT");
 		self.editBox:SetAttribute("stickyType", "VOICE_TEXT");
 	end
 end
 
 function VoiceTranscriptionFrame_UpdateEditBox(self)
-	local speakForMeEnabled = GetCVarBool("remoteTextToSpeech");
+	local speakForMeEnabled = C_VoiceChat.IsSpeakForMeActive();
 	local muted = C_VoiceChat.IsMuted();
 	local prompt = self.editBox.prompt;
 	if muted then
@@ -135,7 +135,7 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 		VoiceTranscriptionFrame_UpdateEditBox(self);
-	elseif ( event == "CVAR_UPDATE" and ( cvarName == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" or cvarName == "ENABLE_REMOTE_TEXT_TO_SPEECH" ) ) then
+	elseif ( ( event == "CVAR_UPDATE" and cvarName == "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" ) or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 		VoiceTranscriptionFrame_UpdateEditBox(self);
@@ -171,6 +171,7 @@ function VoiceTranscriptionFrame_Init(self)
 	self.customEventHandler = VoiceTranscriptionFrame_CustomEventHandler;
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
