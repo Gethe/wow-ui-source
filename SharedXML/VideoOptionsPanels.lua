@@ -453,6 +453,9 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 	local dropdownIndex = GetGraphicsDropdownIndexByMasterIndex(self.graphicsCVar, masterIndex, isRaid);
 	local value = nil;
 	if(self.type == CONTROLTYPE_DROPDOWN) then
+		while self.data[dropdownIndex].skipForSlider do
+			dropdownIndex = dropdownIndex+1;
+		end
 		value = self.data[dropdownIndex].text;
 	elseif(self.type == CONTROLTYPE_SLIDER) then
 		value = dropdownIndex;
@@ -532,7 +535,13 @@ function Graphics_TableGetValue(self)
 			for _, child in pairs(self.childOptions) do
 				if(_G[child].graphicsCVar) then
 					local childValue = _G[child].newValue or tonumber(GetCVar(_G[child].graphicsCVar));
-					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
+					local dropdownIndex = GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid);
+					if _G[child].data then
+						while _G[child].data[dropdownIndex].skipForSlider do
+							dropdownIndex = dropdownIndex+1;
+						end
+					end
+					if(dropdownIndex ~= childValue) then
 						allMatch = false;
 						break;
 					end
@@ -736,6 +745,11 @@ function Graphics_DropDownRefreshValue(self)
 			end
 			if(self.cvar) then
 				local index = GetGraphicsDropdownIndexByMasterIndex(self.cvar, masterIndex, self.raid);
+				if(self.data) then
+					while self.data[index].skipForSlider do
+						index = index+1;
+					end
+				end
 				isValid, is32BitFail = IsValid(self, index);
 				if ( not isValid ) then
 					if ( is32BitFail ) then

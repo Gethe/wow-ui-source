@@ -126,7 +126,7 @@ end
 
 function CallbackRegistryMixin:UnregisterCallback(event, owner)
 	if type(event) ~= "string" then
-		error("CallbackRegistryMixin:TriggerEvent 'event' requires string type.");
+		error("CallbackRegistryMixin:UnregisterCallback 'event' requires string type.");
 	elseif not owner then
 		error("CallbackRegistryMixin:UnregisterCallback 'owner' is required.");
 	end

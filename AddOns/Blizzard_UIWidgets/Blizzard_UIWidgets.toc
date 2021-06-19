@@ -50,6 +50,8 @@ Blizzard_UIWidgetTemplateScenarioHeaderTimer.lua
 Blizzard_UIWidgetTemplateScenarioHeaderTimer.xml
 Blizzard_UIWidgetTemplateTextColumnRow.lua
 Blizzard_UIWidgetTemplateTextColumnRow.xml
+Blizzard_UIWidgetTemplateSpacer.lua
+Blizzard_UIWidgetTemplateSpacer.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

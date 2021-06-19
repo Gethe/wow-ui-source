@@ -421,7 +421,7 @@ function CommunitiesAddToChatDropDown_Initialize(self, level)
 		end
 	end	
 
-	local canCreateChatWindow = FCF_GetNumActiveChatFrames() ~= NUM_CHAT_WINDOWS;
+	local canCreateChatWindow = FCF_CanOpenNewWindow();
 	if canCreateChatWindow then
 		local info = UIDropDownMenu_CreateInfo();
 		info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_NEW_CHAT_WINDOW;

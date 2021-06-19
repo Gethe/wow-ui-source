@@ -159,6 +159,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetNumReservedChatWindows",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numReserved", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRegisteredAddonMessagePrefixes",
 			Type = "Function",
 

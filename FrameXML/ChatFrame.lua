@@ -5517,7 +5517,7 @@ function ChatChannelDropDown_Initialize()
 	info.arg1 = frame.chatType;
 	info.arg2 = frame.chatTarget;
 
-	if ( FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then
+	if ( not FCF_CanOpenNewWindow() ) then
 		info.disabled = 1;
 	end
 

@@ -276,9 +276,7 @@ function SelectionBehaviorMixin:SetElementDataSelected_Internal(elementData, new
 	end
 
 	if changed then
-		if elementData.scrollBoxChild then
-			self:TriggerEvent(SelectionBehaviorMixin.Event.OnSelectionChanged, elementData, newSelected);
-		end
+		self:TriggerEvent(SelectionBehaviorMixin.Event.OnSelectionChanged, elementData, newSelected);
 	end
 end
 

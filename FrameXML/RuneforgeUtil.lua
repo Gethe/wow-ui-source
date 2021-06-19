@@ -87,10 +87,10 @@ function RuneforgePowerBaseMixin:OnEnter()
 		if isSpecPower or isCovenantPower then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
-			local covenantData = isCovenantPower and C_Covenants.GetCovenantData(powerInfo.covenantID) or nil
+			local covenantData = isCovenantPower and C_Covenants.GetCovenantData(powerInfo.covenantID) or nil;
 			local covenantName = covenantData and covenantData.name or "";
 
-			local matchesRequirement = isCovenantPower and powerInfo.matchesCovenant or powerInfo.matchesSpec;
+			local matchesRequirement = (isSpecPower and powerInfo.matchesSpec) or (isCovenantPower and powerInfo.matchesCovenant);
 			local requirementText = isCovenantPower and covenantName or specName;
 			if matchesRequirement then
 				local requiresText = RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(requirementText));

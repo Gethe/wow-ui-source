@@ -188,10 +188,10 @@ end
 
 function EventTracePanelMixin:TryAddToSearch(elementData, search)
 	local s = search:upper()
-	if string.find(tostring(elementData.id), s, 1, true) or 
-		(elementData.event and string.find(elementData.event, s, 1, true)) or 
-		(elementData.arguments and string.find((elementData.arguments):upper(), s, 1, true)) or
-		(elementData.message and string.find((elementData.message):upper(), s, 1, true)) then
+	if string.find(tostring(elementData.id), s) or 
+		(elementData.event and string.find(elementData.event, s)) or 
+		(elementData.arguments and string.find((elementData.arguments):upper(), s)) or
+		(elementData.message and string.find((elementData.message):upper(), s)) then
 		local shallow = true;
 		self.searchDataProvider:Insert(CopyTable(elementData, shallow));
 		return true;
@@ -247,9 +247,11 @@ function EventTracePanelMixin:InitializeLog()
 					return elementData.id == pendingSearch.id;
 				end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 				
-				local button = found and found.scrollBoxChild;
-				if button then
-					button:Flash();
+				if found then
+					local button = self.Log.Search.ScrollBox:FindFrame(found);
+					if button then
+						button:Flash();
+					end
 				end
 			elseif self.Log.Search.ScrollBox:HasScrollableExtent() then
 				self.Log.Search.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
@@ -267,14 +269,14 @@ function EventTracePanelMixin:InitializeLog()
 	SetOnDataRangeChanged(self.Log.Events.ScrollBox);
 	SetOnDataRangeChanged(self.Log.Search.ScrollBox);
 
-	local function AddEventToFilter(elementData)
+	local function AddEventToFilter(scrollBox, elementData)
 		local found = self.filterDataProvider:FindElementDataByPredicate(function(filterData)
 			return filterData.event == elementData.event;
 		end);
 		if found then
 			found.enabled = true;
 			
-			local button = found.scrollBoxChild;
+			local button = scrollBox:FindFrame(elementData);
 			if button then
 				button:UpdateEnabledState();
 			end
@@ -299,7 +301,7 @@ function EventTracePanelMixin:InitializeLog()
 				button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp());
 
 				button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
-					AddEventToFilter(elementData);
+					AddEventToFilter(self.Log.Events.ScrollBox, elementData);
 				end);
 
 				button:SetScript("OnDoubleClick", function(button, buttonName)
@@ -333,7 +335,7 @@ function EventTracePanelMixin:InitializeLog()
 				return data.id == elementData.id;
 			end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 
-			local button = found and found.scrollBoxChild;
+			local button = found and self.Log.Events.ScrollBox:FindFrame(found);
 			if button then
 				button:Flash();
 			end
@@ -347,7 +349,7 @@ function EventTracePanelMixin:InitializeLog()
 				button:Init(elementData, self:IsShowingArguments());
 
 				button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
-					AddEventToFilter(elementData);
+					AddEventToFilter(self.Log.Search.ScrollBox, elementData);
 				end);
 
 				button:SetScript("OnDoubleClick", function(button, buttonName)

@@ -341,28 +341,43 @@ function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus
 	end
 end
 
-function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, hideItemLevel)
+function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo)
+	local itemQuality = itemKeyInfo.quality;
 	local useEquipmentFormat = itemKeyInfo.isEquipment and not hideItemLevel;
 	local itemDisplayText = useEquipmentFormat and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
+	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
 	return itemQualityColor.color:WrapTextInColorCode(itemDisplayText);
+end
+
+function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
+	if ownedAuctionData.status == Enum.AuctionStatus.Sold then
+		return GRAY_FONT_COLOR;
+	end
+
+	local itemQuality = itemKeyInfo.quality;
+	local itemLink = ownedAuctionData.itemLink;
+	if itemLink ~= nil then
+		if LinkUtil.IsLinkType(itemLink, "battlepet") then
+			itemQuality = select(3, BattlePetToolTip_UnpackBattlePetLink(itemLink)) or itemQuality;
+		else
+			itemQuality = select(3, GetItemInfo(itemLink)) or itemQuality;
+		end
+	end
+
+	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
+	return itemQualityColor.color;
 end
 
 function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
 	local itemKey = ownedAuctionData.itemKey;
 	local itemDisplayText = itemKeyInfo.isEquipment and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
-	local itemColor = itemQualityColor.color;
 
 	if ownedAuctionData.quantity > 1 then
 		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, BreakUpLargeNumbers(ownedAuctionData.quantity));
 	end
 
-	if ownedAuctionData.status == Enum.AuctionStatus.Sold then
-		itemColor = GRAY_FONT_COLOR;
-	end
-	
-	return itemColor:WrapTextInColorCode(itemDisplayText);
+	local itemQualityColor = AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo);
+	return itemQualityColor:WrapTextInColorCode(itemDisplayText);
 end
 
 function AuctionHouseUtil.GetSellersString(rowData)

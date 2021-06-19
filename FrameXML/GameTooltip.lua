@@ -924,10 +924,12 @@ function GameTooltip_AddQuest(self, questID)
 			end
 		end
 		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false);
-		local percent = C_TaskQuest.GetQuestProgressBarInfo(questID);
-		local showObjective = not (finished and self.isThreat);
-		if ( percent  and showObjective ) then
-			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
+		if (objectiveType == "progressbar") then
+			local percent = C_TaskQuest.GetQuestProgressBarInfo(questID);
+			local showObjective = not (finished and self.isThreat);
+			if ( percent  and showObjective ) then
+				GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
+			end
 		end
 
 		if (widgetSetID) then

@@ -322,7 +322,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 		info.text = NEW_CHAT_WINDOW;
 		info.func = FCF_NewChatWindow;
 		info.notCheckable = 1;
-		if (FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then
+		if ( not FCF_CanOpenNewWindow() ) then
 			info.disabled = 1;
 		end
 		UIDropDownMenu_AddButton(info);
@@ -600,11 +600,23 @@ function FCFMessageTypeDropDown_OnClick(self)
 	end
 end
 
+function FCF_CanOpenNewWindow()
+	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, NUM_CHAT_WINDOWS do
+		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
+		local chatFrame = _G["ChatFrame"..i];
+		if ( not shown and (not chatFrame or not chatFrame.isDocked) ) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function FCF_OpenNewWindow(name, noDefaultChannels)
 	local count = 1;
 	local chatFrame, chatTab;
 
-	for i=1, NUM_CHAT_WINDOWS do
+	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, NUM_CHAT_WINDOWS do
 		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
 		chatFrame = _G["ChatFrame"..i];
 		chatTab = _G["ChatFrame"..i.."Tab"];

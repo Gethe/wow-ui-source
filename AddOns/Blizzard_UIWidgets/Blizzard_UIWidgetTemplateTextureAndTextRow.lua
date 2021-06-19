@@ -59,7 +59,7 @@ function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo,
 			animationFrame:SetFrameLevel(entryFrame:GetFrameLevel() + 1);
 			animationFrame:Reset();
 			animationFrame:Show();
-			C_Timer.After(index * self.animationInfo.animationDelayModifier, function() animationFrame:Play(); C_Timer.After(self.animationInfo.effectDelay, function() self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame) end); end);
+			C_Timer.After(index * self.animationInfo.animationDelayModifier, function() if (not self.animationInfo) then return; end; animationFrame:Play(); C_Timer.After(self.animationInfo.effectDelay, function() self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame) end); end);
 		end
 	end
 end

@@ -714,12 +714,13 @@ function AuctionHouseTableCellItemDisplayMixin:ClearDisplay()
 end
 
 function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
-	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel));
-	
+	local rowData = self.rowData;
+	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel, rowData));
+
 	self.Icon:SetTexture(itemKeyInfo.iconFileID);
 	self.Icon:Show();
 
-	local noneAvailable = self.rowData.totalQuantity == 0;
+	local noneAvailable = rowData.totalQuantity == 0;
 	self.Icon:SetAlpha(noneAvailable and 0.5 or 1.0);
 end
 

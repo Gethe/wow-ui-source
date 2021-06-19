@@ -736,7 +736,8 @@ function WeeklyRewards_ShowUI()
 		WeeklyRewards_LoadUI();
 	end
 
-	ShowUIPanel(WeeklyRewardsFrame);
+	local force = true;	-- this could be called from the world map which might be in fullscreen mode
+	ShowUIPanel(WeeklyRewardsFrame, force);
 end
 
 --[[

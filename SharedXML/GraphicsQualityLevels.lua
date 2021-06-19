@@ -439,6 +439,7 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			warning = VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING,
+			skipForSlider = true;
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
