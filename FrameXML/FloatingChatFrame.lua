@@ -600,72 +600,105 @@ function FCFMessageTypeDropDown_OnClick(self)
 	end
 end
 
-function FCF_CanOpenNewWindow()
+function FCF_IsChatWindowIndexReserved(chatWindowIndex)
+	return chatWindowIndex <= C_ChatInfo.GetNumReservedChatWindows();
+end
+
+function FCF_IsChatWindowIndexActive(chatWindowIndex)
+	local shown = select(7, FCF_GetChatWindowInfo(chatWindowIndex));
+	if shown then
+		return true;
+	end
+
+	local chatFrame = _G["ChatFrame"..chatWindowIndex];
+	return (chatFrame and chatFrame.isDocked);
+end
+
+function FCF_IterateActiveChatWindows(callback)
+	for i = 1, NUM_CHAT_WINDOWS do
+		if ( FCF_IsChatWindowIndexActive(i) ) then
+			local chatFrame = _G["ChatFrame"..i];
+			if callback(chatFrame, i) then
+				break;
+			end
+		end
+	end
+end
+
+function FCF_GetNumActiveChatFrames()
+	local count = 0;
+	local function IncreaseCount()
+		count = count + 1;
+	end
+
+	FCF_IterateActiveChatWindows(IncreaseCount);
+	return count;
+end
+
+function FCF_GetNextOpenChatWindowIndex()
 	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, NUM_CHAT_WINDOWS do
-		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		local chatFrame = _G["ChatFrame"..i];
-		if ( not shown and (not chatFrame or not chatFrame.isDocked) ) then
-			return true;
+		if ( not FCF_IsChatWindowIndexActive(i) ) then
+			return i;
 		end
 	end
 
-	return false;
+	return nil;
+end
+
+function FCF_CanOpenNewWindow()
+	return FCF_GetNextOpenChatWindowIndex() ~= nil;
 end
 
 function FCF_OpenNewWindow(name, noDefaultChannels)
-	local count = 1;
-	local chatFrame, chatTab;
-
-	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, NUM_CHAT_WINDOWS do
-		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		chatFrame = _G["ChatFrame"..i];
-		chatTab = _G["ChatFrame"..i.."Tab"];
-		if ( (not shown and not chatFrame.isDocked) or (count == NUM_CHAT_WINDOWS) ) then
-			if ( not name or name == "" ) then
-				name = format(CHAT_NAME_TEMPLATE, i);
-			end
-
-			-- initialize the frame
-			FCF_SetWindowName(chatFrame, name);
-			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
-			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
-			SetChatWindowLocked(i, false);
-
-			-- clear stale messages
-			chatFrame:Clear();
-
-			-- Listen to the standard messages
-			ChatFrame_RemoveAllMessageGroups(chatFrame);
-			ChatFrame_RemoveAllChannels(chatFrame);
-			ChatFrame_ReceiveAllPrivateMessages(chatFrame);
-
-			if ( not noDefaultChannels ) then
-				ChatFrame_AddMessageGroup(chatFrame, "SAY");
-				ChatFrame_AddMessageGroup(chatFrame, "YELL");
-				ChatFrame_AddMessageGroup(chatFrame, "GUILD");
-				ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
-				ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
-				ChatFrame_AddMessageGroup(chatFrame, "PARTY");
-				ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
-				ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
-			end
-
-			--Clear the edit box history.
-			chatFrame.editBox:ClearHistory();
-
-			-- Show the frame and tab
-			chatFrame:Show();
-			chatTab:Show();
-			SetChatWindowShown(i, true);
-
-			-- Dock the frame by default
-			FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
-			FCF_FadeInChatFrame(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
-			ChatEdit_SetLastActiveWindow(chatFrame.editBox);
-			return chatFrame, i;
-		end
-		count = count + 1;
+	local chatFrameIndex = FCF_GetNextOpenChatWindowIndex();
+	if chatFrameIndex == nil then
+		return;
 	end
+
+	local chatFrame = _G["ChatFrame"..chatFrameIndex];
+	local chatTab = _G["ChatFrame"..chatFrameIndex.."Tab"];
+	if ( not name or name == "" ) then
+		name = format(CHAT_NAME_TEMPLATE, chatFrameIndex);
+	end
+
+	-- initialize the frame
+	FCF_SetWindowName(chatFrame, name);
+	FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
+	FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
+	SetChatWindowLocked(chatFrameIndex, false);
+
+	-- clear stale messages
+	chatFrame:Clear();
+
+	-- Listen to the standard messages
+	ChatFrame_RemoveAllMessageGroups(chatFrame);
+	ChatFrame_RemoveAllChannels(chatFrame);
+	ChatFrame_ReceiveAllPrivateMessages(chatFrame);
+
+	if ( not noDefaultChannels ) then
+		ChatFrame_AddMessageGroup(chatFrame, "SAY");
+		ChatFrame_AddMessageGroup(chatFrame, "YELL");
+		ChatFrame_AddMessageGroup(chatFrame, "GUILD");
+		ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
+		ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
+		ChatFrame_AddMessageGroup(chatFrame, "PARTY");
+		ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
+		ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
+	end
+
+	--Clear the edit box history.
+	chatFrame.editBox:ClearHistory();
+
+	-- Show the frame and tab
+	chatFrame:Show();
+	chatTab:Show();
+	SetChatWindowShown(chatFrameIndex, true);
+
+	-- Dock the frame by default
+	FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
+	FCF_FadeInChatFrame(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
+	ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+	return chatFrame, chatFrameIndex;
 end
 
 function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
@@ -844,21 +877,6 @@ function FCF_RemoveAllMessagesFromChanSender(chatFrame, chanSender)
 			return false;
 		end);
 	end
-end
-
-function FCF_GetNumActiveChatFrames()
-	local count = 0;
-	local chatFrame;
-	for i=1, NUM_CHAT_WINDOWS do
-		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		chatFrame = _G["ChatFrame"..i];
-		if ( chatFrame ) then
-			if ( shown or chatFrame.isDocked ) then
-				count = count + 1;
-			end
-		end
-	end
-	return count;
 end
 
 function FCF_RenameChatWindow_Popup()
@@ -2513,6 +2531,20 @@ function FCFManager_GetNumDedicatedFrames(chatType, chatTarget)
 	local token = FCFManager_GetToken(chatType, chatTarget);
 	local windowList = dedicatedWindows[token];
 	return (windowList and #windowList or 0);
+end
+
+function FCFManager_GetChatTarget(chatGroup, playerTarget, channelTarget)
+	local chatTarget;
+	if ( chatGroup == "CHANNEL" ) then
+		chatTarget = tostring(channelTarget);
+	elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
+		if(not(strsub(playerTarget, 1, 2) == "|K")) then
+			chatTarget = strupper(playerTarget);
+		else
+			chatTarget = playerTarget;
+		end
+	end
+	return chatTarget;
 end
 
 function FCFManager_ShouldSuppressMessage(chatFrame, chatType, chatTarget)

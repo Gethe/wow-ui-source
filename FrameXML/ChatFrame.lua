@@ -3353,13 +3353,15 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local streamIDs = C_ChatInfo.GetClubStreamIDs(clubId);
 		for k, streamID in pairs(streamIDs) do
 			local channelName = Chat_GetCommunitiesChannelName(clubId, streamID);
-			for i = 1, FCF_GetNumActiveChatFrames() do
-				local chatWindow = _G["ChatFrame"..i];
+			
+			local function RemoveClubChannelFromChatWindow(chatWindow, chatWindowIndex)
 				if ChatFrame_ContainsChannel(chatWindow, channelName) then
 					local omitMessage = true;
 					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamID, omitMessage);
 				end
 			end
+
+			FCF_IterateActiveChatWindows(RemoveClubChannelFromChatWindow);
 		end
 	elseif(event == "DISPLAY_EVENT_TOAST_LINK") then
 		EventToastManagerFrame:DisplayToastLink(self, ...);
@@ -3584,16 +3586,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		local chatGroup = Chat_GetChatCategory(type);
-		local chatTarget;
-		if ( chatGroup == "CHANNEL" ) then
-			chatTarget = tostring(arg8);
-		elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
-			if(not(strsub(arg2, 1, 2) == "|K")) then
-				chatTarget = strupper(arg2);
-			else
-				chatTarget = arg2;
-			end
-		end
+		local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
 
 		if ( FCFManager_ShouldSuppressMessage(self, chatGroup, chatTarget) ) then
 			return true;

@@ -149,6 +149,11 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 		end
 	end
 
+	-- don't update if nothing's changed, could screw up OnClick
+	if self.previousZoneAbilities and tCompare(self.previousZoneAbilities, displayedZoneAbilities) then
+		return;
+	end
+
 	self.previousZoneAbilities = displayedZoneAbilities;
 
 	local numDisplayedAbilites = #displayedZoneAbilities;

@@ -643,7 +643,7 @@ local function IsMessageTypeEnabled(messageType)
 	return false;
 end
 
-function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters)
+function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ignoreActivitySound)
 	local type = nil;
 
 	if id then
@@ -692,7 +692,7 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters)
 		end
 	end
 
-	if ( TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused and not frame:IsShown() ) then
+	if ( not ignoreActivitySound and TEXTTOSPEECH_CONFIG.playActivitySoundWhenNotFocused and not frame:IsShown() ) then
 		PlaySound(SOUNDKIT.UI_VOICECHAT_TTSACTIVITY);
 	end
 
@@ -715,6 +715,10 @@ local ignoredMsgTypes = {
 }
 
 local function IsMessageFromPlayer(msgType, msgSenderName)
+	if msgType == "WHISPER_INFORM" or msgType == "BN_WHISPER_INFORM" then
+		return true;
+	end
+
 	return not ignoredMsgTypes[msgType] and msgSenderName == UnitName("player");
 end
 
@@ -772,8 +776,16 @@ function TextToSpeechFrame_DisplaySilentSystemMessage(text)
 	TextToSpeechFrame_SetChatTypeEnabled("CHAT_MSG_SYSTEM", wasEnabled);
 end
 
-function TextToSpeechFrame_IsEventNarrationEnabled(event, ...)
+function TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
+	
+	local chatType = strsub(event, 10);
+	local chatGroup = Chat_GetChatCategory(chatType);
+	local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
+	
+	if ( FCFManager_ShouldSuppressMessage(frame, chatGroup, chatTarget) ) then
+		return false;
+	end
 
 	if TextToSpeechFrame_GetChatTypeEnabled(event) then
 		return true;
@@ -791,6 +803,14 @@ function TextToSpeechFrame_IsEventNarrationEnabled(event, ...)
 	end
 end
 
+local chatTypesWithTtsFormat = {
+	YELL = true,
+	WHISPER = true,
+	BN_WHISPER = true,
+	WHISPER_INFORM = true,
+	BN_WHISPER_INFORM = true,
+};
+
 function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 	if ( not GetCVarBool("textToSpeech") ) then
 		return;
@@ -800,29 +820,28 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		frame.addMessageObserver = TextToSpeechFrame_AddMessageObserver;
 	end
 
-	if TextToSpeechFrame_IsEventNarrationEnabled(event, ...) then
+	if TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
 		local message = arg1;
 		local name = Ambiguate(arg2 or "", "none");
-
-		-- Add optional text
+		
 		local type = strsub(event, 10);
 		if ( type == "GUILD_ACHIEVEMENT" or type == "ACHIEVEMENT" ) then
+			-- Achievement messages have a token for player name that needs filled in.
 			message = message:format(name);
 		elseif ( type ~= "TEXT_EMOTE" and TEXTTOSPEECH_CONFIG.addCharacterNameToSpeech and name ~= "" ) then
-			if ( type == "YELL" ) then
-				message = CHAT_YELL_GET:format(name) .. message;
-			elseif ( type == "WHISPER" or type == "BN_WHISPER" ) then
-				message = CHAT_WHISPER_GET:format(name) .. message;
-			elseif ( type == "WHISPER_INFORM" ) then
-				message = CHAT_WHISPER_INFORM_GET:format(name) .. message;
-			else
-				message = CHAT_SAY_GET:format(name) .. message;
+			-- Format messages as "<Player> says <message>" except for certain types.
+			local formatType = "SAY";
+			if ( chatTypesWithTtsFormat[type] ) then
+				formatType = type;
 			end
+
+			message = format(_G["CHAT_" .. formatType .. "_GET"] .. message, name);
 		end
 
 		-- Check for chat text from the local player and skip it, unless the player wants their messages narrated
-		if IsMessageFromPlayer(type, name) and not TEXTTOSPEECH_CONFIG.narrateMyMessages then
+		local messageFromPlayer = IsMessageFromPlayer(type, name);
+		if messageFromPlayer and not TEXTTOSPEECH_CONFIG.narrateMyMessages then
 			-- Ensure skipped by observer too
 			lastMessage = message;
 			lastMessageTime = GetTime();
@@ -832,7 +851,7 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		local chatType = strsub(event, 10);
 		local chatTypeInfo = ChatTypeInfo[chatType];
 		if chatTypeInfo and chatTypeInfo.id then
-			TextToSpeechFrame_PlayMessage(frame, message, chatTypeInfo.id);
+			TextToSpeechFrame_PlayMessage(frame, message, chatTypeInfo.id, false, messageFromPlayer);
 		end
 	end
 end

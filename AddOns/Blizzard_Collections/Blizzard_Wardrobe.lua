@@ -4208,7 +4208,13 @@ function WardrobeSetsTransmogMixin:OnEvent(event, ...)
 		-- these event can fire multiple times for set interaction, once for each slot in the set
 		if ( not self.pendingRefresh ) then
 			self.pendingRefresh = true;
-			C_Timer.After(0, function() self.pendingRefresh = nil; local resetSelection = (event == "TRANSMOGRIFY_UPDATE"); self:Refresh(resetSelection); end);
+			C_Timer.After(0, function()
+				self.pendingRefresh = nil;
+				if self:IsShown() then
+					local resetSelection = (event == "TRANSMOGRIFY_UPDATE");
+					self:Refresh(resetSelection);
+				end;
+			end);
 		end
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" or event == "TRANSMOG_SETS_UPDATE_FAVORITE" ) then
 		SetsDataProvider:ClearSets();

@@ -111,7 +111,7 @@ function AccountLogin_UpdateSavedData(self)
 		self.UI.AccountEditBox:SetText(accountName);
 		AccountLogin_FocusPassword();
 	end
-	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" ) then
+	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not C_Login.IsReconnectLoginPossible()) then
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
 		AccountLogin.UI.AccountsDropDown:Show();

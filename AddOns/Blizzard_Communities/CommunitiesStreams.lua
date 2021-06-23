@@ -380,46 +380,50 @@ function CommunitiesAddToChatDropDown_Initialize(self, level)
 	UIDropDownMenu_AddButton(info, level);
 	
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
-	for i = 1, FCF_GetNumActiveChatFrames() do
-		local chatWindow = _G["ChatFrame"..i];
-		if chatWindow ~= COMBATLOG then
-			local info = UIDropDownMenu_CreateInfo();
-			local chatTab = _G["ChatFrame"..i.."Tab"];
-			info.text = chatTab.Text:GetText();
-			info.value = i;
-			
-			if isGuildStream then
-				local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
-				info.func = function(button)
-					if button.checked then
-						ChatFrame_RemoveMessageGroup(chatWindow, messageGroup);
-					else
-						ChatFrame_AddMessageGroup(chatWindow, messageGroup);
-					end
-					
-					chatTab:Click();
-				end;
-				
-				
-				info.checked = ChatFrame_ContainsMessageGroup(chatWindow, messageGroup);
-			else
-				info.func = function(button)
-					if button.checked then
-						ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamId);
-					else
-						ChatFrame_AddNewCommunitiesChannel(i, clubId, streamId);
-					end
-					
-					chatTab:Click();
-				end;
-				
-				info.checked = ChatFrame_ContainsChannel(chatWindow, channelName);
-			end
-			
-			info.isNotRadio = true;
-			UIDropDownMenu_AddButton(info, level);
+	local function AddChatWindowToDropdown(chatWindow, chatWindowIndex)
+		-- The only reserved chat window that allows communities channels is the general chat window.
+		if FCF_IsChatWindowIndexReserved(chatWindowIndex) and (chatWindowIndex ~= 1) then
+			return;
 		end
-	end	
+	
+		local info = UIDropDownMenu_CreateInfo();
+		local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
+		info.text = chatTab.Text:GetText();
+		info.value = chatWindowIndex;
+		
+		if isGuildStream then
+			local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
+			info.func = function(button)
+				if button.checked then
+					ChatFrame_RemoveMessageGroup(chatWindow, messageGroup);
+				else
+					ChatFrame_AddMessageGroup(chatWindow, messageGroup);
+				end
+				
+				chatTab:Click();
+			end;
+			
+			
+			info.checked = ChatFrame_ContainsMessageGroup(chatWindow, messageGroup);
+		else
+			info.func = function(button)
+				if button.checked then
+					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamId);
+				else
+					ChatFrame_AddNewCommunitiesChannel(chatWindowIndex, clubId, streamId);
+				end
+				
+				chatTab:Click();
+			end;
+			
+			info.checked = ChatFrame_ContainsChannel(chatWindow, channelName);
+		end
+		
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level);
+	end
+
+	FCF_IterateActiveChatWindows(AddChatWindowToDropdown);
 
 	local canCreateChatWindow = FCF_CanOpenNewWindow();
 	if canCreateChatWindow then

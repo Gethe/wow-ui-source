@@ -36,6 +36,7 @@ local customTextureKitInfo = {
 		optionsTopPadding = 30,
 		optionsBottomPadding = 55,
 		showOptionsOnly = true,
+		frameYOffset = 95,
 	},
 
 	Oribos = {
@@ -70,6 +71,7 @@ local defaultTextureKitInfo = {
 	optionsBottomPadding = 69,
 	optionsSidePadding = 65,
 	optionsSpacing = 20,
+	frameYOffset = 0,
 };
 
 function PlayerChoiceFrameMixin:GetTextureKitInfo()
@@ -234,6 +236,8 @@ function PlayerChoiceFrameMixin:SetupFrame()
 		self:SetupTextureKits(self.Title, titleTextureKitRegions);
 		self:SetupTextureKits(self.Background, backgroundTextureKitRegions);
 	end
+
+	self:SetPoint("CENTER", 0, self.textureKitInfo.frameYOffset);
 end
 
 local function HideAndAnchorTopLeft(framePool, frame)
