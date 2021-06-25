@@ -351,13 +351,14 @@ function WorldMapZoneMinimapDropDown_GetText(value)
 end
 
 function WorldMapZoneMinimapDropDown_Update()
-	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, SHOW_BATTLEFIELD_MINIMAP);
-	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_GetText(SHOW_BATTLEFIELD_MINIMAP));
+	local value = GetCVar("showBattlefieldMinimap");
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, value);
+	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_GetText(value));
 end
 
 function WorldMapZoneMinimapDropDown_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, self.value);
-	SHOW_BATTLEFIELD_MINIMAP = self.value;
+	SetCVar("showBattlefieldMinimap", self.value);
 
 	if ( DoesInstanceTypeMatchBattlefieldMapSettings()) then
 		if ( not BattlefieldMapFrame ) then
@@ -392,10 +393,12 @@ end
 
 function DoesInstanceTypeMatchBattlefieldMapSettings()
 	local instanceType = GetBattlefieldMapInstanceType();
+	local value = GetCVar("showBattlefieldMinimap");
+
 	if instanceType == "pvp" then
-		return SHOW_BATTLEFIELD_MINIMAP == "1";
+		return value == "1" or value == "2";
 	elseif instanceType == "none" then
-		return SHOW_BATTLEFIELD_MINIMAP == "2";
+		return value == "2";
 	end
 	return false;
 end

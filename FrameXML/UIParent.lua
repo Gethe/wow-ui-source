@@ -674,10 +674,6 @@ function UIParent_OnEvent(self, event, ...)
 
 		LocalizeFrames();
 
-		if ( not BattlefieldMapFrame and GetCVar("showBattlefieldMinimap") == "1" ) then
-			BattlefieldMap_LoadUI();
-		end
-
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");
 		if ( lastTalkedToGM ~= "" ) then
 			GMChatFrame_LoadUI();
@@ -866,6 +862,9 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
+		end
+		if ( not BattlefieldMapFrame and DoesInstanceTypeMatchBattlefieldMapSettings() ) then
+			BattlefieldMap_LoadUI();
 		end
 
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
@@ -4288,7 +4287,9 @@ end
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsInGroup() and (IsInRaid() or useCompact) ) then
+	if ( IsActiveBattlefieldArena() and not useCompact ) then
+		return "party";
+	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
 		return "raid";
 	elseif ( IsInGroup() ) then
 		return "party";

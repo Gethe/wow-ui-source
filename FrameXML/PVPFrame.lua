@@ -273,6 +273,12 @@ function PVPTeamDetails_Update(self, id)
 	local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, personalRating  = GetArenaTeam(id);		
 	local button;
 	local teamIndex;
+	
+	if ( not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+		PVPTeamDetailsAddTeamMember:Hide();
+	else
+		PVPTeamDetailsAddTeamMember:Show();
+	end
 
 	-- Display General Team Stats
 	PVPTeamDetailsName:SetText(teamName);

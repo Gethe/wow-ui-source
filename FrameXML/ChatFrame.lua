@@ -2248,7 +2248,7 @@ SlashCmdList["DISABLE_ADDONS"] = function(msg)
 	ReloadUI();
 end
 
---[[SlashCmdList["STOPWATCH"] = function(msg)
+SlashCmdList["STOPWATCH"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
 		UIParentLoadAddOn("Blizzard_TimeManager");
 	end
@@ -2286,7 +2286,7 @@ end
 				return;
 			end
 			-- try to match a countdown
-			-- kinda ghetto, but hey, it's simple and it works =)
+			-- kinda jank, but hey, it's simple and it works =)
 			local hour, minute, second = strmatch(msg, "(%d+):(%d+):(%d+)");
 			if ( not hour ) then
 				minute, second = strmatch(msg, "(%d+):(%d+)");
@@ -2299,7 +2299,7 @@ end
 			Stopwatch_Toggle();
 		end
 	end
-end]]
+end
 
 --[[SlashCmdList["CALENDAR"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_Calendar") ) then

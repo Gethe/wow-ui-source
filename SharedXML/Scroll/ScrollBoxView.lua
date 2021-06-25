@@ -311,12 +311,6 @@ function ScrollBoxListViewMixin:SignalDataChangeEvent(invalidationReason)
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataChanged);
 end
 
-function ScrollBoxListViewMixin:AssignFrameToElementData(elementData, frame)
-	if type(elementData) == "table" then
-		elementData.scrollBoxChild = frame;
-	end
-end
-
 function ScrollBoxListViewMixin:IsAcquireLocked()
 	return self.acquireLock;
 end
@@ -345,7 +339,7 @@ function ScrollBoxListViewMixin:Acquire(dataIndex)
 	self.factoryFrameElementData = nil;
 
 	table.insert(self:GetFrames(), frame);
-	self:AssignFrameToElementData(elementData, frame);
+
 	frame:SetOrderIndex(dataIndex);
 	frame:Show();
 
@@ -356,7 +350,6 @@ end
 
 function ScrollBoxListViewMixin:Release(frame)
 	local oldElementData = frame:GetElementData();
-	self:AssignFrameToElementData(oldElementData, nil);
 
 	tDeleteItem(self:GetFrames(), frame);
 	self.poolCollection:Release(frame);
@@ -652,7 +645,7 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 						frame:SetOrderIndex(dataIndex);
 						releaseList[currentElementData] = nil;
 					else
-						table.insert(acquireList, dataIndex);
+						tinsert(acquireList, dataIndex);
 					end
 				end
 			end

@@ -276,9 +276,7 @@ function SelectionBehaviorMixin:SetElementDataSelected_Internal(elementData, new
 	end
 
 	if changed then
-		if elementData.scrollBoxChild then
-			self:TriggerEvent(SelectionBehaviorMixin.Event.OnSelectionChanged, elementData, newSelected);
-		end
+		self:TriggerEvent(SelectionBehaviorMixin.Event.OnSelectionChanged, elementData, newSelected);
 	end
 end
 
@@ -328,4 +326,41 @@ function ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, elementDataTra
 		tableBuilder:RemoveRow(frame, elementDataTranslator(elementData));
 	end;
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, onReleased, onReleased);
+end
+
+ScrollBoxFactoryInitializerMixin = {};
+
+function ScrollBoxFactoryInitializerMixin:Init(frameType, frameTemplate, extent)
+	self.frameType = frameType;
+	self.frameTemplate = frameTemplate;
+	self.extent = extent;
+end
+
+function ScrollBoxFactoryInitializerMixin:GetTemplate()
+	assert(self.frameType and self.frameTemplate);
+	return self.frameType, self.frameTemplate;
+end
+
+function ScrollBoxFactoryInitializerMixin:InitFrame(frame)
+	frame:Init(self);
+end
+
+function ScrollBoxFactoryInitializerMixin:Factory(factory, caller)
+	local frame = factory(self:GetTemplate());
+	if frame.Init then
+		frame:Init(self);
+	end
+	return frame;
+end
+
+function ScrollBoxFactoryInitializerMixin:Resetter(frame)
+	frame:Release(self);
+end
+
+function ScrollBoxFactoryInitializerMixin:GetExtent()
+	return self.extent;
+end
+
+function ScrollBoxFactoryInitializerMixin:IsA(frameTemplate)
+	return frameTemplate == self.frameTemplate;
 end

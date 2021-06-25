@@ -1048,19 +1048,19 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "TEAM_PROMOTE" ) then
 			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			end
 		elseif ( value == "TEAM_KICK" ) then
 			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			end
 		elseif ( value == "TEAM_LEAVE" ) then
 			if ( dropdownMenu.name ~= UnitName("player") or not PVPTeamDetails:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			end
 		elseif ( value == "UNINVITE" ) then
 			if ( not inParty or not isPlayer or not isLeader or (instanceType == "pvp") or (instanceType == "arena") ) then
@@ -1146,7 +1146,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
 			if ( not inParty or ( inParty and GetLootMethod() == "freeforall" ) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			end
 		elseif ( value == "LOOT_PROMOTE" ) then
 			local isMaster = nil;

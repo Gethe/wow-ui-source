@@ -47,7 +47,7 @@ end
 function WowScrollBarThumbButtonScriptsMixin:OnEnter()
 	self.Begin:SetAtlas(self.overBeginTexture, TextureKitConstants.UseAtlasSize);
 	self.End:SetAtlas(self.overEndTexture, TextureKitConstants.UseAtlasSize);
-	self.Middle:SetAtlas(self.normalMiddleTexture, TextureKitConstants.UseAtlasSize);
+	self.Middle:SetAtlas(self.overMiddleTexture, TextureKitConstants.UseAtlasSize);
 end
 
 function WowScrollBarThumbButtonScriptsMixin:ApplyNormalAtlas()
@@ -67,7 +67,7 @@ end
 function WowScrollBarThumbButtonScriptsMixin:OnDisable()
 	self.Begin:SetAtlas(self.disabledBeginTexture, TextureKitConstants.UseAtlasSize);
 	self.End:SetAtlas(self.disabledEndTexture, TextureKitConstants.UseAtlasSize);
-	self.Middle:SetAtlas(self.normalMiddleTexture, TextureKitConstants.UseAtlasSize);
+	self.Middle:SetAtlas(self.disabledMiddleTexture, TextureKitConstants.UseAtlasSize);
 end
 
 function WowScrollBarThumbButtonScriptsMixin:OnSizeChanged(width, height)
