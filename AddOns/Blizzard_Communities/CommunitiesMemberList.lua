@@ -1245,11 +1245,15 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		local professionId = self:GetProfessionId();
 		self.GuildInfo:SetText(GUILD_VIEW_RECIPES_LINK);
 	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_DUNGEON_SCORE then
-		local color = C_ChallengeMode.GetDungeonScoreRarityColor(memberInfo.overallDungeonScore);
-		if(not color) then 
-			color = HIGHLIGHT_FONT_COLOR; 
-		end 
-		self.GuildInfo:SetText(color:WrapTextInColorCode(memberInfo.overallDungeonScore));
+		if(memberInfo.overallDungeonScore) then 
+			local color = C_ChallengeMode.GetDungeonScoreRarityColor(memberInfo.overallDungeonScore);
+			if(not color) then 
+				color = HIGHLIGHT_FONT_COLOR; 
+			end 
+			self.GuildInfo:SetText(color:WrapTextInColorCode(memberInfo.overallDungeonScore));
+		else 
+			self.GuildInfo:SetText(NO_ROSTER_ACHIEVEMENT_POINTS); -- Display - if there is no dungeon score. 
+		end
 	end
 end
 
