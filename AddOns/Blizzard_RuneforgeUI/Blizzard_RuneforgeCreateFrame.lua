@@ -58,14 +58,14 @@ function RuneforgeCreateFrameMixin:GetStaticPopupInfo()
 	if self:IsRuneforgeUpgrading() then
 		local upgradeItem = runeforgeFrame:GetUpgradeItem();
 		local itemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
-		return RUNEFORGE_LEGENDARY_UPGRADING_CONFIRMATION, itemPreviewInfo.itemID, upgradeItem, quality, itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
+		return RUNEFORGE_LEGENDARY_UPGRADING_CONFIRMATION, itemPreviewInfo.itemGUID, upgradeItem, quality, itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
 	else
-		return RUNEFORGE_LEGENDARY_CRAFTING_CONFIRMATION, itemPreviewInfo.itemID, baseItem, quality, itemPreviewInfo.itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
+		return RUNEFORGE_LEGENDARY_CRAFTING_CONFIRMATION, itemPreviewInfo.itemGUID, baseItem, quality, itemPreviewInfo.itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
 	end
 end
 
 function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
-	local popupTitleFormat, itemID, itemLocation, quality, itemLevel, itemName, powerID, modifiers = self:GetStaticPopupInfo();
+	local popupTitleFormat, itemGUID, itemLocation, quality, itemLevel, itemName, powerID, modifiers = self:GetStaticPopupInfo();
 
 	local function StaticPopupItemFrameCallback(itemFrame)
 		itemFrame:SetItemLocation(itemLocation);
@@ -77,7 +77,13 @@ function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
 
 	local function StaticPopupItemFrameOnEnterCallback(itemFrame)
 		GameTooltip:SetOwner(itemFrame, "ANCHOR_RIGHT");
-		GameTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
+
+		if self:IsRuneforgeUpgrading() then
+			GameTooltip:SetRuneforgeResultItem(itemGUID, itemLevel);
+		else
+			GameTooltip:SetRuneforgeResultItem(itemGUID, itemLevel, powerID, modifiers);
+		end
+
 		SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 		GameTooltip:Show();
 	end

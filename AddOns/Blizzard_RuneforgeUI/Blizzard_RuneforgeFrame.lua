@@ -300,7 +300,12 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 		local upgradeItem = self:GetUpgradeItem();
 		local hasUpgradeItem = upgradeItem ~= nil;
 		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or itemPreviewInfo.itemLevel;
-		resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemLevel, powerID, modifiers);
+
+		if self:IsRuneforgeUpgrading() then
+			resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemLevel);
+		else
+			resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemLevel, powerID, modifiers);
+		end
 	end
 	
 	resultTooltip:SetShown(hasItem);
@@ -323,9 +328,8 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, -6);
+	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemPreviewInfo.itemLevel);
 
-	local itemID = C_Item.GetItemID(baseItem);
-	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemPreviewInfo.itemLevel, powerID, modifiers);
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip:Show();
 
@@ -333,7 +337,7 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 	resultTooltip:SetOwner(self, "ANCHOR_NONE");
 	resultTooltip:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 4, 0);
 	local upgradeItemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
-	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, upgradeItemLevel, powerID, modifiers);
+	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, upgradeItemLevel);
 	resultTooltip:Show();
 
 	SetUIPanelAttribute(self, "width", self:GetWidth());
