@@ -8,6 +8,7 @@
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
+..\SharedXML\EnumUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
@@ -38,8 +39,10 @@
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
+
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -54,12 +57,21 @@ GlueLocalization.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\GlobalCallbackRegistry.lua
+..\SharedXML\Frame\EventFrame.xml
+..\SharedXML\Frame\EventButton.xml
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
 ..\SharedXML\UIDropDownMenu.xml
 GlueContextMenu.xml
 
+..\SharedXML\DataProvider.lua
+..\SharedXML\Interpolator.lua
+..\SharedXML\Scroll\ScrollUtil.lua
+..\SharedXML\Scroll\ScrollController.lua
+..\SharedXML\Scroll\ScrollBox.xml
+..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml

@@ -4,7 +4,7 @@
 		<Size x="237" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText" justifyH="LEFT">
+				<FontString parentKey="Text" mixin="UIWidgetBaseTextMixin" inherits="GameTooltipText" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>

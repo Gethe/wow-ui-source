@@ -6,11 +6,6 @@ QUESTINFO_FADE_IN = 0.5;
 
 local QUEST_FRAME_MODEL_SCENE_ID = 309;
 
--- A temporary solution for solving troublesome models.
-local QUEST_FRAME_CREATURE_DISPLAY_ID_TO_CUSTOM_MODEL_SCENES = {
-	[92797] = 366,
-};
-
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -133,7 +128,9 @@ function QuestFrameRewardPanel_OnShow()
 	QuestRewardScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, 0, questPortraitText, questPortraitName, -3, -42);
+		local questPortraitMount = 0;
+		local questPortraitModelSceneID = nil;
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -191,7 +188,6 @@ local function QuestFrameProgressPanel_SetupBG(self)
 		end
 	end
 
-	self.Bg:SetAtlas("QuestBG-Parchment", true);
 	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	return material;
 end
@@ -453,13 +449,13 @@ function QuestFrame_UpdatePortraitText(text)
 	end
 end
 
-function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
+function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y)
 	QuestModelScene:SetParent(parentFrame);
 	QuestModelScene:SetFrameLevel(600);
 	QuestModelScene:ClearAllPoints();
 	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:ClearScene();
-	QuestModelScene:TransitionToModelSceneID(QUEST_FRAME_CREATURE_DISPLAY_ID_TO_CUSTOM_MODEL_SCENES[portraitDisplayID] or QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+	QuestModelScene:TransitionToModelSceneID(modelSceneID or QUEST_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	QuestModelScene:Show();
 	QuestFrame_UpdatePortraitText(text);
 
@@ -526,9 +522,9 @@ function QuestFrameDetailPanel_OnShow()
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -553,22 +549,24 @@ end
 
 function QuestFrame_SetMaterial(frame, material)
 	local hasMaterial = material ~= "Parchment";
-	_G[frame:GetName().."MaterialTopLeft"]:SetShown(hasMaterial);
-	_G[frame:GetName().."MaterialTopRight"]:SetShown(hasMaterial);
-	_G[frame:GetName().."MaterialBotLeft"]:SetShown(hasMaterial);
-	_G[frame:GetName().."MaterialBotRight"]:SetShown(hasMaterial);
+	frame.MaterialTopLeft:SetShown(hasMaterial);
+	frame.MaterialTopRight:SetShown(hasMaterial);
+	frame.MaterialBotLeft:SetShown(hasMaterial);
+	frame.MaterialBotRight:SetShown(hasMaterial);
 
 	if hasMaterial then
-		_G[frame:GetName().."MaterialTopLeft"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopLeft");
-		_G[frame:GetName().."MaterialTopRight"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopRight");
-		_G[frame:GetName().."MaterialBotLeft"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
-		_G[frame:GetName().."MaterialBotRight"]:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
+		frame.MaterialTopLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopLeft");
+		frame.MaterialTopRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-TopRight");
+		frame.MaterialBotLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
+		frame.MaterialBotRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
 	end
+	frame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
 end
 
 function QuestFrame_GetMaterial()
+	local questTextContrastEnabled = QuestUtil.QuestTextContrastEnabled();
 	local material = GetQuestBackgroundMaterial();
-	if not material then
+	if questTextContrastEnabled or not material then
 		return "Parchment", true;
 	end
 

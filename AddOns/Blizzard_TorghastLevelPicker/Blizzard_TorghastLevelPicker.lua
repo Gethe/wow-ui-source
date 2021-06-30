@@ -118,7 +118,8 @@ function TorghastLevelPickerFrameMixin:ClearLevelSelection()
 		self.currentSelectedButton:ClearSelection(); 
 		self.currentSelectedButton = nil;
 		self.currentSelectedButtonIndex = nil;
-	end 
+	end
+	self.highestAvailableLayerIndex = nil;
 	self:UpdatePortalButtonState(); 
 end 
 
@@ -236,7 +237,6 @@ function TorghastLevelPickerOptionButtonMixin:SetState(status)
 	local parent = self:GetParent():GetParent(); 
 	local isHighestAvailableLayer = self.index == parent.highestAvailableLayerIndex;
 	local isChecked = (self == parent.currentSelectedButton) and (self.index == parent.currentSelectedButtonIndex);
-
 	self.RewardBanner.Banner:SetShown(not lockedState);
 	self.RewardBanner.BannerSelected:SetShown(not lockedState and isChecked);
 	self.RewardBanner.Reward.PulseAnim:Stop();

@@ -21,7 +21,7 @@ local function ClassTrialDoCharacterUpgrade(guid, boostType, confirmed)
 	if upgradeDistributions[boostType] and upgradeDistributions[boostType].amount >= 1 then
 		if confirmed then
 			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
-				C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType);
+				C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType, 0);
 			else
 				Outbound.ShowUpgradeLogoutConfirmation(boostType);
 			end

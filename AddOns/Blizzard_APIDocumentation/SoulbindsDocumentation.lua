@@ -282,7 +282,7 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitRankFromCollection",
+			Name = "GetConduitRank",
 			Type = "Function",
 
 			Arguments =
@@ -350,6 +350,20 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "data", Type = "SoulbindData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpecsAssignedToSoulbind",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "soulbindID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -716,6 +730,7 @@ local Soulbinds =
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "failureRenownRequirement", Type = "number", Nilable = true },
+				{ Name = "socketEnhanced", Type = "bool", Nilable = true },
 			},
 		},
 		{

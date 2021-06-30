@@ -14,10 +14,10 @@ function UIWidgetTemplateDoubleStateIconRowMixin:Setup(widgetInfo, widgetContain
 	self.iconPool:ReleaseAll();
 
 	local leftAligned = true;
-	local biggestLeftHeight, totalLeftWidth = self:SetupIcons(widgetContainer, widgetInfo.leftIcons, widgetInfo.textureKit, leftAligned);
+	local biggestLeftHeight, totalLeftWidth = self:SetupIcons(widgetContainer, widgetInfo.leftIcons, widgetInfo.textureKit, leftAligned, widgetInfo.tooltipLoc);
 
 	local rightAligned = false;
-	local biggestRightHeight, totalRightWidth = self:SetupIcons(widgetContainer, widgetInfo.rightIcons, widgetInfo.textureKit, rightAligned);
+	local biggestRightHeight, totalRightWidth = self:SetupIcons(widgetContainer, widgetInfo.rightIcons, widgetInfo.textureKit, rightAligned, widgetInfo.tooltipLoc);
 
 	local biggestHeight = math.max(biggestLeftHeight, biggestRightHeight);
 	biggestHeight = math.max(biggestHeight, 1);
@@ -30,7 +30,7 @@ function UIWidgetTemplateDoubleStateIconRowMixin:Setup(widgetInfo, widgetContain
 	self:SetHeight(biggestHeight);
 end
 
-function UIWidgetTemplateDoubleStateIconRowMixin:SetupIcons(widgetContainer, icons, textureKit, leftAlign)
+function UIWidgetTemplateDoubleStateIconRowMixin:SetupIcons(widgetContainer, icons, textureKit, leftAlign, tooltipLoc)
 	local previousIconFrame;
 	local biggestHeight = 0;
 	local totalWidth = 0;
@@ -65,6 +65,8 @@ function UIWidgetTemplateDoubleStateIconRowMixin:SetupIcons(widgetContainer, ico
 			previousIconFrame = iconFrame;
 
 			biggestHeight = math.max(biggestHeight, iconFrame:GetHeight());
+
+			iconFrame:SetTooltipLocation(tooltipLoc);
 		end
 	end
 

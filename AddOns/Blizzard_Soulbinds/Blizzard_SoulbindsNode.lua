@@ -336,6 +336,7 @@ function SoulbindConduitNodeMixin:SetConduit(conduitID, initializing)
 	end
 
 	self:UpdatePendingAnim();
+	self:UpdateEnhancedSheenAnim();
 end
 
 function SoulbindConduitNodeMixin:GetConduit()
@@ -356,6 +357,7 @@ function SoulbindConduitNodeMixin:Init(node)
 
 	self:DisplayConduit();
 	self:UpdatePendingAnim();
+	self:UpdateEnhancedSheenAnim();
 end
 
 function SoulbindConduitNodeMixin:PlaySocketAnimation()
@@ -374,21 +376,32 @@ function SoulbindConduitNodeMixin:OnInstalled()
 	
 	self:PlaySelectionEffect();
 	self:UpdatePendingAnim();
+	self:UpdateEnhancedSheenAnim();
 end
 
 function SoulbindConduitNodeMixin:OnUninstalled()
 	self:Init(C_Soulbinds.GetNode(self:GetID()));
 end
 
+function SoulbindConduitNodeMixin:IsPending()
+	return self.conduit:GetConduitID() ~= self:GetConduitID();
+end
+
 function SoulbindConduitNodeMixin:UpdatePendingAnim()
-	local pending = self.conduit:GetConduitID() ~= self:GetConduitID();
+	local pending = self:IsPending();
 	self.Pending:SetShown(pending);
 	self.PendingStick.RotateAnim:SetPlaying(pending);
 	self.PendingStick2.RotateAnim:SetPlaying(pending);
 end
 
+function SoulbindConduitNodeMixin:IsEnhanced()
+	return self.node.socketEnhanced;
+end
+
 function SoulbindConduitNodeMixin:UpdateVisuals()
 	SoulbindTreeNodeMixin.UpdateVisuals(self);
+
+	local ringAtlas = self:IsEnhanced() and "Soulbinds_Tree_Conduit_Ring_Enhanced" or "Soulbinds_Tree_Conduit_Ring";
 	
 	if self:IsUnavailable() then
 		self.Ring:SetAtlas("Soulbinds_Tree_Conduit_Ring_Disabled", false);
@@ -396,13 +409,13 @@ function SoulbindConduitNodeMixin:UpdateVisuals()
 		self.Emblem:SetDesaturated(true);
 		self.Emblem:SetAlpha(.75);
 	elseif self:IsUnselected() then
-		self.Ring:SetAtlas("Soulbinds_Tree_Conduit_Ring", false);
-		self.MouseOverlay:SetAtlas("Soulbinds_Tree_Conduit_Ring", false);
+		self.Ring:SetAtlas(ringAtlas, false);
+		self.MouseOverlay:SetAtlas(ringAtlas, false);
 		self.Emblem:SetDesaturated(true);
 		self.Emblem:SetAlpha(.75);
 	else
-		self.Ring:SetAtlas("Soulbinds_Tree_Conduit_Ring", false);
-		self.MouseOverlay:SetAtlas("Soulbinds_Tree_Conduit_Ring", false);
+		self.Ring:SetAtlas(ringAtlas, false);
+		self.MouseOverlay:SetAtlas(ringAtlas, false);
 		self.Emblem:SetDesaturated(false);
 		self.Emblem:SetAlpha(1.0);
 	end
@@ -490,6 +503,11 @@ function SoulbindConduitNodeMixin:SetUnsocketedWarningAnimShown(shown)
 	end
 end
 
+function SoulbindConduitNodeMixin:UpdateEnhancedSheenAnim()
+	local playSheenAnim = self:IsEnhanced() and not self:IsPending() and (self:IsSelectable() or self:IsSelected());
+	self.EnhancedNodeSheen.Anim:SetPlaying(playSheenAnim);
+end
+
 function SoulbindConduitNodeMixin:StopAnimations()
 	SoulbindTreeNodeMixin.StopAnimations(self);
 
@@ -568,7 +586,11 @@ function SoulbindConduitNodeMixin:LoadTooltip()
 	if conduit:IsValid() then
 		local onConduitLoad = function()
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetConduit(conduit:GetConduitID(), conduit:GetConduitRank()); 
+			if self:IsEnhanced() then 
+				GameTooltip:SetEnhancedConduit(conduit:GetConduitID(), conduit:GetConduitRank());
+			else
+				GameTooltip:SetConduit(conduit:GetConduitID(), conduit:GetConduitRank()); 
+			end
 			self:AddTooltipContents();
 			GameTooltip:Show();
 		end;
@@ -580,6 +602,9 @@ function SoulbindConduitNodeMixin:LoadTooltip()
 		else
 			local title, description = GetUninstalledConduitStrings(self:GetConduitType());
 			GameTooltip_SetTitle(GameTooltip, title);
+			if self:IsEnhanced() then 
+				GameTooltip_AddColoredLine(GameTooltip, SOULBIND_CONDUIT_ENHANCED, SOULBIND_CONDUIT_ENHANCED_COLOR, false);
+			end
 			GameTooltip_AddNormalLine(GameTooltip, description);
 			self:AddTooltipContents();
 		end

@@ -269,9 +269,13 @@ function AuctionHouseSearchBarMixin:SetSearchText(searchText)
 	self.SearchBox:SetText(searchText);
 end
 
+function AuctionHouseSearchBarMixin:GetLevelFilterRange()
+	return self.FilterButton:GetLevelRange();
+end
+
 function AuctionHouseSearchBarMixin:StartSearch()
 	local searchString = self.SearchBox:GetSearchString();
-	local minLevel, maxLevel = self.FilterButton:GetLevelRange();
+	local minLevel, maxLevel = self:GetLevelFilterRange();
 	local filtersArray = self.FilterButton:CalculateFiltersArray();
 	self:GetAuctionHouseFrame():SendBrowseQuery(searchString, minLevel, maxLevel, filtersArray);
 end

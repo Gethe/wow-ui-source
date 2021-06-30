@@ -19,6 +19,11 @@ local ScriptedAnimations =
 
 	Events =
 	{
+		{
+			Name = "ScriptedAnimationsUpdate",
+			Type = "Event",
+			LiteralName = "SCRIPTED_ANIMATIONS_UPDATE",
+		},
 	},
 
 	Tables =
@@ -37,6 +42,17 @@ local ScriptedAnimations =
 				{ Name = "SourceRecoil", Type = "ScriptedAnimationBehavior", EnumValue = 3 },
 				{ Name = "SourceCollideWithTarget", Type = "ScriptedAnimationBehavior", EnumValue = 4 },
 				{ Name = "UIParentShake", Type = "ScriptedAnimationBehavior", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "ScriptedAnimationFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "UseTargetAsSource", Type = "ScriptedAnimationFlags", EnumValue = 1 },
 			},
 		},
 		{
@@ -72,12 +88,22 @@ local ScriptedAnimations =
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
 				{ Name = "offsetZ", Type = "number", Nilable = false },
+				{ Name = "animation", Type = "number", Nilable = false },
 				{ Name = "animationSpeed", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "useTargetAsSource", Type = "bool", Nilable = false },
 				{ Name = "startBehavior", Type = "ScriptedAnimationBehavior", Nilable = true },
 				{ Name = "startSoundKitID", Type = "number", Nilable = true },
 				{ Name = "finishEffectID", Type = "number", Nilable = true },
 				{ Name = "finishBehavior", Type = "ScriptedAnimationBehavior", Nilable = true },
 				{ Name = "finishSoundKitID", Type = "number", Nilable = true },
+				{ Name = "startAlphaFade", Type = "number", Nilable = true },
+				{ Name = "startAlphaFadeDuration", Type = "number", Nilable = true },
+				{ Name = "endAlphaFade", Type = "number", Nilable = true },
+				{ Name = "endAlphaFadeDuration", Type = "number", Nilable = true },
+				{ Name = "animationStartOffset", Type = "number", Nilable = true },
+				{ Name = "loopingSoundKitID", Type = "number", Nilable = true },
+				{ Name = "particleOverrideScale", Type = "number", Nilable = true },
 			},
 		},
 	},

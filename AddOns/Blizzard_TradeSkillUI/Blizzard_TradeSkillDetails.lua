@@ -573,8 +573,14 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 				hasReagent = false;
 			end
 
-			local hasRequiredSkillRank = categorySkillRank >= slot.requiredSkillRank;
-			reagentButton:SetLocked(not hasRequiredSkillRank, slot.requiredSkillRank);
+			local requiredSkillRank = slot.requiredSkillRank;
+			local hasRequiredSkillRank = categorySkillRank >= requiredSkillRank;
+			local hasLockedReason = (slot.lockedReason ~= nil);
+			if hasLockedReason then
+				reagentButton:SetLocked(true, slot.lockedReason);
+			else
+				reagentButton:SetLocked(not hasRequiredSkillRank, OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank));
+			end
 
 			if hasReagent then
 				local isOptional = true;
@@ -583,11 +589,12 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 					craftable = false;
 				end
 			else
-				reagentButton.Icon:SetAtlas(hasRequiredSkillRank and "tradeskills-icon-add" or "tradeskills-icon-locked", TextureKitConstants.UseAtlasSize);
+				local isLocked = hasLockedReason or not hasRequiredSkillRank;
+				reagentButton.Icon:SetAtlas(isLocked and "tradeskills-icon-locked" or "tradeskills-icon-add", TextureKitConstants.UseAtlasSize);
 				reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
 				reagentButton.Count:SetText("");
 				reagentButton:SetReagentText(slot.slotText or OPTIONAL_REAGENT_POSTFIX);
-				reagentButton:SetReagentColor(hasRequiredSkillRank and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR);
+				reagentButton:SetReagentColor(isLocked and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR);
 			end
 
 			reagentButton.SelectedTexture:SetShown(optionalReagentIndex == selectedOptionalReagentIndex);
@@ -775,7 +782,9 @@ function TradeSkillDetailsMixin:OnOptionalReagentMouseEnter(reagentButton)
 
 	if reagentButton:IsLocked() then
 		GameTooltip_SetTitle(GameTooltip, EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE);
-		GameTooltip_AddErrorLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(reagentButton:GetLockedSkillRank()));
+
+		local lockedReason = reagentButton:GetLockedTooltip();
+		GameTooltip_AddErrorLine(GameTooltip, lockedReason);
 	else
 		local reagentName, bonusText, reagentQuality, reagentTexture, reagentCount, playerReagentCount, itemID = self:GetOptionalReagent(reagentButton.optionalReagentIndex);
 		if reagentName then

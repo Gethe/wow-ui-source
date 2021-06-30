@@ -790,7 +790,7 @@
 					<OnLoad function="PetBattleWeatherFrame_OnLoad"/>
 					<OnEvent function="PetBattleWeatherFrame_OnEvent"/>
 					<OnEnter>
-						PetBattleAbilityTooltip_SetAura(LE_BATTLE_PET_WEATHER, PET_BATTLE_PAD_INDEX, 1);
+						PetBattleAbilityTooltip_SetAura(Enum.BattlePetOwner.Weather, PET_BATTLE_PAD_INDEX, 1);
 						PetBattleAbilityTooltip_Show("TOP", self, "BOTTOM", 0, 0);
 					</OnEnter>
 					<OnLeave>
@@ -1436,7 +1436,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SKIP);
+										PetBattleActionButton_Initialize(self, Enum.BattlePetAction.Skip);
 									</OnLoad>
 									<OnEvent function="PetBattleActionButton_OnEvent"/>
 									<OnClick>
@@ -1495,7 +1495,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SWITCH_PET);
+								PetBattleActionButton_Initialize(self, Enum.BattlePetAction.SwitchPet);
 								self.Icon:SetTexture("Interface\\Icons\\INV_Pet_SwapPet");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
@@ -1519,7 +1519,7 @@
 						<!--Anchored in code via the FlowFrame-->
 						<Scripts>
 							<OnLoad>
-								PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_TRAP);
+								PetBattleActionButton_Initialize(self, Enum.BattlePetAction.Trap);
 								self.Icon:SetTexture("Interface\\Icons\\INV_Pet_PetTrap");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>

@@ -62,6 +62,12 @@ function FlightMap_FlightPathDataProviderMixin:HighlightRouteToPin(pin)
 		local destinationSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, false);
 
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
+
+		-- Exit-only flight points don't show a preview.
+		if startPin == nil then
+			return;
+		end
+
 		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
 		local lineContainer = self.highlightLinePool:Acquire();
@@ -88,6 +94,12 @@ function FlightMap_FlightPathDataProviderMixin:RemoveRouteToPin(pin)
 		local destinationSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, false);
 
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
+		
+		-- Exit-only flight points don't show a preview.
+		if startPin == nil then
+			return;
+		end
+
 		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
 		startPin:SetShown(startPin:GetTaxiNodeState() ~= Enum.FlightPathState.Unreachable);

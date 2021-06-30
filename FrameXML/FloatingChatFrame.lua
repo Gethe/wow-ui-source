@@ -215,7 +215,7 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 			if ( not chatFrame.minimized ) then
 				chatTab:Show();
 			end
-		elseif ( not chatFrame.isTemporary ) then
+		elseif ( not chatFrame.isTemporary and not IsBuiltinChatWindow(chatFrame) ) then
 			FCF_Close(chatFrame);
 		end
 	end
@@ -322,14 +322,14 @@ function FCFOptionsDropDown_Initialize(dropDown)
 		info.text = NEW_CHAT_WINDOW;
 		info.func = FCF_NewChatWindow;
 		info.notCheckable = 1;
-		if (FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then
+		if ( not FCF_CanOpenNewWindow() ) then
 			info.disabled = 1;
 		end
 		UIDropDownMenu_AddButton(info);
 	end
 
 	-- Close current chat window
-	if ( chatFrame and (chatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(chatFrame)) ) then
+	if ( chatFrame and not IsBuiltinChatWindow(chatFrame) ) then
 		if ( not chatFrame.isTemporary ) then
 			info = UIDropDownMenu_CreateInfo();
 			info.text = CLOSE_CHAT_WINDOW;
@@ -600,60 +600,105 @@ function FCFMessageTypeDropDown_OnClick(self)
 	end
 end
 
-function FCF_OpenNewWindow(name, noDefaultChannels)
-	local count = 1;
-	local chatFrame, chatTab;
+function FCF_IsChatWindowIndexReserved(chatWindowIndex)
+	return chatWindowIndex <= C_ChatInfo.GetNumReservedChatWindows();
+end
 
-	for i=1, NUM_CHAT_WINDOWS do
-		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		chatFrame = _G["ChatFrame"..i];
-		chatTab = _G["ChatFrame"..i.."Tab"];
-		if ( (not shown and not chatFrame.isDocked) or (count == NUM_CHAT_WINDOWS) ) then
-			if ( not name or name == "" ) then
-				name = format(CHAT_NAME_TEMPLATE, i);
+function FCF_IsChatWindowIndexActive(chatWindowIndex)
+	local shown = select(7, FCF_GetChatWindowInfo(chatWindowIndex));
+	if shown then
+		return true;
+	end
+
+	local chatFrame = _G["ChatFrame"..chatWindowIndex];
+	return (chatFrame and chatFrame.isDocked);
+end
+
+function FCF_IterateActiveChatWindows(callback)
+	for i = 1, NUM_CHAT_WINDOWS do
+		if ( FCF_IsChatWindowIndexActive(i) ) then
+			local chatFrame = _G["ChatFrame"..i];
+			if callback(chatFrame, i) then
+				break;
 			end
-
-			-- initialize the frame
-			FCF_SetWindowName(chatFrame, name);
-			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
-			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
-			SetChatWindowLocked(i, false);
-
-			-- clear stale messages
-			chatFrame:Clear();
-
-			-- Listen to the standard messages
-			ChatFrame_RemoveAllMessageGroups(chatFrame);
-			ChatFrame_RemoveAllChannels(chatFrame);
-			ChatFrame_ReceiveAllPrivateMessages(chatFrame);
-
-			if ( not noDefaultChannels ) then
-				ChatFrame_AddMessageGroup(chatFrame, "SAY");
-				ChatFrame_AddMessageGroup(chatFrame, "YELL");
-				ChatFrame_AddMessageGroup(chatFrame, "GUILD");
-				ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
-				ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
-				ChatFrame_AddMessageGroup(chatFrame, "PARTY");
-				ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
-				ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
-			end
-
-			--Clear the edit box history.
-			chatFrame.editBox:ClearHistory();
-
-			-- Show the frame and tab
-			chatFrame:Show();
-			chatTab:Show();
-			SetChatWindowShown(i, true);
-
-			-- Dock the frame by default
-			FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
-			FCF_FadeInChatFrame(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
-			ChatEdit_SetLastActiveWindow(chatFrame.editBox);
-			return chatFrame, i;
 		end
+	end
+end
+
+function FCF_GetNumActiveChatFrames()
+	local count = 0;
+	local function IncreaseCount()
 		count = count + 1;
 	end
+
+	FCF_IterateActiveChatWindows(IncreaseCount);
+	return count;
+end
+
+function FCF_GetNextOpenChatWindowIndex()
+	for i = C_ChatInfo.GetNumReservedChatWindows() + 1, NUM_CHAT_WINDOWS do
+		if ( not FCF_IsChatWindowIndexActive(i) ) then
+			return i;
+		end
+	end
+
+	return nil;
+end
+
+function FCF_CanOpenNewWindow()
+	return FCF_GetNextOpenChatWindowIndex() ~= nil;
+end
+
+function FCF_OpenNewWindow(name, noDefaultChannels)
+	local chatFrameIndex = FCF_GetNextOpenChatWindowIndex();
+	if chatFrameIndex == nil then
+		return;
+	end
+
+	local chatFrame = _G["ChatFrame"..chatFrameIndex];
+	local chatTab = _G["ChatFrame"..chatFrameIndex.."Tab"];
+	if ( not name or name == "" ) then
+		name = format(CHAT_NAME_TEMPLATE, chatFrameIndex);
+	end
+
+	-- initialize the frame
+	FCF_SetWindowName(chatFrame, name);
+	FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
+	FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
+	SetChatWindowLocked(chatFrameIndex, false);
+
+	-- clear stale messages
+	chatFrame:Clear();
+
+	-- Listen to the standard messages
+	ChatFrame_RemoveAllMessageGroups(chatFrame);
+	ChatFrame_RemoveAllChannels(chatFrame);
+	ChatFrame_ReceiveAllPrivateMessages(chatFrame);
+
+	if ( not noDefaultChannels ) then
+		ChatFrame_AddMessageGroup(chatFrame, "SAY");
+		ChatFrame_AddMessageGroup(chatFrame, "YELL");
+		ChatFrame_AddMessageGroup(chatFrame, "GUILD");
+		ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
+		ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
+		ChatFrame_AddMessageGroup(chatFrame, "PARTY");
+		ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
+		ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
+	end
+
+	--Clear the edit box history.
+	chatFrame.editBox:ClearHistory();
+
+	-- Show the frame and tab
+	chatFrame:Show();
+	chatTab:Show();
+	SetChatWindowShown(chatFrameIndex, true);
+
+	-- Dock the frame by default
+	FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
+	FCF_FadeInChatFrame(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
+	ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+	return chatFrame, chatFrameIndex;
 end
 
 function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
@@ -834,21 +879,6 @@ function FCF_RemoveAllMessagesFromChanSender(chatFrame, chanSender)
 	end
 end
 
-function FCF_GetNumActiveChatFrames()
-	local count = 0;
-	local chatFrame;
-	for i=1, NUM_CHAT_WINDOWS do
-		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		chatFrame = _G["ChatFrame"..i];
-		if ( chatFrame ) then
-			if ( shown or chatFrame.isDocked ) then
-				count = count + 1;
-			end
-		end
-	end
-	return count;
-end
-
 function FCF_RenameChatWindow_Popup()
 	local dialog = StaticPopup_Show("NAME_CHAT");
 	dialog.data = FCF_GetCurrentChatFrameID();
@@ -874,6 +904,9 @@ function FCF_SetWindowName(frame, name, doNotSave)
 			doNotSave = nil;
 		elseif ( frame:GetID() == 2 ) then
 			name = COMBAT_LOG;
+			doNotSave = nil;
+		elseif ( frame:GetID() == 3 ) then
+			name = VOICE;
 			doNotSave = nil;
 		else
 			name = format(CHAT_NAME_TEMPLATE, frame:GetID());
@@ -1577,7 +1610,7 @@ function FCF_Tab_OnClick(self, button)
 	end
 
 	if (button == "MiddleButton") then
-		if ( chatFrame and (chatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(chatFrame)) ) then
+		if ( chatFrame and not IsBuiltinChatWindow(chatFrame) ) then
 			if ( not chatFrame.isTemporary ) then
 				FCF_PopInWindow(self, chatFrame);
 				return;
@@ -1737,34 +1770,32 @@ function SetChatMouseOverDelay(noDelay)
 	end
 end
 
+function FCF_ResetChatWindow(windowFrame, windowName)
+	FCF_SetChatWindowFontSize(nil, windowFrame, CHAT_FRAME_DEFAULT_FONT_SIZE);
+	FCF_SetWindowName(windowFrame, windowName);
+	FCF_SetWindowColor(windowFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
+	FCF_SetWindowAlpha(windowFrame, DEFAULT_CHATFRAME_ALPHA);
+	ChatFrame_RemoveAllMessageGroups(windowFrame);
+	ChatFrame_RemoveAllChannels(windowFrame);
+	ChatFrame_ReceiveAllPrivateMessages(windowFrame);
+	FCF_UnDockFrame(windowFrame);
+	windowFrame.isInitialized = 0;
+end
+
 -- Reset the chat windows to default
 function FCF_ResetChatWindows()
 	ChatFrame1:ClearAllPoints();
 	--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
 	ChatFrame1:SetWidth(430);
 	ChatFrame1:SetHeight(120);
-	ChatFrame1.isInitialized = 0;
-	FCF_SetButtonSide(ChatFrame1, "left")
-	FCF_SetChatWindowFontSize(nil, ChatFrame1, CHAT_FRAME_DEFAULT_FONT_SIZE);
-	FCF_SetWindowName(ChatFrame1, GENERAL);
-	FCF_SetWindowColor(ChatFrame1, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
-	FCF_SetWindowAlpha(ChatFrame1, DEFAULT_CHATFRAME_ALPHA);
-	FCF_UnDockFrame(ChatFrame1);
-	ChatFrame_RemoveAllMessageGroups(ChatFrame1);
-	ChatFrame_RemoveAllChannels(ChatFrame1);
-	ChatFrame_ReceiveAllPrivateMessages(ChatFrame1);
+	FCF_SetButtonSide(ChatFrame1, "left");
+	FCF_ResetChatWindow(ChatFrame1, GENERAL);
 	SELECTED_CHAT_FRAME = ChatFrame1;
 	DEFAULT_CHAT_FRAME.chatframe = DEFAULT_CHAT_FRAME;
+	
+	FCF_ResetChatWindow(ChatFrame2, COMBAT_LOG);
+	FCF_ResetChatWindow(ChatFrame3, VOICE);
 
-	FCF_SetChatWindowFontSize(nil, ChatFrame2, CHAT_FRAME_DEFAULT_FONT_SIZE);
-	FCF_SetWindowName(ChatFrame2, COMBAT_LOG);
-	FCF_SetWindowColor(ChatFrame2, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
-	FCF_SetWindowAlpha(ChatFrame2, DEFAULT_CHATFRAME_ALPHA);
-	ChatFrame_RemoveAllMessageGroups(ChatFrame2);
-	ChatFrame_RemoveAllChannels(ChatFrame2);
-	ChatFrame_ReceiveAllPrivateMessages(ChatFrame2);
-	FCF_UnDockFrame(ChatFrame2);
-	ChatFrame2.isInitialized = 0;
 	for _, chatFrameName in ipairs(CHAT_FRAMES) do
 		if ( chatFrameName ~= "ChatFrame1" ) then
 			local chatFrame = _G[chatFrameName];
@@ -1784,6 +1815,7 @@ function FCF_ResetChatWindows()
 	ChatFrame1.init = 0;
 	FCF_DockFrame(ChatFrame1, 1, true);
 	FCF_DockFrame(ChatFrame2, 2);
+	FCF_DockFrame(ChatFrame3, 3);
 
 	-- resets to hard coded defaults
 	ResetChatWindows(CHAT_FRAME_DEFAULT_FONT_SIZE);
@@ -1793,11 +1825,15 @@ function FCF_ResetChatWindows()
 end
 
 function IsCombatLog(frame)
-	if ( frame == ChatFrame2 and IsAddOnLoaded("Blizzard_CombatLog") ) then
-		return true;
-	else
-		return false;
-	end
+	return ( frame == ChatFrame2 and IsAddOnLoaded("Blizzard_CombatLog") );
+end
+
+function IsVoiceTranscription(frame)
+	return ( frame == ChatFrame3 );
+end
+
+function IsBuiltinChatWindow(frame)
+	return ( frame == DEFAULT_CHAT_FRAME ) or IsCombatLog(frame) or IsVoiceTranscription(frame);
 end
 
 function FCFClickAnywhereButton_OnLoad(self)
@@ -2495,6 +2531,20 @@ function FCFManager_GetNumDedicatedFrames(chatType, chatTarget)
 	local token = FCFManager_GetToken(chatType, chatTarget);
 	local windowList = dedicatedWindows[token];
 	return (windowList and #windowList or 0);
+end
+
+function FCFManager_GetChatTarget(chatGroup, playerTarget, channelTarget)
+	local chatTarget;
+	if ( chatGroup == "CHANNEL" ) then
+		chatTarget = tostring(channelTarget);
+	elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
+		if(not(strsub(playerTarget, 1, 2) == "|K")) then
+			chatTarget = strupper(playerTarget);
+		else
+			chatTarget = playerTarget;
+		end
+	end
+	return chatTarget;
 end
 
 function FCFManager_ShouldSuppressMessage(chatFrame, chatType, chatTarget)

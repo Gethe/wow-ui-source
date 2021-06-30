@@ -16,7 +16,7 @@ function SoulbindConduitMixin:GetConduitID()
 end
 
 function SoulbindConduitMixin:GetConduitRank()
-	local rank = C_Soulbinds.GetConduitRankFromCollection(self:GetConduitID());
+	local rank = C_Soulbinds.GetConduitRank(self:GetConduitID());
 	return self:IsValid() and math.max(rank, 1) or 1;
 end
 

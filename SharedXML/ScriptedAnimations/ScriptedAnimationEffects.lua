@@ -20,10 +20,6 @@ local function GetProgress(elapsed, duration)
 	return (duration ~= 0) and (elapsed / duration) or 0;
 end
 
-local function GetTransformationProgress(elapsed, duration)
-	return (elapsed > duration) and 1.0 or (elapsed / duration);
-end
-
 local function LinearTrajectory(source, target, elapsed, duration)
 	local sourceX, sourceY = source:GetCenter();
 	local targetX, targetY = target:GetCenter();
@@ -77,21 +73,6 @@ local function HalfwayStaticTrajectory(source, target, elapsed, duration)
 	local sourceCenterX, sourceCenterY = source:GetCenter();
 	local targetCenterX, targetCenterY = target:GetCenter();
 	return sourceCenterX + ((targetCenterX - sourceCenterX) / 2.0), sourceCenterY + ((targetCenterY - sourceCenterY) / 2.0);
-end
-
-local function GenerateAlphaTransformation(effectActor, elapsed, duration, beginAlpha, targetAlpha)
-	beginAlpha = beginAlpha or effectActor:GetAlpha();
-	targetAlpha = targetAlpha or effectActor:GetAlpha();
-
-	local function AlphaTransformation(effectActor, elapsed, duration)
-		local progress = GetTransformationProgress(elapsed, duration);
-		local alpha = Lerp(beginAlpha, targetAlpha, progress);
-		effectActor:SetAlpha(alpha);
-
-		return progress == 1.0;
-	end
-
-	return AlphaTransformation(effectActor, elapsed, duration), AlphaTransformation;
 end
 
 local function ShakeTargetLight(effectDescription, source, target, speed)
@@ -229,201 +210,16 @@ local TrajectoryToCallback = {
 
 -- Support feature prototypes without extending the databse table. Current Extensions:
 --
--- (1) The transformation system
--- Part of the goal of future FX is to allow more control over events in an effect such
--- as playing sounds or starting a new effect. This prototype is currently built to support
--- fading in and fading out.
--- Proposed transformation format:
--- {
--- timing: how the behavior starts (at a fixed time, at a fixed percentage, with the beginning,
--- 			so that the transformation ends with the effect, halfway through the effect, etc )
--- duration: how long the transformation lasts.
--- transformationCallback: an enum value corresponding to the function to do the actual transformation.
--- args: a list of arguments to control the callback.
--- }
--- These can be found in HardcodedTransformations below.
--- 
--- (2) Animation controls
--- Additional columns to support controlling animations
--- animation: an animation to play instead of Stand.
--- animationStartOffset: an offset (in seconds) to the animation.
---
--- (3) Looping sound effects
--- An additional columns to support controlling animations
--- loopingSoundKitID: a looping sound effect that plays while the effect is active.
---
--- (4) Particle scaling
--- An additional column to support an override for the particle scale, which will match the actor
--- scale by default.
--- particleOverrideScale: the override scale for particles.
---
--- (5) Starting alpha
--- An additional column to support an override for the effect actor's starting alpha.
--- startingAlpha: the effect actor's starting alpha.
---
--- (6) Playing Effect at Target without pitching from source 
--- A flag to allow an effect to play at a target without augmenting it's yaw by the source->target vector
--- useTargetAsSource: set to true for readability, anything nonfalse will evaluate to use the default angles. 
-
-Enum.ScriptedAnimationTransformation = {};
-Enum.ScriptedAnimationTransformation.Alpha = 1;
-
-Enum.ScriptedAnimationTransformationTiming = {};
-Enum.ScriptedAnimationTransformationTiming.BeginWithEffect = 1;
-Enum.ScriptedAnimationTransformationTiming.FinishWithEffect = 2;
--- Enum.ScriptedAnimationTransformationTiming.Fixed = 3; -- Currently unsupported.
-
-local TransformationToCallback = {
-	[Enum.ScriptedAnimationTransformation.Alpha] = GenerateAlphaTransformation,
-};
-
-local HardcodedTransformations = {
-	FadeIn = {
-		timing = Enum.ScriptedAnimationTransformationTiming.BeginWithEffect,
-		duration = 0.4,
-		transformationCallback = TransformationToCallback[Enum.ScriptedAnimationTransformation.Alpha],
-		args = { 0, 1, n = 2 },
-	},
-
-	FadeOut = {
-		timing = Enum.ScriptedAnimationTransformationTiming.FinishWithEffect,
-		duration = 0.4,
-		transformationCallback = TransformationToCallback[Enum.ScriptedAnimationTransformation.Alpha],
-		args = { nil, 0, n = 2 },
-	},
-};
-
-local RunecarvingRuneFlashExtension = {
-	animation = 127,
-	animationStartOffset = 0.3,
-
-	transformations = {
-		HardcodedTransformations.FadeOut,
-	},
-};
-
-local RunecarvingRuneBirthExtension = {
-	transformations = {
-		HardcodedTransformations.FadeIn,
-	},
-};
-
-local AnimaDiversionHoldAnimation = {
-	animation = 158,
-};
+-- README: Please replace the comments below if you add a new extension.
+-- (1) Feature
+-- Feature description
+-- featureKey1: feature key 1 description
 
 local ScriptAnimationTableExtension = {
-	[22] = AnimaDiversionHoldAnimation,
-	[24] = AnimaDiversionHoldAnimation,
-	[27] = AnimaDiversionHoldAnimation,
-	[28] = AnimaDiversionHoldAnimation,
-	[31] = AnimaDiversionHoldAnimation,
-	[33] = AnimaDiversionHoldAnimation,
-
-	[41] = {
-		animation = 158,
-	},
-
-	[52] = {
-		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_MAIN_WINDOW_OPEN_LOOP,
-	},
-
-	[55] = {
-		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_POWER_SELECTED_LOOP,
-	},
-
-	[54] = {
-		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_LOWER_RUNE_SELECTED_LOOP,
-	},
-
-	[57] = {
-		loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_UPPER_RUNE_SELECTED_LOOP,
-	},
-
-	[73] = Mixin({ loopingSoundKitID = SOUNDKIT.UI_RUNECARVING_ITEM_SELECTED_LOOP, }, RunecarvingRuneBirthExtension),
-	[74] = RunecarvingRuneBirthExtension,
-	[75] = RunecarvingRuneBirthExtension,
-	[76] = RunecarvingRuneBirthExtension,
-	[77] = RunecarvingRuneBirthExtension,
-	[78] = RunecarvingRuneBirthExtension,
-	[79] = RunecarvingRuneBirthExtension,
-	[80] = RunecarvingRuneBirthExtension,
-
-	[81] = RunecarvingRuneFlashExtension,
-	[82] = RunecarvingRuneFlashExtension,
-	[83] = RunecarvingRuneFlashExtension,
-	[84] = RunecarvingRuneFlashExtension,
-	[85] = RunecarvingRuneFlashExtension,
-	[86] = RunecarvingRuneFlashExtension,
-	[87] = RunecarvingRuneFlashExtension,
-	[88] = RunecarvingRuneFlashExtension,
-	[89] = {
-		animation = 215, 
-	},
-
-	-- Covenant Toast Looping Sounds. 
-	[91] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_BASTION,
-	},
-	[92] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_REVENDRETH,
-	},
-	[93] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_ARDENWEALD,
-	},
-	[94] = { 
-		loopingSoundKitID = SOUNDKIT.UI_COVENANT_CHOICE_CELEBRATION_ANIMATION_MALDRAXXUS,
-	},
-
-	[98] = {
-		animation = 158,
-	},
-
-	[99] = {
-		useTargetAsSource = true,
-	},
-
-	[119] = {
-		startingAlpha = 0.2,
-	},
-	[120] = {
-		startingAlpha = 0.3,
-	},
-	[121] = {
-		startingAlpha = 0.2,
-	},
-	[122] = {
-		startingAlpha = 0.3,
-	},
-	[123] = {
-		startingAlpha = 0.4,
-	},
-
-
+	-- [1] = {
+	-- 	featureKey1 = 12345,
+	-- }
 };
-
--- Split into chunks of 10. These effects were created with old-style particle scaling,
--- so to preserve their current behavior they all have a particleOverrideScale of 1.0.
-local LegacyParticleScaleEffects = {
-	2, 3, 4, 5, 6, 8, 9, 10, 11, 12,
-	15, 16, 17, 18, 19, 20, 21, 22, 25, 30,
-	36, 37, 43, 44, 45, 46, 48, 49, 50, 53,
-	54, 55, 57, 58, 59, 60, 61, 62, 63, 64,
-	65, 77, 67, 68, 70, 72, 73, 74, 75, 76,
-	77, 78, 79, 80, 81, 82, 83, 84, 85, 86,
-	87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-	97, 101, 119, 120, 121, 122, 123
-};
-
-for i, effectID in ipairs(LegacyParticleScaleEffects) do
-	local effectExtension = ScriptAnimationTableExtension[effectID];
-	if not effectExtension then
-		effectExtension = {};
-		ScriptAnimationTableExtension[effectID] = effectExtension;
-	end
-
-	effectExtension.particleOverrideScale = 1.0;
-end
 
 
 local function LoadScriptedAnimationEffects()
@@ -461,7 +257,12 @@ function ScriptedAnimationEffectsUtil.ReloadDB()
 	ScriptedAnimationEffects = LoadScriptedAnimationEffects();
 end
 
+
 ScriptedAnimationEffectsDebug = {};
+
+function ScriptedAnimationEffectsDebug.GetDB()
+	return ScriptedAnimationEffects;
+end
 
 function ScriptedAnimationEffectsDebug.GetAllEffectIDs()
 	local allEffectIDs = {};
@@ -498,4 +299,12 @@ function ScriptedAnimationEffectsDebug.GetEnumFromTrajectory(trajectoryFunction)
 	end
 
 	return nil;
+end
+
+function ScriptedAnimationEffectsDebug.LoadEffectsDBCopy()
+	return LoadScriptedAnimationEffects();
+end
+
+function ScriptedAnimationEffectsDebug.RestoreDBCopy(dbCopy)
+	ScriptedAnimationEffects = dbCopy;
 end

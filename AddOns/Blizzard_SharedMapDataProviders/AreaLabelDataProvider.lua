@@ -98,7 +98,7 @@ function AreaLabelFrameMixin:OnUpdate()
 				end
 			end
 
-			local _, _, _, _, locked = C_PetJournal.GetPetLoadOutInfo(1);
+			local _, _, _, _, locked = C_PetJournal.GetPetLoadOutInfo(Enum.PetbattleSlot.Slot_0);
 			if not locked and GetCVarBool("showTamers") then --don't show pet levels for people who haven't unlocked battle petting
 				if petMinLevel and petMaxLevel and petMinLevel > 0 and petMaxLevel > 0 then
 					local teamLevel = C_PetJournal.GetPetTeamAverageLevel();

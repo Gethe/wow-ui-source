@@ -41,7 +41,7 @@ function MawBuffsContainerMixin:Update()
 	self:SetText(JAILERS_TOWER_BUFFS_BUTTON_TEXT:format(totalCount));
 	self.List:Update(mawBuffs);
 	
-	if(IsInJailersTower()) then
+	if(IsInJailersTower() or self.fromFrameManager) then
 		self:Show();
 	else
 		self:Hide();
@@ -233,3 +233,10 @@ function MawBuffMixin:OnLeave()
 	GameTooltip_Hide(); 
 	self.HighlightBorder:Hide(); 
 end
+
+MawBuffsBelowMinimapFrameMixin = { };
+function MawBuffsBelowMinimapFrameMixin:OnShow()
+	self.Container.fromFrameManager = true;
+	self.Container:Update(); 
+	UIParent_ManageFramePositions();
+end 

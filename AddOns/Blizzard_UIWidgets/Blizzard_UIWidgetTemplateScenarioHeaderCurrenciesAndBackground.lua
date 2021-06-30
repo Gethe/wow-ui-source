@@ -12,6 +12,7 @@ UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin = CreateFromMixins(UI
 local textureKitInfo =
 {
 	["jailerstower-scenario"] = {currencyContainerOffsets = {xOffset = 32, yOffset = -46}},
+	["jailerstower-scenario-nodeaths"] = {currencyContainerOffsets = {xOffset = 34, yOffset = -46}},
 }
 
 local DEFAULT_CURRENCY_FRAME_WIDTH = 95;

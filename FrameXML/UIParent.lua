@@ -279,6 +279,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("LEAVING_TUTORIAL_AREA");
+	self:RegisterEvent("UI_ERROR_POPUP");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -469,6 +470,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Weekly Rewards UI
 	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
+
+	-- Event(s) for the ScriptAnimationEffect System
+	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE")
 end
 
 function UIParent_OnShow(self)
@@ -679,7 +683,12 @@ function ItemUpgrade_LoadUI()
 end
 
 function PlayerChoice_LoadUI()
-	UIParentLoadAddOn("Blizzard_PlayerChoiceUI");
+	UIParentLoadAddOn("Blizzard_PlayerChoice");
+
+	-- ACHURCHILL TODO: remove once player choice refactor testing is done
+	if OldPlayerChoiceFrame then
+		PlayerChoiceFrame = OldPlayerChoiceFrame;
+	end
 end
 
 function Store_LoadUI()
@@ -727,7 +736,8 @@ function WeeklyRewards_ShowUI()
 		WeeklyRewards_LoadUI();
 	end
 
-	ShowUIPanel(WeeklyRewardsFrame);
+	local force = true;	-- this could be called from the world map which might be in fullscreen mode
+	ShowUIPanel(WeeklyRewardsFrame, force);
 end
 
 --[[
@@ -1453,6 +1463,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif event == "LEAVING_TUTORIAL_AREA" then
 		StaticPopup_Show("LEAVING_TUTORIAL_AREA");
+	elseif event == "UI_ERROR_POPUP" then
+		local errorType, errorMessage = ...;
+		local systemPrefix = "UI_ERROR_";
+		StaticPopup_ShowNotification(systemPrefix, errorType, errorMessage);
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
 
@@ -1590,7 +1604,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
-			if(not PlayerChoiceFrame) then
+			if not PlayerChoiceFrame then
 				PlayerChoice_LoadUI();
 			end
 			PlayerChoiceToggleButton:TryShow();
@@ -2169,9 +2183,6 @@ function UIParent_OnEvent(self, event, ...)
 				SetCVar("petJournalTab", 5);
 			end
 		end
-
-	-- Quest Choice trigger event
-
 	elseif ( event == "PLAYER_CHOICE_UPDATE" ) then
 		PlayerChoice_LoadUI();
 		PlayerChoiceFrame:TryShow();
@@ -2395,6 +2406,8 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
+	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then 
+		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
 end
 
@@ -3337,16 +3350,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 
-	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
+	-- BelowMinimap Widgets - need to move below buffs/debuffs
 	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetNumWidgetsShowing() > 0 then
-		if rightActionBars > 0 then
-			anchorY = min(anchorY, buffsAnchorY);
-		end
+		anchorY = min(anchorY, buffsAnchorY);
 
-		UIWidgetBelowMinimapContainerFrame:ClearAllPoints();
 		UIWidgetBelowMinimapContainerFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
+	end
+
+	-- MawBuffsBelowMinimapFrame - need to move below buffs/debuffs
+	if MawBuffsBelowMinimapFrame and MawBuffsBelowMinimapFrame:IsShown() then
+		anchorY = min(anchorY, buffsAnchorY);
+
+		MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+
+		anchorY = anchorY - MawBuffsBelowMinimapFrame:GetHeight() - 4;
 	end
 
 	--Setup Vehicle seat indicator offset - needs to move below buffs/debuffs if both right action bars are showing

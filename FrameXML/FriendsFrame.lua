@@ -63,6 +63,7 @@ local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
 local INVITE_RESTRICTION_NONE = 9;
 local INVITE_RESTRICTION_MOBILE = 10;
+local INVITE_RESTRICTION_REGION = 11;
 
 local FriendListEntries = { };
 local playerRealmID = GetRealmID();
@@ -1875,12 +1876,19 @@ function FriendsListButtonMixin:OnLoad()
 	self.highlight:SetVertexColor(HIGHLIGHT_LIGHT_BLUE:GetRGB());
 end
 
+local regionNames = {
+	[1] = NORTH_AMERICA,
+	[2] = KOREA,
+	[3] = EUROPE,
+	[4] = TAIWAN,
+	[5] = CHINA,
+};
+
 function FriendsListButtonMixin:OnEnter()
 	if ( self.buttonType == FRIENDS_BUTTON_TYPE_DIVIDER ) then
 		return;
 	end
 	local anchor, text;
-	local FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE = NORMAL_FONT_COLOR_CODE..FRIENDS_LIST_ZONE.."|r%1$s|n"..NORMAL_FONT_COLOR_CODE..FRIENDS_LIST_REALM.."|r%2$s";
 	local numGameAccounts = 0;
 	local tooltip = FriendsTooltip;
 	local isOnline = false;
@@ -1914,9 +1922,14 @@ function FriendsListButtonMixin:OnEnter()
 						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, accountInfo.gameAccountInfo.characterLevel, raceName, className);
 					end
 					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
-					local areaName = accountInfo.gameAccountInfo.areaName or UNKNOWN;
-					local realmName = accountInfo.gameAccountInfo.realmDisplayName or UNKNOWN;
-					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, accountInfo.gameAccountInfo.isWowMobile and LOCATION_MOBILE_APP or areaName, realmName), -4);
+					local areaName = accountInfo.gameAccountInfo.isWowMobile and LOCATION_MOBILE_APP or (accountInfo.gameAccountInfo.areaName or UNKNOWN);
+					if accountInfo.gameAccountInfo.isInCurrentRegion then
+						local realmName = accountInfo.gameAccountInfo.realmDisplayName or UNKNOWN;
+						anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, BNET_FRIEND_TOOLTIP_ZONE_AND_REALM:format(areaName, realmName), -4);
+					else
+						local regionNameString = regionNames[accountInfo.gameAccountInfo.regionID] or UNKNOWN;
+						anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, BNET_FRIEND_TOOLTIP_ZONE_AND_REGION:format(areaName, regionNameString), -4);
+					end
 				end
 			else
 				FriendsTooltipGameAccount1Info:Hide();
@@ -2354,6 +2367,8 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			elseif gameAccountInfo.isWowMobile then
 				restriction = INVITE_RESTRICTION_MOBILE;
+			elseif not gameAccountInfo.isInCurrentRegion then
+				restriction = INVITE_RESTRICTION_REGION;
 			else
 				-- there is at lease 1 game account that can be invited
 				return INVITE_RESTRICTION_NONE;
@@ -2384,6 +2399,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
 	elseif ( restriction == INVITE_RESTRICTION_MOBILE ) then
 		return ERR_TRAVEL_PASS_MOBILE;
+	elseif ( restriction == INVITE_RESTRICTION_REGION ) then
+		return ERR_TRAVEL_PASS_DIFFERENT_REGION;
 	else
 		return "";
 	end

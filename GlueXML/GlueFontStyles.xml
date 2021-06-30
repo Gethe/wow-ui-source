@@ -153,11 +153,4 @@
 	<Font name="OptionsFontSmallLeft" inherits="OptionsFontSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontHighlightSmallLeft" inherits="OptionsFontHighlightSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontHighlightSmallLeftTop" inherits="OptionsFontHighlightSmallLeft" justifyV="TOP" virtual="true"/>
-
-	<Font name="QuestFontNormalLarge" inherits="QuestFont_Large" virtual="true">
-		<Color r="1.0" g="0.82" b="0.0"/>
-	</Font>
-	<Font name="QuestFontNormalHuge" inherits="QuestFont_Huge" virtual="true">
-		<Color r="1.0" g="0.82" b="0.0"/>
-	</Font>
 </Ui>

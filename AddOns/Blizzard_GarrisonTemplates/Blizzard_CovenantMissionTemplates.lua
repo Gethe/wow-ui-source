@@ -1,7 +1,7 @@
 function AddAutoCombatSpellToTooltip(tooltip, autoCombatSpell)
 	local str;
 	if (autoCombatSpell.icon) then
-		str = CreateTextureMarkup(autoCombatSpell.icon, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
+		str = GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(autoCombatSpell.icon);
 	else
 		str = "";
 	end
@@ -358,19 +358,11 @@ function CovenantMissionListMixin:Update()
 				end 
 			end 
 		
-			button.Summary:Show();
 			if not mission.encounterIconInfo then
 				mission.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
 			end
 
 			button.info.encounterIconInfo = mission.encounterIconInfo;
-
-			if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
-				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, duration);
-			else
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
-			end
 
 			button.LocBG:Hide();
 
@@ -382,14 +374,22 @@ function CovenantMissionListMixin:Update()
 			button.Overlay:Hide();
 			button.CompleteCheck:SetShown(mission.canBeCompleted);
 
-			if (mission.canBeCompleted) then
-				button.Summary:SetShown(false);
-			elseif (mission.inProgress) then
-				button.Overlay:Show();
-				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR_CODE..GARRISON_MISSION_IN_PROGRESS..FONT_COLOR_CODE_CLOSE);
+			local showSummary = not mission.canBeCompleted;
+			button.Summary:SetShown(showSummary);
+			if (showSummary) then
+				if (mission.inProgress) then
+					button.Overlay:Show();
+					button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR:WrapTextInColorCode(GARRISON_MISSION_IN_PROGRESS));
+				elseif ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+					local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
+					button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(duration, mission.xp));
+				else
+					button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(mission.duration, mission.xp));
+				end
 			end
 
-			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - #mission.rewards * 65 ) then
+			local summaryWidth = showSummary and (button.Summary:GetWidth() + 8) or 0;
+			if ( (button.Title:GetWidth() + summaryWidth) < (655 - (#mission.rewards * 65)) ) then
 				button.Title:SetPoint("LEFT", 165, 0);
 				button.Summary:ClearAllPoints();
 				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
@@ -448,6 +448,8 @@ function CovenantMissionInfoTooltip_OnEnter(self)
 	elseif missionInfo.inProgress then
 		GameTooltip_AddHighlightLine(GameTooltip, IN_PROGRESS);
 	end
+
+	GameTooltip_AddHighlightLine(GameTooltip, COVENANT_MISSION_XP_TOOLTIP_FORMAT:format(missionInfo.xp));
 
 	if(missionInfo.description) then 
 		GameTooltip_AddNormalLine(GameTooltip, missionInfo.description);
@@ -519,6 +521,19 @@ function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
 	self.PortraitBorder:SetShown( not encounterIconInfo.isRare and not encounterIconInfo.isElite);
 	self.RareOverlay:SetShown(encounterIconInfo.isRare);
 	self.EliteOverlay:SetShown(encounterIconInfo.isElite);
+
+	if self.LevelFrame ~= nil then
+		local useAtlasSize = false;
+		if encounterIconInfo.isElite then
+			self.LevelFrame:SetAtlas("adventures-mission-frame-elite", useAtlasSize);
+		elseif encounterIconInfo.isRare then
+			self.LevelFrame:SetAtlas("adventures-mission-frame-medium", useAtlasSize);
+		else
+			self.LevelFrame:SetAtlas("adventures-mission-frame-normal", useAtlasSize);
+		end
+		self.Level:SetText(encounterIconInfo.missionScalar);
+	end
+
 	GarrisonPortrait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
 end
 
@@ -725,6 +740,8 @@ end
 
 CovenantPortraitMixin = {};
 
+local CovenantTroopPortraitYAdjustment = -6;
+
 function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	GarrisonPortrait_Set(self.Portrait, followerInfo.portraitIconID);
 	self.HealthBar:Show();
@@ -738,12 +755,16 @@ function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	self.TroopStackBorder2:SetShown(followerInfo.isAutoTroop);
 	self.PuckBorder:SetAtlas(puckBorderAtlas);
 
-	if (followerInfo.isAutoTroop) then 
-		self:SetScale(0.9); 
-		self:SetPoint("TOPLEFT", 10, -4);
-	else 
-		self:SetScale(1);
-		self:SetPoint("TOPLEFT", 10, 2);
+	self:SetScale(followerInfo.isAutoTroop and 0.9 or 1.0);
+
+	local point, relativeTo, relativePoint, x, y = self:GetPoint();
+	if followerInfo.isAutoTroop and (self.yAnchorAdjustment == nil) then 
+		self.yAnchorAdjustment = CovenantTroopPortraitYAdjustment;
+		y = y + CovenantTroopPortraitYAdjustment;
+		self:SetPoint(point, relativeTo, relativePoint, x, y);
+	elseif not followerInfo.isAutoTroop and (self.yAnchorAdjustment ~= nil) then
+		self:SetPoint(point, relativeTo, relativePoint, x, y - self.yAnchorAdjustment);
+		self.yAnchorAdjustment = nil;
 	end
 end
 

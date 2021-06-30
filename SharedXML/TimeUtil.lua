@@ -196,16 +196,31 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 	return output;
 end
 
+function ConvertSecondsToUnits(timestamp)
+	timestamp = math.max(timestamp, 0);
+	local days = math.floor(timestamp / SECONDS_PER_DAY);
+	timestamp = timestamp - (days * SECONDS_PER_DAY);
+	local hours = math.floor(timestamp / SECONDS_PER_HOUR);
+	timestamp = timestamp - (hours * SECONDS_PER_HOUR);
+	local minutes = math.floor(timestamp / SECONDS_PER_MIN);
+	timestamp = timestamp - (minutes * SECONDS_PER_MIN);
+	local seconds = math.floor(timestamp);
+	local milliseconds = timestamp - seconds;
+	return {
+		days=days,
+		hours=hours,
+		minutes=minutes,
+		seconds=seconds,
+		milliseconds=milliseconds,
+	}
+end
+
 function SecondsToClock(seconds, displayZeroHours)
-	seconds = math.max(seconds, 0);
-	local hours = math.floor(seconds / 3600);
-	seconds = seconds - (hours * 3600);
-	local minutes = math.floor(seconds / 60);
-	seconds = seconds % 60;
-	if hours > 0 or displayZeroHours then
-		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
+	local units = ConvertSecondsToUnits(seconds);
+	if units.hours > 0 or displayZeroHours then
+		return format(HOURS_MINUTES_SECONDS, units.hours, units.minutes, units.seconds);
 	else
-		return format(MINUTES_SECONDS, minutes, seconds);
+		return format(MINUTES_SECONDS, units.minutes, units.seconds);
 	end
 end
 

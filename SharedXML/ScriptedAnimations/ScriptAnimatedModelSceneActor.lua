@@ -33,34 +33,17 @@ function ScriptAnimatedModelSceneActorMixin:DeltaUpdate(elapsed)
 			end
 		end
 
-		local i = 1;
-		while i <= #self.futureTransformations do
-			local transformation = self.futureTransformations[i];
-			if self.elapsedTime >= transformation.startTime then
-				table.insert(self.activeTransformations, transformation);
-				self.futureTransformations[i] = self.futureTransformations[#self.futureTransformations];
-				self.futureTransformations[#self.futureTransformations] = nil;
+		if self.fadeInTime ~= nil then
+			if self.elapsedTime	< self.fadeInTime then
+				local progress =  self.elapsedTime / self.fadeInTime;
+				self:SetAlpha(Lerp(self.startAlpha, self.targetAlpha, progress));
 			else
-				i = i + 1;
+				self.fadeInTime = nil;
+				self:SetAlpha(self.targetAlpha);
 			end
-		end
-
-		local j = 1;
-		while j <= #self.activeTransformations do
-			local transformation = self.activeTransformations[j];
-			local data = transformation.data;
-			local callback = transformation.overrideCallback or data.transformationCallback;
-			local transformationFinished, newTransformationCallback = callback(self, self.elapsedTime - transformation.startTime, data.duration, unpack(data.args, 1, data.args.n));
-			if transformationFinished then
-				self.activeTransformations[j] = self.activeTransformations[#self.activeTransformations];
-				self.activeTransformations[#self.activeTransformations] = nil;
-			else
-				j = j + 1;
-
-				if newTransformationCallback then
-					transformation.overrideCallback = newTransformationCallback;
-				end
-			end
+		elseif (self.fadeOutStart ~= nil) and (self.elapsedTime > self.fadeOutStart) then
+			local progress = (self.elapsedTime - self.fadeOutStart) / self.fadeOutTime;
+			self:SetAlpha(Lerp(self.targetAlpha, self.endAlpha, progress));
 		end
 	end
 end
@@ -114,20 +97,25 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 		self:SetYaw(effectDescription.yawRadians);
 	end
 
-	self.futureTransformations = {};
-	self.activeTransformations = {};
-	if effectDescription.transformations then
-		for i, transformation in ipairs(effectDescription.transformations) do
-			if transformation.timing == Enum.ScriptedAnimationTransformationTiming.BeginWithEffect then
-				table.insert(self.activeTransformations, { startTime = 0, data = transformation, });
-			elseif transformation.timing == Enum.ScriptedAnimationTransformationTiming.FinishWithEffect then
-				local startTime = self.duration - transformation.duration;
-				table.insert(self.futureTransformations, { startTime = startTime, data = transformation, });
-			end
-		end
+	self.targetAlpha = effectDescription.alpha or 1.0;
+
+	self.fadeInTime = effectDescription.startAlphaFadeDuration;
+	if self.fadeInTime == nil then
+		self.startAlpha = nil;
+	else
+		self.startAlpha = effectDescription.startAlphaFade or 0;
 	end
 
-	self:SetAlpha(effectDescription.startingAlpha or 1.0);
+	self.fadeOutTime = effectDescription.endAlphaFadeDuration;
+	if self.fadeOutTime == nil then
+		self.endAlpha = nil;
+		self.fadeOutStart = nil;
+	else
+		self.endAlpha = effectDescription.endAlphaFade or 0;
+		self.fadeOutStart = effectDescription.duration - self.fadeOutTime;
+	end
+
+	self:SetAlpha(effectDescription.startAlpha or self.targetAlpha);
 
 	self:DeltaUpdate(0);
 end

@@ -135,11 +135,9 @@ end
 
 function ComboPointPowerBar:UpdateChargedPowerPoints()
 	local chargedPowerPoints = GetUnitChargedPowerPoints("player");
-	-- there's only going to be 1 max
-	local chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1];
 	for i = 1, self.maxUsablePoints do
 		local comboPointFrame = self.ComboPoints[i];
-		local isCharged = i == chargedPowerPointIndex;
+		local isCharged = chargedPowerPoints and tContains(chargedPowerPoints, i);
 		if comboPointFrame.isCharged ~= isCharged then
 			comboPointFrame.isCharged = isCharged;
 			if isCharged then

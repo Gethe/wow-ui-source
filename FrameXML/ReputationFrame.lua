@@ -298,8 +298,8 @@ function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
 end
 
 function ReputationParagonFrame_SetupParagonTooltip(frame)
-	EmbeddedItemTooltip.owner = frame;
-	EmbeddedItemTooltip.factionID = frame.factionID;
+	GameTooltip.owner = frame;
+	GameTooltip.factionID = frame.factionID;
 
 	local factionName, _, standingID = GetFactionInfoByID(frame.factionID);
 	local gender = UnitSex("player");
@@ -307,9 +307,9 @@ function ReputationParagonFrame_SetupParagonTooltip(frame)
 	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(frame.factionID);
 
 	if ( tooLowLevelForParagon ) then
-		EmbeddedItemTooltip:SetText(PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL);
+		GameTooltip_SetTitle(GameTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
 	else
-		EmbeddedItemTooltip:SetText(factionStandingtext);
+		GameTooltip_SetTitle(GameTooltip, factionStandingtext, NORMAL_FONT_COLOR);
 		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
 		if ( hasRewardPending ) then
 			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
@@ -318,42 +318,42 @@ function ReputationParagonFrame_SetupParagonTooltip(frame)
 				description = text;
 			end
 		end
-		EmbeddedItemTooltip:AddLine(description, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		GameTooltip_AddHighlightLine(GameTooltip, description);
 		if ( not hasRewardPending ) then
 			local value = mod(currentValue, threshold);
 			-- show overflow if reward is pending
 			if ( hasRewardPending ) then
 				value = value + threshold;
 			end
-			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
+			GameTooltip_ShowProgressBar(GameTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
 		end
-		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, rewardQuestID);
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, rewardQuestID);
 	end
-	EmbeddedItemTooltip:Show();
+	GameTooltip:Show();
 end
 
 function ReputationParagonWatchBar_OnEnter(self)
 	if C_Reputation.IsFactionParagon(self.factionID) then
 		self.UpdateTooltip = ReputationParagonFrame_SetupParagonTooltip;
-		GameTooltip_SetDefaultAnchor(EmbeddedItemTooltip, self);
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 		ReputationParagonFrame_SetupParagonTooltip(self);
 	end
 end
 
 function ReputationParagonWatchBar_OnLeave(self)
-	EmbeddedItemTooltip:Hide();
+	GameTooltip:Hide();
 	self.UpdateTooltip = nil;
 end
 
 function ReputationParagonFrame_OnEnter(self)
-	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	self.UpdateTooltip = ReputationParagonFrame_SetupParagonTooltip;
 	ReputationParagonFrame_SetupParagonTooltip(self);
 end
 
 function ReputationParagonFrame_OnLeave(self)
 	self.UpdateTooltip = nil;
-	EmbeddedItemTooltip:Hide();
+	GameTooltip:Hide();
 end
 
 function ReputationParagonFrame_OnUpdate(self)

@@ -507,6 +507,7 @@ function AuctionHouseTableCellAuctionsBidMixin:Populate(rowData, dataIndex)
 		self.MoneyDisplay:SetShown(not sold);
 		if sold then
 			self.Text:SetText(AUCTION_HOUSE_INCOMING_AMOUNT);
+			self.Checkmark:Hide();
 		else
 			AuctionHouseTableCellBidMixin.Populate(self, rowData, dataIndex);
 		end
@@ -713,12 +714,13 @@ function AuctionHouseTableCellItemDisplayMixin:ClearDisplay()
 end
 
 function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
-	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel));
-	
+	local rowData = self.rowData;
+	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel, rowData));
+
 	self.Icon:SetTexture(itemKeyInfo.iconFileID);
 	self.Icon:Show();
 
-	local noneAvailable = self.rowData.totalQuantity == 0;
+	local noneAvailable = rowData.totalQuantity == 0;
 	self.Icon:SetAlpha(noneAvailable and 0.5 or 1.0);
 end
 

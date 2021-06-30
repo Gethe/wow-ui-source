@@ -342,7 +342,9 @@ function CovenantSanctumUpgradesTabMixin:SetUpCurrencies()
 
 	local stride = #currencies;
 	local paddingX = 7;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX);
+	local paddingY = nil;
+	local fixedWidth = 62;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX, paddingY, fixedWidth);
 	local initAnchor = nil;
 	local abbreviateCost = false;
 	local reverseOrder = true;

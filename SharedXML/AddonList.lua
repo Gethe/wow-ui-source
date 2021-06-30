@@ -387,7 +387,7 @@ function AddonList_Update()
 	end
 end
 
-function AddonList_OnKeyDown(key)
+function AddonList_OnKeyDown(self, key)
 	if ( key == "ESCAPE" ) then
 		AddonList_OnCancel();
 	elseif ( key == "ENTER" ) then

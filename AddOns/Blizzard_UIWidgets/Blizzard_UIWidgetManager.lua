@@ -6,11 +6,36 @@ local WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW = false;
 local WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR = CreateColor(1.0, 0.1, 0.1, 0.6);
 local WIDGET_DEBUG_CUSTOM_TEXTURE_COLOR = CreateColor(1.0, 1.0, 0.0, 0.6);
 
-UIWidgetContainerMixin = {}
+UIWidgetHorizontalWidgetContainerMixin = {};
+
+function UIWidgetHorizontalWidgetContainerMixin:OnLoad()
+	self.parentWidgetContainer = self:GetParent();
+	self.childWidgets = {};
+end
+
+function UIWidgetHorizontalWidgetContainerMixin:ResetChildWidgets()
+	for _, widgetFrame in ipairs(self.childWidgets) do
+		widgetFrame:SetParent(self.parentWidgetContainer);
+	end
+
+	self.childWidgets = {};
+end
+
+function UIWidgetHorizontalWidgetContainerMixin:AddChildWidget(widgetFrame)
+	table.insert(self.childWidgets, widgetFrame);
+	widgetFrame:SetParent(self);
+end
+
+UIWidgetContainerMixin = {};
+
+local function ResetHorizontalWidgetContainer(framePool, frame)
+	frame:ResetChildWidgets();
+	FramePool_HideAndClearAnchors(framePool, frame);
+end
 
 function UIWidgetContainerMixin:OnLoad()
 	self.widgetPools = CreateFramePoolCollection();
-	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate");
+	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate", ResetHorizontalWidgetContainer);
 	if WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW then
 		self._debugBGTex = self:CreateTexture()
 		self._debugBGTex:SetColorTexture(WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR:GetRGBA());
@@ -41,6 +66,8 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
 	local widgetContainerFrameLevel = widgetContainerFrame:GetFrameLevel();
+	local horizontalRowAnchorPoint = widgetContainerFrame.horizontalRowAnchorPoint or widgetContainerFrame.verticalAnchorPoint;
+	local horizontalRowRelativePoint = widgetContainerFrame.horizontalRowRelativePoint or widgetContainerFrame.verticalRelativePoint;
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		widgetFrame:ClearAllPoints();
@@ -115,10 +142,10 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 				else 
 					-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
 					local relative = horizontalRowContainer or sortedWidgets[index - 1];
-					newHorizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
 				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
-				widgetFrame:SetParent(newHorizontalRowContainer);
+				newHorizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 
 				-- The old horizontalRowContainer is no longer needed for anchoring, so set it to newHorizontalRowContainer
@@ -126,7 +153,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 			else
 				-- horizontalRowContainer already existed, so we just keep going in it, anchoring to the previous widget
 				local relative = sortedWidgets[index - 1];
-				widgetFrame:SetParent(horizontalRowContainer);
+				horizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
 			end
@@ -323,9 +350,7 @@ end
 
 function UIWidgetContainerMixin:GetWidgetFromPools(templateInfo)
 	if templateInfo then
-		if not self.widgetPools:GetPool(templateInfo.frameTemplate) then
-			self.widgetPools:CreatePool(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
-		end
+		self.widgetPools:CreatePoolIfNeeded(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
 
 		local widgetFrame = self.widgetPools:Acquire(templateInfo.frameTemplate);
 		widgetFrame:SetParent(self);
@@ -345,6 +370,8 @@ function UIWidgetContainerMixin:CreateWidget(widgetID, widgetType, widgetTypeInf
 	widgetFrame.inAnimType = widgetInfo.inAnimType;
 	widgetFrame.outAnimType = widgetInfo.outAnimType;
 	widgetFrame.layoutDirection = widgetInfo.layoutDirection; 
+	widgetFrame.modelSceneLayer = widgetInfo.modelSceneLayer;
+	widgetFrame.scriptedAnimationEffectID = widgetInfo.scriptedAnimationEffectID;
 	widgetFrame.markedForRemove = nil;
 
 	-- If this is a widget with a timer, add it from the timer list
@@ -414,7 +441,10 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	-- Run the Setup function on the widget (could change the orderIndex and/or layoutDirection)
 	widgetFrame:Setup(widgetInfo, self);
-
+	if(isNewWidget) then 
+		--Only Apply the effects when the widget is first added.
+		widgetFrame:ApplyEffects(widgetInfo); 
+	end		
 	if WIDGET_DEBUG_TEXTURE_SHOW then
 		if not widgetFrame._debugBGTex then
 			widgetFrame._debugBGTex = widgetFrame:CreateTexture()
@@ -466,6 +496,10 @@ end
 
 function UIWidgetContainerMixin:GetNumWidgetsShowing()
 	return self.numWidgetsShowing or 0;
+end
+
+function UIWidgetContainerMixin:HasAnyWidgetsShowing()
+	return (self:GetNumWidgetsShowing() > 0);
 end
 
 function UIWidgetContainerMixin:UpdateWidgetLayout()

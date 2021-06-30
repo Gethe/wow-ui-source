@@ -371,6 +371,24 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestLogPortraitGiver",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questLogIndex", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "portraitGiver", Type = "number", Nilable = false },
+				{ Name = "portraitGiverText", Type = "string", Nilable = false },
+				{ Name = "portraitGiverName", Type = "string", Nilable = false },
+				{ Name = "portraitGiverMount", Type = "number", Nilable = false },
+				{ Name = "portraitGiverModelSceneID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetQuestObjectives",
 			Type = "Function",
 
@@ -396,6 +414,20 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "info", Type = "QuestTagInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetQuestType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questType", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -1274,6 +1306,7 @@ local QuestLog =
 				{ Name = "background", Type = "string", Nilable = false },
 				{ Name = "seal", Type = "string", Nilable = false },
 				{ Name = "signature", Type = "string", Nilable = false },
+				{ Name = "poiIcon", Type = "string", Nilable = false },
 			},
 		},
 	},

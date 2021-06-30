@@ -1,9 +1,49 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CreditsFrame.lua"/>
-	<Button name="CreditsSpeedButtonTemplate" virtual="true">
-		<Size x="35" y="35"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	<Button name="CreditsSpeedButtonTemplate" inherits="IconButtonTemplate" virtual="true">
+		<!--
+		iconAtlas: atlas for the icon and highlight of the button.
+		speed: how fast the credits roll when this button is selected.
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Rewind" type="string"/>
+			<KeyValue key="speed" value="CREDITS_SCROLL_RATE_REWIND" type="global"/>
+		</KeyValues>
+		-->
+		<Size x="43" y="43"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetAtlas(self.iconAtlas, TextureKitConstants.UseAtlasSize);
+				self.HightlightTexture:SetAtlas(self.iconAtlas, TextureKitConstants.UseAtlasSize);
+			</OnLoad>
+			<OnClick>
+				CreditsFrame:SetSpeed(self.speed);
+			</OnClick>
+		</Scripts>
+		<NormalTexture atlas="common-button-square-gray-up" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="common-button-square-gray-down" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture parentKey="HightlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 
 	<FontString name="CreditsNormal" inherits="GlueFontHighlightSmall" spacing="2" virtual="true"/>
@@ -173,48 +213,40 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentRewindButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Rewind" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_REWIND" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOM" x="-50" y="20"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_REWIND);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\TimeManager\RWButton"/>
 			</Button>
 			<Button name="$parentPauseButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Pause" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_PAUSE" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRewindButton" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_PAUSE);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\TimeManager\PauseButton"/>
 			</Button>
 			<Button name="$parentPlayButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Play" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_PLAY" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentPauseButton" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_PLAY);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 			</Button>
 			<Button name="$parentFastForwardButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-FastForward" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_FASTFORWARD" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentPlayButton" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_FASTFORWARD);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\TimeManager\FFButton"/>
 			</Button>
 			<Frame parentKey="ExpansionList" inherits="CreditsExpansionListTemplate" hidden="true">
 				<Anchors>

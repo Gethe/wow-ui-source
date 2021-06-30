@@ -602,7 +602,7 @@
 			</Button>
 			<Frame parentKey="CurrencyDisplayGroup" inherits="CurrencyDisplayGroupTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-338" y="56"/>
+					<Anchor point="BOTTOMRIGHT" x="-338" y="58"/>
 				</Anchors>
 			</Frame>
 		</Frames>

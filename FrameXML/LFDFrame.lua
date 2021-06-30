@@ -387,9 +387,9 @@ function LFDQueueFrameTypeDropDown_Initialize()
 
 	for i=1, GetNumRandomDungeons() do
 		local id, name = GetLFGRandomDungeonInfo(i);
-		local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(id);
-		if ( isAvailableForPlayer ) then
-			if ( isAvailableForAll ) then
+		local isAvailableForAll, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+		if isAvailableForPlayer or not hideIfNotJoinable then
+			if isAvailableForAll then
 				info.text = name;
 				info.value = id;
 				info.isTitle = nil;

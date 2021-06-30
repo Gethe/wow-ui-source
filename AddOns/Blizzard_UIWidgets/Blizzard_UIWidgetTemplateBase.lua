@@ -17,6 +17,7 @@ function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
 	self.disableTooltip = widgetContainer.disableWidgetTooltips;
 	self:UpdateMouseEnabled();
 	self:SetMouseClickEnabled(false);
+	self:SetTooltipLocation(nil);
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
@@ -33,8 +34,34 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	self:UpdateMouseEnabled();
 end
 
+local tooltipLocToAnchor = {
+	[Enum.UIWidgetTooltipLocation.BottomLeft]	= "ANCHOR_BOTTOMLEFT",
+	[Enum.UIWidgetTooltipLocation.Left]			= "ANCHOR_NONE",
+	[Enum.UIWidgetTooltipLocation.TopLeft]		= "ANCHOR_LEFT",
+	[Enum.UIWidgetTooltipLocation.Top]			= "ANCHOR_TOP",
+	[Enum.UIWidgetTooltipLocation.TopRight]		= "ANCHOR_RIGHT",
+	[Enum.UIWidgetTooltipLocation.Right]		= "ANCHOR_NONE",
+	[Enum.UIWidgetTooltipLocation.BottomRight]	= "ANCHOR_BOTTOMRIGHT",
+	[Enum.UIWidgetTooltipLocation.Bottom]		= "ANCHOR_BOTTOM",
+};
+
+function UIWidgetTemplateTooltipFrameMixin:SetTooltipLocation(tooltipLoc)
+	self.tooltipLoc = tooltipLoc;
+	self.tooltipAnchor = tooltipLocToAnchor[tooltipLoc] or self.defaultTooltipAnchor;
+end
+
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
-	EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
+	if self.tooltipAnchor == "ANCHOR_NONE" then
+		EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor);
+		EmbeddedItemTooltip:ClearAllPoints();
+		if self.tooltipLoc == Enum.UIWidgetTooltipLocation.Left then
+			EmbeddedItemTooltip:SetPoint("RIGHT", self, "LEFT", self.tooltipXOffset, self.tooltipYOffset);
+		elseif self.tooltipLoc == Enum.UIWidgetTooltipLocation.Right then
+			EmbeddedItemTooltip:SetPoint("LEFT", self, "RIGHT", self.tooltipXOffset, self.tooltipYOffset);
+		end
+	else
+		EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
+	end
 end
 
 function UIWidgetTemplateTooltipFrameMixin:OnEnter()
@@ -89,31 +116,83 @@ local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor
 		return DISABLED_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Red then
 		return RED_FONT_COLOR;
-	elseif enabledState == Enum.WidgetEnabledState.Highlight then
+	elseif enabledState == Enum.WidgetEnabledState.White then
 		return HIGHLIGHT_FONT_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Green then
+		return GREEN_FONT_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Gold then
+		return CHALLENGE_MODE_TOAST_TITLE_COLOR;
 	else
 		return overrideNormalFontColor or NORMAL_FONT_COLOR;
 	end
 end
 
-local function SetTextColorForEnabledState(fontString, enabledState, overrideNormalFontColor)
-	fontString:SetTextColor(GetTextColorForEnabledState(enabledState, overrideNormalFontColor):GetRGB());
+UIWidgetBaseEnabledFrameMixin = {}
+
+function UIWidgetBaseEnabledFrameMixin:SetOverrideNormalFontColor(overrideNormalFontColor)
+	self.overrideNormalFontColor = overrideNormalFontColor;
+	self:UpdateFontColors();
 end
 
-function UIWidgetTemplateTooltipFrameMixin:SetFontColor(overrideNormalFontColor)
+function UIWidgetBaseEnabledFrameMixin:ClearOverrideNormalFontColor()
+	self.overrideNormalFontColor = nil;
+	self:UpdateFontColors();
+end
+
+function UIWidgetBaseEnabledFrameMixin:UpdateFontColors()
+	if self.SetTextColor then
+		self:SetTextColor(GetTextColorForEnabledState(self.enabledState, self.overrideNormalFontColor):GetRGB());
+	end
+
 	if self.ColoredStrings then
 		for _, fontString in ipairs(self.ColoredStrings) do
-			SetTextColorForEnabledState(fontString, self.enabledState, overrideNormalFontColor);
+			fontString:SetTextColor(GetTextColorForEnabledState(self.enabledState, self.overrideNormalFontColor):GetRGB());
 		end
 	end
 end
 
-function UIWidgetTemplateTooltipFrameMixin:SetEnabledState(enabledState)
+function UIWidgetBaseEnabledFrameMixin:SetEnabledState(enabledState)
 	self.enabledState = enabledState;
-	self:SetFontColor();
+	self:UpdateFontColors();
 end
 
 UIWidgetBaseTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+
+function UIWidgetBaseTemplateMixin:ShouldApplyEffectsToSubFrames()
+	return false;
+end
+
+function UIWidgetBaseTemplateMixin:ClearEffects()
+	local frames = {self:GetChildren()};
+	table.insert(frames, self);
+	for _, frame in ipairs(frames) do
+		if frame.effectController then 
+			frame.effectController:CancelEffect();
+			frame.effectController = nil;
+		end	
+	end
+end 
+
+function UIWidgetBaseTemplateMixin:ApplyEffectToFrame(widgetInfo, widgetContainer, frame) 
+	if frame.effectController then 
+		frame.effectController:CancelEffect();
+		frame.effectController = nil;
+	end
+	if widgetInfo.scriptedAnimationEffectID and widgetInfo.modelSceneLayer ~= Enum.UIWidgetModelSceneLayer.None then
+		if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then 
+			frame.effectController = widgetContainer.FrontModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+		elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then 
+			frame.effectController = widgetContainer.BackModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+		end 
+	end
+end	
+
+function UIWidgetBaseTemplateMixin:ApplyEffects(widgetInfo)
+	local applyFrames = self:ShouldApplyEffectsToSubFrames() and {self:GetChildren()} or {self};
+	for _, frame in ipairs(applyFrames) do
+		self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, frame);
+	end
+end
 
 function UIWidgetBaseTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
@@ -199,6 +278,7 @@ end
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
 	self:SetScale(GetWidgetScale(widgetInfo.widgetScale));
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	self:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.widgetContainer = widgetContainer;
 	self.orderIndex = widgetInfo.orderIndex;
 	self.layoutDirection = widgetInfo.layoutDirection; 
@@ -209,9 +289,10 @@ end
 function UIWidgetBaseTemplateMixin:OnReset()
 	self:Hide();
 	self:ClearAllPoints();
+	self:ClearEffects();
 end
 
-UIWidgetBaseResourceTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+UIWidgetBaseResourceTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
@@ -225,7 +306,7 @@ function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
 	self:SetHeight(self.Icon:GetHeight());
 end
 
-UIWidgetBaseCurrencyTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+UIWidgetBaseCurrencyTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, enabledState, tooltipEnabledState)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
@@ -252,7 +333,7 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 	self:SetHeight(self.Icon:GetHeight());
 end
 
-UIWidgetBaseSpellTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+UIWidgetBaseSpellTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 local iconSizes =
 {
@@ -358,12 +439,6 @@ function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
 	local useMouse = ((self.tooltip and self.tooltip ~= "") or self.spellID) and not disableMouse;
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
-end
-
-UIWidgetBaseColoredTextMixin = {};
-
-function UIWidgetBaseColoredTextMixin:SetEnabledState(enabledState)
-	SetTextColorForEnabledState(self, enabledState);
 end
 
 UIWidgetBaseStatusBarTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
@@ -493,20 +568,25 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.layoutIndex = layoutIndex;
 
-	local textureKitAppend = "";
+	local bgTextureKitFmt = "%s";
+	local fgTextureKitFmt = "%s";
 
 	if layoutIndex then
-		textureKitAppend = "_"..layoutIndex;
+		if frameTextureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, frameTextureKit)) then 
+			bgTextureKitFmt = "%s_"..layoutIndex;
+		end
+
+		if textureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, textureKit)) then 
+			fgTextureKitFmt = "%s_"..layoutIndex;
+		end
 	end
 
 	self.Text:SetFontObject(GetTextSizeFont(textSizeType));
 
 	self.Text:SetText(text);
 	self:SetTooltip(tooltip);
-
-	SetupTextureKitOnFrame(frameTextureKit, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-	SetupTextureKitOnFrame(textureKit, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-
+	SetupTextureKitOnFrame(frameTextureKit, self.Background, bgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.Foreground, fgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end
 
@@ -718,6 +798,7 @@ local scenarioHeaderTextureKitRegions = {
 local scenarioHeaderTextureKitInfo =
 {
 	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
+	["jailerstower-scenario-nodeaths"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
 	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, headerTextHeight = 20},
 }
 
@@ -824,4 +905,58 @@ function UIWidgetBaseCircularStatusBarTemplateMixin:Setup(widgetContainer, barMi
 	self.Progress:SetSwipeTexture(swipeTextureName);
 
 	CooldownFrame_SetDisplayAsPercentage(self.Progress, 1 - currentPercent);
+end
+
+UIWidgetBaseTextMixin = CreateFromMixins(UIWidgetBaseEnabledFrameMixin);
+
+local normalFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Med1",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Large",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Huge4",
+}
+
+local shadowFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4",
+}
+
+local outlineFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1_Outline",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large_Outline",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2_Outline",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4_Outline",
+}
+
+local fontTypes = 
+{
+	[Enum.UIWidgetFontType.Normal]	= normalFonts,
+	[Enum.UIWidgetFontType.Shadow]	= shadowFonts,
+	[Enum.UIWidgetFontType.Outline]	= outlineFonts,
+}
+
+local function GetTextFont(fontType, textSizeType)
+	return fontTypes[fontType][textSizeType];
+end
+
+local function GetJustifyH(hAlignType)
+	if hAlignType == Enum.WidgetTextHorizontalAlignmentType.Left then
+		return "LEFT";
+	elseif hAlignType == Enum.WidgetTextHorizontalAlignmentType.Right then
+		return "RIGHT";
+	else
+		return "CENTER";
+	end
+end
+
+function UIWidgetBaseTextMixin:Setup(text, fontType, textSizeType, enabledState, hAlignType)
+	self:SetFontObject(GetTextFont(fontType, textSizeType));
+	self:SetJustifyH(GetJustifyH(hAlignType))
+	self:SetText(text);
+	self:SetEnabledState(enabledState);
 end

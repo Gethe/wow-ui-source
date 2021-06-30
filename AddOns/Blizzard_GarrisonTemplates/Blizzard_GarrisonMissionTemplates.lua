@@ -114,6 +114,11 @@ function GarrisonMission:SetTitle(title, ignoreTruncation)
 	end 
 end
 
+function GarrisonMission:GetNumTitleLines()
+	local missionPage = self:GetMissionPage();
+	return missionPage.Stage.Title:GetNumLines();
+end
+
 function GarrisonMission:SetEnvironmentTexture(environmentTexture)
 	local missionPage = self:GetMissionPage();
 
@@ -2074,7 +2079,7 @@ function GarrisonMissionFrameTab_OnLeave(self)
 end
 
 function GarrisonMissionFrame_SetItemRewardDetails(frame)
-	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frame.itemID);
+	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frame.itemLink or frame.itemID);
 	frame.Icon:SetTexture(itemTexture);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	if(color) then

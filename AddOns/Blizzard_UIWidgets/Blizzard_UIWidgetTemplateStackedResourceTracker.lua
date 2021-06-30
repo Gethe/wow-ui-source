@@ -29,6 +29,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 		resourceFrame:Show();
 
 		resourceFrame:Setup(widgetContainer, resourceInfo);
+		resourceFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
 
 		if previousResourceFrame then
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);
@@ -43,9 +44,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 			resourceHeight = resourceFrame:GetHeight();
 		end
 
-		if self.fontColor then
-			resourceFrame:SetFontColor(self.fontColor);
-		end
+		resourceFrame:SetOverrideNormalFontColor(self.fontColor);
 
 		resourceWidth = math.max(resourceWidth, resourceFrame:GetWidth());
 

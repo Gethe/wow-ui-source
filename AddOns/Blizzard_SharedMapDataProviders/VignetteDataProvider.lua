@@ -256,7 +256,7 @@ function VignettePinMixin:OnMouseEnter()
 		end
 
 		if hasValidTooltip and self.widgetSetID then
-			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, 10);
+			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, self:GetWidgetSetVerticalPadding());
 		elseif not hasValidTooltip then
 			GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA);
 		end
@@ -298,4 +298,12 @@ function VignettePinMixin:DisplayTorghastTooltip()
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
 	return true;
+end
+
+function VignettePinMixin:GetWidgetSetVerticalPadding()
+	if self:GetVignetteType() == Enum.VignetteType.Torghast then
+		return 0;
+	else
+		return 10;
+	end
 end

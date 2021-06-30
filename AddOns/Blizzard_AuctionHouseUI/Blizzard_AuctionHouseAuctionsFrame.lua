@@ -465,11 +465,17 @@ function AuctionHouseAuctionsFrameMixin:SelectItemKey(itemKey)
 
 	self:SetItemKey(itemKey);
 
-	local newDisplayMode = itemKeyInfo.isCommodity and AuctionsFrameDisplayMode.Commodity or AuctionsFrameDisplayMode.Item;
-	self:GetAuctionHouseFrame():QueryItem(self:GetSearchContext(newDisplayMode), itemKey);
 	if itemKeyInfo.isCommodity then
 		self.CommoditiesList:SetItemID(itemKey.itemID);
 	end
+
+	local newDisplayMode = itemKeyInfo.isCommodity and AuctionsFrameDisplayMode.Commodity or AuctionsFrameDisplayMode.Item;
+	local displayMode = self:GetDisplayMode();
+	if newDisplayMode == displayMode then
+		-- If we're switching display modes, the OnShow will automatically force a refresh. If not, we need to do it manually here.
+		self:GetAuctionHouseFrame():QueryItem(self:GetSearchContext(newDisplayMode), itemKey);
+	end
+
 	self:SetDisplayMode(newDisplayMode);
 end
 

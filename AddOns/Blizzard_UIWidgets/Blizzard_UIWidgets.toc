@@ -2,6 +2,8 @@
 ## LoadOnDemand: 0
 Blizzard_UIWidgetManager.lua
 Blizzard_UIWidgetManager.xml
+Blizzard_UIWidgetAnimationTemplates.lua
+Blizzard_UIWidgetAnimationTemplates.xml
 Blizzard_UIWidgetTemplateBase.lua
 Blizzard_UIWidgetTemplateBase.xml
 Blizzard_UIWidgetTemplateIconAndText.lua
@@ -46,6 +48,10 @@ Blizzard_UIWidgetTemplateDiscreteProgressSteps.xml
 Blizzard_UIWidgetTemplateDiscreteProgressSteps.lua
 Blizzard_UIWidgetTemplateScenarioHeaderTimer.lua
 Blizzard_UIWidgetTemplateScenarioHeaderTimer.xml
+Blizzard_UIWidgetTemplateTextColumnRow.lua
+Blizzard_UIWidgetTemplateTextColumnRow.xml
+Blizzard_UIWidgetTemplateSpacer.lua
+Blizzard_UIWidgetTemplateSpacer.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

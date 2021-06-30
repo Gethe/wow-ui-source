@@ -23,20 +23,24 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 
 	if ( template.canHaveSealMaterial ) then
 		local questFrame = parentFrame:GetParent():GetParent();
-		local questID;
-		if ( template.questLog ) then
-			questID = questFrame.questID;
+		if QuestUtil.QuestTextContrastEnabled() then
+			questFrame.SealMaterialBG:Hide();
 		else
-			questID = GetQuestID();
-		end
+			local questID;
+			if ( template.questLog ) then
+				questID = questFrame.questID;
+			else
+				questID = GetQuestID();
+			end
 
-		local theme = C_QuestLog.GetQuestDetailsTheme(questID);
-		QuestInfoSealFrame.theme = theme;
+			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
+			QuestInfoSealFrame.theme = theme;
 
-		local hasValidBackground = theme and theme.background;
-		questFrame.SealMaterialBG:SetShown(hasValidBackground);
-		if hasValidBackground then
-			questFrame.SealMaterialBG:SetAtlas(theme.background);
+			local hasValidBackground = theme and theme.background;
+			questFrame.SealMaterialBG:SetShown(hasValidBackground);
+			if hasValidBackground then
+				questFrame.SealMaterialBG:SetAtlas(theme.background);
+			end
 		end
 	end
 

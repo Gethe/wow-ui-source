@@ -71,10 +71,10 @@
 					<Color r="0.84" g="0.72" b="0.57"/>
 				</FontString>
 				<FontString parentKey="Title" inherits="QuestFont_Huge" justifyH="LEFT" maxLines="2">
-					<Size x="290" y="0"/>
+					<Size x="340" y="0"/>
 					<Shadow x="1" y="-1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Header" x="105" y="-4"/>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="90" y="-4"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>

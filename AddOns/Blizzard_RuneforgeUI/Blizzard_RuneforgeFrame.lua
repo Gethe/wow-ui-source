@@ -46,6 +46,7 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 local RuneforgeFrameEvents = {
 	"RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
 	"ITEM_CHANGED",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 local RuneforgeFramePlayerEvents = {
@@ -72,6 +73,8 @@ function RuneforgeFrameMixin:OnShow()
 	self:RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self.OnUpgradeItemChanged, self);
 
 	self:SetStaticEffectsShown(true);
+
+	self:RefreshCurrencyDisplay();
 
 	self.Title:SetText(self:IsRuneforgeUpgrading() and RUNEFORGE_LEGENDARY_CRAFTING_FRAME_UPGRADE_TITLE or RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE);
 
@@ -109,6 +112,8 @@ end
 function RuneforgeFrameMixin:OnEvent(event, ...)
 	if event == "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED" then
 		HideUIPanel(self);
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+		self:RefreshCurrencyDisplay();
 	elseif event == "ITEM_CHANGED" then
 		local item = self:GetItem();
 		if item then
@@ -165,6 +170,19 @@ function RuneforgeFrameMixin:OnCinematicStopped()
 	self.cinematicShowing = nil;
 	self.skipCloseSound = true;
 	self:OnHide();
+end
+
+function RuneforgeFrameMixin:RefreshCurrencyDisplay()
+	local currencies = C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies();
+
+	local initialAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", self.CurrencyDisplay, "TOPRIGHT");
+	local direction = GridLayoutMixin.Direction.TopRightToBottomLeftVertical;
+	local stride = #currencies;
+	local paddingX = 2;
+	local paddingY = 2;
+	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
+	local tooltipAnchor = "ANCHOR_TOP";
+	self.CurrencyDisplay:SetCurrencies(currencies, initFunction, initialAnchor, layout, tooltipAnchor);
 end
 
 function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
@@ -282,7 +300,12 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 		local upgradeItem = self:GetUpgradeItem();
 		local hasUpgradeItem = upgradeItem ~= nil;
 		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or itemPreviewInfo.itemLevel;
-		resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemLevel, powerID, modifiers);
+
+		if self:IsRuneforgeUpgrading() then
+			resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemLevel);
+		else
+			resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemLevel, powerID, modifiers);
+		end
 	end
 	
 	resultTooltip:SetShown(hasItem);
@@ -305,9 +328,8 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, -6);
+	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemPreviewInfo.itemLevel);
 
-	local itemID = C_Item.GetItemID(baseItem);
-	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemPreviewInfo.itemLevel, powerID, modifiers);
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip:Show();
 
@@ -315,7 +337,7 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 	resultTooltip:SetOwner(self, "ANCHOR_NONE");
 	resultTooltip:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 4, 0);
 	local upgradeItemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
-	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, upgradeItemLevel, powerID, modifiers);
+	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, upgradeItemLevel);
 	resultTooltip:Show();
 
 	SetUIPanelAttribute(self, "width", self:GetWidth());
@@ -362,21 +384,21 @@ end
 function RuneforgeFrameMixin:GetPowers()
 	local item = self.CraftingFrame:GetItem();
 	if item then
-		return C_LegendaryCrafting.GetRuneforgePowers(item);
+		return C_LegendaryCrafting.GetRuneforgePowers(item, Enum.RuneforgePowerFilter.Relevant);
 	else
 		local classID, specID = RuneforgeUtil.GetPreviewClassAndSpec();
-		local specPowers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID, specID);
-		local otherSpecPowers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID);
+		local primaryPowers = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant(classID, specID, C_Covenants.GetActiveCovenantID(), Enum.RuneforgePowerFilter.Relevant);
+		local otherPowers = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant(classID, nil, nil, Enum.RuneforgePowerFilter.Relevant);
 
-		local invertedSpecPowers = tInvert(specPowers);
+		local invertedPrimaryPowers = tInvert(primaryPowers);
 		local function FilterPredicate(powerID)
-			return invertedSpecPowers[powerID] == nil;
+			return invertedPrimaryPowers[powerID] == nil;
 		end
 
 		local isIndexTable = true;
-		otherSpecPowers = tFilter(otherSpecPowers, FilterPredicate, isIndexTable);
+		otherPowers = tFilter(otherPowers, FilterPredicate, isIndexTable);
 
-		return specPowers, otherSpecPowers;
+		return primaryPowers, otherPowers;
 	end
 end
 

@@ -3,6 +3,21 @@ local GarrisonConstants =
 	Tables =
 	{
 		{
+			Name = "ContributionState",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "ContributionState", EnumValue = 0 },
+				{ Name = "Building", Type = "ContributionState", EnumValue = 1 },
+				{ Name = "Active", Type = "ContributionState", EnumValue = 2 },
+				{ Name = "UnderAttack", Type = "ContributionState", EnumValue = 3 },
+				{ Name = "Destroyed", Type = "ContributionState", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "CovenantSkill",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -198,11 +213,12 @@ local GarrisonConstants =
 		{
 			Name = "GarrFollowerQuality",
 			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 1,
+			NumValues = 7,
+			MinValue = 0,
 			MaxValue = 6,
 			Fields =
 			{
+				{ Name = "None", Type = "GarrFollowerQuality", EnumValue = 0 },
 				{ Name = "Common", Type = "GarrFollowerQuality", EnumValue = 1 },
 				{ Name = "Uncommon", Type = "GarrFollowerQuality", EnumValue = 2 },
 				{ Name = "Rare", Type = "GarrFollowerQuality", EnumValue = 3 },

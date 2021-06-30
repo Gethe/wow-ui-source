@@ -48,9 +48,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 23,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 22,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -74,6 +74,8 @@ local UIWidgetManagerShared =
 				{ Name = "TextureWithAnimation", Type = "UIWidgetVisualizationType", EnumValue = 18 },
 				{ Name = "DiscreteProgressSteps", Type = "UIWidgetVisualizationType", EnumValue = 19 },
 				{ Name = "ScenarioHeaderTimer", Type = "UIWidgetVisualizationType", EnumValue = 20 },
+				{ Name = "TextColumnRow", Type = "UIWidgetVisualizationType", EnumValue = 21 },
+				{ Name = "Spacer", Type = "UIWidgetVisualizationType", EnumValue = 22 },
 			},
 		},
 	},

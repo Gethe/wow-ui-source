@@ -134,7 +134,6 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
    		encounterFrame:Show();
    	end
    
-   	local encounterIndex = 1;
    	for i, followerGUID in ipairs(mission.followers) do
    		local missionCompleteInfo = self.followerGUIDToInfo[followerGUID];			
    		local followerFrame = self:GetFrameFromBoardIndex(missionCompleteInfo.boardIndex);
@@ -169,6 +168,7 @@ function AdventuresCompleteScreenMixin:StartMissionReplay()
 	self.AdventuresCombatLog:Clear();
 	self.replayTimeElapsed = 0;
 	self.replayRoundIndex = 1;
+	self.eventIndexToCooldownUpdates = {};
 	self:SetScript("OnUpdate", AdventuresCompleteScreenMixin.UpdateMissionReplay);
 	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, self.currentMission, self.autoCombatResult.winner);
 
@@ -230,11 +230,47 @@ function AdventuresCompleteScreenMixin:IsReplayEventFinished()
 	return eventTime > 0.5;
 end
 
+function AdventuresCompleteScreenMixin:CalculateCooldownUpdates(roundIndex)
+	local round = self:GetReplayRound(roundIndex);
+
+	local castBoardIndexToAbilityEventIndex = {};
+	for eventIndex, event in ipairs(round.events) do
+		if GarrAutoCombatUtil.IsAbilityEvent(event) then
+			castBoardIndexToAbilityEventIndex[event.casterBoardIndex] = eventIndex;
+		end
+	end
+
+	local lastEventIndex = #round.events;
+
+	self.eventIndexToCooldownUpdates = {};
+
+	local function AddCooldownUpdate(puckFrame)
+		local boardIndex = puckFrame:GetBoardIndex();
+		local cooldownEventIndex = castBoardIndexToAbilityEventIndex[boardIndex] or lastEventIndex;
+
+		local cooldownUpdates = self.eventIndexToCooldownUpdates[cooldownEventIndex];
+		if cooldownUpdates == nil then
+			cooldownUpdates = {};
+			self.eventIndexToCooldownUpdates[cooldownEventIndex] = cooldownUpdates;
+		end
+
+		table.insert(cooldownUpdates, boardIndex);
+	end
+
+	for enemyFrame in self.Board:EnumerateEnemies() do
+		AddCooldownUpdate(enemyFrame);
+	end
+
+	for followerFrame in self.Board:EnumerateFollowers() do
+		AddCooldownUpdate(followerFrame);
+	end
+end
+
 function AdventuresCompleteScreenMixin:StartReplayRound(roundIndex)
 	self.replayRoundIndex = roundIndex;
 	self.roundStartTime = self:GetReplayTimeElapsed();
 	self.AdventuresCombatLog:AddCombatRoundHeader(roundIndex, self:GetNumReplayRounds());
-	self.Board:UpdateCooldownsFromNewRound();
+	self:CalculateCooldownUpdates(roundIndex);
 
 	local eventIndex = 1;
 	self:StartReplayEvent(roundIndex, eventIndex);
@@ -416,9 +452,14 @@ function AdventuresCompleteScreenMixin:OnReplayEffectResolved()
 end
 
 function AdventuresCompleteScreenMixin:AdvanceReplay()
-	local currentRound = self:GetReplayRound(self.replayRoundIndex);
 	if self:IsReplayEventFinished() then
-		if self.replayEventIndex < #currentRound.events then
+		local cooldownUpdates = self.eventIndexToCooldownUpdates[self.replayEventIndex];
+		if cooldownUpdates ~= nil then
+			self.Board:AdvanceCooldowns(cooldownUpdates);
+		end
+
+		local currentRound = self:GetReplayRound(self.replayRoundIndex);
+		if (currentRound ~= nil) and (self.replayEventIndex < #currentRound.events) then
 			self:StartReplayEvent(self.replayRoundIndex, self.replayEventIndex + 1);
 		elseif self.replayRoundIndex < self:GetNumReplayRounds() then
 			self:StartReplayRound(self.replayRoundIndex + 1);

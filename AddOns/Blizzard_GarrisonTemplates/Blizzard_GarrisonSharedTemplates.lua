@@ -161,8 +161,6 @@ function GarrisonFollowerList:StopAnimations()
 end
 
 function GarrisonFollowerList:OnHide()
-	self.followers = nil;
-
 	self:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
 	self:UnregisterEvent("GARRISON_FOLLOWER_REMOVED");
 	self:UnregisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
@@ -365,7 +363,9 @@ function GarrisonFollowerList:UpdateFollowers()
 	--TODO: Tagify GetFollowers and condense this into it
 	for i = 1, #self.followers do
 		if self.followers[i].followerID then
-			self.followers[i].autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].followerID, self.followers[i].level);
+			local autoCombatSpells, autoCombatAutoAttack = C_Garrison.GetFollowerAutoCombatSpells(self.followers[i].followerID, self.followers[i].level);
+			self.followers[i].autoCombatSpells = autoCombatSpells;
+			self.followers[i].autoCombatAutoAttack = autoCombatAutoAttack;
 			self.followers[i].autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(self.followers[i].followerID);
 		end
 	end

@@ -175,7 +175,7 @@ function CommunitiesSettingsDialogMixin:PostClub(newName)
 	local description = self.Description.EditBox:GetText(); 
 
 	if(clubInfo and clubInfo.clubType == Enum.ClubType.Character) then 
-		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, specsInList, Enum.ClubFinderRequestType.Community);
+		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, self:GetAvatarId(), specsInList, Enum.ClubFinderRequestType.Community);
 		if (self.ShouldListClub.Button:GetChecked() and postClubSuccessful) then
 			shouldHideNow = false;
 		elseif(not postClubSuccessful) then 

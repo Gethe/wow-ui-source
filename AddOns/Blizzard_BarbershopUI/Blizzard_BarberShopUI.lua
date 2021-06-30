@@ -7,7 +7,6 @@ function BarberShopMixin:OnLoad()
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
-	CharCustomizeFrame.RandomizeAppearanceButton:Hide();
 
 	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
 end
@@ -143,8 +142,8 @@ function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
-function BarberShopMixin:ResetCustomizationPreview()
-	C_BarberShop.ClearPreviewChoices();
+function BarberShopMixin:ResetCustomizationPreview(clearSavedChoices)
+	C_BarberShop.ClearPreviewChoices(clearSavedChoices);
 end
 
 function BarberShopMixin:PreviewCustomizationChoice(optionID, choiceID)
@@ -190,6 +189,11 @@ end
 
 function BarberShopMixin:SetCameraDistanceOffset(offset)
 	C_BarberShop.SetCameraDistanceOffset(offset);
+end
+
+function BarberShopMixin:RandomizeAppearance()
+	C_BarberShop.RandomizeCustomizationChoices();
+	self:UpdateCharCustomizationFrame();
 end
 
 function BarberShopMixin:SetCharacterSex(sexID)

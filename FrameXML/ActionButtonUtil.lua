@@ -50,6 +50,7 @@ function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
 		_G["PetActionButton"..i].QuickKeybindHighlightTexture:SetShown(show);
 		_G["StanceButton"..i].QuickKeybindHighlightTexture:SetShown(show);
 	end
+	ExtraActionButton1.QuickKeybindHighlightTexture:SetShown(show);
 	ActionBarUpButton.QuickKeybindHighlightTexture:SetShown(show);
 	ActionBarDownButton.QuickKeybindHighlightTexture:SetShown(show);
 	for i = 0, NumBagSlots do

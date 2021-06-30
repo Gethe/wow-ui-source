@@ -100,6 +100,15 @@ function DressUpModelFrameFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
+function DressUpModelFrameFrameMixin:OnDressModel()
+	if self.OutfitDropDown then	
+		if not self.gotDressed then
+			self.gotDressed = true;
+			C_Timer.After(0, function() self.gotDressed = nil; self.OutfitDropDown:UpdateSaveButton(); end);
+		end
+	end
+end
+
 --------------------------------------------------
 -- SIDE DRESS UP MODEL FRAME FRAME MIXIN
 SideDressUpModelFrameFrameMixin = {};

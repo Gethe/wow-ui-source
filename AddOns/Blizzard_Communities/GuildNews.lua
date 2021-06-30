@@ -13,7 +13,7 @@ function CommunitiesGuildNewsFrame_OnLoad(self)
 	self.SetFiltersButton:SetWidth(fontString:GetWidth() + 4);
 	self.Container.update = function () CommunitiesGuildNews_Update(self); end;
 	HybridScrollFrame_CreateButtons(self.Container, "CommunitiesGuildNewsButtonTemplate", 0, 0);
-
+	
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
 	else  -- alliance
@@ -56,13 +56,13 @@ function CommunitiesGuildNews_Update(self)
 		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 7);
 		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 5);
 	end
-
+	
 	local motd = GetGuildRosterMOTD();
 	local scrollFrame = self.Container;
-	local haveMOTD = motd ~= "" and 1 or 0;
+	local haveMOTD = motd ~= "" and 1 or 0;	
 	local buttons = scrollFrame.buttons;
 	local button, index;
-
+	
 	local numEvents = math.min(7, C_Calendar.GetNumGuildEvents());
 	local numNews = GetNumGuildNews();
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -86,7 +86,7 @@ function CommunitiesGuildNews_Update(self)
 			button:Hide();
 		end
 	end
-
+	
 	-- update tooltip
 	if ( self.activeButton ) then
 		CommunitiesGuildNewsButton_OnEnter(self.activeButton);

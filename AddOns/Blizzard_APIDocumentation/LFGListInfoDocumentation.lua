@@ -55,6 +55,22 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetApplicantDungeonScoreForListing",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "localID", Type = "number", Nilable = false },
+				{ Name = "applicantIndex", Type = "number", Nilable = false },
+				{ Name = "activityID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bestDungeonScoreForListing", Type = "BestDungeonScoreMapInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetApplicantInfo",
 			Type = "Function",
 
@@ -267,6 +283,17 @@ local LFGListInfo =
 	Tables =
 	{
 		{
+			Name = "BestDungeonScoreMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mapScore", Type = "number", Nilable = false },
+				{ Name = "mapName", Type = "string", Nilable = false },
+				{ Name = "bestRunLevel", Type = "number", Nilable = false },
+				{ Name = "finishedSuccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LfgApplicantData",
 			Type = "Structure",
 			Fields =
@@ -316,8 +343,11 @@ local LFGListInfo =
 				{ Name = "numGuildMates", Type = "number", Nilable = false },
 				{ Name = "isDelisted", Type = "bool", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
+				{ Name = "isWarMode", Type = "bool", Nilable = false },
 				{ Name = "age", Type = "number", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
+				{ Name = "leaderOverallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "leaderDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },
 			},
 		},
 		{

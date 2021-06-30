@@ -187,7 +187,7 @@ function GetCurrenciesString(currencies)
 
 		if type(currency) == "table" then
 			if currency.currencyID and currency.amount then
-				text = text..GetCurrencyString(currency.currencyID, currency.amount);
+				text = text..GetCurrencyString(currency.currencyID, currency.amount, currency.colorCode);
 			else
 				text = text..GetCurrencyString(unpack(currency));
 			end

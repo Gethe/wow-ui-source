@@ -85,6 +85,16 @@ BACKDROP_DIALOG_32_32 = {
 	insets = { left = 11, right = 12, top = 12, bottom = 11 },
 };
 
+BACKDROP_DARK_DIALOG_32_32 = {
+	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 32,
+	edgeSize = 32,
+	insets = { left = 11, right = 12, top = 12, bottom = 11 },
+};
+
 BACKDROP_GOLD_DIALOG_32_32 = {
 	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
 	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",

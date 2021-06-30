@@ -637,6 +637,12 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="NineSliceCodeTemplate" mixin="NineSlicePanelMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 	
 <!--
 *******************************************************************************
@@ -646,12 +652,7 @@
 	artwork, etc...
 *******************************************************************************
 -->
-	<Frame name="NineSlicePanelTemplate" mixin="NineSlicePanelMixin" frameLevel="500" setAllPoints="true" virtual="true">
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
+	<Frame name="NineSlicePanelTemplate" inherits="NineSliceCodeTemplate" frameLevel="500" setAllPoints="true" virtual="true"/>
 <!--
 *******************************************************************************
     InsetFrameTemplate
@@ -2116,6 +2117,13 @@
 		</Scripts>
 	</Button>
 
+	<Button name="IconButtonTemplate" mixin="IconButtonMixin" virtual="true">
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
 	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<!--
@@ -2351,23 +2359,25 @@
 	</Frame>
 
 	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
-		<Size x="258" y="54"/>
+		<Size x="343" y="48"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" atlas="common-input-left" useAtlasSize="true">
+				<Texture parentKey="Left" atlas="common-gray-button-entrybox-left" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Right" atlas="common-input-left" useAtlasSize="true">
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				<Texture parentKey="Right" atlas="common-gray-button-entrybox-right" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Middle" atlas="common-input-middle" setAllPoints="true" />
+				<Texture parentKey="Middle" atlas="common-gray-button-entrybox-center">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<FontString inherits="NumberFont_Shadow_Large"/>
@@ -2601,6 +2611,14 @@
 		</Scripts>
 	</Button>
 
+	<Button name="AlphaHighlightButtonTemplate" mixin="AlphaHighlightButtonMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
 		<Size x="223" y="38"/>
 		<Layers>
@@ -2619,7 +2637,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
+			<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="RIGHT" x="4"/>
@@ -2629,12 +2647,11 @@
 						self:GetParent():Increment();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-nextbutton"/>
+				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-nextbutton-down"/>
+				<DisabledTexture atlas="charactercreate-customize-nextbutton-disabled"/>
 			</Button>
-			<Button parentKey="DecrementButton" motionScriptsWhileDisabled="true">
+			<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SelectionPopoutButton" relativePoint="LEFT" x="-5"/>
@@ -2644,14 +2661,13 @@
 						self:GetParent():Decrement();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-backbutton"/>
+				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-backbutton-down"/>
+				<DisabledTexture atlas="charactercreate-customize-backbutton-disabled"/>
 			</Button>
 		</Frames>
 	</Frame>
-
+	
 	<!--The DefaultScaleFrame template is used to allow a frame to appear to be "unscaled"
 		That means that all the textures/fonts used should appear as the same size they do in Photoshop when authored.
 		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.
@@ -2667,4 +2683,59 @@
 			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="PanelResizeButtonTemplate" mixin="PanelResizeButtonMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+		<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
+		<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
+		<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
+	</Button>
+
+	<Frame name="DropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownMenu" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EnumDropDownControlTemplate" mixin="EnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
+		<KeyValues>
+			<!-- Overwrite to change the dropdown text when the selected value is nil -->
+			<KeyValue key="noneSelectedText" value="NONE" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="DisabledTooltipButtonTemplate" mixin="DisabledTooltipButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
 </Ui>

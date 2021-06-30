@@ -15,5 +15,5 @@
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<Frame name="GlueContextMenu" inherits="GlueContextMenuTemplate"/>
+	<Frame name="GlueContextMenu" inherits="GlueContextMenuTemplate" hidden="true"/>
 </Ui>

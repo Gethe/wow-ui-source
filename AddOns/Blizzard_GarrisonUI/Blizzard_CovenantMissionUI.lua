@@ -254,6 +254,10 @@ function CovenantMission:SetupTabs()
 		if (not defaultTab) then
 			defaultTab = 3;
 		end
+
+		self.MapTab:Show();
+	else
+		self.MapTab:Hide();
 	end
 
    self.Tab1:Hide();
@@ -313,8 +317,16 @@ function CovenantMission:ShowMission(missionInfo)
 		missionDuration = format(PARENS_TEMPLATE, missionInfo.duration);
 	end
 
+	-- First we test if the title and duration fit on one line.
 	local ignoreTruncation = true;
 	self:SetTitle(COVENANT_MISSION_TITLE_FORMAT:format(missionInfo.name, missionDuration), ignoreTruncation);
+
+	local numLines = self:GetNumTitleLines();
+	if numLines > 1 then
+		self:SetTitle(COVENANT_MISSION_TITLE_FORMAT_WITH_XP:format(missionInfo.name, missionDuration, missionInfo.xp), ignoreTruncation);
+	else
+		self:SetTitle(COVENANT_MISSION_TITLE_FORMAT_WITH_XP_SECOND_LINE:format(missionInfo.name, missionDuration, missionInfo.xp), ignoreTruncation);
+	end
 	
 	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
 	missionPage.environment = missionDeploymentInfo.environment;
@@ -568,7 +580,7 @@ function CovenantMission:UpdateCurrencyInfo()
 	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetSize(18, 18);
 	self.FollowerTab.HealFollowerFrame.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon, "LEFT", -8, -1);
 
-	self.FollowerList.HealAllButton.currencyInfo = currencyInfo;
+	self.FollowerList.HealAllButton.currencyID = secondaryCurrency;
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
@@ -957,6 +969,12 @@ function CovenantMission:GetSystemSpecificStartMissionFailureMessage()
 		end
 	end
 end
+
+function CovenantMission:GetActiveMissionID()
+	local missionInfo = self:GetMissionPage().missionInfo;
+	return (missionInfo ~= nil) and missionInfo.missionID or nil;
+end
+
 ---------------------------------------------------------------------------------
 --- Mission Page Follower Mixin                                               ---
 ---------------------------------------------------------------------------------
@@ -967,7 +985,9 @@ function CovenantFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	followerInfo.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	local autoCombatSpells, autoCombatAutoAttack = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	followerInfo.autoCombatSpells = autoCombatSpells;
+	followerInfo.autoCombatAutoAttack = autoCombatAutoAttack;
 
 	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
 		local puck = self.Board:GetFrameByBoardIndex(boardIndex);
@@ -1075,7 +1095,6 @@ end
 function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 	local healAllCost = 0;
 	self.HealAllButton.tooltip = nil;
-	self:SetScript("OnUpdate", nil);
 
 	for _, follower in ipairs(self.followers) do
 		if follower.status ~= GARRISON_FOLLOWER_ON_MISSION then
@@ -1094,12 +1113,11 @@ function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 	if healAllCost == 0 then
 		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_ALL_ADVENTURERS_FULL;
 		self.HealAllButton:SetEnabled(false);
-	elseif healAllCost > self.HealAllButton.currencyInfo.quantity then
-		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
-		self.HealAllButton:SetEnabled(false)
-	else	
-		self:SetScript("OnUpdate", self.OnUpdate);
-		self.HealAllButton:SetEnabled(true);
+	else
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.HealAllButton.currencyID);
+		local healAllDisabled = currencyInfo and (healAllCost > currencyInfo.quantity);
+		self.HealAllButton.tooltip = healAllDisabled and COVENANT_MISSIONS_HEAL_ERROR_RESOURCES or nil;
+		self.HealAllButton:SetEnabled(not healAllDisabled)
 	end
 end
 
@@ -1120,7 +1138,8 @@ function CovenantMissionHealAllButton_OnLeave(self)
 end
 
 function CovenantMissionHealAllButton_OnClick(self)
-	local currencyString = CreateTextureMarkup(self.currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, self.currencyInfo.name);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyID);
+	local currencyString = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, currencyInfo.name);
 	StaticPopup_Show("COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION", currencyString, "", {followerType = self.followerType});
 end
 

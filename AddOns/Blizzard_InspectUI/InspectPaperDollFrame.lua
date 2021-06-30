@@ -188,5 +188,5 @@ end
 
 function InspectPaperDollViewButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	DressUpSources(C_TransmogCollection.GetInspectSources());
+	DressUpItemTransmogInfoList(C_TransmogCollection.GetInspectItemTransmogInfoList());
 end

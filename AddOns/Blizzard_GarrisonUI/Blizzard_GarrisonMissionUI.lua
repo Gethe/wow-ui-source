@@ -1042,7 +1042,7 @@ function GarrisonMissionList_UpdateMouseOverTooltip(self)
 	local buttons = self.buttons;
 	for i = 1, #buttons do
 		if ( buttons[i]:IsMouseOver() ) then
-			GarrisonMissionButton_OnEnter(buttons[i]);
+			ExecuteFrameScript(buttons[i], "OnEnter");
 			break;
 		end
 	end
@@ -1051,6 +1051,7 @@ end
 function GarrisonMissionButtonRewards_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (self.itemID) then
+		self.UpdateTooltip = GarrisonMissionButtonRewards_OnEnter;
 		if(self.itemLink) then
 			GameTooltip:SetHyperlink(self.itemLink);
 		else
@@ -1058,6 +1059,7 @@ function GarrisonMissionButtonRewards_OnEnter(self)
 		end
 		return;
 	end
+	self.UpdateTooltip = nil;
 	if (self.currencyID and self.currencyID ~= 0 and self.currencyQuantity) then
 		GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
 		return;

@@ -82,6 +82,9 @@
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="commandName" value="EXTRAACTIONBUTTON1" type="string"/>
+				</KeyValues>
 			</CheckButton>
 		</Frames>
 		<Scripts>

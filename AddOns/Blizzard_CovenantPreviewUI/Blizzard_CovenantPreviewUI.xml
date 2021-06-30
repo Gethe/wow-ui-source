@@ -57,7 +57,7 @@
 	<Frame name="CovenantPreviewFrame" toplevel="true" mixin="CovenantPreviewFrameMixin" enableMouse="true" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size x="1100" y="607"/>
 		<Anchors>
-			<Anchor point="CENTER" x="-10" y="0"/>
+			<Anchor point="TOP" x="0" y="-157"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="BorderFrame" frameLevel="510">

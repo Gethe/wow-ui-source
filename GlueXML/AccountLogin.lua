@@ -11,6 +11,9 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("SHOULD_RECONNECT_TO_REALM_LIST");
 
 	AccountLogin_CheckLoginState(self);
+
+	local year = date:sub(#date - 3, #date);
+	self.UI.BlizzDisclaimer:SetText(BLIZZ_DISCLAIMER_FORMAT:format(year));
 end
 
 function AccountLogin_OnEvent(self, event, ...)
@@ -19,6 +22,7 @@ function AccountLogin_OnEvent(self, event, ...)
 		AccountLogin_CheckAutoLogin();
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		AccountLogin_CheckLoginState(self);
+		AccountLogin_Update();
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_Update();
 	elseif ( event == "SHOULD_RECONNECT_TO_REALM_LIST" ) then
@@ -80,15 +84,32 @@ function AccountLogin_Update()
 
 	EventRegistry:TriggerEvent("AccountLogin.Update", showButtonsAndStuff);
 
+	local isReconnectMode = C_Login.IsReconnectLoginPossible();
 	for _, region in pairs(AccountLogin.UI.NormalLoginRegions) do
 		region:SetShown(showButtonsAndStuff);
 	end
+	for _, region in pairs(AccountLogin.UI.ManualLoginRegions) do
+		region:SetShown(showButtonsAndStuff and not isReconnectMode);
+	end
+	for _, region in pairs(AccountLogin.UI.ReconnectLoginRegions) do
+		region:SetShown(showButtonsAndStuff and isReconnectMode);
+	end
+
 	if (HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON) then
 		AccountLogin.UI.SaveAccountNameCheckButton:Hide();
 	end
-	if ( AccountLogin.UI.AccountsDropDown.active ) then
+	
+	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not isReconnectMode) then
+		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
-	end
+
+	else
+		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 275);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
+		AccountLogin.UI.AccountsDropDown:Hide();
+	end	
+
 end
 
 function AccountLogin_UpdateSavedData(self)
@@ -99,18 +120,23 @@ function AccountLogin_UpdateSavedData(self)
 		self.UI.AccountEditBox:SetText(accountName);
 		AccountLogin_FocusPassword();
 	end
-	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" ) then
-		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 0, 255);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
-		AccountLogin.UI.AccountsDropDown:Show();
-		AccountLogin.UI.AccountsDropDown.active = true;
-	else
-		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", 0, 275);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
-		AccountLogin.UI.AccountsDropDown:Hide();
-		AccountLogin.UI.AccountsDropDown.active = false;
-	end
+
 	AccountLoginDropDown_SetupList();
+end
+
+function AccountLogin_OnKeyDown(self, key)
+	-- Reconnect button isn't an edit box, so can't respond to these on its own.
+	if key == "ENTER" then
+		local reconnectButton = self.UI.ReconnectLoginButton;
+		if reconnectButton:IsShown() and reconnectButton:IsEnabled() and C_Login.IsLoginReady() then
+			AccountLogin_ReconnectLogin();
+		end
+	elseif key == "TAB" then
+		local switchButton = self.UI.ReconnectSwitchButton;
+		if switchButton:IsShown() and switchButton:IsEnabled() then
+			AccountLogin_ClearReconnectLogin();
+		end
+	end
 end
 
 function AccountLogin_Login()
@@ -135,6 +161,24 @@ function AccountLogin_Login()
 	else
 		SetSavedAccountName("");
 		SetUsesToken(false);
+	end
+end
+
+function AccountLogin_ReconnectLogin()
+	PlaySound(SOUNDKIT.GS_LOGIN);
+	C_Login.ReconnectLogin();
+end
+
+function AccountLogin_ClearReconnectLogin()
+	C_Login.ClearReconnectLogin();
+	AccountLogin_Update();
+end
+
+function AccountLogin_OnEscapePressed()
+	if GlueParent_IsSecondaryScreenOpen("options") then
+		GlueParent_CloseSecondaryScreen();
+	else
+		AccountLogin_Exit();
 	end
 end
 

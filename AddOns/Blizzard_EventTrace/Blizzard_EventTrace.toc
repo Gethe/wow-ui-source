@@ -1,0 +1,6 @@
+## Title: Blizzard Event Trace
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: Both
+## SavedVariables: EventTraceSavedVars
+Blizzard_EventTrace.xml

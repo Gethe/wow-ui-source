@@ -169,8 +169,8 @@ function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
-function GameTooltip_ShowDisabledTooltip(tooltip, owner, text)
-	tooltip:SetOwner(owner);
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
+	tooltip:SetOwner(owner, tooltipAnchor);
 
 	local wrap = true;
 	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
@@ -223,16 +223,22 @@ end
 function GameTooltip_CalculatePadding(tooltip)
 	local itemWidth, itemHeight, bottomFontStringWidth, bottomFontStringHeight = 0, 0, 0, 0;
 
+	local itemTooltip = tooltip.ItemTooltip;
+	local isItemTooltipShown = itemTooltip and itemTooltip:IsShown();
 	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
+
+	if not isItemTooltipShown and not isBottomFontStringShown then
+		return;
+	end
+
 	if isBottomFontStringShown then
 		bottomFontStringWidth, bottomFontStringHeight = tooltip.BottomFontString:GetSize();
 		bottomFontStringHeight = bottomFontStringHeight + 7;
 		bottomFontStringWidth = bottomFontStringWidth + 20; -- extra width padding for this line
 	end
 
-	local itemTooltip = tooltip.ItemTooltip;
 	if itemTooltip then
-		if itemTooltip:IsShown() then
+		if isItemTooltipShown then
 			itemWidth, itemHeight = itemTooltip:GetSize();
 			itemWidth = itemWidth + 9; -- extra padding for this line
 		end
@@ -262,8 +268,8 @@ function GameTooltip_CalculatePadding(tooltip)
 		paddingHeight = extraHeight + 5;
 	end
 
-	if(math.abs(paddingWidth - oldPaddingWidth) > 0.5 or math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
-		tooltip:SetPadding(paddingWidth, paddingHeight);
+	if (math.abs(paddingWidth - oldPaddingWidth) > 0.5) or (math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
+		tooltip:SetPadding(paddingWidth, paddingHeight, 0, 0);
 	end
 end
 
@@ -843,6 +849,107 @@ end
 function GameTooltip_HideResetCursor()
 	GameTooltip:Hide();
 	ResetCursor();
+end
+
+function GameTooltip_AddQuest(self, questID)
+	local questID = self.questID or questID;
+	if ( not HaveQuestData(questID) ) then
+		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
+		GameTooltip:Show();
+		return;
+	end
+
+	local widgetSetAdded = false;
+	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(questID);
+
+	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
+	if ( self.worldQuest or C_QuestLog.IsWorldQuest(questID)) then
+		self.worldQuest = true;
+		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
+		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
+		local color = WORLD_QUEST_QUALITY_COLORS[quality].color;
+		GameTooltip_SetTitle(GameTooltip, title, color);
+		QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
+
+		local factionName = factionID and GetFactionInfoByID(factionID);
+		if (factionName) then
+			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
+			if (reputationYieldsRewards) then
+				GameTooltip:AddLine(factionName);
+			else
+				GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
+			end
+		end
+
+		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
+	elseif ( self.isThreat or C_QuestLog.IsThreatQuest(questID)) then
+		GameTooltip_SetTitle(GameTooltip, title);
+		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
+	else
+		GameTooltip_SetTitle(GameTooltip, title);
+	end
+
+	if (self.isCombatAllyQuest or C_QuestLog.GetQuestType(questID) == Enum.QuestTag.CombatAlly) then
+		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_FOLLOWER_QUEST, HIGHLIGHT_FONT_COLOR, true);
+		GameTooltip_AddColoredLine(GameTooltip, GRANTS_FOLLOWER_XP, GREEN_FONT_COLOR, true);
+	elseif (self.isQuestStart) then
+		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_QUEST, HIGHLIGHT_FONT_COLOR, true);
+	else
+		local questDescription = "";
+		local questCompleted = C_QuestLog.IsComplete(questID);
+
+		if (questCompleted and self.shouldShowObjectivesAsStatusBar) then
+			questDescription = QUEST_WATCH_QUEST_READY;
+			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
+			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
+			if (questLogIndex) then 
+				questDescription = select(2, GetQuestLogQuestText(questLogIndex));
+				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
+			end
+		end
+		local numObjectives = self.numbObjectives or C_QuestLog.GetNumQuestObjectives(questID);
+		for objectiveIndex = 1, numObjectives do
+			local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, objectiveIndex, false);
+			local showObjective = not (finished and self.isThreat);
+			if showObjective then
+				if(self.shouldShowObjectivesAsStatusBar) then
+					local percent = math.floor((numFulfilled/numRequired) * 100);
+					GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
+				elseif ( objectiveText and #objectiveText > 0 ) then
+					local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+					GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
+				end
+			end
+		end
+		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false);
+		if (objectiveType == "progressbar") then
+			local percent = C_TaskQuest.GetQuestProgressBarInfo(questID);
+			local showObjective = not (finished and self.isThreat);
+			if ( percent  and showObjective ) then
+				GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
+			end
+		end
+
+		if (widgetSetID) then
+			widgetSetAdded = true;
+			GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
+		end
+
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, self.questRewardTooltipStyle or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT);
+
+		if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
+			GameTooltip:AddDebugWorldQuestInfo(questID);
+		end
+	end
+
+
+	if (not widgetSetAdded and widgetSetID) then
+		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
+	end
+
+	GameTooltip:Show();
 end
 
 function EmbeddedItemTooltip_UpdateSize(self)

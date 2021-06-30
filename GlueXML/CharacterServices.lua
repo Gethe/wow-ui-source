@@ -75,17 +75,17 @@ local stepTextures = {
 };
 
 local professionsMap = {
-	[164] = CHARACTER_PROFESSION_BLACKSMITHING,
-	[165] = CHARACTER_PROFESSION_LEATHERWORKING,
-	[171] = CHARACTER_PROFESSION_ALCHEMY,
-	[182] = CHARACTER_PROFESSION_HERBALISM,
-	[186] = CHARACTER_PROFESSION_MINING,
-	[197] = CHARACTER_PROFESSION_TAILORING,
-	[202] = CHARACTER_PROFESSION_ENGINEERING,
-	[333] = CHARACTER_PROFESSION_ENCHANTING,
-	[393] = CHARACTER_PROFESSION_SKINNING,
-	[755] = CHARACTER_PROFESSION_JEWELCRAFTING,
-	[773] = CHARACTER_PROFESSION_INSCRIPTION,
+	[Constants.ProfessionIDs.PROFESSION_BLACKSMITHING] = CHARACTER_PROFESSION_BLACKSMITHING,
+	[Constants.ProfessionIDs.PROFESSION_LEATHERWORKING] = CHARACTER_PROFESSION_LEATHERWORKING,
+	[Constants.ProfessionIDs.PROFESSION_ALCHEMY] = CHARACTER_PROFESSION_ALCHEMY,
+	[Constants.ProfessionIDs.PROFESSION_HERBALISM] = CHARACTER_PROFESSION_HERBALISM,
+	[Constants.ProfessionIDs.PROFESSION_MINING] = CHARACTER_PROFESSION_MINING,
+	[Constants.ProfessionIDs.PROFESSION_TAILORING] = CHARACTER_PROFESSION_TAILORING,
+	[Constants.ProfessionIDs.PROFESSION_ENGINEERING] = CHARACTER_PROFESSION_ENGINEERING,
+	[Constants.ProfessionIDs.PROFESSION_ENCHANTING] = CHARACTER_PROFESSION_ENCHANTING,
+	[Constants.ProfessionIDs.PROFESSION_SKINNING] = CHARACTER_PROFESSION_SKINNING,
+	[Constants.ProfessionIDs.PROFESSION_JEWELCRAFTING] = CHARACTER_PROFESSION_JEWELCRAFTING,
+	[Constants.ProfessionIDs.PROFESSION_INSCRIPTION] = CHARACTER_PROFESSION_INSCRIPTION,
 };
 
 local classDefaultProfessionMap = {
@@ -419,7 +419,7 @@ function CharacterUpgradeFlow:Finish(controller)
 		self:SetTrialBoostGuid(nil);
 
 		CharacterServicesMaster.pendingGuid = results.playerguid;
-		C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType);
+		C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType, 0);
 	end
 	return true;
 end
@@ -1023,7 +1023,7 @@ end
 
 function CharacterUpgrade_BeginNewCharacterCreation(characterType)
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
-	CharacterSelect_CreateNewCharacter(characterType, false);
+	CharacterSelect_CreateNewCharacter(characterType);
 end
 
 function CharacterUpgradeCreateCharacter_OnClick(self)

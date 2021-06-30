@@ -21,7 +21,7 @@
 						<Anchor point="TOPLEFT" x="19" y="5"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="StepActiveLabel" inherits="QuestFontHighlight" justifyH="LEFT">
+				<FontString parentKey="StepActiveLabel" font="SystemFont_Large" justifyH="LEFT">
 					<Size x="260" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="9" y="3"/>

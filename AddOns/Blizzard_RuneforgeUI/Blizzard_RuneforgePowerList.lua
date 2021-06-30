@@ -8,11 +8,11 @@ RuneforgePowerButtonMixin = CreateFromMixins(RuneforgePowerBaseMixin);
 function RuneforgePowerButtonMixin:OnPowerSet(oldPowerID, powerID)
 	local hasPowerID = powerID ~= nil;
 	self.Icon:SetShown(hasPowerID);
+	self.CovenantSigil:SetShown(hasPowerID);
 	if hasPowerID then
 		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
 
 		local isAvailable = self.powerInfo.state == Enum.RuneforgePowerState.Available;
-		local isActive = isAvailable and self:IsSelectionActive();
 		self.Icon:SetDesaturated(not isAvailable);
 	end
 end
@@ -196,7 +196,7 @@ function RuneforgePowerMixin:IsAvailable()
 end
 
 function RuneforgePowerMixin:OnSelected()
-	if not RuneforgePowerButtonMixin.OnSelected(self) and self:IsSelectionActive() and self:IsAvailable() then
+	if not RuneforgePowerButtonMixin.OnSelected(self) and self:IsSelectionActive() and self:IsAvailable() and self:GetPowerInfo().matchesCovenant then
 		self:GetPowerList():OnPowerSelected(self:GetListIndex());
 	end
 end
@@ -209,10 +209,23 @@ function RuneforgePowerMixin:OnPowerSet(oldPowerID, powerID)
 
 	if hasPower then
 		local isAvailable = self:IsAvailable();
-		self.UnavailableOverlay:SetShown(not isAvailable);
+		local matchesCovenant = self:GetPowerInfo().matchesCovenant;
 
-		local isActive = isAvailable and self:IsSelectionActive();
-		self:SetAlpha(isActive and 1.0 or 0.5);
+		local isActive = isAvailable and self:IsSelectionActive() and matchesCovenant;
+		local alpha = isActive and 1.0 or 0.5;
+		self.Icon:SetAlpha(alpha);
+
+		self.Border:SetDesaturated(not isAvailable);
+
+		if isAvailable then
+			self.UnavailableOverlay:SetShown(not matchesCovenant);
+			self.UnavailableOverlay:SetAlpha(0.25);
+			self.Icon:SetDesaturation(not matchesCovenant and 0.5 or 0);
+		else
+			self.UnavailableOverlay:Show();
+			self.UnavailableOverlay:SetAlpha(1.0);
+			self.Icon:SetDesaturation(1.0);
+		end
 	else
 		self.UnavailableOverlay:Hide();
 	end

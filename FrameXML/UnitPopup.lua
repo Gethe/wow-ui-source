@@ -1358,9 +1358,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif value == "VOICE_CHAT_USER_VOLUME" then
-			if not C_VoiceChat.CanPlayerUseVoiceChat() then
-				return false;
-			elseif isLocalPlayer or not isValidPlayerLocation or not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
+			if not C_VoiceChat.CanPlayerUseVoiceChat() or isLocalPlayer or not isValidPlayerLocation or not C_VoiceChat.IsPlayerUsingVoice(playerLocation) then
 				shown = false;
 			end
 		elseif value == "COMMUNITIES_LEAVE" then
@@ -2053,6 +2051,7 @@ function UnitPopup_OnClick (self)
 	elseif (button == "GUILDS_RECRUITMENT_SETTINGS") then
 		CommunitiesFrame.RecruitmentDialog.clubId = clubInfo.clubId;
 		CommunitiesFrame.RecruitmentDialog.clubName = clubInfo.name;
+		CommunitiesFrame.RecruitmentDialog.clubAvatarId = clubInfo.avatarId;
 		CommunitiesFrame.RecruitmentDialog:UpdatedPostingInformationInit();
 	elseif ( button == "COMMUNITIES_NOTIFICATION_SETTINGS" ) then
 		CommunitiesFrame:ShowNotificationSettingsDialog(clubInfo.clubId);

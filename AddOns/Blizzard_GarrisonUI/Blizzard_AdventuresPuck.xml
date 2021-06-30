@@ -175,6 +175,16 @@
 
 	<Button name="AdventuresEnemyPuckTemplate" mixin="AdventuresEnemyPuckMixin" inherits="AdventuresPuckAnimatedTemplate" virtual="true">
 		<Size x="67" y="67"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EliteOverlay" atlas="Adventure-Mission-Gold-Dragon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-14" y="16"/>
+						<Anchor point="BOTTOMRIGHT" x="22" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 	
 	<Button name="AdventuresMissionPageFollowerPuckTemplate" mixin="AdventuresMissionPageFollowerPuckMixin" inherits="AdventuresFollowerPuckTemplate" virtual="true">

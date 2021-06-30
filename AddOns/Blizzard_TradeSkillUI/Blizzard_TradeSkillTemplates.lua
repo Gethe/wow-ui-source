@@ -37,9 +37,9 @@ function OptionalReagentButtonMixin:SetReagentText(name)
 	self.Name:SetText(name);
 end
 
-function OptionalReagentButtonMixin:SetLocked(locked, lockedSkillRank)
+function OptionalReagentButtonMixin:SetLocked(locked, lockedReason)
 	self.locked = locked;
-	self.lockedSkillRank = lockedSkillRank;
+	self.lockedReason = lockedReason;
 	self:SetEnabled(not locked);
 end
 
@@ -47,6 +47,6 @@ function OptionalReagentButtonMixin:IsLocked()
 	return self.locked;
 end
 
-function OptionalReagentButtonMixin:GetLockedSkillRank()
-	return self.lockedSkillRank;
+function OptionalReagentButtonMixin:GetLockedTooltip()
+	return self.lockedReason;
 end

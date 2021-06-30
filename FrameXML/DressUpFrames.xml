@@ -175,6 +175,11 @@
 						</Anchors>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnDressModel>
+						self:GetParent():OnDressModel();
+					</OnDressModel>
+				</Scripts>
 			</ModelScene>
 			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 				<Size x="80" y="22"/>

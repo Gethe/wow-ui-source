@@ -76,6 +76,22 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetAutoMissionTargetingInfoForSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "missionID", Type = "number", Nilable = false },
+				{ Name = "autoCombatSpellID", Type = "number", Nilable = false },
+				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetInfo", Type = "table", InnerType = "AutoMissionTargetingInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAutoTroops",
 			Type = "Function",
 
@@ -133,7 +149,8 @@ local GarrisonInfo =
 
 			Returns =
 			{
-				{ Name = "spellInfo", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+				{ Name = "autoCombatAutoAttack", Type = "AutoCombatSpellInfo", Nilable = true },
 			},
 		},
 		{
@@ -855,6 +872,25 @@ local GarrisonInfo =
 			LiteralName = "GARRISON_SHOW_LANDING_PAGE",
 		},
 		{
+			Name = "GarrisonSpecGroupUpdated",
+			Type = "Event",
+			LiteralName = "GARRISON_SPEC_GROUP_UPDATED",
+			Payload =
+			{
+				{ Name = "garrTypeID", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonSpecGroupsCleared",
+			Type = "Event",
+			LiteralName = "GARRISON_SPEC_GROUPS_CLEARED",
+			Payload =
+			{
+				{ Name = "garrTypeID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GarrisonTalentComplete",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_COMPLETE",
@@ -1016,6 +1052,7 @@ local GarrisonInfo =
 				{ Name = "previewMask", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "spellTutorialFlag", Type = "number", Nilable = false },
+				{ Name = "hasThornsEffect", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1051,7 +1088,6 @@ local GarrisonInfo =
 				{ Name = "isSoulbind", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "autoCombatStats", Type = "FollowerAutoCombatStatsInfo", Nilable = false },
-				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
 			},
 		},
 		{
@@ -1104,6 +1140,8 @@ local GarrisonInfo =
 			{
 				{ Name = "targetIndex", Type = "number", Nilable = false },
 				{ Name = "previewType", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "effectIndex", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1203,11 +1241,13 @@ local GarrisonInfo =
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "mechanics", Type = "table", InnerType = "GarrisonMechanicInfo", Nilable = false },
 				{ Name = "autoCombatSpells", Type = "table", InnerType = "AutoCombatSpellInfo", Nilable = false },
+				{ Name = "autoCombatAutoAttack", Type = "AutoCombatSpellInfo", Nilable = true },
 				{ Name = "role", Type = "number", Nilable = false },
 				{ Name = "health", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "attack", Type = "number", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },
+				{ Name = "isElite", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1264,6 +1304,7 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
+				{ Name = "missionScalar", Type = "number", Nilable = false },
 				{ Name = "isElite", Type = "bool", Nilable = false },
 				{ Name = "isRare", Type = "bool", Nilable = false },
 			},

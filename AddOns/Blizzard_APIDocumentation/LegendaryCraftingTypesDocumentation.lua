@@ -5,14 +5,15 @@ local LegendaryCraftingTypes =
 		{
 			Name = "RuneforgePowerFilter",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "All", Type = "RuneforgePowerFilter", EnumValue = 0 },
-				{ Name = "Available", Type = "RuneforgePowerFilter", EnumValue = 1 },
-				{ Name = "Unavailable", Type = "RuneforgePowerFilter", EnumValue = 2 },
+				{ Name = "Relevant", Type = "RuneforgePowerFilter", EnumValue = 1 },
+				{ Name = "Available", Type = "RuneforgePowerFilter", EnumValue = 2 },
+				{ Name = "Unavailable", Type = "RuneforgePowerFilter", EnumValue = 3 },
 			},
 		},
 		{

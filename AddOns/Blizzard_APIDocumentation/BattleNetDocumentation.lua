@@ -162,6 +162,8 @@ local BattleNet =
 				{ Name = "isWowMobile", Type = "bool", Nilable = false },
 				{ Name = "canSummon", Type = "bool", Nilable = false },
 				{ Name = "hasFocus", Type = "bool", Nilable = false },
+				{ Name = "regionID", Type = "number", Nilable = false },
+				{ Name = "isInCurrentRegion", Type = "bool", Nilable = false },
 			},
 		},
 	},

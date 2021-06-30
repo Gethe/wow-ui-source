@@ -101,8 +101,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then 
 			return RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Soulbinds then
-			local CONDUIT_UPGRADE_ITEM = 184359;
-			if C_Item.IsItemConduit(itemLocation) or (C_Item.GetItemID(itemLocation) == CONDUIT_UPGRADE_ITEM) then
+			local CONDUIT_UPGRADE_ITEMS = { 184359, 187148, 187216 };
+			if C_Item.IsItemConduit(itemLocation) or tContains(CONDUIT_UPGRADE_ITEMS, C_Item.GetItemID(itemLocation)) then
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
@@ -177,3 +177,27 @@ function ItemUtil.GetOptionalReagentCount(itemID)
 	return GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
 end
 
+function ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID)
+	return CreateAndInitFromMixin(ItemTransmogInfoMixin, appearanceID, secondaryAppearanceID, illusionID);
+end
+
+ItemTransmogInfoMixin = {};
+
+function ItemTransmogInfoMixin:Init(appearanceID, secondaryAppearanceID, illusionID)
+	self.appearanceID = appearanceID;
+	self.secondaryAppearanceID = secondaryAppearanceID or Constants.Transmog.NoTransmogID;
+	self.illusionID = illusionID or Constants.Transmog.NoTransmogID;
+end
+
+function ItemTransmogInfoMixin:IsEqual(itemTransmogInfo)
+	if not itemTransmogInfo then
+		return false;
+	end
+	return self.appearanceID == itemTransmogInfo.appearanceID and self.secondaryAppearanceID == itemTransmogInfo.secondaryAppearanceID and self.illusionID == itemTransmogInfo.illusionID;
+end
+
+function ItemTransmogInfoMixin:Clear()
+	self.appearanceID = Constants.Transmog.NoTransmogID;
+	self.secondaryAppearanceID = Constants.Transmog.NoTransmogID;
+	self.illusionID = Constants.Transmog.NoTransmogID;
+end

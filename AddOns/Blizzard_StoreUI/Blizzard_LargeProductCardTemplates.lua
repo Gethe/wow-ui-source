@@ -126,6 +126,15 @@ end
 
 function VerticalLargeStoreCardMixin:SetupDescription(entryInfo)
 	local description = entryInfo.sharedData.description;
+
+	if not description then
+		return;
+	end
+
+	self.ProductName:SetPoint("BOTTOM", self, "CENTER", 0, -41);
+	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -8);
+	self.Description:Show();
+
 	if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken then
 		description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
 	end
@@ -196,14 +205,17 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 	
 	self.ProductName:ClearAllPoints();
+	self.ProductName:SetPoint("BOTTOM", 0, 69);
 	self.ProductName:SetSize(250, 50);
-	self.ProductName:SetPoint("BOTTOM", self, "CENTER", 0, -22);
 	self.ProductName:SetFontObject("GameFontNormalLarge");
 	self.ProductName:SetJustifyH("CENTER");
 	self.ProductName:SetJustifyV("BOTTOM");
 	self.ProductName:SetTextColor(1, 1, 1);
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
+
+	self.Description:ClearAllPoints();
+	self.Description:Hide();
 	
 	self.SelectedTexture:Hide();
 
@@ -213,10 +225,17 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.HighlightTexture:ClearAllPoints();
 	self.HighlightTexture:SetAtlas("shop-card-half-hover", true);
 	self.HighlightTexture:SetTexCoord(0, 1, 0, 1);	
-	self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
+	self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -3);
+	self.HighlightTexture:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -2, 3);
+
+	self.CurrentPrice:ClearAllPoints();
+	self.CurrentPrice:SetPoint("BOTTOM", 0, 20);
+
+	self.NormalPrice:ClearAllPoints();
+	self.NormalPrice:SetPoint("BOTTOM", 0, 20);
 
 	self.DiscountRight:ClearAllPoints();
-	self.DiscountRight:SetPoint("TOPRIGHT", 1, -2);
+	self.DiscountRight:SetPoint("BOTTOM", -40, 20);
 
 	self.DiscountLeft:ClearAllPoints();
 	self.DiscountLeft:SetPoint("RIGHT", self.DiscountRight, "LEFT", -40, 0);
@@ -234,8 +253,8 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.Strikethrough:SetPoint("BOTTOMRIGHT", self.NormalPrice, "BOTTOMRIGHT", 0, 0);
 	
 	self.ModelScene:ClearAllPoints();
-	self.ModelScene:SetPoint("TOPLEFT", 8, -8);
-	self.ModelScene:SetPoint("BOTTOMRIGHT", -8, 8);
+	self.ModelScene:SetPoint("TOPLEFT", 3, -5);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -3, 5);
 	self.ModelScene:SetViewInsets(20, 20, 20, 160);
 	
 	self.Magnifier:ClearAllPoints();
@@ -250,7 +269,7 @@ function VerticalLargeStoreCardMixin:Layout()
 	
 	self.CurrentMarketPrice:SetSize(250, 0);
 	self.CurrentMarketPrice:ClearAllPoints();
-	self.CurrentMarketPrice:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -4);
+	self.CurrentMarketPrice:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, -4);
 	self.CurrentMarketPrice:SetTextColor(0.733, 0.588, 0.31);
 	
 	self.GlowSpin:Hide();
@@ -260,7 +279,7 @@ end
 
 --------------------------------------------------
 -- VERTICAL LARGE STORE CARD WITH A BUY BUTTON MIXIN 
-VerticalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardMixin, ProductCardBuyButtonMixin);
+VerticalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardMixin, ProductCardBuyButtonMixin, LargeProductCardBuyButtonMixin);
 
 function VerticalLargeStoreCardWithBuyButtonMixin:OnLoad()
 	VerticalLargeStoreCardMixin.OnLoad(self);
@@ -286,6 +305,35 @@ function VerticalLargeStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)
 	VerticalLargeStoreCardMixin.SetupDescription(self, entryInfo);
 end
 
+function VerticalLargeStoreCardWithBuyButtonMixin:OnEnter()
+	local disabled = not self:IsEnabled();
+	local hasDisabledTooltip = disabled and self.disabledTooltip;
+	local hasProductTooltip = not disabled and self.productTooltipTitle;
+	if hasDisabledTooltip or hasProductTooltip then
+		StoreTooltip:ClearAllPoints();
+		if self.anchorRight then
+			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
+		else
+			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
+		end
+
+		if hasDisabledTooltip then
+			StoreTooltip_Show("", self.disabledTooltip);
+		elseif hasProductTooltip then
+			StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
+		end
+	end
+
+	if disabled then
+		return;
+	end
+
+	if self.HighlightTexture then
+		self.HighlightTexture:Hide();
+	end
+	self:UpdateMagnifier();
+end
+
 function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 	VerticalLargeStoreCardMixin.Layout(self);
 
@@ -294,12 +342,6 @@ function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 
 	self.SplashBanner:Hide();
 	self.SplashBannerText:Hide();
-
-	self.Description:ClearAllPoints();
-	self.Description:SetSize(250, 0);
-	self.Description:SetPoint("LEFT", self.ProductName, "LEFT");
-	self.Description:SetPoint("RIGHT", self.ProductName, "RIGHT");
-	self.Description:SetPoint("TOP", self.CurrentPrice, "BOTTOM", 0, -12);
 
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetSize(146, 35);
@@ -383,7 +425,7 @@ end
 
 --------------------------------------------------
 -- HORIZONTAL LARGE STORE CARD WITH A BUY BUTTON MIXIN 
-HorizontalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin, LargeProductCardBuyButtonMixin);
+HorizontalLargeStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin);
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:SetDefaultCardTexture()
 	self.Card:SetAtlas("store-card-horizontalfull", true);
@@ -427,35 +469,6 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:SetDisclaimerText(entryInfo)
 	else
 		self.DisclaimerText:Hide();
 	end
-end
-
-function HorizontalLargeStoreCardWithBuyButtonMixin:OnEnter()
-	local disabled = not self:IsEnabled();
-	local hasDisabledTooltip = disabled and self.disabledTooltip;
-	local hasProductTooltip = not disabled and self.productTooltipTitle;
-	if hasDisabledTooltip or hasProductTooltip then
-		StoreTooltip:ClearAllPoints();
-		if self.anchorRight then
-			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
-		else
-			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
-		end
-
-		if hasDisabledTooltip then
-			StoreTooltip_Show("", self.disabledTooltip);
-		elseif hasProductTooltip then
-			StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
-		end
-	end
-
-	if disabled then
-		return;
-	end
-
-	if self.HighlightTexture then
-		self.HighlightTexture:Hide();
-	end
-	self:UpdateMagnifier();
 end
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)

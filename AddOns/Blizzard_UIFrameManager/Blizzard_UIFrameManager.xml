@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIFrameManager" toplevel="true" mixin="UIFrameManagerMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="UIFrameManager_ManagedFrame" mixin="UIFrameManager_ManagedFrameMixin" virtual="true">
+		<!--
+		frameType is a required keyValue on all inheriting frames
+		
+		<KeyValues>
+			<KeyValue key="frameType" value="Enum.UIFrameType.JailersTowerBuffs" type="global"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

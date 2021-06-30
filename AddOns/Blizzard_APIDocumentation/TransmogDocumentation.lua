@@ -7,6 +7,67 @@ local Transmog =
 	Functions =
 	{
 		{
+			Name = "ApplyAllPending",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currentSpecOnly", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requestSent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanHaveSecondaryAppearanceForSlotID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canHaveSecondaryAppearance", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanTransmogItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeTransmogged", Type = "bool", Nilable = false },
+				{ Name = "selfFailureReason", Type = "string", Nilable = true },
+				{ Name = "canTransmogOthers", Type = "bool", Nilable = false },
+				{ Name = "othersFailureReason", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "CanTransmogItemWithItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetItemInfo", Type = "string", Nilable = false },
+				{ Name = "sourceItemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransmog", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "ClearAllPending",
 			Type = "Function",
 		},
@@ -20,6 +81,28 @@ local Transmog =
 			},
 		},
 		{
+			Name = "Close",
+			Type = "Function",
+		},
+		{
+			Name = "GetApplyCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetApplyWarnings",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "warnings", Type = "table", InnerType = "TransmogApplyWarningInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBaseCategory",
 			Type = "Function",
 
@@ -30,7 +113,7 @@ local Transmog =
 
 			Returns =
 			{
-				{ Name = "categoryID", Type = "number", Nilable = false },
+				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
 			},
 		},
 		{
@@ -59,6 +142,34 @@ local Transmog =
 			Returns =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPending",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pendingInfo", Type = "table", Mixin = "TransmogPendingInfoMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSlotEffectiveCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
 			},
 		},
 		{
@@ -126,13 +237,44 @@ local Transmog =
 				{ Name = "baseVisualID", Type = "number", Nilable = false },
 				{ Name = "appliedSourceID", Type = "number", Nilable = false },
 				{ Name = "appliedVisualID", Type = "number", Nilable = false },
-				{ Name = "appliedCategoryID", Type = "number", Nilable = false },
 				{ Name = "pendingSourceID", Type = "number", Nilable = false },
 				{ Name = "pendingVisualID", Type = "number", Nilable = false },
-				{ Name = "pendingCategoryID", Type = "number", Nilable = false },
 				{ Name = "hasUndo", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
 				{ Name = "itemSubclass", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAtTransmogNPC",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAtNPC", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSlotBeingCollapsed",
+			Type = "Function",
+			Documentation = { "Returns true if the only pending for the location's slot is a ToggleOff for the secondary appearance." },
+
+			Arguments =
+			{
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBeingCollapsed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "LoadOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -142,8 +284,7 @@ local Transmog =
 			Arguments =
 			{
 				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
-				{ Name = "transmogID", Type = "number", Nilable = false },
-				{ Name = "categoryID", Type = "number", Nilable = true },
+				{ Name = "pendingInfo", Type = "table", Mixin = "TransmogPendingInfoMixin", Nilable = false },
 			},
 		},
 	},
@@ -196,8 +337,8 @@ local Transmog =
 			LiteralName = "TRANSMOG_SEARCH_UPDATED",
 			Payload =
 			{
-				{ Name = "searchType", Type = "number", Nilable = false },
-				{ Name = "collectionType", Type = "number", Nilable = true },
+				{ Name = "searchType", Type = "TransmogSearchType", Nilable = false },
+				{ Name = "collectionType", Type = "TransmogCollectionType", Nilable = true },
 			},
 		},
 		{
@@ -254,45 +395,6 @@ local Transmog =
 	Tables =
 	{
 		{
-			Name = "TransmogCollectionType",
-			Type = "Enumeration",
-			NumValues = 29,
-			MinValue = 0,
-			MaxValue = 28,
-			Fields =
-			{
-				{ Name = "Head", Type = "TransmogCollectionType", EnumValue = 0 },
-				{ Name = "Shoulder", Type = "TransmogCollectionType", EnumValue = 1 },
-				{ Name = "Back", Type = "TransmogCollectionType", EnumValue = 2 },
-				{ Name = "Chest", Type = "TransmogCollectionType", EnumValue = 3 },
-				{ Name = "Shirt", Type = "TransmogCollectionType", EnumValue = 4 },
-				{ Name = "Tabard", Type = "TransmogCollectionType", EnumValue = 5 },
-				{ Name = "Wrist", Type = "TransmogCollectionType", EnumValue = 6 },
-				{ Name = "Hands", Type = "TransmogCollectionType", EnumValue = 7 },
-				{ Name = "Waist", Type = "TransmogCollectionType", EnumValue = 8 },
-				{ Name = "Legs", Type = "TransmogCollectionType", EnumValue = 9 },
-				{ Name = "Feet", Type = "TransmogCollectionType", EnumValue = 10 },
-				{ Name = "Wand", Type = "TransmogCollectionType", EnumValue = 11 },
-				{ Name = "OneHAxe", Type = "TransmogCollectionType", EnumValue = 12 },
-				{ Name = "OneHSword", Type = "TransmogCollectionType", EnumValue = 13 },
-				{ Name = "OneHMace", Type = "TransmogCollectionType", EnumValue = 14 },
-				{ Name = "Dagger", Type = "TransmogCollectionType", EnumValue = 15 },
-				{ Name = "Fist", Type = "TransmogCollectionType", EnumValue = 16 },
-				{ Name = "Shield", Type = "TransmogCollectionType", EnumValue = 17 },
-				{ Name = "Holdable", Type = "TransmogCollectionType", EnumValue = 18 },
-				{ Name = "TwoHAxe", Type = "TransmogCollectionType", EnumValue = 19 },
-				{ Name = "TwoHSword", Type = "TransmogCollectionType", EnumValue = 20 },
-				{ Name = "TwoHMace", Type = "TransmogCollectionType", EnumValue = 21 },
-				{ Name = "Staff", Type = "TransmogCollectionType", EnumValue = 22 },
-				{ Name = "Polearm", Type = "TransmogCollectionType", EnumValue = 23 },
-				{ Name = "Bow", Type = "TransmogCollectionType", EnumValue = 24 },
-				{ Name = "Gun", Type = "TransmogCollectionType", EnumValue = 25 },
-				{ Name = "Crossbow", Type = "TransmogCollectionType", EnumValue = 26 },
-				{ Name = "Warglaives", Type = "TransmogCollectionType", EnumValue = 27 },
-				{ Name = "Paired", Type = "TransmogCollectionType", EnumValue = 28 },
-			},
-		},
-		{
 			Name = "TransmogModification",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -300,8 +402,22 @@ local Transmog =
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "None", Type = "TransmogModification", EnumValue = 0 },
-				{ Name = "RightShoulder", Type = "TransmogModification", EnumValue = 1 },
+				{ Name = "Main", Type = "TransmogModification", EnumValue = 0 },
+				{ Name = "Secondary", Type = "TransmogModification", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TransmogPendingType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Apply", Type = "TransmogPendingType", EnumValue = 0 },
+				{ Name = "Revert", Type = "TransmogPendingType", EnumValue = 1 },
+				{ Name = "ToggleOn", Type = "TransmogPendingType", EnumValue = 2 },
+				{ Name = "ToggleOff", Type = "TransmogPendingType", EnumValue = 3 },
 			},
 		},
 		{
@@ -334,6 +450,15 @@ local Transmog =
 			{
 				{ Name = "Appearance", Type = "TransmogType", EnumValue = 0 },
 				{ Name = "Illusion", Type = "TransmogType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TransmogApplyWarningInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 	},

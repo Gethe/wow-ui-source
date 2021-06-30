@@ -43,7 +43,19 @@ function SoulbindsSelectButtonMixin:OnEnter()
 	if not self.soulbindData.unlocked then
 		GameTooltip_AddNormalLine(GameTooltip, self.soulbindData.playerConditionReason);
 	else
-		GameTooltip_AddNormalLine(GameTooltip, self.soulbindData.name);
+		GameTooltip_AddHighlightLine(GameTooltip, self.soulbindData.name);
+
+		local specIDs = C_Soulbinds.GetSpecsAssignedToSoulbind(self.soulbindData.ID);
+		if #specIDs > 0 then
+			local specNames = {};
+			for index, specID in ipairs(specIDs) do
+				local name = select(2, GetSpecializationInfoForSpecID(specID));
+				table.insert(specNames, name);
+			end
+			local specList = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(table.concat(specNames, LIST_DELIMITER));
+			GameTooltip_AddNormalLine(GameTooltip, SOULBINDS_ACTIVATED_FOR_SPEC:format(specList));
+		end
+		
 	end
 	GameTooltip:Show();
 end

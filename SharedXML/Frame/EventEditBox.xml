@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="EventEditBox.lua"/>
+
+	<EditBox name="EventEditBox" mixin="EventEditBoxMixin" enableMouse="true" intrinsic="true">
+		<Scripts>
+			<OnLoad method="OnLoad_Intrinsic"/>
+			<OnMouseDown method="OnMouseDown_Intrinsic"/>
+			<OnMouseUp method="OnMouseUp_Intrinsic"/>
+			<OnTabPressed method="OnTabPressed_Intrinsic"/>
+			<OnTextChanged method="OnTextChanged_Intrinsic"/>
+			<OnCursorChanged method="OnCursorChanged_Intrinsic"/>
+			<OnEscapePressed method="OnEscapePressed_Intrinsic"/>
+			<OnEditFocusGained method="OnEditFocusGained_Intrinsic"/>
+			<OnEditFocusLost method="OnEditFocusLost_Intrinsic"/>
+		</Scripts>
+	</EditBox>
+</Ui>

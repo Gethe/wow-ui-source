@@ -7,6 +7,20 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "GetChannelInfoFromIdentifier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIdentifier", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ChatChannelInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
 
@@ -81,6 +95,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetChatTypeName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "typeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetClubStreamIDs",
 			Type = "Function",
 
@@ -128,6 +156,15 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "numChannels", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumReservedChatWindows",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numReserved", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1952,6 +1989,31 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "ChatMsgVoiceText",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_VOICE_TEXT",
+			Payload =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "languageName", Type = "string", Nilable = false },
+				{ Name = "channelName", Type = "string", Nilable = false },
+				{ Name = "playerName2", Type = "string", Nilable = false },
+				{ Name = "specialFlags", Type = "string", Nilable = false },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false },
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+				{ Name = "channelBaseName", Type = "string", Nilable = false },
+				{ Name = "unused", Type = "number", Nilable = false },
+				{ Name = "lineID", Type = "number", Nilable = false },
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "bnSenderID", Type = "number", Nilable = false },
+				{ Name = "isMobile", Type = "bool", Nilable = false },
+				{ Name = "isSubtitle", Type = "bool", Nilable = false },
+				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
+				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ChatMsgWhisper",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_WHISPER",
@@ -2148,6 +2210,19 @@ local ChatInfo =
 
 	Tables =
 	{
+		{
+			Name = "ChatChannelInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortcut", Type = "string", Nilable = false },
+				{ Name = "localID", Type = "number", Nilable = false },
+				{ Name = "instanceID", Type = "number", Nilable = false },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false },
+				{ Name = "channelType", Type = "PermanentChatChannelType", Nilable = false },
+			},
+		},
 	},
 };
 

@@ -1003,7 +1003,7 @@ function PetJournalDragButton_OnDragStart(self)
 
 	for i=1,MAX_ACTIVE_PETS do
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
-		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
+		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i - 1);
 		if(locked) then
 			PetJournal.Loadout["Pet"..i].setButton:Hide();
 		else
@@ -1682,7 +1682,7 @@ end
 
 function PET_JOURNAL_ABILITY_INFO:GetPetOwner(target)
 	self:EnsureTarget(target);
-	return LE_BATTLE_PET_ALLY;
+	return Enum.BattlePetOwner.Ally;
 end
 
 function PET_JOURNAL_ABILITY_INFO:GetPetType(target)
@@ -1772,7 +1772,7 @@ end
 function PetJournalPetCount_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(BATTLE_PETS_TOTAL_PETS, 1, 1, 1);
-	GameTooltip:AddLine(format(BATTLE_PETS_TOTAL_PETS_TOOLTIP, C_PetJournal.GetNumMaxPets()), nil, nil, nil, true);
+	GameTooltip:AddLine(BATTLE_PETS_TOTAL_PETS_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 

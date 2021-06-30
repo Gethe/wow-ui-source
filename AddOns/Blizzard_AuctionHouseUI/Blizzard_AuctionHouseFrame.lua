@@ -659,7 +659,12 @@ function AuctionHouseFrameMixin:QueryItem(searchContext, itemKey, byItemID)
 	if byItemID then
 		C_AuctionHouse.SendSellSearchQuery(itemKey, sorts, separateOwnerItems);
 	else
-		C_AuctionHouse.SendSearchQuery(itemKey, sorts, separateOwnerItems);
+		if searchContext == AuctionHouseSearchContext.BuyItems then
+			local minLevel, maxLevel = self.SearchBar:GetLevelFilterRange();
+			C_AuctionHouse.SendSearchQuery(itemKey, sorts, separateOwnerItems, minLevel, maxLevel);
+		else
+			C_AuctionHouse.SendSearchQuery(itemKey, sorts, separateOwnerItems);
+		end
 	end
 end
 
@@ -734,6 +739,9 @@ function AuctionHouseFrameMixin:RefreshSearchResults(searchContext, itemKey)
 		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
 		if itemKeyInfo.isCommodity then
 			C_AuctionHouse.RefreshCommoditySearchResults(itemKey.itemID);
+		elseif searchContext == AuctionHouseSearchContext.BuyItems then
+			local minLevel, maxLevel = self.SearchBar:GetLevelFilterRange();
+			C_AuctionHouse.RefreshItemSearchResults(itemKey, minLevel, maxLevel);
 		else
 			C_AuctionHouse.RefreshItemSearchResults(itemKey);
 		end

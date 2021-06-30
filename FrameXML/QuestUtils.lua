@@ -63,7 +63,7 @@ end
 
 QuestUtil = {};
 
-function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID)
+function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID, questID)
 	local iconAtlas;
 	if ( inProgress ) then
 		return "worldquest-questmarker-questionmark", 10, 15;
@@ -89,7 +89,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 			iconAtlas = "worldquest-icon-horde";
 		end
 	elseif ( worldQuestType == Enum.QuestTagType.Threat ) then
-		iconAtlas = "worldquest-icon-nzoth";
+		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
 	else
 		return "worldquest-questmarker-questbang", 6, 15;
 	end
@@ -275,6 +275,23 @@ function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isC
 	if ( button.SpellTargetGlow ) then
 		button.SpellTargetGlow:SetShown(isSpellTarget);
 	end
+end
+
+function QuestUtil.QuestTextContrastEnabled()
+	return GetCVarBool("QuestTextContrast");
+end
+
+function QuestUtil.GetDefaultQuestBackgroundTexture()
+	return QuestUtil.QuestTextContrastEnabled() and "QuestBG-Parchment-Accessibility" or "QuestBG-Parchment";
+end
+
+function QuestUtil.GetDefaultQuestMapBackgroundTexture()
+	return QuestUtil.QuestTextContrastEnabled() and "QuestDetailsBackgrounds-Accessibility" or "QuestDetailsBackgrounds";
+end
+
+function QuestUtil.GetThreatPOIIcon(questID)
+	local theme = C_QuestLog.GetQuestDetailsTheme(questID);
+	return theme and theme.poiIcon or "worldquest-icon-nzoth";
 end
 
 function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)

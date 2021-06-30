@@ -55,8 +55,11 @@ end
 UIDropDownCustomMenuEntryMixin = {};
 
 function UIDropDownCustomMenuEntryMixin:GetPreferredEntryWidth()
-	-- NOTE: Only width is currently supported, dropdown menus size vertically based on how many buttons are present.
 	return self:GetWidth();
+end
+
+function UIDropDownCustomMenuEntryMixin:GetPreferredEntryHeight()
+	return self:GetHeight();
 end
 
 function UIDropDownCustomMenuEntryMixin:OnSetOwningButton()

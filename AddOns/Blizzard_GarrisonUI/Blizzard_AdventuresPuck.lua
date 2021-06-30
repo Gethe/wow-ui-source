@@ -5,10 +5,24 @@ function AdventuresPuckAbilityMixin:OnEnter()
 	GameTooltip:SetOwner(self);
 	AddAutoCombatSpellToTooltip(GameTooltip, self.abilityInfo);
 	GameTooltip:Show();
+
+	local autoCombatSpellID = self:GetAutoCombatSpellID();
+	if autoCombatSpellID ~= nil then
+		local board = self:GetBoard();
+		if (board ~= nil) and not board:IsShowingActiveCombat() then
+			local missionID = board:GetMainFrame():GetActiveMissionID();
+			if missionID ~= nil then
+				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatSpellID, self:GetPuck():GetBoardIndex());
+				local useLoop = true;
+				board:TriggerTargetingReticles(abilityTargetInfos, useLoop);
+			end
+		end
+	end
 end
 
 function AdventuresPuckAbilityMixin:OnLeave()
 	GameTooltip_Hide();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 end
 
 function AdventuresPuckAbilityMixin:SetAbilityInfo(abilityInfo)
@@ -48,6 +62,10 @@ function AdventuresPuckAbilityMixin:AdvanceCooldown()
 	self:RefreshCooldown();
 end
 
+function AdventuresPuckAbilityMixin:GetCurrentCooldown()
+	return self.currentCooldown;
+end
+
 function AdventuresPuckAbilityMixin:RefreshCooldown()
 	local cooldown = self.currentCooldown or 0;
 	local onCooldown = cooldown > 0;
@@ -59,6 +77,14 @@ end
 function AdventuresPuckAbilityMixin:SetPuckDesaturation(desaturation)
 	self.Icon:SetDesaturation(desaturation);
 	self.Border:SetDesaturation(desaturation);
+end
+
+function AdventuresPuckAbilityMixin:GetPuck()
+	return self:GetParent();
+end
+
+function AdventuresPuckAbilityMixin:GetBoard()
+	return self:GetPuck():GetBoard();
 end
 
 AdventuresPuckMixin = {};
@@ -110,9 +136,13 @@ end
 
 function AdventuresPuckMixin:StartCooldown(autoCombatSpellID)
 	if self.AbilityOne:GetAutoCombatSpellID() == autoCombatSpellID then
-		self.AbilityOne:StartCooldown();
+		if self.AbilityOne:GetCurrentCooldown() == nil then
+			self.AbilityOne:StartCooldown();
+		end
 	elseif self.AbilityTwo:GetAutoCombatSpellID() == autoCombatSpellID then
-		self.AbilityTwo:StartCooldown();
+		if self.AbilityTwo:GetCurrentCooldown() == nil then
+			self.AbilityTwo:StartCooldown();
+		end
 	end
 end
 
@@ -165,17 +195,46 @@ function AdventuresPuckMixin:OnEnter()
 		if autoCombatSpells then 
 			for i = 1, #autoCombatSpells do
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				AddAutoCombatSpellToTooltip(GameTooltip, autoCombatSpells[i])
+				AddAutoCombatSpellToTooltip(GameTooltip, autoCombatSpells[i]);
 			end
 		end
+
+		local autoCombatAutoAttack = self:GetAutoCombatAutoAttack();
+		if autoCombatAutoAttack ~= nil then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			AddAutoCombatSpellToTooltip(GameTooltip, autoCombatAutoAttack);
+		end
+
 		GameTooltip:Show();
+
+		self:ShowAutoAttackTargetingReticles();
 	end
 	self:GetBoard():ShowHealthValues();
 end
 
+function AdventuresPuckMixin:ShowAutoAttackTargetingReticles()
+	local autoCombatAutoAttack = self:GetAutoCombatAutoAttack();
+	if autoCombatAutoAttack ~= nil then
+		local board = self:GetBoard();
+		if (board ~= nil) and not board:IsShowingActiveCombat() then
+			local missionID = board:GetMainFrame():GetActiveMissionID();
+			if missionID ~= nil then
+				local abilityTargetInfos = C_Garrison.GetAutoMissionTargetingInfoForSpell(missionID, autoCombatAutoAttack.autoCombatSpellID, self:GetBoardIndex());
+				local useLoop = true;
+				board:TriggerTargetingReticles(abilityTargetInfos, useLoop);
+			end
+		end
+	end
+end
+
 function AdventuresPuckMixin:OnLeave()
 	GameTooltip_Hide();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 	self:GetBoard():HideHealthValues();
+end
+
+function AdventuresPuckMixin:GetBoardIndex()
+	return self.boardIndex;
 end
 
 function AdventuresPuckMixin:GetBoard()
@@ -184,6 +243,11 @@ end
 
 -- Overwrite in your derived Mixin
 function AdventuresPuckMixin:GetAutoCombatSpells()
+	return nil;
+end
+
+-- Overwrite in your derived Mixin
+function AdventuresPuckMixin:GetAutoCombatAutoAttack()
 	return nil;
 end
 
@@ -211,6 +275,14 @@ function AdventuresFollowerPuckMixin:OnLoad()
 end
 
 function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
+	local function GetFollowerAutoCombatSpellsFromInfo()
+		if (info.autoCombatSpells ~= nil) and (info.autoCombatAutoAttack ~= nil) then
+			return info.autoCombatSpells, info.autoCombatAutoAttack;
+		end
+
+		return C_Garrison.GetFollowerAutoCombatSpells(followerGUID, info.level);
+	end
+
 	self.followerGUID = followerGUID;
 	self.info = info;
 	self.name = info.name;
@@ -218,8 +290,9 @@ function AdventuresFollowerPuckMixin:SetFollowerGUID(followerGUID, info)
 	local puckBorderAtlas = info.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
 	self.PuckBorder:SetAtlas(puckBorderAtlas);
 
-	local autoCombatSpells = info.autoCombatSpells or C_Garrison.GetFollowerAutoCombatSpells(followerGUID, info.level);
+	local autoCombatSpells, autoCombatAutoAttack = GetFollowerAutoCombatSpellsFromInfo();
 	self.autoCombatSpells = autoCombatSpells;
+	self.autoCombatAutoAttack = autoCombatAutoAttack;
 	
 	local abilityOne = autoCombatSpells[1];
 	local abilityTwo = autoCombatSpells[2];
@@ -249,6 +322,10 @@ end
 
 function AdventuresFollowerPuckMixin:GetAutoCombatSpells()
 	return self.autoCombatSpells;
+end
+
+function AdventuresFollowerPuckMixin:GetAutoCombatAutoAttack()
+	return self.autoCombatAutoAttack;
 end
 
 function AdventuresFollowerPuckMixin:GetName()
@@ -313,6 +390,7 @@ function AdventuresEnemyPuckMixin:SetEncounter(encounter)
 
 	local autoCombatSpells = encounter.autoCombatSpells;
 	self.autoCombatSpells = autoCombatSpells;
+	self.autoCombatAutoAttack = encounter.autoCombatAutoAttack;
 
 	local abilityOne = autoCombatSpells[1];
 	local abilityTwo = autoCombatSpells[2];
@@ -328,6 +406,7 @@ function AdventuresEnemyPuckMixin:SetEncounter(encounter)
 	end
 
 	self.Portrait:SetTexture(encounter.portraitFileDataID);
+	self.EliteOverlay:SetShown(encounter.isElite);
 
 	self.HealthBar:SetMaxHealth(encounter.maxHealth);
 	self.HealthBar:SetHealth(encounter.health);
@@ -336,6 +415,10 @@ end
 
 function AdventuresEnemyPuckMixin:GetAutoCombatSpells()
 	return self.autoCombatSpells;
+end
+
+function AdventuresEnemyPuckMixin:GetAutoCombatAutoAttack()
+	return self.autoCombatAutoAttack;
 end
 
 function AdventuresEnemyPuckMixin:GetName()
@@ -355,12 +438,14 @@ function AdventuresMissionPageFollowerPuckMixin:OnEnter()
 	local followerID = self:GetFollowerGUID();
 	if followerID then
 		GarrisonMissionPageFollowerFrame_OnEnter(self);
+		self:ShowAutoAttackTargetingReticles();
 		self:GetBoard():ShowHealthValues();
 	end
 end
 
 function AdventuresMissionPageFollowerPuckMixin:OnLeave()
 	GarrisonFollowerTooltip:Hide();
+	EventRegistry:TriggerEvent("CovenantMission.CancelLoopingTargetingAnimation");
 	self:GetBoard():HideHealthValues();
 end
 
@@ -375,6 +460,10 @@ function AdventuresMissionPageFollowerPuckMixin:SetEmpty()
 	self.HealthBar:Hide();
 	self.AbilityOne:Hide();
 	self.AbilityTwo:Hide();
+end
+
+function AdventuresMissionPageFollowerPuckMixin:IsEmpty()
+	return self.followerGUID == nil;
 end
 
 function AdventuresMissionPageFollowerPuckMixin:SetFollowerGUID(...)

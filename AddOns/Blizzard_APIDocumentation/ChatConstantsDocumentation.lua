@@ -30,6 +30,20 @@ local ChatConstants =
 				{ Name = "Communities", Type = "ChatChannelType", EnumValue = 4 },
 			},
 		},
+		{
+			Name = "PermanentChatChannelType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "PermanentChatChannelType", EnumValue = 0 },
+				{ Name = "Zone", Type = "PermanentChatChannelType", EnumValue = 1 },
+				{ Name = "Communities", Type = "PermanentChatChannelType", EnumValue = 2 },
+				{ Name = "Custom", Type = "PermanentChatChannelType", EnumValue = 3 },
+			},
+		},
 	},
 };
 

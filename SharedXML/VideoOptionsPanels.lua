@@ -453,6 +453,9 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 	local dropdownIndex = GetGraphicsDropdownIndexByMasterIndex(self.graphicsCVar, masterIndex, isRaid);
 	local value = nil;
 	if(self.type == CONTROLTYPE_DROPDOWN) then
+		while self.data[dropdownIndex].skipForSlider do
+			dropdownIndex = dropdownIndex+1;
+		end
 		value = self.data[dropdownIndex].text;
 	elseif(self.type == CONTROLTYPE_SLIDER) then
 		value = dropdownIndex;
@@ -465,6 +468,9 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 		self.newValue = dropdownIndex;
 		self.selectedID = dropdownIndex;
 		if(self.type == CONTROLTYPE_DROPDOWN) then
+			if self.data[dropdownIndex].warning then
+				value = WARNING_FONT_COLOR:WrapTextInColorCode(value);
+			end
 			UIDropDownMenu_SetText(self, value);
 		elseif(self.type == CONTROLTYPE_SLIDER) then
 			self:SetDisplayValue(dropdownIndex);
@@ -529,7 +535,13 @@ function Graphics_TableGetValue(self)
 			for _, child in pairs(self.childOptions) do
 				if(_G[child].graphicsCVar) then
 					local childValue = _G[child].newValue or tonumber(GetCVar(_G[child].graphicsCVar));
-					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
+					local dropdownIndex = GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid);
+					if _G[child].data then
+						while _G[child].data[dropdownIndex].skipForSlider do
+							dropdownIndex = dropdownIndex+1;
+						end
+					end
+					if(dropdownIndex ~= childValue) then
 						allMatch = false;
 						break;
 					end
@@ -733,6 +745,11 @@ function Graphics_DropDownRefreshValue(self)
 			end
 			if(self.cvar) then
 				local index = GetGraphicsDropdownIndexByMasterIndex(self.cvar, masterIndex, self.raid);
+				if(self.data) then
+					while self.data[index].skipForSlider do
+						index = index+1;
+					end
+				end
 				isValid, is32BitFail = IsValid(self, index);
 				if ( not isValid ) then
 					if ( is32BitFail ) then
@@ -852,15 +869,22 @@ function VideoOptionsDropDown_OnLoad(self)
 				Graphics_PrepareTooltip(self);
 			end
 
+			local data = self.data;
+			local hasData = data ~= nil;
 			for mode, text in ipairs(self.table) do
+				local modeData = hasData and data[mode] or nil;
+				if ( hasData and modeData.warning ) then
+					text = WARNING_FONT_COLOR:WrapTextInColorCode(text);
+				end
+
 				local info = UIDropDownMenu_CreateInfo();
 				info.text = text;
 				info.value = text;
 				info.func = self.onclickfunction or VideoOptionsDropDown_OnClick;
 				-- disable settings
-				if(self.data ~= nil) then
-					if(self.data[mode].cvars ~= nil) then
-						for cvar_name, cvar_value in pairs(self.data[mode].cvars) do
+				if(hasData) then
+					if(modeData.cvars ~= nil) then
+						for cvar_name, cvar_value in pairs(modeData.cvars) do
 							if(self.validity[cvar_name][cvar_value] ~= 0 and self.validity[cvar_name][cvar_value] ~= VR_WINDOWS_32BIT) then
 								info.notClickable = true;
 								info.disablecolor = GREYCOLORCODE;
@@ -948,14 +972,30 @@ function VideoOptionsSlider_OnLoad(self)
 end
 
 function VideoOptionsControl_OnEnter(self)
-	if(self.tooltip ~= nil) then
-		GetAppropriateTooltip():SetOwner(self);
-		if(self.name == nil) then
+	local hasTooltip = self.tooltip ~= nil;
+	local data = self.data and self.data[self:GetValue()] or nil;
+	local warning = data and data.warning or nil;
+	local hasWarning = warning ~= nil;
+
+	if ( hasTooltip ) then
+		local tooltipFrame = GetAppropriateTooltip();
+		tooltipFrame:SetOwner(self);
+		if ( self.name == nil) then
 			self.name = " ";
 		end
-		GetAppropriateTooltip():SetText(self.name .. ":", nil, nil, nil, nil, 1);
-		GetAppropriateTooltip():AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
-		GetAppropriateTooltip():Show();
+		tooltipFrame:SetText(self.name .. ":", nil, nil, nil, nil, 1);
+
+		if ( hasTooltip ) then
+			tooltipFrame:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
+		end
+
+		if ( hasWarning ) then
+			local r, g, b = WARNING_FONT_COLOR:GetRGB();
+			tooltipFrame:AddLine(" ");
+			tooltipFrame:AddLine(warning, r, g, b, true, 1);
+		end
+
+		tooltipFrame:Show();
 	end
 end
 
