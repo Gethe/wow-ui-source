@@ -103,7 +103,6 @@ function AccountLogin_Update()
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
-
 	else
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 275);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
@@ -131,6 +130,8 @@ function AccountLogin_OnKeyDown(self, key)
 		if reconnectButton:IsShown() and reconnectButton:IsEnabled() and C_Login.IsLoginReady() then
 			AccountLogin_ReconnectLogin();
 		end
+	elseif ( key == "ESCAPE" ) then
+		AccountLogin_OnEscapePressed();
 	elseif key == "TAB" then
 		local switchButton = self.UI.ReconnectSwitchButton;
 		if switchButton:IsShown() and switchButton:IsEnabled() then
@@ -165,6 +166,7 @@ function AccountLogin_Login()
 end
 
 function AccountLogin_ReconnectLogin()
+	C_Login.ClearLastError();
 	PlaySound(SOUNDKIT.GS_LOGIN);
 	C_Login.ReconnectLogin();
 end
