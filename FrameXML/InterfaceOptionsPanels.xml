@@ -2237,7 +2237,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentSpeechToText" hyperlinksEnabled="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentSpeechToText" parentKey="SpeechToTextCheckbox" hyperlinksEnabled="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentSubText" parentKey="SubText" text="SPEECH_TO_TEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="2" justifyH="LEFT" justifyV="TOP">
@@ -2252,11 +2252,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="TOPRIGHT" x="275"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "speechToText";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelSpeechToTextCheckbox_OnLoad"/>
 					<OnHyperlinkClick function="GetURLIndexAndLoadURLWithSound" />
 				</Scripts>
 			</CheckButton>
@@ -2265,11 +2261,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentSpeechToTextSubText" relativePoint="BOTTOMLEFT" x="-28" y="-4" />
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "textToSpeech";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelTextToSpeechCheckbox_OnLoad"/>
 				</Scripts>
 			</CheckButton>
 			<Button name="$parentConfigureTextToSpeech" inherits="UIPanelButtonTemplate" text="CONFIGURE_TEXT_TO_SPEECH">

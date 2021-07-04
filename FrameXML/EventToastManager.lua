@@ -719,10 +719,7 @@ function EventToastAnimationsMixin:SetAnimOutStartDelay(delay)
 end
 
 function EventToastAnimationsMixin:ResetAnimations()
-	self:SetAnimInStartDelay(0);
-	self.hideAnim:Stop();
-	self.showAnim:Stop();
-	self:BannerPlay();
+	self:SetAlpha(1);
 end
 
 function EventToastAnimationsMixin:PauseAnimations()
