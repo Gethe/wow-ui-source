@@ -258,6 +258,7 @@ local function IsReadyToLoad(loadedEvents)
 end
 
 function TextToSpeechFrame_OnLoad(self)
+	self.loaded = false;
 	self.loadedEvents = {};
 	FrameUtil.RegisterFrameForEvents(self, loadEvents);
 
@@ -266,13 +267,14 @@ function TextToSpeechFrame_OnLoad(self)
 end
 
 function TextToSpeechFrame_CheckLoad(self)
-	if IsReadyToLoad(self.loadedEvents) then
+	if not self.loaded and IsReadyToLoad(self.loadedEvents) then
+		self.loaded = true;
 		C_VoiceChat.GetTtsVoices();
 
 		TextToSpeechFrameTtsVoiceDropdown_OnLoad(self.PanelContainer.TtsVoiceDropdown);
 		TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self.PanelContainer.TtsVoiceAlternateDropdown);
-		TextToSpeechFrame_Update(self);
 		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TextToSpeechChatTypes, "TextToSpeechChatTypeCheckButtonTemplate");
+		TextToSpeechFrame_Update(self);
 		TextToSpeech_CheckConfig();
 	end
 end

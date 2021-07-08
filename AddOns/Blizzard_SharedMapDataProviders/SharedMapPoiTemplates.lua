@@ -120,3 +120,20 @@ function MapPinHighlight_CheckHighlightPin(highlight, parentPin, regionToHighlig
 		parentPin.SupertrackedHighlight:SetHighlightShown(highlight, regionToHighlight, params);
 	end
 end
+
+-- Cache for C_TaskQuest.GetQuestsForPlayerByMapID
+local cache = {};
+function GetQuestsForPlayerByMapIDCached(mapID)
+	local entry = cache[mapID];
+	if entry then
+		return entry;
+	end
+
+	local quests = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	cache[mapID] = quests;
+	return quests;
+end
+
+function ClearCachedQuestsForPlayer()
+	cache = {};
+end

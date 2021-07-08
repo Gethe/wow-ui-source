@@ -438,7 +438,7 @@ end
 
 function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(mapID)
 	local numQuests = 0;
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
 	for i, info in ipairs(taskInfo) do
 		if QuestUtils_IsQuestWorldQuest(info.questId) and info.mapID == mapID then -- ignore worlds quests that are on surrounding maps but viewable from this map
 			if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then

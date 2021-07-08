@@ -401,6 +401,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetPairedArtifactAppearance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pairedItemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceIcon",
 			Type = "Function",
 
