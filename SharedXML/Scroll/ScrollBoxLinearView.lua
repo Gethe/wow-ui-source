@@ -1,18 +1,16 @@
 -- Points are cleared first to avoid some complications related to drag and drop.
 local function SetHorizontalPoint(frame, offset, scrollTarget)
-	local width = frame:GetWidth();
 	frame:ClearAllPoints();
 	frame:SetPoint("TOPLEFT", scrollTarget, "TOPLEFT", offset, 0);
 	frame:SetPoint("BOTTOMLEFT", scrollTarget, "BOTTOMLEFT", offset, 0);
-	return width;
+	return frame:GetWidth();
 end
 
 local function SetVerticalPoint(frame, offset, scrollTarget)
-	local height = frame:GetHeight();
 	frame:ClearAllPoints();
 	frame:SetPoint("TOPLEFT", scrollTarget, "TOPLEFT", 0, -offset);
 	frame:SetPoint("TOPRIGHT", scrollTarget, "TOPRIGHT", 0, -offset);
-	return height;
+	return frame:GetHeight();
 end
 
 ScrollBoxLinearPaddingMixin = CreateFromMixins(ScrollBoxPaddingMixin);

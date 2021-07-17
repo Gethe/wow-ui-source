@@ -14,9 +14,7 @@
 			-->
 		</KeyValues>
 		<Frames>
-			<EventFrame parentKey="ScrollTarget" useParentLevel="true">
-				<Size x="1" y="1"/>
-			</EventFrame>
+			<EventFrame parentKey="ScrollTarget" useParentLevel="true"/>
 			<Frame parentKey="Shadows" setAllPoints="true">
 				<Layers>
 					<Layer>

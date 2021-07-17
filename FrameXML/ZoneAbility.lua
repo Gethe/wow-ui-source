@@ -128,8 +128,6 @@ local function SortByUIPriority(lhs, rhs)
 end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
-	HideZoneAbilityTutorial();
-
 	local zoneAbilities = GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
 
@@ -180,6 +178,8 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	if self.previousZoneAbilities and tCompare(self.previousZoneAbilities, displayedZoneAbilities) then
 		return;
 	end
+
+	HideZoneAbilityTutorial();
 
 	self.previousZoneAbilities = displayedZoneAbilities;
 
