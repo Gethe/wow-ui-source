@@ -2500,7 +2500,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
 
-	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
+	C_Commentator.AssignPlayersToTeamInCurrentInstance(teamIndex, teamName);
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
@@ -2516,7 +2516,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 	end
 
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
+	C_Commentator.AssignPlayerToTeam(playerName, teamName);
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)

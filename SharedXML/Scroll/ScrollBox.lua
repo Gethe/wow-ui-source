@@ -134,7 +134,10 @@ end
 function ScrollBoxBaseMixin:Layout()
 	local view = self:GetView();
 	if view then
-		self:SetFrameExtent(self:GetScrollTarget(), view:Layout());
+		-- Minimum extent of 1 to preserve a valid rect so that so that children of RLF frames 
+		-- can be successfully laid out without an invalid rect error.
+		local extent = view:Layout();
+		self:SetFrameExtent(self:GetScrollTarget(), math.max(1, extent));
 	end
 end
 
