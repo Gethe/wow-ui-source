@@ -173,6 +173,13 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 		end);
 	end 
 
+	self:ClearAllPoints();
+	if self.showingFromPlayerChoice then
+		self:SetPoint("CENTER", PlayerChoiceFrame, "CENTER");
+	else
+		self:SetPoint("TOP", UIParent, "TOP", 0, -157);
+	end
+
 	self:SetupAbilityButtons(covenantInfo.covenantAbilities);
 	self:SetupSoulbindButtons(covenantInfo.covenantSoulbinds);
 	self:SetupCovenantInfoPanel(covenantInfo); 
