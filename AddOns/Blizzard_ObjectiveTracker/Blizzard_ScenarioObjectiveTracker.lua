@@ -56,10 +56,17 @@ end
 -- ***** SLIDING
 -- *****************************************************************************************************
 
+function ScenarioBlocksFrame_ExtraBlocksSetShown(shown)
+	TopScenarioWidgetContainerBlock:SetShown(shown);
+	BottomScenarioWidgetContainerBlock:SetShown(shown);
+	SCENARIO_TRACKER_MODULE.BlocksFrame.MawBuffsBlock:SetShown(shown and IsInJailersTower());
+end
+
 function ScenarioBlocksFrame_OnFinishSlideIn()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED);
+	ScenarioBlocksFrame_ExtraBlocksSetShown(true);
 end
 function ScenarioBlocksFrame_OnFinishSpellExpand()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
@@ -134,6 +141,7 @@ function ScenarioBlocksFrame_SlideOut()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = "OUT";
 	SLIDE_OUT_DATA.startHeight = ScenarioStageBlock.height;
 	ObjectiveTracker_SlideBlock(SCENARIO_TRACKER_MODULE.BlocksFrame, SLIDE_OUT_DATA);
+	ScenarioBlocksFrame_ExtraBlocksSetShown(false);
 end
 
 local showingEmberCourtHelpTip = false;
@@ -165,15 +173,17 @@ local function WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, cont
 	local containerBlock = widgetContainerFrame:GetParent(); 
 	DefaultWidgetLayout(widgetContainerFrame, sortedWidgets);
 
-	local blockHeight = 0;
+	local blockHeight;
 	if widgetContainerFrame:HasAnyWidgetsShowing() then
 		blockHeight = widgetContainerFrame:GetHeight() + containerOffset;
 		containerBlock:SetWidth(widgetContainerFrame:GetWidth());
+	else
+		blockHeight = 1;
+		containerBlock:SetWidth(1);
 	end
 
 	containerBlock.height = blockHeight;
 	containerBlock:SetHeight(blockHeight);
-	containerBlock:Show();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
 end
 
@@ -219,8 +229,8 @@ end
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
-		BottomScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, TopWidgetLayout);
-		TopScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, BottomWidgetLayout);
+		BottomScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, BottomWidgetLayout);
+		TopScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, TopWidgetLayout);
 	elseif ( event == "WORLD_STATE_TIMER_START") then
 		local timerID = ...;
 		ScenarioTimer_CheckTimers(timerID);
@@ -1072,6 +1082,9 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			-- Usually ScenarioStage_UpdateOptionWidgetRegistration is run at the beginning of the slide in
 			-- But if there is no slide in we need to just call it now
 			ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, stageBlock.widgetSetID);
+
+			-- Same with ScenarioBlocksFrame_ExtraBlocksSetShown, which is usually run at the end of the slide in
+			ScenarioBlocksFrame_ExtraBlocksSetShown(true);
 		end
 
 		-- header
