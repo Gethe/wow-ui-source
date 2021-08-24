@@ -1,0 +1,136 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\FrameXML\UI.xsd">
+	<Script file="MacOptionsPanel.lua"/>
+	<Frame name="MacKeyboardOptionsPanel" hidden="true" parent="VideoOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDisplayHeader" text="KEYBOARD_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="MacKeyboardOptionsFrameCheckButton9" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacKeyboardOptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacKeyboardOptionsFrameCheckButton9" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MacKeyboardOptionsFrameCheckButton11" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacKeyboardOptionsFrameCheckButton10" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="MacKeyboardOptionsFrame_OnLoad"/>
+			<OnShow>
+				VideoOptionsPanel_OnShow(self);
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="FolderPicker" inherits="BackdropTemplate" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="500" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="FolderPickerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="296" y="70"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FolderPicker" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormalLarge" text="Folder...">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FolderPickerHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="FolderPickerButton01" text="YES">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parentName" inherits="GameFontHighlightSmall" text="Player Name">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="13" y="-1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						FolderPicker:Hide();
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

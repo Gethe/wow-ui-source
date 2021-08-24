@@ -1,0 +1,5 @@
+## Title: Blizzard Battlefield Map
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: BattlefieldMapOptions
+..\..\..\Interface_Vanilla\AddOns\Blizzard_BattlefieldMap\Blizzard_BattlefieldMap.xml
+Localization.lua

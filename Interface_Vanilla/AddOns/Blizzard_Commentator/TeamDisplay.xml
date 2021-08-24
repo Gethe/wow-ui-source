@@ -1,0 +1,85 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="TeamDisplay.lua"/>
+
+	<Frame name="CommentatorTeamDisplay" enableMouse="false" hidden="true" parent="WorldFrame" toplevel="true" clampedToScreen="true" mixin="CommentatorTeamDisplayMixin">
+		<Size x="400" y="50" />
+		<Anchors>
+			<Anchor point="TOP" relativeTo="WorldFrame" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftBg" atlas="ScoreTeam">
+					<Size x="384" y="96" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="WorldFrame" relativePoint="TOP" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBg" atlas="ScoreTeam">
+					<Size x="384" y="96" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="WorldFrame" relativePoint="TOP" />
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Divider" atlas="ScoreDivider">
+					<Size x="48" y="96" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-3" />
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="DampeningBg" atlas="HealingDampening">
+					<Size x="192" y="96" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-3" />
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<FontString parentKey="Team1Score" inherits="CommentatorTeamScoreFont" parentArray="ScoreLabels" text="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="WorldFrame" relativePoint="TOP" x="-250" y="-28" />
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="Team2Score" inherits="CommentatorTeamScoreFont" parentArray="ScoreLabels" text="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="WorldFrame" relativePoint="TOP" x="250" y="-28" />
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="Team1Name" inherits="CommentatorTeamNameFont" parentArray="TeamNameLabels" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="200" y="40" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="WorldFrame" relativePoint="TOP" x="-20" y="-7" />
+					</Anchors>
+				</FontString>
+				
+				<FontString parentKey="Team2Name" inherits="CommentatorTeamNameFont" parentArray="TeamNameLabels" justifyH="RIGHT" justifyV="MIDDLE">
+					<Size x="200" y="40" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="WorldFrame" relativePoint="TOP" x="20" y="-7" />
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="Dampening" font="CommentatorDampeningFont">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="WorldFrame" y="-58" />
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

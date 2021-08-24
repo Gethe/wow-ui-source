@@ -1,0 +1,21 @@
+## Title: Blizzard_Communities
+## LoadOnDemand: 1
+
+..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\NineSlice.lua
+..\..\..\Interface_TBC\AddOns\Blizzard_Communities\CommunitiesList.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_Communities\CommunitiesMemberList.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_Communities\CommunitiesChatFrame.xml
+CommunitiesInvitationFrame.xml
+CommunitiesStreams.xml
+CommunitiesAvatarPickerDialog.xml
+CommunitiesAddDialogInsecure.xml
+CommunitiesAddDialog.xml
+CommunitiesAddDialogOutbound.lua
+CommunitiesTabs.xml
+CommunitiesSettings.xml
+CommunitiesTicketManagerDialog.xml
+CommunitiesErrors.lua
+CommunitiesHyperlink.lua
+..\..\..\Interface_TBC\AddOns\Blizzard_Communities\CommunitiesFrame.xml
+Localization.lua

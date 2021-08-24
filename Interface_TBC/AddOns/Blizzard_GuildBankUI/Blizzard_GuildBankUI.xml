@@ -1,0 +1,899 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GuildBankUI.lua"/>
+	
+	<Button name="GuildBankItemButtonTemplate" inherits="ItemButtonTemplate" mixin="GuildBankItemButtonMixin" parentArray="Buttons" virtual="true">
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEvent method="OnHide"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="GuildBankFrameColumnTemplate" parentArray="Columns" virtual="true">
+		<Size x="100" y="311"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\GuildBankFrame\UI-GuildBankFrame-Slots" setAllPoints="true">
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.607421875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Button1" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-3"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button2" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button1" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button3" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button2" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button4" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button3" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button5" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button4" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button6" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button5" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button7" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button6" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button8" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button1" relativePoint="TOPRIGHT" x="12" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button9" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button8" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button10" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button9" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button11" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button10" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button12" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button11" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button13" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button12" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Button14" inherits="GuildBankItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Button13" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="GuildBankTabTemplate" mixin="GuildBankTabMixin" enableMouse="true" parentArray="BankTabs" virtual="true">
+		<Size x="42" y="50"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\GuildBankFrame\UI-GuildBankFrame-Tab">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="Button" mixin="GuildBankTabButtonMixin" registerForClicks="LeftButtonUp, RightButtonUp">
+				<Size x="36" y="34"/>
+			 	<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="IconTexture"/>
+						<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="SearchOverlay" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+				<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+			</CheckButton>
+		</Frames>
+	</Frame>
+
+	<Button name="GuildBankFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" mixin="GuildBankFrameTabMixin" parentArray="FrameTabs" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<CheckButton name="GuildBankPopupButtonTemplate" inherits="PopupButtonTemplate" mixin="GuildBankPopupButtonMixin" parentArray="Buttons" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="GuildBankFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" mixin="GuildBankFrameMixin">
+		<Size x="769" y="444"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TabTitleBG" file="Interface\GuildBankFrame\UI-TabNameBorder">
+					<Size x="10" y="18"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GuildBankFrame" relativePoint="TOP" x="6" y="-43"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.546875" top="0" bottom="0.5625"/>
+				</Texture>
+				<Texture parentKey="TabTitleBGLeft" file="Interface\GuildBankFrame\UI-TabNameBorder">
+					<Size x="8" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.TabTitleBG" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.5625"/>
+				</Texture>
+				<Texture parentKey="TabTitleBGRight" file="Interface\GuildBankFrame\UI-TabNameBorder">
+					<Size x="8" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TabTitleBG" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.546875" right="0.609375" top="0" bottom="0.5625"/>
+				</Texture>
+				<FontString parentKey="TabTitle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TabTitleBG" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="TabLimitBG" file="Interface\GuildBankFrame\UI-TabNameBorder">
+					<Size x="10" y="18"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GuildBankFrame" relativePoint="TOP" x="6" y="-388"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.546875" top="0" bottom="0.5625"/>
+				</Texture>
+				<Texture parentKey="TabLimitBGLeft" file="Interface\GuildBankFrame\UI-TabNameBorder">
+					<Size x="8" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.TabLimitBG" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.5625"/>
+				</Texture>
+				<Texture parentKey="TabLimitBGRight" file="Interface\GuildBankFrame\UI-TabNameBorder">
+					<Size x="8" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TabLimitBG" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.546875" right="0.609375" top="0" bottom="0.5625"/>
+				</Texture>
+				<FontString parentKey="LimitLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TabLimitBG" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+				<FontString name="GuildBankLimitLabel" parentKey="LimitLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TabLimitBG">
+							<Offset x="0" y="1"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="GuildBankMoneyLimitLabel" parentKey="MoneyLimitLabel" inherits="GameFontNormalSmall" text="GUILDBANK_AVAILABLE_MONEY">
+					<Size x="0" y="13"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="GuildBankFrame" relativePoint="BOTTOMLEFT" x="26" y="16"/>
+					</Anchors>
+				</FontString>
+				<FontString name="GuildBankMoneyUnlimitedLabel" parentKey="UnlimitedLabel" inherits="GameFontHighlightSmall" text="UNLIMITED">
+					<Size x="0" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="GuildBankMoneyLimitLabel" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ErrorMessage" inherits="GameFontNormal" text="NO_GUILDBANK_TABS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GuildBankFrame" relativePoint="TOP" x="0" y="-216"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="GuildBankFrameLeft" file="Interface\GuildBankFrame\UI-GuildBankFrame-Left">
+					<Size>
+						<AbsDimension x="512" y="512"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GuildBankFrameRight" file="Interface\GuildBankFrame\UI-GuildBankFrame-Right">
+					<Size>
+						<AbsDimension x="512" y="512"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GuildBankFrameLeft" relativePoint="TOPRIGHT">
+							<Offset x="0" y="-11"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Portrait">
+					<Size x="40" y="40"/>
+					<Anchors>
+							<Anchor point="TOPLEFT" x="7" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Emblem">
+				<Size x="700" y="80"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GuildBankFrame" relativePoint="TOP" x="-70" y="46"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Left" file="Interface\GuildBankFrame\UI-GuildBankFrame-EmblemBorder">
+							<Size x="512" y="80"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.3125"/>
+						</Texture>
+						<Texture parentKey="Right" file="Interface\GuildBankFrame\UI-GuildBankFrame-EmblemBorder">
+							<Size x="512" y="79"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" x="0" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.31640625" bottom="0.625"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="GuildBankEmblemBackgroundUL" parentKey="BackgroundUL">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOP" x="56" y="-19"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBackgroundUR" parentKey="BackgroundUR">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankEmblemBackgroundUL" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBackgroundBL" parentKey="BackgroundBL">
+							<Size x="40" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="GuildBankEmblemBackgroundUL" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBackgroundBR" parentKey="BackgroundBR">
+							<Size x="40" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankEmblemBackgroundBL" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="GuildBankEmblemBorderUL" parentKey="BorderUL">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildBankEmblemBackgroundUL" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBorderUR" parentKey="BorderUR">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankEmblemBorderUL" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBorderBL" parentKey="BorderBL">
+							<Size x="40" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="GuildBankEmblemBorderUL" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBorderBR" parentKey="BorderBR">
+							<Size x="40" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankEmblemBorderBL" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemUL" parentKey="UL">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="GuildBankEmblemBackgroundUL" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemUR" parentKey="UR">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankEmblemBorderUL" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBL" parentKey="BL">
+							<Size x="40" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="GuildBankEmblemUL" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="GuildBankEmblemBR" parentKey="BR">
+							<Size x="40" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankEmblemBL" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Column1" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-70"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Column2" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Column1" relativePoint="TOPRIGHT" x="3" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Column3" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Column2" relativePoint="TOPRIGHT" x="3" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Column4" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Column3" relativePoint="TOPRIGHT" x="3" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Column5" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Column4" relativePoint="TOPRIGHT" x="3" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Column6" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Column5" relativePoint="TOPRIGHT" x="3" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Column7" inherits="GuildBankFrameColumnTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Column6" relativePoint="TOPRIGHT" x="3" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankMoneyFrame" parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GuildBankFrame" relativePoint="BOTTOMRIGHT" x="-4" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self, "GUILDBANK");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="GuildBankWithdrawMoneyFrame" parentKey="WithdrawMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GuildBankMoneyLimitLabel" relativePoint="RIGHT" x="13" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self, "GUILDBANKWITHDRAW");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="3" y="-8"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button parentKey="DepositButton" inherits="UIPanelButtonTemplate" mixin="GuildBankFrameDepositButtonMixin" text="DEPOSIT">
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GuildBankFrame" relativePoint="BOTTOMRIGHT" x="-11" y="37"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="WithdrawButton" inherits="UIPanelButtonTemplate" mixin="GuildBankFrameWithdrawButtonMixin" text="WITHDRAW">
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DepositButton" relativePoint="LEFT" x="3" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="GuildBankFrameTab1" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK" id="1">
+               <Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="GuildBankFrame" relativePoint="BOTTOMLEFT" x="19" y="-24"/>
+				</Anchors>
+            </Button>
+            <Button name="GuildBankFrameTab2" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_LOG" id="2">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="GuildBankFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
+                </Anchors>
+            </Button>
+			<Button name="GuildBankFrameTab3" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_MONEY_LOG" id="3">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="GuildBankFrameTab2" relativePoint="RIGHT" x="-16" y="0"/>
+                </Anchors>
+            </Button>
+			<Button name="GuildBankFrameTab4" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_TAB_INFO" id="4">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="GuildBankFrameTab3" relativePoint="RIGHT" x="-16" y="0"/>
+                </Anchors>
+            </Button>
+			<Frame name="GuildBankTab1" inherits="GuildBankTabTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="-1" y="-32"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab2" inherits="GuildBankTabTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab3" inherits="GuildBankTabTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab4" inherits="GuildBankTabTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab5" inherits="GuildBankTabTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab6" inherits="GuildBankTabTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BuyInfo"  hidden="true">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GuildBankFrame" relativePoint="TOP" x="0" y="-194"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="TabText" inherits="GameFontHighlight" text="PURCHASE_TAB_TEXT">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="PurchasedText" inherits="GameFontHighlightSmall" text="PURCHASE_TAB_TEXT">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.TabText" relativePoint="BOTTOM" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="GuildBankFrameTabCost" inherits="GameFontNormal" text="COSTS_LABEL">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOP" x="-93" y="-38"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildBankFrameTabCostMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildBankFrameTabCost" relativePoint="RIGHT" x="10" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button parentKey="PurchaseButton" inherits="UIPanelButtonTemplate" text="BANKSLOTPURCHASE">
+						<Size x="124" y="21"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="GuildBankFrameTabCostMoneyFrame" relativePoint="RIGHT" x="12" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+								StaticPopup_Show("CONFIRM_BUY_GUILDBANK_TAB");
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						self:GetParent():UpdateTabBuyingInfo();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Log">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<ScrollingMessageFrame name="GuildBankMessageFrame" parentKey="MessageFrame" inherits="InlineHyperlinkFrameTemplate">
+						<Size x="688" y="304"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Log" relativePoint="TOPLEFT" x="33" y="-73"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetInsertMode(SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP);
+								self:SetMaxLines(128);
+								self:SetFading(false);
+								self:SetFontObject(ChatFontNormal);
+								self:SetJustifyH("LEFT");
+							</OnLoad>
+						</Scripts>
+					</ScrollingMessageFrame>
+					<ScrollFrame name="GuildBankTransactionsScrollFrame" parentKey="TransactionsScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
+						<Size x="688" y="304"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="-50" y="-75"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="106"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, GUILDBANK_TRANSACTION_HEIGHT, GuildBankLogScroll)
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="GuildBankInfo" parentKey="Info" hidden="true">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPLEFT" x="32" y="-74"/>
+				</Anchors>
+				<Frames>
+					<Button name="GuildBankInfoSaveButton" parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE_CHANGES" hidden="true">
+						<Size x="100" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildBankFrame" relativePoint="BOTTOMLEFT" x="25" y="37"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetWidth(_G[self:GetName().."Text"]:GetWidth()+40);
+							</OnLoad>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								if ( GuildBankTabInfoEditBox:GetText() ~= GuildBankTabInfoEditBox.text ) then
+									SetGuildBankText(GetCurrentGuildBankTab(), GuildBankTabInfoEditBox:GetText());
+									GuildBankTabInfoEditBox:ClearFocus();
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="GuildBankInfoScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size x="691" y="306"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="4"/>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="106"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-3"/>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnMouseDown>
+								if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+									GuildBankTabInfoEditBox:SetFocus();
+								else
+									GuildBankTabInfoEditBox:ClearFocus();
+								end
+							</OnMouseDown>
+							<OnMouseUp>
+								if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+									GuildBankTabInfoEditBox:SetFocus();
+								else
+									GuildBankTabInfoEditBox:ClearFocus();
+								end
+							</OnMouseUp> 
+						</Scripts>
+						<ScrollChild>
+							<EditBox name="GuildBankTabInfoEditBox" parentKey="EditBox" letters="500" multiLine="true" autoFocus="false">
+								<Size x="690" y="218"/>
+								<Scripts>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+										local currentTab = GetCurrentGuildBankTab();
+										if ( currentTab > GetNumGuildBankTabs() ) then
+											GuildBankInfoSaveButton:Hide();
+										elseif ( CanEditGuildTabInfo(currentTab) ) then
+											GuildBankInfoSaveButton:Show();
+										else
+											GuildBankInfoSaveButton:Hide();
+										end
+									</OnTextChanged>
+									<OnCursorChanged>
+										ScrollingEdit_OnCursorChanged(self, x, y-10, w, h);
+									</OnCursorChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnHide>
+						GuildBankInfoSaveButton:Click();
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GuildBankPopupFrame" mixin="GuildBankPopupFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="525" y="495"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="-4" y="-30"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".66"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="BorderBox" frameLevel="50" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="topLeft" atlas="macropopup-topleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topRight" atlas="macropopup-topright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_macropopup-top" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomLeft" atlas="macropopup-bottomleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomRight" atlas="macropopup-bottomright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_macropopup-bottom" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="!macropopup-left" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="!macropopup-right" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontHighlightSmall" text="GUILDBANK_POPUP_TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-21"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-69"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<EditBox name="GuildBankPopupEditBox" parentKey="EditBox" mixin="GuildBankPopupEditBoxMixin" frameLevel="51" autoFocus="false" letters="15" historyLines="0">
+				<Size x="180" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BorderBox" x="29" y="-35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="GuildBankPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="12" y="29"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-11" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="GuildBankPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="12" y="29"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="11" y="0"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="GuildBankPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="175" y="29"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GuildBankPopupNameLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="GuildBankPopupNameRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEscapePressed method="OnEscapePressed"/>
+					<OnEnterPressed method="OnEnterPressed"/>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" mixin="GuildBankPopupCancelButtonMixin" frameLevel="51" text="CANCEL">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GuildBankPopupFrame" x="-11" y="13"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate" mixin="GuildBankPopupOkayButtonMixin" frameLevel="51" text="OKAY">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CancelButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="ScrollFrame" inherits="ListScrollFrameTemplate">
+				<Size x="485" y="389"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBankPopupFrame" relativePoint="TOPRIGHT" x="-36" y="-70"/>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, GUILDBANK_ICON_ROW_HEIGHT, (function() self:GetParent():Update() end));
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

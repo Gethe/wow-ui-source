@@ -1,0 +1,35 @@
+## Title: Blizzard Shared Map Data Providers
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+SharedMapPoiTemplates.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_SharedMapDataProviders\QuestDataProvider.xml
+GroupMembersDataProvider.xml
+SpectatorDataProvider.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_SharedMapDataProviders\WorldQuestDataProvider.xml
+ZoneLabelDataProvider.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_SharedMapDataProviders\ClickToZoomDataProvider.xml
+AreaPOIDataProvider.xml
+MapExplorationDataProvider.xml
+MapHighlightDataProvider.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_SharedMapDataProviders\AreaLabelDataProvider.xml
+BattlefieldFlagDataProvider.xml
+BonusObjectiveDataProvider.xml
+VehicleDataProvider.xml
+StorylineQuestDataProvider.xml
+EncounterJournalDataProvider.xml
+FogOfWarDataProvider.xml
+DeathMapDataProvider.xml
+VignetteDataProvider.xml
+InvasionDataProvider.xml
+GossipDataProvider.xml
+FlightPointDataProvider.xml
+PetTamerDataProvider.xml
+DigSiteDataProvider.xml
+GarrisonPlotDataProvider.xml
+DungeonEntranceDataProvider.xml
+BannerDataProvider.xml
+ContributionCollectorDataProvider.xml
+MapLinkDataProvider.xml
+SelectableGraveyardDataProvider.xml

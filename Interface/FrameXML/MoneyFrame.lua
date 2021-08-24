@@ -130,7 +130,7 @@ MoneyTypeInfo["GUILDBANKWITHDRAW"] = {
 	end,
 
 	UpdateFunc = function(self)
-		GuildBankFrame_UpdateWithdrawMoney();
+		self:GetParent():UpdateWithdrawMoney();
 		return nil;
 	end,
 

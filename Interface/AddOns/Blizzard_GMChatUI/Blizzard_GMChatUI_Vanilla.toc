@@ -1,0 +1,5 @@
+## Title: Blizzard_GMChatUI
+## LoadOnDemand: 1
+..\..\..\Interface_Vanilla\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.lua
+..\..\..\Interface_Vanilla\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.xml
+Localization.lua

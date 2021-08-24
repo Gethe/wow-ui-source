@@ -1,0 +1,398 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MultiActionBars.lua"/>
+	
+	<CheckButton name="MultiBarButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFloatingBG" file="Interface\Buttons\UI-Quickslot" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-15" y="15"/>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
+	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				self.buttonType = "MULTIACTIONBAR1BUTTON"
+				ActionButton_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				self.buttonType = "MULTIACTIONBAR2BUTTON"
+				ActionButton_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MultiBar2ButtonNoBackgroundTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="noGrid" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.buttonType = "MULTIACTIONBAR2BUTTON"
+				ActionButton_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				self.buttonType = "MULTIACTIONBAR3BUTTON"
+				ActionButton_OnLoad(self);
+				self:SetAttribute("flyoutDirection", "LEFT");
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+		<Scripts>
+			<OnLoad>
+				self.buttonType = "MULTIACTIONBAR4BUTTON"
+				ActionButton_OnLoad(self);
+				self:SetAttribute("flyoutDirection", "LEFT");
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
+		<Size x="500" y="38"/>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="6"/>
+		</Attributes>
+		<Frames>
+			<CheckButton name="$parentButton1" inherits="MultiBar1ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="MultiBar1ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="MultiBar1ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="MultiBar1ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="MultiBar1ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="MultiBar1ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="MultiBar1ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="MultiBar1ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="MultiBar1ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="MultiBar1ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="MultiBar1ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="MultiBar1ButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
+		<Size x="500" y="38"/>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="5"/>
+		</Attributes>
+		<Frames>
+			<CheckButton name="$parentButton1" inherits="MultiBar2ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="MultiBar2ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="MultiBar2ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="MultiBar2ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="MultiBar2ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="MultiBar2ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="MultiBar2ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="MultiBar2ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="MultiBar2ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="MultiBar2ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="MultiBar2ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="MultiBar2ButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
+		<Size x="41" y="503"/>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="3"/>
+		</Attributes>
+		<Frames>
+			<CheckButton name="$parentButton1" inherits="MultiBar3ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="MultiBar3ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="MultiBar3ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="MultiBar3ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="MultiBar3ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="MultiBar3ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="MultiBar3ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="MultiBar3ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="MultiBar3ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="MultiBar3ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="MultiBar3ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="MultiBar3ButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
+		<Size x="41" y="503"/>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="4"/>
+		</Attributes>
+		<Frames>
+			<CheckButton name="$parentButton1" inherits="MultiBar4ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="MultiBar4ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="MultiBar4ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="MultiBar4ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-6"/>				
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="MultiBar4ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="MultiBar4ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-6"/>				
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="MultiBar4ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="MultiBar4ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="MultiBar4ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="MultiBar4ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="MultiBar4ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="MultiBar4ButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBar1" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="ActionButton1" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="17"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBar2" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="MultiBarBottomLeft" relativePoint="RIGHT" x="10" y="0"/>
+		</Anchors>
+	</Frame>
+	<Frame name="VerticalMultiBarsContainer" parent="UIParent">
+		<Size x="141" y="503"/>
+		<Anchors>
+			<Anchor point="RIGHT" x="0"/>
+		</Anchors>
+		<Frames>
+			<Frame name="MultiBarRight" inherits="VerticalMultiBar3">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="slideOut">
+						<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
+						<Scripts>
+							<OnFinished>
+								if not MainMenuBar:IsShown() then
+									MultiBarRight:Hide();
+								end
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="UIParent">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MultiBarRight" relativePoint="BOTTOM" x="0" y="-20"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="slideOut">
+						<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
+						<Scripts>
+							<OnFinished>
+								if not MainMenuBar:IsShown() then
+									MultiBarLeft:Hide();
+								end
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+				self:RegisterEvent("UI_SCALE_CHANGED");
+			</OnLoad>
+			<OnEvent function="MultiActionBar_Update"/>
+		</Scripts>
+	</Frame>
+</Ui>

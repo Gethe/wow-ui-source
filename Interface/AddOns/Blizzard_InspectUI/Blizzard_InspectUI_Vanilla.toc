@@ -1,0 +1,6 @@
+## Title: Blizzard Inspect UI
+## LoadOnDemand: 1
+..\..\..\Interface_Vanilla\AddOns\Blizzard_InspectUI\Blizzard_InspectUI.xml
+..\..\..\Interface_Vanilla\AddOns\Blizzard_InspectUI\InspectPaperDollFrame.xml
+InspectHonorFrame.xml
+Localization.lua

@@ -1,0 +1,558 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MainMenuBar.lua"/>
+	<Frame name="MainMenuBarWatchBarTemplate" enableMouse="true" parent="MainMenuBar" hidden="true" virtual="true">
+		<Size x="1024" y="11"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-3"/>
+		</Anchors>
+		<Frames>
+			<StatusBar parentKey="StatusBar" drawLayer="ARTWORK" inherits="AnimatedStatusBarTemplate">
+				<Size x="1024" y="8"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="WatchBarTexture0" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="2"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.171875"/>
+						</Texture>
+						<Texture parentKey="WatchBarTexture1" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.171875" bottom="0.34375"/>
+						</Texture>
+						<Texture parentKey="WatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.34375" bottom="0.515625"/>
+						</Texture>
+						<Texture parentKey="WatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Underlay" hidden="true" file="Interface\TargetingFrame\UI-StatusBar">
+							<Color r=".502" g=".443" b=".278" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Overlay" hidden="true" atlas="XPBarAnim-OrangeGain" alphaMode="ADD">
+							<Color r=".901" g=".8" b=".601" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</StatusBar>
+			<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="MainMenuBar" enableMouse="true" parent="UIParent">
+		<Animations>
+			<AnimationGroup parentKey="slideOut">
+				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
+				<Scripts>
+					<OnFinished>
+						if MainMenuBar.hideOnFinish then
+						MainMenuBar:Hide();
+						end
+						ValidateActionBarTransition();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size>
+			<AbsDimension x="1024" y="53"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+		<Frames>
+			<StatusBar name="MainMenuExpBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="1024" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="ExhaustionLevelFillBar">
+							<Size>
+								<AbsDimension x="0" y="13"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="MainMenuExpBar">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture name="MainMenuXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-384" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+						</Texture>
+						<Texture name="MainMenuXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-128" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
+						</Texture>
+						<Texture name="MainMenuXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="128" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
+						</Texture>
+						<Texture name="MainMenuXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="384" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-2">
+						<Texture>
+							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="MainMenuBarOverlayFrame" frameStrata="DIALOG">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MainMenuBar"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="MainMenuBarExpText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="MainMenuExpBar">
+											<Offset>
+												<AbsDimension x="0" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								MainMenuExpBar.lockShow = 0;
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						TextStatusBar_Initialize(self);
+						self:GetStatusBarTexture():SetDrawLayer("BACKGROUND", -1);
+
+						SetTextStatusBarText(MainMenuExpBar, MainMenuBarExpText);
+						ExpBar_Update();
+
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						self:RegisterEvent("PLAYER_XP_UPDATE");
+						self.textLockable = 1;
+						self.cvar = "xpBarText";
+						self.cvarLabel = "XP_BAR_TEXT";
+						self.alwaysPrefix = true;
+						self.alwaysShow = true;
+					</OnLoad>
+					<OnEvent>
+						if ( event == "CVAR_UPDATE" ) then
+						TextStatusBar_OnEvent(self, event, ...);
+						else
+						ExpBar_Update();
+						end
+					</OnEvent>
+					<OnShow>
+						if ( GetCVar("xpBarText") == "1" ) then
+						ExpBar_UpdateTextString();
+						end
+					</OnShow>
+					<OnEnter function="ExpBar_OnEnter"/>
+					<OnLeave>
+						HideTextStatusBarText(self);
+						GameTooltip:Hide();
+						ExhaustionTick.timer = nil;
+					</OnLeave>
+					<OnUpdate inherit="prepend">
+						ExhaustionTick_OnUpdate(ExhaustionTick, elapsed);
+					</OnUpdate>
+					<OnValueChanged>
+						if (not self:IsShown()) then
+						return;
+						end
+						TextStatusBar_OnValueChanged(self);
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+			</StatusBar>
+			<Frame name="MainMenuBarMaxLevelBar" enableMouse="true" hidden="true">
+				<Size>
+					<AbsDimension x="1024" y="7"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MainMenuBar" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-11"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuMaxLevelBar0" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size>
+								<AbsDimension x="256" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="-384" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.21875"/>
+						</Texture>
+						<Texture name="MainMenuMaxLevelBar1" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size>
+								<AbsDimension x="256" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MainMenuMaxLevelBar0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.25" bottom="0.46875"/>
+						</Texture>
+						<Texture name="MainMenuMaxLevelBar2" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size>
+								<AbsDimension x="256" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MainMenuMaxLevelBar1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.5" bottom="0.71875"/>
+						</Texture>
+						<Texture name="MainMenuMaxLevelBar3" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size>
+								<AbsDimension x="256" y="7"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MainMenuMaxLevelBar2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.75" bottom="0.96875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow function="UIParent_ManageFramePositions"/>
+					<OnHide function="UIParent_ManageFramePositions"/>
+				</Scripts>
+			</Frame>
+			<Frame name="MainMenuBarArtFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MainMenuBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="43"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-384" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.83203125" bottom="1.0"/>
+						</Texture>
+						<Texture name="MainMenuBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="43"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-128" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.58203125" bottom="0.75"/>
+						</Texture>
+						<Texture name="MainMenuBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="43"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="128" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.33203125" bottom="0.5"/>
+						</Texture>
+						<Texture name="MainMenuBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="256" y="43"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="384" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.08203125" bottom="0.25"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture name="MainMenuBarLeftEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+							<Size>
+								<AbsDimension x="128" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="-544" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="MainMenuBarRightEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+							<Size>
+								<AbsDimension x="128" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="544" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<FontString name="MainMenuBarPageNumber" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="30" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="MainMenuBar_OnLoad"/>
+					<OnEvent function="MainMenuBar_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="MainMenuBarPerformanceBarFrame" frameStrata="LOW">
+				<Size>
+					<AbsDimension x="16" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-227" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+							<Size>
+								<AbsDimension x="20" y="66"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						PERFORMANCEBAR_LOW_LATENCY = 300;
+						PERFORMANCEBAR_MEDIUM_LATENCY = 600;
+						PERFORMANCEBAR_UPDATE_INTERVAL = 10;
+						self.hover = nil;
+						self.updateInterval = 0;
+					</OnLoad>
+					<OnUpdate>
+						if (self.updateInterval > 0) then
+						self.updateInterval = self.updateInterval - elapsed;
+						else
+						self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+
+						local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+						local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+						if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
+						elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+						else
+						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+						end
+						if (self.hover) then
+						GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+						end
+						end
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+			<Button name="MainMenuBarPerformanceBarFrameButton" parent="MainMenuBarPerformanceBarFrame" setAllPoints="true" frameStrata="HIGH">
+				<Scripts>
+					<OnEnter>
+						MainMenuBarPerformanceBarFrame.hover = 1;
+						local bandwidthIn, bandwidthOut, latency = GetNetStats();
+						GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+					</OnEnter>
+					<OnLeave>
+						MainMenuBarPerformanceBarFrame.hover = nil;
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="MainMenuBarVehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
+					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
+					<OnClick function="MainMenuBarVehicleLeaveButton_OnClicked"/>
+					<OnEnter function="MainMenuBarVehicleLeaveButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</PushedTexture>
+				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				UpdateMicroButtonsParent(MainMenuBarArtFrame);
+				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 552, 2, false);
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="MainMenuExpBar">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="ExhaustionTick_OnLoad"/>
+			<OnEvent function="ExhaustionTick_OnEvent"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<NormalTexture name="ExhaustionTickNormal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+		<HighlightTexture name="ExhaustionTickHighlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+	</Button>
+</Ui>

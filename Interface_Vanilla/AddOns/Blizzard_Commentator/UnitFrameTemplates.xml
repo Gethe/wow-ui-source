@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+
+<StatusBar name="CommentatorUnitFrameHealthStatusBar" drawLayer="BORDER" useParentLevel="true" virtual="true" mixin="SmoothStatusBarMixin">
+	<BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill" />
+</StatusBar>
+
+<StatusBar name="CommentatorUnitFramePowerStatusBar" inherits="CommentatorUnitFrameHealthStatusBar" virtual="true">
+	<BarTexture file="Interface\RaidFrame\Raid-Bar-Resource-Fill" />
+</StatusBar>
+
+<Frame name="CommentatorUnitFrameTemplate" frameStrata="LOW" hidden="true" mixin="CommentatorUnitFrameMixin" virtual="true">
+	<!-- Many sizes and anchors are setup in Lua, see UnitFrameLayoutData.lua -->
+	<Layers>
+		<Layer level="BACKGROUND" textureSubLevel="1">
+			<Texture parentKey="FrameUnderlay">
+				<Color r="0.0" g="0.0" b="0.0"/>
+			</Texture>
+		</Layer>
+		
+		<Layer level="BACKGROUND" textureSubLevel="2">
+			<Texture parentKey="FlagTexture" />
+		</Layer>
+		
+		<Layer level="BORDER">
+			<!-- Health/power bar is in this layer -->
+			<Texture parentKey="ClassIcon" file="Interface\TARGETINGFRAME\UI-Classes-circles" />
+		</Layer>
+
+		<Layer level="ARTWORK" textureSubLevel="1">
+			<Texture parentKey="FrameTexture"/>
+		</Layer>
+
+		<Layer level="ARTWORK" textureSubLevel="2">
+			<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyV="MIDDLE">
+				<Color r="1.0" g="1.0" b="1.0"/>
+			</FontString>
+
+			<Texture parentKey="CCIconGlow" atlas="RedCCIconGlow" hidden="true" />
+		</Layer>
+
+		<Layer level="OVERLAY" textureSubLevel="0">
+			<Texture parentKey="FeignIcon" file="Interface\Icons\Ability_Rogue_FeignDeath" hidden="true" />
+			<Texture parentKey="FlagIcon" hidden="true" />
+		</Layer>
+
+		<Layer level="OVERLAY" textureSubLevel="1">
+			<Texture parentKey="CCIcon" hidden="true" />
+			<FontString parentKey="CCText" inherits="CommentatorCCFont" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
+				<Color r="0.0" g="1.0" b="0.0"/>
+			</FontString>
+			<Texture parentKey="FlagIconHighlight" hidden="true" alphaMode="ADD" />
+		</Layer>
+
+		<Layer level="OVERLAY" textureSubLevel="2">
+			<Texture parentKey="CCOverlay" hidden="true" />
+			<Texture parentKey="DeathOverlay" hidden="true" />
+
+			<FontString parentKey="DeadText" inherits="CommentatorDeadFontDefault" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" justifyV="MIDDLE" text="COMMENTATOR_UNITFRAME_DEAD_STR" hidden="true"/>
+		</Layer>
+
+		<Layer level="OVERLAY" textureSubLevel="3">
+			<Texture parentKey="DeathIcon" atlas="DeathIcon" hidden="true" />
+			<Texture parentKey="RoleIcon" hidden="true" />
+		</Layer>
+	</Layers>
+	<Frames>
+		<StatusBar parentKey="HealthBar" inherits="CommentatorUnitFrameHealthStatusBar" />
+		<StatusBar parentKey="PowerBar" inherits="CommentatorUnitFramePowerStatusBar" />
+
+		<StatusBar parentKey="CastingBar" minValue="0" maxValue="1" drawLayer="BORDER" useParentLevel="true" hidden="true">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="FrameUnderlay">
+						<Color r="0.0" g="0.0" b="0.0"/>
+					</Texture>
+				</Layer>
+
+				<Layer level="BORDER" textureSubLevel="1">
+					<Texture parentKey="Border" atlas="CastBar">
+						<Size x="256" y="64" />
+						<Anchors>
+							<Anchor point="LEFT" x="-41" y="-10" />
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Text" inherits="GameFontNormalLarge" maxLines="1" justifyH="CENTER" justifyV="MIDDLE">
+						<Size x="140" y="28" />
+						<Anchors>
+							<Anchor point="TOP" x="0" y="1" />
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<Texture parentKey="Icon">
+						<Size x="32" y="32" />
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-5" y="2" />
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture file="Interface\CastingBar\UI-CastingBar-Spark" parentKey="Spark" alphaMode="ADD">
+						<Size x="32" y="32" />
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+					<Texture atlas="CastBar" parentKey="Flash" alphaMode="ADD">
+						<Size x="256" y="64" />
+						<Anchors>
+							<Anchor point="LEFT" x="-41" y="-10" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+
+			<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			<BarColor r="1.0" g="0.7" b="0.0"/>
+		</StatusBar>
+	</Frames>
+	<Scripts>
+		<OnUpdate method="OnUpdate"/>
+		<OnSizeChanged method="OnSizeChanged"/>
+	</Scripts>
+</Frame>
+</Ui>

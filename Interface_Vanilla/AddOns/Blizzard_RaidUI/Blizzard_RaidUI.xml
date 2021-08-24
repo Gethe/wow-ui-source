@@ -1,0 +1,930 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_RaidUI.lua"/>
+	<Button name="RaidClassButtonTemplate" hidden="true" virtual="true">
+		<Size x="18" y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" x="2" y="-8"/>
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall" text="40" justifyH="RIGHT">
+					<Size x="24" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				RaidClassButton_OnLoad(self);
+			</OnLoad>
+			<OnDragStart>
+				--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
+			</OnDragStart>
+			<OnDragStop>
+				--Do not pass self here. We want to stop the currently moving frame and not the class frame (which isn't actually moving)
+				RaidPulloutStopMoving();
+			</OnDragStop>
+			<OnEnter>
+				RaidClassButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="18" y="18"/>
+			<Anchors>
+				<Anchor point="TOP" relativeTo="$parentIconTexture" x="0" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+    </Button>
+	<Button name="RaidRoleIconTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" file="Interface\GroupFrame\UI-Group-LeaderIcon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				RaidGroupButton_OnLoad(self:GetParent());
+			</OnLoad>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" inherits="SecureUnitButtonTemplate" clampedToScreen="true" virtual="true">
+		<Size x="156" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="50" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT" x="29" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size x="23" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentRank" inherits="RaidRoleIconTemplate">
+				<Size x="11" y="11"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local rank = self:GetParent().rank;
+						local voice = self:GetParent().voice;
+						-- Sets the Leader/Assistant Tooltip
+						if ( rank ) then
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+							if ( rank == 2 ) then
+								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, true);
+							elseif ( rank == 1 ) then
+								GameTooltip:SetText(RAID_ASSISTANT, nil, nil, nil, nil, true);
+							end
+							if ( voice == 2 ) then
+								GameToolTip:AddLine("("..MUTED..")", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							end
+						else
+							GameTooltip:Hide();
+						end
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentRole" inherits="RaidRoleIconTemplate">
+				<Size x="11" y="11"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local role = self:GetParent().role;
+						-- Sets the Main Tank/Assist Tooltip
+						if ( role ) then
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+							if ( role == "MAINTANK" ) then
+								GameTooltip:SetText(MAIN_TANK, nil, nil, nil, nil, true);
+							elseif ( role == "MAINASSIST" ) then
+								GameTooltip:SetText(MAIN_ASSIST, nil, nil, nil, nil, true);
+							end
+						else
+							GameTooltip:Hide();
+						end
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentLoot" inherits="RaidRoleIconTemplate">
+				<Size x="11" y="11"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRole" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						-- Sets the Master Looter Tooltip
+						if ( self:GetParent().loot ) then
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
+						else
+						GameTooltip:Hide();
+						end
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+				<Size x="11" y="11"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						RaiseFrameLevelByTwo(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentClass">
+				<Size>
+					<AbsDimension x="50" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self:GetParent().class, self:GetText()));
+					</OnDragStart>
+					<OnDragStop>
+						RaidPulloutStopMoving();
+					</OnDragStop>
+					<OnHide>
+						RaidPulloutStopMoving();
+					</OnHide>
+					<OnEnter>
+						-- Hack to highlight the text even though we've overwritten the color with SetTextColor.
+						self.textR, self.textG, self.textB = self.text:GetTextColor();
+						self.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave>
+						self.text:SetTextColor(self.textR, self.textG, self.textB);
+					</OnLeave>
+				</Scripts>
+				<ButtonText parentKey="text">
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
+				RaidGroupButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				if ( button == "RightButton" ) then
+					RaidGroupButton_ShowMenu(self);
+				else
+					SecureUnitButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnDragStart>
+				if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+					if ( IsShiftKeyDown() ) then
+						--self.keypressed = "1";
+						--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
+					else
+						RaidGroupButton_OnDragStart(self);
+						self.keypressed = nil;
+					end
+				else
+					--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
+				end
+			</OnDragStart>
+			<OnDragStop>
+				if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+					if ( self.keypressed ) then
+						RaidPulloutStopMoving();
+					else
+						RaidGroupButton_OnDragStop(self);
+					end
+				else
+					RaidPulloutStopMoving();
+				end
+			</OnDragStop>
+			<OnEnter function="RaidGroupButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
+			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.5" bottom="0.9375"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="RaidGroupSlotTemplate" virtual="true">
+		<Size x="156" y="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontDarkGraySmall" text="EMPTY">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.5" bottom="0.9375"/>
+		</HighlightTexture>
+	</Button>
+	<Frame name="RaidGroupTemplate" parent="RaidFrame" virtual="true">
+		<Size x="162" y="80"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
+					<Size x="162" y="80"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.6640625" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentLabel">
+				<Size x="156" y="14"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="14"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self:GetParent():GetID()));
+					</OnDragStart>
+					<OnDragStop>
+						RaidPulloutStopMoving();
+					</OnDragStop>
+					<OnHide>
+						RaidPulloutStopMoving();
+					</OnHide>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+			</Button>
+			<Button name="$parentSlot1" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-3"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot2" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot3" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot4" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentSlot5" inherits="RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				_G[self:GetName().."Label"]:SetText(GROUP.." "..self:GetID());
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="RaidAuraFrameTemplate" enableMouse="true" virtual="true" hidden="true">
+		<Size x="12" y="12"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( self:GetCenter() > GetScreenWidth()/2 ) then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				else
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				end
+
+				local filter;
+				if ( self:GetParent():GetParent().showBuffs ) then
+					if ( GetCVarBool("showCastableBuffs") ) then
+						filter = "HELPFUL|RAID";
+					else
+						filter = "HELPFUL";
+					end
+				else
+					if ( GetCVarBool("showDispelDebuffs") ) then
+						filter = "HARMFUL|RAID";
+					else
+						filter = "HARMFUL";
+					end
+				end
+				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), filter);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
+		<Size x="57" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormalSmall">
+					<Size x="55" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!--
+				<Texture name="$parentThreatIndicator" file="Interface\RaidFrame\UI-RaidFrame-Threat" hidden="false">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-2" y="-5"/>
+					</Anchors>
+				</Texture>
+				-->
+				<Texture name="$parentVehicleIndicator" file="Interface\Vehicles\UI-Vehicles-Raid-Icon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
+				<Size x="51" y="5"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.33"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
+							<Size x="55" y="7"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="0.859375" top="0" bottom="0.21875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnValueChanged>
+						if ( UnitIsConnected(self.unit) ) then
+							UnitFrameHealthBar_OnValueChanged(self, value);
+						end
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
+				<Size x="51" y="5"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentHealthBar" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.33"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
+							<Size x="55" y="7"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="0.859375" top="0.21875" bottom="0.4375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<StatusBar name="$parentTarget" drawLayer="ARTWORK" inherits="SecureFrameTemplate, TextStatusBar" enableMouse="false">
+				<Size x="55" y="14"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentManaBar" relativePoint="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.33"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontNormalSmall">
+							<Size x="55" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" x="1" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel()+2);
+					</OnLoad>
+					<OnValueChanged>
+						--UnitFrameHealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
+					<OnMouseUp>
+						if ( button == "RightButton" ) then
+							ToggleDropDownMenu(1, nil, _G[self:GetParent():GetParent():GetName().."DropDown"]);
+						else
+							SecureUnitButton_OnClick(self, button);
+						end
+					</OnMouseUp>
+					<OnEnter>
+						if ( self.unit ) then
+							UnitFrame_UpdateTooltip(self);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0" b="0"/>
+			</StatusBar>
+			<Frame name="$parentTargetTargetFrame" inherits="TooltipBackdropTemplate" hidden="true" enableMouse="false">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Size x="72" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="6" y="-12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\RaidFrame\UI-RaidFrame-Arrow">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-16" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self:SetFrameLevel(self:GetFrameLevel()-1);
+						self:SetAlpha(0.7);
+					</OnLoad>
+					<OnMouseUp>
+						TargetUnit(self:GetParent().unit.."targettarget");
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			<StatusBar name="$parentTargetTarget" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" hidden="true">
+				<Size x="51" y="7"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentTargetTargetFrame" x="0" y="-16"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.33"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame>
+						<Size x="57" y="12"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-1" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentName" inherits="GameFontNormalSmall">
+									<Size x="55" y="10"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-1" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnMouseUp>
+								TargetUnit(self:GetParent():GetParent().unit.."targettarget");
+							</OnMouseUp>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnValueChanged>
+						--UnitFrameHealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
+					<OnMouseUp>
+						TargetUnit(self:GetParent().unit.."targettarget");
+					</OnMouseUp>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<Button name="$parentClearButton" inherits="SecureUnitButtonTemplate">
+				<Size x="57" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						RaidPulloutButton_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						RaidGroupButton_OnEnter(self:GetParent());
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<!-- For the record, this probably isn't how this should be done (the TargetTargetFrame should be the Secure Button Template, and the healthbar should be its child).
+			     But we've come this far, so we might as well go all the way... -->
+			<Button name="$parentTargetTargetClearButton" inherits="SecureUnitButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTargetTargetFrame"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTargetTargetFrame"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						RaidPulloutButton_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						if ( self.unit ) then
+							UnitFrame_UpdateTooltip(self);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						RaiseFrameLevelByTwo(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentAura1" inherits="RaidAuraFrameTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="8" y="4"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentAura2" inherits="RaidAuraFrameTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentAura3" inherits="RaidAuraFrameTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentAura4" inherits="RaidAuraFrameTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				RaidPulloutButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnLoad>
+				local prefix = self:GetName();
+				self.healthbar = _G[prefix.."HealthBar"];
+				self.manabar = _G[prefix.."ManaBar"];
+				--self.threatIndicator = _G[prefix.."ThreatIndicator"];
+				self.nameLabel = _G[prefix.."Name"];
+				self.clearButton = _G[prefix.."ClearButton"];
+				self.speaker = _G[prefix.."Speaker"];
+				self.vehicleIndicator = _G[prefix.."VehicleIndicator"];
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" virtual="true">
+		<Size x="72" y="10"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						RaidPulloutDropDown_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMenuBackdrop" inherits="TooltipBackdropTemplate" setAllPoints="true" alpha=".7">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
+					</KeyValues>
+			</Frame>
+		</Frames>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-13" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("GROUP_ROSTER_UPDATE");
+				self:RegisterEvent("UNIT_PET");
+				self:RegisterEvent("UNIT_NAME_UPDATE");
+				self:RegisterEvent("UNIT_CONNECTION");
+				self:RegisterEvent("READY_CHECK");
+				self:RegisterEvent("READY_CHECK_CONFIRM");
+				self:RegisterEvent("READY_CHECK_FINISHED");
+				self:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self.label = _G[self:GetName() .. "Name"];
+				self.buttons = {};
+			</OnLoad>
+			<OnEvent>
+				RaidPullout_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnDragStart>
+				self:SetFrameStrata("DIALOG");
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				RaidPulloutStopMoving(self);
+			</OnDragStop>
+			<OnClick>
+				if (button == "RightButton") then
+					ToggleDropDownMenu(1, nil, _G[self:GetName().."DropDown"]);
+				end
+			</OnClick>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+				self:SetFrameStrata("BACKGROUND");
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
+		<Size>
+			<AbsDimension x="90" y="21"/>
+		</Size>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="RaidFrameRaidInfoButton" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				DoReadyCheck();
+			</OnClick>
+		</Scripts>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+	</Button>
+	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton14"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="16"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton13"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="13">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton14" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton12"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="12">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton13" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton11" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="11">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton12" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton10" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="10">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton11" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton9" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="9">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton10" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton8" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="8">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton9" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton7" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="7">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton8" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton6" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="6">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton7" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton5" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="5">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton6" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton4" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="4">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton5" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton3" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="3">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton4" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton2" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="2">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton3" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Button name="RaidClassButton1" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="1">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton2" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
+	<Frame name="RaidGroup1" inherits="RaidGroupTemplate" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="3" y="-58"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup2" inherits="RaidGroupTemplate" id="2">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="RaidGroup1" relativePoint="RIGHT" x="3" y="0"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup3" inherits="RaidGroupTemplate" id="3">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM" x="0" y="-14"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup4" inherits="RaidGroupTemplate" id="4">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="RaidGroup3" relativePoint="RIGHT" x="3" y="0"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup5" inherits="RaidGroupTemplate" id="5">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM" x="0" y="-14"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup6" inherits="RaidGroupTemplate" id="6">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="RaidGroup5" relativePoint="RIGHT" x="3" y="0"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup7" inherits="RaidGroupTemplate" id="7">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM" x="0" y="-14"/>
+		</Anchors>
+	</Frame>
+	<Frame name="RaidGroup8" inherits="RaidGroupTemplate" id="8">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="RaidGroup7" relativePoint="RIGHT" x="3" y="0"/>
+		</Anchors>
+	</Frame>
+	<Button name="RaidGroupButton1" inherits="RaidGroupButtonTemplate" id="1"/>
+	<Button name="RaidGroupButton2" inherits="RaidGroupButtonTemplate" id="2"/>
+	<Button name="RaidGroupButton3" inherits="RaidGroupButtonTemplate" id="3"/>
+	<Button name="RaidGroupButton4" inherits="RaidGroupButtonTemplate" id="4"/>
+	<Button name="RaidGroupButton5" inherits="RaidGroupButtonTemplate" id="5"/>
+	<Button name="RaidGroupButton6" inherits="RaidGroupButtonTemplate" id="6"/>
+	<Button name="RaidGroupButton7" inherits="RaidGroupButtonTemplate" id="7"/>
+	<Button name="RaidGroupButton8" inherits="RaidGroupButtonTemplate" id="8"/>
+	<Button name="RaidGroupButton9" inherits="RaidGroupButtonTemplate" id="9"/>
+	<Button name="RaidGroupButton10" inherits="RaidGroupButtonTemplate" id="10"/>
+	<Button name="RaidGroupButton11" inherits="RaidGroupButtonTemplate" id="11"/>
+	<Button name="RaidGroupButton12" inherits="RaidGroupButtonTemplate" id="12"/>
+	<Button name="RaidGroupButton13" inherits="RaidGroupButtonTemplate" id="13"/>
+	<Button name="RaidGroupButton14" inherits="RaidGroupButtonTemplate" id="14"/>
+	<Button name="RaidGroupButton15" inherits="RaidGroupButtonTemplate" id="15"/>
+	<Button name="RaidGroupButton16" inherits="RaidGroupButtonTemplate" id="16"/>
+	<Button name="RaidGroupButton17" inherits="RaidGroupButtonTemplate" id="17"/>
+	<Button name="RaidGroupButton18" inherits="RaidGroupButtonTemplate" id="18"/>
+	<Button name="RaidGroupButton19" inherits="RaidGroupButtonTemplate" id="19"/>
+	<Button name="RaidGroupButton20" inherits="RaidGroupButtonTemplate" id="20"/>
+	<Button name="RaidGroupButton21" inherits="RaidGroupButtonTemplate" id="21"/>
+	<Button name="RaidGroupButton22" inherits="RaidGroupButtonTemplate" id="22"/>
+	<Button name="RaidGroupButton23" inherits="RaidGroupButtonTemplate" id="23"/>
+	<Button name="RaidGroupButton24" inherits="RaidGroupButtonTemplate" id="24"/>
+	<Button name="RaidGroupButton25" inherits="RaidGroupButtonTemplate" id="25"/>
+	<Button name="RaidGroupButton26" inherits="RaidGroupButtonTemplate" id="26"/>
+	<Button name="RaidGroupButton27" inherits="RaidGroupButtonTemplate" id="27"/>
+	<Button name="RaidGroupButton28" inherits="RaidGroupButtonTemplate" id="28"/>
+	<Button name="RaidGroupButton29" inherits="RaidGroupButtonTemplate" id="29"/>
+	<Button name="RaidGroupButton30" inherits="RaidGroupButtonTemplate" id="30"/>
+	<Button name="RaidGroupButton31" inherits="RaidGroupButtonTemplate" id="31"/>
+	<Button name="RaidGroupButton32" inherits="RaidGroupButtonTemplate" id="32"/>
+	<Button name="RaidGroupButton33" inherits="RaidGroupButtonTemplate" id="33"/>
+	<Button name="RaidGroupButton34" inherits="RaidGroupButtonTemplate" id="34"/>
+	<Button name="RaidGroupButton35" inherits="RaidGroupButtonTemplate" id="35"/>
+	<Button name="RaidGroupButton36" inherits="RaidGroupButtonTemplate" id="36"/>
+	<Button name="RaidGroupButton37" inherits="RaidGroupButtonTemplate" id="37"/>
+	<Button name="RaidGroupButton38" inherits="RaidGroupButtonTemplate" id="38"/>
+	<Button name="RaidGroupButton39" inherits="RaidGroupButtonTemplate" id="39"/>
+	<Button name="RaidGroupButton40" inherits="RaidGroupButtonTemplate" id="40"/>
+	<!-- This must be after all of the raid pullout stuff! -->
+	<Script>
+		RaidGroupFrame_OnLoad();
+	</Script>
+</Ui>

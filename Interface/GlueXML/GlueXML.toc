@@ -73,7 +73,6 @@ RealmList.xml
 CharacterServicesPatchwerk.xml
 CharacterSelect.xml
 AccountReactivate.xml
-KioskModeSplash.xml
 CharacterServices.xml
 CharacterCreate.xml
 PromotionFrame.xml

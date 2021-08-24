@@ -300,7 +300,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Button name="PVPTeam1" inherits="PVPTeamBorderTemplate" debugID="123" id="1">
+			<Button name="PVPTeam1" inherits="PVPTeamBorderTemplate" id="1">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PVPTeam1Standard">
 						<Offset>

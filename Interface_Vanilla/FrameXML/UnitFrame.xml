@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UnitFrame.lua"/>
+	<Texture name="MyHealPredictionBarTemplate" virtual="true" file="Interface\TargetingFrame\UI-StatusBar">
+		<Color r="0.0" g="0.827" b="0.765"/>
+	</Texture>
+	<Texture name="MyManaCostPredictionBarTemplate" virtual="true" file="Interface\TargetingFrame\UI-StatusBar">
+		<Color r="0.0" g="0.447" b="1.0"/>
+	</Texture>
+	<Texture name="OtherHealPredictionBarTemplate" virtual="true" file="Interface\TargetingFrame\UI-StatusBar">
+		<Color r="0.0" g="0.631" b="0.557"/>
+	</Texture>
+	<Texture name="TotalAbsorbBarTemplate" virtual="true" file="Interface\RaidFrame\Shield-Fill"/>
+	<Texture name="HealAbsorbBarTemplate" virtual="true"/>
+	<Texture name="HealAbsorbBarLeftShadowTemplate" virtual="true" file="Interface\RaidFrame\Absorb-Edge"/>
+	<Texture name="HealAbsorbBarRightShadowTemplate" virtual="true" file="Interface\RaidFrame\Absorb-Edge">
+		<TexCoords left="1" right="0" top="0" bottom="1"/>
+	</Texture>
+
+	<!--The tile size is set up in UnitFrame_Initialize-->
+	<Texture name="TotalAbsorbBarOverlayTemplate" virtual="true" file="Interface\RaidFrame\Shield-Overlay" vertTile="true" horizTile="true"/>
+	<Texture name="OverAbsorbGlowTemplate" virtual="true" file="Interface\RaidFrame\Shield-Overshield" alphaMode="ADD">
+		<Size x="16" y="0"/>
+	</Texture>
+	<Texture name="OverHealAbsorbGlowTemplate" virtual="true" file="Interface\RaidFrame\Absorb-Overabsorb" alphaMode="ADD">
+		<Size x="16" y="0"/>
+	</Texture>
+</Ui>

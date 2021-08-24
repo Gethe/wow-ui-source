@@ -1,4 +1,0 @@
-## Title: Blizzard Craft UI
-## LoadOnDemand: 1
-Blizzard_CraftUI.xml
-Localization.lua

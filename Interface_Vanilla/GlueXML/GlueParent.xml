@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GlueParent.lua"/>
+	<Frame name="GlueParent" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ScreenFrame" name="GlueParentScreenFrame" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="OptionsResetFrame" toplevel="true" frameStrata="DIALOG" hidden="true">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GlueFontRedLarge" text="RESET_WARNING">
+									<Size x="400" y="48"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-32"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GlueParent_OnLoad"/>
+			<OnEvent function="GlueParent_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

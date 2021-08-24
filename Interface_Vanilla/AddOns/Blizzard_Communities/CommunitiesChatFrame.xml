@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesChatFrame.lua"/>
+	
+	<Frame name="CommunitiesChatTemplate" mixin="CommunitiesChatMixin" virtual="true">
+		<Frames>
+			<ScrollingMessageFrame parentKey="MessageFrame" enableMouseWheel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1" inherits="HybridScrollBarBackgroundTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-9"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-17"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="ScrollUp" registerForClicks="LeftButtonDown" inherits="UIPanelScrollUpButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():ScrollByAmount(3);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="ScrollDown" registerForClicks="LeftButtonDown" inherits="UIPanelScrollDownButtonTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():ScrollByAmount(-3);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnValueChanged function="CommunitiesChatFrameScrollBar_OnValueChanged"/>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetFading(false);
+						self:SetFontObject(ChatFontNormal);
+						self:SetJustifyH("LEFT");
+						self:SetHyperlinksEnabled(true);
+						self:SetTextCopyable(true);
+						self:SetIndentedWordWrap(true);
+						self:SetOnScrollChangedCallback(function(messageFrame, offset)
+							messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
+						end);
+					</OnLoad>
+					<OnHyperlinkClick>
+						SetItemRef(link, text, button, nil);
+					</OnHyperlinkClick>
+					<OnMouseWheel>
+						self:ScrollByAmount(delta * 3);
+					</OnMouseWheel>
+				</Scripts>
+			</ScrollingMessageFrame>
+			<Button name="JumpToUnreadButton" inherits="UIPanelButtonTemplate" text="COMMUNITIES_FRAME_JUMP_TO_UNREAD" hidden="true">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.MessageFrame" relativePoint="TOPRIGHT" x="-10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesJumpToUnreadButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="7"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-28"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	<EditBox name="CommunitiesChatEditBoxTemplate" autoFocus="false" virtual="true" bytes="512" visibleBytes="255" invisibleBytes="255">
+		<Size x="130" y="32"/>
+		<KeyValues>
+			<KeyValue key="supportsSlashCommands" value="false" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Mid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+					<Size x="0" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="EditBox_ClearHighlight"/>
+			<OnEditFocusGained function="CommunitiesChatEditBox_OnFocusGained"/>
+			<OnEnterPressed function="CommunitiesChatEditBox_OnEnterPressed"/>
+			<OnHide function="CommunitiesChatEditBox_OnHide"/>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+</Ui>

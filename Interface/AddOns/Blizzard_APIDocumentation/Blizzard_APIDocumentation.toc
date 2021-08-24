@@ -58,6 +58,7 @@ ItemUpgradeDocumentation.lua
 KeyBindingsDocumentation.lua
 KnowledgeBaseDocumentation.lua
 LFGInfoDocumentation.lua
+LFGListInfoDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
@@ -127,7 +128,9 @@ SystemDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
+AzeriteConstantsDocumentation.lua
 BaseDocumentation.lua
+BattlePetConstantsDocumentation.lua
 BountySharedDocumentation.lua
 CalendarConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
@@ -145,6 +148,7 @@ ItemSharedDocumentation.lua
 LevelConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
+PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 ProfessionConstantsDocumentation.lua

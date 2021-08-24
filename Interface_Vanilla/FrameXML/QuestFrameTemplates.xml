@@ -1,0 +1,227 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="QuestFramePanelTemplate" virtual="true">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentMaterialTopLeft">
+					<Size>
+						<AbsDimension x="239" y="241"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="-75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialTopRight">
+					<Size>
+						<AbsDimension x="64" y="241"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotLeft">
+					<Size>
+						<AbsDimension x="239" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotRight">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SealMaterialBG" hidden="true">
+					<Size x="299" y="407"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="QuestItemTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if ( self:GetAlpha() > 0 ) then
+					if (self.objectType == "item") then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetQuestItem(self.type, self:GetID());
+						GameTooltip_ShowCompareItem(GameTooltip);
+					elseif (self.objectType == "currency") then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetQuestCurrency(self.type, self:GetID());
+					end
+				end
+				CursorUpdate(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				if (self.objectType == "item") then
+					HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestSpellTemplate" hidden="true" virtual="true">
+		<Size x="157" y="56"/>
+		<HitRectInsets left="0" right="0" top="0" bottom="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" name="$parentIconTexture">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NameFrame" name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-12" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpellBorder" file="Interface\Spellbook\Spellbook-Parts">
+					<Size x="70" y="65"/>
+					<TexCoords left="0.00390625" right="0.27734375" top="0.44140625" bottom="0.69531250"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" >
+					<Size  x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame"  x="17" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.spellID) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetSpellByID(self.spellID);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") and self.spellID) then
+					ChatEdit_InsertLink(GetSpellLink(self.spellID));
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestTitleButtonTemplate" virtual="true">
+		<Size x="300" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentQuestIcon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				QuestTitleButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<ButtonText>
+			<Size x="275" y="0"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="20" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="QuestFontLeft"/>
+	</Button>
+	<ScrollFrame name="QuestScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Size x="300" y="334"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="23" y="-81"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="102"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+					</Anchors>
+					<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="106"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
+					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ScrollFrame>
+</Ui>

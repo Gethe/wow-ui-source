@@ -1,0 +1,5 @@
+## Title: Blizzard Raid UI
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: RAID_PULLOUT_POSITIONS, RAID_SINGLE_POSITIONS
+..\..\..\Interface_Vanilla\AddOns\Blizzard_RaidUI\Blizzard_RaidUI.xml
+Localization.lua

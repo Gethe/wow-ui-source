@@ -1,0 +1,855 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GMSurveyUI.lua"/>
+	<CheckButton name="GMSurveyRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentScore" inherits="GameFontHighlightSmall">
+					<Size>
+						<AbsDimension x="75" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				self:Enable();
+			</OnShow>
+			<OnClick>
+				GMSurveyRadioButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Frame name="GMSurveyQuestionTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="568" y="80"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="520" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<CheckButton name="$parentRadioButton0" inherits="GMSurveyRadioButtonTemplate" id="0">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="30" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton1" inherits="GMSurveyRadioButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton0" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton2" inherits="GMSurveyRadioButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton3" inherits="GMSurveyRadioButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton4" inherits="GMSurveyRadioButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton5" inherits="GMSurveyRadioButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton6" inherits="GMSurveyRadioButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton7" inherits="GMSurveyRadioButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton8" inherits="GMSurveyRadioButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton9" inherits="GMSurveyRadioButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton10" inherits="GMSurveyRadioButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRadioButton11" inherits="GMSurveyRadioButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRadioButton10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				GMSurveyQuestion_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="GMSurveyFrame" toplevel="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="645" y="562"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="40" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="44" top="0" bottom="13"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="GMSurveyTopLeft" file="Interface\HelpFrame\HelpFrame-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyTop" file="Interface\HelpFrame\HelpFrame-Top">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMSurveyTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyTopRight" file="Interface\HelpFrame\HelpFrame-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyTopFiller" file="Interface\HelpFrame\HelpFrame-Top">
+					<Size>
+						<AbsDimension x="5" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMSurveyTop" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="GMSurveyTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyLeft" file="Interface\HelpFrame\HelpFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMSurveyTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
+				</Texture>
+				<Texture name="GMSurveyMiddle" file="Interface\HelpFrame\HelpFrame-Bottom">
+					<Size>
+						<AbsDimension x="256" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMSurveyLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
+				</Texture>
+				<Texture name="GMSurveyRight" file="Interface\HelpFrame\HelpFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="GMSurveyTopRight" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
+				</Texture>
+				<Texture name="GMSurveyMiddleFiller" file="Interface\HelpFrame\HelpFrame-Bottom">
+					<Size>
+						<AbsDimension x="5" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMSurveyMiddle" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="GMSurveyRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
+				</Texture>
+				<Texture name="GMSurveyBottomLeft" file="Interface\HelpFrame\HelpFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyBottom" file="Interface\HelpFrame\HelpFrame-Bottom">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="GMSurveyBottomLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyBottomRight" file="Interface\HelpFrame\HelpFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="GMSurveyBottomFiller" file="Interface\HelpFrame\HelpFrame-Bottom">
+					<Size>
+						<AbsDimension x="5" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMSurveyBottom" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="GMSurveyBottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="GMSURVEY_REQUEST_TEXT">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="GMSurveyHeader">
+				<Size>
+					<AbsDimension x="336" y="41"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-12" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="GMSurveyHeaderLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
+							<Size>
+								<AbsDimension x="32" y="41"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.22265625" right="0.34375" top="0" bottom="0.640625"/>
+						</Texture>
+						<Texture name="GMSurveyHeaderRight" file="Interface\DialogFrame\UI-DialogBox-Header">
+							<Size>
+								<AbsDimension x="32" y="41"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.65234375" right="0.77734375" top="0" bottom="0.640625"/>
+						</Texture>
+						<Texture name="GMSurveyHeaderCenter" file="Interface\DialogFrame\UI-DialogBox-Header">
+							<Size>
+								<AbsDimension x="10" y="41"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="GMSurveyHeaderLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="RIGHT" relativeTo="GMSurveyHeaderRight" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.34375" right="0.65234375" top="0" bottom="0.640625"/>
+						</Texture>
+						<FontString name="GMSurveyHeaderText" inherits="GameFontNormal" text="GMSURVEY_TITLE">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="GMSurveyHeader">
+									<Offset>
+										<AbsDimension x="0" y="-14"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ScrollFrame name="GMSurveyScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-55"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-55" y="48"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="GMSurveyScrollFrame_OnLoad"/>
+					<OnScrollRangeChanged function="ScrollFrame_OnScrollRangeChanged"/>
+				</Scripts>
+				<ScrollChild>
+					<Frame name="GMSurveyScrollChildFrame">
+						<Size>
+							<AbsDimension x="541" y="10"/>
+						</Size>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="GMSurveyAdditionalCommentsText" inherits="GameFontHighlight" text="ADDITIONAL_COMMENTS" justifyH="LEFT">
+									<Size x="541" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="InstructionsBlock" >
+								<Size x="541" y="50"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="BOTTOM" text="GMSURVEY_BLOCK_TEXT2">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-5"/>
+												<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="GMSurveyQuestion1" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="InstructionsBlock" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="InstructionsBlock" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion2" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion1" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion1" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion3" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion4" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion3" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion3" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMBlock" >
+								<Size x="541" y="60"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion4" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion4" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="BOTTOM" text="GMSURVEY_BLOCK_TEXT3">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-5"/>
+												<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="GMSurveyQuestion5" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMBlock" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMBlock" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion6" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion5" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion5" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion7" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion6" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion6" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion8" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion7" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion7" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion9" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion8" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion8" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion10" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion9" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion9" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion11" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion10" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion10" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion12" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion11" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion11" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion13" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion12" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion12" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion14" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion13" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion13" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion15" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion14" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion14" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyCommentFrame">
+								<Size>
+									<AbsDimension x="541" y="85"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyAdditionalCommentsText" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-10" y="0"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyAdditionalCommentsText" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+									<EdgeSize>
+										<AbsValue val="16"/>
+									</EdgeSize>
+									<TileSize>
+										<AbsValue val="16"/>
+									</TileSize>
+									<BackgroundInsets>
+										<AbsInset left="5" right="5" top="5" bottom="5"/>
+									</BackgroundInsets>
+								</Backdrop>
+								<Frames>
+									<ScrollFrame name="GMSurveyCommentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT">
+												<Offset>
+													<AbsDimension x="10" y="-5"/>
+												</Offset>
+											</Anchor>
+											<Anchor point="BOTTOMRIGHT">
+												<Offset>
+													<AbsDimension x="-10" y="5"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad function="GMSurveyCommentScrollFrame_OnLoad"/>
+											<OnMouseDown>
+												GMSurveyFrameComment:SetFocus();
+											</OnMouseDown>
+											<OnMouseUp>
+												GMSurveyFrameComment:SetFocus();
+											</OnMouseUp> 
+										</Scripts>
+										<ScrollChild>
+											<EditBox name="GMSurveyFrameComment" multiLine="true" letters="500" enableMouse="true" autoFocus="false">
+												<Size>
+													<AbsDimension x="530" y="60"/>
+												</Size>
+												<Scripts>
+													<OnEscapePressed function="EditBox_ClearFocus"/>
+													<OnTextChanged>
+														ScrollingEdit_OnTextChanged(self, self:GetParent());
+													</OnTextChanged>
+													<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+													<OnUpdate>
+														ScrollingEdit_OnUpdate(self, 0, self:GetParent());
+													</OnUpdate>
+													<OnShow>
+														GMSurveyFrameComment:SetText("");
+													</OnShow>
+												</Scripts>
+												<FontString inherits="GameFontHighlightSmall"/>
+											</EditBox>
+										</ScrollChild>
+									</ScrollFrame>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										self:SetBackdropBorderColor(0.5,0.5,0.5);
+										self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="GMSurveyCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TicketStatusFrame.hasGMSurvey = false;
+						TicketStatusFrame:Hide();
+						HideUIPanel(GMSurveyFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GMSurveyCancelButton" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="130" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="21"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TicketStatusFrame.hasGMSurvey = false;
+						TicketStatusFrame:Hide();
+						HideUIPanel(GMSurveyFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GMSurveySubmitButton" inherits="GameMenuButtonTemplate" text="SUBMIT">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-53" y="21"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GMSurveySubmitButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				GMSurveyHeader:SetWidth(GMSurveyHeaderText:GetWidth() + 100);
+			</OnLoad>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+				GMSurveyFrame_Update();
+				GMSurveyScrollFrame:SetVerticalScroll(0);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+				HelpOpenTicketButton_Update();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

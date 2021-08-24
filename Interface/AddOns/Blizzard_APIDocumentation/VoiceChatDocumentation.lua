@@ -16,6 +16,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "ActivateChannelTranscription",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "BeginLocalCapture",
 			Type = "Function",
 
@@ -49,6 +58,15 @@ local VoiceChat =
 		},
 		{
 			Name = "DeactivateChannel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DeactivateChannelTranscription",
 			Type = "Function",
 
 			Arguments =
@@ -306,6 +324,24 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "keys", Type = "table", InnerType = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRemoteTtsVoices",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ttsVoices", Type = "table", InnerType = "VoiceTtsVoiceType", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTtsVoices",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ttsVoices", Type = "table", InnerType = "VoiceTtsVoiceType", Nilable = false },
 			},
 		},
 		{
@@ -654,6 +690,32 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "SpeakRemoteTextSample",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SpeakText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "voiceID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
+				{ Name = "rate", Type = "number", Nilable = false },
+				{ Name = "volume", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "StopSpeakingText",
+			Type = "Function",
+		},
+		{
 			Name = "ToggleDeafened",
 			Type = "Function",
 		},
@@ -842,6 +904,18 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "VoiceChatChannelMemberSttMessage",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_STT_MESSAGE",
+			Payload =
+			{
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "language", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "VoiceChatChannelMemberVolumeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_VOLUME_CHANGED",
@@ -879,6 +953,16 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatChannelTranscribingChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED",
+			Payload =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "isTranscribing", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1001,6 +1085,55 @@ local VoiceChat =
 				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "VoiceChatTtsPlaybackFailed",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_FAILED",
+			Payload =
+			{
+				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
+				{ Name = "utteranceID", Type = "number", Nilable = false },
+				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatTtsPlaybackFinished",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_FINISHED",
+			Payload =
+			{
+				{ Name = "numConsumers", Type = "number", Nilable = false },
+				{ Name = "utteranceID", Type = "number", Nilable = false },
+				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatTtsPlaybackStarted",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_STARTED",
+			Payload =
+			{
+				{ Name = "numConsumers", Type = "number", Nilable = false },
+				{ Name = "utteranceID", Type = "number", Nilable = false },
+				{ Name = "durationMS", Type = "number", Nilable = false },
+				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatTtsSpeakTextUpdate",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_SPEAK_TEXT_UPDATE",
+			Payload =
+			{
+				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
+				{ Name = "utteranceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatTtsVoicesUpdate",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_VOICES_UPDATE",
+		},
 	},
 
 	Tables =
@@ -1053,6 +1186,47 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "VoiceTtsDestination",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "RemoteTransmission", Type = "VoiceTtsDestination", EnumValue = 0 },
+				{ Name = "LocalPlayback", Type = "VoiceTtsDestination", EnumValue = 1 },
+				{ Name = "RemoteTransmissionWithLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 2 },
+				{ Name = "QueuedRemoteTransmission", Type = "VoiceTtsDestination", EnumValue = 3 },
+				{ Name = "QueuedLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 4 },
+				{ Name = "QueuedRemoteTransmissionWithLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 5 },
+				{ Name = "ScreenReader", Type = "VoiceTtsDestination", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "VoiceTtsStatusCode",
+			Type = "Enumeration",
+			NumValues = 14,
+			MinValue = 0,
+			MaxValue = 13,
+			Fields =
+			{
+				{ Name = "Success", Type = "VoiceTtsStatusCode", EnumValue = 0 },
+				{ Name = "InvalidEngineType", Type = "VoiceTtsStatusCode", EnumValue = 1 },
+				{ Name = "EngineAllocationFailed", Type = "VoiceTtsStatusCode", EnumValue = 2 },
+				{ Name = "NotSupported", Type = "VoiceTtsStatusCode", EnumValue = 3 },
+				{ Name = "MaxCharactersExceeded", Type = "VoiceTtsStatusCode", EnumValue = 4 },
+				{ Name = "UtteranceBelowMinimumDuration", Type = "VoiceTtsStatusCode", EnumValue = 5 },
+				{ Name = "InputTextEnqueued", Type = "VoiceTtsStatusCode", EnumValue = 6 },
+				{ Name = "SdkNotInitialized", Type = "VoiceTtsStatusCode", EnumValue = 7 },
+				{ Name = "DestinationQueueFull", Type = "VoiceTtsStatusCode", EnumValue = 8 },
+				{ Name = "EnqueueNotNecessary", Type = "VoiceTtsStatusCode", EnumValue = 9 },
+				{ Name = "UtteranceNotFound", Type = "VoiceTtsStatusCode", EnumValue = 10 },
+				{ Name = "ManagerNotFound", Type = "VoiceTtsStatusCode", EnumValue = 11 },
+				{ Name = "InvalidArgument", Type = "VoiceTtsStatusCode", EnumValue = 12 },
+				{ Name = "InternalError", Type = "VoiceTtsStatusCode", EnumValue = 13 },
+			},
+		},
+		{
 			Name = "VoiceAudioDevice",
 			Type = "Structure",
 			Fields =
@@ -1078,6 +1252,7 @@ local VoiceChat =
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isMuted", Type = "bool", Nilable = false },
 				{ Name = "isTransmitting", Type = "bool", Nilable = false },
+				{ Name = "isTranscribing", Type = "bool", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "VoiceChatMember", Nilable = false },
 			},
 		},
@@ -1101,6 +1276,15 @@ local VoiceChat =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "channels", Type = "table", InnerType = "VoiceChatChannel", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceTtsVoiceType",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "voiceID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
 			},
 		},
 	},
