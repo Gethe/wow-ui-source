@@ -97,6 +97,15 @@ function CraftFrame_Update()
 	local craftOffset = FauxScrollFrame_GetOffset(CraftListScrollFrame);
 	-- Set the action button text
 	CraftCreateButton:SetText(getglobal(GetCraftButtonToken()));
+
+	if ( CraftIsEnchanting() ) then
+		CraftFrameFilterDropDown:Show();
+		CraftFrameAvailableFilterCheckButton:Show();
+	else
+		CraftFrameFilterDropDown:Hide();
+		CraftFrameAvailableFilterCheckButton:Hide();
+	end
+
 	-- Set the craft skill line status bar info
 	local name, rank, maxRank = GetCraftDisplaySkillLine();
 	if ( name ) then
@@ -454,6 +463,50 @@ function Craft_UpdateTrainingPoints()
 		CraftFramePointsLabel:Hide();
 		CraftFramePointsText:Hide();
 	end	
+end
+
+function CraftFrameFilterDropDown_OnLoad()
+	UIDropDownMenu_Initialize(CraftFrameFilterDropDown, CraftFrameFilterDropDown_Initialize);
+	UIDropDownMenu_SetWidth(CraftFrameFilterDropDown, 120);
+	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, 1);
+end
+
+function CraftFrameFilterDropDown_Initialize()
+	CraftFrameFilterDropDown_LoadInvSlots(GetCraftSlots());
+end
+
+function CraftFrameFilterDropDown_LoadInvSlots(...)
+	local allChecked = GetCraftFilter(0);
+	local info = UIDropDownMenu_CreateInfo();
+	if ( select("#", ...) > 1 ) then
+		info.text = ALL_INVENTORY_SLOTS;
+		info.func = CraftFrameFilterDropDown_OnClick;
+		info.checked = allChecked;
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	local checked;
+	for i=1, select("#", ...), 1 do
+		if ( allChecked and select("#", ...) > 1 ) then
+			checked = nil;
+			UIDropDownMenu_SetText(CraftFrameFilterDropDown, ALL_INVENTORY_SLOTS);
+		else
+			checked = GetCraftFilter(i);
+			if ( checked ) then
+				UIDropDownMenu_SetText(CraftFrameFilterDropDown, getglobal(select(i, ...)));
+			end
+		end
+		info.text = getglobal(select(i, ...));
+		info.func = CraftFrameFilterDropDown_OnClick;
+		info.checked = checked;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function CraftFrameFilterDropDown_OnClick(self)	
+	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, self:GetID());
+	SetCraftFilter(self:GetID());
+	CraftFrame.selected = self:GetID();
 end
 
 function Craft_SetSubTextColor(button, r, g, b)

@@ -2,9 +2,9 @@
 BATTLEFIELD_TAB_SHOW_DELAY = 0.2;
 BATTLEFIELD_TAB_FADE_TIME = 0.15;
 BATTLEFIELD_TAB_DEFAULT_ALPHA = 0.75;
-BATTLEFIELD_MAP_PARTY_MEMBER_SIZE = 8;
-BATTLEFIELD_MAP_RAID_MEMBER_SIZE = 8;
-BATTLEFIELD_MAP_PLAYER_SIZE = 12;
+BATTLEFIELD_MAP_PARTY_MEMBER_SIZE = 16;
+BATTLEFIELD_MAP_RAID_MEMBER_SIZE = 16;
+BATTLEFIELD_MAP_PLAYER_SIZE = 16;
 BATTLEFIELD_MAP_POI_SCALE = 0.6;
 BATTLEFIELD_MAP_WIDTH = 305;  -- +5 pixels for border
 
@@ -289,13 +289,11 @@ end
 
 function BattlefieldMapMixin:UpdateUnitsVisibility()
 	if BattlefieldMapOptions.showPlayers then
-		self.groupMembersDataProvider:SetUnitPinSize("player", BATTLEFIELD_MAP_PLAYER_SIZE);
 		self.groupMembersDataProvider:SetUnitPinSize("party", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 		self.groupMembersDataProvider:SetUnitPinSize("raid", BATTLEFIELD_MAP_RAID_MEMBER_SIZE);
 		self.spectatorDataProvider:SetUnitPinSize("spectateda", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 		self.spectatorDataProvider:SetUnitPinSize("spectatedb", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 	else
-		self.groupMembersDataProvider:SetUnitPinSize("player", 0);
 		self.groupMembersDataProvider:SetUnitPinSize("party", 0);
 		self.groupMembersDataProvider:SetUnitPinSize("raid", 0);
 		self.spectatorDataProvider:SetUnitPinSize("spectateda", 0);

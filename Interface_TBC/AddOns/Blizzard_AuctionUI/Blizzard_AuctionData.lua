@@ -461,6 +461,7 @@ end
 do -- Quest Items
 	local questItemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_QUEST_ITEMS);
 	questItemsCategory:AddFilter(Enum.ItemClass.QuestItem);
+end
 
 do -- WoW Token
 	local wowTokenCategory = AuctionFrame_CreateCategory(TOKEN_FILTER_LABEL);

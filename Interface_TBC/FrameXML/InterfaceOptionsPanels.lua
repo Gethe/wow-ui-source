@@ -1291,6 +1291,7 @@ NamePanelOptions = {
 	nameplateShowEnemyMinus = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINUS" },
 
 	nameplateShowAll = { text = "UNIT_NAMEPLATES_AUTOMODE" },
+	nameplateMaxDistance = { text = "UNIT_NAMEPLATES_MAX_DISTANCE", minValue = 20, maxValue = 41, valueStep = 1 },
 }
 
 -- Namplate Motion Dropdown ---

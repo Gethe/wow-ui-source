@@ -2193,6 +2193,43 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
+					<Slider name="$parentNameplateMaxDistanceSlider" obeyStepOnDrag="true" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentMotionDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self.type = CONTROLTYPE_SLIDER;
+								self.cvar = "nameplateMaxDistance";
+								self.SetDisplayValue = self.SetValue;
+								self.SetValue = function (self, value)
+									self:SetDisplayValue(value);
+									self.value = value;
+									SetCVar(self.cvar, value);
+									SetCVar("nameplateMaxDistance", value);
+								end
+
+								self.GetCurrentValue = function(self)
+									return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+								end;
+								self.ValueText = _G[self:GetName().."High"];
+								self.ValueText:ClearAllPoints();
+								self.ValueText:SetPoint("TOP", self, "BOTTOM", 0, 0);
+								_G[self:GetName().."Low"]:Hide();
+
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+							<OnValueChanged>
+								self.value = value;
+								SetCVar(self.cvar, value);
+								self.ValueText:SetText(RANGE_ABBR:format(self:GetCurrentValue()));
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
 				</Frames>
 			</Frame>
 		</Frames>

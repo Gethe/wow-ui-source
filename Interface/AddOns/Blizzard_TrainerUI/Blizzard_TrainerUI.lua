@@ -88,6 +88,7 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 				
 				if currentServiceType ~= "available" then
 					-- Collapsed groups already accounted for in sorting prior to the event.
+					currentSelection = 0;
 					while currentSelection <= numServices do
 						currentSelection = currentSelection + 1;
 						local serviceType = select(3, GetTrainerServiceInfo(currentSelection));
@@ -103,10 +104,11 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 					ClassTrainer_SetSelection(currentSelection);
 					
 					-- Keep the entry in view.
-					local lastVisible = FauxScrollFrame_GetOffset(ClassTrainerListScrollFrame) + CLASS_TRAINER_SKILLS_DISPLAYED;
-					if currentSelection > lastVisible then
+					local firstVisible = FauxScrollFrame_GetOffset(ClassTrainerListScrollFrame);
+					local lastVisible = firstVisible + CLASS_TRAINER_SKILLS_DISPLAYED;
+					if currentSelection < firstVisible or currentSelection > lastVisible then
 						local offset = math.max(0, currentSelection - CLASS_TRAINER_SKILLS_DISPLAYED);
-						FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, offset);
+						ClassTrainerListScrollFrameScrollBar:SetValue(CLASS_TRAINER_SKILL_HEIGHT * offset);
 					end
 				end
 			end
@@ -276,7 +278,7 @@ function ClassTrainer_SelectFirstLearnableSkill()
 	if ( GetNumTrainerServices() > 0 ) then
 		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainer_SetSelection(2);
-		FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0)		
+		FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0);
 	else
 		ClassTrainerFrame.showSkillDetails = nil;
 		ClassTrainer_SetSelection();
@@ -571,6 +573,4 @@ function ClassTrainerFrameFilterDropDown_OnClick(self)
 		setglobal("TRAINER_FILTER_"..strupper(self.value), 0);
 		SetTrainerServiceTypeFilter(self.value, 0);
 	end
-	
-	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 end

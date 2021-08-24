@@ -15,7 +15,7 @@ local function GetOrCreateUnitAppearanceData(frame, unitType)
 	local UNIT_POSITION_FRAME_DEFAULT_PIN_SIZE = 40;
 	local UNIT_POSITION_FRAME_DEFAULT_SUBLEVEL = 7;
 	local UNIT_POSITION_FRAME_DEFAULT_TEXTURE = "WhiteCircle-RaidBlips";
-	local UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = true;
+	local UNIT_POSITION_FRAME_DEFAULT_SHOULD_SHOW_UNITS = false;
 	local UNIT_POSITION_FRAME_DEFAULT_USE_CLASS_COLOR = false;
 
 	if Private_UnitAppearanceData[frame] == nil then
@@ -359,7 +359,7 @@ function UnitPositionFrameUpdateSecureMixin:SetupSecureData()
 end
 
 function UnitPositionFrameUpdateSecureMixin:UpdatePlayerPins()
-	if self:NeedsFullUpdate()then
+	if self:NeedsFullUpdate() then
 		self:UpdateFull(GetTime());	
 	elseif self:NeedsPeriodicUpdate() then
 		self:UpdatePeriodic(GetTime());

@@ -33,6 +33,7 @@ function GroupMembersDataProviderMixin:SetUnitPinSize(unit, size)
 		unitPinSizes[unit] = size;
 		if self.pin then
 			self.pin:UpdateShownUnits();
+			self.pin:SynchronizePinSizes();
 		end
 	end
 end

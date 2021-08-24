@@ -194,12 +194,6 @@ function ScrollBoxListViewMixin:Init()
 		Mixin(frame, ScrollBoxListFrameMixin);
 		frame:SetElementData(self.factoryFrameElementData);
 
-		-- Anchoring to all points is temporary to enable an RLF to have a valid rect at the factory initialization
-		-- step. These points will be cleared and reattached during layout. In the future we can look into anchoring 
-		-- prior to the initialization call, though there are some complications related to dynamically sized frames 
-		-- that need to be ironed out.
-		frame:SetAllPoints(self:GetScrollTarget());
-
 		self.factoryFrame = frame;
 		self.factoryFrameNew = new;
 		return frame, new;

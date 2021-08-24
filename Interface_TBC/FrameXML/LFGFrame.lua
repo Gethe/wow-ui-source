@@ -5,14 +5,20 @@ LFGParentFrameMixin = {};
 
 function LFGParentFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	PanelTemplates_SetNumTabs(self, 2);
 	LFGParentFrame.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
 end
 
-function LFGParentFrameMixin:OnEvent(event)
+function LFGParentFrameMixin:OnEvent(event, ...)
 	if (event == "PLAYER_LEVEL_UP") then
 		C_LFGList.RequestAvailableActivities();
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			SetPortraitTexture(LFGParentFrameIcon, unit);
+		end
 	end
 end
 
@@ -105,11 +111,10 @@ function LFMFrameMixin:RefreshResults(singleRefreshID)
 	if ( numResults > LFGS_TO_DISPLAY ) then
 		showScrollBar = true;
 	end
-	local clearSelection = true; -- Default true. If we find our selected result and it's not delisted, don't clear.
 
 	for i=1, LFGS_TO_DISPLAY, 1 do
 		local resultIndex = scrollOffset + i;
-		local button = _G["LFMFrameButton"..i];
+		local button = self.LFMFrameButton[i];
 		
 		if ( resultIndex <= numResults ) then
 			local resultID = resultIDs[resultIndex];
@@ -128,38 +133,30 @@ function LFMFrameMixin:RefreshResults(singleRefreshID)
 					local name, classFileName, className, level, zone = C_LFGList.GetSearchResultLeaderInfo(resultID);
 					local classTextColor = classFileName and RAID_CLASS_COLORS[classFileName] or NORMAL_FONT_COLOR;
 
-					local nameText = _G["LFMFrameButton"..i.."Name"];
-					local levelText = _G["LFMFrameButton"..i.."Level"];
-					local classText = _G["LFMFrameButton"..i.."Class"];
-					local zoneText = _G["LFMFrameButton"..i.."Zone"];
-					nameText:SetText(searchResultInfo.leaderName);
-					levelText:SetText(level);
-					classText:SetText(className);
-					zoneText:SetText(zone);
+					button.Name:SetText(searchResultInfo.leaderName);
+					button.Level:SetText(level);
+					button.Class:SetText(className);
+					button.Zone:SetText(zone);
 					
 					button.isDelisted = searchResultInfo.isDelisted;
 					if (button.isDelisted) then
-						nameText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						levelText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						classText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						zoneText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						button.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						button.Level:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						button.Class:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						button.Zone:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					else
-						nameText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						levelText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						classText:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
-						zoneText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					end
-
-					if (self.selectedLFM and button.resultID == self.selectedLFM and not button.isDelisted) then
-						clearSelection = false;
+						button.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						button.Level:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						button.Class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
+						button.Zone:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					end
 
 					-- Show the party leader icon if necessary
 					local isGroup = searchResultInfo.numMembers > 1;
 					if ( isGroup ) then
-						_G["LFMFrameButton"..i.."PartyIcon"]:Show();
+						button.PartyIcon:Show();
 					else	
-						_G["LFMFrameButton"..i.."PartyIcon"]:Hide();
+						button.PartyIcon:Hide();
 					end
 
 					-- Set info for the tooltip
@@ -171,9 +168,9 @@ function LFMFrameMixin:RefreshResults(singleRefreshID)
 				
 					-- If need scrollbar resize columns
 					if ( showScrollBar ) then
-						zoneText:SetWidth(102);
+						button.Zone:SetWidth(102);
 					else
-						zoneText:SetWidth(117);
+						button.Zone:SetWidth(117);
 					end
 
 					button:Show();
@@ -185,6 +182,19 @@ function LFMFrameMixin:RefreshResults(singleRefreshID)
 		end
 	end
 
+	-- Clear our selection unless it matches one of our buttons, and that button isn't delisted.
+	local clearSelection = true;
+	if (self.selectedLFM) then
+		for i=1,#self.LFMFrameButton do
+			local button = self.LFMFrameButton[i];
+			if (button.resultID == self.selectedLFM) then
+				if (not button.isDelisted) then
+					clearSelection = false;
+				end
+				break;
+			end
+		end
+	end
 	if (clearSelection) then
 		self:ClearSelection();
 	end
@@ -207,9 +217,9 @@ function LFMFrameMixin:UpdateSelection()
 	local selectionIsDelisted = false;
 	for i=1, LFGS_TO_DISPLAY, 1 do
 		-- Highlight the correct lfm
-		local button = _G["LFMFrameButton"..i];
+		local button = self.LFMFrameButton[i];
 		if ( self.selectedLFM and self.selectedLFM == button.resultID ) then
-			self.selectedName = _G["LFMFrameButton"..i.."Name"]:GetText();
+			self.selectedName = button.Name:GetText();
 			button:LockHighlight();
 			selectionIsDelisted = button.isDelisted;
 		else
@@ -273,19 +283,19 @@ function LFMButton_OnEnter(self)
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
 	if ( self.isLFM ) then
-		GameTooltip:SetText(LFM_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		GameTooltip_AddColoredLine(GameTooltip, LFM_TITLE, HIGHLIGHT_FONT_COLOR);
 	else
-		GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		GameTooltip_AddColoredLine(GameTooltip, LFG_TITLE, HIGHLIGHT_FONT_COLOR);
 	end
 	
-	GameTooltip:AddLine(self.leaderName);
+	GameTooltip_AddColoredLine(GameTooltip, self.leaderName, NORMAL_FONT_COLOR);
 	local numPartyMembers = self.partyMembers;
 	if ( numPartyMembers > 0 ) then
 		if (self.isLFM) then
 			GameTooltip:AddTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
 		end
 		-- Only show party members if there are 10 or less
-		if ( numPartyMembers > 9 ) then
+		if ( numPartyMembers > 10 ) then
 			GameTooltip:AddLine(format(LFM_NUM_RAID_MEMBER_TEMPLATE, numPartyMembers));
 			-- Bogus texture to make the spacing correct
 			GameTooltip:AddTexture("");
@@ -293,7 +303,7 @@ function LFMButton_OnEnter(self)
 			for i=1, numPartyMembers do
 				local name, _, class, level, isLeader = C_LFGList.GetSearchResultMemberInfo(self.resultID, i);
 				if ( name and not isLeader ) then -- Skip the leader since we added them above.
-					GameTooltip:AddLine(format(LFM_NAME_TEMPLATE, name, level, class));
+					GameTooltip_AddColoredLine(GameTooltip, format(LFM_NAME_TEMPLATE, name, level, class), NORMAL_FONT_COLOR);
 					-- Bogus texture to make the spacing correct
 					GameTooltip:AddTexture("");
 				end
@@ -308,10 +318,10 @@ function LFMButton_OnEnter(self)
 			activityString = activityString .. "\n" .. name;
 		end
 	end
-	GameTooltip:AddLine(activityString, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GameTooltip_AddColoredLine(GameTooltip, activityString, HIGHLIGHT_FONT_COLOR);
 
 	if ( self.comment and self.comment ~= "" ) then
-		GameTooltip:AddLine("\n"..self.comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		GameTooltip_AddColoredLine(GameTooltip, "\n"..self.comment, HIGHLIGHT_FONT_COLOR, 1);
 	end
 
 	GameTooltip:Show();

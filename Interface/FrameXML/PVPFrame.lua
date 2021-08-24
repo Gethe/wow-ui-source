@@ -280,6 +280,10 @@ function PVPTeamDetails_Update(self, id)
 		PVPTeamDetailsAddTeamMember:Show();
 	end
 
+	-- If team is not part of top 5000 display a -
+	if (teamRank == 0) then
+		teamRank = '-';
+	end
 	-- Display General Team Stats
 	PVPTeamDetailsName:SetText(teamName);
 	PVPTeamDetailsSize:SetFormattedText(PVP_TEAMSIZE, teamSize, teamSize);

@@ -301,7 +301,7 @@ function EventTracePanelMixin:InitializeLog()
 				button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp());
 
 				button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
-					AddEventToFilter(self.Log.Events.ScrollBox, elementData);
+					AddEventToFilter(self.Filter.ScrollBox, elementData);
 				end);
 
 				button:SetScript("OnDoubleClick", function(button, buttonName)

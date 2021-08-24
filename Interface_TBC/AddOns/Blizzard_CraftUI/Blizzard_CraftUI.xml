@@ -198,6 +198,51 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="CraftFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-26" y="-66"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CraftFrameFilterDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<CheckButton name="CraftFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="68" y="-54"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CraftFrameAvailableFilterCheckButtonText:SetText(CRAFT_IS_MAKEABLE);
+					</OnLoad>
+					<OnClick>
+						CraftOnlyShowMakeable(self:GetChecked());
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="0" right="-75" top="0" bottom="0"/>
+				</HitRectInsets>
+			</CheckButton>
 			<StatusBar name="CraftRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
 				<Size>
 					<AbsDimension x="268" y="15"/>
@@ -205,7 +250,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="73" y="-37"/>
+							<AbsDimension x="73" y="-38"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
