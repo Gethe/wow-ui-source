@@ -644,16 +644,16 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 
 StaticPopupDialogs["CONFIRM_TEAM_DISBAND"] = {
 	text = CONFIRM_TEAM_DISBAND,
-	button1 = YES,
-	button2 = NO,
+	button1 = ACCEPT,
+	button2 = CANCEL,
 	OnAccept = function (self)
 		ArenaTeamDisband(self.data);
 	end,
 	OnCancel = function (self)
 	end,
-	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
+	hideOnEscape = 1
 };
 
 StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
@@ -661,7 +661,7 @@ StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ArenaTeamLeave(PVPTeamDetails.team);
+		ArenaTeamLeave(self.data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -673,7 +673,7 @@ StaticPopupDialogs["CONFIRM_TEAM_PROMOTE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, team, name)
-		ArenaTeamSetLeaderByName(PVPTeamDetails.team, name);
+		ArenaTeamSetLeaderByName(self.data, name);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -685,7 +685,7 @@ StaticPopupDialogs["CONFIRM_TEAM_KICK"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, team, name)
-		ArenaTeamUninviteByName(PVPTeamDetails.team, name);
+		ArenaTeamUninviteByName(self.data, name);
 	end,
 	timeout = 0,
 	whileDead = 1,
