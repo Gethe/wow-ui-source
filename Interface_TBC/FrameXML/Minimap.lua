@@ -565,7 +565,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 					if (bgtype == "WARGAME") then
 						local dialog = StaticPopup_Show("CONFIRM_WARGAME_ENTRY", mapName, nil, i);
 					else
-						local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
+						PVPReadyDialog_Display(self, i, mapName, false, bgtype, bgtype, nil);
 					end
 
 					if ( dialog ) then

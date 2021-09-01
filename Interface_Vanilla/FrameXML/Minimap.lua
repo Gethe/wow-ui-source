@@ -479,7 +479,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)));
 				if ( not tooltipOnly ) then
-					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
+					PVPReadyDialog_Display(self, i, mapName, false, bgtype, bgtype, nil);
 					if ( dialog ) then
 						dialog.data = i;
 					end
