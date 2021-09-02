@@ -2,6 +2,7 @@ local next = next;
 local securecall = securecall;
 local unpack = unpack;
 local error = error;
+local issecure = issecure;
 
 local function SecureNext(elements, key)
     return securecall(next, elements, key);
@@ -93,7 +94,7 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 	end
 
 	local count = select("#", ...);
-	if count > 0 then
+	if not issecure() or (count > 0) then
 		local callbacks = self:GetCallbacksByEvent(CallbackType.Closure, event);
 		callbacks[owner] = GenerateClosure(func, owner, ...);
 	else
