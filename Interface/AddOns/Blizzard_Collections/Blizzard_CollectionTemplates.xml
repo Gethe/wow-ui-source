@@ -76,7 +76,7 @@
 						<Anchor point="CENTER" x="8" y="0" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 					</Shadow>
 				</FontString>
 
@@ -367,9 +367,7 @@
 		</Layers>
 	</Frame>
 
-	<FontString name="CollectionsPageTextTemplate" inherits="GameFontWhite" justifyH="RIGHT" virtual="true">
-		<Size x="102" y="0" />
-	</FontString>
+	<FontString name="CollectionsPageTextTemplate" inherits="GameFontWhite" justifyH="RIGHT" virtual="true"/>
 
 	<Button name="CollectionsPrevPageButton" virtual="true">
 		<Size x="32" y="32" />

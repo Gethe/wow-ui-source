@@ -13,6 +13,9 @@ end
 function CharCustomizeParentFrameBaseMixin:ResetCustomizationPreview(clearSavedChoices)
 end
 
+function CharCustomizeParentFrameBaseMixin:MarkCustomizationChoiceAsSeen(choiceID)
+end
+
 function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
 end
 
@@ -533,6 +536,10 @@ function CharCustomizeOptionSliderMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("BOTTOMLEFT", self.Slider.Thumb, "TOPRIGHT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
+function CharCustomizeOptionSliderMixin:RefreshOption()
+	self:SetupOption(self.optionData);
+end
+
 function CharCustomizeOptionSliderMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.currentChoice = nil;
@@ -579,9 +586,26 @@ end
 
 CharCustomizeOptionCheckButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
 
+function CharCustomizeOptionCheckButtonMixin:RefreshOption()
+	self:SetupOption(self.optionData);
+end
+
+function CharCustomizeOptionCheckButtonMixin:UpdateNewFlag()
+	for _, choiceData in ipairs(self.optionData.choices) do
+		if choiceData.isNew then
+			self.New:Show();
+			return;
+		end
+	end
+
+	self.New:Hide();
+end
+
 function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.checked = (optionData.currentChoiceIndex == 2);
+
+	self:UpdateNewFlag();
 
 	if showDebugTooltipInfo then
 		self:ClearTooltipLines();
@@ -593,12 +617,24 @@ function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.Button:SetChecked(self.checked);
 end
 
+function CharCustomizeOptionCheckButtonMixin:MarkChoicesAsSeen()
+	for _, choiceData in ipairs(self.optionData.choices) do
+		if choiceData.isNew then
+			CharCustomizeFrame:MarkCustomizationChoiceAsSeen(choiceData.id);
+		end
+	end
+end
+
 function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self.checked = not self.checked;
 
 	local newChoiceIndex = self.checked and 2 or 1;
 	local newChoiceData = self.optionData.choices[newChoiceIndex];
+
+	if self.New:IsShown() then
+		self:MarkChoicesAsSeen();
+	end
 
 	CharCustomizeFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
@@ -661,10 +697,27 @@ function CharCustomizeOptionSelectionPopoutMixin:GetMaxPopoutHeight()
 	return self:GetBottom() - POPOUT_CLEARANCE;
 end
 
+function CharCustomizeOptionSelectionPopoutMixin:RefreshOption()
+	self:SetupOption(self.optionData);
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:UpdateNewFlag()
+	for _, choiceData in ipairs(self.optionData.choices) do
+		if choiceData.isNew then
+			self.New:Show();
+			return;
+		end
+	end
+
+	self.New:Hide();
+end
+
 function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
+
+	self:UpdateNewFlag();
 
 	self:ClearTooltipLines();
 
@@ -730,6 +783,7 @@ end
 function CharCustomizeMixin:OnHide()
 	local clearSavedChoices = true;
 	self:ResetCustomizationPreview(clearSavedChoices);
+	self:SaveSeenChoices();
 end
 
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
@@ -751,6 +805,14 @@ end
 
 function CharCustomizeMixin:ResetCustomizationPreview(clearSavedChoices)
 	self.parentFrame:ResetCustomizationPreview(clearSavedChoices);
+end
+
+function CharCustomizeMixin:MarkCustomizationChoiceAsSeen(choiceID)
+	self.parentFrame:MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function CharCustomizeMixin:SaveSeenChoices()
+	self.parentFrame:SaveSeenChoices();
 end
 
 function CharCustomizeMixin:Reset()
@@ -1090,6 +1152,12 @@ function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)
 	if not entry.isSelected then
 		self.previewIsDirty = false;
 		self:PreviewCustomizationChoice(option.optionData.id, entry.selectionData.id);
+	end
+
+	if entry.isNew then
+		self:MarkCustomizationChoiceAsSeen(entry.selectionData.id);
+		entry:ClearNewFlag();
+		option:RefreshOption();
 	end
 end
 

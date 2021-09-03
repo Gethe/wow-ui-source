@@ -195,7 +195,7 @@
 			<OnClick function="LootHistoryPlayerFrame_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="LootHistoryFrame" movable="true" resizable="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBorderedFrameTemplate" hidden="true">
+	<Frame name="LootHistoryFrame" movable="true" resizable="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate" hidden="true">
 		<Size x="210" y="175"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="280" y="180"/>

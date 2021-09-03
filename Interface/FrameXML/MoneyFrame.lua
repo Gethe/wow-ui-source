@@ -130,7 +130,7 @@ MoneyTypeInfo["GUILDBANKWITHDRAW"] = {
 	end,
 
 	UpdateFunc = function(self)
-		GuildBankFrame_UpdateWithdrawMoney();
+		self:GetParent():UpdateWithdrawMoney();
 		return nil;
 	end,
 
@@ -278,15 +278,16 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 	end
 end
 
-local function CreateMoneyButtonNormalTexture (button, iconWidth)
+local function InitCoinButton(button, atlas, iconWidth)
+	if not button or not atlas then
+		return;
+	end
 	local texture = button:CreateTexture();
-	texture:SetTexture("Interface\\MoneyFrame\\UI-MoneyIcons");
+	texture:SetAtlas(atlas, true);
 	texture:SetWidth(iconWidth);
 	texture:SetHeight(iconWidth);
 	texture:SetPoint("RIGHT");
 	button:SetNormalTexture(texture);
-	
-	return texture;
 end
 
 function MoneyFrame_Update(frameName, money, forceShow)
@@ -347,12 +348,11 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = nil;
 			frame.vadjust = MONEY_TEXT_VADJUST;
-			local texture = CreateMoneyButtonNormalTexture(goldButton, iconWidth);
-			texture:SetTexCoord(0, 0.25, 0, 1);
-			texture = CreateMoneyButtonNormalTexture(silverButton, iconWidth);
-			texture:SetTexCoord(0.25, 0.5, 0, 1);
-			texture = CreateMoneyButtonNormalTexture(copperButton, iconWidth);
-			texture:SetTexCoord(0.5, 0.75, 0, 1);
+
+			InitCoinButton(goldButton, "coin-gold", iconWidth);
+			InitCoinButton(silverButton, "coin-silver", iconWidth);
+			InitCoinButton(copperButton, "coin-copper", iconWidth);
+
 			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
@@ -572,19 +572,18 @@ function GetDenominationsFromCopper(money)
 end
 
 
--- Tex coords for Interface\MoneyFrame\UI-MoneyIcons
 local TextureType = {
 	File = 1,
 	Atlas = 2,
 };
 
 MoneyDenominationDisplayType = {
-	Copper = { TextureType.File, [[Interface\MoneyFrame\UI-MoneyIcons]], 0.5, 0.75, 0, 1, },
-	Silver = { TextureType.File, [[Interface\MoneyFrame\UI-MoneyIcons]], 0.25, 0.5, 0, 1, },
-	Gold = { TextureType.File, [[Interface\MoneyFrame\UI-MoneyIcons]], 0, 0.25, 0, 1, },
-	AuctionHouseCopper = { TextureType.Atlas, "auctionhouse-icon-coin-copper" },
-	AuctionHouseSilver = { TextureType.Atlas, "auctionhouse-icon-coin-silver" },
-	AuctionHouseGold = { TextureType.Atlas, "auctionhouse-icon-coin-gold" },
+	Copper = { TextureType.Atlas, "coin-copper" },
+	Silver = { TextureType.Atlas, "coin-silver" },
+	Gold = { TextureType.Atlas, "coin-gold" },
+	AuctionHouseCopper = { TextureType.Atlas, "coin-copper" },
+	AuctionHouseSilver = { TextureType.Atlas, "coin-silver" },
+	AuctionHouseGold = { TextureType.Atlas, "coin-gold" },
 };
 
 MONEY_DENOMINATION_SYMBOLS_BY_DISPLAY_TYPE = {

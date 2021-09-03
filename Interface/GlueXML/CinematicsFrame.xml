@@ -120,7 +120,7 @@
 		<PushedTextOffset x="-3" y="-3"/>
 	</Button>
 
-	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
 		<Size x="450" y="430"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-50"/>
@@ -142,7 +142,8 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
-			<Button name="CinematicsFrameCloseButton" inherits="GlueCloseButton">
+			<Button name="CinematicsFrameCloseButton" inherits="BigRedExitButtonTemplate">
+				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
@@ -234,6 +235,7 @@
 		<Scripts>
 			<OnLoad function="CinematicsFrame_OnLoad"/>
 			<OnShow function="CinematicsFrame_OnShow"/>
+			<OnHide function="CinematicsFrame_OnHide"/>
 			<OnKeyDown function="CinematicsFrame_OnKeyDown"/>
 			<OnChar function="nop"/>
 		</Scripts>

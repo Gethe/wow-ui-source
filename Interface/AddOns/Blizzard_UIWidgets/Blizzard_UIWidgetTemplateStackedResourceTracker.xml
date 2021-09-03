@@ -1,14 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Frame name="UIWidgetTemplateStackedResourceTracker" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateStackedResourceTrackerMixin">
-		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="Frame" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-45" />
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 	</Frame>
 </Ui>

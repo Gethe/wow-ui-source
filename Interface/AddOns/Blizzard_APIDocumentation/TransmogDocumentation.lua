@@ -332,6 +332,15 @@ local Transmog =
 			},
 		},
 		{
+			Name = "TransmogCosmeticCollectionSourceAdded",
+			Type = "Event",
+			LiteralName = "TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED",
+			Payload =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TransmogSearchUpdated",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SEARCH_UPDATED",

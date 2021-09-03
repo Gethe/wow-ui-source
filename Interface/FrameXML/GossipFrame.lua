@@ -235,9 +235,46 @@ function GossipFrameOptionsUpdate()
 	end
 end
 
+local FRIENDSHIP_BAR_COLORS = {
+	[1] = PURE_RED_COLOR,
+	[2] = FACTION_ORANGE_COLOR,
+	[3] = FACTION_YELLOW_COLOR,
+	[4] = FACTION_GREEN_COLOR,
+};
+local function GetColorIndex(currentRank, numRanks, numColors)
+	if numRanks < numColors then
+		if currentRank == 1 then
+			return 1;
+		elseif currentRank == numRanks then
+			return numColors;
+		else
+			return 3;
+		end
+	end
+
+	-- Each chunk of rank colors will either have smallColorChunkCount or largeColorChunkCount ranks in them
+	local smallColorChunkCount = math.floor(numRanks/numColors);
+	local largeColorChunkCount = math.ceil(numRanks/numColors);
+	local numLargeColorChunks = numRanks % numColors;
+	-- Any ranks <= highestMaxColorIndex will be part of a chunk of largeColorChunkCount colors
+	-- Any ranks above this will be part of a chunk of smallColorChunkCount colors
+	local highestMaxColorIndex = numLargeColorChunks * largeColorChunkCount;
+
+	if currentRank <= highestMaxColorIndex then
+		return math.ceil(currentRank / largeColorChunkCount);
+	else
+		-- This rank is in a small color chunk
+		-- First remove highestMaxColorIndex to get back into a 1->x distribution
+		local relativeIndex = currentRank - highestMaxColorIndex;
+		-- Then distrubute ranks evenly within that group of colors
+		local relativeColorIndex = math.ceil(relativeIndex / smallColorChunkCount);
+		return numLargeColorChunks + relativeColorIndex;
+	end
+end
+
 function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
 	local statusBar = NPCFriendshipStatusBar;
-	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation(factionID);
+	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold, reversedColor, overrideColor = GetFriendshipReputation(factionID);
 	statusBar.friendshipFactionID = id;
 	if ( id and id > 0 ) then
 		statusBar:SetParent(frame);
@@ -250,10 +287,27 @@ function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
 		else
 			statusBar.icon:SetTexture("Interface\\Common\\friendship-heart");
 		end
+
+		local numColors = 4;
+		local colorIndex;
+		if (not overrideColor) then
+			local currRank, numRanks = GetFriendshipReputationRanks(factionID);
+
+			colorIndex = GetColorIndex(currRank, numRanks, numColors);
+			if (reversedColor) then
+				colorIndex = (numColors + 1) - colorIndex;
+			end
+		else
+			colorIndex = overrideColor;
+		end
+
 		statusBar:SetMinMaxValues(threshold, nextThreshold);
 		statusBar:SetValue(rep);
 		statusBar:ClearAllPoints();
 		statusBar:SetPoint("TOPLEFT", 80, -41);
+
+		local barFillColor = FRIENDSHIP_BAR_COLORS[colorIndex];
+		statusBar:SetStatusBarColor(barFillColor:GetRGBA()); 
 		statusBar:Show();
 	else
 		statusBar:Hide();

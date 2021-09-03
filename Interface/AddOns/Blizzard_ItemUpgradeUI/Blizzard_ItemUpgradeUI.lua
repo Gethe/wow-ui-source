@@ -1,13 +1,9 @@
-
 UIPanelWindows["ItemUpgradeFrame"] = { area = "left", pushable = 0};
-
-ITEM_UPGRADE_MAX_STATS_SHOWN = 10;
-
 
 function ItemUpgradeFrame_Show()
 	ShowUIPanel(ItemUpgradeFrame);
-	if(not ItemUpgradeFrame:IsShown()) then
-		CloseItemUpgrade();
+	if not ItemUpgradeFrame:IsShown() then
+		C_ItemUpgrade.CloseItemUpgrade();
 	end
 end
 
@@ -15,329 +11,180 @@ function ItemUpgradeFrame_Hide()
 	HideUIPanel(ItemUpgradeFrame);
 end
 
-function ItemUpgradeFrame_OnLoad(self)
+ItemUpgradeMixin = {};
+
+function ItemUpgradeMixin:OnLoad()
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE");
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 
-	self:SetPortraitToAsset("Interface\\Icons\\inv_hammer_2h_silverhand_b_01");
-	self.StatsScroll.Contents.LeftStat = {};
-	self.StatsScroll.Contents.RightStat = {};
-	ItemUpgradeFrame.StatsScroll.Contents.EffectRow = {};
-
-	self.Inset:SetPoint("TOPLEFT", 4, -64);
+	self:SetPortraitToAsset("Interface\\Icons\\UI_ItemUpgrade");
 
 	self:SetTitle(ITEM_UPGRADE);
 
-	local function ItemUpgradeLevelDropDownOptionSelectedCallback(value, isUserInput)
-		if isUserInput then
-			local fromDropDown = true;
-			ItemUpgradeFrame_Update(fromDropDown);
-		end
-	end
+	self.MicaFleckSheenSlide:Play();
+	self.IdleGlowSlide:Play();
 
-	self.UpgradeLevelDropDown:SetOptionSelectedCallback(ItemUpgradeLevelDropDownOptionSelectedCallback);
-	self.UpgradeLevelDropDown:SetTextJustifyH("LEFT");
-	self.UpgradeLevelDropDown:AdjustTextPointsOffset(-5, -2);
-
-	local padding = 2;
-	local spacing = 2;
-	local statsView = CreateScrollBoxLinearView(padding, padding, padding, padding, spacing);
-	ScrollUtil.InitScrollBoxWithScrollBar(self.StatsScroll, self.StatsScrollBar, statsView);
-
-	local bottomYOffset = 65;
-	local scrollBoxAnchorsWithBar = {
-		CreateAnchor("TOPLEFT", 20, -160),
-		CreateAnchor("BOTTOMRIGHT", -32, bottomYOffset);
-	};
-
-	local scrollBoxAnchorsWithoutBar = {
-		scrollBoxAnchorsWithBar[1],
-		CreateAnchor("BOTTOMRIGHT", -6, bottomYOffset);
-	};
-
-	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.StatsScroll, self.StatsScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
+	self.UpgradeItemButton.IconBorder:SetSize(58, 58);
+	self.UpgradeCostFrame:CreateLabel(ITEM_UPGRADE_COST_LABEL, nil, nil, 5);
+	
+	self.Dropdown = self.ItemInfo.Dropdown;
+	UIDropDownMenu_Initialize(self.Dropdown, GenerateClosure(self.InitDropdown, self));
+	UIDropDownMenu_SetWidth(self.Dropdown, 95);
 end
 
-function ItemUpgradeFrame_OnShow(self)
+function ItemUpgradeMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
-	ItemUpgradeFrame_Update();
+	self:Update();
+	--TODO: Add function for filtering equipement frame as well as bags
 	ItemButtonUtil.OpenAndFilterBags(self);
 
 	self:RegisterEvent("BAG_UPDATE");
-
-	ItemUpgradeFrameMoneyFrame:Show();
 end
 
-function ItemUpgradeFrame_OnHide(self)
+function ItemUpgradeMixin:OnHide()
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
-	CloseItemUpgrade();
+	C_ItemUpgrade.CloseItemUpgrade();
 	ItemButtonUtil.CloseFilteredBags(self);
+	EquipmentFlyout_Hide(self);
+	self.UpgradedFlash:Stop();
 
 	self:UnregisterEvent("BAG_UPDATE");
-
-	ClearItemUpgrade();
-	HideStatsLeft();
-	HideStatsRight();
-	ItemUpgradeFrame.StatsScroll.Contents.LeftItemLevel:Hide();
-	ItemUpgradeFrame.StatsScroll.Contents.RightItemLevel:Hide();
 end
 
-function ItemUpgradeFrame_OnEvent(self, event, ...)
-	if ( event == "ITEM_UPGRADE_MASTER_SET_ITEM" ) then
-		self.itemLevel = GetItemUpdateLevel();
-		ItemUpgradeFrame_Update();
-		ItemUpgradeFrame.StatsScroll:ScrollToBegin();
-	elseif ( event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
-		ItemUpgradeFrame_Update();
-		self.FinishedGlow.FinishedAnim:Play();
-		self.ItemUpgradedNotification:Show();
-		self.ItemUpgradedNotification.FinishedAnim:Play();
-	elseif ( event == "BAG_UPDATE" ) then
-		local itemLevel = GetItemUpdateLevel();
-		if self.itemLevel and self.itemLevel < itemLevel then
-			ItemUpgradeFrame_Update();
-			self.FinishedGlow.FinishedAnim:Play();
-			self.ItemUpgradedNotification:Show();
-			self.ItemUpgradedNotification.FinishedAnim:Play();
+function ItemUpgradeMixin:OnEvent(event, ...)
+	if event == "ITEM_UPGRADE_MASTER_SET_ITEM" or event == "ITEM_UPGRADE_MASTER_UPDATE" or event == "BAG_UPDATE" then
+		self:Update();
+	elseif event == "GLOBAL_MOUSE_DOWN" then
+		local buttonName = ...;
+		local isRightButton = buttonName == "RightButton";
+
+		local mouseFocus = GetMouseFocus();
+		local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+		if not flyoutSelected then
+			EquipmentFlyout_Hide();
 		end
 	end
 end
 
-function ItemUpgradeFrame_Update(fromDropDown)
-	local numUpgradeLevels = fromDropDown and ItemUpgradeFrame_GetNumUpgradeLevelsSelected() or 1;
-	local singleUpgradeSelected = numUpgradeLevels == 1;
-	local icon, name, quality, bound, numCurrUpgrades, numMaxUpgrades, cost, currencyType, failureMessage = GetItemUpgradeItemInfo(numUpgradeLevels);
+function ItemUpgradeMixin:OnConfirm()
+	self:PlayUpgradedCelebration();
+	C_ItemUpgrade.UpgradeItem();
+end
 
-	ItemUpgradeFrameUpgradeButton:SetDisabledState(true);
+function ItemUpgradeMixin:Update(fromDropDown)
+    local numUpgradeLevels = 1;
+	self.upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
 
-	local ItemUpgradeFrame = ItemUpgradeFrame;
-	if ( icon ) then
-		ItemUpgradeFrame.ItemButton.IconTexture:SetTexture(icon);
-		ItemUpgradeFrame.ItemButton.IconTexture:SetTexCoord( 0, 1, 0, 1);
-		local _, _, _, hex = GetItemQualityColor(quality);
-		ItemUpgradeFrame.ItemButton.ItemName:SetText("|c"..hex..name.."|r");
-		ItemUpgradeFrame.ItemButton.BoundStatus:SetText(bound);
-		ItemUpgradeFrame.TextFrame.MissingText:Hide();
-		ItemUpgradeFrame.MissingDescription:Hide();
-		ItemUpgradeFrame.TitleTextLeft:Show();
-		ItemUpgradeFrame.TitleTextRight:Show();
-		ItemUpgradeFrame.HorzBar:Show();
+	self.UpgradeButton:SetDisabledState(not self.upgradeInfo);
 
-		if ( numCurrUpgrades and numMaxUpgrades ) then
-			local canUpgradeItem = false;
-			ItemUpgradeFrame.TitleTextLeft:SetText(ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(numCurrUpgrades, numMaxUpgrades));
-			local hasMoreUpgrades = numCurrUpgrades < numMaxUpgrades;
-			if ( hasMoreUpgrades ) then
-				canUpgradeItem = true;
-				if ( not failureMessage ) then
-					ItemUpgradeFrameUpgradeButton:SetDisabledState(false);
-				end
-			end
-
-			if ( failureMessage ) then
-				ItemUpgradeFrame.Feedback.Text:SetText(failureMessage);
-				ItemUpgradeFrame.Feedback:Show();
-				canUpgradeItem = false;
-			elseif ( canUpgradeItem )  then
-				ItemUpgradeFrame.Feedback:Hide();
-			else
-				ItemUpgradeFrame.Feedback.Text:SetText(ITEM_UPGRADE_NO_MORE_UPGRADES);
-				ItemUpgradeFrame.Feedback:Show();
-			end
-
-			if ( not fromDropDown ) then
-				ItemUpgradeFrame_UpdateUpgradeOptions(canUpgradeItem);
-			end
-
-			ItemUpgradeFrame.TitleTextRight:SetShown(hasMoreUpgrades);
-			ItemUpgradeFrame.UpgradeLevelDropDown:SetShown(hasMoreUpgrades);
-
-			ItemUpgradeFrame_UpdateStats(hasMoreUpgrades);
-			ItemUpgradeFrame.StatsScroll:Show();
-		end
-	else	-- There is no item so hide elements
-		ItemUpgradeFrame.ItemButton.IconTexture:SetTexture("Interface\\BUTTONS\\UI-Slot-Background");
-		ItemUpgradeFrame.ItemButton.IconTexture:SetTexCoord( 0, 0.640625, 0, 0.640625);
-		ItemUpgradeFrame.ItemButton.ItemName:SetText("");
-		ItemUpgradeFrame.ItemButton.BoundStatus:SetText("");
-		ItemUpgradeFrame.TextFrame.MissingText:Show();
-		ItemUpgradeFrame.MissingDescription:Show();
-		ItemUpgradeFrame.TitleTextLeft:Hide();
-		ItemUpgradeFrame.TitleTextRight:Hide();
-		ItemUpgradeFrame.UpgradeLevelDropDown:Hide();
-		ItemUpgradeFrame.HorzBar:Hide();
-		ItemUpgradeFrame.StatsScroll:Hide();
-		ItemUpgradeFrame.Feedback:Hide();
+	if not self.upgradeInfo then
+		self.ItemInfo:Setup(self.upgradeInfo);
+		SetItemButtonTexture(self.UpgradeItemButton, nil);
+		SetItemButtonQuality(self.UpgradeItemButton, nil);
+		self.UpgradeItemButton:SetNormalAtlas("itemupgrade_greenplusicon");
+		self.UpgradeItemButton:SetPushedAtlas("itemupgrade_greenplusicon_pressed");
+		self.UpgradeItemButton.EmptySlotGlow:Show();
+		self.UpgradeItemButton.PulseEmptySlotGlow:Restart();
+		self.MissingDescription:Show();
+		self.LeftItemPreviewFrame:Hide();
+		self.RightItemPreviewFrame:Hide();
+		self.UpgradeCostFrame:Hide();
+		self.PlayerCurrencies:Hide();
+		self.FrameErrorText:Hide();
+		self.Arrow:Hide();
+		return;
 	end
 
-	if ( ItemUpgradeFrame.UpgradeLevelDropDown:IsShown() ) then
-		ItemUpgradeFrame.TitleTextRight:SetPoint("RIGHT", ItemUpgradeFrame.UpgradeLevelDropDown, "LEFT");
+	self.UpgradeItemButton:SetNormalTexture(nil);
+	self.UpgradeItemButton:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+	self.UpgradeItemButton.EmptySlotGlow:Hide();
+	self.UpgradeItemButton.PulseEmptySlotGlow:Stop();
+
+	if fromDropDown then
+		numUpgradeLevels = fromDropDown - self.upgradeInfo.currUpgrade;
+		UIDropDownMenu_SetSelectedValue(self.Dropdown, fromDropDown);
+		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(fromDropDown));
 	else
-		ItemUpgradeFrame.TitleTextRight:SetPoint("RIGHT", -26, 0);
+		UIDropDownMenu_SetSelectedValue(self.Dropdown, self.upgradeInfo.currUpgrade + 1);
+		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.upgradeInfo.currUpgrade + 1));
 	end
 
-	-- update player's currency
-	if ( cost and cost > 0 ) then
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyType);
-		local amount = currencyInfo.quantity;
-		local currencyTexture = currencyInfo.iconFileID;
-		ItemUpgradeFrameMoneyFrame.Currency.currencyID = currencyType;
-		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture(currencyTexture);
-		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(cost);
-		ItemUpgradeFrameMoneyFrame.Currency:Show();
+	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
 
-		if ( cost > amount ) then
-			ItemUpgradeFrameUpgradeButton:SetDisabledState(true);
-			ItemUpgradeFrameMoneyFrame.Currency.count:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		else
-			ItemUpgradeFrameMoneyFrame.Currency.count:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	SetItemButtonTexture(self.UpgradeItemButton, self.upgradeInfo.iconID);
+	SetItemButtonQuality(self.UpgradeItemButton, self.upgradeInfo.displayQuality);
+
+	self.MissingDescription:Hide();
+	self:PopulatePreviewFrames(numUpgradeLevels);
+end
+
+function ItemUpgradeMixin:PopulatePreviewFrames(numUpgradeLevels)
+	local itemMaxedOut =  self.upgradeInfo.currUpgrade >= self.upgradeInfo.maxUpgrade;
+	local failureMessage = not itemMaxedOut and self.upgradeInfo.upgradeLevelInfos[numUpgradeLevels+1].failureMessage;
+	local canUpgradeItem = self.upgradeInfo.itemUpgradeable and not itemMaxedOut and not failureMessage;
+
+	if numUpgradeLevels > 1 then
+		self.UpgradeButton:SetDisabledState(true);
+		self.UpgradeButton:SetDisabledTooltip(ITEM_UPGRADE_FRAME_PREVIEW_RANK_TOOLTIP_ERROR);
+	elseif canUpgradeItem  then
+		self.UpgradeButton:SetDisabledState(false);
+		self.FrameErrorText:Hide();
+	elseif failureMessage then
+		self.FrameErrorText:SetText(failureMessage);
+		self.FrameErrorText:Show();
+		self.UpgradeButton:SetDisabledState(true);
+		self.UpgradeButton:SetDisabledTooltip(failureMessage);
+	else
+		self.FrameErrorText:SetText(ITEM_UPGRADE_NO_MORE_UPGRADES);
+		self.FrameErrorText:Show();
+		self.UpgradeButton:SetDisabledState(true);
+		self.UpgradeButton:SetDisabledTooltip(ITEM_UPGRADE_NO_MORE_UPGRADES);
+	end
+
+	self.ItemInfo:Setup(self.upgradeInfo, canUpgradeItem);
+	self.Arrow:SetPoint("CENTER", self.LeftItemPreviewFrame, "RIGHT", 8, 0);
+	self.Arrow:SetShown(canUpgradeItem);
+
+	self.LeftItemPreviewFrame:GeneratePreviewTooltip(false, nil);
+	if canUpgradeItem then
+		self.RightItemPreviewFrame:GeneratePreviewTooltip(true, nil);
+
+		if self.RightItemPreviewFrame:GetHeight() > self.LeftItemPreviewFrame:GetHeight() then
+			self.LeftItemPreviewFrame:SetHeight(self.RightItemPreviewFrame:GetHeight());
 		end
 	else
-		ItemUpgradeFrameMoneyFrame.Currency:Hide();
+		self.RightItemPreviewFrame:Hide();
+		self.UpgradeCostFrame:Hide();
+		self.PlayerCurrencies:Hide();
+		return;
 	end
 
-	if ( not singleUpgradeSelected ) then
-		ItemUpgradeFrameUpgradeButton:SetDisabledState(true, ITEM_UPGRADE_FRAME_PREVIEW_RANK_TOOLTIP_ERROR, "ANCHOR_RIGHT");
-	end
-end
+	self.UpgradeCostFrame:Clear();
+	self.PlayerCurrencies:Clear();
 
-local function GenerateOptions(numCurrUpgrades, numMaxUpgrades, canUpgradeItem)
-	local options = {};
-	local firstUpgrade = numCurrUpgrades + 1;
-	for i = firstUpgrade, numMaxUpgrades do
-		local selectedText = (canUpgradeItem and (i == firstUpgrade)) and i or RED_FONT_COLOR:WrapTextInColorCode(i);
-		table.insert(options, { value = i, text = i, selectedText = selectedText, });
-	end
+	local currTotalUpgradeCosts = self:CalculateTotalCostTable(numUpgradeLevels);
+	for currencyID, totalCurrencyCost in pairs(currTotalUpgradeCosts) do
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 
-	return options;
-end
-
-function ItemUpgradeFrame_UpdateUpgradeOptions(canUpgradeItem)
-	local numCurrUpgrades, numMaxUpgrades = select(5, GetItemUpgradeItemInfo());
-	local options = GenerateOptions(numCurrUpgrades, numMaxUpgrades, canUpgradeItem);
-	local defaultSelectedValue = numCurrUpgrades + 1;
-	ItemUpgradeFrame.UpgradeLevelDropDown:SetOptions(options, defaultSelectedValue);
-end
-
-function ItemUpgradeFrame_GetNumUpgradeLevelsSelected()
-	local numCurrUpgrades, numMaxUpgrades = select(5, GetItemUpgradeItemInfo());
-	local selectedUpgradeLevel = ItemUpgradeFrame.UpgradeLevelDropDown:GetSelectedValue();
-	if (selectedUpgradeLevel == nil) or (numCurrUpgrades == nil) then
-		return 1;
-	end
-
-	return selectedUpgradeLevel - numCurrUpgrades;
-end
-
-function ItemUpgradeFrame_AddItemClick(self, button)
-	SetItemUpgradeFromCursorItem();
-	GameTooltip:Hide();
-end
-
-function ItemUpgradeFrame_UpdateStats(setStatsRight)
-	local numUpgradeLevels = ItemUpgradeFrame_GetNumUpgradeLevelsSelected();
-	local itemLevel		= GetItemUpdateLevel();
-	local ilvlInc		= C_ItemUpgrade.GetItemLevelIncrement(numUpgradeLevels);
-
-	ItemUpgradeFrame.StatsScroll.Contents.LeftItemLevel.iLvlText:SetText(itemLevel);
-	ItemUpgradeFrame.StatsScroll.Contents.LeftItemLevel.ItemLevelText:SetText(ITEM_UPGRADE_STAT_AVERAGE_ITEM_LEVEL);
-	ItemUpgradeFrame.StatsScroll.Contents.LeftItemLevel:Show();
-
-	if ( setStatsRight ) then
-		ItemUpgradeFrame.StatsScroll.Contents.RightItemLevel.incText:SetText(GREEN_FONT_COLOR_CODE.."+"..ilvlInc..FONT_COLOR_CODE_CLOSE);
-		ItemUpgradeFrame.StatsScroll.Contents.RightItemLevel.iLvlText:SetText(itemLevel + ilvlInc);
-		ItemUpgradeFrame.StatsScroll.Contents.RightItemLevel.ItemLevelText:SetText(ITEM_UPGRADE_STAT_AVERAGE_ITEM_LEVEL);
-		ItemUpgradeFrame.StatsScroll.Contents.RightItemLevel:Show();
-	else
-		ItemUpgradeFrame.StatsScroll.Contents.RightItemLevel:Hide();
-	end
-
-	local statsLeft		= {GetItemUpgradeStats(false)};
-	local statsRight	= {GetItemUpgradeStats(true, numUpgradeLevels)};
-	local index = 1;
-
-	local statAnchor;
-	for i = 1, #statsLeft, 3 do
-		local leftStat, rightStat = ItemUpgradeFrame_GetStatRow(index, true);
-		-- Update the left stat text field.
-		local name, value, active = statsLeft[i], statsLeft[i + 1], statsLeft[i + 2];
-		if (active) then
-			leftStat.ItemLevelText:SetText(value);
-			leftStat.ItemText:SetText(name);
+		if (totalCurrencyCost > currencyInfo.quantity) then
+			self.UpgradeButton:SetDisabledState(true);
+			self.UpgradeButton:SetDisabledTooltip();
+			self.UpgradeCostFrame:AddCurrency(currencyID, totalCurrencyCost, RED_FONT_COLOR);
 		else
-			leftStat.ItemLevelText:SetText(GRAY_FONT_COLOR_CODE..value..FONT_COLOR_CODE_CLOSE);
-			leftStat.ItemText:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+			self.UpgradeCostFrame:AddCurrency(currencyID, totalCurrencyCost);
 		end
-		leftStat:Show();
-
-		-- Update the right stat text field.
-		if ( setStatsRight ) then
-			local name, value, active = statsRight[i], statsRight[i + 1], statsRight[i + 2];
-			local statInc = statsRight[i + 1] - statsLeft[i + 1];
-			if (active) then
-				rightStat.ItemIncText:SetText(GREEN_FONT_COLOR_CODE.."+"..statInc..FONT_COLOR_CODE_CLOSE);
-				rightStat.ItemLevelText:SetText(value);
-				rightStat.ItemText:SetText(name);
-			else
-				rightStat.ItemIncText:SetText(GRAY_FONT_COLOR_CODE.."+"..statInc..FONT_COLOR_CODE_CLOSE);
-				rightStat.ItemLevelText:SetText(GRAY_FONT_COLOR_CODE..value..FONT_COLOR_CODE_CLOSE);
-				rightStat.ItemText:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
-			end
-			rightStat:Show();
-		else
-			rightStat:Hide();
-		end
-
-		index = index + 1;
-		statAnchor = leftStat;
+		self.PlayerCurrencies:AddCurrency(currencyID);
 	end
 
-	for i = index, #ItemUpgradeFrame.StatsScroll.Contents.LeftStat do
-		ItemUpgradeFrame.StatsScroll.Contents.LeftStat[i]:Hide();
-	end
-	for i = index, #ItemUpgradeFrame.StatsScroll.Contents.RightStat do
-		ItemUpgradeFrame.StatsScroll.Contents.RightStat[i]:Hide();
-	end
-
-	-- effects
-	local effectIndex = 1;
-	for i = 1, C_ItemUpgrade.GetNumItemUpgradeEffects() do
-		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex, setStatsRight);
-		if ( effectIndex == 1 ) then
-			row:ClearAllPoints();
-			if ( index == 1 ) then
-				row:SetPoint("TOPLEFT", ItemUpgradeFrame.StatsScroll.Contents);
-			else
-				row:SetPoint("TOPLEFT", statAnchor, "BOTTOMLEFT", 0, -1);
-			end
-		end
-		local leftText, rightText = C_ItemUpgrade.GetItemUpgradeEffect(i, numUpgradeLevels);
-		row.LeftText:SetText(leftText);
-
-		if ( setStatsRight ) then
-			row.RightText:SetText(ItemUpgradeFrame_GetUpgradedEffectString(leftText, rightText));
-			row.RightText:Show();
-		else
-			row.RightText:Hide();
-		end
-
-		local height = max(row.LeftText:GetHeight(), row.RightText:GetHeight());
-		row:SetHeight(height + 3);
-		row:Show();
-		effectIndex = effectIndex + 1;
-	end
-	for i = effectIndex, #ItemUpgradeFrame.StatsScroll.Contents.EffectRow do
-		ItemUpgradeFrame.StatsScroll.Contents.EffectRow[i]:Hide();
-	end
-
-	ItemUpgradeFrame.StatsScroll.Contents:Layout();
-	ItemUpgradeFrame.StatsScroll:UpdateImmediately();
+	self.UpgradeCostFrame:Show();
+	self.PlayerCurrencies:Show();
 end
 
 -- compare 2 strings finding numeric differences
 -- return the text of the 2nd string with (+x) in front of each number that is higher than in the 1st string
-function ItemUpgradeFrame_GetUpgradedEffectString(string1, string2)
+function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 	local output = "";
 	local index2 = 1;	-- where we're at in string2
 
@@ -345,7 +192,7 @@ function ItemUpgradeFrame_GetUpgradedEffectString(string1, string2)
 	local start2, end2, substring2 = string.find(string2, "([%d,%.]+)");
 	while start1 and start2 do
 		output = output .. string.sub(string2, index2, start2 - 1);
-		if ( substring1 ~= substring2 ) then
+		if substring1 ~= substring2 then
 			-- need to remove , and . because of locale
 			local temp1 = gsub(substring1, "[,%.]", "");
 			local temp2 = gsub(substring2, "[,%.]", "");
@@ -366,83 +213,308 @@ function ItemUpgradeFrame_GetUpgradedEffectString(string1, string2)
 	return output;
 end
 
-function ItemUpgradeFrame_GetStatRow(index, tryAdd)
-	local leftStat, rightStat;
-	leftStat = ItemUpgradeFrame.StatsScroll.Contents.LeftStat[index];
-	rightStat = ItemUpgradeFrame.StatsScroll.Contents.RightStat[index];
+function ItemUpgradeMixin:CalculateTotalCostTable(numUpgradeLevels)
+	local currTotalUpgradeCosts = {};
 
-	if ( tryAdd and not leftStat ) then
-		if ( index > ITEM_UPGRADE_MAX_STATS_SHOWN ) then
+	for upgradeIndex = 1, numUpgradeLevels+1 do
+		local upgradeLevel = self.upgradeInfo.upgradeLevelInfos[upgradeIndex];
+		if not upgradeLevel then
 			return;
 		end
-		leftStat = CreateFrame("FRAME", nil, ItemUpgradeFrame.StatsScroll.Contents, "ItemUpgradeStatTemplateLeft");
-		if ( index == 1 ) then
-			leftStat:SetPoint("TOPLEFT", ItemUpgradeFrame.StatsScroll.Contents.LeftItemLevel, "BOTTOMLEFT", 0, -1);
-		else
-			leftStat:SetPoint("TOP", ItemUpgradeFrame.StatsScroll.Contents.LeftStat[index - 1], "BOTTOM", 0, -1);
+
+		for _, levelCost in ipairs(upgradeLevel.costsToUpgrade) do
+			if not currTotalUpgradeCosts[levelCost.currencyID] then
+				currTotalUpgradeCosts[levelCost.currencyID] = 0;
+			end
+			currTotalUpgradeCosts[levelCost.currencyID] = currTotalUpgradeCosts[levelCost.currencyID] + levelCost.cost; 
+		end
+	end
+	return currTotalUpgradeCosts;
+end
+
+function ItemUpgradeMixin:InitDropdown()
+	if not self.upgradeInfo then
+		return;
+	end
+
+	local currUpgradeLevel = self.upgradeInfo.currUpgrade;
+	local maxUpgradeLevel = self.upgradeInfo.maxUpgrade;
+
+	local info = UIDropDownMenu_CreateInfo();
+	for i = currUpgradeLevel + 1, maxUpgradeLevel do
+		info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i);
+		info.value = i;
+		info.notCheckable = true;
+		info.minWidth = 120;
+		info.func = function() UIDropDownMenu_SetSelectedValue(ItemUpgradeFrame.Dropdown, i); 
+							   ItemUpgradeFrame:Update(i); end;
+
+		local costTable = ItemUpgradeFrame:CalculateTotalCostTable(i - currUpgradeLevel);
+		local currencyTable = {};
+
+		for currencyID, totalCurrencyCost in pairs(costTable) do
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+			if totalCurrencyCost > currencyInfo.quantity then
+				currencyTable[#currencyTable + 1] = GetCurrencyString(currencyID, totalCurrencyCost, RED_FONT_COLOR_CODE);
+			else
+				currencyTable[#currencyTable + 1] = GetCurrencyString(currencyID, totalCurrencyCost);
+			end
 		end
 
-		rightStat = CreateFrame("FRAME", nil, ItemUpgradeFrame.StatsScroll.Contents, "ItemUpgradeStatTemplateRight");
-		rightStat:SetPoint("LEFT", leftStat, "RIGHT", 5, 0);
-
-		leftStat.BG:SetShown(mod(index, 2) == 1);
-		rightStat.BG:SetShown(mod(index, 2) == 1);
-
-		ItemUpgradeFrame.StatsScroll.Contents.LeftStat[index] = leftStat;
-		ItemUpgradeFrame.StatsScroll.Contents.RightStat[index] = rightStat;
-	end
-
-	return leftStat, rightStat;
-end
-
-function ItemUpgradeFrame_GetEffectRow(index, colorIndex, showRight)
-	local row = ItemUpgradeFrame.StatsScroll.Contents.EffectRow[index];
-	if ( not row ) then
-		row = CreateFrame("FRAME", nil, ItemUpgradeFrame.StatsScroll.Contents, "ItemUpgradeEffectRowTemplate");
-		if ( index > 1 ) then
-			row:SetPoint("TOP", ItemUpgradeFrame.StatsScroll.Contents.EffectRow[index - 1], "BOTTOM", 0, -1);
-		end
-		ItemUpgradeFrame.StatsScroll.Contents.EffectRow[index] = row;
-	end
-	row.LeftBg:SetShown(mod(colorIndex, 2) == 0);
-	row.RightBg:SetShown(showRight and mod(colorIndex, 2) == 0);
-	return row;
-end
-
-function HideStatsLeft()
-	local index = 1;
-	local leftStat, _ = ItemUpgradeFrame_GetStatRow(index);
-	while leftStat do
-		leftStat:Hide();
-		index = index + 1;
-		leftStat, _ = ItemUpgradeFrame_GetStatRow(index);
+		info.tooltipOnButton = 1;
+		info.tooltipWhileDisabled = 1;
+		info.tooltipTitle = table.concat(currencyTable, " ");
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
-function HideStatsRight()
-	local index = 1;
-	local _, rightStat = ItemUpgradeFrame_GetStatRow(index);
-	while rightStat do
-		rightStat:Hide();
-		index = index + 1;
-		_, rightStat = ItemUpgradeFrame_GetStatRow(index);
+local upgradedSoundKits = {
+	[Enum.ItemQuality.Rare] = SOUNDKIT.UI_ITEM_UPGRADE_UI_ITEM_UPGRADED_RARE,
+	[Enum.ItemQuality.Epic] = SOUNDKIT.UI_ITEM_UPGRADE_UI_ITEM_UPGRADED_EPIC,
+};
+
+function ItemUpgradeMixin:PlayUpgradedSound()
+	if self.upgradeInfo then
+		local soundKit = upgradedSoundKits[self.upgradeInfo.displayQuality] or SOUNDKIT.UI_ITEM_UPGRADE_UI_ITEM_UPGRADED;
+		PlaySound(soundKit);
 	end
 end
 
-ItemUpgradeFrameUpgradeButtonMixin = {};
+function ItemUpgradeMixin:PlayUpgradedCelebration()
+	self.LeftItemPreviewFrame.UpgradedAnim:Restart();
+	self.RightItemPreviewFrame.UpgradedAnim:Restart();
+	self.UpgradedFlash:Restart();
+	self:PlayUpgradedSound();
+end
 
-function ItemUpgradeFrameUpgradeButtonMixin:OnClick()
+ItemUpgradeButtonMixin = {};
+
+function ItemUpgradeButtonMixin:OnClick()
 	self:SetDisabledState(true);
+	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
+	local costTable = ItemUpgradeFrame:CalculateTotalCostTable(1);
+	local currencyTable = {};
+	for currencyID, totalCurrencyCost in pairs(costTable) do
+		currencyTable[#currencyTable + 1] = GetCurrencyString(currencyID, totalCurrencyCost);
+	end
 
-	local icon, name, quality, _, _, _, cost, currencyType = GetItemUpgradeItemInfo();
-	local itemsString = GetCurrencyString(currencyType, cost);
-	local r, g, b = GetItemQualityColor(quality);
 	local data = {
-		texture = icon,
-		name = name,
-		color = {r, g, b, 1},
-		link = C_ItemUpgrade.GetItemHyperlink()
+		texture = upgradeInfo.iconID,
+		name = upgradeInfo.name,
+		color = {upgradeInfo.itemQualityColor:GetRGBA()},
+		link = C_ItemUpgrade.GetItemHyperlink(),
 	};
 
-	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", itemsString, "", data);
+	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", table.concat(currencyTable, " "), "", data);
+end
+
+ItemUpgradePreviewMixin = {};
+
+function ItemUpgradePreviewMixin:OnShow()
+	if self.UpgradedAnim then
+		self.UpgradedAnim:Stop();
+		self.GlowAnimatedPieces:SetAlpha(0);
+		self.GlowNineSlice:SetAlpha(0);
+	end
+end
+
+function ItemUpgradePreviewMixin:OnEnter()
+	if self.truncated then
+		ItemUpgradeFrame.ItemHoverPreviewFrame:GeneratePreviewTooltip(self.isUpgrade, self);
+	end
+end
+
+function ItemUpgradePreviewMixin:OnLeave()
+	ItemUpgradeFrame.ItemHoverPreviewFrame:Hide();
+end
+
+--When changed will edit the max height a tooltip with the ItemUpgradePreviewMixin 
+--will get before text starts to get truncated and a hover tooltip is shown
+MAX_TOOLTIP_TRUNCATION_HEIGHT = 230;
+
+function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
+	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
+	local itemLevel = C_ItemUpgrade.GetItemUpdateLevel();
+	local numUpgradeLevels = UIDropDownMenu_GetSelectedValue(ItemUpgradeFrame.Dropdown) - upgradeInfo.currUpgrade;
+
+	if parentFrame then
+		self:SetOwner(parentFrame, "ANCHOR_NONE");
+		self:SetPoint("LEFT", parentFrame, "RIGHT", 0, 0);
+	else
+		self:SetOwner(ItemUpgradeFrame, "ANCHOR_PRESERVE");
+	end
+
+	self:SetMinimumWidth(220, true);
+	self:SetCustomLineSpacing(5);
+
+	GameTooltip_AddDisabledLine(self, isUpgrade and ITEM_UPGRADE_NEXT_UPGRADE or ITEM_UPGRADE_CURRENT);
+	GameTooltip_AddColoredLine(self, upgradeInfo.name, upgradeInfo.itemQualityColor);
+	self:ApplyColorToGlowNiceSlice(upgradeInfo.itemQualityColor);
+
+	if isUpgrade then
+		local ilvlInc = C_ItemUpgrade.GetItemLevelIncrement(numUpgradeLevels);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT:format(itemLevel + ilvlInc, ilvlInc), false);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade + numUpgradeLevels, upgradeInfo.maxUpgrade), false);
+	else
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT:format(itemLevel), false);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade), false);
+	end
+
+	-- Stats ----------------------------------------------------------------------------------------------
+	local stats	= isUpgrade and upgradeInfo.upgradeLevelInfos[numUpgradeLevels + 1].levelStats or upgradeInfo.upgradeLevelInfos[1].levelStats;
+	for _, statLine in ipairs(stats) do
+		if statLine.active then
+			GameTooltip_AddHighlightLine(self, statLine.displayString, false);
+		end
+	end
+
+	--Trinket Text -----------------------------------------------------------------------------------------
+	local text, upgradeText = C_ItemUpgrade.GetItemUpgradeEffect(1, numUpgradeLevels);
+	if isUpgrade and upgradeText then
+		text = ItemUpgradeFrame:GetTrinketUpgradeText(text, upgradeText);
+	end
+
+	if text then
+		GameTooltip_AddBlankLineToTooltip(self);
+
+		if not parentFrame then
+			local bigText = isUpgrade and ItemUpgradeFrame.RightPreviewBigText or ItemUpgradeFrame.LeftPreviewBigText;
+		
+			--Temp to force calc height
+			self:SetPadding(self:GetPadding());
+			bigText:ClearAllPoints();
+			bigText:SetPoint("TOP", self, "TOP", 0, 0);
+			bigText:SetHeight(0);
+			bigText:SetText(text);
+		
+			local maxHeight = MAX_TOOLTIP_TRUNCATION_HEIGHT - self:GetHeight();
+			if bigText:GetStringHeight() > maxHeight then
+				bigText:SetHeight(maxHeight);
+				self.truncated = true;
+			else
+				self.truncated = false;
+			end
+
+			--Used to truncate the tooltipHeight down to fit the text in an effort to solve
+			--spacing problem caused by the custom line spacing
+			local actualTooltipHeight = self:GetHeight() + bigText:GetHeight() + 12;
+			GameTooltip_InsertFrame(self, bigText);
+			self:Show();
+			self:SetHeight(actualTooltipHeight);
+		else
+			GameTooltip_AddHighlightLine(self, text, true);
+		end
+	end
+
+	self:Show();
+end
+
+function ItemUpgradePreviewMixin:ApplyColorToGlowNiceSlice(color)
+	if self.GlowNineSlice then
+		for _, region in enumerate_regions(self.GlowNineSlice) do
+			region:SetVertexColor(color:GetRGBA());
+		end
+	end
+end
+
+ItemUpgradeSlotMixin = {};
+
+function ItemUpgradeSlotMixin:OnLoad()
+	local function SetUpgradeableItemCallback(button)
+		local location = button:GetItemLocation();
+		C_ItemUpgrade.SetItemUpgradeFromLocation(location);
+	end
+
+	-- itemSlot is required by the API, but unused in this context.
+	local function GetUpgradeableItemsCallback(itemSlot, resultsTable)
+		self:GetItemUpgradeItemsCallBack(resultsTable);
+	end
+
+	--Using parent for the API
+	self:GetParent().flyoutSettings = {
+		customFlyoutOnUpdate = nop,
+		hasPopouts = true,
+		parent = self:GetParent():GetParent(),
+		anchorX = 20,
+		anchorY = -8,
+		useItemLocation = true,
+		hideFlyoutHighlight = true,
+		alwaysHideOnClick = true,
+		getItemsFunc = GetUpgradeableItemsCallback,
+		onClickFunc = SetUpgradeableItemCallback,
+		filterFunction = C_ItemUpgrade.CanUpgradeItem,
+	};
+end
+
+function ItemUpgradeSlotMixin:GetItemUpgradeItemsCallBack(resultsTable)
+	local function ItemLocationCallback(itemLocation)
+		if C_ItemUpgrade.CanUpgradeItem(itemLocation) then
+			resultsTable[itemLocation] = C_Item.GetItemLink(itemLocation);
+		end
+	end
+
+	ContainerFrameUtil_IteratePlayerInventory(ItemLocationCallback);
+
+	for i = EQUIPPED_FIRST, EQUIPPED_LAST do
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(i);
+		if C_Item.DoesItemExist(itemLocation) then
+			ItemLocationCallback(itemLocation);
+		end
+	end
+end
+
+function ItemUpgradeSlotMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetUpgradeItem();
+	GameTooltip:Show();
+end
+
+function ItemUpgradeSlotMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ItemUpgradeSlotMixin:OnClick(buttonName)
+	if buttonName == "RightButton" then
+		C_ItemUpgrade.ClearItemUpgrade();
+		return;
+	end
+
+	local cursorItem = C_Cursor.GetCursorItem();
+	if cursorItem then
+		if C_ItemUpgrade.CanUpgradeItem(cursorItem) then
+			C_ItemUpgrade.SetItemUpgradeFromCursorItem();
+			ClearCursor();
+		end
+	else
+		EquipmentFlyout_Show(self);
+	end
+end
+
+function ItemUpgradeSlotMixin:OnDrag()
+	local cursorItem = C_Cursor.GetCursorItem();
+	if cursorItem then
+		C_ItemUpgrade.SetItemUpgradeFromCursorItem();
+		GameTooltip:Hide();
+	end
+end
+
+ItemUpgradeItemInfoMixin = {};
+
+function ItemUpgradeItemInfoMixin:Setup(upgradeInfo, canUpgrade)
+	if not upgradeInfo then
+		self.MissingItemText:Show();
+		self.ItemName:Hide();
+		self.UpgradeTo:Hide();
+		self.Dropdown:Hide();
+	else
+		self.MissingItemText:Hide();
+
+		self.ItemName:SetText(upgradeInfo.itemQualityColor:WrapTextInColorCode(upgradeInfo.name));
+		self.ItemName:Show();
+
+		self.UpgradeTo:SetShown(canUpgrade);
+		self.Dropdown:SetShown(canUpgrade);
+	end
+
+	self:Layout();
 end

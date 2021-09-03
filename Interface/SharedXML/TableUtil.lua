@@ -30,7 +30,12 @@ function tIndexOf(tbl, item)
 end
 
 function tContains(tbl, item)
-	return tIndexOf(tbl, item) ~= nil;
+	for k, v in pairs(tbl) do
+		if item == v then
+			return true;
+		end
+	end
+	return false;
 end
 
 -- This is a deep compare on the values of the table (based on depth) but not a deep comparison

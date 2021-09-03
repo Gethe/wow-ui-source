@@ -3548,9 +3548,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		local channelLength = strlen(arg4);
 		local infoType = type;
 
-		if type == "VOICE_TEXT" then
-			infoType, type = VoiceTranscription_DetermineChatType(UnitIsGroupLeader(arg2));
-			info = ChatTypeInfo[infoType];
+		if type == "VOICE_TEXT" and not GetCVarBool("speechToText") then
+			return;
 
 		elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
@@ -4187,7 +4186,7 @@ function ChatFrame_DisplayChatHelp(frame)
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
 		-- hack fix for removing a line without causing localization problems
-		if ( i == 15 ) then
+		if ( i == 10 or i == 15 ) then
 			i = i + 1;
 		end
 		text = _G["CHAT_HELP_TEXT_LINE"..i];
@@ -4468,7 +4467,7 @@ function ChatEdit_SetLastActiveWindow(editBox)
 	if ( editBox.disableActivate ) then
 		return;
 	end
-
+	
 	local previousValue = LAST_ACTIVE_CHAT_EDIT_BOX;
 	if ( LAST_ACTIVE_CHAT_EDIT_BOX and not LAST_ACTIVE_CHAT_EDIT_BOX.isGM and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		if ( GetCVar("chatStyle") == "im" ) then

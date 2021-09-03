@@ -554,6 +554,14 @@ function CharacterCreateMixin:PreviewCustomizationChoice(optionID, choiceID)
 	C_CharacterCreation.PreviewCustomizationChoice(optionID, choiceID);
 end
 
+function CharacterCreateMixin:MarkCustomizationChoiceAsSeen(choiceID)
+	C_CharacterCreation.MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function CharacterCreateMixin:SaveSeenChoices()
+	C_CharacterCreation.SaveSeenChoices();
+end
+
 function CharacterCreateMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
 	C_CharacterCreation.SetCameraZoomLevel(zoomLevel, keepCustomZoom);
 end

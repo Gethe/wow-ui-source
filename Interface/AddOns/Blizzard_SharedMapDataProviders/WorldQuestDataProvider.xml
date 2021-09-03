@@ -5,6 +5,10 @@
 	<Frame name="WorldQuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="WorldQuestPinMixin" virtual="true">
 		<Size x="50" y="50"/>
 
+		<KeyValues>
+			<KeyValue key="questRewardTooltipStyle" value="TOOLTIP_QUEST_REWARDS_STYLE_WORLD_QUEST" type="global"/>
+		</KeyValues>
+
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-4">
 				<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">

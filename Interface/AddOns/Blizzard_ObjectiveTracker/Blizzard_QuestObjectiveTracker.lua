@@ -287,8 +287,10 @@ function QuestObjectiveTracker_DoQuestObjectives(self, block, questCompleted, qu
 	local objectiveCompleting = false;
 	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(block.id);
 	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+	local suppressProgressPercentageInObjectiveText = true;
 	for objectiveIndex = 1, numObjectives do
-		local text, objectiveType, finished = GetQuestLogLeaderBoard(objectiveIndex, questLogIndex);
+
+		local text, objectiveType, finished = GetQuestLogLeaderBoard(objectiveIndex, questLogIndex, suppressProgressPercentageInObjectiveText);
 		if ( text ) then
 			local line = block.lines[objectiveIndex];
 			if ( questCompleted ) then

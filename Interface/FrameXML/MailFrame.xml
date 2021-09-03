@@ -67,9 +67,7 @@
 					</OnLeave>						
 				</Scripts>
 				<NormalFont style="GameFontHighlightSmallRight"/>
-				<PushedTextOffset>
-					<AbsDimension x="0" y="0"/> 
-				</PushedTextOffset>
+				<PushedTextOffset x="0" y="0"/> 
 			</Button>
 			<CheckButton parentKey="Button" name="$parentButton" hidden="true">
 				<Size x="37" y="37"/>
@@ -481,12 +479,11 @@
 						<FontString name="SendMailErrorText" inherits="GameFontRedSmall" hidden="true">
 							<Size x="0" y="10"/>
 						</FontString>
-						<Texture name="SendMailErrorCoin" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+						<Texture name="SendMailErrorCoin" atlas="coin-gold" hidden="true">
 							<Size x="10" y="10"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="SendMailErrorText" relativePoint="RIGHT" x="1" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="SendMailHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size x="256" y="16"/>

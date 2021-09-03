@@ -6,6 +6,7 @@
 	atLeastShowAzerite - bool
 	fullItemDescription - bool
 	prioritizeCurrencyOverItem - bool
+	showCollectionText - bool
 --]]
 
 TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
@@ -17,6 +18,15 @@ TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
 	fullItemDescription = true,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_WORLD_QUEST = {
+	headerText = QUEST_REWARDS,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 1,
+	postHeaderBlankLineCount = 0,
+	wrapHeaderText = true,
+	fullItemDescription = true,
+	showCollectionText = true,
+}
 
 TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER = {
 	prefixBlankLineCount = 0,
@@ -269,7 +279,9 @@ function GameTooltip_CalculatePadding(tooltip)
 	end
 
 	if (math.abs(paddingWidth - oldPaddingWidth) > 0.5) or (math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
-		tooltip:SetPadding(paddingWidth, paddingHeight, 0, 0);
+		--if tooltip:IsRectValid() then
+			tooltip:SetPadding(paddingWidth, paddingHeight, 0, 0);
+		--end
 	end
 end
 
@@ -358,67 +370,36 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
-GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED = {
-	-- Nothing
-};
-
 GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Azerite",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Azerite",
-	tile = true,
-	tileEdge = false,
-	tileSize = 16,
-	edgeSize = 19,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
+	layoutType = "TooltipAzeriteLayout",
 
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = WHITE_FONT_COLOR,
-
-	overlayAtlasTop = "AzeriteTooltip-Topper";
+	overlayAtlasTop = "AzeriteTooltip-Topper",
 	overlayAtlasTopScale = .75,
-	overlayAtlasTopYOffset = 1;
-	overlayAtlasBottom = "AzeriteTooltip-Bottom";
-	overlayAtlasBottomYOffset = 2;
+	overlayAtlasTopYOffset = 1,
+	overlayAtlasBottom = "AzeriteTooltip-Bottom",
+	overlayAtlasBottomYOffset = 2,
 
-	padding = { left = 3, right = 3, top = 3, bottom = 3 },
+	padding = { left = 6, right = 6, top = 6, bottom = 6 },
 };
 
 GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Corrupted",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Corrupted",
-	tile = true,
-	tileEdge = false,
-	tileSize = 16,
-	edgeSize = 19,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
+	layoutType = "TooltipCorruptedLayout",
 
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = WHITE_FONT_COLOR,
-
-	overlayAtlasTop = "Nzoth-tooltip-topper";
+	overlayAtlasTop = "Nzoth-tooltip-topper",
 	overlayAtlasTopScale = .75,
-	overlayAtlasTopYOffset = -2;
+	overlayAtlasTopYOffset = -2,
 
-	padding = { left = 3, right = 3, top = 3, bottom = 3 },
+	padding = { left = 6, right = 6, top = 6, bottom = 6 },
 };
 
 GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Maw",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Maw",
-	tile = true,
-	tileEdge = false,
-	tileSize = 16,
-	edgeSize = 19,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
+	layoutType = "TooltipMawLayout",
 
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = WHITE_FONT_COLOR,
-
-	overlayAtlasTop = "Maw-tooltip-topper";
+	overlayAtlasTop = "Maw-tooltip-topper",
 	overlayAtlasTopScale = .75,
-	overlayAtlasTopYOffset = -2;
+	overlayAtlasTopYOffset = -2,
 
-	padding = { left = 3, right = 3, top = 3, bottom = 3 },
+	padding = { left = 6, right = 6, top = 6, bottom = 6 },
 };
 
 GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
@@ -428,7 +409,8 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 function GameTooltip_OnHide(self)
 	self.needsReset = true;
 	self.waitingForData = false;
-	SharedTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or TOOLTIP_BACKDROP_STYLE_DEFAULT);
+	local style = nil;
+	SharedTooltip_SetBackdropStyle(self, style, self.IsEmbedded);
 	GameTooltip_ClearMoney(self);
 	GameTooltip_ClearStatusBars(self);
 	GameTooltip_ClearProgressBars(self);
@@ -518,7 +500,7 @@ function GameTooltip_OnTooltipSetUnit(self)
 end
 
 function GameTooltip_UpdateStyle(self)
-	local backdropStyle = TOOLTIP_BACKDROP_STYLE_DEFAULT;
+	local backdropStyle = nil;
 	local _, itemLink = self:GetItem();
 	if itemLink then
 		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemLink) or C_AzeriteItem.IsAzeriteItemByID(itemLink) then
@@ -1020,7 +1002,7 @@ function EmbeddedItemTooltip_SetItemByID(self, id, count)
 	EmbeddedItemTooltip_UpdateSize(self);
 end
 
-function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, rewardType)
+function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, rewardType, showCollectionText)
 	if not questLogIndex then
 		return false;
 	end
@@ -1041,7 +1023,7 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, 
 		self:Show();
 		EmbeddedItemTooltip_PrepareForItem(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetQuestLogItem(rewardType, questLogIndex, questID);
+		self.Tooltip:SetQuestLogItem(rewardType, questLogIndex, questID, showCollectionText);
 		SetItemButtonQuality(self, quality, itemID);
 		SetItemButtonCount(self, quantity);
 		self.Icon:SetTexture(itemTexture);

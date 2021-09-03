@@ -129,7 +129,7 @@
 						<Anchor point="RIGHT" x="-15" y="0"/>
 					</Anchors>
 					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 					</Shadow>
 				</FontString>
 				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
@@ -429,7 +429,7 @@
 										<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="8" y="0"/>
 									</Anchors>
 									<Shadow>
-										<Color r="0.32" g="0.5" b="1.0"/>
+										<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 									</Shadow>
 								</FontString>
 

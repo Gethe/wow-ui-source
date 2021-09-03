@@ -90,9 +90,6 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="10"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad inherit="prepend">
-						self:SetBackdrop(nil);
-					</OnLoad>
 					<OnSizeChanged>
 						EmbeddedItemTooltip_UpdateSize(self:GetParent());
 					</OnSizeChanged>

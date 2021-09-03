@@ -9,6 +9,12 @@ local MOUNT_FACTION_TEXTURES = {
 	[1] = "MountJournalIcons-Alliance"
 };
 
+local mountTypeStrings = {
+	[Enum.MountType.Ground] = MOUNT_JOURNAL_FILTER_GROUND,
+	[Enum.MountType.Flying] = MOUNT_JOURNAL_FILTER_FLYING,
+	[Enum.MountType.Aquatic] = MOUNT_JOURNAL_FILTER_AQUATIC,
+};
+
 StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
 	text = DIALOG_INSTRUCTION_REPLACE_MOUNT_EQUIPMENT,
 	button1 = YES,
@@ -794,6 +800,34 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 
+		UIDropDownMenu_AddSpace(level);
+
+		info.hasArrow = false;
+		info.isNotRadio = true;
+		info.notCheckable = true;
+		info.isTitle = true;
+		info.text = MOUNT_JOURNAL_FILTER_TYPE;
+		UIDropDownMenu_AddButton(info, level);
+
+		for i=1, Enum.MountTypeMeta.NumValues do
+			info = UIDropDownMenu_CreateInfo();
+			info.keepShownOnClick = true;
+			info.isNotRadio = true;
+			if not C_MountJournal.IsValidTypeFilter(i) then
+				break;
+			end
+
+			info.text = mountTypeStrings[i-1];
+
+			info.func = function(_, _, _, value)
+							C_MountJournal.SetTypeFilter(i, value);
+						end
+			info.checked = function() return C_MountJournal.IsTypeChecked(i) end;
+			UIDropDownMenu_AddButton(info, level);
+		end;
+
+		UIDropDownMenu_AddSpace(level);
+
 		info.checked = 	nil;
 		info.isNotRadio = nil;
 		info.func =  nil;
@@ -803,6 +837,7 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		info.text = SOURCES;
 		info.value = 1;
 		UIDropDownMenu_AddButton(info, level)
+
 	else --if level == 2 then
 		info.hasArrow = false;
 		info.isNotRadio = true;

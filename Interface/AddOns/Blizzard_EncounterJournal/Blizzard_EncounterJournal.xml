@@ -2968,7 +2968,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad inherit="prepend">
-								SharedTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED);
+								SharedTooltip_SetBackdropStyle(self, nil, true);
 								self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 							</OnLoad>
 							<OnUpdate function="GameTooltip_OnUpdate"/>

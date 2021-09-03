@@ -172,6 +172,16 @@ local GamePad =
 			},
 		},
 		{
+			Name = "SetVibration",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vibrationType", Type = "string", Nilable = false },
+				{ Name = "intensity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "StickIndexToConfigName",
 			Type = "Function",
 
@@ -184,6 +194,10 @@ local GamePad =
 			{
 				{ Name = "configName", Type = "string", Nilable = true },
 			},
+		},
+		{
+			Name = "StopVibration",
+			Type = "Function",
 		},
 	},
 
@@ -317,6 +331,8 @@ local GamePad =
 				{ Name = "axisX", Type = "string", Nilable = true },
 				{ Name = "axisY", Type = "string", Nilable = true },
 				{ Name = "deadzone", Type = "number", Nilable = true },
+				{ Name = "deadzoneX", Type = "number", Nilable = true },
+				{ Name = "deadzoneY", Type = "number", Nilable = true },
 				{ Name = "comment", Type = "string", Nilable = true },
 			},
 		},

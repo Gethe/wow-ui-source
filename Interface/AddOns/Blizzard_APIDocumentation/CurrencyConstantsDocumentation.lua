@@ -52,7 +52,7 @@ local CurrencyConstants =
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "CurrencyBUseTotalEarnedForMaxQty", Type = "CurrencyFlagsB", EnumValue = 1 },
+				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
 				{ Name = "CurrencyBShowQuestXpGainInTooltip", Type = "CurrencyFlagsB", EnumValue = 2 },
 			},
 		},

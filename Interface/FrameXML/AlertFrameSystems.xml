@@ -2575,4 +2575,29 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
+	<ContainedAlertFrame name="NewCosmeticAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewCosmeticAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="CosmeticToast-Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="LeftModelScene" inherits="ScriptAnimatedModelSceneTemplate">
+				<Size x="14" y="60"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-16"/>
+				</Anchors>
+			</ModelScene>
+			<ModelScene parentKey="RightModelScene" inherits="ScriptAnimatedModelSceneTemplate">
+				<Size x="14" y="60"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-16"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+	</ContainedAlertFrame>
 </Ui>

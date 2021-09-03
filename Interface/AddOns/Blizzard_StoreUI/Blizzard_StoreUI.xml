@@ -339,7 +339,7 @@
 		</Button>
 		<EditBox name="StoreEditBoxWithAutoCompleteTemplate" inherits="StoreEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
 			<Frames>
-				<Frame parentKey="AutoCompleteBox" inherits="TooltipBorderedFrameTemplate" hidden="true">
+				<Frame parentKey="AutoCompleteBox" inherits="NineSlicePanelTemplate" hidden="true">
 					<Size x="150" y="5"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="14"/>
@@ -365,6 +365,9 @@
 							</Scripts>
 						</Button>
 					</Frames>
+					<KeyValues>
+						<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+					</KeyValues>
 					<Scripts>
 						<OnShow>
 							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
@@ -862,7 +865,7 @@
 				<Layer level="ARTWORK">
 					<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-98" y="46" />
+							<Anchor point="BOTTOMRIGHT" x="-98" y="29" />
 						</Anchors>
 					</FontString>
 				</Layer>
@@ -1112,7 +1115,7 @@
 				<Button parentKey="PrevPageButton">
 					<Size x="32" y="32" />
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-57" y="36" />
+						<Anchor point="BOTTOMRIGHT" x="-57" y="18" />
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFramePrevPageButton_OnClick" />
@@ -1125,7 +1128,7 @@
 				<Button parentKey="NextPageButton">
 					<Size x="32" y="32" />
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-22" y="36" />
+						<Anchor point="BOTTOMRIGHT" x="-22" y="18" />
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameNextPageButton_OnClick" />
@@ -1759,7 +1762,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="NineSlicePanelTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">
@@ -1777,6 +1780,9 @@
 					</FontString>
 				</Layer>
 			</Layers>
+			<KeyValues>
+				<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+			</KeyValues>
 		</Frame>
 
 		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" mixin="StoreBulletPointMixin" hyperlinksEnabled="true" virtual="true">

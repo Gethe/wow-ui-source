@@ -1061,19 +1061,19 @@
 		ToggleCollectionsJournal();
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(1);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(2);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSTOYBOX" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(3);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(4);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(5);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	</Binding>
 
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">

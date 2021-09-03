@@ -1683,6 +1683,9 @@ function FCF_Close(frame, fallback)
 	FCF_UnDockFrame(frame);
 	HideUIPanel(frame);
 	_G[frame:GetName().."Tab"]:Hide();
+	if ( GetCVar("chatStyle") == "im" and LAST_ACTIVE_CHAT_EDIT_BOX == frame.editBox ) then
+		ChatEdit_SetLastActiveWindow(DEFAULT_CHAT_FRAME.editBox);
+	end
 	FCF_FlagMinimizedPositionReset(frame);
 	if ( frame.minFrame and frame.minFrame:IsShown() ) then
 		frame.minFrame:Hide();

@@ -201,16 +201,6 @@ function AddonList_OnLoad(self)
 		AddonDialog:SetFrameStrata("DIALOG")
 		AddonDialogButton1:SetScript("OnClick", AddonDialog_OnClick);
 		AddonDialogButton2:SetScript("OnClick", AddonDialog_OnClick);
-		local bg = CreateFrame("Frame", "AddonListBackground", GlueParent)
-		bg:SetFrameStrata("HIGH")
-		bg:EnableMouse(true)
-		bg:SetAllPoints()
-		bg:Hide()
-		local tex = bg:CreateTexture()
-		tex:SetColorTexture(0, 0, 0, 0.6)
-		tex:SetDrawLayer("BACKGROUND")
-		tex:SetPoint("TOPLEFT")
-		tex:SetPoint("BOTTOMRIGHT")
 		self:EnableKeyboard(true)
 		self:SetScript("OnKeyDown", AddonList_OnKeyDown)
 		self:SetFrameStrata("DIALOG")
@@ -472,9 +462,9 @@ function AddonListScrollFrame_OnVerticalScroll(self, offset)
 	end
 end
 
-function AddonList_OnShow()
+function AddonList_OnShow(self)
 	if ( InGlue() ) then
-		AddonListBackground:Show()
+		GlueParent_AddModalFrame(self);
 	end
 	UIDropDownMenu_Initialize(AddonCharacterDropDown, AddonListCharacterDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue( AddonCharacterDropDown, UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown) );
@@ -483,7 +473,7 @@ end
 
 function AddonList_OnHide(self)
 	if ( InGlue() ) then
-		AddonListBackground:Hide()
+		GlueParent_RemoveModalFrame(self);
 	end
 	if ( self.save ) then
 		SaveAddOns();

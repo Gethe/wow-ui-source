@@ -1010,73 +1010,32 @@
 
 <!--
 *******************************************************************************
-    Tooltip bordered frame
+    Tooltip backdrops
 *******************************************************************************
 -->
-	<Frame name="TooltipBorderedFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BorderTopLeft" file="Interface\Tooltips\UI-Tooltip-TL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderTopRight" file="Interface\Tooltips\UI-Tooltip-TR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderBottomRight" file="Interface\Tooltips\UI-Tooltip-BR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderBottomLeft" file="Interface\Tooltips\UI-Tooltip-BL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderTop" file="Interface\Tooltips\UI-Tooltip-T">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderRight" file="Interface\Tooltips\UI-Tooltip-R">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderBottom" file="Interface\Tooltips\UI-Tooltip-B">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderLeft" file="Interface\Tooltips\UI-Tooltip-L">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Background">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
-			</Layer>
-		</Layers>
+
+	<Frame name="TooltipBackdropTemplate" mixin="TooltipBackdropTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TooltipBorderBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value="0" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="TooltipBorderedFrameTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value="0.8" type="number"/>
+		</KeyValues>
 	</Frame>
 
 	<Texture name="GreenCheckMarkTemplate" file="Interface\Scenarios\ScenarioIcon-Check" virtual="true">
@@ -2317,6 +2276,13 @@
 		</KeyValues>
 	</Button>
 
+	<Button name="BigRedExitButtonTemplate" inherits="UIButtonTemplate" virtual="true">
+		<Size x="128" y="128"/>
+		<KeyValues>
+			<KeyValue key="atlasName" value="128-redbutton-exit" type="string"/>
+		</KeyValues>
+	</Button>
+	
 	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
 		<!--
 		labelText: The text to use on the label
@@ -2465,13 +2431,29 @@
 	</Frame>
 
 	<Frame name="SelectionPopoutDetails" mixin="SelectionPopoutDetailsMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="selectable" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="SelectionNumberBG" font="GameFontNormal_NoShadow" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="25" y="20"/>
+					<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0.5" y="-0.5"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="SelectionNumber" font="GameFontNormal" justifyH="LEFT">
 					<Size x="25" y="20"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
+					<Shadow>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+					</Shadow>
 				</FontString>
 				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT"  maxLines="1" hidden="true">
 					<Size x="25" y="20"/>
@@ -2488,6 +2470,16 @@
 					<Size x="36" y="8"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT" x="18" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="NewGlow" atlas="charactercreate-customize-dropdown-newtagglow" useAtlasSize="true" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SelectionNumber" relativePoint="LEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -2594,6 +2586,9 @@
 		<Frames>
 			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true">
 				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="selectable" value="false" type="boolean"/>
+				</KeyValues>
 			</Frame>
 			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
 				<Anchors>

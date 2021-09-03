@@ -77,6 +77,8 @@ function TransmogFrameMixin:OnLoad()
 	self.SecondaryHandEnchantButton.dependencySlot = self.SecondaryHandButton;
 	self.ShoulderButton.dependentSlot = self.SecondaryShoulderButton;
 	self.SecondaryShoulderButton.dependencySlot = self.ShoulderButton;
+
+	WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox.Label:SetPoint("RIGHT", WardrobeCollectionFrame.ItemsCollectionFrame.PagingFrame.PageText, "LEFT", -40, 0);
 end
 
 function TransmogFrameMixin:OnEvent(event, ...)
@@ -509,18 +511,10 @@ function TransmogFrameMixin:OnTransmogApplied()
 	end
 end
 
-WardrobeOutfitMixin = { };
+WardrobeOutfitMixin = CreateFromMixins(WardrobeOutfitFrameMixin);
 
 function WardrobeOutfitMixin:OnOutfitApplied(outfitID)
-	local value = outfitID or "";
-	if GetCVarBool("transmogCurrentSpecOnly") then
-		local specIndex = GetSpecialization();
-		SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
-	else
-		for specIndex = 1, GetNumSpecializations() do
-			SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
-		end
-	end
+	self:SaveLastOutfit(outfitID);
 end
 
 function WardrobeOutfitMixin:LoadOutfit(outfitID)
@@ -536,22 +530,6 @@ function WardrobeOutfitMixin:GetItemTransmogInfoList()
 		return playerActor:GetItemTransmogInfoList();
 	end
 	return nil;
-end
-
-function WardrobeOutfitMixin:OnOutfitSaved(outfitID)
-	if C_Transmog.GetApplyCost() then
-		self:OnOutfitApplied(outfitID);
-	end
-end
-
-function WardrobeOutfitMixin:OnSelectOutfit(outfitID)
-	-- outfitID can be 0, so use empty string for none
-	local value = outfitID or "";
-	for specIndex = 1, GetNumSpecializations() do
-		if GetCVar("lastTransmogOutfitIDSpec"..specIndex) == "" then
-			SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
-		end
-	end
 end
 
 function WardrobeOutfitMixin:GetLastOutfitID()
@@ -877,18 +855,21 @@ function TransmogSlotButtonMixin:RefreshItemModel()
 		local currentItemTransmogInfo = actor:GetItemTransmogInfo(slotID);
 		-- need the main category for mainhand
 		local mainHandCategoryID;
-		local canRecurse = false;
+		local isLegionArtifact = false;
 		if self.transmogLocation:IsMainHand() then
 			mainHandCategoryID = C_Transmog.GetSlotEffectiveCategory(self.transmogLocation);
-			canRecurse = TransmogUtil.IsCategoryLegionArtifact(mainHandCategoryID);
+			isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(mainHandCategoryID);
 		end
 		-- update only if there is a change or it can recurse (offhand is processed first and mainhand might override offhand)
-		if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) or canRecurse then
+		if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) or isLegionArtifact then
 			-- don't specify a slot for ranged weapons
 			if mainHandCategoryID and TransmogUtil.IsCategoryRangedWeapon(mainHandCategoryID) then
 				slotID = nil;
 			end
-			actor:SetItemTransmogInfo(itemTransmogInfo, slotID, canRecurse);
+			if isLegionArtifact then
+				itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.MainHandTransmogFromPairedCategory;
+			end
+			actor:SetItemTransmogInfo(itemTransmogInfo, slotID);
 		end
 	end
 end
@@ -1212,6 +1193,19 @@ function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
 		self:SetTab(TAB_SETS);
 		self.SetsCollectionFrame:SelectSet(setID);
 	end
+end
+
+function WardrobeCollectionFrameMixin:GoToItem(sourceID)
+	self:SetTab(TAB_ITEMS);
+	local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+	local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(categoryID);
+	local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+	self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+end
+
+function WardrobeCollectionFrameMixin:GoToSet(setID)
+	self:SetTab(TAB_SETS);
+	self.SetsCollectionFrame:SelectSet(setID);
 end
 
 function WardrobeCollectionFrameMixin:UpdateTabButtons()
@@ -1722,7 +1716,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 		self:ChangeModelsSlot(self.transmogLocation);
 		needsUpdate = true;
 	else
-		local transmogLocation = TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		local transmogLocation = C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:GetSelectedTransmogLocation() or TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 		self:SetActiveSlot(transmogLocation);
 	end
 

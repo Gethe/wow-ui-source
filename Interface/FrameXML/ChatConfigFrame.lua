@@ -94,6 +94,12 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
 	},
+	[17] = {
+		text = VOICE_CHAT_TRANSCRIPTION,
+		type = "VOICE_TEXT",
+		checked = function () return IsListeningForMessageType("VOICE_TEXT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "VOICE_TEXT"); end;
+	},
 };
 
 CHAT_CONFIG_CHAT_CREATURE_LEFT = {
@@ -1523,6 +1529,8 @@ end
 function UpdateDefaultButtons(combatLogSelected, textToSpeechSelected)
 	TextToSpeechDefaultButton:SetShown(textToSpeechSelected);
 	TextToSpeechDefaultButton:SetWidth(TextToSpeechDefaultButton.Text:GetWidth() + 32);
+	TextToSpeechCharacterSpecificButton:SetPoint("LEFT", TextToSpeechDefaultButton, "RIGHT", 5, 0);
+	TextToSpeechCharacterSpecificButton:SetShown(textToSpeechSelected);
 	CombatLogDefaultButton:SetShown(combatLogSelected);
 	ChatConfigFrame.DefaultButton:SetShown(not combatLogSelected and not textToSpeechSelected);
 	ChatConfigFrame.RedockButton:SetShown(not combatLogSelected and not textToSpeechSelected);
@@ -1607,7 +1615,7 @@ function CreateChatTextToSpeechChannelList(self, ...)
 		end
 		
 		local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(channel);
-		local checked = TextToSpeechFrame_GetChannelEnabled(channelInfo);
+		local checked = C_TTSSettings.GetChannelEnabled(channelInfo);
 
 		while count < channelID do
 			-- Leave empty entries for missing channels to allow for re-ordering.
@@ -2082,13 +2090,24 @@ function ChatConfigChannelSettings_OnShow()
 	UpdateDefaultButtons(false);
 end
 
+local ChannelTypeFormat = "CHANNEL%d";
+function ChatConfigChannelSettings_SwapChannelsByIndex(firstChannelIndex, secondChannelIndex)
+	local firstChatType = ChannelTypeFormat:format(firstChannelIndex);
+	local secondChatType = ChannelTypeFormat:format(secondChannelIndex);
+	local firstTypeInfo = ChatTypeInfo[firstChatType];
+	local secondTypeInfo = ChatTypeInfo[secondChatType];
+	ChatTypeInfo[firstChatType] = secondTypeInfo;
+	ChatTypeInfo[secondChatType] = firstTypeInfo;
+	C_ChatInfo.SwapChatChannelsByChannelIndex(firstChannelIndex, secondChannelIndex);
+	ChatConfigChannelSettings_UpdateCheckboxes();
+end
+
 function ChatConfigChannelSettings_MoveChannelDown(channelIndex)
 	if channelIndex == #CHAT_CONFIG_CHANNEL_LIST then
 		return;
 	end
 
-	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex + 1);
-	ChatConfigChannelSettings_UpdateCheckboxes();
+	ChatConfigChannelSettings_SwapChannelsByIndex(channelIndex, channelIndex + 1)
 end
 
 function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
@@ -2096,8 +2115,7 @@ function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
 		return;
 	end
 
-	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex - 1);
-	ChatConfigChannelSettings_UpdateCheckboxes();
+	ChatConfigChannelSettings_SwapChannelsByIndex(channelIndex, channelIndex - 1)
 end
 
 function ChatConfigOtherSettings_UpdateCheckboxes()
@@ -2378,7 +2396,7 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	local channelIndex = self:GetID();
 	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
-			C_ChatInfo.SwapChatChannelsByChannelIndex(i, i + 1);
+			ChatConfigChannelSettings_SwapChannelsByIndex(i, i + 1);
 		end
 	else
 		LeaveChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID);
@@ -2393,4 +2411,38 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	end
 
 	ChatConfigChannelSettings_UpdateCheckboxes();
+end
+
+TextToSpeechCharacterSpecificButtonMixin = {};
+
+function TextToSpeechCharacterSpecificButtonMixin:OnLoad()
+	local descriptionText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(CHARACTER_SPECIFIC_SETTINGS);
+	self.text:SetText(descriptionText);
+	self.text:SetFontObject(GameFontNormal);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnShow()
+	local checked = GetCVarBool("TTSUseCharacterSettings");
+	self:SetChecked(checked);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnClick(button, down)
+	local checked = self:GetChecked();
+	if (checked) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+	
+	SetCVar("TTSUseCharacterSettings", checked);
+	TextToSpeechFrame_Update(TextToSpeechFrame);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(CHARACTER_SPECIFIC_SETTINGS_TOOLTIP, nil, nil, nil, nil, true);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnHide()
+	GameTooltip_Hide();
 end

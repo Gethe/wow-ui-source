@@ -1,0 +1,135 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_BehavioralMessaging.lua"/>
+	<Button name="BehaviorMessagingNotificationTemplate" mixin="BehavioralMessagingNotificationMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+		</KeyValues>
+		<Size x="180" y="41"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="TitleText" inherits="Game11Font">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10" />
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="SubtitleText" text="BEHAVIORAL_NOTIFICATION_OPEN" inherits="Game11Font">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+		</Frames>
+	</Button>
+	
+	<Frame name="BehavioralMessagingTray" inherits="HorizontalLayoutFrame" mixin="BehavioralMessagingTrayMixin" parent="UIParent" hidden="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BehavioralMessagingDetails" mixin="BehavioralMessagingDetailsMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
+		<Size x="500" y="625"/>
+		<Anchors>
+			<Anchor point="CENTER" y="150"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">>
+				<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="TOPRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size y="36"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".7"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="TopInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="-21" relativeKey="$parent.TopInset"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="-21" relativeKey="$parent.TopInset"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="7" relativeKey="$parent.BottomInset"/>
+						<Anchor point="TOPRIGHT" x="-6" y="7" relativeKey="$parent.BottomInset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Text" inherits="Game16Font" text="BEHAVIORAL_DETAILS_TITLE_BAR">
+					<Anchors>
+						<Anchor point="TOP" y="-17"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" frameLevel="2" setAllPoints="true"/>
+			<Frame parentKey="Body">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMLEFT" x="30" y="-25"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="-30" y="30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="TitleText" inherits="Game18Font" justifyH="LEFT" wordwrap="true" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="BodyText" inherits="Game13Font" justifyH="LEFT" wordwrap="true" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT" y="-30"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</FontString>
+						<Texture atlas="gmchat-watermark-blizzard" alpha=".2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="BEHAVIORAL_DETAILS_CLOSE_BUTTON">
+				<Size x="140" y="21"/>	
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" y="15"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

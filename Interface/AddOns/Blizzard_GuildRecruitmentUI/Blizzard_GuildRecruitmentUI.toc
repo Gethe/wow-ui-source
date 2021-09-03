@@ -1,3 +1,0 @@
-## Title: Blizzard Guild Recruitment UI
-## LoadOnDemand: 1
-GuildRecruitment.xml

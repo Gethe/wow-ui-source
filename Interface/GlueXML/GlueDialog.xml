@@ -154,6 +154,7 @@
 			<OnHide function="GlueDialog_OnHide"/>
 			<OnUpdate function="GlueDialog_OnUpdate"/>
 			<OnKeyDown function="GlueDialog_OnKeyDown"/>
+			<OnMouseWheel function="nop"/>
 		</Scripts>
 	</Frame>
 

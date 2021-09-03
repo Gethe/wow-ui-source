@@ -280,7 +280,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ContributionBuffTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="ContributionBuffTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="ARTWORK">

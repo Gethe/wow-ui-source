@@ -83,6 +83,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "MarkCustomizationChoiceAsSeen",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "choiceID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PreviewCustomizationChoice",
 			Type = "Function",
 
@@ -112,6 +121,10 @@ local BarberShop =
 			{
 				{ Name = "diffDegrees", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "SaveSeenChoices",
+			Type = "Function",
 		},
 		{
 			Name = "SetCameraDistanceOffset",

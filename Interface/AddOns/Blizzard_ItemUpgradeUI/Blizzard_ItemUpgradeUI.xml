@@ -1,476 +1,386 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_ItemUpgradeUI.lua"/>
+	<GameTooltip name="ItemUpgradeTooltipTemplate" inherits="SharedTooltipTemplate" mixin="ItemUpgradePreviewMixin" virtual="true">
+		<Size x="240" y="190"/>
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight1Font" value="GameTooltipText" type="string"/>
+		</KeyValues>
+	</GameTooltip>
 
-	<Frame name="ItemUpgradeStatTemplate" hidden="true" virtual="true">
-		<Size x="165" y="15"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture  parentKey="BG" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.15"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-	
-	<Frame name="ItemUpgradeStatTemplateLeft" inherits="ItemUpgradeStatTemplate" virtual="true" justifyH="RIGHT">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
-					<Size x="50" y="12"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-				<FontString parentKey="ItemText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="100" y ="12"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="8"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="ItemUpgradeStatTemplateRight" inherits="ItemUpgradeStatTemplate" virtual="true">
-		<Size x="207" y="15"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="ItemIncText" inherits="GameFontNormalSmall" justifyH="RIGHT">
-					<Size x="40" y="12"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
-					<Size x="50" y="12"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemIncText" x="-4"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-				<FontString parentKey="ItemText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="100" y ="12"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="8"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-	
-	<Frame name="ItemUpgradeEffectRowTemplate" virtual="true">
-		<Size x="382" y="100"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="LeftBg" hidden="true">
-					<Size x="165" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOM"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.15"/>
-				</Texture>
-				<Texture parentKey="RightBg" hidden="true">
-					<Size x="207" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="175" y="0"/>
-						<Anchor point="BOTTOM"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.15"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="LeftText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="150" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-2"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-				<FontString parentKey="RightText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="192" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="183" y="-2"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="ItemUpgradeFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size x="428" y="434"/>
-
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-6">
-				<Texture parentKey="MarbleBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true" hidden="true"/>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture  parentKey="HorzBar">
-					<Size x="0" y="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="22" y="-154"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-24" y="-155"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.2"/>
-				</Texture>
-				<FontString parentKey="MissingDescription" inherits="GameFontNormalMed3" justifyH="CENTER" text="ITEM_UPGRADE_DESCRIPTION">
-					<Size x="250" y="80"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.5"/>
-				</FontString>
-				<FontString parentKey="ItemUpgradedNotification" inherits="GameFontNormalLarge" justifyH="CENTER" text="ITEM_UPGRADE_ITEM_UPGRADED_NOTIFICATION" hidden="true">
-					<Animations>
-						<AnimationGroup parentKey="FinishedAnim">
-							<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
-							<Alpha startDelay="2" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
-							<Scripts>
-								<OnFinished>
-									self:GetParent():Hide();
-								</OnFinished>
-							</Scripts>
-						</AnimationGroup>
-					</Animations>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-80"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="TitleTextLeft" inherits="GameFontNormal" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="23" y="-136"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="TitleTextRight" inherits="GameFontNormal" justifyH="RIGHT" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-136"/>
-						<Anchor point="RIGHT" x="-26" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		
+	<GameTooltip name="ItemUpgradePreviewTemplate" inherits="ItemUpgradeTooltipTemplate" frameStrata="MEDIUM" virtual="true">
 		<Frames>
-			<Frame parentKey="UpgradeLevelDropDown" inherits="DropDownControlTemplate">
-				<Size x="80" y="30"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-22" y="-125"/>
-				</Anchors>
+			<Frame parentKey="GlowNineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true" alpha="0">
+				<KeyValues>
+					<KeyValue key="layoutType" value="IdenticalCornersLayoutNoCenter" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ItemUpgradeTooltip" type="string"/>
+				</KeyValues>
 			</Frame>
-
-			<Frame parentKey="StatsScroll" inherits="WowScrollBox">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-160"/>
-					<Anchor point="BOTTOMRIGHT" x="-28" y="65"/>
-				</Anchors>
-				<Frames>
-					<Frame parentKey="Contents" inherits="ResizeLayoutFrame">
-						<Size x="1" y="1"/>
-						<KeyValues>
-							<KeyValue key="scrollable" value="true" type="boolean"/>
-						</KeyValues>
-						<Frames>
-							<Frame parentKey="LeftItemLevel" hidden="true">
-								<Size x="170" y="24"/>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-											<Size x="50" y="0"/>
-											<Anchors>
-												<Anchor point="LEFT" x="0" y="0"/>
-											</Anchors>
-											<Color r="1" g="1" b="1" a="1"/>
-										</FontString>
-										<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.iLvlText" relativePoint="RIGHT" x="8" y="0"/>
-											</Anchors>
-											<Color r="1" g="1" b="1" a="1"/>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-
-							<Frame parentKey="RightItemLevel" hidden="true">
-								<Size x="207" y="24"/>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.LeftItemLevel" relativePoint="RIGHT" x="0" y="0" />
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="incText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-											<Size x="40" y="22"/>
-											<Anchors>
-												<Anchor point="LEFT" x="0" y="0"/>
-											</Anchors>
-											<Color r="1" g="1" b="1" a="1"/>
-										</FontString>
-										<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-											<Size x="40" y="22"/>
-											<Anchors>
-												<Anchor point="LEFT" x="46" y="0"/>
-											</Anchors>
-											<Color r="1" g="1" b="1" a="1"/>
-										</FontString>
-										<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
-											<Size x="0" y="22"/>
-											<Anchors>
-												<Anchor point="LEFT" x="94"/>
-											</Anchors>
-											<Color r="1" g="1" b="1" a="1"/>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
-				</Frames>
-			</Frame>
-
-			<EventFrame parentKey="StatsScrollBar" inherits="WowTrimScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.StatsScroll" relativePoint="TOPRIGHT" x="0" y="6"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.StatsScroll" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
-				</Anchors>
-			</EventFrame>
-
-			<Frame parentKey="Feedback" inherits="TruncatedTooltipScriptTemplate" hidden="true">
-				<Size x="120" y="30"/>
-				<Anchors>
-					<Anchor point="LEFT" x="30" y="0"/>
-					<Anchor point="RIGHT" x="-30" y="0"/>
-					<Anchor point="BOTTOM" x="0" y="30"/>
-				</Anchors>
+			<Frame parentKey="GlowAnimatedPieces" setAllPoints="true" alpha="0">
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalMed3" justifyV="BOTTOM" setAllPoints="true">
-							<Color r="1" g="0.1" b="0.1"/>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-
-			<Frame parentKey="TextFrame">
-				<Size x="348" y="63"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-7" y="-65"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
+						<Texture parentKey="Fog" atlas="itemupgrade_fx_tooltip_overlay" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="6" y="-6"/>
-								<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
-							</Anchors>
-							<Color r="0" g="0" b="0"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="Right" atlas="Upgrade-Right-Tile" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="RIGHT"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="TopRight" atlas="Upgrade-Top-Right-Corner" useAtlasSize="true">
+						<Texture parentKey="Fog2" atlas="itemupgrade_fx_tooltip_overlay" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="TOPRIGHT"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BottomRight" atlas="Upgrade-Bottom-Right-Corner" useAtlasSize="true">
+						<Texture parentKey="GoldFlake" atlas="itemupgrade_fx_tooltip_goldflake" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Top" atlas="Upgrade-Top-Tile" useAtlasSize="true" horizTile="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Bottom" atlas="Upgrade-Bottom-Tile" useAtlasSize="true" horizTile="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="MissingText" inherits="GameFontNormalMed3" justifyH="CENTER" text="UPGRADE_MISSING_ITEM">
-							<Size x="250" y="30"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-1" y="0"/>
-							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Button parentKey="ItemButton" frameLevel="10">
-				<Size x="58" y="58"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="13" y="-67"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="IconTexture"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT">
-							<Size x="250" y="12"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="18" y="10"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="BoundStatus" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="260" y="12"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-5"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Frame" atlas="Upgrade-Frame-Metal" useAtlasSize="true">
+						<Texture parentKey="GoldFlake2" atlas="itemupgrade_fx_tooltip_goldflake" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUpgradeItem();
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						ItemUpgradeFrame_AddItemClick(self, button);
-					</OnClick>
-					<OnDragStart>
-						ItemUpgradeFrame_AddItemClick(self, button);
-					</OnDragStart>
-					<OnReceiveDrag>
-						ItemUpgradeFrame_AddItemClick(self, button);
-					</OnReceiveDrag>
-				</Scripts>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture alphaMode="ADD" atlas="Upgrade-Highlight"/>
-			</Button>
-			<Frame parentKey="ButtonFrame">
-				<Size x="0" y="20"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Frames>
-					<Frame name="ItemUpgradeFrameMoneyFrame" inherits="ThinGoldEdgeTemplate">
-						<Size x="260" y="20"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="2" y="5"/>
-						</Anchors>
-						<Frames>
-							<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="false">
-								<Anchors>
-									<Anchor point="RIGHT" x="-6" y="-2"/>
-								</Anchors>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetCurrencyByID(self.currencyID);
-									</OnEnter>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
-
-					<Button name="ItemUpgradeFrameUpgradeButton" mixin="ItemUpgradeFrameUpgradeButtonMixin" inherits="MagicButtonTemplate, TruncatedButtonTemplate, DisabledTooltipButtonTemplate" motionScriptsWhileDisabled="true" text="UPGRADE">
-						<Size x="160" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnClick method="OnClick"/>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Layers>
-					<Layer level="BORDER" textureSubLevel="1">
-						<Texture>
-							<Size x="334" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
-							</Anchors>
-							<Color r="0" g="0" b="0"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="2">
-						<Texture parentKey="ButtonBorder" inherits="_UI-Frame-InnerBotTile">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="1" y="25"/>
-								<Anchor point="BOTTOMRIGHT" x="-3" y="25"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="ButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="6" y="2"/>
-								<Anchor point="BOTTOMRIGHT" x="-8" y="2"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
-			<Frame parentKey="FinishedGlow" setAllPoints="true">
-				<Animations>
-					<AnimationGroup parentKey="FinishedAnim">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
-						<Alpha startDelay="0.1" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
-					</AnimationGroup>
-				</Animations>
+			<Frame parentKey="GlowMasks" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FinishedFlare" file="Interface\Reforging\Valor-Flare" alphaMode="ADD">
-							<Size x="256" y="256"/>
+						<MaskTexture parentKey="TopRightCornerMask" atlas="tooltip_innerglow_mask_corner" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="ItemUpgradeFrame" y="-23"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="ItemUpgradeFrame" y="26"/>
+								<Anchor point="TOPRIGHT"/>
 							</Anchors>
-						</Texture>
+							<MaskedTextures>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.Fog"/>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.GoldFlake"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<MaskTexture parentKey="BottomLeftCornerMask" atlas="tooltip_innerglow_mask_corner" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" rotation="180">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.Fog2"/>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.GoldFlake2"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<MaskTexture parentKey="FullMask" atlas="item_upgrade_tooltip_fullmask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.Fog"/>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.GoldFlake"/>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.Fog2"/>
+								<MaskedTexture childKey="$parent.GlowAnimatedPieces.GoldFlake2"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetAlpha(0);
-					</OnLoad>
+					<OnShow>
+						self.TopRightCornerMask:Show();
+						self.BottomLeftCornerMask:Show();
+						self.FullMask:Show();
+					</OnShow>
+					<OnHide>
+						self.TopRightCornerMask:Hide();
+						self.BottomLeftCornerMask:Hide();
+						self.FullMask:Hide();
+					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>
-		
+		<Animations>
+			<AnimationGroup parentKey="UpgradedAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlowAnimatedPieces" duration="0.15" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowAnimatedPieces" startDelay="1.08" smoothing="IN"  duration="0.25" fromAlpha="1" toAlpha="0"/>
+				
+				<Rotation childKey="GlowAnimatedPieces.Fog" smoothing="OUT"  duration="1.33" degrees="90" />
+				<Rotation childKey="GlowAnimatedPieces.GoldFlake" startDelay="0" smoothing="IN"  duration="1" order="1" degrees="180"/>
+				<Scale childKey="GlowAnimatedPieces.GoldFlake" smoothing="OUT" duration="1" fromScaleX="1.5" fromScaleY="1.5" toScaleX="0" toScaleY="0"/>
+
+				<Rotation childKey="GlowAnimatedPieces.Fog2" smoothing="OUT"  duration="1.33" degrees="90" />
+				<Rotation childKey="GlowAnimatedPieces.GoldFlake2" startDelay="0" smoothing="IN"  duration="1" order="1" degrees="180"/>
+				<Scale childKey="GlowAnimatedPieces.GoldFlake2" smoothing="OUT" duration="1" fromScaleX="1.5" fromScaleY="1.5" toScaleX="0" toScaleY="0"/>
+
+				<Alpha childKey="GlowNineSlice" duration="0.15" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowNineSlice" startDelay="1.08" smoothing="IN"  duration="0.25" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
-			<OnLoad function="ItemUpgradeFrame_OnLoad"/>
-			<OnShow function="ItemUpgradeFrame_OnShow"/>
-			<OnHide function="ItemUpgradeFrame_OnHide"/>
-			<OnEvent function="ItemUpgradeFrame_OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</GameTooltip>
+
+	<Frame name="ItemUpgradeFrame" inherits="PortraitFrameTemplate" mixin="ItemUpgradeMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="538" y="540"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="BottomBG" atlas="ItemUpgrade_BottomPanel" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="24"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="BottomPanel_Flash" atlas="ItemUpgrade_BottomPanel" useAtlasSize="true" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BottomBG"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IdleGlow" atlas="!itemupgrade_fx_framedecor_idleglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BottomBG"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IdleGlowMask" atlas="itemupgrade_fx_framedecor_linemask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BottomBG" x="1"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="IdleGlow"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="BottomBGShadow" atlas="ItemUpgrade_BottomPanel-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BottomBG"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="TopBG" atlas="ItemUpgrade_TopPanel" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-23"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="MicaFleckSheen" atlas="itemupgrade_fx_framedecor_micafleckssheen" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="MicaFleckMask" atlas="itemupgrade_fx_framedecor_micaflecksmask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="MicaFleckSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="MissingDescription" inherits="GameFontHighlightMedium" text="ITEM_UPGRADE_DESCRIPTION">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BottomBG"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+				
+				<FontString parentKey="FrameErrorText" inherits="GameFontHighlightMedium" hidden="true">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="130"/>
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
+				</FontString>
+				
+				<FontString parentKey="LeftPreviewBigText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="220"/>
+				</FontString>
+				
+				<FontString parentKey="RightPreviewBigText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="220"/>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<ItemButton parentKey="UpgradeItemButton" mixin="ItemUpgradeSlotMixin">
+				<Size x="58" y="58"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="141" y="-60"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="EmptySlotGlow" atlas="itemupgrade_fx_slotinnerglow" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ButtonFrame" atlas="itemupgrade_slotborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
+						<Alpha childkey="EmptySlotGlow" duration="1" fromalpha="0.4" toalpha="1" />
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnDragStart method="OnDrag"/>
+					<OnReceiveDrag method="OnDrag"/>
+				</Scripts>
+			</ItemButton>
+
+			<Frame parentKey="ItemInfo" inherits="ResizeLayoutFrame" mixin="ItemUpgradeItemInfoMixin">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.UpgradeItemButton" relativePoint="RIGHT" x="31"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="MissingItemText" inherits="GameFontHighlightMedium" text="UPGRADE_MISSING_ITEM">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="ItemName" inherits="GameFontHighlightLarge2" justifyH="Left" maxLines="2">
+							<Size x="245" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="UpgradeTo" inherits="GameFontHighlightOutline" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Dropdown" inherits="UIDropDownMenuTemplate">
+						<Size x="150" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.UpgradeTo" relativePoint="RIGHT" x="-7" y="-3"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			
+			<GameTooltip name="$parentLeftItemPreviewFrame" parentKey="LeftItemPreviewFrame" inherits="ItemUpgradePreviewTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-180"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="isUpgrade" value="false" type="boolean"/>
+				</KeyValues>
+			</GameTooltip>
+			
+			<GameTooltip name="$parentRightItemPreviewFrame" parentKey="RightItemPreviewFrame" inherits="ItemUpgradePreviewTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-180"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="isUpgrade" value="true" type="boolean"/>
+				</KeyValues>
+			</GameTooltip>
+
+			<GameTooltip name="$parentItemHoverPreviewFrame" parentKey="ItemHoverPreviewFrame" inherits="ItemUpgradeTooltipTemplate" />
+
+			<Frame parentKey="Arrow" hidden="true">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="arrow" atlas="ItemUpgrade_HelpTipArrow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="arrow" smoothing="IN"  duration="0.5" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="arrow" startDelay="0.5" smoothing="OUT"  duration="0.5" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="arrow" endDelay="0.25" smoothing="NONE"  duration="1" offsetX="25" offsetY="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnShow>
+						self.Anim:Play();
+					</OnShow>
+					<OnHide>
+						self.Anim:Stop();
+					</OnHide>
+				</Scripts>
+			</Frame>
+			
+			<Button parentKey="UpgradeButton" mixin="ItemUpgradeButtonMixin" inherits="UIPanelButtonTemplate, TruncatedButtonTemplate, DisabledTooltipButtonTemplate" text="UPGRADE">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="57"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+
+			<Frame parentKey="UpgradeCostFrame" inherits="CurrencyHorizontalLayoutFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.UpgradeButton" relativePoint="TOP" y="12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGTex" atlas="ItemUpgrade_TotalCostBar" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentPlayerCurrenciesBorder" parentKey="PlayerCurrenciesBorder" inherits="ThinGoldEdgeTemplate">
+				<Size x="530" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+			</Frame>
+			
+			<Frame parentKey="PlayerCurrencies" inherits="CurrencyHorizontalLayoutFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5" y="-4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+
+		<Animations>
+			<AnimationGroup parentKey="MicaFleckSheenSlide" looping="REPEAT">
+				<Translation childKey="MicaFleckSheen" startDelay="2" endDelay="8" duration="3" offsetX="1275"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="IdleGlowSlide" looping="REPEAT">
+				<TextureCoordTranslation childKey="IdleGlow" duration="30" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="UpgradedFlash" setToFinalAlpha="true">
+				<Alpha childKey="BottomPanel_Flash" smoothing="IN"  duration="0.15" fromAlpha="0" toAlpha="0.75"/>
+				<Alpha childKey="BottomPanel_Flash" startDelay="0.15" smoothing="OUT"  duration="0.15"  fromAlpha="1" toAlpha="0" endDelay="1.03"/>
+			</AnimationGroup>
+		</Animations>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -4,7 +4,7 @@
 
 	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
@@ -428,13 +428,14 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<Frame parentKey="Container" inherits="BackdropTemplate">
+									<Frame parentKey="Container" inherits="TooltipBackdropTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
 											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
 										</Anchors>
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
+											<KeyValue key="backdropColorAlpha" value="0" type="number"/>
 										</KeyValues>
 										<Frames>
 											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">

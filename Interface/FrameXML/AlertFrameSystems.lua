@@ -19,6 +19,7 @@ function AlertFrameSystems_Register()
 	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
+	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -670,13 +671,13 @@ function EntitlementDelivered_OnClick(self, button, down)
 			OpenBag(slot);
 		end
 	elseif (self.type == Enum.WoWEntitlementType.Mount) then
-		ToggleCollectionsJournal(1);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	elseif (self.type == Enum.WoWEntitlementType.Battlepet) then
-		ToggleCollectionsJournal(2);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	elseif (self.type == Enum.WoWEntitlementType.Toy) then
 		ToggleToyCollection(self.payloadID);
 	elseif (self.type == Enum.WoWEntitlementType.Appearance or self.type == Enum.WoWEntitlementType.AppearanceSet or self.type == Enum.WoWEntitlementType.Illusion) then
-		ToggleCollectionsJournal(5);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	end
 end
 
@@ -1043,11 +1044,17 @@ end
 
 ItemAlertFrameMixin = {};
 
-function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label)
+function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label, overlayAtlas)
 	self.Icon:SetTexture(icon);
 	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
 	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
 	self.Label:SetText(label);
+	if overlayAtlas then
+		self.IconOverlay:SetAtlas(overlayAtlas);
+		self.IconOverlay:Show();
+	else
+		self.IconOverlay:Hide();
+	end
 end
 
 -- [[ NewPetAlertFrame ]] --
@@ -1065,7 +1072,7 @@ function NewPetAlertFrameMixin:SetUp(petID)
 	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
 	if speciesID ~= nil and health ~= nil then
 		local itemQuality = rarity - 1;
-		self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+		self:SetUpDisplay(icon, itemQuality, customName or name, YOU_COLLECTED_LABEL);
 	end
 end
 
@@ -1091,7 +1098,7 @@ function NewMountAlertFrameMixin:SetUp(mountID)
 
 	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
 	local itemQuality = Enum.ItemQuality.Epic; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
-	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
+	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_COLLECTED_LABEL);
 end
 
 function NewMountAlertFrameMixin:OnClick(button, down)
@@ -1115,7 +1122,7 @@ function NewToyAlertFrameMixin:SetUp(toyID)
 	self.toyID = toyID;
 
 	local itemID, toyName, icon, isFavorite, hasFanfare, itemQuality = C_ToyBox.GetToyInfo(self.toyID);
-	self:SetUpDisplay(icon, itemQuality, toyName, YOU_EARNED_LABEL);
+	self:SetUpDisplay(icon, itemQuality, toyName, YOU_COLLECTED_LABEL);
 end
 
 function NewToyAlertFrameMixin:OnClick(button, down)
@@ -1168,3 +1175,57 @@ function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 	EncounterJournal_LoadUI();
 	EncounterJournal_OpenToPowerID(self:GetPowerID());
 end
+
+-- [[ NewCosmeticAlertFrameSystem ]] --
+
+function NewCosmeticAlertFrameSystem_SetUp(frame, itemModifiedAppearanceID)
+	frame:SetUp(itemModifiedAppearanceID);
+end
+
+NewCosmeticAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewCosmeticAlertFrameMixin:SetUp(itemModifiedAppearanceID)
+	self.itemModifiedAppearanceID = itemModifiedAppearanceID;
+	local info = C_TransmogCollection.GetSourceInfo(itemModifiedAppearanceID);
+	local icon = C_TransmogCollection.GetSourceIcon(itemModifiedAppearanceID);
+	local name = "";
+	local quality = Enum.ItemQuality.Epic;	-- most cosmetics are epic
+	self:SetUpDisplay(icon, quality, name, YOU_COLLECTED_LABEL, "CosmeticIconFrame");
+
+	local item = Item:CreateFromItemID(info.itemID);
+	item:ContinueOnItemLoad(function()	
+		if self.itemModifiedAppearanceID == itemModifiedAppearanceID then
+			self:SetUpDisplay(icon, item:GetItemQuality(), item:GetItemName(), YOU_COLLECTED_LABEL, "CosmeticIconFrame");
+		end
+	end);
+
+	self.timers = { };
+	local effectID1 = 135;
+	local effectID2 = 136;
+
+	-- stagger effect timings
+	self.LeftModelScene:AddEffect(effectID1, self.LeftModelScene);
+	table.insert(self.timers, C_Timer.NewTimer(0.25, function() self.LeftModelScene:AddEffect(effectID2, self.LeftModelScene); end));
+	table.insert(self.timers, C_Timer.NewTimer(0.5, function() self.LeftModelScene:AddEffect(effectID1, self.LeftModelScene); end));
+
+	table.insert(self.timers, C_Timer.NewTimer(0.3, function() self.RightModelScene:AddEffect(effectID1, self.RightModelScene); end));
+	table.insert(self.timers, C_Timer.NewTimer(0.55, function() self.RightModelScene:AddEffect(effectID2, self.RightModelScene); end));
+	table.insert(self.timers, C_Timer.NewTimer(0.8, function() self.RightModelScene:AddEffect(effectID1, self.RightModelScene); end));
+end
+
+function NewCosmeticAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	TransmogUtil.OpenCollectionToItem(self.itemModifiedAppearanceID);
+end
+ 
+function NewCosmeticAlertFrameMixin:OnRelease()
+	self.LeftModelScene:ClearEffects();
+	self.RightModelScene:ClearEffects();
+	for i, timer in ipairs(self.timers) do
+		timer:Cancel();
+	end
+	self.timers = { };
+ end

@@ -1,16 +1,13 @@
 PVPUtil = {};
 
-local tierEnumToName =
-{
-	[0] = PVP_RANK_0_NAME,
-	[1] = PVP_RANK_1_NAME,
-	[2] = PVP_RANK_2_NAME,
-	[3] = PVP_RANK_3_NAME,
-	[4] = PVP_RANK_4_NAME,
-	[5] = PVP_RANK_5_NAME,
-};
-
 function PVPUtil.GetTierName(tierEnum)
-	return tierEnumToName[tierEnum];
+	return _G["PVP_RANK_"..tierEnum.."_NAME"];
+end
+
+function PVPUtil.GetTierDescription(tierEnum)
+	return _G["PVP_RANK_"..tierEnum.."_NEXT_RANK_DESC"];
+end
+function PVPUtil.GetBracketName(bracket)
+	return _G["PVP_BRACKET_"..bracket];
 end
 

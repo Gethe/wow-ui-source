@@ -130,7 +130,7 @@ function SetKioskTooltip(frame)
 end
 
 local function GuildFrameIsOpen()
-	return ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() );
+	return ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() );
 end
 
 function UpdateMicroButtons()

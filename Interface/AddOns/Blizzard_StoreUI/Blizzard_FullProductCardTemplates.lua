@@ -197,7 +197,7 @@ function FullStoreCardMixin:GetTooltipOffsets()
 end
 
 function FullStoreCardMixin:ShouldShowIcon(entryInfo)
-	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and entryInfo.sharedData.texture;
+	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and (entryInfo.sharedData.texture or entryInfo.sharedData.overrideTexture);
 end
 
 function FullStoreCardMixin:ShowIcon(displayData)

@@ -6,9 +6,13 @@ function NewFeatureLabelMixin:ClearAlert()
 end
 
 function NewFeatureLabelMixin:OnShow()
-	self.Fade:Play();
+	if self.animateGlow then
+		self.Fade:Play();
+	end
 end
 
 function NewFeatureLabelMixin:OnHide()
-	self.Fade:Stop();
+	if self.animateGlow then
+		self.Fade:Stop();
+	end
 end

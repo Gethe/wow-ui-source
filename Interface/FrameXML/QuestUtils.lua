@@ -445,7 +445,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 		if style.fullItemDescription then
 			-- we want to do a full item description
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
-			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID, rewardType) then
+			if not EmbeddedItemTooltip_SetItemByQuestReward(tooltip.ItemTooltip, itemIndex, questID, rewardType, style.showCollectionText) then
 				showRetrievingData = true;
 			end
 			-- check for item compare input of flag

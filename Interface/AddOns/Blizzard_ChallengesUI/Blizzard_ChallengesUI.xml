@@ -726,7 +726,7 @@
 		</Scripts>
 	</Frame>
 
-    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="MEDIUM" mixin="ChallengesDungeonIconMixin" virtual="true">
+    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="HIGH" mixin="ChallengesDungeonIconMixin" virtual="true">
         <Size x="52" y="52"/>
         <Layers>
             <Layer level="BORDER">
@@ -813,114 +813,115 @@
                                     </Shadow>
                                 </FontString>
                             </Layer>
-														<Layer level="BACKGROUND">
-															<Texture parentKey="RuneBG" hidden="false" alpha="0.6" alphaMode="BLEND" atlas="ChallengeMode-RuneBG" useAtlasSize="true">
-																<Anchors>
-																	<Anchor point="CENTER" x="-100" y="50"/>
-																</Anchors>
-															</Texture>
-															<Texture parentKey="RunesLarge" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large" useAtlasSize="true">
-																	<Anchors>
-																			<Anchor point="CENTER" relativeKey="$parent.RuneBG" y="0"/>
-																	</Anchors>
-															</Texture>
-															<Texture parentKey="RunesSmall" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small" useAtlasSize="true">
-																	<Anchors>
-																			<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-1" y="0"/>
-																	</Anchors>
-															</Texture>
-													</Layer>
-													<Layer level="BACKGROUND" textureSubLevel="1">
-															<Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge" useAtlasSize="true">
-																	<Anchors>
-																			<Anchor point="TOPLEFT" y="-2"/>
-																	</Anchors>
-															</Texture>
-															<Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall" useAtlasSize="true">
-																	<Anchors>
-																			<Anchor point="TOPLEFT" x="-1" y="0"/>
-																	</Anchors>
-															</Texture>
-													</Layer>
-											</Layers>
-											<Frames>
-											<Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate">
-													<Anchors>
-															<Anchor point="CENTER" relativeKey="$parent.ThisWeekLabel" x="-95" y="-45"/>
-													</Anchors>
-											</Frame>
-											<Frame parentKey="WeeklyChest" hidden="true" mixin="ChallengeModeWeeklyChestMixin">
-												<Size x="67" y="67"/>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="RuneBG" hidden="false" alpha="0.6" alphaMode="BLEND" atlas="ChallengeMode-RuneBG" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" x="-100" y="50"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="RunesLarge" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="CENTER" x="0" y="-5"/>
+														<Anchor point="CENTER" relativeKey="$parent.RuneBG" y="0"/>
 												</Anchors>
-												<Layers>
-													<Layer level="ARTWORK">
-														<FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER">
-															<Size x="430" />
-															<Anchors>
-																<Anchor point="TOP" relativePoint="TOP" y="43"/>
-															</Anchors>
-														</FontString>
-														<Texture parentKey="Icon">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-													</Layer>
-													<Layer level="HIGHLIGHT">
-														<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-													</Layer>
-													<Layer level="OVERLAY">
-														<Texture parentKey="AnimTexture" atlas="mythicplus-greatvault-collect" useAtlasSize="true" alphaMode="ADD">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-															<Animations>
-																<AnimationGroup parentKey="Anim" looping="REPEAT">
-																	<Alpha childKey="CollectGlow" startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.3"/>
-																	<Alpha childKey="CollectGlow" startDelay="1" duration="1" order="1" fromAlpha="0.3" toAlpha="0"/>
-																</AnimationGroup>
-															</Animations>
-														</Texture>
-													</Layer>
-												</Layers>
-												<Scripts>
-													<OnEnter method="OnEnter"/>
-													<OnLeave function="GameTooltip_Hide"/>
-													<OnMouseUp method="OnMouseUp"/>
-												</Scripts>
-											</Frame>
-											<Frame parentKey="DungeonScoreInfo" mixin="DungeonScoreInfoMixin" hidden="true">
-												<Size x="200" y="70"/>
+										</Texture>
+										<Texture parentKey="RunesSmall" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="TOP" relativeKey="$parent.WeeklyChest" relativePoint="BOTTOM" x="0" y="-30"/>
+														<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-1" y="0"/>
 												</Anchors>
-												<Layers>
-													<Layer level="ARTWORK">
-														<FontString parentKey="Title" justifyV="TOP" inherits="GameFontHighlightMedium" text="DUNGEON_SCORE">
-															<Size x="200" y="0"/>
-															<Anchors>
-																<Anchor point="TOP"/>
-															</Anchors>
-														</FontString>
-														<FontString parentKey="Score" justifyV="TOP" inherits="SystemFont_Huge2">
-															<Size x="200" y="0"/>
-															<Anchors>
-																<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5"/>
-															</Anchors>
-														</FontString>
-													</Layer>
-												</Layers>
-												<Scripts> 
-													<OnEnter method="OnEnter"/>
-													<OnLeave method="OnLeave"/>
-												</Scripts>
-											</Frame>
+										</Texture>
+								</Layer>
+								<Layer level="BACKGROUND" textureSubLevel="1">
+										<Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge" useAtlasSize="true">
+												<Anchors>
+														<Anchor point="TOPLEFT" y="-2"/>
+												</Anchors>
+										</Texture>
+										<Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall" useAtlasSize="true">
+												<Anchors>
+														<Anchor point="TOPLEFT" x="-1" y="0"/>
+												</Anchors>
+										</Texture>
+								</Layer>
+							</Layers>
+						<Frames>
+							<Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate">
+									<Anchors>
+											<Anchor point="CENTER" relativeKey="$parent.ThisWeekLabel" x="-95" y="-45"/>
+									</Anchors>
+							</Frame>
+							<Frame parentKey="WeeklyChest" hidden="true" mixin="ChallengeModeWeeklyChestMixin">
+								<Size x="67" y="67"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER">
+											<Size x="430" />
+											<Anchors>
+												<Anchor point="TOP" relativePoint="TOP" y="43"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="Icon">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="HIGHLIGHT">
+										<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="AnimTexture" atlas="mythicplus-greatvault-collect" useAtlasSize="true" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<Animations>
+												<AnimationGroup parentKey="Anim" looping="REPEAT">
+													<Alpha childKey="CollectGlow" startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.3"/>
+													<Alpha childKey="CollectGlow" startDelay="1" duration="1" order="1" fromAlpha="0.3" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter method="OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+									<OnMouseUp method="OnMouseUp"/>
+								</Scripts>
+							</Frame>
+							<Button parentKey="DungeonScoreInfo" mixin="DungeonScoreInfoMixin" hidden="true">
+								<Size x="200" y="70"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.WeeklyChest" relativePoint="BOTTOM" x="0" y="-30"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" justifyV="TOP" inherits="GameFontHighlightMedium" text="DUNGEON_SCORE">
+											<Size x="200" y="0"/>
+											<Anchors>
+												<Anchor point="TOP"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Score" justifyV="TOP" inherits="SystemFont_Huge2">
+											<Size x="200" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts> 
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</Button>
 						</Frames>
 					<Animations>
 					  <AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">

@@ -372,7 +372,7 @@
 		<Size x="30" y="30"/>
 		<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
 	</Texture>
-	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrameUnclickable,TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" virtual="true" hidden="true">
+	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrameUnclickable,TooltipBackdropTemplate" frameStrata="TOOLTIP" virtual="true" hidden="true">
 		<Size x="260" y="190"/>
 		<Layers>
 			<Layer level="ARTWORK">

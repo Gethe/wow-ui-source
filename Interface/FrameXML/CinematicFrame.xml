@@ -120,6 +120,7 @@
 			<OnHide function="CinematicFrame_OnHide"/>
 			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown function="CinematicFrame_OnKeyDown"/>
+			<OnGamePadButtonDown function="CinematicFrame_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

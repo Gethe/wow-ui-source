@@ -1,64 +1,3 @@
-
-BACKDROP_TOOLTIP_8_8_1111 = {
-	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 8,
-	edgeSize = 8,
-	insets = { left = 1, right = 1, top = 1, bottom = 1 },
-};
-
-BACKDROP_TOOLTIP_8_12_1111 = {
-	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 8,
-	edgeSize = 12,
-	insets = { left = 1, right = 1, top = 1, bottom = 1 },
-};
-
-BACKDROP_TOOLTIP_16_16_5555 = {
-	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 5, right = 5, top = 5, bottom = 5 },
-};
-
-BACKDROP_TOOLTIP_12_12_4444 = {
-	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 12,
-	edgeSize = 12,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
-};
-
-BACKDROP_TOOLTIP_0_16 = {
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	edgeSize = 16,
-	tileEdge = true,
-};
-
-BACKDROP_TOOLTIP_0_12_0055 = {
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	edgeSize = 12,
-	tileEdge = true,
-	insets = { left = 0, right = 0, top = 5, bottom = 5 },
-};
-
-BACKDROP_TOOLTIP_0_16_5555 = {
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	edgeSize = 16,
-	tileEdge = true,
-	insets = { left = 5, right = 5, top = 5, bottom = 5 },
-};
-
 BACKDROP_ACHIEVEMENTS_0_64 = {
 	edgeFile = "Interface\\AchievementFrame\\UI-Achievement-WoodBorder",
 	edgeSize = 64,
@@ -151,32 +90,6 @@ BACKDROP_CALLOUT_GLOW_0_20 = {
 	edgeFile = "Interface\\TutorialFrame\\UI-TutorialFrame-CalloutGlow",
 	edgeSize = 20,
 	tileEdge = true,
-};
-
-BACKDROP_GLUE_TOOLTIP_16_16 = {
-	bgFile = "Interface\\Glues\\Common\\Glue-Tooltip-Background",
-	edgeFile = "Interface\\Glues\\Common\\Glue-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 10, right = 5, top = 4, bottom = 9 },
-};
-
-BACKDROP_GLUE_TOOLTIP_0_16 = {
-	edgeFile = "Interface\\Glues\\Common\\Glue-Tooltip-Border",
-	tileEdge = true,
-	edgeSize = 16,
-};
-
-BACKDROP_MIXED_TOOLTIP_16_16 = {
-	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	edgeFile = "Interface\\Glues\\Common\\Glue-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 10, right = 5, top = 4, bottom = 9 },
 };
 
 BACKDROP_TEXT_PANEL_0_16 = {

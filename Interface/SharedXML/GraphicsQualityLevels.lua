@@ -1101,7 +1101,7 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 
 	data = {
 		{
-			text = VIDEO_OPTIONS_NONE,
+			text = RESAMPLE_QUALITY_POINT,
 			cvars =    {
 				resampleQuality = 0,
 			},
@@ -1116,6 +1116,12 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 			text = RESAMPLE_QUALITY_BICUBIC,
 			cvars =	{
 				resampleQuality = 2,
+			},
+		},
+		{
+			text = RESAMPLE_QUALITY_FSR,
+			cvars =	{
+				resampleQuality = 3,
 			},
 		},
 	},

@@ -57,15 +57,15 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
 
-	local frameTextureKit = widgetInfo.frameTextureKit;
+	local frameTextureKit = widgetInfo.frameTextureKit or "worldstate-capturebar";
 	local textureKit = widgetInfo.textureKit;
 
-	local isFactionsTextureKit = (frameTextureKit == "factions");
+	local isFactionsTextureKit = (textureKit == "factions");
 	if isFactionsTextureKit and IsInLFDBattlefield() then
-		frameTextureKit = "lfd";
+		textureKit = "lfd";
 	end
 
-	local barInfo = textureKitBarInfo[frameTextureKit] or defaultBarInfo;
+	local barInfo = textureKitBarInfo[textureKit] or defaultBarInfo;
 
 	self:SetHeight(barInfo.barHeight);
 
@@ -113,7 +113,7 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.oldValue = position;
 	end
 
-	local textureKits = {textureKit, frameTextureKit};
+	local textureKits = {frameTextureKit, textureKit};
 
 	SetupTextureKitsFromRegionInfo(textureKits, self, textureKitRegionInfo);
 
@@ -129,11 +129,11 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	self.LeftArrow:ClearAllPoints(); 
 	self.RightArrow:ClearAllPoints(); 
 
-	if frameTextureKit == "bastionarmor" then 
+	if textureKit == "bastionarmor" then 
 		neutralFrameOffsetY = 2
 		self.LeftArrow:SetPoint("TOPRIGHT", self.Spark, "TOPLEFT", 2, -7);
 		self.RightArrow:SetPoint("TOPLEFT", self.Spark, "TOPRIGHT", -2, -7);
-	elseif frameTextureKit == "boss" then
+	elseif textureKit == "boss" then
 		self.Glow1:ClearAllPoints();
 		self.Glow1:SetPoint("CENTER", self, "CENTER", 0, 0); 
 		self.Glow2:ClearAllPoints();
@@ -240,8 +240,8 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	else
 		self.NeutralBar:Show();
 		self.NeutralBar:SetWidth(neutralZoneSizePercent * barInfo.barWidth);
-		self.LeftLine:SetShown(frameTextureKit ~= "bastionarmor");
-		self.RightLine:SetShown(frameTextureKit ~= "bastionarmor");
+		self.LeftLine:SetShown(textureKit ~= "bastionarmor");
+		self.RightLine:SetShown(textureKit ~= "bastionarmor");
 		self.Divider:Hide();
 	end
 

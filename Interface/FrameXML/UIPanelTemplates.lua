@@ -572,6 +572,7 @@ function CurrencyHorizontalLayoutFrameMixin:AddToLayout(region)
 	region.layoutIndex = self.nextLayoutIndex;
 	self.nextLayoutIndex = self.nextLayoutIndex + 1;
 	region:Show();
+	self:MarkDirty();
 end
 
 function CurrencyHorizontalLayoutFrameMixin:GetQuantityFontString()
@@ -605,6 +606,7 @@ function CurrencyHorizontalLayoutFrameMixin:CreateLabel(text, color, fontObject,
 	label:SetText(text);
 	color = color or HIGHLIGHT_FONT_COLOR;
 	label:SetTextColor(color:GetRGB());
+	self:MarkDirty();
 end
 
 function CurrencyHorizontalLayoutFrameMixin:AddCurrency(currencyID, overrideAmount, color)

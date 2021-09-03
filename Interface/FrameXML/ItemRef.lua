@@ -1,3 +1,9 @@
+local DUNGEON_SCORE_LINK_INDEX_START = 9; 
+local DUNGEON_SCORE_LINK_ITERATE = 3; 
+local PVP_LINK_ITERATE = 3; 
+local PVP_LINK_ITERATE_BRACKET = 4; 
+local PVP_LINK_INDEX_START = 7;
+
 local function FormatLink(linkType, linkDisplayText, ...)
 	local linkFormatTable = { ("|H%s"):format(linkType), ... };
 	local returnLink = table.concat(linkFormatTable, ":");
@@ -155,7 +161,7 @@ function SetItemRef(link, text, button, chatFrame)
 		ToggleTalentFrame(TALENTS_TAB);
 		return;
 	elseif ( strsub(link, 1, 14) == "mountequipment" ) then
-		ToggleCollectionsJournal(1);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 		return;
 	elseif ( strsub(link, 1, 11) == "honortalent" ) then
 		ToggleTalentFrame(PVP_TALENTS_TAB);
@@ -254,26 +260,17 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 18) == "transmogappearance" ) then
+		local _, sourceID = strsplit(":", link);
 		if ( IsModifiedClick("CHATLINK") ) then
-			local _, sourceID = strsplit(":", link);
 			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
 			HandleModifiedItemClick(itemLink);
 		else
-			if ( not CollectionsJournal ) then
-				CollectionsJournal_LoadUI();
-			end
-			if ( CollectionsJournal ) then
-				WardrobeCollectionFrame:OpenTransmogLink(link);
-			end
+			TransmogUtil.OpenCollectionToItem(sourceID);
 		end
 		return;
 	elseif ( strsub(link, 1, 11) == "transmogset" ) then
-		if ( not CollectionsJournal ) then
-			CollectionsJournal_LoadUI();
-		end
-		if ( CollectionsJournal ) then
-			WardrobeCollectionFrame:OpenTransmogLink(link);
-		end
+		local _, setID = strsplit(":", link);
+		TransmogUtil.OpenCollectionToSet(setID);
 		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then
 		APIDocumentation_LoadUI();
@@ -361,8 +358,13 @@ function SetItemRef(link, text, button, chatFrame)
 			OpenWorldMap(waypoint.uiMapID);
 		end
 		return;
+	elseif ( strsub(link, 1, 12) ==  "dungeonScore" ) then 
+		DisplayDungeonScoreLink(link);
+		return; 
+	elseif ( strsub(link, 1, 9) == "pvpRating" ) then
+		DisplayPvpRatingLink(link);
+		return;
 	end
-
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
 		HandleModifiedItemClick(fixedLink);
@@ -499,6 +501,165 @@ function GetClubFinderLink(clubFinderId, clubName)
 	return fontColor:WrapTextInColorCode(FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
 end
 
+function DungeonScoreLinkAddDungeonsToTable()
+	local dungeonScoreDungeonTable = { };
+	local maps = C_ChallengeMode.GetMapScoreInfo(); 
+	for _, scoreInfo in ipairs(maps) do 
+		table.insert(dungeonScoreDungeonTable, scoreInfo.mapChallengeModeID);
+		table.insert(dungeonScoreDungeonTable, scoreInfo.completedInTime);
+		table.insert(dungeonScoreDungeonTable, scoreInfo.level);
+	end		
+	return dungeonScoreDungeonTable; 
+end		
+
+function DisplayPvpRatingLink(link)
+	
+	if ( not ItemRefTooltip:IsShown() ) then
+		ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+	end 
+	
+	local splits  = StringSplitIntoTable(":", link);
+	if(not splits) then 
+		return; 
+	end 
+	local playerName = splits[3]; 
+	local playerClass = splits[4]; 
+	local playerItemLevel = tonumber(splits[5]);
+	local playerLevel = tonumber(splits[6]);
+	local className, classFileName = GetClassInfo(playerClass);
+	local classColor = C_ClassColor.GetClassColor(classFileName);
+	if(not playerName or not playerClass or not playerItemLevel or not playerLevel) then 
+		return; 
+	end 
+
+	if(not className or not classFileName or not classColor) then 
+		return;
+	end 
+
+	GameTooltip_SetTitle(ItemRefTooltip, classColor:WrapTextInColorCode(playerName));
+	GameTooltip_AddColoredLine(ItemRefTooltip, PVP_LINK_LEVEL_CLASS_FORMAT_STRING:format(playerLevel, className), HIGHLIGHT_FONT_COLOR)
+	GameTooltip_AddNormalLine(ItemRefTooltip, PVP_RATING_LINK_ITEM_LEVEL:format(playerItemLevel));
+
+	for i = PVP_LINK_INDEX_START, (#splits), PVP_LINK_ITERATE_BRACKET do
+		
+		GameTooltip_AddBlankLineToTooltip(ItemRefTooltip); 
+
+		local bracket = tonumber(splits[i]);
+		local rating = tonumber(splits[i + 1]);
+		local tier = tonumber(splits[i + 2]);
+		local seasonGamesPlayed = tonumber(splits[i + 3]);		
+
+		GameTooltip_AddNormalLine(ItemRefTooltip, PVPUtil.GetBracketName(bracket)); 
+		GameTooltip_AddColoredLine(ItemRefTooltip,  PVP_RATING_LINK_FORMAT_STRING:format(PVPUtil.GetTierName(tier), rating), HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(ItemRefTooltip, PVP_LINK_SEASON_GAMES:format(seasonGamesPlayed), HIGHLIGHT_FONT_COLOR);
+	end 
+	ShowUIPanel(ItemRefTooltip);
+
+	ItemRefTooltip:SetPadding(30, 0); 
+end
+
+function AddPvpRatingsToTable()
+	local pvpLinkInfoTable = { };
+	for i = 1, PVP_LINK_ITERATE do 
+		local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
+		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking = GetPersonalRatedInfo(bracketIndex);
+		local tierInfo = C_PvP.GetPvpTierInfo(pvpTier);
+		if(not tierInfo or not tierInfo.pvpTierEnum) then 
+			return; 
+		end 
+		table.insert(pvpLinkInfoTable, bracketIndex);
+		table.insert(pvpLinkInfoTable, rating);
+		table.insert(pvpLinkInfoTable, tierInfo.pvpTierEnum);
+		table.insert(pvpLinkInfoTable, seasonPlayed);
+	end
+	return pvpLinkInfoTable;
+end
+
+function DisplayDungeonScoreLink(link)
+	if ( not ItemRefTooltip:IsShown() ) then
+		ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+	end 
+
+	local splits  = StringSplitIntoTable(":", link);
+	
+	--Bad Link, Return. 
+	if(not splits) then 
+		return;
+	end		
+	local dungeonScore = tonumber(splits[2]);
+	local playerName = splits[4]; 
+	local playerClass = splits[5]; 
+	local playerItemLevel = tonumber(splits[6]);
+	local playerLevel = tonumber(splits[7]);
+	local className, classFileName = GetClassInfo(playerClass);
+	local classColor = C_ClassColor.GetClassColor(classFileName);
+	local runsThisSeason = tonumber(splits[8]);
+
+	--Bad Link..
+	if(not playerName or not playerClass or not playerItemLevel or not playerLevel) then 
+		return; 
+	end 
+
+	--Bad Link..
+	if(not className or not classFileName or not classColor) then 
+		return;
+	end 
+
+	GameTooltip_SetTitle(ItemRefTooltip, classColor:WrapTextInColorCode(playerName));
+	GameTooltip_AddColoredLine(ItemRefTooltip, DUNGEON_SCORE_LINK_LEVEL_CLASS_FORMAT_STRING:format(playerLevel, className), HIGHLIGHT_FONT_COLOR)
+	GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_ITEM_LEVEL:format(playerItemLevel));
+
+	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
+	if (not color) then 
+		color = HIGHLIGHT_FONT_COLOR; 
+	end
+	GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_RATING:format(color:WrapTextInColorCode(dungeonScore)));
+	GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_RUNS_SEASON:format(runsThisSeason));
+	GameTooltip_AddBlankLineToTooltip(ItemRefTooltip);
+
+	local sortTable = { };
+	for i = DUNGEON_SCORE_LINK_INDEX_START, (#splits), DUNGEON_SCORE_LINK_ITERATE do
+		local mapChallengeModeID = tonumber(splits[i]);
+		local completedInTime = tonumber(splits[i + 1]); 
+		local level = tonumber(splits[i + 2]);
+
+		local mapName = C_ChallengeMode.GetMapUIInfo(mapChallengeModeID);
+
+		--If any of the maps don't exist.. this is a bad link
+		if(not mapName) then 
+			return; 
+		end 
+
+		table.insert(sortTable, { mapName = mapName, completedInTime = completedInTime, level = level });
+	end
+
+	-- Sort Alphabetically. 
+	table.sort(sortTable, function(a, b) strcmputf8i(a.mapName, b.mapName); end);
+
+	for i = 1, #sortTable do 
+		local textColor = sortTable[i].completedInTime and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR; 
+		GameTooltip_AddColoredDoubleLine(ItemRefTooltip, DUNGEON_SCORE_LINK_TEXT1:format(sortTable[i].mapName), (sortTable[i].level > 0 and  DUNGEON_SCORE_LINK_TEXT2:format(sortTable[i].level) or DUNGEON_SCORE_LINK_NO_SCORE), NORMAL_FONT_COLOR, textColor); 
+	end
+	ItemRefTooltip:SetPadding(0, 0); 
+	ShowUIPanel(ItemRefTooltip);
+end		
+
+function GetDungeonScoreLink(dungeonScore, playerName)
+	local _, _, class = UnitClass("player");
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
+	local runHistory = C_MythicPlus.GetRunHistory(true);
+	local dungeonScoreTable = {C_ChallengeMode.GetOverallDungeonScore(), UnitGUID("player"), playerName, class, math.ceil(avgItemLevel), UnitLevel("player"), runHistory and #runHistory or 0, unpack(DungeonScoreLinkAddDungeonsToTable())};
+	return NORMAL_FONT_COLOR:WrapTextInColorCode(FormatLink("dungeonScore", DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
+end		
+
+function GetPvpRatingLink(playerName)
+	local fontColor = NORMAL_FONT_COLOR;
+	local _, _, class = UnitClass("player");
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
+	local pvpRatingTable = { UnitGUID("player"), playerName, class, math.ceil(avgItemLevelPvP), UnitLevel("player"), unpack(AddPvpRatingsToTable())};
+	return fontColor:WrapTextInColorCode(FormatLink("pvpRating", PVP_PERSONAL_RATING_LINK, unpack(pvpRatingTable)));
+end
+
 function GetCalendarEventLink(monthOffset, monthDay, index)
 	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
 	if dayEvent then
@@ -615,4 +776,4 @@ function ItemRefTooltipMixin:ItemRefSetHyperlink(link)
 		local xPadding = 16;
 		self:SetPadding(xPadding, 0);
 	end
-end
+end	

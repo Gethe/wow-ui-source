@@ -105,16 +105,17 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 	end
 
 	local slotID = nil;
-	local canRecurse = false;
 	if categoryID then
 		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
 		-- weapons that can go in either hand need the slot specified
 		slotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
 		-- legion artifacts might set both weapons
-		canRecurse = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+		if TransmogUtil.IsCategoryLegionArtifact(categoryID) then
+			itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.MainHandTransmogFromPairedCategory;
+		end
 	end
 
-	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID, canRecurse);
+	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID);
 	if result ~= Enum.ItemTryOnReason.Success then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end

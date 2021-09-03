@@ -251,11 +251,19 @@
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
 	</Frame>
-	<Frame name="CharCustomizeOptionSelectionPopoutTemplate" inherits="SelectionPopoutWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSelectionPopoutMixin" virtual="true">
+	
+<Frame name="CharCustomizeOptionSelectionPopoutTemplate" inherits="SelectionPopoutWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSelectionPopoutMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
+		<Frames>
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="TOPRIGHT" x="-18" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="CharCustomizeOptionCheckButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionCheckButtonMixin" virtual="true">
@@ -288,6 +296,12 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
+			
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Button" relativePoint="TOPRIGHT" x="3" y="-5"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

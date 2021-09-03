@@ -3,10 +3,13 @@
 	<Script file="HelpFrame.lua"/>
 
 
-	<Frame name="HelpFrameContainerFrameTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+	<Frame name="HelpFrameContainerFrameTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
 		</KeyValues>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+		</Frames>
 	</Frame>
 
 	<Browser name="BrowserTemplate" frameStrata="HIGH" IMEFont="ChatFontNormal" virtual="true">
@@ -96,7 +99,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
+	<Frame name="BrowserSettingsTooltip" inherits="TooltipBackdropTemplate" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
 		<Size x="250" y="70"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -200,58 +203,29 @@
 	<!-- Ticket Status -->
 	<!-- It might be a good idea to put this in a separate file and convert the HelpFrame stuff into an addon -->
 	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="208" y="75"/>
-		</Size>
+		<Size x="208" y="41"/>
 		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString parentKey="TitleText" text="TICKET_STATUS_NMI" inherits="Game11Font" justifyH="LEFT">
 					<Size x="168" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="10" y="-10" />
 					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
 				</FontString>
-				<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="168" y="0"/>
+				<Texture file="Interface\HelpFrame\OpenTicketIcon">
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<Texture name="TicketStatusFrameIcon" file="Interface\HelpFrame\OpenTicketIcon">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="TicketStatusFrameButton" inherits="HelpFrameContainerFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
-						<Offset x="-8" y="8"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TicketStatusTime">
-						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
-					</Anchor>
-				</Anchors>
+			<Button name="TicketStatusFrameButton" setAllPoints="true" inherits="HelpFrameContainerFrameTemplate">
 				<Scripts>
-					<OnLoad inherit="prepend" function="TicketStatusFrameButton_OnLoad"/>
+					<OnLoad function="TicketStatusFrameButton_OnLoad"/>
 					<OnClick function="TicketStatusFrameButton_OnClick"/>
 				</Scripts>
 			</Button>

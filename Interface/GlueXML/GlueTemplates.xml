@@ -1,17 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GlueTemplates.lua"/>
-	<Button name="GlueCloseButton" virtual="true">
-		<Size x="32" y="32"/>
-		<Scripts>
-			<OnClick>
-				self:GetParent():Hide();
-			</OnClick>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-	</Button>
 	<Texture name="GlueScrollBarButton" virtual="true">
 		<TexCoords left="0.23" right="0.77" top="0.23" bottom="0.77"/>
 	</Texture>
@@ -310,22 +299,5 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
-	<Frame name="GlueModalFrameTemplate" virtual="true">
-		<Frames>
-			<Frame parentKey="ModalBackground" useParentLevel="true" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GlueParent"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="GlueParent"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-10">
-						<Texture setAllPoints="true">
-							<Color a="0.75" r="0" g="0" b="0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 	</Frame>
 </Ui>

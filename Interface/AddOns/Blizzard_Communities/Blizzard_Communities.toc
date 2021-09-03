@@ -1,5 +1,5 @@
 ## Title: Blizzard_Communities
-## RequiredDep: Blizzard_GuildRecruitmentUI, Blizzard_GuildControlUI
+## RequiredDep: Blizzard_GuildControlUI
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 ## LoadOnDemand: 1
 

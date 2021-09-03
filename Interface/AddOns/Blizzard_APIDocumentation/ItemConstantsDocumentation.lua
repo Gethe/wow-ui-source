@@ -213,6 +213,47 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "Itemclassfilterflags",
+			Type = "Enumeration",
+			NumValues = 18,
+			MinValue = 1,
+			MaxValue = 131072,
+			Fields =
+			{
+				{ Name = "Consumable", Type = "Itemclassfilterflags", EnumValue = 1 },
+				{ Name = "Container", Type = "Itemclassfilterflags", EnumValue = 2 },
+				{ Name = "Weapon", Type = "Itemclassfilterflags", EnumValue = 4 },
+				{ Name = "Gem", Type = "Itemclassfilterflags", EnumValue = 8 },
+				{ Name = "Armor", Type = "Itemclassfilterflags", EnumValue = 16 },
+				{ Name = "Reagent", Type = "Itemclassfilterflags", EnumValue = 32 },
+				{ Name = "Projectile", Type = "Itemclassfilterflags", EnumValue = 64 },
+				{ Name = "Tradegoods", Type = "Itemclassfilterflags", EnumValue = 128 },
+				{ Name = "ItemEnhancement", Type = "Itemclassfilterflags", EnumValue = 256 },
+				{ Name = "Recipe", Type = "Itemclassfilterflags", EnumValue = 512 },
+				{ Name = "CurrencyTokenObsolete", Type = "Itemclassfilterflags", EnumValue = 1024 },
+				{ Name = "Quiver", Type = "Itemclassfilterflags", EnumValue = 2048 },
+				{ Name = "Questitemclassfilterflags", Type = "Itemclassfilterflags", EnumValue = 4096 },
+				{ Name = "Key", Type = "Itemclassfilterflags", EnumValue = 8192 },
+				{ Name = "PermanentObsolete", Type = "Itemclassfilterflags", EnumValue = 16384 },
+				{ Name = "Miscellaneous", Type = "Itemclassfilterflags", EnumValue = 32768 },
+				{ Name = "Glyph", Type = "Itemclassfilterflags", EnumValue = 65536 },
+				{ Name = "Battlepet", Type = "Itemclassfilterflags", EnumValue = 131072 },
+			},
+		},
+		{
+			Name = "Itemsetflags",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Legacy", Type = "Itemsetflags", EnumValue = 1 },
+				{ Name = "UseItemHistorySetSlots", Type = "Itemsetflags", EnumValue = 2 },
+				{ Name = "RequiresPvPTalentsActive", Type = "Itemsetflags", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "ITEM_WEAPON_SUBCLASSConstants",
 			Type = "Constants",
 			Values =

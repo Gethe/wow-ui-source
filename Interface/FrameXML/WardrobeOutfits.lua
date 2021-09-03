@@ -52,6 +52,7 @@ function WardrobeOutfitDropDownMixin:UpdateSaveButton()
 end
 
 function WardrobeOutfitDropDownMixin:OnOutfitSaved(outfitID)
+	-- Override in your mixin, called when a new outfit is saved
 end
 
 function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
@@ -132,8 +133,7 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(outfitID)
 			-- skip offhand if mainhand is an appeance from Legion Artifacts category and the offhand matches the paired appearance
 			if isValidSlot and slotID == INVSLOT_OFFHAND then
 				local mhInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
-				-- -1 means appearance is from LA category
-				if mhInfo.secondaryAppearanceID == -1 then
+				if mhInfo.secondaryAppearanceID == Constants.Transmog.MainHandTransmogFromPairedCategory then
 					isValidSlot = appearanceID ~= C_TransmogCollection.GetPairedArtifactAppearance(mhInfo.appearanceID);
 				end
 			end
@@ -310,6 +310,9 @@ function WardrobeOutfitFrameMixin:NewOutfit(name)
 	end
 
 	local outfitID = C_TransmogCollection.NewOutfit(name, icon, self.itemTransmogInfoList);
+	if outfitID then
+		self:SaveLastOutfit(outfitID);
+	end
 	if ( self.popupDropDown ) then
 		self.popupDropDown:SelectOutfit(outfitID);
 		self.popupDropDown:OnOutfitSaved(outfitID);
@@ -397,9 +400,20 @@ end
 function WardrobeOutfitFrameMixin:ContinueWithSave()
 	if self.outfitID then
 		C_TransmogCollection.ModifyOutfit(self.outfitID, self.itemTransmogInfoList);
+		self:SaveLastOutfit(self.outfitID);
 		WardrobeOutfitFrame:ClosePopups();
 	else
 		WardrobeOutfitFrame:ShowPopup("NAME_TRANSMOG_OUTFIT");
+	end
+end
+
+function WardrobeOutfitFrameMixin:SaveLastOutfit(outfitID)
+	local value = outfitID or "";
+	local currentSpecIndex = GetCVarBool("transmogCurrentSpecOnly") and GetSpecialization() or nil;
+	for specIndex = 1, GetNumSpecializations() do
+		if not currentSpecIndex or specIndex == currentSpecIndex then
+			SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
+		end
 	end
 end
 

@@ -7,6 +7,7 @@ function PlayerChoiceBaseOptionTemplateMixin:OnShow()
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:OnHide()
+	self.WidgetContainer:UnregisterForWidgetSet();
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:Reset()
@@ -207,7 +208,8 @@ end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupWidgets()
 	if self.optionInfo.widgetSetID ~= self.WidgetContainer.widgetSetID then
-		self.WidgetContainer:RegisterForWidgetSet(self.optionInfo.widgetSetID, GenerateClosure(self.WidgetsLayout, self), GenerateClosure(self.WidgetInit, self));
+		local attachedUnitInfo = {unit = PlayerChoiceFrame:GetObjectGUID(), isGuid = true};
+		self.WidgetContainer:RegisterForWidgetSet(self.optionInfo.widgetSetID, GenerateClosure(self.WidgetsLayout, self), GenerateClosure(self.WidgetInit, self), attachedUnitInfo);
 	elseif self.WidgetContainer:GetNumWidgetsShowing() > 0 then
 		-- WidgetContainer is also used as the filler frame, so the height may have been adjusted the last time this option was set up.
 		-- If the widget set ID is the same as it was before, and there are widgets showing, then we need to call UpdateWidgetLayout

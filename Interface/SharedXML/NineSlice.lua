@@ -102,7 +102,7 @@ local function SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout
 end
 
 local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, userLayout)
-	--- Change texture coordinates before applying atlas.
+	-- Change texture coordinates before applying atlas.
 	SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout);
 
 	-- textureKit is optional, that's fine; but if it's nil the caller should ensure that there are no format specifiers in .atlas
@@ -363,6 +363,96 @@ local layouts =
 		["Center"] = { atlas = "%s-NineSlice-Center" },
 	};
 
+	GMChatRequest =
+	{
+		["TopRightCorner"] = { atlas = "GMChat-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "GMChat-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "GMChat-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "GMChat-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_GMChat-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_GMChat-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!GMChat-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!GMChat-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
+	TooltipDefaultLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
+	TooltipAzeriteLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-Azerite-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-Azerite-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-Azerite-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-Azerite-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-Azerite-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-Azerite-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-Azerite-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-Azerite-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Azerite-NineSlice-Center", x = -18, y = 18, x1 = 18, y1 = -18, },
+	};
+
+	TooltipCorruptedLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-Corrupted-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-Corrupted-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-Corrupted-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-Corrupted-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-Corrupted-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-Corrupted-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-Corrupted-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-Corrupted-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Corrupted-NineSlice-Center", x = -18, y = 18, x1 = 18, y1 = -18, },
+	};
+
+	TooltipMawLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-Maw-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-Maw-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-Maw-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-Maw-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-Maw-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-Maw-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-Maw-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-Maw-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Maw-NineSlice-Center", x = -24, y = 24, x1 = 24, y1 = -24, },
+	};
+
+	TooltipGluesLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-Glues-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-Glues-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-Glues-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-Glues-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-Glues-NineSlice-EdgeTop", x = 0, y = -1, x1 = 0, y1 = -1 },
+		["BottomEdge"] = { atlas = "_Tooltip-Glues-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-Glues-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-Glues-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Glues-NineSlice-Center", x = -8, y = 10, x1 = 8, y1 = -7, },
+	};
+
+	IdenticalCornersLayoutNoCenter =
+	{
+		["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
+		["TopLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true,},
+		["BottomLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
+		["BottomRightCorner"] = { atlas = "%s-NineSlice-Corner",  mirrorLayout = true,},
+		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
+	};
+
 	IdenticalCornersLayout =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
@@ -438,9 +528,61 @@ function NineSlicePanelMixin:GetFrameLayoutType()
 	return self.layoutType or self:GetParent().layoutType;
 end
 
+function NineSlicePanelMixin:GetFrameLayoutTextureKit()
+	return self.layoutTextureKit or self:GetParent().layoutTextureKit;
+end
+
 function NineSlicePanelMixin:OnLoad()
 	local layout = NineSliceUtil.GetLayout(self:GetFrameLayoutType());
 	if layout then
-		NineSliceUtil.ApplyLayout(self, layout, self.layoutTextureKit);
+		NineSliceUtil.ApplyLayout(self, layout, self:GetFrameLayoutTextureKit());
+	end
+end
+
+function NineSlicePanelMixin:SetCenterColor(r, g, b, a)
+	local center = self["Center"];
+	if center then
+		center:SetVertexColor(r, g, b, a or 1);
+	end
+end
+
+function NineSlicePanelMixin:GetCenterColor()
+	local center = self["Center"];
+	if center then
+		return center:GetVertexColor();
+	end
+end
+
+function NineSlicePanelMixin:SetBorderColor(r, g, b, a)
+	for _, section in ipairs(nineSliceSetup) do
+		if section.pieceName ~= "Center" then
+			local piece = self[pieceName];
+			if piece then
+				piece:SetVertexColor(r, g, b, a or 1);
+			end
+		end
+	end
+end
+
+function NineSlicePanelMixin:GetBorderColor()
+	-- return the vertex color of any valid piece
+	for _, section in ipairs(nineSliceSetup) do
+		if section.pieceName ~= "Center" then
+			local piece = self[pieceName];
+			if piece then
+				return piece:GetVertexColor();
+			end
+		end
+	end
+end
+
+function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
+	for _, section in ipairs(nineSliceSetup) do
+		if section.pieceName ~= "Center" then
+			local piece = self[pieceName];
+			if piece then
+				piece:SetBlendMode(blendMode);
+			end
+		end
 	end
 end

@@ -27,6 +27,14 @@ MathUtil =
 	Epsilon = .000001;
 };
 
+function CreateCounter(initialCount)
+	local count = initialCount or 0;
+	return function()
+		count = count + 1;
+		return count;
+	end
+end
+
 function Lerp(startValue, endValue, amount)
 	return (1 - amount) * startValue + amount * endValue;
 end

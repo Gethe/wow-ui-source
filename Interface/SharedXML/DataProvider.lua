@@ -230,7 +230,9 @@ function CreateDataProviderWithAssignedKey(tbl, key)
 end
 
 -- DataProviderIndexRangeMixin is only intended for use with ScrollBox in scenarios where
--- extremely large index ranges would need to be stored (i.e. 20,000 equipment set icons). 
+-- extremely large index ranges would need to be stored (i.e. 20,000 equipment set icons).
+-- Some functions exist only for parity with the DataProvider API expected by various parts
+-- of ScrollBox code.
 DataProviderIndexRangeMixin = CreateFromMixins(CallbackRegistryMixin);
 
 DataProviderIndexRangeMixin:GenerateCallbackEvents(
@@ -251,6 +253,13 @@ end
 
 function DataProviderIndexRangeMixin:SetSize(size)
 	self.size = math.max(0, size);
+
+	local pendingSort = false;
+	self:TriggerEvent(DataProviderIndexRangeMixin.Event.OnSizeChanged, pendingSort);
+end
+
+function DataProviderIndexRangeMixin:Flush()
+	self:SetSize(0);
 end
 
 function DataProviderIndexRangeMixin:Find(index)
@@ -268,18 +277,6 @@ end
 
 function DataProviderIndexRangeMixin:ContainsByPredicate(predicate)
 	return self:FindByPredicate(predicate) ~= nil;
-end
-
-function DataProviderIndexRangeMixin:ForEach(func)
-	for index = 1, self:GetSize() do
-		func(index);
-	end
-end
-
-function DataProviderIndexRangeMixin:Flush()
-	self:SetSize(0);
-	local pendingSort = false;
-	self:TriggerEvent(DataProviderIndexRangeMixin.Event.OnSizeChanged, pendingSort);
 end
 
 local function IndexRangeRegisterListener(dataProvider, event, handler, listener)

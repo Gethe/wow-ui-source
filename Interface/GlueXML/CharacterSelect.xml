@@ -965,7 +965,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterSelectCharacterFrame" inherits="BackdropTemplate">
+					<Frame name="CharacterSelectCharacterFrame" inherits="TooltipBackdropTemplate">
 						<Size x="260" y="710"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-5" y="-15"/>
@@ -989,7 +989,7 @@
 							</Layer>
 						</Layers>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 							<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 							<KeyValue key="backdropColorAlpha" value="0.85" type="number"/>
 							<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
@@ -1129,7 +1129,7 @@
 												<Anchor point="TOPLEFT" x="8" y="-1"/>
 											</Anchors>
 											<Shadow>
-												<Color r="0.32" g="0.5" b="1.0"/>
+												<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 											</Shadow>
 										</FontString>
 
@@ -1608,13 +1608,13 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="BackdropTemplate">
+					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="TooltipBackdropTemplate">
 						<Size x="220" y="150"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOMLEFT" x="-40" y="-20"/>
 						</Anchors>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 						</KeyValues>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1653,13 +1653,13 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame name="PlayersOnServer" hidden="true" inherits="BackdropTemplate">
+					<Frame name="PlayersOnServer" hidden="true" inherits="TooltipBackdropTemplate">
 						<Size x="220" y="88"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="CharacterTemplatesFrame" relativePoint="TOP" x="0" y="0"/>
 						</Anchors>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 						</KeyValues>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1795,7 +1795,7 @@
 					</OnUpdate>
 				</Scripts>
 			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true" inherits="BackdropTemplate">
+			<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
 				<Size x="255" y="60"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
@@ -1811,7 +1811,7 @@
 					</Layer>
 				</Layers>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+					<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 				</KeyValues>
 			</Frame>
 		</Frames>

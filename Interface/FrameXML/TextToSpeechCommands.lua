@@ -158,30 +158,30 @@ local function TextToSpeech_ToggleTextToSpeechChat(cmd)
 	return true;
 end
 
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PLAYLINE, TextToSpeech_CommandOptionHandler, "playSoundSeparatingChatLineBreaks", SLASH_TEXTTOSPEECH_HELP_PLAYLINE);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PLAYACTIVITY, TextToSpeech_CommandOptionHandler, "playActivitySoundWhenNotFocused", SLASH_TEXTTOSPEECH_HELP_PLAYACTIVITY);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SAYNAME, TextToSpeech_CommandOptionHandler, "addCharacterNameToSpeech", SLASH_TEXTTOSPEECH_HELP_SAYNAME);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ALTSYSTEMVOICE, TextToSpeech_CommandOptionHandler, "alternateSystemVoice", SLASH_TEXTTOSPEECH_HELP_ALTSYSTEMVOICE);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_MYMESSAGES, TextToSpeech_CommandOptionHandler, "narrateMyMessages", SLASH_TEXTTOSPEECH_HELP_MYMESSAGES);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PLAYLINE, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks, SLASH_TEXTTOSPEECH_HELP_PLAYLINE);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PLAYACTIVITY, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.PlayActivitySoundWhenNotFocused, SLASH_TEXTTOSPEECH_HELP_PLAYACTIVITY);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SAYNAME, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.AddCharacterNameToSpeech, SLASH_TEXTTOSPEECH_HELP_SAYNAME);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ALTSYSTEMVOICE, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.AlternateSystemVoice, SLASH_TEXTTOSPEECH_HELP_ALTSYSTEMVOICE);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_MYMESSAGES, TextToSpeech_CommandOptionHandler, Enum.TtsBoolSetting.NarrateMyMessages, SLASH_TEXTTOSPEECH_HELP_MYMESSAGES);
 
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_NPC, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_MONSTER_SAY", SLASH_TEXTTOSPEECH_HELP_NPC);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SYSTEM, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_SYSTEM", SLASH_TEXTTOSPEECH_HELP_SYSTEM);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_EMOTE, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_EMOTE", SLASH_TEXTTOSPEECH_HELP_EMOTE);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_WHISPER, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_WHISPER", SLASH_TEXTTOSPEECH_HELP_WHISPER);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SAY, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_SAY", SLASH_TEXTTOSPEECH_HELP_SAY);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_YELL, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_YELL", SLASH_TEXTTOSPEECH_HELP_YELL);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PARTYLEADER, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_PARTY_LEADER", SLASH_TEXTTOSPEECH_HELP_PARTYLEADER);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PARTY, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_PARTY", SLASH_TEXTTOSPEECH_HELP_PARTY);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_GUILDLEADER, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_OFFICER", SLASH_TEXTTOSPEECH_HELP_GUILDLEADER);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_GUILD, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_GUILD", SLASH_TEXTTOSPEECH_HELP_GUILD);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_GUILD_ANNOUNCE, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_GUILD_ACHIEVEMENT", SLASH_TEXTTOSPEECH_HELP_GUILD_ANNOUNCE);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_RAIDLEADER, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_RAID_LEADER", SLASH_TEXTTOSPEECH_HELP_RAIDLEADER);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_RAID, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_RAID", SLASH_TEXTTOSPEECH_HELP_RAID);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_RAID_WARNING, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_RAID_WARNING", SLASH_TEXTTOSPEECH_HELP_RAID_WARNING);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_INSTANCELEADER, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_INSTANCE_CHAT_LEADER", SLASH_TEXTTOSPEECH_HELP_INSTANCELEADER);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_INSTANCE, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_INSTANCE_CHAT", SLASH_TEXTTOSPEECH_HELP_INSTANCE);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_BLIZZARD, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_BN_WHISPER", SLASH_TEXTTOSPEECH_HELP_BLIZZARD);
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ACHIEVEMENT, TextToSpeech_ToggleTextToSpeechChat, "CHAT_MSG_ACHIEVEMENT", SLASH_TEXTTOSPEECH_HELP_ACHIEVEMENT);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_NPC, TextToSpeech_ToggleTextToSpeechChat, "MONSTER_SAY", SLASH_TEXTTOSPEECH_HELP_NPC);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SYSTEM, TextToSpeech_ToggleTextToSpeechChat, "SYSTEM", SLASH_TEXTTOSPEECH_HELP_SYSTEM);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_EMOTE, TextToSpeech_ToggleTextToSpeechChat, "EMOTE", SLASH_TEXTTOSPEECH_HELP_EMOTE);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_WHISPER, TextToSpeech_ToggleTextToSpeechChat, "WHISPER", SLASH_TEXTTOSPEECH_HELP_WHISPER);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SAY, TextToSpeech_ToggleTextToSpeechChat, "SAY", SLASH_TEXTTOSPEECH_HELP_SAY);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_YELL, TextToSpeech_ToggleTextToSpeechChat, "YELL", SLASH_TEXTTOSPEECH_HELP_YELL);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PARTYLEADER, TextToSpeech_ToggleTextToSpeechChat, "PARTY_LEADER", SLASH_TEXTTOSPEECH_HELP_PARTYLEADER);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PARTY, TextToSpeech_ToggleTextToSpeechChat, "PARTY", SLASH_TEXTTOSPEECH_HELP_PARTY);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_GUILDLEADER, TextToSpeech_ToggleTextToSpeechChat, "OFFICER", SLASH_TEXTTOSPEECH_HELP_GUILDLEADER);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_GUILD, TextToSpeech_ToggleTextToSpeechChat, "GUILD", SLASH_TEXTTOSPEECH_HELP_GUILD);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_GUILD_ANNOUNCE, TextToSpeech_ToggleTextToSpeechChat, "GUILD_ACHIEVEMENT", SLASH_TEXTTOSPEECH_HELP_GUILD_ANNOUNCE);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_RAIDLEADER, TextToSpeech_ToggleTextToSpeechChat, "RAID_LEADER", SLASH_TEXTTOSPEECH_HELP_RAIDLEADER);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_RAID, TextToSpeech_ToggleTextToSpeechChat, "RAID", SLASH_TEXTTOSPEECH_HELP_RAID);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_RAID_WARNING, TextToSpeech_ToggleTextToSpeechChat, "RAID_WARNING", SLASH_TEXTTOSPEECH_HELP_RAID_WARNING);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_INSTANCELEADER, TextToSpeech_ToggleTextToSpeechChat, "INSTANCE_CHAT_LEADER", SLASH_TEXTTOSPEECH_HELP_INSTANCELEADER);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_INSTANCE, TextToSpeech_ToggleTextToSpeechChat, "INSTANCE_CHAT", SLASH_TEXTTOSPEECH_HELP_INSTANCE);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_BLIZZARD, TextToSpeech_ToggleTextToSpeechChat, "BN_WHISPER", SLASH_TEXTTOSPEECH_HELP_BLIZZARD);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ACHIEVEMENT, TextToSpeech_ToggleTextToSpeechChat, "ACHIEVEMENT", SLASH_TEXTTOSPEECH_HELP_ACHIEVEMENT);
 
 do
 	local SLASH_TEXTTOSPEECH_TOGGLE = "";
@@ -298,7 +298,7 @@ end
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_DEFAULT,
 	function (cmd)
-		TextToSpeech_ResetDefaults();
+		TextToSpeechFrame_SetToDefaults();
 		cmd:GetCommands():SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION_RESET);
 		return true;
 	end, nil, SLASH_TEXTTOSPEECH_HELP_DEFAULT
@@ -337,8 +337,8 @@ do
 		function(cmd)
 			local commands = cmd:GetCommands();
 			commands:SpeakConfirmation(GetOptionConfirmation(TEXT_TO_SPEECH, GetCVarBool("textToSpeech")));
-			commands:SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, TEXTTOSPEECH_CONFIG.speechVolume));
-			commands:SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, TEXTTOSPEECH_CONFIG.speechRate));
+			commands:SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, C_ChatInfo.GetTTSSpeechVolume));
+			commands:SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, C_ChatInfo.GetTTSSpeechRate));
 
 			DisplaySelectedVoice(commands, "standard", SLASH_TEXTTOSPEECH_VOICE_CHANGED_CONFIRMATION);
 			DisplaySelectedVoice(commands, "alternate", SLASH_TEXTTOSPEECH_ALTVOICE_CHANGED_CONFIRMATION);
@@ -346,7 +346,7 @@ do
 			local entries = {};
 			local individualCommands = commands:GetCommands();
 			for cmdName, cmd in pairs(individualCommands) do
-				local value = TextToSpeech_GetSetting(cmd.option);
+				local value = type(cmd.cmdType) == "string" and TextToSpeechFrame_GetChatTypeEnabled(cmd.option) or C_TTSSettings.GetSetting(cmd.option);
 				if value then
 					table.insert(entries, { GetOptionConfirmation(cmdName, value) });
 				end

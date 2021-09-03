@@ -5,7 +5,7 @@
 	<Button name="FriendsTabTemplate" inherits="TabButtonTemplate" mixin="FriendsTabMixin" virtual="true">
 		<Size x="280" y="32"/>
 		<Frames>
-			<Frame parentKey="New" inherits="NewCallout" frameLevel="20">
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate" frameLevel="20">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="28"/>
 				</Anchors>

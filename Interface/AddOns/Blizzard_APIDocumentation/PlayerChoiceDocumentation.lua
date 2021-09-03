@@ -87,6 +87,7 @@ local PlayerChoice =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "objectGUID", Type = "string", Nilable = false },
 				{ Name = "choiceID", Type = "number", Nilable = false },
 				{ Name = "questionText", Type = "string", Nilable = false },
 				{ Name = "uiTextureKit", Type = "string", Nilable = false },

@@ -173,14 +173,15 @@ function VerticalLargeStoreCardMixin:SetDefaultCardTexture()
 	self.Card:SetAllPoints(self);
 end
 
+function VerticalLargeStoreCardMixin:ShouldModelShowShadows()
+	return false;
+end
+
 function VerticalLargeStoreCardMixin:Layout()
 	local width, height = StoreFrame_GetCellPixelSize("VerticalLargeStoreCardTemplate");
 	self:SetSize(width, height);
 
 	self:SetDefaultCardTexture();
-
-	self.Shadows:ClearAllPoints();
-	self.Shadows:SetPoint("CENTER");
 	
 	self.Icon:ClearAllPoints();
 	self.Icon:SetSize(63, 63);
@@ -255,7 +256,7 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.ModelScene:ClearAllPoints();
 	self.ModelScene:SetPoint("TOPLEFT", 3, -5);
 	self.ModelScene:SetPoint("BOTTOMRIGHT", -3, 5);
-	self.ModelScene:SetViewInsets(20, 20, 20, 160);
+	self.ModelScene:SetViewInsets(0, 0, 0, 0);
 	
 	self.Magnifier:ClearAllPoints();
 	self.Magnifier:SetSize(31, 35);
@@ -353,6 +354,30 @@ function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 	self.PurchasedText:Hide();
 
 	self.PurchasedMark:Hide();
+end
+
+--------------------------------------------------
+-- VERTICAL LARGE PAGEABLE STORE CARD WITH A BUY BUTTON MIXIN
+VerticalLargePageableStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin);
+
+function VerticalLargePageableStoreCardWithBuyButtonMixin:Layout()
+	VerticalLargeStoreCardWithBuyButtonMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("VerticalLargePageableStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+
+	self.Description:ClearAllPoints();
+	self.Description:ClearAllPoints();
+	self.Description:Hide();
+end
+
+function VerticalLargePageableStoreCardWithBuyButtonMixin:SetDefaultCardTexture()
+	self.Card:SetAtlas("store-card-transmog", true);
+	self.Card:SetTexCoord(0, 1, 0, 1);
+end
+
+function VerticalLargePageableStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)
+	-- do nothing
 end
 
 --------------------------------------------------

@@ -77,9 +77,9 @@ local UIEventToastManager =
 		{
 			Name = "EventToastEventType",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 18,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "LevelUp", Type = "EventToastEventType", EnumValue = 0 },
@@ -101,6 +101,7 @@ local UIEventToastManager =
 				{ Name = "PlayerAuraAdded", Type = "EventToastEventType", EnumValue = 16 },
 				{ Name = "PlayerAuraRemoved", Type = "EventToastEventType", EnumValue = 17 },
 				{ Name = "SpellScript", Type = "EventToastEventType", EnumValue = 18 },
+				{ Name = "CriteriaUpdated", Type = "EventToastEventType", EnumValue = 19 },
 			},
 		},
 		{

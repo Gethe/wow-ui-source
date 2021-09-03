@@ -5,7 +5,7 @@ UI.xsd">
 		<Size x="32" y="32"/>
 		<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
 	</Texture>
-	<Frame name="SharedPetBattleAbilityTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="SharedPetBattleAbilityTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="260" y="90"/>
 		<Layers>
 			<Layer level="ARTWORK">

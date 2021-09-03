@@ -144,14 +144,14 @@ ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 ExtraAbilityContainer.xml
 CurrencyContainer.lua
-## IME.xml needs to be loaded after UIParent.xml
-..\SharedXML\IME.xml
 MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+## IME.xml needs to be loaded after UIParent.xml
+..\SharedXML\IME.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\CustomBindingButtonTemplate.xml
 CustomBindingManager.lua

@@ -277,10 +277,9 @@
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightFont style="GameFontNormalSmall"/>
 	</Button>
-	<Frame name="CalendarEventInviteListTemplate" inherits="BackdropTemplate" virtual="true">
+	<Frame name="CalendarEventInviteListTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<Size x="294" y="250"/>
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_8_8_1111" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
 			<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
 			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>

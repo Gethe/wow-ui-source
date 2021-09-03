@@ -25,6 +25,17 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetCurrentSeasonValues",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displaySeasonID", Type = "number", Nilable = false },
+				{ Name = "milestoneSeasonID", Type = "number", Nilable = false },
+				{ Name = "rewardSeasonID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLastWeeklyBestInformation",
 			Type = "Function",
 
@@ -223,19 +234,6 @@ local MythicPlusInfo =
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
 				{ Name = "dungeonScore", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "MythicPlusAffixScoreInfo",
-			Type = "Structure",
-			Documentation = { "Information about a specific M+ run" },
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "score", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "durationSec", Type = "number", Nilable = false },
-				{ Name = "overTime", Type = "bool", Nilable = false },
 			},
 		},
 		{

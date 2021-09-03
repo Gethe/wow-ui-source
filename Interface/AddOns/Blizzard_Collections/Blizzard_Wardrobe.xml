@@ -27,7 +27,7 @@
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
 					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 					</Shadow>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="8"/>
@@ -1699,8 +1699,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="TRANSMOGRIFY_RIGHT_SHOULDER">
-									<Size x="180" y="30"/>
+								<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT" text="TRANSMOGRIFY_RIGHT_SHOULDER">
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
 									</Anchors>

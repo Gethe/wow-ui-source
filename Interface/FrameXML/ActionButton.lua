@@ -411,7 +411,7 @@ function ActionBarActionButtonMixin:Update()
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
 		else
-			hotkey:SetVertexColor(0.6, 0.6, 0.6);
+			hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
 		end
 	end
 
@@ -920,7 +920,7 @@ function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 		if ( checksRange ) then
 			self.HotKey:Show();
 			if ( inRange ) then
-				self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+				self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
 			else
 				self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
 			end
@@ -931,7 +931,7 @@ function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 		if ( checksRange and not inRange ) then
 			self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
 		else
-			self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+			self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
 		end
 	end
 end

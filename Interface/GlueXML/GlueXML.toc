@@ -42,6 +42,7 @@
 ..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
+..\SharedXML\NewFeatureLabel.xml
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -51,6 +52,7 @@ GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
 ..\SharedXML\Backdrop.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
@@ -84,7 +86,6 @@ GlueContextMenu.xml
 ..\SharedXML\ModelSceneActorMixin.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\FrameStack.lua
 
 ##New stuff!!!

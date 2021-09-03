@@ -421,11 +421,6 @@
 								<KeyValues>
 									<KeyValue key="IsEmbedded" value="true" type="boolean"/>
 								</KeyValues>
-								<Scripts>
-									<OnLoad>
-										self:SetBackdrop(nil);
-									</OnLoad>
-								</Scripts>
 							</GameTooltip>							
 						</Frames>
 					</Frame>

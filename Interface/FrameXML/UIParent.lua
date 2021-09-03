@@ -64,7 +64,6 @@ UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead
 UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildLogFrame"] =	{ area = "left",			pushable = 1,	whileDead = 1, 		yoffset = 4, };
 UIPanelWindows["CommunitiesGuildTextEditFrame"] = 			{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["CommunitiesGuildRecruitmentFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
@@ -398,6 +397,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");
 	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
 	self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED");
+	self:RegisterEvent("BEHAVIORAL_NOTIFICATION");
 	self:RegisterEvent("COVENANT_RENOWN_INTERACTION_STARTED");
 
 	-- Shop (for Asia promotion)
@@ -663,10 +663,6 @@ function GuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
-function LookingForGuildFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_LookingForGuildUI");
-end
-
 function EncounterJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_EncounterJournal");
 end
@@ -680,7 +676,10 @@ function BlackMarket_LoadUI()
 end
 
 function ItemUpgrade_LoadUI()
-	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
+	-- ACHURCHILL TODO: remove once item upgrade testing is done
+	if not OldItemUpgradeFrame then
+		UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
+	end
 end
 
 function PlayerChoice_LoadUI()
@@ -2260,6 +2259,10 @@ function UIParent_OnEvent(self, event, ...)
 			CovenantSanctum_LoadUI();
 		end
 		CovenantSanctumFrame:OnEvent(event, ...);
+	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
+		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
+		LoadAddOn("Blizzard_BehavioralMessaging");
+		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "COVENANT_RENOWN_INTERACTION_STARTED" ) then
 		self:UnregisterEvent(event);
 		if not CovenantRenownFrame then
@@ -2450,36 +2453,58 @@ end
 
 function UIParent_UpdateTopFramePositions()
 	local topOffset = 0;
-	local buffsAreaTopOffset = 0;
+	local yOffset = 0;
+	local xOffset = -180;
 
-	if (OrderHallCommandBar and OrderHallCommandBar:IsShown()) then
+	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
 		topOffset = 12;
-		buffsAreaTopOffset = OrderHallCommandBar:GetHeight();
+		yOffset = OrderHallCommandBar:GetHeight();
 	end
 
-	if (PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame)) then
+	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
 		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
 	end
 
-	if (TargetFrame and not TargetFrame:IsUserPlaced()) then
+	if TargetFrame and not TargetFrame:IsUserPlaced() then
 		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
-	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local buffOffset = 0;
 	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown();
-	if (ticketStatusFrameShown) then
-		TicketStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -180, 0 - buffsAreaTopOffset);
-		buffsAreaTopOffset = buffsAreaTopOffset + TicketStatusFrame:GetHeight();
-	end
-	if (gmChatStatusFrameShown) then
-		GMChatStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -170, -5 - buffsAreaTopOffset);
-		buffsAreaTopOffset = buffsAreaTopOffset + GMChatStatusFrame:GetHeight() + 5;
-	end
-	if (not ticketStatusFrameShown and not gmChatStatusFrameShown) then
-		buffsAreaTopOffset = buffsAreaTopOffset + 13;
+	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local notificationAnchorTo = UIParent;
+	if gmChatStatusFrameShown then
+		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		
+		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
+		notificationAnchorTo = GMChatStatusFrame;
 	end
 
-	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, 0 - buffsAreaTopOffset);
+	if ticketStatusFrameShown then
+		if gmChatStatusFrameShown then
+			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
+		else
+			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		end
+		
+		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
+		notificationAnchorTo = TicketStatusFrame;
+	end
+
+	local reportNotificationShown = BehavioralMessagingTray and BehavioralMessagingTray:IsShown();
+	if reportNotificationShown then
+		BehavioralMessagingTray:ClearAllPoints();
+		if notificationAnchorTo ~= UIParent then
+			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
+		else
+			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
+		end
+
+		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
+	end
+	
+	local y = -(buffOffset + 13)
+	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end
 
 UIPARENT_ALTERNATE_FRAME_POSITIONS = {

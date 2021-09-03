@@ -166,14 +166,28 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 	widgetContainerFrame:Layout(); 
 end
 
+function UIWidgetContainerMixin:SetAttachedUnitAndType(attachedUnitInfo)
+	if type(attachedUnitInfo) == "table" then
+		self.attachedUnit = attachedUnitInfo.unit;
+		self.attachedUnitIsGuid = attachedUnitInfo.isGuid;
+	elseif attachedUnitInfo then
+		self.attachedUnit = attachedUnitInfo;
+		self.attachedUnitIsGuid = false;
+	else
+		self.attachedUnit = nil;
+		self.attachedUnitIsGuid = nil;
+	end
+end
+
 -- widgetLayoutFunction should take 2 arguments (this widget container and a sequence containing all widgetFrames belonging to that widgetSet, sorted by orderIndex). It can update the layout of the widgets & widgetContainer as it sees fit. 
 --		IMPORTANT: widgetLayoutFunction is called every time any widget in this container is shown, hidden or re-ordered. If nil is passed DefaultWidgetLayout is used
 -- widgetInitFunction should take 1 argument (the widgetFrame). It should do anything needed for initialization of widgets by the registering system. It is called only once, when a widget is initialized (when entering a new map/area/subarea/phase)
 -- Either can be nil if your system doesn't need that functionaility
+-- attachedUnitInfo is only used if this widget container is attached to a particular unit (it is displayed in a nameplate or in the player choice UI), and causes UnitAura data sources to look at the attached unit
 --
 -- Calling RegisterForWidgetSet on a container that is already registered to a different WidgetSet will cause the old WidgetSet to get unregistered and the new one to take its place
 -- Calling RegisterForWidgetSet with a nil widgetSetID is the same as just calling UnregisterForWidgetSet
-function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedToUnit)
+function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedUnitInfo)
 	if self.widgetSetID then
 		-- We are already registered to a WidgetSet
 		if self.widgetSetID == widgetSetID then
@@ -192,18 +206,18 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.widgetSetID = widgetSetID;
 	self.layoutFunc = widgetLayoutFunction or DefaultWidgetLayout;
 	self.initFunc = widgetInitFunction;
-	self.attachedToUnit = attachedToUnit;
 	self.widgetFrames = {};
 	self.timerWidgets = {};
 	self.numTimers = 0;
 	self.numWidgetsShowing = 0;
+	self:SetAttachedUnitAndType(attachedUnitInfo)
 
 	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
 	self.widgetSetLayoutDirection = widgetSetInfo.layoutDirection;
 	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
 
-	if self.attachedToUnit then
-		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedToUnit);
+	if self.attachedUnit then
+		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedUnit, self.attachedUnitIsGuid);
 	end
 
 	self:ProcessAllWidgets();
@@ -238,13 +252,14 @@ function UIWidgetContainerMixin:UnregisterForWidgetSet()
 		self:Hide();
 	end
 
-	if self.attachedToUnit then
-		if UIWidgetManager.processingUnit == self.attachedToUnit then
+	if self.attachedUnit then
+		if UIWidgetManager.processingUnit == self.attachedUnit then
 			UIWidgetManager.processingUnit = nil;
 		end
 
-		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedToUnit);
-		self.attachedToUnit = nil;
+		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedUnit, self.attachedUnitIsGuid);
+
+		self:SetAttachedUnitAndType(nil);
 	end
 
 	self:UnregisterEvent("UPDATE_ALL_UI_WIDGETS");
@@ -396,10 +411,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 		return;
 	end
 
-	if UIWidgetManager.processingUnit ~= self.attachedToUnit then
-		C_UIWidgetManager.SetProcessingUnit(self.attachedToUnit);
-		UIWidgetManager.processingUnit = self.attachedToUnit;
-	end
+	UIWidgetManager:UpdateProcessingUnit(self.attachedUnit, self.attachedUnitIsGuid);
 
 	local widgetInfo = widgetTypeInfo.visInfoDataFunction(widgetID);
 
@@ -530,6 +542,18 @@ function UIWidgetManagerMixin:OnWidgetContainerUnregistered(widgetContainer)
 	self.registeredWidgetContainers[widgetContainer] = nil;
 end
 
+function UIWidgetManagerMixin:UpdateProcessingUnit(attachedUnit, attachedUnitIsGuid)
+	if self.processingUnit ~= attachedUnit then
+		if attachedUnitIsGuid then
+			C_UIWidgetManager.SetProcessingUnitGuid(attachedUnit);
+		else
+			C_UIWidgetManager.SetProcessingUnit(attachedUnit);
+		end
+
+		self.processingUnit = attachedUnit;
+	end
+end
+
 function UIWidgetManagerMixin:GetWidgetTypeInfo(widgetType)
 	return self.widgetVisTypeInfo[widgetType];
 end
@@ -563,4 +587,3 @@ function UIWidgetManagerMixin:EnumerateWidgetsByWidgetTag(widgetTag)
 
 	return pairs(widgetFrames);
 end
-

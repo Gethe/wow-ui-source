@@ -277,6 +277,8 @@
 
 		<Button name="VerticalLargeStoreCardWithBuyButtonTemplate" mixin="VerticalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
 
+		<Button name="VerticalLargePageableStoreCardWithBuyButtonTemplate" mixin="VerticalLargePageableStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
 		<Button name="HorizontalFullStoreCardWithBuyButtonTemplate" mixin="HorizontalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
 
 		<Button name="VerticalFullStoreCardWithBuyButtonTemplate" mixin="VerticalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />

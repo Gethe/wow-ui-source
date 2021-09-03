@@ -141,6 +141,11 @@ function CinematicsFrame_OnShow(self)
 		end
 		CinematicsButton_Update(button);
 	end
+	GlueParent_AddModalFrame(self);
+end
+
+function CinematicsFrame_OnHide(self)
+	GlueParent_RemoveModalFrame(self);
 end
 
 function CinematicsFrame_OnKeyDown(self, key)

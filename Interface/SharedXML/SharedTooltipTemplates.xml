@@ -9,13 +9,17 @@
 		<Size x="12" y="12"/>
 	</Texture>
 	
-	<GameTooltip name="SharedTooltipTemplate" clampedToScreen="true" frameStrata="TOOLTIP" inherits="BackdropTemplate" hidden="true" virtual="true">
+	<GameTooltip name="SharedTooltipTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameTooltipHeaderText" type="string"/>
 			<KeyValue key="textRight1Font" value="GameTooltipHeaderText" type="string"/>
 			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
 			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
 		</KeyValues>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true"/>
+		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="TopOverlay" hidden="true">

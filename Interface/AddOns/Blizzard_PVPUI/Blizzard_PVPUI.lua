@@ -1171,16 +1171,6 @@ function ConquestFrame_OnShow(self)
 	end
 end
 
-local nextTierEnumToDescription =
-{
-	[0] = nil,
-	[1] = PVP_RANK_1_NEXT_RANK_DESC,
-	[2] = PVP_RANK_2_NEXT_RANK_DESC,
-	[3] = PVP_RANK_3_NEXT_RANK_DESC,
-	[4] = PVP_RANK_4_NEXT_RANK_DESC,
-	[5] = PVP_RANK_5_NEXT_RANK_DESC,
-};
-
 function PVPRatedTier_OnEnter(self)
 	local tierName = self.tierInfo and self.tierInfo.pvpTierEnum and PVPUtil.GetTierName(self.tierInfo.pvpTierEnum);
 	if tierName then
@@ -1200,9 +1190,10 @@ function NextTier_OnEnter(self)
 	if tierName then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, TOOLTIP_PVP_NEXT_RANK:format(tierName));
-		if nextTierEnumToDescription[self.tierInfo.pvpTierEnum] then
+		local tierDescription = PVPUtil.GetTierDescription(self.tierInfo.pvpTierEnum);
+		if tierDescription then
 			GameTooltip:SetMinimumWidth(260);
-			GameTooltip_AddNormalLine(GameTooltip, nextTierEnumToDescription[self.tierInfo.pvpTierEnum]);
+			GameTooltip_AddNormalLine(GameTooltip, tierDescription);
 		end
 		local activityItemLevel, weeklyItemLevel = C_PvP.GetRewardItemLevelsByTierEnum(self.tierInfo.pvpTierEnum);
 		if activityItemLevel > 0 then
@@ -1396,6 +1387,13 @@ end
 
 function ConquestFrameButton_OnClick(self, button)
 	CloseDropDownMenus();
+	if(IsModifiedClick("CHATLINK")) then
+		local link = GetPvpRatingLink(UnitName("player"));
+		if not ChatEdit_InsertLink(link) then
+			ChatFrame_OpenChat(link);
+		end
+		return; 
+	end		
 	if ( button == "LeftButton" or self.teamIndex ) then
 		ConquestFrame_SelectButton(self);
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -2026,24 +2024,14 @@ function PVPWeeklyChestMixin:OnEnter()
 		return;
 	end
 
-	local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
-	local tierInfo = C_PvP.GetPvpTierInfo(tierID);
-	local pvpTier = tierInfo and tierInfo.pvpTierEnum or 0;
-	local tierName = tierInfo and tierInfo.pvpTierEnum and PVPUtil.GetTierName(tierInfo.pvpTierEnum);
-
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local itemLink = weeklyProgress.sampleItemHyperlink;
-	local itemLevel = 0;
-	if itemLink then
-		itemLevel = GetDetailedItemLevelInfo(itemLink) or 0;
-	end
 	local unlocksCompleted = weeklyProgress.unlocksCompleted or 0;
 
 	local state = self:GetState();
 	local maxUnlocks = weeklyProgress.maxUnlocks or 3;
 	local description;
 	if unlocksCompleted > 0 then
-		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks, itemLevel, tierName);
+		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
 	else
 		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP_NO_REWARDS:format(unlocksCompleted, maxUnlocks);
 	end

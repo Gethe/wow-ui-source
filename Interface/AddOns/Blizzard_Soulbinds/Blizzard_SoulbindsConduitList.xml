@@ -365,7 +365,7 @@
 			</EventFrame>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="MEDIUM">
 				<KeyValues>
-					<KeyValue key="lowerShadowAtlas" value="Soulbinds_Collection_Shadow" type="string"/>
+					<KeyValue key="lowerShadow" value="Soulbinds_Collection_Shadow" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>

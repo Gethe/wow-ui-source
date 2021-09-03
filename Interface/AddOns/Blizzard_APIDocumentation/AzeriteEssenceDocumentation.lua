@@ -233,7 +233,7 @@ local AzeriteEssence =
 			LiteralName = "AZERITE_ESSENCE_ACTIVATED",
 			Payload =
 			{
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = false },
+				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = false },
 				{ Name = "essenceID", Type = "number", Nilable = false },
 			},
 		},
@@ -243,7 +243,7 @@ local AzeriteEssence =
 			LiteralName = "AZERITE_ESSENCE_ACTIVATION_FAILED",
 			Payload =
 			{
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = false },
+				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = false },
 				{ Name = "essenceID", Type = "number", Nilable = false },
 			},
 		},
@@ -295,20 +295,6 @@ local AzeriteEssence =
 	Tables =
 	{
 		{
-			Name = "AzeriteEssence",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "MainSlot", Type = "AzeriteEssence", EnumValue = 0 },
-				{ Name = "PassiveOneSlot", Type = "AzeriteEssence", EnumValue = 1 },
-				{ Name = "PassiveTwoSlot", Type = "AzeriteEssence", EnumValue = 2 },
-				{ Name = "PassiveThreeSlot", Type = "AzeriteEssence", EnumValue = 3 },
-			},
-		},
-		{
 			Name = "AzeriteEssenceInfo",
 			Type = "Structure",
 			Fields =
@@ -331,7 +317,7 @@ local AzeriteEssence =
 				{ Name = "canUnlock", Type = "bool", Nilable = false },
 				{ Name = "unlocked", Type = "bool", Nilable = false },
 				{ Name = "rank", Type = "number", Nilable = true },
-				{ Name = "slot", Type = "AzeriteEssence", Nilable = true },
+				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = true },
 			},
 		},
 	},

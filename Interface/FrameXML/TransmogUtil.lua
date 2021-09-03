@@ -166,7 +166,32 @@ function TransmogUtil.IsValidTransmogSlotID(slotID)
 	local lookupKey = TransmogUtil.GetTransmogLocationLookupKey(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 	return not not TRANSMOG_SLOTS[lookupKey];
 end
-	
+
+function TransmogUtil.OpenCollectionToItem(sourceID)
+	if TransmogUtil.OpenCollectionUI() then
+		WardrobeCollectionFrame:GoToItem(sourceID);
+	end
+end
+
+function TransmogUtil.OpenCollectionToSet(setID)
+	if TransmogUtil.OpenCollectionUI() then
+		WardrobeCollectionFrame:GoToSet(setID);
+	end
+end
+
+function TransmogUtil.OpenCollectionUI()
+	if not CollectionsJournal then
+		CollectionsJournal_LoadUI();
+	end
+	if CollectionsJournal then
+		if not CollectionsJournal:IsVisible() or not WardrobeCollectionFrame:IsVisible() then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
+		return true;
+	end
+	return false;
+end
+
 TransmogPendingInfoMixin = {};
 
 function TransmogPendingInfoMixin:Init(pendingType, transmogID, category)

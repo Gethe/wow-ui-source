@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GlueMenuFrame.lua"/>
-	<Frame name="GlueMenuFrame" inherits="GlueModalFrameTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
+	<Frame name="GlueMenuFrame" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
 		<Size x="195" y="255"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -67,5 +67,9 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnShow function="GlueMenuFrame_OnShow"/>
+			<OnHide function="GlueMenuFrame_OnHide"/>
+		</Scripts>
 	</Frame>
 </Ui>

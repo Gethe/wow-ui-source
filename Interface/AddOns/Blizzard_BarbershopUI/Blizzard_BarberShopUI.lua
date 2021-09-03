@@ -151,6 +151,14 @@ function BarberShopMixin:PreviewCustomizationChoice(optionID, choiceID)
 	C_BarberShop.PreviewCustomizationChoice(optionID, choiceID);
 end
 
+function BarberShopMixin:MarkCustomizationChoiceAsSeen(choiceID)
+	C_BarberShop.MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function BarberShopMixin:SaveSeenChoices()
+	C_BarberShop.SaveSeenChoices();
+end
+
 function BarberShopMixin:GetCurrentCameraZoom()
 	return C_BarberShop.GetCurrentCameraZoom();
 end
