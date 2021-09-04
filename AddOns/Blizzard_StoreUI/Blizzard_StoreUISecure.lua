@@ -2602,9 +2602,11 @@ function StoreFrame_IsLoading(self)
 	end
 	-- can open the store UI while in queue, but in that state we don't ask for, nor need the purchase list
 	if ( not C_StoreSecure.HasPurchaseList() ) then
-		local _, _, wowConnectionState = C_Login.GetState();
-		if ( wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
-			return true;
+		if (IsOnGlueScreen()) then
+			local _, _, wowConnectionState = C_Login.GetState();
+			if ( wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+				return true;
+			end
 		end
 	end
 	return false;

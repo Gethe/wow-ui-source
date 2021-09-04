@@ -258,6 +258,7 @@ local function IsReadyToLoad(loadedEvents)
 end
 
 function TextToSpeechFrame_OnLoad(self)
+	self.loaded = false;
 	self.loadedEvents = {};
 	FrameUtil.RegisterFrameForEvents(self, loadEvents);
 
@@ -266,13 +267,14 @@ function TextToSpeechFrame_OnLoad(self)
 end
 
 function TextToSpeechFrame_CheckLoad(self)
-	if IsReadyToLoad(self.loadedEvents) then
+	if not self.loaded and IsReadyToLoad(self.loadedEvents) then
+		self.loaded = true;
 		C_VoiceChat.GetTtsVoices();
 
 		TextToSpeechFrameTtsVoiceDropdown_OnLoad(self.PanelContainer.TtsVoiceDropdown);
 		TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self.PanelContainer.TtsVoiceAlternateDropdown);
-		TextToSpeechFrame_Update(self);
 		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TextToSpeechChatTypes, "TextToSpeechChatTypeCheckButtonTemplate");
+		TextToSpeechFrame_Update(self);
 		TextToSpeech_CheckConfig();
 	end
 end
@@ -778,11 +780,11 @@ end
 
 function TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
-	
+
 	local chatType = strsub(event, 10);
 	local chatGroup = Chat_GetChatCategory(chatType);
 	local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
-	
+
 	if ( FCFManager_ShouldSuppressMessage(frame, chatGroup, chatTarget) ) then
 		return false;
 	end
@@ -824,7 +826,7 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
 		local message = arg1;
 		local name = Ambiguate(arg2 or "", "none");
-		
+
 		local type = strsub(event, 10);
 		if ( type == "GUILD_ACHIEVEMENT" or type == "ACHIEVEMENT" ) then
 			-- Achievement messages have a token for player name that needs filled in.
@@ -836,7 +838,7 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 				formatType = type;
 			end
 
-			message = format(_G["CHAT_" .. formatType .. "_GET"] .. message, name);
+			message = _G["CHAT_" .. formatType .. "_GET"]:format(name) .. message;
 		end
 
 		-- Check for chat text from the local player and skip it, unless the player wants their messages narrated

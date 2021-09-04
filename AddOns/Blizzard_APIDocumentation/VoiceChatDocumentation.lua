@@ -538,6 +538,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsTranscriptionAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LeaveChannel",
 			Type = "Function",
 

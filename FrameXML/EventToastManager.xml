@@ -2,24 +2,28 @@
 ..\FrameXML\UI.xsd">
 	<Script file="EventToastManager.lua"/>
 
+	<AnimationGroup name="ShowToastAnimGroupTemplate" setToFinalAlpha="true" virtual="true">
+		<Alpha parentKey="anim1" startDelay="1.8" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+		<Scripts>
+			<OnFinished>
+				self:GetParent():OnAnimatedIn();
+			</OnFinished>
+		</Scripts>
+	</AnimationGroup>
+
+	<AnimationGroup name="HideToastAnimGroupTemplate" setToFinalAlpha="true" virtual="true">
+		<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim1"/>
+		<Scripts>
+			<OnFinished>
+				self:GetParent():OnAnimatedOut();
+			</OnFinished>
+		</Scripts>
+	</AnimationGroup>
+
 	<Frame name="EventToastAnimationsTemplate" alpha="0" mixin="EventToastAnimationsMixin" virtual="true">
 		<Animations>
-			<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
-				<Alpha parentKey="anim1" startDelay="1.8" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimatedIn();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():OnAnimatedOut();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
+			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate"/>
+			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate"/>
 		</Animations>
 		<Frames>
 			<Frame parentKey="TitleTextMouseOverFrame" enableMouse="true">
@@ -205,6 +209,14 @@
 			<KeyValue key="animInEndDelay" value="4.5" type="number"/>
 		</KeyValues>
 		<Animations>
+			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate">
+				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" order="2" parentKey="anim2"/>
+			</AnimationGroup>
+			
+			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate">
+				<Alpha childKey="BannerFrame" fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim2"/>
+			</AnimationGroup>
+			
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
@@ -240,7 +252,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="BG1" hidden="false" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
+				<Texture parentKey="BG1" hidden="true" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -250,7 +262,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="BG2" hidden="false" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
+				<Texture parentKey="BG2" hidden="true" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -290,14 +302,6 @@
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
-				<Animations>
-					<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" order="1" parentKey="anim1"/>
-					</AnimationGroup>
-					<AnimationGroup parentKey="hideAnim" setToFinalAlpha="true">
-						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" parentKey="anim1"/>
-					</AnimationGroup>
-				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
@@ -335,7 +339,7 @@
 						</Texture>
 						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-10"/>at l
+								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
 							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
@@ -352,15 +356,15 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Description" inherits="SystemFont_Shadow_Med3" justifyH="CENTER">
+				<FontString parentKey="Description" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 					<Size x="300" y="0"/>
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-22"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-12"/>
 					</Anchors>
-					<Color color="SCENARIO_STAGE_COLOR"/>
+					<Color color="SCENARIO_SUBTITLE_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -409,6 +413,15 @@
 			<KeyValue key="animInStartDelay" value="10" type="number"/>
 			<KeyValue key="animInEndDelay" value="0" type="number"/>
 		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate">
+				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1" parentKey="anim2"/>
+			</AnimationGroup>
+
+			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate">
+				<Alpha childKey="BannerFrame" fromAlpha="1" toAlpha="0" duration="0.5" order="1" parentKey="anim2"/>
+			</AnimationGroup>
+		</Animations>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 			<Anchor point="BOTTOMRIGHT"/>
@@ -434,14 +447,6 @@
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
-				<Animations>
-					<AnimationGroup parentKey="showAnim">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1" parentKey="anim1"/>
-					</AnimationGroup>
-					<AnimationGroup parentKey="hideAnim">
-						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" parentKey="anim1"/>
-					</AnimationGroup>
-				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="MedalFlare" atlas="challenges-bannershine" useAtlasSize="true">

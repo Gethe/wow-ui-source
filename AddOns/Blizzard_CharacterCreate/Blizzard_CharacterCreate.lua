@@ -1091,12 +1091,15 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 end
 
 function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
-	if self.ClassTrialCheckButton.Button:GetChecked() then
+	if self.selectedRaceData.isNeutralRace and self.selectedClassData.earlyFactionChoice then
+		-- For neutral races, if the player selected an earlyFactionChoice class (DK) we ALWAYS need to pass back the selected faction, because the creation process will fail if we try to create a Neutral character of this class
+		return self.selectedFaction;
+	elseif self.ClassTrialCheckButton.Button:GetChecked() then
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
-			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
+			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction
 			return self.selectedFaction;
 		else
 			-- Otherwise they start as neutral so pass back nil

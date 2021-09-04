@@ -1986,6 +1986,25 @@ function InterfaceOptionsAccessibilityPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 end
 
+function InterfaceOptionsAccessibilityPanelSpeechToTextCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "speechToText";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self:SetShown(C_VoiceChat.IsTranscriptionAllowed());
+end
+
+function InterfaceOptionsAccessibilityPanelTextToSpeechCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "textToSpeech";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	if not C_VoiceChat.IsTranscriptionAllowed() then
+		local parent = self:GetParent();
+		self:SetPoint("TOPLEFT", parent.SpeechToTextCheckbox, "TOPLEFT", 0);
+	end
+end
+
 function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CVAR_UPDATE");

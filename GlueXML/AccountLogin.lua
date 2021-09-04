@@ -98,9 +98,17 @@ function AccountLogin_Update()
 	if (HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON) then
 		AccountLogin.UI.SaveAccountNameCheckButton:Hide();
 	end
-	if ( AccountLogin.UI.AccountsDropDown.active ) then
+	
+	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not isReconnectMode) then
+		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
-	end
+	else
+		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 275);
+		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
+		AccountLogin.UI.AccountsDropDown:Hide();
+	end	
+
 end
 
 function AccountLogin_UpdateSavedData(self)
@@ -111,17 +119,7 @@ function AccountLogin_UpdateSavedData(self)
 		self.UI.AccountEditBox:SetText(accountName);
 		AccountLogin_FocusPassword();
 	end
-	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not C_Login.IsReconnectLoginPossible()) then
-		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
-		AccountLogin.UI.AccountsDropDown:Show();
-		AccountLogin.UI.AccountsDropDown.active = true;
-	else
-		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 275);
-		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
-		AccountLogin.UI.AccountsDropDown:Hide();
-		AccountLogin.UI.AccountsDropDown.active = false;
-	end
+
 	AccountLoginDropDown_SetupList();
 end
 
@@ -132,6 +130,8 @@ function AccountLogin_OnKeyDown(self, key)
 		if reconnectButton:IsShown() and reconnectButton:IsEnabled() and C_Login.IsLoginReady() then
 			AccountLogin_ReconnectLogin();
 		end
+	elseif ( key == "ESCAPE" ) then
+		AccountLogin_OnEscapePressed();
 	elseif key == "TAB" then
 		local switchButton = self.UI.ReconnectSwitchButton;
 		if switchButton:IsShown() and switchButton:IsEnabled() then
@@ -166,6 +166,7 @@ function AccountLogin_Login()
 end
 
 function AccountLogin_ReconnectLogin()
+	C_Login.ClearLastError();
 	PlaySound(SOUNDKIT.GS_LOGIN);
 	C_Login.ReconnectLogin();
 end

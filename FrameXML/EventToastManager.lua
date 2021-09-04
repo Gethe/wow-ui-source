@@ -97,6 +97,9 @@ end
 function EventToastManagerMixin:SetAnimStartDelay(delay)
 end
 
+function EventToastManagerMixin:SetupGLineAtlas(useWhiteGLineAtlas)
+end
+
 EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin); 
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
@@ -158,7 +161,7 @@ function EventToastManagerFrameMixin:CloseActiveToasts()
 		self.hideAutomatically = true;
 		self.currentDisplayingToast.hideAutomatically = true;
 		self.animationsPaused = false;
-		self.currentDisplayingToast:SetOutStartDelay(0);
+		self.currentDisplayingToast:SetAnimOutStartDelay(0);
 		self.currentDisplayingToast:AnimOut();
 	end
 end
@@ -385,28 +388,30 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 	self.SubTitle:SetText(toastInfo.subtitle);
 	self.Description:SetText(toastInfo.instructionText);
 
+	if(toastInfo.subtitle == "") then
+		self.PaddingFrame:SetHeight(22);
+	else
+		self.PaddingFrame:SetHeight(16);
+	end
+
+	local usesBGTextures = toastInfo.uiTextureKit or not toastInfo.hideDefaultAtlas;
+	self.BG1:SetShown(usesBGTextures);
+	self.BG2:SetShown(usesBGTextures);
+	self.hideParentAnim = usesBGTextures; 
+
 	if(toastInfo.uiTextureKit) then 
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandBackgroundFormatStrings, TextureKitConstants.SetVisibility, false);
 		self:SetupTextureKitOffsets(toastInfo.uiTextureKit);
-	elseif(toastInfo.hideDefaultAtlas) then 
-		self.BG1:SetAlpha(0);
-		self.BG2:SetAlpha(0);
-		self.hideParentAnim = false; 
-	else
+	elseif(usesBGTextures) then 
 		SetupAtlasesOnRegions(self, defaultAtlases, true);
 	end 
 
 	self:GetParent():SetAnimationState(self.hideParentAnim);
 
 	self.uiTextureKit = toastInfo.uiTextureKit; 
-	if(not self.uiTextureKit) then 
-		self.Title:SetTextColor(SCENARIO_STAGE_COLOR:GetRGB());
-		self.BannerFrame:Show(); 
-	else 
-		self.BannerFrame:Hide(); 
-	end 
+	self.BannerFrame:SetShown(not usesBGTextures);
 end
 
 function EventToastScenarioBaseToastMixin:OnAnimFinished()
@@ -414,9 +419,8 @@ function EventToastScenarioBaseToastMixin:OnAnimFinished()
 end
 
 function EventToastScenarioBaseToastMixin:PlayAnim()
-	if(self.uiTextureKit) then 
+	if self.hideParentAnim then 
 		self.NewStageTextureKit:Play(); 
-		self:GetParent():SetAnimationState(self.hideParentAnim); 
 	end 
 	self:AnimIn();
 end
@@ -693,73 +697,61 @@ end
 
 function EventToastAnimationsMixin:SetAnimInStartDelay(delay)
 	self.showAnim.anim1:SetStartDelay(delay);
-	if(self.BannerFrame) then 
-		self.BannerFrame.showAnim.anim1:SetStartDelay(delay);
+	if(self.showAnim.anim2) then 
+		self.showAnim.anim2:SetStartDelay(delay);
 	end 
 end
 
 function EventToastAnimationsMixin:SetAnimInEndDelay(delay)
-	self.showAnim.anim1:SetEndDelay(delay);
-	if(self.BannerFrame) then 
-		self.BannerFrame.showAnim.anim1:SetEndDelay(delay);
+	if(self.showAnim.anim2) then 
+		self.showAnim.anim1:SetEndDelay(0);
+		self.showAnim.anim2:SetEndDelay(delay);
+	else
+		self.showAnim.anim1:SetEndDelay(delay);
 	end 
 end
 
-function EventToastAnimationsMixin:SetOutStartDelay(delay)
+function EventToastAnimationsMixin:SetAnimOutStartDelay(delay)
 	self.hideAnim.anim1:SetStartDelay(delay);
+	if(self.hideAnim.anim2) then 
+		self.hideAnim.anim2:SetStartDelay(delay);
+	end 
 end
 
 function EventToastAnimationsMixin:ResetAnimations()
-	self:SetAnimInStartDelay(0);
-	self.hideAnim:Stop();
-	self.showAnim:Stop();
-	if(self.BannerFrame) then 
-		self.BannerFrame.hideAnim:Stop();
-		self.BannerFrame.showAnim:Stop();
-	end		
-	self:BannerPlay();
+	self:SetAlpha(1);
 end
 
 function EventToastAnimationsMixin:PauseAnimations()
 	self.hideAnim:Stop();
 	self.showAnim:Stop();
 	self:SetAlpha(1);
-
-	if(self.BannerFrame) then
-		self.BannerFrame.hideAnim:Stop();
-		self.BannerFrame.showAnim:Stop();
-		self.BannerFrame:SetAlpha(1);
-	end 
 end
 
 function EventToastAnimationsMixin:ResumeAnimations()
 	self.hideAnim:Play();
-	if(self.BannerFrame) then 
-		self.BannerFrame.hideAnim:Play();
-	end 
 end
+
+local defaultAnimInStartDelay = 1.8;
+local defaultAnimOutStartDelay = 1.8;
 
 function EventToastAnimationsMixin:BannerPlay()
 	self:GetParent():SetupGLineAtlas(self.useWhiteGlineAtlas);
 
-	if(self.animInStartDelay) then 
-		self:SetAnimInStartDelay(self.animInStartDelay);
-		self:GetParent():SetAnimStartDelay(self.animInStartDelay);
-	end
-	if (self.animInEndDelay) then 
-		self:SetAnimInEndDelay(self.animInEndDelay);
-	end
+	self:SetAnimInStartDelay(self.animInStartDelay or defaultAnimInStartDelay);
+	self:GetParent():SetAnimStartDelay(self.animInStartDelay or defaultAnimInStartDelay);
 
-	C_Timer.After(self.animInStartDelay and self.animInStartDelay or 0, 
+	self:SetAnimInEndDelay(self.animInEndDelay or 0);
+
+	self:SetAnimOutStartDelay(defaultAnimOutStartDelay);
+
+	C_Timer.After(self.animInStartDelay or 0, 
 	function() 
 		if (self.toastInfo and self.toastInfo.showSoundKitID) then
 			PlaySound(self.toastInfo.showSoundKitID);
 		end
 	end);
 	self.showAnim:Play();
-	if(self.BannerFrame) then 
-		self.BannerFrame.showAnim:Play();
-	end
 	self:GetParent():PlayAnim();
 end
 
@@ -796,11 +788,6 @@ function EventToastAnimationsMixin:AnimOut()
 				PlaySound(self.toastInfo.hideSoundKitID);
 			end
 		end);
-
-		if(self.BannerFrame) then 
-			self.BannerFrame.hideAnim.anim1:SetStartDelay(self.hideAnim.anim1:GetStartDelay());
-			self.BannerFrame.hideAnim:Play();
-		end
 	end
 end
 

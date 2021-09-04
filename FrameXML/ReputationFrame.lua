@@ -302,8 +302,11 @@ function ReputationParagonFrame_SetupParagonTooltip(frame)
 	GameTooltip.factionID = frame.factionID;
 
 	local factionName, _, standingID = GetFactionInfoByID(frame.factionID);
-	local gender = UnitSex("player");
-	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	local factionStandingtext = select(7, GetFriendshipReputation(frame.factionID));
+	if not factionStandingtext then
+		local gender = UnitSex("player");
+		factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	end
 	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(frame.factionID);
 
 	if ( tooLowLevelForParagon ) then

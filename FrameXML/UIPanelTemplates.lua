@@ -285,7 +285,7 @@ function InlineHyperlinkFrame_OnClick(self, link, text, button)
 		local fixedLink;
 		local _, _, linkType, linkID = string.find(link, "([%a]+):([%d]+)");
 		if ( linkType == "currency" ) then
-			fixedLink = C_CurrencyInfo.GetCurrencyLink(linkID);
+			fixedLink = C_CurrencyInfo.GetCurrencyLink(linkID, 0);
 		end
 
 		if ( fixedLink ) then

@@ -128,7 +128,16 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(outfitID)
 		local isValidAppearance = false;
 		if TransmogUtil.IsValidTransmogSlotID(slotID) then
 			local appearanceID = itemTransmogInfo.appearanceID;
-			if appearanceID ~= Constants.Transmog.NoTransmogID then
+			local isValidSlot = appearanceID ~= Constants.Transmog.NoTransmogID;
+			-- skip offhand if mainhand is an appeance from Legion Artifacts category and the offhand matches the paired appearance
+			if isValidSlot and slotID == INVSLOT_OFFHAND then
+				local mhInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
+				-- -1 means appearance is from LA category
+				if mhInfo.secondaryAppearanceID == -1 then
+					isValidSlot = appearanceID ~= C_TransmogCollection.GetPairedArtifactAppearance(mhInfo.appearanceID);
+				end
+			end
+			if isValidSlot then
 				isValidAppearance = C_TransmogCollection.PlayerKnowsSource(appearanceID);
 				if not isValidAppearance then
 					local isInfoReady, canCollect = C_TransmogCollection.PlayerCanCollectSource(itemTransmogInfo.appearanceID);

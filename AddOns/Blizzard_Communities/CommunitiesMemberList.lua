@@ -862,6 +862,16 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 			end
 		end);
+	elseif sortAttribute == "dungeonScore" then 
+		table.sort(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+			if self.reverseActiveColumnSort then
+				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
+			end
+			-- If the score somehow hasn't been populated yet, we want to treat it like a score of 0. 
+			local lhsSortScore = lhsMemberInfo.overallDungeonScore or 0;
+			local rhsSortScore = rhsMemberInfo.overallDungeonScore or 0; 
+			return lhsSortScore < rhsSortScore;
+		end);
 		return;
 	end
 

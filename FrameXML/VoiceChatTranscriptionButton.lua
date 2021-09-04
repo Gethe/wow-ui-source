@@ -172,6 +172,10 @@ function VoiceChatTranscriptionButtonMixin:ShowTooltip()
 end
 
 function VoiceChatTranscriptionButtonMixin:ShouldEnable()
+	if not C_VoiceChat.IsTranscriptionAllowed() then
+		return false;
+	end
+
 	if not GetCVarBool("speechToText") then
 		return false;
 	end

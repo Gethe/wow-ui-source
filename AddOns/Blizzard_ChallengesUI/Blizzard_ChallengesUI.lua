@@ -148,7 +148,7 @@ function ChallengesFrame_Update(self)
 		local dungeonScore = 0;
 		if(inTimeInfo and overtimeInfo) then 
 			local inTimeScoreIsBetter = inTimeInfo.dungeonScore > overtimeInfo.dungeonScore; 
-			level = inTimeScoreIsBetter and inTimeInfo.level or overTimeInfo.level; 
+			level = inTimeScoreIsBetter and inTimeInfo.level or overtimeInfo.level; 
 			dungeonScore = inTimeScoreIsBetter and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore; 
         elseif(inTimeInfo or overtimeInfo) then 
 			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level; 
@@ -203,9 +203,9 @@ function ChallengesFrame_Update(self)
 
 	local chestFrame = self.WeeklyInfo.Child.WeeklyChest;
 	local bestMapID = weeklySortedMaps[1].id;
-	local chestState = chestFrame:Update(bestMapID);
-	chestFrame:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT);
-	local dungeonScore = C_ChallengeMode.GetOverallDungeonScore(); 
+	local dungeonScore = C_ChallengeMode.GetOverallDungeonScore();
+	local chestState = chestFrame:Update(bestMapID, dungeonScore);
+	chestFrame:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT); 
 	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore); 
 	if(color) then 
 		self.WeeklyInfo.Child.DungeonScoreInfo.Score:SetVertexColor(color.r, color.g, color.b);
@@ -261,7 +261,7 @@ end
 
 ChallengeModeWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
 
-function ChallengeModeWeeklyChestMixin:Update(bestMapID)
+function ChallengeModeWeeklyChestMixin:Update(bestMapID, dungeonScore)
 	local chestState = CHEST_STATE_WALL_OF_TEXT;
 
 	if C_WeeklyRewards.HasAvailableRewards() then
@@ -279,7 +279,7 @@ function ChallengeModeWeeklyChestMixin:Update(bestMapID)
 		self.Highlight:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
-	elseif C_MythicPlus.GetOwnedKeystoneLevel() then
+	elseif C_MythicPlus.GetOwnedKeystoneLevel() or (dungeonScore and dungeonScore > 0) then
 		chestState = CHEST_STATE_INCOMPLETE;
 
 		self.Icon:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);

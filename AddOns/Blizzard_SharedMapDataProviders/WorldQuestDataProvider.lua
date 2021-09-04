@@ -212,7 +212,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
-		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+		taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
 		self.matchWorldMapFilters = MapUtil.MapShouldShowWorldQuestFilters(mapID);
 	end
 

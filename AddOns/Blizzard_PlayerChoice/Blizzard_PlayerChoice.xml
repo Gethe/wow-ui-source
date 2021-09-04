@@ -17,7 +17,7 @@
 					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="BlackBackground" frameLevel="500" enableMouse="true" setAllPoints="true" hidden="true">
+			<Frame parentKey="BlackBackground" frameLevel="450" enableMouse="true" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture setAllPoints="true">

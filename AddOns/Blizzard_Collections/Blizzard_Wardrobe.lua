@@ -204,7 +204,7 @@ function TransmogFrameMixin:GetRandomAppearanceID()
 	-- we need to skip any appearances that match base or current
 	local baseItemTransmogInfo = C_Item.GetBaseItemTransmogInfo(self.selectedSlotButton.itemLocation);
 	local baseInfo = C_TransmogCollection.GetAppearanceInfoBySource(baseItemTransmogInfo.appearanceID);
-	local baseVisual = baseInfo.appearanceID;
+	local baseVisual = baseInfo and baseInfo.appearanceID;
 	local appliedItemTransmogInfo = C_Item.GetAppliedItemTransmogInfo(self.selectedSlotButton.itemLocation);
 	local appliedInfo = C_TransmogCollection.GetAppearanceInfoBySource(appliedItemTransmogInfo.appearanceID);	
 	local appliedVisual = appliedInfo and appliedInfo.appearanceID or Constants.Transmog.NoTransmogID;
@@ -3017,7 +3017,7 @@ end
 
 function WardrobeCollectionFrameSearchBoxMixin:OnKeyDown(key, ...)
 	if key == WARDROBE_CYCLE_KEY then
-		WardrobeCollectionFramen:OnKeyDown(key, ...);
+		WardrobeCollectionFrame:OnKeyDown(key, ...);
 	end
 end
 

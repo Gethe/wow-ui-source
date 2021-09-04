@@ -68,7 +68,7 @@ function ItemSocketingFrame_Update()
 	ItemSocketingFrame.itemIsBoundTradeable = nil;
 	if(GetSocketItemRefundable()) then
 		ItemSocketingFrame.itemIsRefundable = true;
-	elseif(GetSocketItemBoundTradeable() or HasBoundGemProposed()) then
+	elseif(GetSocketItemBoundTradeable() and HasBoundGemProposed()) then -- Only gems flagged "Soulbound" on their enchantments will remove item tradability when socketed
 		ItemSocketingFrame.itemIsBoundTradeable = true;
 	end
 

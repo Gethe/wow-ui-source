@@ -45,11 +45,6 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	self:Layout(); -- Layout visible entries horizontally
 end
 
-local function ResetAnimationFrame(framePool, frame)
-	frame:Reset();
-	frame:Hide();
-end
-
 function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index)
 	if self.animationInfo then
 		local animationPool = self.animationPools:GetOrCreatePool("FRAME", self, self.animationInfo.template);
@@ -59,7 +54,7 @@ function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo,
 			animationFrame:SetFrameLevel(entryFrame:GetFrameLevel() + 1);
 			animationFrame:Reset();
 			animationFrame:Show();
-			C_Timer.After(index * self.animationInfo.animationDelayModifier, function() if (not self.animationInfo) then return; end; animationFrame:Play(); C_Timer.After(self.animationInfo.effectDelay, function() self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame) end); end);
+			C_Timer.After(index * self.animationInfo.animationDelayModifier, function() if (not self.animationInfo) then return; end; animationFrame:Play(); C_Timer.After(self.animationInfo.effectDelay, function() self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame) end); end);		
 		end
 	end
 end
@@ -77,6 +72,11 @@ end
 
 function UIWidgetTemplateTextureAndTextRowMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
+	if(self.animatedEntries) then 
+		for _, entryFrame in ipairs(self.animatedEntries) do
+			entryFrame:SetAlpha(1);
+		end	
+	end	
 	self.entryPool:ReleaseAll();
 	self.animationPools:ReleaseAll();
 	self.animationInfo = nil;

@@ -78,6 +78,29 @@ local function HideZoneAbilityTutorial()
 	HelpTip:HideAll(ZoneAbilityFrame);
 end
 
+ZoneAbilityFrameUpdater = {};
+
+function ZoneAbilityFrameUpdater:AddDirtyFrame(dirtyFrame)
+	if not self.dirtyFrames then
+		self.dirtyFrames = {};
+	end
+
+	self.dirtyFrames[dirtyFrame] = true;
+
+	if not self.isDirty then
+		self.isDirty = true;
+		C_Timer.After(0, function() self:Clean() end);
+	end
+end
+
+function ZoneAbilityFrameUpdater:Clean()
+	for frame in pairs(self.dirtyFrames) do
+		frame:UpdateDisplayedZoneAbilities();
+	end
+
+	self.dirtyFrames = {};
+	self.isDirty = false;
+end
 
 ZoneAbilityFrameMixin = {};
 
@@ -93,7 +116,11 @@ function ZoneAbilityFrameMixin:OnLoad()
 end
 
 function ZoneAbilityFrameMixin:OnEvent(event, ...)
-	self:UpdateDisplayedZoneAbilities();
+	self:MarkDirty();
+end
+
+function ZoneAbilityFrameMixin:MarkDirty()
+	ZoneAbilityFrameUpdater:AddDirtyFrame(self);
 end
 
 local function SortByUIPriority(lhs, rhs)
@@ -101,11 +128,9 @@ local function SortByUIPriority(lhs, rhs)
 end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
-	HideZoneAbilityTutorial();
-
 	local zoneAbilities = GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
-	
+
 	local displayedZoneAbilities = {};
 	local activeAbilityIsDisplayedOnBar = {};
 	local displayedTextureKit = nil;
@@ -153,6 +178,8 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	if self.previousZoneAbilities and tCompare(self.previousZoneAbilities, displayedZoneAbilities) then
 		return;
 	end
+
+	HideZoneAbilityTutorial();
 
 	self.previousZoneAbilities = displayedZoneAbilities;
 

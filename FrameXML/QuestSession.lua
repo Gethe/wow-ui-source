@@ -853,7 +853,7 @@ function QuestSessionManagerMixin:CheckShowInviteTravelPassConfirmation(target, 
 	if questSessionActive then
 		self:ShowCheckDialog(self.ConfirmInviteTravelPassConfirmationDialog, target, guid);
 	else
-		ConfirmInviteTravelPass(target, guid);
+		C_PartyInfo.ConfirmInviteTravelPass(target, guid);
 	end
 end
 

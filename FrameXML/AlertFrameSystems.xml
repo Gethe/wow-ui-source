@@ -357,7 +357,7 @@
 				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="2" justifyV="TOP" justifyH="CENTER">
 					<Size x="160" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="27" y="-35"/>
+						<Anchor point="CENTER" x="27" y="-7"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -2556,7 +2556,7 @@
       </Layer>
     </Layers>
   </ContainedAlertFrame>
-  
+
 	<ContainedAlertFrame name="NewRuneforgePowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewRuneforgePowerAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -2574,5 +2574,5 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</ContainedAlertFrame>
-  
+
 </Ui>
