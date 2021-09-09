@@ -15,15 +15,6 @@ local BehavioralMessaging =
 				{ Name = "notificationType", Type = "string", Nilable = false },
 			},
 		},
-		{
-			Name = "TestNotification",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "notificationType", Type = "string", Nilable = false },
-			},
-		},
 	},
 
 	Events =
@@ -35,6 +26,7 @@ local BehavioralMessaging =
 			Payload =
 			{
 				{ Name = "notificationType", Type = "string", Nilable = false },
+				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
 	},

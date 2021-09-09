@@ -4039,7 +4039,17 @@ StaticPopupDialogs["BACKPACK_INCREASE_SIZE"] = {
 	timeout = 0,
 	whileDead = 0,
 }
-
+StaticPopupDialogs["GROUP_FINDER_AUTHENTICATOR_POPUP"] = {
+	text = GROUP_FINDER_AUTHENTICATOR_POPUP_DESC,
+	button1 = ACTIVATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		LoadURLIndex(41);
+	end,
+	wide = true,
+	timeout = 0,
+	whileDead = 0,
+}
 StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	text = BACKPACK_AUTHENTICATOR_FULL_INVENTORY,
 	button1 = OKAY,

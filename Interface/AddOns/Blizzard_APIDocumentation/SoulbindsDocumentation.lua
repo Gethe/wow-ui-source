@@ -146,24 +146,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitCharges",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "charges", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetConduitChargesCapacity",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "charges", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetConduitCollection",
 			Type = "Function",
 
@@ -367,29 +349,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetTotalConduitChargesPending",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "count", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetTotalConduitChargesPendingInSoulbind",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "soulbindID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "count", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetTree",
 			Type = "Function",
 
@@ -551,15 +510,6 @@ local Soulbinds =
 			Payload =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SoulbindConduitChargesUpdated",
-			Type = "Event",
-			LiteralName = "SOULBIND_CONDUIT_CHARGES_UPDATED",
-			Payload =
-			{
-				{ Name = "charges", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -74,21 +74,25 @@ do
 	end
 
 	function GetItemUpgradeStats(upgraded, numUpgradeLevels)
-		local stats = {};
-		local unformattedStats = C_ItemUpgrade.GetItemUpgradeStats(upgraded, numUpgradeLevels);
-		if (not unformattedStats) then
+		numUpgradeLevels = numUpgradeLevels or 0;
+
+		local upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
+		if not upgradeInfo then
 			return;
 		end
 
-		for i=1, #unformattedStats * 3 do
-			local currStat = unformattedStats[math.ceil(i/3)];
-			if ( i % 3 == 1) then
-				stats[i] = currStat.displayString;
-			elseif ( i % 3 == 2) then
-				stats[i] = currStat.statValue;
-			elseif ( i % 3 == 0) then
-				stats[i] = currStat.active;
-			end
+		local upgradeLevel =  upgradeInfo.upgradeLevelInfos[numUpgradeLevels + 1];
+		if not upgradeLevel then
+			return;
+		end
+
+		local stats = {};
+		local i = 1;
+		for _, statLine in ipairs(upgradeLevel.levelStats) do
+			stats[i] = statLine.displayString;
+			stats[i + 1] = statLine.statValue;
+			stats[i + 2] = statLine.active;
+			i = i + 3;
 		end
 
 		return unpack(stats);
@@ -111,7 +115,17 @@ do
 	end
 
 	function GetItemUpdateLevel()
-		return C_ItemUpgrade.GetItemUpdateLevel();
+		return C_ItemUpgrade.GetItemUpgradeCurrentLevel();
+	end
+
+	C_ItemUpgrade.GetItemLevelIncrement = function(numUpgradeLevels)
+		local upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
+		if not upgradeInfo then
+			return nil;
+		end
+
+		local upgradeLevel =  upgradeInfo.upgradeLevelInfos[numUpgradeLevels + 1];
+		return upgradeLevel and upgradeLevel.itemLevelIncrement or nil;
 	end
 end
 
@@ -122,6 +136,13 @@ do
 		local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
 		if categoryInfo then
 			return categoryInfo.name, categoryInfo.separateRecommended, categoryInfo.autoChooseActivity, categoryInfo.preferCurrentArea, categoryInfo.showPlaystyleDropdown;
+		end
+	end
+
+	function C_LFGList.GetActivityInfo(activityID, questID, showWarmode)
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID, questID, showWarmode);
+		if activityInfo then
+			return activityInfo.fullName, activityInfo.shortName, activityInfo.categoryID, activityInfo.groupFinderActivityGroupID, activityInfo.ilvlSuggestion, activityInfo.filters, activityInfo.minLevel, activityInfo.maxNumPlayers, activityInfo.displayType, activityInfo.orderIndex, activityInfo.useHonorLevel, activityInfo.showQuickJoinToast, activityInfo.isMythicPlusActivity, activityInfo.isRatedPvpActivity, activityInfo.isCurrentRaidActivity;
 		end
 	end
 end

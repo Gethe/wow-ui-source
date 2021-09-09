@@ -92,6 +92,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "MarkCustomizationOptionAsSeen",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "optionID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PreviewCustomizationChoice",
 			Type = "Function",
 

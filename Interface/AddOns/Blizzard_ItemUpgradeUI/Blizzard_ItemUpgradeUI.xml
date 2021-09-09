@@ -42,6 +42,17 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="GlowSheen" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Sheen" atlas="itemupgrade_fx_tooltip_confirmsheen" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="GlowMasks" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
@@ -69,32 +80,21 @@
 								<MaskedTexture childKey="$parent.GlowAnimatedPieces.GoldFlake"/>
 								<MaskedTexture childKey="$parent.GlowAnimatedPieces.Fog2"/>
 								<MaskedTexture childKey="$parent.GlowAnimatedPieces.GoldFlake2"/>
+								<MaskedTexture childKey="$parent.GlowSheen.Sheen"/>
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnShow>
-						self.TopRightCornerMask:Show();
-						self.BottomLeftCornerMask:Show();
-						self.FullMask:Show();
-					</OnShow>
-					<OnHide>
-						self.TopRightCornerMask:Hide();
-						self.BottomLeftCornerMask:Hide();
-						self.FullMask:Hide();
-					</OnHide>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="UpgradedAnim" setToFinalAlpha="true">
 				<Alpha childKey="GlowAnimatedPieces" duration="0.15" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="GlowAnimatedPieces" startDelay="1.08" smoothing="IN"  duration="0.25" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowAnimatedPieces" startDelay="1.08" smoothing="IN"  duration="0.25" fromAlpha="1" toAlpha="0" endDelay="0.67"/>
 				
 				<Rotation childKey="GlowAnimatedPieces.Fog" smoothing="OUT"  duration="1.33" degrees="90" />
-				<Rotation childKey="GlowAnimatedPieces.GoldFlake" startDelay="0" smoothing="IN"  duration="1" order="1" degrees="180"/>
-				<Scale childKey="GlowAnimatedPieces.GoldFlake" smoothing="OUT" duration="1" fromScaleX="1.5" fromScaleY="1.5" toScaleX="0" toScaleY="0"/>
+				<Rotation childKey="GlowAnimatedPieces.GoldFlake" startDelay="0" smoothing="IN"  duration="1.75" order="1" degrees="180"/>
+				<Scale childKey="GlowAnimatedPieces.GoldFlake" smoothing="OUT" duration="1.75" fromScaleX="1.5" fromScaleY="1.5" toScaleX="0" toScaleY="0"/>
 
 				<Rotation childKey="GlowAnimatedPieces.Fog2" smoothing="OUT"  duration="1.33" degrees="90" />
 				<Rotation childKey="GlowAnimatedPieces.GoldFlake2" startDelay="0" smoothing="IN"  duration="1" order="1" degrees="180"/>
@@ -102,6 +102,18 @@
 
 				<Alpha childKey="GlowNineSlice" duration="0.15" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="GlowNineSlice" startDelay="1.08" smoothing="IN"  duration="0.25" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="GlowSheen" smoothing="IN" duration="0.5" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="GlowSheen" startDelay="0.5" duration="0.25" fromAlpha="0.5" toAlpha="0"/>
+				<Translation childKey="GlowSheen" smoothing="IN_OUT" duration="0.75" offsetX="712" offsetY="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ReappearAnim" setToFinalAlpha="true">
+				<Alpha duration="0.5" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnFinished>
+						ItemUpgradeFrame:OnTooltipReappearComplete();
+					</OnFinished>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -132,12 +144,18 @@
 						<Anchor point="TOP" relativeKey="$parent.BottomBG"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="IdleGlowMask" atlas="itemupgrade_fx_framedecor_linemask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+				<Texture parentKey="Ring" atlas="itemupgrade_fx_framedecor_ring" useAtlasSize="true" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="LineMask" atlas="itemupgrade_fx_framedecor_linemask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.BottomBG" x="1"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="IdleGlow"/>
+						<MaskedTexture childKey="Ring"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -236,7 +254,7 @@
 
 			<Frame parentKey="ItemInfo" inherits="ResizeLayoutFrame" mixin="ItemUpgradeItemInfoMixin">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.UpgradeItemButton" relativePoint="RIGHT" x="31"/>
+					<Anchor point="LEFT" relativeKey="$parent.UpgradeItemButton" relativePoint="RIGHT" x="23"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -253,7 +271,7 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="UpgradeTo" inherits="GameFontHighlightOutline" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
+						<FontString parentKey="UpgradeTo" inherits="GameFontHighlight" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-10"/>
 							</Anchors>
@@ -296,7 +314,7 @@
 			<Frame parentKey="Arrow" hidden="true">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="CENTER" relativeKey="$parent.LeftItemPreviewFrame" relativePoint="RIGHT" x="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -314,14 +332,6 @@
 						<Translation childKey="arrow" endDelay="0.25" smoothing="NONE"  duration="1" offsetX="25" offsetY="0"/>
 					</AnimationGroup>
 				</Animations>
-				<Scripts>
-					<OnShow>
-						self.Anim:Play();
-					</OnShow>
-					<OnHide>
-						self.Anim:Stop();
-					</OnHide>
-				</Scripts>
 			</Frame>
 			
 			<Button parentKey="UpgradeButton" mixin="ItemUpgradeButtonMixin" inherits="UIPanelButtonTemplate, TruncatedButtonTemplate, DisabledTooltipButtonTemplate" text="UPGRADE">
@@ -329,8 +339,28 @@
 				<Anchors>
 					<Anchor point="BOTTOM" y="57"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Glow" atlas="itemupgrade_fx_buttonglow" useAtlasSize="true" alphaMode="ADD" alpha="0" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
+						<Alpha childkey="Glow" duration="1" fromalpha="0.4" toalpha="1" />
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnClick method="OnClick"/>
+					<OnDisable inherit="prepend">
+						self.Glow:Hide();
+					</OnDisable>
+					<OnEnable inherit="prepend">
+						self.Glow:Show();
+					</OnEnable>
 				</Scripts>
 			</Button>
 
@@ -358,8 +388,21 @@
 			
 			<Frame parentKey="PlayerCurrencies" inherits="CurrencyHorizontalLayoutFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5" y="-4"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5" y="-2"/>
 				</Anchors>
+			</Frame>
+
+			<Frame parentKey="AnimationHolder">
+				<Animations>
+					<AnimationGroup parentKey="UpgradedFlash" setToFinalAlpha="true">
+						<Alpha childKey="$parent.BottomPanel_Flash" smoothing="IN"  duration="0.15" fromAlpha="0" toAlpha="0.75"/>
+						<Alpha childKey="$parent.BottomPanel_Flash" startDelay="0.15" smoothing="OUT"  duration="0.15"  fromAlpha="1" toAlpha="0" endDelay="1.7"/>
+
+						<Alpha childKey="$parent.Ring" smoothing="IN" duration="0.15" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="$parent.Ring" smoothing="OUT" duration="0.75" fromScaleX="0" toScaleX="3" fromScaleY="0" toScaleY="3"/>
+						<Alpha childKey="$parent.Ring" startDelay="0.5" duration="0" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
 			</Frame>
 		</Frames>
 
@@ -369,10 +412,6 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="IdleGlowSlide" looping="REPEAT">
 				<TextureCoordTranslation childKey="IdleGlow" duration="30" offsetU="0" offsetV="1" />
-			</AnimationGroup>
-			<AnimationGroup parentKey="UpgradedFlash" setToFinalAlpha="true">
-				<Alpha childKey="BottomPanel_Flash" smoothing="IN"  duration="0.15" fromAlpha="0" toAlpha="0.75"/>
-				<Alpha childKey="BottomPanel_Flash" startDelay="0.15" smoothing="OUT"  duration="0.15"  fromAlpha="1" toAlpha="0" endDelay="1.03"/>
 			</AnimationGroup>
 		</Animations>
 

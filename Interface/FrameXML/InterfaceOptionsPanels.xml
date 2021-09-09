@@ -2151,68 +2151,68 @@
     <Size x="0" y="14"/>
   </FontString>
 
-  <Frame name="InterfaceOptionsAccessibilityPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
-    <Layers>
-      <Layer level="ARTWORK">
-        <FontString name="$parentTitle" text="ACCESSIBILITY_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-          <Anchors>
-            <Anchor point="TOPLEFT" x="16" y="-16" />
-          </Anchors>
-        </FontString>
-        <FontString name="$parentSubText" text="ACCESSIBILITY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-          <Size y="32" x="0" />
-          <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-8" />
-            <Anchor point="RIGHT" x="-32" y="0" />
-          </Anchors>
-        </FontString>
-      </Layer>
-    </Layers>
-    <Frames>
-      <CheckButton name="$parentMovePad" parentKey="MovePad" inherits="InterfaceOptionsCheckButtonTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="0" />
-        </Anchors>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_CHECKBOX;
-            self.cvar = "enableMovePad"
-            self.SetDisplayValue = self.SetValue;
-            self.setFunc = function(value)
-            if ( value == "1" ) then
-            UIParentLoadAddOn("Blizzard_MovePad");
-            MovePadFrame:Show();
-            elseif(IsAddOnLoaded("Blizzard_MovePad")) then
-            MovePadFrame:Hide();
-            end
-            end
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-            self:RegisterEvent("VARIABLES_LOADED");
-            if (Kiosk.IsEnabled()) then
-            self:RegisterEvent("PLAYER_ENTERING_WORLD");
-            end
-          </OnLoad>
-          <OnEvent>
-            self.setFunc(GetCVar(self.cvar));
-          </OnEvent>
-        </Scripts>
-      </CheckButton>
-      <CheckButton name="$parentCinematicSubtitles" inherits="InterfaceOptionsCheckButtonTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-8"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_CHECKBOX;
-            self.cvar = "movieSubtitle";
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-          </OnLoad>
-        </Scripts>
-      </CheckButton>
+	<Frame name="InterfaceOptionsAccessibilityPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="ACCESSIBILITY_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="ACCESSIBILITY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size y="32" x="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+						<Anchor point="RIGHT" x="-32" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentMovePad" parentKey="MovePad" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableMovePad"
+						self.SetDisplayValue = self.SetValue;
+						self.setFunc = function(value)
+						if ( value == "1" ) then
+						UIParentLoadAddOn("Blizzard_MovePad");
+						MovePadFrame:Show();
+						elseif(IsAddOnLoaded("Blizzard_MovePad")) then
+						MovePadFrame:Hide();
+						end
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+						if (Kiosk.IsEnabled()) then
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						end
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCinematicSubtitles" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "movieSubtitle";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
@@ -2310,15 +2310,15 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parentQuestTextContrast" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
-                </Anchors>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentQuestTextContrast" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MOTION_SICKNESS_DROPDOWN">
-                            <Anchors>
-                                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="3"/>
-                            </Anchors>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="3"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -2332,15 +2332,15 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentShakeIntensityDropdown" parentKey="ShakeIntensityDropdown" inherits="UIDropDownMenuTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-                </Anchors>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ADJUST_MOTION_SICKNESS_SHAKE">
-                            <Anchors>
-                                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="2"/>
-                            </Anchors>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="2"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -2353,11 +2353,28 @@
 					<OnEvent function="InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent"/>
 				</Scripts>
 			</Frame>
-    </Frames>
-    <Scripts>
-      <OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
-    </Scripts>
-  </Frame>
+			<Frame name="$parentCursorSizeDropdown" parentKey="CursorSizeDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShakeIntensityDropdown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="CURSOR_SIZE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
+		</Scripts>
+	</Frame>
 
 
 	<Frame name="InterfaceOptionsColorblindPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">

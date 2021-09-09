@@ -520,7 +520,17 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<EditBox name="LFGListEditBoxTemplate" autoFocus="false" inherits="InputBoxInstructionsTemplate" virtual="true">
+	<Button name="LFGListLockButtonTemplate" mixin="LFGListLockButtonMixin" virtual="true">
+		<Size x="28" y="34"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture atlas="groupfinder-icon-lock" useAtlasSize="true"/>
+		<HighlightTexture atlas="groupfinder-icon-lock" useAtlasSize="true" alphaMode="ADD"/>
+	</Button>
+	<EditBox name="LFGListEditBoxTemplate" autoFocus="false" inherits="InputBoxInstructionsTemplate" mixin="LFGEditBoxMixin" virtual="true">
 		<!--KeyValues>
 			Optional
 			<KeyValue key="tabCategory" value="tabCategoryLabel" type="string"/>
@@ -530,14 +540,20 @@
 			<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				if ( self.tabCategory ) then
-					LFGListEditBox_AddToTabCategory(self, self.tabCategory);
-				end
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
 			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnTabPressed function="LFGListEditBox_OnTabPressed"/>
+			<OnTabPressed method="OnTabPressed"/>
+			<OnEnter method="OnEnter"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
+		<Frames>
+			<Button parentKey="LockButton" inherits="LFGListLockButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="14"/>
+				</Anchors>
+			</Button>
+		</Frames>
 	</EditBox>
 	<Frame name="LFGListOptionCheckButtonTemplate" virtual="true">
 		<!--KeyValues>
@@ -702,7 +718,7 @@
 					self.EditBox:SetMaxLetters(self.maxLetters);
 				end
 				if ( self.tabCategory ) then
-					LFGListEditBox_AddToTabCategory(self.EditBox, self.tabCategory);
+					self.EditBox:AddToTabCategory(self.tabCategory);
 				end
 				if ( self.secureReferenceStr ) then
 					StoreSecureReference(self.secureReferenceStr, self.EditBox);
@@ -1788,7 +1804,7 @@
 							<Anchor point="LEFT" relativeKey="$parent.GroupDropDown" relativePoint="RIGHT" x="-15" y="0"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame parentKey="Description" name="LFGListCreationDescription" inherits="InputScrollFrameTemplate">
+					<ScrollFrame parentKey="Description" name="LFGListCreationDescription" mixin="LFGListCreationDescriptionMixin" inherits="InputScrollFrameTemplate">
 						<Size x="283" y="46"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
@@ -1799,15 +1815,17 @@
 							<KeyValue key="hideCharCount" value="true" type="boolean"/>
 						</KeyValues>
 						<Scripts>
-							<OnLoad>
-								StoreSecureReference("LFGListCreationDescription", self.EditBox);
-								self.EditBox:SetSecurityDisableSetText();
-								self.EditBox:SetSecurityDisablePaste();
-								LFGListEditBox_AddToTabCategory(self.EditBox, "ENTRY_CREATION");
-								self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
-								InputScrollFrame_OnLoad(self);
-							</OnLoad>
+							<OnLoad method="OnLoad"/>
+							<OnEnter method="OnEnter"/>
+							<OnMouseDown method="OnMouseDown"/>
 						</Scripts>
+						<Frames>
+							<Button parentKey="LockButton" inherits="LFGListLockButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="17" y="20"/>
+								</Anchors>
+							</Button>
+						</Frames>
 					</ScrollFrame>
 					<Frame parentKey="PlayStyleDropdown" name="LFGListEntryCreationPlayStyleDropdown" inherits="UIDropDownMenuTemplate">
 						<Size x="175" y="32"/>
@@ -1888,6 +1906,15 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
+						<Frames>
+							<Button parentKey="DisableStateClickButton" mixin="LFGListCreateGroupDisabledStateButtonMixin" setAllPoints="true" hidden="true">
+								<Scripts>
+									<OnClick method="OnClick"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Button>
+						</Frames>
 					</Button>
 					<Button parentKey="CancelButton" inherits="LFGListMagicButtonTemplate" text="BACK">
 						<Size x="135" y="22"/>

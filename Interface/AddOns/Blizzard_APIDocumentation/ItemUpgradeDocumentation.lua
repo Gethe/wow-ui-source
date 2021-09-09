@@ -38,21 +38,7 @@ local ItemUpgrade =
 			},
 		},
 		{
-			Name = "GetItemLevelIncrement",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "numUpgradeLevels", Type = "number", Nilable = false, Default = 1 },
-			},
-
-			Returns =
-			{
-				{ Name = "itemLevelIncrement", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetItemUpdateLevel",
+			Name = "GetItemUpgradeCurrentLevel",
 			Type = "Function",
 
 			Returns =
@@ -86,21 +72,6 @@ local ItemUpgrade =
 			},
 		},
 		{
-			Name = "GetItemUpgradeStats",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "upgraded", Type = "bool", Nilable = false, Default = false },
-				{ Name = "numUpgradeLevels", Type = "number", Nilable = false, Default = 1 },
-			},
-
-			Returns =
-			{
-				{ Name = "itemStats", Type = "table", InnerType = "ItemUpgradeStat", Nilable = false },
-			},
-		},
-		{
 			Name = "GetNumItemUpgradeEffects",
 			Type = "Function",
 
@@ -125,11 +96,21 @@ local ItemUpgrade =
 		{
 			Name = "UpgradeItem",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "numUpgrades", Type = "number", Nilable = false, Default = 1 },
+			},
 		},
 	},
 
 	Events =
 	{
+		{
+			Name = "ItemUpgradeFailed",
+			Type = "Event",
+			LiteralName = "ITEM_UPGRADE_FAILED",
+		},
 		{
 			Name = "ItemUpgradeMasterClosed",
 			Type = "Event",
@@ -144,11 +125,6 @@ local ItemUpgrade =
 			Name = "ItemUpgradeMasterSetItem",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",
-		},
-		{
-			Name = "ItemUpgradeMasterUpdate",
-			Type = "Event",
-			LiteralName = "ITEM_UPGRADE_MASTER_UPDATE",
 		},
 	},
 
@@ -183,6 +159,8 @@ local ItemUpgrade =
 			Fields =
 			{
 				{ Name = "upgradeLevel", Type = "number", Nilable = false },
+				{ Name = "displayQuality", Type = "number", Nilable = false },
+				{ Name = "itemLevelIncrement", Type = "number", Nilable = false },
 				{ Name = "levelStats", Type = "table", InnerType = "ItemUpgradeStat", Nilable = false },
 				{ Name = "costsToUpgrade", Type = "table", InnerType = "ItemUpgradeCurrencyCost", Nilable = false },
 				{ Name = "failureMessage", Type = "string", Nilable = true },

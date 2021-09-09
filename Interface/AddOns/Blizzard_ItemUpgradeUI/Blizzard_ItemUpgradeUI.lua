@@ -14,19 +14,17 @@ end
 ItemUpgradeMixin = {};
 
 function ItemUpgradeMixin:OnLoad()
-	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
-	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE");
-	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
-
 	self:SetPortraitToAsset("Interface\\Icons\\UI_ItemUpgrade");
 
 	self:SetTitle(ITEM_UPGRADE);
 
 	self.MicaFleckSheenSlide:Play();
 	self.IdleGlowSlide:Play();
+	self.UpgradeButton.GlowAnim:Play();
 
 	self.UpgradeItemButton.IconBorder:SetSize(58, 58);
 	self.UpgradeCostFrame:CreateLabel(ITEM_UPGRADE_COST_LABEL, nil, nil, 5);
+	self.Ring:SetPoint("CENTER", self.UpgradeButton, "CENTER", 0, 0);
 	
 	self.Dropdown = self.ItemInfo.Dropdown;
 	UIDropDownMenu_Initialize(self.Dropdown, GenerateClosure(self.InitDropdown, self));
@@ -39,22 +37,53 @@ function ItemUpgradeMixin:OnShow()
 	--TODO: Add function for filtering equipement frame as well as bags
 	ItemButtonUtil.OpenAndFilterBags(self);
 
+	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
+	self:RegisterEvent("ITEM_UPGRADE_FAILED");
 	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 end
 
 function ItemUpgradeMixin:OnHide()
+	self:UnregisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
+	self:UnregisterEvent("ITEM_UPGRADE_FAILED");
+	self:UnregisterEvent("BAG_UPDATE");
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	C_ItemUpgrade.CloseItemUpgrade();
 	ItemButtonUtil.CloseFilteredBags(self);
 	EquipmentFlyout_Hide(self);
-	self.UpgradedFlash:Stop();
+	self.AnimationHolder.UpgradedFlash:Stop();
+	self.upgradeAnimationsInProgress = false;
+end
 
-	self:UnregisterEvent("BAG_UPDATE");
+function ItemUpgradeMixin:HasReachedTargetUpgradeLevel()
+	if not self.targetUpgradeLevel then
+		return true;
+	end
+
+	local upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
+	return upgradeInfo and upgradeInfo.currUpgrade == self.targetUpgradeLevel;
+end
+
+function ItemUpgradeMixin:UpdateIfTargetReached()
+	if self:HasReachedTargetUpgradeLevel() and not self.tooltipReappearTimerInProgress then
+		self:Update();
+	end
 end
 
 function ItemUpgradeMixin:OnEvent(event, ...)
-	if event == "ITEM_UPGRADE_MASTER_SET_ITEM" or event == "ITEM_UPGRADE_MASTER_UPDATE" or event == "BAG_UPDATE" then
+	if event == "ITEM_UPGRADE_MASTER_SET_ITEM" then
+		if not self.upgradeAnimationsInProgress then
+			self:Update();
+		end
+		StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
+	elseif event == "BAG_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" then
+		self:UpdateIfTargetReached();
+	elseif event == "ITEM_UPGRADE_FAILED" then
 		self:Update();
 	elseif event == "GLOBAL_MOUSE_DOWN" then
 		local buttonName = ...;
@@ -70,16 +99,14 @@ end
 
 function ItemUpgradeMixin:OnConfirm()
 	self:PlayUpgradedCelebration();
-	C_ItemUpgrade.UpgradeItem();
+	C_ItemUpgrade.UpgradeItem(self.numUpgradeLevels);
 end
 
 function ItemUpgradeMixin:Update(fromDropDown)
-    local numUpgradeLevels = 1;
 	self.upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
 
-	self.UpgradeButton:SetDisabledState(not self.upgradeInfo);
-
 	if not self.upgradeInfo then
+		self:UpdateButtonAndArrowStates(true, false);
 		self.ItemInfo:Setup(self.upgradeInfo);
 		SetItemButtonTexture(self.UpgradeItemButton, nil);
 		SetItemButtonQuality(self.UpgradeItemButton, nil);
@@ -89,11 +116,14 @@ function ItemUpgradeMixin:Update(fromDropDown)
 		self.UpgradeItemButton.PulseEmptySlotGlow:Restart();
 		self.MissingDescription:Show();
 		self.LeftItemPreviewFrame:Hide();
+		self.RightItemPreviewFrame.ReappearAnim:Stop();
 		self.RightItemPreviewFrame:Hide();
 		self.UpgradeCostFrame:Hide();
 		self.PlayerCurrencies:Hide();
 		self.FrameErrorText:Hide();
 		self.Arrow:Hide();
+		self.upgradeAnimationsInProgress = false;
+		self.targetUpgradeLevel = nil;
 		return;
 	end
 
@@ -102,14 +132,11 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	self.UpgradeItemButton.EmptySlotGlow:Hide();
 	self.UpgradeItemButton.PulseEmptySlotGlow:Stop();
 
-	if fromDropDown then
-		numUpgradeLevels = fromDropDown - self.upgradeInfo.currUpgrade;
-		UIDropDownMenu_SetSelectedValue(self.Dropdown, fromDropDown);
-		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(fromDropDown));
-	else
-		UIDropDownMenu_SetSelectedValue(self.Dropdown, self.upgradeInfo.currUpgrade + 1);
-		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.upgradeInfo.currUpgrade + 1));
-	end
+	self.targetUpgradeLevel = fromDropDown or (self.upgradeInfo.currUpgrade + 1);
+	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
+
+	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
+	UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel));
 
 	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
 
@@ -117,59 +144,83 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	SetItemButtonQuality(self.UpgradeItemButton, self.upgradeInfo.displayQuality);
 
 	self.MissingDescription:Hide();
-	self:PopulatePreviewFrames(numUpgradeLevels);
+	self:PopulatePreviewFrames();
 end
 
-function ItemUpgradeMixin:PopulatePreviewFrames(numUpgradeLevels)
-	local itemMaxedOut =  self.upgradeInfo.currUpgrade >= self.upgradeInfo.maxUpgrade;
-	local failureMessage = not itemMaxedOut and self.upgradeInfo.upgradeLevelInfos[numUpgradeLevels+1].failureMessage;
-	local canUpgradeItem = self.upgradeInfo.itemUpgradeable and not itemMaxedOut and not failureMessage;
+function ItemUpgradeMixin:UpdateButtonAndArrowStates(buttonDisabled, canUpgrade)
+	self.pendingButtonEnable = false;
 
-	if numUpgradeLevels > 1 then
-		self.UpgradeButton:SetDisabledState(true);
-		self.UpgradeButton:SetDisabledTooltip(ITEM_UPGRADE_FRAME_PREVIEW_RANK_TOOLTIP_ERROR);
-	elseif canUpgradeItem  then
-		self.UpgradeButton:SetDisabledState(false);
-		self.FrameErrorText:Hide();
-	elseif failureMessage then
-		self.FrameErrorText:SetText(failureMessage);
-		self.FrameErrorText:Show();
-		self.UpgradeButton:SetDisabledState(true);
-		self.UpgradeButton:SetDisabledTooltip(failureMessage);
+	local isReappearAnimPlaying = self.RightItemPreviewFrame.ReappearAnim:IsPlaying();
+
+	if buttonDisabled then
+		self.UpgradeButton:SetEnabled(false);
+	elseif not isReappearAnimPlaying then
+		self.UpgradeButton:SetEnabled(true);
 	else
-		self.FrameErrorText:SetText(ITEM_UPGRADE_NO_MORE_UPGRADES);
-		self.FrameErrorText:Show();
-		self.UpgradeButton:SetDisabledState(true);
-		self.UpgradeButton:SetDisabledTooltip(ITEM_UPGRADE_NO_MORE_UPGRADES);
+		self.pendingButtonEnable = true;
 	end
 
-	self.ItemInfo:Setup(self.upgradeInfo, canUpgradeItem);
-	self.Arrow:SetPoint("CENTER", self.LeftItemPreviewFrame, "RIGHT", 8, 0);
-	self.Arrow:SetShown(canUpgradeItem);
+	if not canUpgrade then
+		self.Arrow:Hide();
+	elseif not isReappearAnimPlaying then
+		self.Arrow.Anim:Restart();
+		self.Arrow:Show();
+	end
+end
+
+function ItemUpgradeMixin:PopulatePreviewFrames()
+	local itemMaxedOut =  self.upgradeInfo.currUpgrade >= self.upgradeInfo.maxUpgrade;
+	local failureMessage = itemMaxedOut and ITEM_UPGRADE_NO_MORE_UPGRADES or self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels+1].failureMessage;
+	local canUpgradeItem = self.upgradeInfo.itemUpgradeable and not failureMessage;
+	local showRightPreview = self.upgradeInfo.itemUpgradeable and not itemMaxedOut;
+
+	local buttonDisabledState = true;
+
+	if canUpgradeItem  then
+		buttonDisabledState = false;
+		self.FrameErrorText:Hide();
+	elseif showRightPreview then
+		self.FrameErrorText:Hide();
+		self.UpgradeButton:SetDisabledTooltip(failureMessage);
+	else
+		self.FrameErrorText:SetText(failureMessage);
+		self.FrameErrorText:Show();
+		self.UpgradeButton:SetDisabledTooltip(failureMessage);
+	end
+
+	self.ItemInfo:Setup(self.upgradeInfo, showRightPreview);
 
 	self.LeftItemPreviewFrame:GeneratePreviewTooltip(false, nil);
-	if canUpgradeItem then
+	if showRightPreview then
 		self.RightItemPreviewFrame:GeneratePreviewTooltip(true, nil);
 
 		if self.RightItemPreviewFrame:GetHeight() > self.LeftItemPreviewFrame:GetHeight() then
 			self.LeftItemPreviewFrame:SetHeight(self.RightItemPreviewFrame:GetHeight());
 		end
 	else
+		self:UpdateButtonAndArrowStates(buttonDisabledState, showRightPreview);
+		self.RightItemPreviewFrame.ReappearAnim:Stop();
 		self.RightItemPreviewFrame:Hide();
 		self.UpgradeCostFrame:Hide();
 		self.PlayerCurrencies:Hide();
+		self.upgradeAnimationsInProgress = false;
 		return;
+	end
+
+	if self.upgradeAnimationsInProgress then
+		self.RightItemPreviewFrame:SetAlpha(0);
+		self.RightItemPreviewFrame.ReappearAnim:Play();
 	end
 
 	self.UpgradeCostFrame:Clear();
 	self.PlayerCurrencies:Clear();
 
-	local currTotalUpgradeCosts = self:CalculateTotalCostTable(numUpgradeLevels);
+	local currTotalUpgradeCosts = self:CalculateTotalCostTable();
 	for currencyID, totalCurrencyCost in pairs(currTotalUpgradeCosts) do
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 
 		if (totalCurrencyCost > currencyInfo.quantity) then
-			self.UpgradeButton:SetDisabledState(true);
+			buttonDisabledState = true;
 			self.UpgradeButton:SetDisabledTooltip();
 			self.UpgradeCostFrame:AddCurrency(currencyID, totalCurrencyCost, RED_FONT_COLOR);
 		else
@@ -177,6 +228,8 @@ function ItemUpgradeMixin:PopulatePreviewFrames(numUpgradeLevels)
 		end
 		self.PlayerCurrencies:AddCurrency(currencyID);
 	end
+
+	self:UpdateButtonAndArrowStates(buttonDisabledState, showRightPreview);
 
 	self.UpgradeCostFrame:Show();
 	self.PlayerCurrencies:Show();
@@ -213,10 +266,10 @@ function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 	return output;
 end
 
-function ItemUpgradeMixin:CalculateTotalCostTable(numUpgradeLevels)
+function ItemUpgradeMixin:CalculateTotalCostTable()
 	local currTotalUpgradeCosts = {};
 
-	for upgradeIndex = 1, numUpgradeLevels+1 do
+	for upgradeIndex = 1, self.numUpgradeLevels+1 do
 		local upgradeLevel = self.upgradeInfo.upgradeLevelInfos[upgradeIndex];
 		if not upgradeLevel then
 			return;
@@ -280,17 +333,39 @@ function ItemUpgradeMixin:PlayUpgradedSound()
 	end
 end
 
+local tooltipReappearWaitTime = 1.5;
+
 function ItemUpgradeMixin:PlayUpgradedCelebration()
+	self.upgradeAnimationsInProgress = true;
 	self.LeftItemPreviewFrame.UpgradedAnim:Restart();
-	self.RightItemPreviewFrame.UpgradedAnim:Restart();
-	self.UpgradedFlash:Restart();
+	self.RightItemPreviewFrame:SetAlpha(0);
+	self.Arrow:Hide();
+	self.AnimationHolder.UpgradedFlash:Restart();
 	self:PlayUpgradedSound();
+	self.tooltipReappearTimerInProgress = true;
+	C_Timer.After(tooltipReappearWaitTime, GenerateClosure(self.OnTooltipReappearTimerComplete, self));
+end
+
+function ItemUpgradeMixin:OnTooltipReappearTimerComplete()
+	self.tooltipReappearTimerInProgress = false;
+	self:UpdateIfTargetReached();
+end
+
+function ItemUpgradeMixin:OnTooltipReappearComplete()
+	self.Arrow.Anim:Restart();
+	self.Arrow:Show();
+
+	if self.pendingButtonEnable then
+		self.UpgradeButton:SetEnabled(true);
+	end
+
+	self.upgradeAnimationsInProgress = false;
 end
 
 ItemUpgradeButtonMixin = {};
 
 function ItemUpgradeButtonMixin:OnClick()
-	self:SetDisabledState(true);
+	self:SetEnabled(false);
 	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
 	local costTable = ItemUpgradeFrame:CalculateTotalCostTable(1);
 	local currencyTable = {};
@@ -334,8 +409,9 @@ MAX_TOOLTIP_TRUNCATION_HEIGHT = 230;
 
 function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
-	local itemLevel = C_ItemUpgrade.GetItemUpdateLevel();
-	local numUpgradeLevels = UIDropDownMenu_GetSelectedValue(ItemUpgradeFrame.Dropdown) - upgradeInfo.currUpgrade;
+	local currentItemLevel = C_ItemUpgrade.GetItemUpgradeCurrentLevel();
+	local numUpgradeLevels = ItemUpgradeFrame.numUpgradeLevels
+	local upgradeLevelInfo = isUpgrade and upgradeInfo.upgradeLevelInfos[numUpgradeLevels + 1] or upgradeInfo.upgradeLevelInfos[1];
 
 	if parentFrame then
 		self:SetOwner(parentFrame, "ANCHOR_NONE");
@@ -347,26 +423,32 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 	self:SetMinimumWidth(220, true);
 	self:SetCustomLineSpacing(5);
 
+	local itemQualityColor = ITEM_QUALITY_COLORS[upgradeLevelInfo.displayQuality].color;
+
 	GameTooltip_AddDisabledLine(self, isUpgrade and ITEM_UPGRADE_NEXT_UPGRADE or ITEM_UPGRADE_CURRENT);
-	GameTooltip_AddColoredLine(self, upgradeInfo.name, upgradeInfo.itemQualityColor);
-	self:ApplyColorToGlowNiceSlice(upgradeInfo.itemQualityColor);
+	GameTooltip_AddColoredLine(self, upgradeInfo.name, itemQualityColor);
+	self:ApplyColorToGlowNiceSlice(itemQualityColor);
+
+	if isUpgrade and not parentFrame then
+		ItemUpgradeFrame.Ring:SetVertexColor(itemQualityColor:GetRGB());
+	end
 
 	if isUpgrade then
-		local ilvlInc = C_ItemUpgrade.GetItemLevelIncrement(numUpgradeLevels);
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT:format(itemLevel + ilvlInc, ilvlInc), false);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT:format(currentItemLevel + upgradeLevelInfo.itemLevelIncrement, upgradeLevelInfo.itemLevelIncrement), false);
 		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade + numUpgradeLevels, upgradeInfo.maxUpgrade), false);
 	else
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT:format(itemLevel), false);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT:format(currentItemLevel), false);
 		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade), false);
 	end
 
 	-- Stats ----------------------------------------------------------------------------------------------
-	local stats	= isUpgrade and upgradeInfo.upgradeLevelInfos[numUpgradeLevels + 1].levelStats or upgradeInfo.upgradeLevelInfos[1].levelStats;
-	for _, statLine in ipairs(stats) do
+	for _, statLine in ipairs(upgradeLevelInfo.levelStats) do
 		if statLine.active then
 			GameTooltip_AddHighlightLine(self, statLine.displayString, false);
 		end
 	end
+
+	GameTooltip_AddBlankLineToTooltip(self);
 
 	--Trinket Text -----------------------------------------------------------------------------------------
 	local text, upgradeText = C_ItemUpgrade.GetItemUpgradeEffect(1, numUpgradeLevels);
@@ -375,8 +457,6 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 	end
 
 	if text then
-		GameTooltip_AddBlankLineToTooltip(self);
-
 		if not parentFrame then
 			local bigText = isUpgrade and ItemUpgradeFrame.RightPreviewBigText or ItemUpgradeFrame.LeftPreviewBigText;
 		

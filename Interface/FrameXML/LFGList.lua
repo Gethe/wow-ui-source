@@ -710,23 +710,27 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
 	
 	--Update the activity dropdown
-	local _, shortName, _, _, iLevel, _, _, _, _, _, _, _, mythicDungeon, ratedPvp, raidActivity = C_LFGList.GetActivityInfo(activityID);
-	UIDropDownMenu_SetText(self.ActivityDropDown, shortName);
+	local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+	if(not activityInfo) then 
+		return;
+	end 
+
+	UIDropDownMenu_SetText(self.ActivityDropDown, activityInfo.shortName);
 
 	--Update the group dropdown. If the group dropdown is showing an activity, hide the activity dropdown
 	local groupName = C_LFGList.GetActivityGroupInfo(groupID);
-	UIDropDownMenu_SetText(self.GroupDropDown, groupName or shortName);
+	UIDropDownMenu_SetText(self.GroupDropDown, groupName or activityInfo.shortName);
 	self.ActivityDropDown:SetShown(groupName and not categoryInfo.autoChooseActivity);
 	self.GroupDropDown:SetShown(not categoryInfo.autoChooseActivity);
-	local shouldShowPlayStyleDropdown = (categoryInfo.showPlayStyleDropdown) and (mythicDungeon or ratedPvp or raidActivity); 
+	local shouldShowPlayStyleDropdown = (categoryInfo.showPlaystyleDropdown) and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity); 
 	self.PlayStyleDropdown:SetShown(shouldShowPlayStyleDropdown);
 	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
-	self.MythicPlusRating:SetShown(mythicDungeon); 
-	self.PVPRating:SetShown(ratedPvp);
+	self.MythicPlusRating:SetShown(activityInfo.isMythicPlusActivity); 
+	self.PVPRating:SetShown(activityInfo.isRatedPvpActivity);
 	
 	--Update the recommended item level box
-	if ( iLevel ~= 0 ) then
-		self.ItemLevel.EditBox.Instructions:SetFormattedText(LFG_LIST_RECOMMENDED_ILVL, iLevel);
+	if ( activityInfo.ilvlSuggestion ~= 0 ) then
+		self.ItemLevel.EditBox.Instructions:SetFormattedText(LFG_LIST_RECOMMENDED_ILVL, activityInfo.ilvlSuggestion);
 	else
 		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_SHORT);
 	end
@@ -743,6 +747,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 
 	LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
 	LFGListEntryCreation_UpdateValidState(self);
+	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
 
 function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
@@ -776,7 +781,8 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 	end
 
 	local groupOrder = groups[1] and select(2, C_LFGList.GetActivityGroupInfo(groups[1]));
-	local activityOrder = activities[1] and select(10, C_LFGList.GetActivityInfo(activities[1]));
+	local activityInfo = activities[1] and C_LFGList.GetActivityInfoTable(activities[1]);
+	local activityOrder = activityInfo and activityInfo.orderIndex or 0; 
 
 	local groupIndex, activityIndex = 1, 1;
 
@@ -788,8 +794,9 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 
 		if ( activityOrder and (not groupOrder or activityOrder < groupOrder) ) then
 			local activityID = activities[activityIndex];
-			local name = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
-
+			local activityInfo = activities[1] and C_LFGList.GetActivityInfoTable(activities[1]);
+			local name = activityInfo and activityInfo.shortName;
+		
 			info.text = name;
 			info.value = activityID;
 			info.arg1 = "activity";
@@ -798,7 +805,8 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 			UIDropDownMenu_AddButton(info);
 
 			activityIndex = activityIndex + 1;
-			activityOrder = activities[activityIndex] and select(10, C_LFGList.GetActivityInfo(activities[activityIndex]));
+			local nextActivityInfo =  activities[activityIndex] and C_LFGList.GetActivityInfoTable(activities[activityIndex]);
+			activityOrder = nextActivityInfo and nextActivityInfo.orderIndex;
 		else
 			local groupID = groups[groupIndex];
 			local name = C_LFGList.GetActivityGroupInfo(groupID);
@@ -870,7 +878,8 @@ function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
 
 	for i=1, #activities do
 		local activityID = activities[i];
-		local shortName = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+		local shortName = activityInfo and activityInfo.shortName;
 
 		info.text = shortName;
 		info.value = activityID;
@@ -896,45 +905,45 @@ function LFGListEntryCreation_SetupPlayStyleDropDown(self, dropdown, info)
 		return; 
 	end 
 
-	local _, _, _, _, _, _, _, _, _, _, _, _, isMythicPlusActivity, isRatedPvpActivity, isRaidActivity = C_LFGList.GetActivityInfo(self.selectedActivity);
+	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
 
-	if (isRatedPvpActivity) then 
-		info.text = pvpPlaystyleStrings[Enum.LfgEntryPlaystyle.Standard];
+	if (activityInfo.isRatedPvpActivity) then 
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Standard, activityInfo.isRatedPvpActivity);
 		info.value = Enum.LfgEntryPlaystyle.Standard;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Standard); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = pvpPlaystyleStrings[Enum.LfgEntryPlaystyle.Casual];
+		info.text =  C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Casual, activityInfo.isRatedPvpActivity);
 		info.value = Enum.LfgEntryPlaystyle.Casual;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Casual); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = pvpPlaystyleStrings[Enum.LfgEntryPlaystyle.Hardcore];
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Hardcore, activityInfo.isRatedPvpActivity);
 		info.value = Enum.LfgEntryPlaystyle.Hardcore;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Hardcore); end;  
 		UIDropDownMenu_AddButton(info);
 	else
-		info.text = pvePlaystyleStrings[Enum.LfgEntryPlaystyle.Standard];
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Standard, activityInfo.isRatedPvpActivity);
 		info.value = Enum.LfgEntryPlaystyle.Standard;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Standard); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = pvePlaystyleStrings[Enum.LfgEntryPlaystyle.Casual];
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Casual, activityInfo.isRatedPvpActivity);
 		info.value = Enum.LfgEntryPlaystyle.Casual;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Casual); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = pvePlaystyleStrings[Enum.LfgEntryPlaystyle.Hardcore];
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Hardcore, activityInfo.isRatedPvpActivity);
 		info.value = Enum.LfgEntryPlaystyle.Hardcore;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Hardcore); end;  
 		info.checked = false;
@@ -942,11 +951,11 @@ function LFGListEntryCreation_SetupPlayStyleDropDown(self, dropdown, info)
 		UIDropDownMenu_AddButton(info);
 	end 
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(self.selectedCategory);
-	local shouldShowPlayStyleDropdown = categoryInfo.showPlayStyleDropdown and (isMythicPlusActivity or isRatedPvpActivity or isRaidActivity); 
+	local shouldShowPlayStyleDropdown = categoryInfo.showPlaystyleDropdown and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity); 
 
 	dropdown:SetShown(shouldShowPlayStyleDropdown);
 	self.PlayStyleLabel:SetShown(showPlayStyleDropdown or not shouldHidePlayStyleDropdown);
-	local labelText = isRatedPvpActivity and LFG_PLAYSTYLE_LABEL_PVP or LFG_PLAYSTYLE_LABEL_PVE;
+	local labelText = activityInfo.isRatedPvpActivity and LFG_PLAYSTYLE_LABEL_PVP or LFG_PLAYSTYLE_LABEL_PVE;
 	self.PlayStyleLabel:SetText(labelText);
 end
 
@@ -959,10 +968,11 @@ function LFGListEntryCreation_OnActivitySelected(self, activityID, buttonType)
 end
 
 function LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, playstyle)
-	local ratedPvp = select(14, C_LFGList.GetActivityInfo(self.selectedActivity));
+	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
 	self.selectedPlaystyle = playstyle;
 	UIDropDownMenu_SetSelectedValue(dropdown, playstyle); 
-	UIDropDownMenu_SetText(dropdown, ratedPvp and pvpPlaystyleStrings[playstyle] or pvePlaystyleStrings[playstyle]);
+	UIDropDownMenu_SetText(dropdown, C_LFGList.GetPlaystyleString(playstyle, activityInfo.isRatedPvpActivity));
+	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
 
 function LFGListEntryCreation_GetSanitizedName(self)
@@ -1037,9 +1047,13 @@ end
 
 function LFGListEntryCreation_UpdateValidState(self)
 	local errorText;
-	local maxPlayers, _, _, useHonorLevel = select(ACTIVITY_RETURN_VALUES.maxPlayers, C_LFGList.GetActivityInfo(self.selectedActivity));
-	if ( maxPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxPlayers ) then
-		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxPlayers);
+	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity)
+	local maxNumPlayers = activityInfo and  activityInfo.maxNumPlayers or 0; 
+	local mythicPlusDisableActivity = activityInfo.isMythicPlusActivity and not C_MythicPlus.GetOwnedKeystoneLevel();
+	if ( maxNumPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxNumPlayers ) then
+		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxNumPlayers);
+	elseif (mythicPlusDisableActivity) then 
+		errorText = LFG_AUTHENTICATOR_BUTTON_MYTHIC_PLUS_TOOLTIP;
 	elseif ( LFGListEntryCreation_GetSanitizedName(self) == "" ) then
 		errorText = LFG_LIST_MUST_HAVE_NAME;
 	elseif ( self.ItemLevel.warningText ) then
@@ -1052,17 +1066,41 @@ function LFGListEntryCreation_UpdateValidState(self)
 		errorText = LFGListUtil_GetActiveQueueMessage(false);
 	end
 
-	self.ListGroupButton:SetEnabled(not errorText);
+	LFGListEntryCreation_UpdateAuthenticatedState(self);
+
+	self.ListGroupButton.DisableStateClickButton:SetShown(mythicPlusDisableActivity);
+	self.ListGroupButton:SetEnabled(not errorText and not mythicPlusDisableActivity);
 	self.ListGroupButton.errorText = errorText;
 end
 
+function LFGListEntryCreation_UpdateAuthenticatedState(self)
+	local isAuthenticated = IsAccountSecured(); 
+	self.Description.EditBox:SetEnabled(isAuthenticated);
+	self.Name:SetEnabled(isAuthenticated);
+	self.VoiceChat.EditBox:SetEnabled(isAuthenticated)
+end		
 
 function LFGListEntryCreation_SetBaseFilters(self, baseFilters)
 	self.baseFilters = baseFilters;
 end
 
+function LFGListEntryCreation_SetTitleFromActivityInfo(self)
+	if(not self.selectedActivity or not self.selectedGroup or not self.selectedCategory) then 
+		return; 
+	end
+	
+	C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle);
+end		
+
 function LFGListEntryCreation_SetEditMode(self, editMode)
 	self.editMode = editMode;
+
+	local descInstructions = nil; 
+	local isAccountSecured = IsAccountSecured();
+	if (not isAccountSecured) then 
+		descInstructions = LFG_AUTHENTICATOR_DESCRIPTION_BOX;
+	end 
+
 	if ( editMode ) then
 		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 		assert(activeEntryInfo);
@@ -1075,11 +1113,11 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 
 		--Update edit boxes
 		C_LFGList.CopyActiveEntryInfoToCreationFields();
-		self.Name:SetEnabled(activeEntryInfo.questID == nil);
+		self.Name:SetEnabled(activeEntryInfo.questID == nil and isAccountSecured);
 		if ( activeEntryInfo.questID ) then
 			self.Description.EditBox.Instructions:SetText(LFGListUtil_GetQuestDescription(activeEntryInfo.questID));
 		else
-			self.Description.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
+			self.Description.EditBox.Instructions:SetText(descInstructions or DESCRIPTION_OF_YOUR_GROUP);
 		end
 		self.ItemLevel.EditBox:SetText(activeEntryInfo.requiredItemLevel ~= 0 and activeEntryInfo.requiredItemLevel or "");
 		self.MythicPlusRating.EditBox:SetText(activeEntryInfo.requiredDungeonScore or "" );
@@ -1094,8 +1132,13 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		UIDropDownMenu_EnableDropDown(self.GroupDropDown);
 		UIDropDownMenu_EnableDropDown(self.ActivityDropDown);
 		self.ListGroupButton:SetText(LIST_GROUP);
-		self.Name:Enable();
-		self.Description.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
+		self.Name:SetEnabled(isAccountSecured);
+		self.Description.EditBox.Instructions:SetText(descInstructions or DESCRIPTION_OF_YOUR_GROUP);
+		local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity); 
+		if(activityInfo and activityInfo.isMythicPlusActivity) then 
+			local activityID, groupID = C_LFGList.GetOwnedKeystoneActivityAndGroup(); 
+			LFGListEntryCreation_OnGroupSelected(self, groupID, "group");
+		end 	
 	end
 end
 
@@ -1157,7 +1200,7 @@ function LFGListEntryCreationActivityFinder_Update(self)
 		local idx = i + offset;
 		local id = actitivities[idx];
 		if ( id ) then
-			button:SetText( (C_LFGList.GetActivityInfo(id)) );
+			button:SetText( (C_LFGList.GetActivityFullName(id)) );
 			button.activityID = id;
 			button.Selected:SetShown(self.selectedActivity == id);
 			if ( self.selectedActivity == id ) then
@@ -1249,12 +1292,20 @@ end
 function LFGListApplicationViewer_UpdateInfo(self)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	assert(activeEntryInfo);
-	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, _, _, _, isMythicPlusActivity, isRatedPvpActivity = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
-	local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
-	self.RatingColumnHeader:SetShown(isMythicPlusActivity or isRatedPvpActivity);
+	local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID);
+	if(not activityInfo) then 
+		return; 
+	end 
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
+
+	if (not categoryInfo) then 
+		return; 
+	end 
+
+	self.RatingColumnHeader:SetShown(activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity);
 	self.EntryName:SetWidth(0);
 	self.EntryName:SetText(activeEntryInfo.name);
-	self.DescriptionFrame.activityName = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
+	self.DescriptionFrame.activityName = activityInfo.fullName;
 	if ( activeEntryInfo.comment == "" and activeEntryInfo.questID ) then
 		activeEntryInfo.comment = LFGListUtil_GetQuestDescription(activeEntryInfo.questID);
 	end
@@ -1305,6 +1356,7 @@ function LFGListApplicationViewer_UpdateInfo(self)
 	end
 
 	local suffix = "";
+	local filters = activityInfo.filters;
 	if ( bit.band(filters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
 		suffix = "-pve";
 	elseif ( bit.band(filters, LE_LFG_LIST_FILTER_PVP) ~= 0 ) then
@@ -1382,7 +1434,8 @@ function LFGListApplicationViewer_UpdateInviteState(self)
 		return;
 	end
 
-	local numAllowed = select(ACTIVITY_RETURN_VALUES.maxPlayers, C_LFGList.GetActivityInfo(activeEntryInfo.activityID, activeEntryInfo.questID));
+	local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID, activeEntryInfo.questID);
+	local numAllowed = activityInfo and activityInfo.maxNumPlayers or 0; 
 	if ( numAllowed == 0 ) then
 		numAllowed = MAX_RAID_MEMBERS;
 	end
@@ -1663,7 +1716,11 @@ function LFGListApplicantMember_OnEnter(self)
 	if ( not activeEntryInfo ) then
 		return;
 	end
-	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
+
+	local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID);
+	if(not activityInfo) then 
+		return;
+	end 
 	local applicantInfo = C_LFGList.GetApplicantInfo(applicantID);
 	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore  = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local bestDungeonScoreForEntry = C_LFGList.GetApplicantDungeonScoreForListing(applicantID, memberIdx, activeEntryInfo.activityID);
@@ -1681,7 +1738,7 @@ function LFGListApplicantMember_OnEnter(self)
 		GameTooltip:SetText(" ");	--Just make it empty until we get the name update
 	end
 	GameTooltip:AddLine(string.format(LFG_LIST_ITEM_LEVEL_CURRENT, itemLevel), 1, 1, 1);
-	if ( useHonorLevel ) then
+	if ( activityInfo.useHonorLevel ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_HONOR_LEVEL_CURRENT_PVP, honorLevel), 1, 1, 1);
 	end
 	if ( applicantInfo.comment and applicantInfo.comment ~= "" ) then
@@ -2192,7 +2249,7 @@ function LFGListSearchPanel_UpdateAutoComplete(self)
 			button.activityID = nil;
 		else
 			--This is an actual activity
-			button:SetText( (C_LFGList.GetActivityInfo(id)) );
+			button:SetText( (C_LFGList.GetActivityFullName(id)) );
 			button:Enable();
 			button.activityID = id;
 
@@ -2316,7 +2373,7 @@ function LFGListSearchEntry_Update(self)
 	local panel = self:GetParent():GetParent():GetParent();
 
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 
 	self.resultID = resultID;
 	self.Selected:SetShown(panel.selectedResult == resultID and not isApplication and not searchResultInfo.isDelisted);
@@ -2625,7 +2682,7 @@ end
 
 function LFGListInviteDialog_Show(self, resultID, kstringGroupName)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 	local _, status, _, _, role = C_LFGList.GetApplicationInfo(resultID);
 
 	local informational = (status ~= "invited");
@@ -2689,28 +2746,31 @@ end
 ----------Group Data Display functions
 -------------------------------------------------------
 function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled)
-	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
-	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_ROLE_COUNT ) then
+	local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+	if(not activityInfo) then 
+		return;
+	end
+	if ( activityInfo.displayType == Enum.LfgListDisplayType.RoleCount ) then
 		self.RoleCount:Show();
 		self.Enumerate:Hide();
 		self.PlayerCount:Hide();
 		LFGListGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
-	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_ROLE_ENUMERATE ) then
+	elseif ( activityInfo.displayType == Enum.LfgListDisplayType.RoleEnumerate ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Show();
 		self.PlayerCount:Hide();
-		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, maxPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_ROLE_ORDER);
-	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
+		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_ROLE_ORDER);
+	elseif ( activityInfo.displayType == Enum.LfgListDisplayType.ClassEnumerate ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Show();
 		self.PlayerCount:Hide();
-		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, maxPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER);
-	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_PLAYER_COUNT ) then
+		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER);
+	elseif ( displayType == Enum.LfgListDisplayType.PlayerCount ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
 		self.PlayerCount:Show();
 		LFGListGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
-	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_HIDE_ALL ) then
+	elseif ( displayType == Enum.LfgListDisplayType.HideAll ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
 		self.PlayerCount:Hide();
@@ -2782,31 +2842,6 @@ function LFGListGroupDataDisplayPlayerCount_Update(self, displayData, disabled)
 end
 
 -------------------------------------------------------
-----------Edit Box functions
--------------------------------------------------------
-function LFGListEditBox_AddToTabCategory(self, tabCategory)
-	self.tabCategory = tabCategory;
-	local cat = LFG_LIST_EDIT_BOX_TAB_CATEGORIES[tabCategory];
-	if ( not cat ) then
-		cat = {};
-		LFG_LIST_EDIT_BOX_TAB_CATEGORIES[tabCategory] = cat;
-	end
-	self.tabCategoryIndex = #cat+1;
-	cat[self.tabCategoryIndex] = self;
-end
-
-function LFGListEditBox_OnTabPressed(self)
-	if ( self.tabCategory ) then
-		local offset = IsShiftKeyDown() and -1 or 1;
-		local cat = LFG_LIST_EDIT_BOX_TAB_CATEGORIES[self.tabCategory];
-		if ( cat ) then
-			--It's times like this when I wish Lua was 0-based...
-			cat[((self.tabCategoryIndex - 1 + offset + #cat) % #cat) + 1]:SetFocus();
-		end
-	end
-end
-
--------------------------------------------------------
 ----------Requirement functions
 -------------------------------------------------------
 function LFGListRequirement_Validate(self, text)
@@ -2829,7 +2864,8 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID, filters);
 		local bestItemLevel, bestRecommended, bestCurrentArea, bestMinLevel, bestMaxPlayers;
 		for i=1, #activities do
-			local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(activities[i]);
+			local activityInfo = C_LFGList.GetActivityInfoTable(activities[i]);
+			local iLevel = activityInfo and activityInfo.ilvlSuggestion or 0; 
 			local isRecommended = bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0;
 			local currentArea = C_LFGList.GetActivityInfoExpensive(activities[i]);
 
@@ -2841,14 +2877,14 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 				isBetter = currentArea;
 			elseif ( bestRecommended ~= isRecommended ) then
 				isBetter = isRecommended;
-			elseif ( bestMinLevel ~= minLevel ) then
-				isBetter = minLevel > bestMinLevel;
+			elseif ( bestMinLevel ~= activityInfo.minLevel ) then
+				isBetter = activityInfo.minLevel > bestMinLevel;
 			elseif ( iLevel ~= bestItemLevel ) then
 				isBetter = (iLevel > bestItemLevel and iLevel <= usedItemLevel) or
 							(iLevel <= usedItemLevel and bestItemLevel > usedItemLevel) or
 							(iLevel < bestItemLevel and iLevel > usedItemLevel);
-			elseif ( (myNumMembers < maxPlayers) ~= (myNumMembers < bestMaxPlayers) ) then
-				isBetter = myNumMembers < maxPlayers;
+			elseif ( (myNumMembers < activityInfo.maxNumPlayers) ~= (myNumMembers < bestMaxPlayers) ) then
+				isBetter = myNumMembers < activityInfo.maxNumPlayers;
 			end
 
 			if ( isBetter ) then
@@ -2856,8 +2892,8 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 				bestItemLevel = iLevel;
 				bestRecommended = isRecommended;
 				bestCurrentArea = currentArea;
-				bestMinLevel = minLevel;
-				bestMaxPlayers = maxPlayers;
+				bestMinLevel = activityInfo.minLevel;
+				bestMaxPlayers = activityInfo.maxNumPlayers;
 			end
 		end
 	end
@@ -2865,12 +2901,15 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	assert(activityID);
 
 	--Update the categoryID and groupID with what we get from the activity
-	local _;
-	categoryID, groupID, _, filters = select(ACTIVITY_RETURN_VALUES.categoryID, C_LFGList.GetActivityInfo(activityID));
+	local currentActivityInfo = C_LFGList.GetActivityInfoTable(activityID);
+	if(not currentActivityInfo) then 
+		return;
+	end 
 
 	--Update the filters if needed
-	local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
-	if ( categoryInfo.separateRecommended ) then
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(currentActivityInfo.groupFinderActivityGroupID);
+
+	if ( categoryInfo and categoryInfo.separateRecommended ) then
 		if ( bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) == 0 ) then
 			filters = LE_LFG_LIST_FILTER_NOT_RECOMMENDED;
 		else
@@ -2880,7 +2919,7 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 		filters = 0;
 	end
 
-	return filters, categoryID, groupID, activityID;
+	return currentActivityInfo.filters, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
 end
 
 function LFGListUtil_SetUpDropDown(context, dropdown, populateFunc, onClickFunc)
@@ -3220,9 +3259,8 @@ function LFGListUtil_OpenBestWindow(toggle)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	if ( activeEntryInfo ) then
 		--Open to the window of our active activity
-		local fullName, shortName, categoryID, groupID, iLevel, filters = C_LFGList.GetActivityInfo(activeEntryInfo.activityID);
-
-		if ( bit.band(filters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
+		local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID);
+		if ( activityInfo and bit.band(activityInfo.filters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
 			func("GroupFinderFrame", "LFGListPVEStub");
 		else
 			func("PVPUIFrame", "LFGListPVPStub");
@@ -3238,23 +3276,27 @@ function LFGListUtil_OpenBestWindow(toggle)
 end
 
 function LFGListUtil_SortActivitiesByRelevancyCB(activityID1, activityID2)
-	local fullName1, _, _, _, iLevel1, _, minLevel1 = C_LFGList.GetActivityInfo(activityID1);
-	local fullName2, _, _, _, iLevel2, _, minLevel2 = C_LFGList.GetActivityInfo(activityID2);
+	local activityInfo1 = C_LFGList.GetActivityInfoTable(activityID1);
+	local activityInfo2 = C_LFGList.GetActivityInfoTable(activityID2);
 
-	if ( minLevel1 ~= minLevel2 ) then
-		return minLevel1 > minLevel2;
-	elseif ( iLevel1 ~= iLevel2 ) then
+	if(not activityInfo1 or not activityInfo2) then 
+		return false;
+	end		
+
+	if ( activityInfo1.minLevel ~= activityInfo2.minLevel ) then
+		return activityInfo1.minLevel > activityInfo2.minLevel;
+	elseif ( activityInfo1.ilvlSuggestion ~= activityInfo2.ilvlSuggestion ) then
 		local myILevel = GetAverageItemLevel();
 
-		if ((iLevel1 <= myILevel) ~= (iLevel2 <= myILevel) ) then
+		if ((activityInfo1.minLevel <= myILevel) ~= (activityInfo2.minLevel <= myILevel) ) then
 			--If one is below our item level and the other above, choose the one we meet
-			return iLevel1 < myILevel;
+			return activityInfo1.minLevel < myILevel;
 		else
 			--If both are above or both are below, choose the one closest to our iLevel
-			return math.abs(iLevel1 - myILevel) < math.abs(iLevel2 - myILevel);
+			return math.abs(activityInfo1.ilvlSuggestion - myILevel) < math.abs(activityInfo2.ilvlSuggestion - myILevel);
 		end
 	else
-		return strcmputf8i(fullName1, fullName2) < 0;
+		return strcmputf8i(activityInfo1.fullName, activityInfo2.ilvlSuggestion) < 0;
 	end
 end
 
@@ -3337,13 +3379,14 @@ LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE = 2;
 
 function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel, _, isMythicPlusActivity, isRatedPvpActivity, isRaidActivity = C_LFGList.GetActivityInfo(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);
 
 	if (searchResultInfo.playstyle > 0) then 
-		if(isMythicPlusActivity) then 
+		if(activityInfo.isMythicPlusActivity) then 
 			GameTooltip_AddColoredLine(tooltip, pvePlaystyleStrings[searchResultInfo.playstyle], GREEN_FONT_COLOR); 
 		elseif(isRatedPvpActivity) then 
 			GameTooltip_AddColoredLine(tooltip, pvpPlaystyleStrings[searchResultInfo.playstyle], GREEN_FONT_COLOR); 
@@ -3365,13 +3408,13 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( searchResultInfo.requiredItemLevel > 0 ) then
 		tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL:format(searchResultInfo.requiredItemLevel));
 	end
-	if ( useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
+	if ( activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
 		tooltip:AddLine(LFG_LIST_TOOLTIP_HONOR_LEVEL:format(searchResultInfo.requiredHonorLevel));
 	end
 	if ( searchResultInfo.voiceChat ~= "" ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
 	end
-	if ( searchResultInfo.requiredItemLevel > 0 or (useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" or  searchResultInfo.requiredDungeonScore > 0 or searchResultInfo.requiredPvpRating > 0 ) then
+	if ( searchResultInfo.requiredItemLevel > 0 or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" or  searchResultInfo.requiredDungeonScore > 0 or searchResultInfo.requiredPvpRating > 0 ) then
 		tooltip:AddLine(" ");
 	end
 
@@ -3379,7 +3422,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
 	end
 	
-	if( isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo) then
+	if( activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo) then
 		GameTooltip_AddNormalLine(tooltip, PVP_RATING_GROUP_FINDER:format(searchResultInfo.leaderPvpRatingInfo.activityName, searchResultInfo.leaderPvpRatingInfo.rating, PVPUtil.GetTierName(searchResultInfo.leaderPvpRatingInfo.tier)));
 	elseif ( isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore) then 
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(searchResultInfo.leaderOverallDungeonScore);
@@ -3389,7 +3432,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore)));	
 	end 
 
-	if(isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then 
+	if(activityInfo.isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then 
 		local leaderDungeonScoreInfo = searchResultInfo.leaderDungeonScoreInfo; 
 		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(leaderDungeonScoreInfo.mapScore);
 		if (not color) then 
@@ -3462,15 +3505,18 @@ function LFGListUtil_GetQuestCategoryData(questID)
 
 	local activityID = C_LFGList.GetActivityIDForQuestID(questID);
 	if activityID then
-		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
-
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+		if(not activityInfo) then 
+			return;
+		end 
+		local filters = activityInfo.filters; 
 		-- NOTE: There's an issue where filters will actually contain ALL of the filters for the given activity.
 		-- This portion of the UI only cares about the filters for specific categories that get updated when the category buttons are added,
 		-- and furthermore only cares about them when we're separating a single category into recommended and non-recommended.
 		-- The baseFilters on the frame contain the rest of the required filters.
 		-- To solve this so that category selection can be properly driven from the API, only use the filters that would be present on the button.
 		-- Otherwise the selection will not work, and it won't be possible to create a group automatically.
-		local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
+		local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
 		if categoryInfo.separateRecommended then
 			if bit.bor(filters, LE_LFG_LIST_FILTER_RECOMMENDED) then
 				filters = LE_LFG_LIST_FILTER_RECOMMENDED;
@@ -3483,7 +3529,7 @@ function LFGListUtil_GetQuestCategoryData(questID)
 			filters = 0;
 		end
 
-		return activityID, categoryID, filters, questName;
+		return activityID, activityInfo.categoryID, filters, questName;
 	end
 end
 
@@ -3507,3 +3553,122 @@ function LFGListUtil_GetQuestDescription(questID)
 
 	return descriptionFormat:format(QuestUtils_GetQuestName(questID));
 end
+
+
+
+-------------------------------------------------------
+----------Edit Box functions
+-------------------------------------------------------
+
+
+function LFGListEditBox_AddToTabCategory(self, tabCategory)
+	self.tabCategory = tabCategory;
+	local cat = LFG_LIST_EDIT_BOX_TAB_CATEGORIES[tabCategory];
+	if ( not cat ) then
+		cat = {};
+		LFG_LIST_EDIT_BOX_TAB_CATEGORIES[tabCategory] = cat;
+	end
+	self.tabCategoryIndex = #cat+1;
+	cat[self.tabCategoryIndex] = self;
+end
+
+function LFGListEditBox_OnTabPressed(self)
+	if ( self.tabCategory ) then
+		local offset = IsShiftKeyDown() and -1 or 1;
+		local cat = LFG_LIST_EDIT_BOX_TAB_CATEGORIES[self.tabCategory];
+		if ( cat ) then
+			--It's times like this when I wish Lua was 0-based...
+			cat[((self.tabCategoryIndex - 1 + offset + #cat) % #cat) + 1]:SetFocus();
+		end
+	end
+end
+
+LFGAuthenticatorMessagingMixin = {}
+function LFGAuthenticatorMessagingMixin:DisplayTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, LFG_AUTHENTICATOR_BUTTON_TOOLTIP);
+	GameTooltip:Show(); 
+end 
+
+function LFGAuthenticatorMessagingMixin:DisplayStaticPopup()
+	StaticPopup_Show("GROUP_FINDER_AUTHENTICATOR_POPUP");
+end
+
+LFGEditBoxMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);
+function LFGEditBoxMixin:AddToTabCategory(tabCategory, editBox)
+	local addToTab = editBox or self; 
+	LFGListEditBox_AddToTabCategory(addToTab, tabCategory);
+end
+
+function LFGEditBoxMixin:OnLoad()
+	if ( self.tabCategory ) then
+		self:AddToTabCategory(self.tabCategory);
+	end
+	local isAccountSecured = IsAccountSecured(); 
+	if(self:GetParent().numeric or isAccountSecured) then
+		self:SetEnabled(true);
+		self.LockButton:Hide();
+	else 
+		self:SetEnabled(false);
+		self.LockButton:Show();
+	end
+end
+
+function LFGEditBoxMixin:OnEnter() 
+	if(not IsAccountSecured()) then 
+		self:DisplayTooltip();
+	end
+end 
+
+function LFGEditBoxMixin:OnMouseDown(button)
+	if(not IsAccountSecured()) then 
+		self:DisplayStaticPopup();
+	end
+end 
+
+function LFGEditBoxMixin:OnTabPressed()
+	LFGListEditBox_OnTabPressed(self);
+end
+
+LFGListLockButtonMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);
+
+function LFGListLockButtonMixin:OnClick()
+	self:DisplayStaticPopup(); 
+end	
+
+function LFGListLockButtonMixin:OnEnter() 
+	self:DisplayTooltip(); 
+end 
+
+LFGListCreationDescriptionMixin = CreateFromMixins(LFGEditBoxMixin);
+
+function LFGListCreationDescriptionMixin:OnLoad()
+	StoreSecureReference("LFGListCreationDescription", self.EditBox);
+	self.EditBox:SetSecurityDisableSetText();
+	self.EditBox:SetSecurityDisablePaste();
+	self:AddToTabCategory("ENTRY_CREATION", self.EditBox);
+	self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
+	InputScrollFrame_OnLoad(self);
+
+	local isAccountSecured = IsAccountSecured(); 
+	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
+	self.EditBox:SetEnabled(isAccountSecured);
+	self.LockButton:SetShown(not isAccountSecured);
+end
+
+LFGListCreateGroupDisabledStateButtonMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);
+
+function LFGListCreateGroupDisabledStateButtonMixin:OnClick()
+	if(not IsAccountSecured()) then 
+		self:DisplayStaticPopup();
+	end
+end		
+
+function LFGListCreateGroupDisabledStateButtonMixin:OnEnter()
+	local parentErrorText = self:GetParent().errorText; 
+	if(parentErrorText) then 
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, parentErrorText);
+		GameTooltip:Show(); 
+	end
+end		

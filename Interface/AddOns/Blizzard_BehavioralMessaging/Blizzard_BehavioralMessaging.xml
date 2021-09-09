@@ -41,7 +41,7 @@
 	<Frame name="BehavioralMessagingDetails" mixin="BehavioralMessagingDetailsMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
 		<Size x="500" y="625"/>
 		<Anchors>
-			<Anchor point="CENTER" y="150"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">>

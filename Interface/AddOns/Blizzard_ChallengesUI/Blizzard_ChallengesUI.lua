@@ -921,6 +921,17 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 			color = HIGHLIGHT_FONT_COLOR; 
 		end
 		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
+		
+		if(gainedScore > 0) then 
+			local chatString;
+			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then 
+				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore, data.keystoneUpgradeLevels);
+			else 
+				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore);
+			end
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
+		end
 	end
 	local sortedUnitTokens = self:GetSortedPartyMembers();
 

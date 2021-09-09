@@ -155,6 +155,10 @@ function BarberShopMixin:MarkCustomizationChoiceAsSeen(choiceID)
 	C_BarberShop.MarkCustomizationChoiceAsSeen(choiceID);
 end
 
+function BarberShopMixin:MarkCustomizationOptionAsSeen(optionID)
+	C_BarberShop.MarkCustomizationOptionAsSeen(optionID);
+end
+
 function BarberShopMixin:SaveSeenChoices()
 	C_BarberShop.SaveSeenChoices();
 end

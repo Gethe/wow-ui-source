@@ -55,6 +55,53 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetActivityFullName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
+				{ Name = "showWarmode", Type = "bool", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "fullName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActivityGroupInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "groupID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActivityInfoTable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
+				{ Name = "showWarmode", Type = "bool", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "activityInfo", Type = "GroupFinderActivityInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetApplicantDungeonScoreForListing",
 			Type = "Function",
 
@@ -125,6 +172,31 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetOwnedKeystoneActivityAndGroup",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "groupID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlaystyleString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = false },
+				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "playstyleString", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 
@@ -181,6 +253,17 @@ local LFGListInfo =
 				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "preferredFilters", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "languageFilter", Type = "WowLocale", Nilable = true },
+			},
+		},
+		{
+			Name = "SetEntryTitle",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "groupID", Type = "number", Nilable = false },
+				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = true },
 			},
 		},
 		{
@@ -356,6 +439,21 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "LfgListDisplayType",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "RoleCount", Type = "LfgListDisplayType", EnumValue = 0 },
+				{ Name = "RoleEnumerate", Type = "LfgListDisplayType", EnumValue = 1 },
+				{ Name = "ClassEnumerate", Type = "LfgListDisplayType", EnumValue = 2 },
+				{ Name = "HideAll", Type = "LfgListDisplayType", EnumValue = 3 },
+				{ Name = "PlayerCount", Type = "LfgListDisplayType", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "BestDungeonScoreMapInfo",
 			Type = "Structure",
 			Fields =
@@ -364,6 +462,28 @@ local LFGListInfo =
 				{ Name = "mapName", Type = "string", Nilable = false },
 				{ Name = "bestRunLevel", Type = "number", Nilable = false },
 				{ Name = "finishedSuccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GroupFinderActivityInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "fullName", Type = "string", Nilable = false },
+				{ Name = "shortName", Type = "string", Nilable = false },
+				{ Name = "categoryID", Type = "number", Nilable = false },
+				{ Name = "groupFinderActivityGroupID", Type = "number", Nilable = false },
+				{ Name = "ilvlSuggestion", Type = "number", Nilable = false },
+				{ Name = "filters", Type = "number", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxNumPlayers", Type = "number", Nilable = false },
+				{ Name = "displayType", Type = "LfgListDisplayType", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "useHonorLevel", Type = "bool", Nilable = false },
+				{ Name = "showQuickJoinToast", Type = "bool", Nilable = false },
+				{ Name = "isMythicPlusActivity", Type = "bool", Nilable = false },
+				{ Name = "isRatedPvpActivity", Type = "bool", Nilable = false },
+				{ Name = "isCurrentRaidActivity", Type = "bool", Nilable = false },
 			},
 		},
 		{

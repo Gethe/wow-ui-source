@@ -16,6 +16,9 @@ end
 function CharCustomizeParentFrameBaseMixin:MarkCustomizationChoiceAsSeen(choiceID)
 end
 
+function CharCustomizeParentFrameBaseMixin:MarkCustomizationOptionAsSeen(optionID)
+end
+
 function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
 end
 
@@ -617,14 +620,6 @@ function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.Button:SetChecked(self.checked);
 end
 
-function CharCustomizeOptionCheckButtonMixin:MarkChoicesAsSeen()
-	for _, choiceData in ipairs(self.optionData.choices) do
-		if choiceData.isNew then
-			CharCustomizeFrame:MarkCustomizationChoiceAsSeen(choiceData.id);
-		end
-	end
-end
-
 function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self.checked = not self.checked;
@@ -633,7 +628,7 @@ function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 	local newChoiceData = self.optionData.choices[newChoiceIndex];
 
 	if self.New:IsShown() then
-		self:MarkChoicesAsSeen();
+		CharCustomizeFrame:MarkCustomizationOptionAsSeen(self.optionData.id);
 	end
 
 	CharCustomizeFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
@@ -809,6 +804,10 @@ end
 
 function CharCustomizeMixin:MarkCustomizationChoiceAsSeen(choiceID)
 	self.parentFrame:MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function CharCustomizeMixin:MarkCustomizationOptionAsSeen(optionID)
+	self.parentFrame:MarkCustomizationOptionAsSeen(optionID);
 end
 
 function CharCustomizeMixin:SaveSeenChoices()
@@ -1156,8 +1155,6 @@ function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)
 
 	if entry.isNew then
 		self:MarkCustomizationChoiceAsSeen(entry.selectionData.id);
-		entry:ClearNewFlag();
-		option:RefreshOption();
 	end
 end
 

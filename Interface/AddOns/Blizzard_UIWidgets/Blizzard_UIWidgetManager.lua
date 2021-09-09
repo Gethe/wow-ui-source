@@ -203,6 +203,11 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 		return;
 	end
 
+	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
+	if not widgetSetInfo then
+		return;
+	end
+
 	self.widgetSetID = widgetSetID;
 	self.layoutFunc = widgetLayoutFunction or DefaultWidgetLayout;
 	self.initFunc = widgetInitFunction;
@@ -212,7 +217,6 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.numWidgetsShowing = 0;
 	self:SetAttachedUnitAndType(attachedUnitInfo)
 
-	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
 	self.widgetSetLayoutDirection = widgetSetInfo.layoutDirection;
 	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
 

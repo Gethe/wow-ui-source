@@ -556,7 +556,7 @@ end
 function NineSlicePanelMixin:SetBorderColor(r, g, b, a)
 	for _, section in ipairs(nineSliceSetup) do
 		if section.pieceName ~= "Center" then
-			local piece = self[pieceName];
+			local piece = self[section.pieceName];
 			if piece then
 				piece:SetVertexColor(r, g, b, a or 1);
 			end
@@ -568,7 +568,7 @@ function NineSlicePanelMixin:GetBorderColor()
 	-- return the vertex color of any valid piece
 	for _, section in ipairs(nineSliceSetup) do
 		if section.pieceName ~= "Center" then
-			local piece = self[pieceName];
+			local piece = self[section.pieceName];
 			if piece then
 				return piece:GetVertexColor();
 			end
@@ -579,7 +579,7 @@ end
 function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
 	for _, section in ipairs(nineSliceSetup) do
 		if section.pieceName ~= "Center" then
-			local piece = self[pieceName];
+			local piece = self[section.pieceName];
 			if piece then
 				piece:SetBlendMode(blendMode);
 			end

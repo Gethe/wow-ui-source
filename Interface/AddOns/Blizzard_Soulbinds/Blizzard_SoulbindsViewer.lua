@@ -112,7 +112,6 @@ function SoulbindViewerMixin:OnHide()
 	ItemButtonUtil.CloseFilteredBags(self);
 	
 	StaticPopup_Hide("SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION");
-	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
 end
 
 function SoulbindViewerMixin:SetSheenAnimationsPlaying(playing)
@@ -121,7 +120,6 @@ function SoulbindViewerMixin:SetSheenAnimationsPlaying(playing)
 	self.GridSheen.Anim:SetPlaying(playing);
 	self.BackgroundRuneLeft.Anim:SetPlaying(playing);
 	self.BackgroundRuneRight.Anim:SetPlaying(playing);
-	self.ConduitList.Fx.ChargeSheen.Anim:SetPlaying(playing);
 end
 
 function SoulbindViewerMixin:UpdateButtons()
@@ -142,8 +140,6 @@ function SoulbindViewerMixin:SetBackgroundStateActive(active)
 end
 
 function SoulbindViewerMixin:OnPendingConduitChanged(nodeID)
-	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
-	
 	self:UpdateButtons();
 
 	HelpTip:AcknowledgeSystem("soulbinds", SOULBIND_SLOT_CONDUIT_TUTORIAL_TEXT);
@@ -349,16 +345,9 @@ end
 
 function SoulbindViewerMixin:OnCommitConduitsClicked()
 	local soulbindID = self:GetOpenSoulbindID();
-	local onConfirm = function()
-		Soulbinds.SetConduitInstallPending(true);
-		C_Soulbinds.CommitPendingConduitsInSoulbind(soulbindID);
-		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
-	end
-
-	local total = C_Soulbinds.GetTotalConduitChargesPendingInSoulbind(soulbindID);
-	local iconMarkup = CreateAtlasMarkup("soulbinds_collection_charge_dialog", 12, 12, 0, 0);
-	local text = string.format("%s\n\n", CONDUIT_CHARGE_CONFIRM:format(total, iconMarkup));
-	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", text, nil, onConfirm);
+	Soulbinds.SetConduitInstallPending(true);
+	C_Soulbinds.CommitPendingConduitsInSoulbind(soulbindID);
+	PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
 end
 
 function SoulbindViewerMixin:OnCollectionConduitClick(conduitID)
@@ -549,20 +538,6 @@ end
 StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
 	text = CONDUIT_NO_CHANGES_CONFIRMATION,
 	button1 = LEAVE,
-	button2 = CANCEL,
-	enterClicksFirstButton = true,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
-
-	OnButton1 = function(self, callback)
-		callback();
-	end,
-};
-
-StaticPopupDialogs["SOULBIND_CONDUIT_INSTALL_CONFIRM"] = {
-	text = "%s",
-	button1 = ACCEPT,
 	button2 = CANCEL,
 	enterClicksFirstButton = true,
 	whileDead = 1,

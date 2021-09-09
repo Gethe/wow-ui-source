@@ -558,6 +558,10 @@ function CharacterCreateMixin:MarkCustomizationChoiceAsSeen(choiceID)
 	C_CharacterCreation.MarkCustomizationChoiceAsSeen(choiceID);
 end
 
+function CharacterCreateMixin:MarkCustomizationOptionAsSeen(optionID)
+	C_CharacterCreation.MarkCustomizationOptionAsSeen(optionID);
+end
+
 function CharacterCreateMixin:SaveSeenChoices()
 	C_CharacterCreation.SaveSeenChoices();
 end

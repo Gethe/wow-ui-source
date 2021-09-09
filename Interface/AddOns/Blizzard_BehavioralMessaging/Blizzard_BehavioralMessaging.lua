@@ -13,13 +13,8 @@ local function InsertNotificationData(notificationType, label, icon, title, mess
 	};
 end
 
-local function ShareNotificationData(notificationTypeExisting, notificationTypeNew)
-	NotificationData[notificationTypeNew] = notificationTypeExisting;
-end
-
-InsertNotificationData("RECEIVED_COMPLAINT_LANGUAGE", BEHAVIORAL_NOTIFICATION_WARNING, "gmchat-icon-alert", BEHAVIORAL_DETAILS_LANGUAGE_TITLE, BEHAVIORAL_DETAILS_LANGUAGE_MESSAGE);
-InsertNotificationData("COMPLAINT_SUCCESSFUL", BEHAVIORAL_NOTIFICATION_RESOLUTION, "gmchat-icon-wow", BEHAVIORAL_DETAILS_RESOLUTION_TITLE, BEHAVIORAL_DETAILS_RESOLUTION_MESSAGE);
-ShareNotificationData("RECEIVED_COMPLAINT_LANGUAGE", "RECEIVED_COMPLAINT_SPAM");
+InsertNotificationData("ComplaintWarning_Social", BEHAVIORAL_NOTIFICATION_WARNING, "gmchat-icon-alert", BEHAVIORAL_DETAILS_LANGUAGE_TITLE, BEHAVIORAL_DETAILS_LANGUAGE_MESSAGE);
+InsertNotificationData("ComplaintThankYou_Social", BEHAVIORAL_NOTIFICATION_RESOLUTION, "gmchat-icon-wow", BEHAVIORAL_DETAILS_RESOLUTION_TITLE, BEHAVIORAL_DETAILS_RESOLUTION_MESSAGE);
 
 BehavioralMessagingNotificationMixin = {}
 
@@ -40,30 +35,24 @@ function BehavioralMessagingTrayMixin:OnLoad()
 	self:RegisterEvent("BEHAVIORAL_NOTIFICATION");
 
 	self.pool = CreateFramePool("Button", self, "BehaviorMessagingNotificationTemplate");
-	self.notifications = {};
 end
 
 function BehavioralMessagingTrayMixin:OnEvent(event, ...)
 	if event == "BEHAVIORAL_NOTIFICATION" then
-		local notificationType = ...;
+		local notificationType, count = ...;
 		local data = NotificationData[notificationType];
-		if not data then
-			-- Notification type needs to be shared or added altogether. See InsertNotificationData and ShareNotificationData above.
-			return;
-		end
+		if data then
+			local function OnClick(button, buttonName, down)
+				BehavioralMessagingDetails:DisplayNotification(data.details, button);
+			end
 
-		if not self.notifications[notificationType] then
-			self.notifications[notificationType] = self.pool:Acquire();
+			for index = 1, count do
+				local notification = self.pool:Acquire();
+				notification:Init(data.notification, notificationType);
+				notification:Show();
+				notification:SetScript("OnClick", OnClick);
+			end
 		end
-
-		local notification = self.notifications[notificationType];
-		notification:Init(data.notification, notificationType);
-		notification:Show();
-
-		local function OnClick(button, buttonName, down)
-			BehavioralMessagingDetails:DisplayNotification(data.details, button);
-		end
-		notification:SetScript("OnClick", OnClick);
 	end
 
 	self:EvaluateLayout();
@@ -85,7 +74,6 @@ end
 
 function BehavioralMessagingTrayMixin:OnNotificationAchknowledged(notification)
 	local notificationType = notification.notificationType;
-	self.notifications[notificationType] = nil;
 	self.pool:Release(notification);
 	
 	C_BehavioralMessaging.SendNotificationReceipt(notificationType);

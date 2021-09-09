@@ -2826,3 +2826,9 @@ function PaperDollFrame_HideInventoryFixupComplete(self)
 	HelpTip:Hide(self, PAPERDOLL_INVENTORY_FIXUP_COMPLETE);
 	MicroButtonPulseStop(CharacterMicroButton);
 end
+
+PaperDollItemSlotButtonMixin = {}
+
+function PaperDollItemSlotButtonMixin:GetItemContextMatchResult()
+	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromEquipmentSlot(self:GetID()));
+end

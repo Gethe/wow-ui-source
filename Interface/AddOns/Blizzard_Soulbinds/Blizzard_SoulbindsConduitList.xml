@@ -14,54 +14,6 @@
 		</Animations>
 	</Texture>
 
-	<Frame name="ConduitChargeTemplate" mixin="ConduitChargeMixin" virtual="true">
-		<Size x="26" y="26"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture atlas="soulbinds_collection_charge_slot" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="PendingOverlay" atlas="soulbinds_collection_charge_pending" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha fromAlpha="0.5" toAlpha="1" duration="0.8" order="1" smoothing="IN"/>
-							<Alpha fromAlpha="1" toAlpha="0.5" duration="0.8" order="2" smoothing="IN"/>
-						</AnimationGroup>
-					</Animations>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnShow method="OnShow"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="ConduitChargeTrayTemplate" mixin="ConduitChargesTrayMixin" virtual="true">
-		<Size x="225" y="35"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Frame>
-
 	<Button name="ConduitListConduitButtonTemplate" mixin="ConduitListConduitButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
 		<Size x="242" y="42"/>
 		<Layers>
@@ -324,39 +276,6 @@
 	<Frame name="ConduitListTemplate" mixin="ConduitListMixin" virtual="true">
 		<Size x="268"/>
 		<Frames>
-			<Frame parentKey="Charges" inherits="ConduitChargeTrayTemplate" frameStrata="HIGH">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="12" y="-39"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Fx" frameStrata="HIGH" frameLevel="20">
-				<Layers>
-					<Layer level="FULLSCREEN" textureSubLevel="100">
-						<Texture parentKey="ChargeSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.$parent.Charges" relativePoint="LEFT"/>
-							</Anchors>
-							<Animations>
-								<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-									<Translation childKey="ChargeSheen" order="1" offsetX="-100" offsetY="0" startDelay="10" duration="0"/>
-									<Translation childKey="ChargeSheen" order="2" offsetX="300" offsetY="0" duration="4.9" />
-									<Translation childKey="ChargeSheen" order="2" offsetX="-100" offsetY="0" startDelay="4.9" duration="0.1"/>
-									<Alpha childKey="ChargeSheen" order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
-									<Alpha childKey="ChargeSheen" order="2" fromAlpha="1" toAlpha="0" startDelay="4.8" duration="0.1"/>
-								</AnimationGroup>
-							</Animations>
-						</Texture>
-						<MaskTexture parentKey="ChargeMask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_charge">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.Background" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
-							</Anchors>
-							<MaskedTextures>
-								<MaskedTexture childKey="ChargeSheen"/>
-							</MaskedTextures>
-						</MaskTexture>
-					</Layer>
-				</Layers>
-			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="OribosScrollBar" frameStrata="HIGH">
 				<Size x="10" y="804"/>
 				<Anchors>

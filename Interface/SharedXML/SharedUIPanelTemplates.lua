@@ -1868,11 +1868,6 @@ function SelectionPopoutEntryMixin:HandlesGlobalMouseEvent(buttonID, event)
 	return event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton";
 end
 
-function SelectionPopoutEntryMixin:ClearNewFlag()
-	self.selectionData.isNew = false;
-	self.parentButton:UpdatePopout();
-end
-
 function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq)
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
@@ -2133,9 +2128,11 @@ end
 DisabledTooltipButtonMixin = {};
 
 function DisabledTooltipButtonMixin:OnEnter()
-	local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
-	if disabledTooltip ~= nil then
-		GameTooltip_ShowDisabledTooltip(GameTooltip, self, disabledTooltip, disabledTooltipAnchor);
+	if not self:IsEnabled() then
+		local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
+		if disabledTooltip ~= nil then
+			GameTooltip_ShowDisabledTooltip(GameTooltip, self, disabledTooltip, disabledTooltipAnchor);
+		end
 	end
 end
 

@@ -1185,6 +1185,7 @@ end
 NewCosmeticAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
 
 function NewCosmeticAlertFrameMixin:SetUp(itemModifiedAppearanceID)
+	PlaySound(SOUNDKIT.UI_COSMETIC_ITEM_TOAST_SHOW);
 	self.itemModifiedAppearanceID = itemModifiedAppearanceID;
 	local info = C_TransmogCollection.GetSourceInfo(itemModifiedAppearanceID);
 	local icon = C_TransmogCollection.GetSourceIcon(itemModifiedAppearanceID);

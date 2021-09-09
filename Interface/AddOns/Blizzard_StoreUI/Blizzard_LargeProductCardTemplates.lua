@@ -206,11 +206,11 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 	
 	self.ProductName:ClearAllPoints();
-	self.ProductName:SetPoint("BOTTOM", 0, 69);
+	self.ProductName:SetPoint("TOP", self, "BOTTOM", 0, 98);
 	self.ProductName:SetSize(250, 50);
 	self.ProductName:SetFontObject("GameFontNormalLarge");
 	self.ProductName:SetJustifyH("CENTER");
-	self.ProductName:SetJustifyV("BOTTOM");
+	self.ProductName:SetJustifyV("TOP");
 	self.ProductName:SetTextColor(1, 1, 1);
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
@@ -254,8 +254,8 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.Strikethrough:SetPoint("BOTTOMRIGHT", self.NormalPrice, "BOTTOMRIGHT", 0, 0);
 	
 	self.ModelScene:ClearAllPoints();
-	self.ModelScene:SetPoint("TOPLEFT", 3, -5);
-	self.ModelScene:SetPoint("BOTTOMRIGHT", -3, 5);
+	self.ModelScene:SetPoint("TOPLEFT", 6, -5);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -7, 5);
 	self.ModelScene:SetViewInsets(0, 0, 0, 0);
 	
 	self.Magnifier:ClearAllPoints();
@@ -346,11 +346,11 @@ function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetSize(146, 35);
-	self.BuyButton:SetPoint("BOTTOM", 0, 20);
+	self.BuyButton:SetPoint("BOTTOM", 0, 22);
 
 	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
 	self.PurchasedText:ClearAllPoints();
-	self.PurchasedText:SetPoint("BOTTOM", 0, 20);
+	self.PurchasedText:SetPoint("BOTTOM", 0, 22);
 	self.PurchasedText:Hide();
 
 	self.PurchasedMark:Hide();
