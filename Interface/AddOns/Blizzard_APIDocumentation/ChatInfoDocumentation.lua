@@ -2127,6 +2127,11 @@ local ChatInfo =
 			LiteralName = "LANGUAGE_LIST_CHANGED",
 		},
 		{
+			Name = "NotifyChatSuppressed",
+			Type = "Event",
+			LiteralName = "NOTIFY_CHAT_SUPPRESSED",
+		},
+		{
 			Name = "QuestBossEmote",
 			Type = "Event",
 			LiteralName = "QUEST_BOSS_EMOTE",

@@ -272,6 +272,12 @@ function SetItemRef(link, text, button, chatFrame)
 		local _, setID = strsplit(":", link);
 		TransmogUtil.OpenCollectionToSet(setID);
 		return;
+	elseif ( strsub(link, 1, 6) == "outfit" ) then
+		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
+		if itemTransmogInfoList then
+			DressUpList(itemTransmogInfoList);
+		end
+		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then
 		APIDocumentation_LoadUI();
 
@@ -364,6 +370,9 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 9) == "pvpRating" ) then
 		DisplayPvpRatingLink(link);
 		return;
+	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
+		ShowUIPanel(ChatConfigFrame);
+		return;
 	end
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
@@ -413,6 +422,8 @@ function GetFixedLink(text, quality)
 		elseif ( strsub(text, startLink + 2, startLink + 19) == "transmogappearance" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "transmogset" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 7) == "outfit" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));

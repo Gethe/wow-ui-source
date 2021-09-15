@@ -63,6 +63,7 @@ local CharacterCustomizationShared =
 				{ Name = "optionType", Type = "ChrCustomizationOptionType", Nilable = false },
 				{ Name = "choices", Type = "table", InnerType = "CharCustomizationChoice", Nilable = false },
 				{ Name = "currentChoiceIndex", Type = "number", Nilable = false },
+				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
 			},
 		},
 	},

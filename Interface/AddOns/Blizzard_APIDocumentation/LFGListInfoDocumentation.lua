@@ -244,6 +244,15 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "IsPlayerAuthenticatedForLFG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAuthenticated", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Search",
 			Type = "Function",
 

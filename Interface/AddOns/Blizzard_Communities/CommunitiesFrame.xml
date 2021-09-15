@@ -366,12 +366,26 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="170" y="29"/>
 				</Anchors>
 			</Frame>
-			<CheckButton parentKey="ChatTab" hidden="true" inherits="CommunitiesChatTabTemplate">
+			<CheckButton parentKey="ChatTab" hidden="true" inherits="CommunitiesFrameTabTemplate" mixin="CommunitiesChatTabMixin" motionScriptsWhileDisabled="true">
+				<KeyValues>
+					<KeyValue key="tooltip" value="COMMUNITIES_CHAT_TAB_TOOLTIP" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/Icons/UI_Chat" type="string"/>
+					<KeyValue key="displayMode" value="COMMUNITIES_FRAME_DISPLAY_MODES.CHAT" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
 				</Anchors>
+				<Scripts>
+					<!--CommunitiesFrameTabTemplate:OnClick() is called conditionally. See CommunitiesChatTabMixin:OnClick().-->
+					<OnClick method="OnClick"/>
+				</Scripts>
 			</CheckButton>
-			<CheckButton parentKey="RosterTab" hidden="true" inherits="CommunitiesRosterTabTemplate">
+			<CheckButton parentKey="RosterTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="COMMUNITIES_ROSTER_TAB_TOOLTIP" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/Icons/achievement_guildperk_everybodysfriend" type="string"/>
+					<KeyValue key="displayMode" value="COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ChatTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
@@ -391,12 +405,22 @@
 					</Frame>
 				</Frames>
 			</CheckButton>
-			<CheckButton parentKey="GuildBenefitsTab" hidden="true" inherits="CommunitiesGuildBenefitsTabTemplate">
+			<CheckButton parentKey="GuildBenefitsTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="COMMUNITIES_GUILD_BENEFITS_TAB_TOOLTIP" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/Icons/achievement_guildperk_honorablemention" type="string"/>
+					<KeyValue key="displayMode" value="COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RosterTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="GuildInfoTab" hidden="true" inherits="CommunitiesGuildInfoTabTemplate">
+			<CheckButton parentKey="GuildInfoTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="COMMUNITIES_GUILD_INFO_TAB_TOOLTIP" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/Icons/inv_misc_scrollunrolled01" type="string"/>
+					<KeyValue key="displayMode" value="COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.GuildBenefitsTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>

@@ -1419,33 +1419,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<CheckButton parentKey="ClubFinderSearchTab" mixin="ClubFinderTabMixin" hidden="false" inherits="CommunitiesFrameTabTemplate">
+			<CheckButton parentKey="ClubFinderSearchTab" inherits="CommunitiesFrameTabTemplate" mixin="ClubFinderTabMixin" hidden="false" >
 				<KeyValues>
 					<KeyValue key="tooltip" value="SEARCH" type="global"/>
+					<KeyValue key="iconTexture" value="Interface/Icons/inv_misc_spyglass_03" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="9" y="47"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.Icon:SetTexture("Interface\\Icons\\inv_misc_spyglass_03");
-					</OnLoad>
-					<OnClick inherit="append">
-							self:SetTab();
-					</OnClick>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</CheckButton>
-			<CheckButton parentKey="ClubFinderPendingTab"  motionScriptsWhileDisabled="true" mixin="ClubFinderTabMixin" hidden="false" inherits="CommunitiesFrameTabTemplate">
+			<CheckButton parentKey="ClubFinderPendingTab" inherits="CommunitiesFrameTabTemplate" mixin="ClubFinderTabMixin" hidden="false" motionScriptsWhileDisabled="true">
+				<KeyValues>
+					<KeyValue key="iconTexture" value="Interface/Icons/inv_misc_notepicture1c" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ClubFinderSearchTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.Icon:SetTexture("Interface\\Icons\\inv_misc_notepicture1c");
-					</OnLoad>
-					<OnClick inherit="append">
-						self:SetTab();
-					</OnClick>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</CheckButton>
 		</Frames>

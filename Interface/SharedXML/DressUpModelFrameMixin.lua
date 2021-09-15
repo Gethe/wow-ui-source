@@ -42,6 +42,21 @@ function DressUpModelFrameResetButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
+--------------------------------------------------
+-- DRESS UP MODEL FRAME LINK BUTTON MIXIN
+DressUpModelFrameLinkButtonMixin = {};
+
+function DressUpModelFrameLinkButtonMixin:OnClick()
+	local playerActor = self:GetParent().ModelScene:GetPlayerActor();
+	if playerActor then
+		local list = playerActor:GetItemTransmogInfoList();
+		local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(list);
+		if not ChatEdit_InsertLink(hyperlink) then
+			ChatFrame_OpenChat(hyperlink);
+ 	 	end
+		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	end
+end
 
 --------------------------------------------------
 -- DRESS UP MODEL FRAME CLOSE BUTTON MIXIN

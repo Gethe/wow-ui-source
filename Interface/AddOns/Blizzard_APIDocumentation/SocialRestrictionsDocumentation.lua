@@ -7,6 +7,19 @@ local SocialRestrictions =
 	Functions =
 	{
 		{
+			Name = "AcknowledgeRegionalChatDisabled",
+			Type = "Function",
+		},
+		{
+			Name = "IsChatDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMuted",
 			Type = "Function",
 
@@ -33,10 +46,24 @@ local SocialRestrictions =
 				{ Name = "isSquelched", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetChatDisabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "AlertRegionalChatDisabled",
+			Type = "Event",
+			LiteralName = "ALERT_REGIONAL_CHAT_DISABLED",
+		},
 	},
 
 	Tables =

@@ -1,18 +1,10 @@
-local next = next;
+local secureexecuterange = secureexecuterange;
 local securecall = securecall;
+local securecallfunction  = securecallfunction;
 local unpack = unpack;
 local error = error;
-
-local function SecureNext(elements, key)
-    return securecall(next, elements, key);
-end
-
-local function SecureInvoke(func, ...)
-	if type(func) ~= "function" then
-        error("SecureInvoke 'func' requires function type.");
-    end
-    securecall(func, ...);
-end
+local pairs = pairs;
+local rawset = rawset;
 
 local InsertEventAttribute = "insert-secure-event";
 local AttributeDelegate = CreateFrame("FRAME");
@@ -111,16 +103,20 @@ function CallbackRegistryMixin:TriggerEvent(event, ...)
 
 	local closures = self:GetCallbacksByEvent(CallbackType.Closure, event);
 	if closures then
-		for owner, closure in SecureNext, closures do
-			SecureInvoke(closure, ...);
+		local function CallbackRegistryExecuteClosurePair(owner, closure, ...)
+			securecallfunction(closure, ...);
 		end
+
+		secureexecuterange(closures, CallbackRegistryExecuteClosurePair, ...);
 	end
 
 	local funcs = self:GetCallbacksByEvent(CallbackType.Function, event);
 	if funcs then
-		for owner, func in SecureNext, funcs do
-			SecureInvoke(func, owner, ...);
+		local function CallbackRegistryExecuteOwnerPair(owner, func, ...)
+			securecallfunction(func, owner, ...);
 		end
+
+		secureexecuterange(funcs, CallbackRegistryExecuteOwnerPair, ...);
 	end
 end
 

@@ -1817,17 +1817,23 @@ end
 
 function Class_Intro_MapHighlights:Display()
 	local tutorialData = TutorialHelper:GetFactionData();
-	questID = tutorialData.UseMapQuest;
+	local questID = tutorialData.UseMapQuest;
 
-	local targetPin
-	for pin in WorldMapFrame:EnumerateAllPins() do
-		 if pin.pinTemplate == "QuestPinTemplate" then
+	local targetPin = nil;
+	local function Class_Intro_MapHighlightsPinCallback(pin)
+		if targetPin ~= nil then
+			return;
+		end
+
+		if pin.pinTemplate == "QuestPinTemplate" then
 			if questID == pin.questID then
 				targetPin = pin;
-				break;
 			end
-		 end
+		end
 	end
+
+	WorldMapFrame:ExecuteOnAllPins(Class_Intro_MapHighlightsPinCallback);
+
 	if targetPin then
 		self.MapPointerTutorialID = self:AddPointerTutorial(TutorialHelper:FormatString(self.Prompt), "UP", targetPin, 0, 0, nil);
 	end

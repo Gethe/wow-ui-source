@@ -254,6 +254,32 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "UIItemInteractionFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "DisplayWithInset", Type = "UIItemInteractionFlags", EnumValue = 1 },
+				{ Name = "ConfirmationHasDelay", Type = "UIItemInteractionFlags", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "UIItemInteractionType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "UIItemInteractionType", EnumValue = 0 },
+				{ Name = "CastSpell", Type = "UIItemInteractionType", EnumValue = 1 },
+				{ Name = "CleanseCorruption", Type = "UIItemInteractionType", EnumValue = 2 },
+				{ Name = "RunecarverScrapping", Type = "UIItemInteractionType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "ITEM_WEAPON_SUBCLASSConstants",
 			Type = "Constants",
 			Values =

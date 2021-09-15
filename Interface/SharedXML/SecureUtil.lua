@@ -80,12 +80,14 @@ function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheathe
 
 	local actor = modelScene:GetPlayerActor();
 	if actor then
+		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
 		if IsOnGlueScreen() then
 			actor:SetPlayerModelFromGlues();
-			actor:Undress();
+			if not autoDress then
+				actor:Undress();
+			end
+			actor:SetSheathed(sheatheWeapons);
 		else
-			sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
-			autoDress = autoDress or false;
 			actor:SetModelByUnit("player", sheatheWeapons, autoDress);
 		end
 

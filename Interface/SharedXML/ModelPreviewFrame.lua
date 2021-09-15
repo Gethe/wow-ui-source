@@ -47,11 +47,32 @@ function ModelPreviewFrame_RefreshCurrentDisplay()
 	ModelPreviewFrame_ShowModel(display.displayID, display.modelSceneID, display.allowZoom, true);
 end
 
+function ModelPreviewFrame_BuildCarousel(self)
+	self.carouselEntries = {};
+
+	for _, entry in ipairs(self.displayInfoEntries) do
+		if entry.displayID and entry.displayID > 0 then
+			tinsert(self.carouselEntries, entry);
+		else
+			if entry.displayTransmogItemsIndividually then
+				for i, myIndividualTransmogID in ipairs(entry.itemModifiedAppearanceIDs) do
+					local newEntry = CopyTable(entry, false);
+					newEntry.itemModifiedAppearanceIDs = {entry.itemModifiedAppearanceIDs[i]};
+					tinsert(self.carouselEntries, newEntry);
+				end
+			else
+				tinsert(self.carouselEntries, entry);
+			end
+		end
+	end
+end
+
 function ModelPreviewFrame_ShowModels(displayInfoEntries, allowZoom, forceUpdate)
 	local self = ModelPreviewFrame;
 	self.displayInfoEntries = displayInfoEntries;
+	ModelPreviewFrame_BuildCarousel(self);
 
-	if #displayInfoEntries > 1 then
+	if #self.carouselEntries > 1 then
 		ModelPreviewFrame_SetStyle(self, "carousel");
 	else
 		ModelPreviewFrame_SetStyle(self, nil);
@@ -61,7 +82,7 @@ end
 
 function ModelPreviewFrame_ShowModel(displayID, modelSceneID, allowZoom, forceUpdate)
 	local self = ModelPreviewFrame;
-	local displayInfoEntry = self.displayInfoEntries[self.carouselIndex];
+	local displayInfoEntry = self.carouselEntries[self.carouselIndex];
 	local itemModifiedAppearanceIDs = displayInfoEntry.itemModifiedAppearanceIDs;
 
 	ModelPreviewFrame_SetStyle(self, nil);
@@ -80,7 +101,7 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		local actor = display.ModelScene:GetActorByTag("item");
 		SetupItemPreviewActor(actor, displayID);
 	else
-		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs);
+		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs, true, true);
 	end
 	ModelPreviewFrame:Show();
 end
@@ -95,9 +116,9 @@ end
 
 function ModelPreviewFrame_SetCarouselIndex(self, index, allowZoom, forceUpdate)
 	self.carouselIndex = index;
-	self.Display.CarouselText:SetText(MODEL_PREVIEW_FRAME_CAROUSEL_TEXT_FORMAT:format(self.carouselIndex, #self.displayInfoEntries));
+	self.Display.CarouselText:SetText(MODEL_PREVIEW_FRAME_CAROUSEL_TEXT_FORMAT:format(self.carouselIndex, #self.carouselEntries));
 	
-	local displayInfoEntry = self.displayInfoEntries[self.carouselIndex];
+	local displayInfoEntry = self.carouselEntries[self.carouselIndex];
 	ModelPreviewFrame_ShowModelInternal(displayInfoEntry.creatureDisplayInfoID, displayInfoEntry.modelSceneID, allowZoom, forceUpdate, displayInfoEntry.itemModifiedAppearanceIDs);
 	self.Display.Name:SetText(displayInfoEntry.title);
 end
@@ -107,11 +128,11 @@ function ModelPreviewFrame_MoveCarousel(self, backward)
 	if backward then
 		newCarouselIndex = newCarouselIndex - 1;
 		if newCarouselIndex <= 0 then
-			newCarouselIndex = #self.displayInfoEntries;
+			newCarouselIndex = #self.carouselEntries;
 		end
 	else
 		newCarouselIndex = newCarouselIndex + 1;
-		if newCarouselIndex > #self.displayInfoEntries then
+		if newCarouselIndex > #self.carouselEntries then
 			newCarouselIndex = 1;
 		end
 	end

@@ -1172,36 +1172,6 @@ function SecureCmdUseItem(name, bag, slot, target)
 	end
 end
 
---These functions are terrible, but they support legacy slash commands.
-function ValueToBoolean(valueToCheck, defaultValue, defaultReturn)
-	if ( type(valueToCheck) == "nil" ) then
-		return false;
-	elseif ( type(valueToCheck) == "boolean" ) then
-		return valueToCheck;
-	elseif ( type(valueToCheck) == "number" ) then
-		return valueToCheck ~= 0;
-	elseif ( type(valueToCheck) == "string" ) then
-		return StringToBoolean(valueToCheck, defaultReturn);
-	else
-		return defaultReturn;
-	end
-end
-
-function StringToBoolean(stringToCheck, defaultReturn)
-	stringToCheck = string.lower(stringToCheck);
-	local firstChar = string.sub(stringToCheck, 1, 1);
-
-	if ( firstChar == "0" or firstChar == "n" or firstChar == "f" or stringToCheck == "off" or stringToCheck == "disabled" ) then
-		return false;
-	elseif ( firstChar == "1" or firstChar == "2" or firstChar == "3" or firstChar == "4" or firstChar == "5" or
-				firstChar == "6" or firstChar == "7" or firstChar == "8" or firstChar == "9" or firstChar == "y" or
-				firstChar == "t" or stringToCheck == "on" or stringToCheck == "enabled" ) then
-		return true;
-	end
-
-	return defaultReturn;
-end
-
 SecureCmdList["STARTATTACK"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
@@ -2797,6 +2767,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("NEWCOMER_GRADUATION");
 	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
 	self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
+	self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
+
 	self.channelList = {};
 	self.zoneChannelList = {};
 	self.messageTypeList = {};
@@ -3344,6 +3316,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
 		return true;
+	elseif event == "NOTIFY_CHAT_SUPPRESSED" then
+		local hyperlink = string.format("|Haadcopenconfig|h[%s]", RESTRICT_CHAT_CONFIG_HYPERLINK);
+		local message = string.format(RESTRICT_CHAT_CHATFRAME_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(hyperlink));
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(message, info.r, info.g, info.b, info.id);
+		return true;
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
@@ -3353,7 +3331,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local streamIDs = C_ChatInfo.GetClubStreamIDs(clubId);
 		for k, streamID in pairs(streamIDs) do
 			local channelName = Chat_GetCommunitiesChannelName(clubId, streamID);
-			
+
 			local function RemoveClubChannelFromChatWindow(chatWindow, chatWindowIndex)
 				if ChatFrame_ContainsChannel(chatWindow, channelName) then
 					local omitMessage = true;
@@ -4467,7 +4445,7 @@ function ChatEdit_SetLastActiveWindow(editBox)
 	if ( editBox.disableActivate ) then
 		return;
 	end
-	
+
 	local previousValue = LAST_ACTIVE_CHAT_EDIT_BOX;
 	if ( LAST_ACTIVE_CHAT_EDIT_BOX and not LAST_ACTIVE_CHAT_EDIT_BOX.isGM and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		if ( GetCVar("chatStyle") == "im" ) then

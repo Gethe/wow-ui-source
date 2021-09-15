@@ -300,6 +300,8 @@ function CharCustomizeMaskedButtonMixin:OnLoad()
 	self.CircleMask:SetPoint("TOPLEFT", self, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
 	self.CircleMask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
 
+	self.New:SetPoint("CENTER", self, "BOTTOM", 0, self.newTagYOffset);
+
 	local hasRingSizes = self.ringWidth and self.ringHeight;
 	if hasRingSizes then
 		self.Ring:SetAtlas(self.ringAtlas);
@@ -465,6 +467,8 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
 	end
 
+	self.New:SetShown(categoryData.hasNewChoices);
+
 	if selectedCategoryID == categoryData.id then
 		self:SetChecked(true);
 		self:SetIconAtlas(categoryData.selectedIcon);
@@ -593,22 +597,11 @@ function CharCustomizeOptionCheckButtonMixin:RefreshOption()
 	self:SetupOption(self.optionData);
 end
 
-function CharCustomizeOptionCheckButtonMixin:UpdateNewFlag()
-	for _, choiceData in ipairs(self.optionData.choices) do
-		if choiceData.isNew then
-			self.New:Show();
-			return;
-		end
-	end
-
-	self.New:Hide();
-end
-
 function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.checked = (optionData.currentChoiceIndex == 2);
 
-	self:UpdateNewFlag();
+	self.New:SetShown(optionData.hasNewChoices);
 
 	if showDebugTooltipInfo then
 		self:ClearTooltipLines();
@@ -696,23 +689,12 @@ function CharCustomizeOptionSelectionPopoutMixin:RefreshOption()
 	self:SetupOption(self.optionData);
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:UpdateNewFlag()
-	for _, choiceData in ipairs(self.optionData.choices) do
-		if choiceData.isNew then
-			self.New:Show();
-			return;
-		end
-	end
-
-	self.New:Hide();
-end
-
 function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
 
-	self:UpdateNewFlag();
+	self.New:SetShown(optionData.hasNewChoices);
 
 	self:ClearTooltipLines();
 

@@ -335,6 +335,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetItemTransmogInfoListFromOutfitHyperlink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "hyperlink", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "list", Type = "table", InnerType = "table", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLatestAppearance",
 			Type = "Function",
 
@@ -360,6 +374,20 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfitHyperlinkFromItemTransmogInfoList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "table", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hyperlink", Type = "string", Nilable = false },
 			},
 		},
 		{

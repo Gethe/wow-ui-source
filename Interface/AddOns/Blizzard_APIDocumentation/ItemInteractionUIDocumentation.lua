@@ -90,17 +90,6 @@ local ItemInteractionUI =
 	Tables =
 	{
 		{
-			Name = "ItemInteractionFrameType",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
-			Fields =
-			{
-				{ Name = "CleanseCorruption", Type = "ItemInteractionFrameType", EnumValue = 0 },
-			},
-		},
-		{
 			Name = "ItemInteractionFrameInfo",
 			Type = "Structure",
 			Fields =
@@ -111,8 +100,11 @@ local ItemInteractionUI =
 				{ Name = "titleText", Type = "string", Nilable = false },
 				{ Name = "tutorialText", Type = "string", Nilable = false },
 				{ Name = "buttonText", Type = "string", Nilable = false },
-				{ Name = "frameType", Type = "ItemInteractionFrameType", Nilable = false },
+				{ Name = "interactionType", Type = "UIItemInteractionType", Nilable = false },
+				{ Name = "flags", Type = "number", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
+				{ Name = "buttonTooltip", Type = "string", Nilable = true },
+				{ Name = "confirmationDescription", Type = "string", Nilable = true },
 				{ Name = "cost", Type = "number", Nilable = true },
 				{ Name = "currencyTypeId", Type = "number", Nilable = true },
 				{ Name = "dropInSlotSoundKitId", Type = "number", Nilable = true },

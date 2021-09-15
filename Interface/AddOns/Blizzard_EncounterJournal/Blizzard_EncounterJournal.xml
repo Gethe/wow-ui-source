@@ -442,12 +442,7 @@
 				GameTooltip:Hide();
 				self.showingTooltip = false;
 			</OnLeave>
-			<OnClick>
-				if not ChatEdit_TryInsertChatLink(self.link) then
-					EncounterJournal_DisplayInstance(self.instanceID);
-					PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
-				end
-			</OnClick>
+			<OnClick function="EncounterInstanceButtonTemplate_OnClick"/>
 		</Scripts>
 	</Button>
 
@@ -1228,105 +1223,136 @@
 
 	<Button name="EncounterItemTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="321" y="45"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" parentKey="icon">
-					<Size x="42" y="42"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture inherits="UI-EJ-DungeonLootFrame" parentKey="bossTexture">
-					<Anchors>
-						<Anchor point="CENTER" x="24" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture inherits="UI-EJ-LootFrame" parentKey="bosslessTexture">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentName" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
-					<Size x="250" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="7" y="-7"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentArmorClass" inherits="GameFontBlack" justifyH="RIGHT" parentKey="armorType">
-					<Size x="0" y="12"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentName" relativePoint="TOPLEFT" x="264" y="-30"/>
-					</Anchors>
-					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-				</FontString>
-				<FontString name="$parentSlot" inherits="GameFontBlack" justifyH="LEFT" parentKey="slot">
-					<Size x="0" y="12"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="7" y="5"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$parentArmorClass" x="-15" y="0"/>
-					</Anchors>
-					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-				</FontString>
-				<FontString name="$parentBoss" inherits="GameFontBlack" justifyH="LEFT" parentKey="boss">
-					<Size x="0" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" y="-3"/>
-					</Anchors>
-					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="IconOverlay" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="IconOverlay2" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Frames>
+			<Frame parentKey="lootFrame" hidden="false" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon" parentKey="icon">
+							<Size x="42" y="42"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture inherits="UI-EJ-DungeonLootFrame" parentKey="bossTexture">
+							<Anchors>
+								<Anchor point="CENTER" x="24" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture inherits="UI-EJ-LootFrame" parentKey="bosslessTexture">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
+							<Size x="250" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="7" y="-7"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentArmorClass" inherits="GameFontBlack" justifyH="RIGHT" parentKey="armorType">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentName" relativePoint="TOPLEFT" x="264" y="-30"/>
+							</Anchors>
+							<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+						</FontString>
+						<FontString name="$parentSlot" inherits="GameFontBlack" justifyH="LEFT" parentKey="slot">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="7" y="5"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$parentArmorClass" x="-15" y="0"/>
+							</Anchors>
+							<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+						</FontString>
+						<FontString name="$parentBoss" inherits="GameFontBlack" justifyH="LEFT" parentKey="boss">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="IconOverlay" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="IconOverlay2" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="dividerFrame" hidden="true" setAllPoints="true">				
+				<Layers>					
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-22"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="TipButton" >
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.name" relativePoint="RIGHT" x="-3" y="3" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="I" file="Interface\common\help-i">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".2"/>
+						</HighlightTexture>
+						<Scripts>
+							<OnEnter function="EncounterItemTemplate_DividerFrameTipOnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			
+		</Frames>
 		<Scripts>
-			<OnClick>
-				if (not HandleModifiedItemClick(self.link)) then
-					EncounterJournal_Loot_OnClick(self);
-				else
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-				end
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				EncounterJournal_SetTooltip(self.link);
-				self.showingTooltip = true;
-				self:SetScript("OnUpdate", EncounterJournal_Loot_OnUpdate);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				self.showingTooltip = false;
-				self:SetScript("OnUpdate", nil);
-				ResetCursor();
-			</OnLeave>
+			<OnClick function = "EncounterItemTemplate_OnClick" />
+			<OnEnter function = "EncounterItemTemplate_OnEnter" />
+			<OnLeave function = "EncounterItemTemplate_OnLeave" />
 		</Scripts>
 	</Button>
 
@@ -2195,12 +2221,7 @@
 									<OnLoad>
 										self.tooltip = OVERVIEW;
 									</OnLoad>
-									<OnClick>
-										EncounterJournal_TabClicked(self, button);
-										if (not EncounterJournal.encounterID and EncounterJournal.instanceID) then
-											EncounterJournal_DisplayInstance(EncounterJournal.instanceID, true);
-										end
-									</OnClick>
+									<OnClick function="EncounterTabTemplate_OnClick"/>
 								</Scripts>
 							</Button>
 							<Button name="$parentLootTab" inherits="EncounterTabTemplate" parentKey="lootTab" id="2">
@@ -2249,12 +2270,7 @@
 									<OnLoad>
 										self.tooltip = ABILITIES;
 									</OnLoad>
-									<OnClick>
-										EncounterJournal_TabClicked(self, button);
-										if (not EncounterJournal.encounterID and EncounterJournal.instanceID) then
-											EncounterJournal_DisplayInstance(EncounterJournal.instanceID, true);
-										end
-									</OnClick>
+									<OnClick function="EncounterTabTemplate_OnClick"/>
 								</Scripts>
 							</Button>
 							<Button name="$parentModelTab" inherits="EncounterTabTemplate" parentKey="modelTab" id="4">

@@ -2170,7 +2170,7 @@ end
 
 TooltipBackdropTemplateMixin = {};
 
-function TooltipBackdropTemplateMixin:OnLoad()
+function TooltipBackdropTemplateMixin:TooltipBackdropOnLoad()
 	NineSliceUtil.DisableSharpening(self.NineSlice);
 
 	local bgColor = self.backdropColor or TOOLTIP_DEFAULT_COLOR;

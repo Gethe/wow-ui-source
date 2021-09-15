@@ -224,6 +224,10 @@ local Club =
 			Type = "Function",
 		},
 		{
+			Name = "FocusCommunityStreams",
+			Type = "Function",
+		},
+		{
 			Name = "FocusStream",
 			Type = "Function",
 
@@ -905,6 +909,15 @@ local Club =
 			Returns =
 			{
 				{ Name = "clubTypeIsAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnfocusAllStreams",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unsubscribe", Type = "bool", Nilable = false },
 			},
 		},
 		{

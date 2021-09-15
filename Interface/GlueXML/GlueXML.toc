@@ -32,6 +32,7 @@
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\RegionUtil.lua
 ..\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
@@ -41,6 +42,7 @@
 ..\SharedXML\AnchorUtil.lua
 ..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\StringUtil.lua
+..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 ..\SharedXML\NewFeatureLabel.xml
 

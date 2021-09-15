@@ -13,6 +13,7 @@ ScrollBoxConstants =
 {
 	NoScrollInterpolation = true,
 	RetainScrollPosition = true,
+	DiscardScrollPosition = false,
 	AlignBegin = 0,
 	AlignCenter = .5,
 	AlignEnd = 1,

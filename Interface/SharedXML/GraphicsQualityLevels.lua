@@ -1102,24 +1102,28 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 	data = {
 		{
 			text = RESAMPLE_QUALITY_POINT,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_POINT,
 			cvars =    {
 				resampleQuality = 0,
 			},
 		},
 		{
 			text = RESAMPLE_QUALITY_BILINEAR,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_BILINEAR,
 			cvars =	{
 				resampleQuality = 1,
 			},
 		},
 		{
 			text = RESAMPLE_QUALITY_BICUBIC,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_BICUBIC,
 			cvars =	{
 				resampleQuality = 2,
 			},
 		},
 		{
 			text = RESAMPLE_QUALITY_FSR,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_FSR,
 			cvars =	{
 				resampleQuality = 3,
 			},
@@ -1249,6 +1253,11 @@ VideoData["Advanced_BrightnessSlider"]={
 VideoData["Advanced_GammaSlider"]={
 	name = GAMMA;
 	tooltip = OPTION_TOOLTIP_GAMMA,
+}
+
+VideoData["Advanced_ResampleSharpnessSlider"]={
+	name = RESAMPLE_SHARPNESS;
+	tooltip = OPTION_TOOLTIP_SHARPNESS,
 }
 
 VideoData["Advanced_MaxFPSCheckBox"]={

@@ -782,7 +782,7 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 
 	local groupOrder = groups[1] and select(2, C_LFGList.GetActivityGroupInfo(groups[1]));
 	local activityInfo = activities[1] and C_LFGList.GetActivityInfoTable(activities[1]);
-	local activityOrder = activityInfo and activityInfo.orderIndex or 0; 
+	local activityOrder = activityInfo and activityInfo.orderIndex; 
 
 	local groupIndex, activityIndex = 1, 1;
 
@@ -794,7 +794,7 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 
 		if ( activityOrder and (not groupOrder or activityOrder < groupOrder) ) then
 			local activityID = activities[activityIndex];
-			local activityInfo = activities[1] and C_LFGList.GetActivityInfoTable(activities[1]);
+			local activityInfo = activityID and C_LFGList.GetActivityInfoTable(activityID);
 			local name = activityInfo and activityInfo.shortName;
 		
 			info.text = name;
@@ -1049,7 +1049,7 @@ function LFGListEntryCreation_UpdateValidState(self)
 	local errorText;
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity)
 	local maxNumPlayers = activityInfo and  activityInfo.maxNumPlayers or 0; 
-	local mythicPlusDisableActivity = activityInfo.isMythicPlusActivity and not C_MythicPlus.GetOwnedKeystoneLevel();
+	local mythicPlusDisableActivity = not C_LFGList.IsPlayerAuthenticatedForLFG() and (activityInfo.isMythicPlusActivity and not C_MythicPlus.GetOwnedKeystoneLevel());
 	if ( maxNumPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxNumPlayers ) then
 		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxNumPlayers);
 	elseif (mythicPlusDisableActivity) then 
@@ -1074,7 +1074,7 @@ function LFGListEntryCreation_UpdateValidState(self)
 end
 
 function LFGListEntryCreation_UpdateAuthenticatedState(self)
-	local isAuthenticated = IsAccountSecured(); 
+	local isAuthenticated = C_LFGList.IsPlayerAuthenticatedForLFG(); 
 	self.Description.EditBox:SetEnabled(isAuthenticated);
 	self.Name:SetEnabled(isAuthenticated);
 	self.VoiceChat.EditBox:SetEnabled(isAuthenticated)
@@ -1085,18 +1085,22 @@ function LFGListEntryCreation_SetBaseFilters(self, baseFilters)
 end
 
 function LFGListEntryCreation_SetTitleFromActivityInfo(self)
-	if(not self.selectedActivity or not self.selectedGroup or not self.selectedCategory) then 
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	if(not self.selectedActivity or not self.selectedGroup or not self.selectedCategory or activeEntryInfo) then 
 		return; 
 	end
-	
-	C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle);
+
+	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity); 
+	if((activityInfo and activityInfo.isMythicPlusActivity) or not C_LFGList.IsPlayerAuthenticatedForLFG()) then 
+		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle);
+	end
 end		
 
 function LFGListEntryCreation_SetEditMode(self, editMode)
 	self.editMode = editMode;
 
 	local descInstructions = nil; 
-	local isAccountSecured = IsAccountSecured();
+	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG();
 	if (not isAccountSecured) then 
 		descInstructions = LFG_AUTHENTICATOR_DESCRIPTION_BOX;
 	end 
@@ -1345,6 +1349,7 @@ function LFGListApplicationViewer_UpdateInfo(self)
 		self.EntryName:SetWidth(290);
 	end
 
+	local filters = activityInfo.filters;
 	--Set the background
 	local atlasName = nil;
 	if ( categoryInfo.separateRecommended and bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0 ) then
@@ -1356,7 +1361,6 @@ function LFGListApplicationViewer_UpdateInfo(self)
 	end
 
 	local suffix = "";
-	local filters = activityInfo.filters;
 	if ( bit.band(filters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
 		suffix = "-pve";
 	elseif ( bit.band(filters, LE_LFG_LIST_FILTER_PVP) ~= 0 ) then
@@ -1368,11 +1372,22 @@ function LFGListApplicationViewer_UpdateInfo(self)
 		self.InfoBackground:SetAtlas(atlasName);
 	end
 
+	local isPartyLeader = UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
 	--Update the AutoAccept button
 	self.AutoAcceptButton:SetChecked(activeEntryInfo.autoAccept);
+	
+	self.RemoveEntryButton:ClearAllPoints()
+	self.BrowseGroupsButton:SetShown(isPartyLeader);
+
+	if (isPartyLeader) then 
+		self.RemoveEntryButton:SetPoint("LEFT", self.BrowseGroupsButton, "RIGHT", 15, 0);
+	else 
+		self.RemoveEntryButton:SetPoint("BOTTOMLEFT", -3, 4);
+	end		
+
 	if ( not C_LFGList.CanActiveEntryUseAutoAccept() ) then
 		self.AutoAcceptButton:Hide();
-	elseif ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+	elseif ( isPartyLeader ) then
 		self.AutoAcceptButton:Show();
 		self.AutoAcceptButton:Enable();
 		self.AutoAcceptButton.Label:SetFontObject(GameFontHighlightSmall);
@@ -1706,6 +1721,21 @@ function LFGListApplicationViewerEditButton_OnClick(self)
 	LFGListEntryCreation_SetEditMode(entryCreation, true);
 	LFGListFrame_SetActivePanel(panel:GetParent(), entryCreation);
 end
+
+LFGApplicationBrowseGroupsButtonMixin = { };
+function LFGApplicationBrowseGroupsButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local panel = self:GetParent();
+	local categoryPanel = panel:GetParent().CategorySelection;
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	if(activeEntryInfo) then 
+		local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID);
+		if(activityInfo) then 
+			LFGListCategorySelection_SelectCategory(categoryPanel, activityInfo.categoryID, 0);
+			LFGListCategorySelection_StartFindGroup(categoryPanel);
+		end
+	end 
+end		
 
 --Applicant members
 function LFGListApplicantMember_OnEnter(self)
@@ -2110,7 +2140,8 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 
 	--Update the StartGroupButton
 	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
-	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+	local isPartyLeader = UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
+	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not isPartyLeader ) then
 		startGroupButton:Disable();
 		startGroupButton.tooltip = LFG_LIST_NOT_LEADER;
 	else
@@ -2127,6 +2158,10 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 			startGroupButton.tooltip = nil;
 		end
 	end
+
+	local canBrowseWhileQueued = C_LFGList.HasActiveEntryInfo() and isPartyLeader;
+	self.BackButton:SetShown(not canBrowseWhileQueued); 
+	self.BackToGroupButton:SetShown(canBrowseWhileQueued)
 end
 
 function LFGListSearchPanel_SignUp(self)
@@ -2765,12 +2800,12 @@ function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled)
 		self.Enumerate:Show();
 		self.PlayerCount:Hide();
 		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER);
-	elseif ( displayType == Enum.LfgListDisplayType.PlayerCount ) then
+	elseif ( activityInfo.displayType == Enum.LfgListDisplayType.PlayerCount ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
 		self.PlayerCount:Show();
 		LFGListGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
-	elseif ( displayType == Enum.LfgListDisplayType.HideAll ) then
+	elseif ( activityInfo.displayType == Enum.LfgListDisplayType.HideAll ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
 		self.PlayerCount:Hide();
@@ -3604,7 +3639,10 @@ function LFGEditBoxMixin:OnLoad()
 	if ( self.tabCategory ) then
 		self:AddToTabCategory(self.tabCategory);
 	end
-	local isAccountSecured = IsAccountSecured(); 
+end
+
+function LFGEditBoxMixin:OnShow()
+	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(); 
 	if(self:GetParent().numeric or isAccountSecured) then
 		self:SetEnabled(true);
 		self.LockButton:Hide();
@@ -3612,16 +3650,16 @@ function LFGEditBoxMixin:OnLoad()
 		self:SetEnabled(false);
 		self.LockButton:Show();
 	end
-end
+end		
 
 function LFGEditBoxMixin:OnEnter() 
-	if(not IsAccountSecured()) then 
+	if(not C_LFGList.IsPlayerAuthenticatedForLFG()) then 
 		self:DisplayTooltip();
 	end
 end 
 
 function LFGEditBoxMixin:OnMouseDown(button)
-	if(not IsAccountSecured()) then 
+	if(not C_LFGList.IsPlayerAuthenticatedForLFG()) then 
 		self:DisplayStaticPopup();
 	end
 end 
@@ -3650,16 +3688,23 @@ function LFGListCreationDescriptionMixin:OnLoad()
 	self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
 	InputScrollFrame_OnLoad(self);
 
-	local isAccountSecured = IsAccountSecured(); 
+	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(); 
 	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
 	self.EditBox:SetEnabled(isAccountSecured);
 	self.LockButton:SetShown(not isAccountSecured);
 end
 
+function LFGListCreationDescriptionMixin:OnShow()
+	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(); 
+	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
+	self.EditBox:SetEnabled(isAccountSecured);
+	self.LockButton:SetShown(not isAccountSecured);
+end		
+
 LFGListCreateGroupDisabledStateButtonMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);
 
 function LFGListCreateGroupDisabledStateButtonMixin:OnClick()
-	if(not IsAccountSecured()) then 
+	if(not C_LFGList.IsPlayerAuthenticatedForLFG()) then 
 		self:DisplayStaticPopup();
 	end
 end		
@@ -3671,4 +3716,21 @@ function LFGListCreateGroupDisabledStateButtonMixin:OnEnter()
 		GameTooltip_AddNormalLine(GameTooltip, parentErrorText);
 		GameTooltip:Show(); 
 	end
-end		
+end	
+
+LFGListSearchBackToGroupButtonMixin = { };
+
+function LFGListSearchBackToGroupButtonMixin:OnClick()
+	local frame = self:GetParent():GetParent();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	LFGListFrame_SetActivePanel(frame, frame.ApplicationViewer);
+end
+
+LFGListSearchBackButtonMixin = { }; 
+
+function LFGListSearchBackButtonMixin:OnClick()
+	local frame = self:GetParent():GetParent();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
+	self:GetParent().shouldAlwaysShowCreateGroupButton = false;
+end 

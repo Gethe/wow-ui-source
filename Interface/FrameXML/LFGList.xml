@@ -546,6 +546,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnLeave function="GameTooltip_Hide"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 		<Frames>
 			<Button parentKey="LockButton" inherits="LFGListLockButtonTemplate">
@@ -1253,18 +1254,22 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Button parentKey="BackButton" inherits="LFGListMagicButtonTemplate" text="BACK">
+					<Button parentKey="BackButton" inherits="LFGListMagicButtonTemplate" mixin="LFGListSearchBackButtonMixin" text="BACK">
 						<Size x="135" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								local frame = self:GetParent():GetParent();
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
-								self:GetParent().shouldAlwaysShowCreateGroupButton = false;
-							</OnClick>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="BackToGroupButton" mixin="LFGListSearchBackToGroupButtonMixin" inherits="LFGListMagicButtonTemplate" text="GROUP_FINDER_BACK_TO_GROUP">
+						<Size x="145" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="SignUpButton" inherits="LFGListMagicButtonTemplate" text="SIGN_UP">
@@ -1507,8 +1512,8 @@
 							</Slider>
 						</Frames>
 					</ScrollFrame>
-					<Button parentKey="RemoveEntryButton" inherits="LFGListMagicButtonTemplate" text="UNLIST_MY_GROUP">
-						<Size x="135" y="22"/>
+					<Button parentKey="RemoveEntryButton" inherits="LFGListMagicButtonTemplate" text="GROUP_FINDER_DELIST">
+						<Size x="90" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>
 						</Anchors>
@@ -1520,12 +1525,21 @@
 						</Scripts>
 					</Button>
 					<Button parentKey="EditButton" inherits="LFGListMagicButtonTemplate" text="EDIT">
-						<Size x="135" y="22"/>
+						<Size x="90" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="LFGListApplicationViewerEditButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="BrowseGroupsButton" inherits="LFGListMagicButtonTemplate" mixin="LFGApplicationBrowseGroupsButtonMixin" text="GROUP_FINDER_BROWSE">
+						<Size x="145" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame parentKey="UnempoweredCover" enableMouse="true" frameLevel="15">
@@ -1818,6 +1832,7 @@
 							<OnLoad method="OnLoad"/>
 							<OnEnter method="OnEnter"/>
 							<OnMouseDown method="OnMouseDown"/>
+							<OnShow method="OnShow"/>
 						</Scripts>
 						<Frames>
 							<Button parentKey="LockButton" inherits="LFGListLockButtonTemplate">

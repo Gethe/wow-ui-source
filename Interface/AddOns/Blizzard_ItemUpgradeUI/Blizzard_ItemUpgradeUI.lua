@@ -34,7 +34,7 @@ end
 function ItemUpgradeMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
 	self:Update();
-	--TODO: Add function for filtering equipement frame as well as bags
+
 	ItemButtonUtil.OpenAndFilterBags(self);
 
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
@@ -135,10 +135,14 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	self.targetUpgradeLevel = fromDropDown or (self.upgradeInfo.currUpgrade + 1);
 	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
 
+	self.currentUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[1] 
+	self.targetUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels + 1] 
+
 	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
 	UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel));
 
 	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
+	self.upgradeInfo.targetQualityColor = self.targetUpgradeLevelInfo and ITEM_QUALITY_COLORS[self.targetUpgradeLevelInfo.displayQuality].color;
 
 	SetItemButtonTexture(self.UpgradeItemButton, self.upgradeInfo.iconID);
 	SetItemButtonQuality(self.UpgradeItemButton, self.upgradeInfo.displayQuality);
@@ -326,22 +330,23 @@ local upgradedSoundKits = {
 	[Enum.ItemQuality.Epic] = SOUNDKIT.UI_ITEM_UPGRADE_UI_ITEM_UPGRADED_EPIC,
 };
 
-function ItemUpgradeMixin:PlayUpgradedSound()
-	if self.upgradeInfo then
-		local soundKit = upgradedSoundKits[self.upgradeInfo.displayQuality] or SOUNDKIT.UI_ITEM_UPGRADE_UI_ITEM_UPGRADED;
-		PlaySound(soundKit);
-	end
-end
-
 local tooltipReappearWaitTime = 1.5;
 
 function ItemUpgradeMixin:PlayUpgradedCelebration()
 	self.upgradeAnimationsInProgress = true;
+
+	self.LeftItemPreviewFrame:GeneratePreviewTooltip(true, nil);
+	self.ItemInfo.ItemName:SetText(self.upgradeInfo.targetQualityColor:WrapTextInColorCode(self.upgradeInfo.name));
+	SetItemButtonQuality(self.UpgradeItemButton, self.targetUpgradeLevelInfo.displayQuality);
+
 	self.LeftItemPreviewFrame.UpgradedAnim:Restart();
 	self.RightItemPreviewFrame:SetAlpha(0);
 	self.Arrow:Hide();
 	self.AnimationHolder.UpgradedFlash:Restart();
-	self:PlayUpgradedSound();
+
+	local soundKit = upgradedSoundKits[self.targetUpgradeLevelInfo.displayQuality] or SOUNDKIT.UI_ITEM_UPGRADE_UI_ITEM_UPGRADED;
+	PlaySound(soundKit);
+
 	self.tooltipReappearTimerInProgress = true;
 	C_Timer.After(tooltipReappearWaitTime, GenerateClosure(self.OnTooltipReappearTimerComplete, self));
 end
@@ -403,15 +408,13 @@ function ItemUpgradePreviewMixin:OnLeave()
 	ItemUpgradeFrame.ItemHoverPreviewFrame:Hide();
 end
 
---When changed will edit the max height a tooltip with the ItemUpgradePreviewMixin 
---will get before text starts to get truncated and a hover tooltip is shown
-MAX_TOOLTIP_TRUNCATION_HEIGHT = 230;
+local MAX_TOOLTIP_TRUNCATION_HEIGHT = 230;
 
 function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
 	local currentItemLevel = C_ItemUpgrade.GetItemUpgradeCurrentLevel();
-	local numUpgradeLevels = ItemUpgradeFrame.numUpgradeLevels
-	local upgradeLevelInfo = isUpgrade and upgradeInfo.upgradeLevelInfos[numUpgradeLevels + 1] or upgradeInfo.upgradeLevelInfos[1];
+	local numUpgradeLevels = ItemUpgradeFrame.numUpgradeLevels;
+	local upgradeLevelInfo = isUpgrade and ItemUpgradeFrame.targetUpgradeLevelInfo or ItemUpgradeFrame.currentUpgradeLevelInfo;
 
 	if parentFrame then
 		self:SetOwner(parentFrame, "ANCHOR_NONE");
@@ -423,7 +426,7 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 	self:SetMinimumWidth(220, true);
 	self:SetCustomLineSpacing(5);
 
-	local itemQualityColor = ITEM_QUALITY_COLORS[upgradeLevelInfo.displayQuality].color;
+	local itemQualityColor = isUpgrade and upgradeInfo.targetQualityColor or upgradeInfo.itemQualityColor;
 
 	GameTooltip_AddDisabledLine(self, isUpgrade and ITEM_UPGRADE_NEXT_UPGRADE or ITEM_UPGRADE_CURRENT);
 	GameTooltip_AddColoredLine(self, upgradeInfo.name, itemQualityColor);

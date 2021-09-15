@@ -3,21 +3,16 @@
 	<Script file="Blizzard_ItemInteractionUI.lua"/>
 
 	<Frame name="ItemInteractionFrame" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="ItemInteractionMixin" hidden="true">
-		<Size x="343" y="261"/>
+		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-4">
-				<Texture parentKey="Background">
-					<Anchors>
-						<Anchor point="BOTTOM" y="30" />
-					</Anchors>
-				</Texture>
+				<!-- Anchored dynamically -->
+				<Texture parentKey="Background" setAllPoints="false"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Description" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight">
+				<FontString parentKey="Description" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight" setAllPoints="false">
 					<Size x="250" y="0"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="45"/>
-					</Anchors>
+					<!-- Anchored dynamically -->
 				</FontString>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
@@ -31,11 +26,20 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate" hidden="true">
+				<Size x="330" y="202"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-1" y="30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DescriptionCurrencies" inherits="CurrencyDisplayGroupTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+			</Frame>
 			<Button parentKey="ItemSlot" mixin="ItemInteractionItemSlotMixin">
 				<Size x="44" y="44" />
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Background" />
-				</Anchors>
+				<!-- Anchored dynamically -->
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Icon" hidden="true">
@@ -46,11 +50,8 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="GlowOverlay" useAtlasSize="true" alphaMode="ADD" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER" y="7"/>
-							</Anchors>
-						</Texture>
+						<!-- Anchored dynamically -->
+						<Texture parentKey="GlowOverlay" alphaMode="ADD" setAllPoints="false" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -80,15 +81,9 @@
 							<OnLeave method="OnMouseLeave"/>
 						</Scripts>
 					</Button>
-					<Frame parentKey="MoneyFrameEdge" inherits="ThinGoldEdgeTemplate" >
-						<Size x="182" y="24"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-160" y="3"/>
-						</Anchors>
-					</Frame>
 					<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-170" y="7"/>
+							<Anchor point="BOTTOMRIGHT" x="-170" y="8"/>
 						</Anchors>
 						<Scripts>
 							<OnEnter>
@@ -99,7 +94,9 @@
 					</Button>
 					<Frame parentKey="MoneyFrame" hidden="true" name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-150" y="6"/>
+							<Anchor point="BOTTOM" x="0" y="9"/>
+							<Anchor point="RIGHT" x="-163" y="0"/>
+							<Anchor point="LEFT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -109,13 +106,22 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="MoneyFrameEdge" inherits="ThinGoldEdgeTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.MoneyFrame" relativePoint="BOTTOM" x="0" y="-3"/>
+							<Anchor point="RIGHT" relativeKey="$parent.MoneyFrame" relativePoint="RIGHT" x="5" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.MoneyFrame" relativePoint="LEFT" x="-5" y="0"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 				<Layers>
 					<Layer level="BORDER" textureSubLevel="1">
 						<Texture parentKey="BlackBorder">
-							<Size x="334" y="21"/>
+							<Size x="0" y="21"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
+								<Anchor point="BOTTOM" x="0" y="5"/>
+								<Anchor point="LEFT" x="1" y="0"/>
+								<Anchor point="RIGHT" x="-1" y="0"/>
 							</Anchors>
 							<Color r="0" g="0" b="0"/>
 						</Texture>

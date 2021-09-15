@@ -1022,7 +1022,7 @@
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="TooltipBackdropOnLoad"/>
 		</Scripts>
 	</Frame>
 

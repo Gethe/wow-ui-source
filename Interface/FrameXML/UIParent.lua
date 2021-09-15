@@ -279,7 +279,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("LEAVING_TUTORIAL_AREA");
 	self:RegisterEvent("UI_ERROR_POPUP");
-	self:RegisterEvent("SHOW_AADC_ALERT");
+	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -1467,8 +1467,8 @@ function UIParent_OnEvent(self, event, ...)
 		local errorType, errorMessage = ...;
 		local systemPrefix = "UI_ERROR_";
 		StaticPopup_ShowNotification(systemPrefix, errorType, errorMessage);
-	elseif ( event == "SHOW_AADC_ALERT" ) then
-		StaticPopup_Show("AADC_ALERT");
+	elseif ( event == "ALERT_REGIONAL_CHAT_DISABLED" ) then
+		StaticPopup_Show("REGIONAL_CHAT_DISABLED");
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
 

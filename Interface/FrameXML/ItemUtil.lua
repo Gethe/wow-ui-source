@@ -11,6 +11,7 @@ ItemButtonUtil.ItemContextEnum = {
 	Soulbinds = 7,
 	MythicKeystone = 8,
 	UpgradableItem = 9,
+	RunecarverScrapping = 10,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -43,8 +44,10 @@ end
 function ItemButtonUtil.GetItemContext()
 	if ScrappingMachineFrame and ScrappingMachineFrame:IsShown() then
 		return ItemButtonUtil.ItemContextEnum.Scrapping;
-	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetFrameType() == Enum.ItemInteractionFrameType.CleanseCorruption then
+	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.CleanseCorruption then
 		return ItemButtonUtil.ItemContextEnum.CleanseCorruption;
+	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.RunecarverScrapping then
+		return ItemButtonUtil.ItemContextEnum.RunecarverScrapping;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return RuneforgeFrame:GetItemContext();
 	elseif TargetSpellReplacesBonusTree() then
@@ -92,6 +95,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return C_Item.CanScrapItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.CleanseCorruption then 
 			return C_Item.IsItemCorrupted(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.RunecarverScrapping then 
+			return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem then 
 			return C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ReplaceBonusTree then 

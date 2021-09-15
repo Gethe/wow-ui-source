@@ -55,9 +55,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
-					<Size>
-						<AbsDimension x="290" y="0"/>
-					</Size>
+					<Size x="1" y="0"/>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
@@ -67,7 +65,7 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SubText" inherits="GameFontNormalSmall">
-					<Size x="290" y="0"/>
+					<Size x="1" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>

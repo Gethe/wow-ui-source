@@ -66,6 +66,7 @@
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\StringUtil.lua
+..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 MixinUtil.lua
 

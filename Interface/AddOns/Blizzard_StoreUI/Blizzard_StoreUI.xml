@@ -4,9 +4,9 @@
 	<Script file="Blizzard_StoreUIInbound.lua" />
 	<Script file="Blizzard_StoreUIOutbound.lua" />
 	<Script file="Blizzard_StoreUISecure.lua" />
-	
+
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		
+
 		<Button name="StoreButtonTemplate" mixin="StoreButtonMixin" virtual="true">
 			<Size x="146" y="35" />
 			<Layers>
@@ -329,7 +329,7 @@
 				</Layer>
 			</Layers>
 		</EditBox>
-		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
+		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" frameLevel="600" virtual="true">
 			<Size x="140" y="14"/>
 			<ButtonText parentKey="Text" justifyH="LEFT"/>
 			<NormalFont style="GameFontWhiteTiny2"/>
@@ -339,10 +339,10 @@
 		</Button>
 		<EditBox name="StoreEditBoxWithAutoCompleteTemplate" inherits="StoreEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
 			<Frames>
-				<Frame parentKey="AutoCompleteBox" inherits="NineSlicePanelTemplate" hidden="true">
+				<Frame parentKey="AutoCompleteBox" hidden="true">
 					<Size x="150" y="5"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="14"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="0"/>
 					</Anchors>
 					<Layers>
 						<Layer level="BACKGROUND">
@@ -356,6 +356,11 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="NineSlicePanelTemplate">
+							<KeyValues>
+								<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+							</KeyValues>
+						</Frame>
 						<Button inherits="StoreAutoCompleteButtonTemplate">
 							<Anchors>
 								<Anchor point="TOP" x="6" y="-12"/>
@@ -365,9 +370,6 @@
 							</Scripts>
 						</Button>
 					</Frames>
-					<KeyValues>
-						<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
-					</KeyValues>
 					<Scripts>
 						<OnShow>
 							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
