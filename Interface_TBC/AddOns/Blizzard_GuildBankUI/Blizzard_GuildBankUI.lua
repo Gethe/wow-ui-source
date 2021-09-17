@@ -578,7 +578,7 @@ function GuildBankTabMixin:OnClick(button, down)
 	end
 	SetCurrentGuildBankTab(currentTab);
 	guildBankFrame:UpdateTabs();
-	if ( CanEditGuildBankTabInfo() and button == "RightButton" and currentTab ~= (GetNumGuildBankTabs() + 1) ) then
+	if ( CanEditGuildBankTabInfo(currentTab) and button == "RightButton" and currentTab ~= (GetNumGuildBankTabs() + 1) ) then
 		--Show the popup if it's a right click
 		GuildBankPopupFrame:Show();
 		GuildBankPopupFrame:Update();

@@ -2490,7 +2490,7 @@ function GuildControlPopupFrame_OnLoad()
 	end
 	GuildControlTabPermissionsViewTabText:SetText(GUILDCONTROL_VIEW_TAB);
 	GuildControlTabPermissionsDepositItemsText:SetText(GUILDCONTROL_DEPOSIT_ITEMS);
-	GuildControlTabPermissionsUpdateTextText:SetText(GUILDCONTROL_UPDATE_TEXT);
+	GuildControlTabPermissionsUpdateTextText:SetText(GUILDCONTROL_OPTION19); --option # is a lie, we're simply repurposing this globalstring from mainline
 	ClearPendingGuildBankPermissions();
 end
 

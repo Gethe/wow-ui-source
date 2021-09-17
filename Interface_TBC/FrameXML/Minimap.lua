@@ -528,10 +528,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 		end
 		tooltip = nil;
 
-		if ( not tooltipOnly and (status ~= "confirm") ) then
-			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
-		end
-
 		if ( status ~= "none" ) then
 			numberQueues = numberQueues+1;
 			if ( status == "queued" ) then
@@ -564,13 +560,8 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 
 					if (bgtype == "WARGAME") then
 						local dialog = StaticPopup_Show("CONFIRM_WARGAME_ENTRY", mapName, nil, i);
-					else
-						PVPReadyDialog_Display(self, i, mapName, false, bgtype, bgtype, nil);
 					end
 
-					if ( dialog ) then
-						dialog.data = i;
-					end
 					PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 					MiniMapBattlefieldFrame:Show();
 				end

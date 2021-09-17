@@ -95,7 +95,7 @@ function LootFrame_OnEvent(self, event, ...)
 		end
 		return;
 	elseif ( event == "OPEN_MASTER_LOOT_LIST" ) then
-		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0);
+		MasterLooterFrame_Show(LootFrame.selectedLootButton);
 		return;
 	elseif ( event == "UPDATE_MASTER_LOOT_LIST" ) then
 		MasterLooterFrame_UpdatePlayers();
@@ -449,32 +449,6 @@ function GroupLootContainer_Update(self)
 	end
 end
 
-function GroupLootDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, nil, "MENU");
-	self.initialize = GroupLootDropDown_Initialize;
-end
-
-function GroupLootDropDown_Initialize()
-	--[[local info = UIDropDownMenu_CreateInfo();
-	info.isTitle = 1;
-	info.text = MASTER_LOOTER;
-	info.fontObject = GameFontNormalLeft;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	info.text = ASSIGN_LOOT;
-	info.func = MasterLooterFrame_Show;
-	UIDropDownMenu_AddButton(info);
-	info.text = REQUEST_ROLL;
-	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot); end;
-	UIDropDownMenu_AddButton(info);]]
-
-	-- Removing the Request Roll option but keeping the modern Master Loot UI, so we'll just shortcut straight to that.
-	MasterLooterFrame_Show();
-end
-
 function GroupLootFrame_OpenNewFrame(id, rollTime)
 	local frame;
 	for i=1, NUM_GROUP_LOOT_FRAMES do
@@ -586,7 +560,7 @@ function MasterLooterFrame_OnHide(self)
 	wipe(buttonsToHide);
 end
 
-function MasterLooterFrame_Show()
+function MasterLooterFrame_Show(selectedLootButton)
 	local itemFrame = MasterLooterFrame.Item;
 	itemFrame.ItemName:SetText(LootFrame.selectedItemName);
 	itemFrame.Icon:SetTexture(LootFrame.selectedTexture);
@@ -595,7 +569,7 @@ function MasterLooterFrame_Show()
 
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
-	MasterLooterFrame:SetPoint("TOPLEFT", DropDownList1, 0, 0);
+	MasterLooterFrame:SetPoint("TOPLEFT", selectedLootButton, "BOTTOMLEFT", 0, 0);
 
 	CloseDropDownMenus();
 end
