@@ -1,1 +1,0 @@
-LoadAddOn("Blizzard_Console");
