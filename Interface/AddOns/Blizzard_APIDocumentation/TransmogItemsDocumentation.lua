@@ -471,6 +471,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetSourceItemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceRequiredHoliday",
 			Type = "Function",
 
@@ -815,6 +829,7 @@ local TransmogItems =
 				{ Name = "appearanceMeetsNonLevelRequirements", Type = "bool", Nilable = false },
 				{ Name = "appearanceIsUsable", Type = "bool", Nilable = false },
 				{ Name = "appearanceNumSources", Type = "number", Nilable = false },
+				{ Name = "sourceIsKnown", Type = "bool", Nilable = false },
 			},
 		},
 		{

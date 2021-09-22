@@ -275,7 +275,8 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 6) == "outfit" ) then
 		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
 		if itemTransmogInfoList then
-			DressUpList(itemTransmogInfoList);
+			local showOutfitDetails = true;
+			DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
 		end
 		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then

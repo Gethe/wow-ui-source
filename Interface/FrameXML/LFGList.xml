@@ -1860,6 +1860,18 @@
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
 						</KeyValues>
 					</Frame>
+					<Frame parentKey="PvpItemLevel" inherits="LFGListRequirementTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="20" y="-258"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="label" value="LFG_LIST_ITEM_LEVEL_PVP" type="global"/>
+							<KeyValue key="numeric" value="true" type="boolean"/>
+							<KeyValue key="instructions" value="LFG_LIST_ITEM_LEVEL_PVP_INSTR_SHORT" type="global"/>
+							<KeyValue key="validateFunc" value="LFGListUtil_ValidatePvPLevelReq" type="global"/>
+							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
+						</KeyValues>
+					</Frame>
 					<Frame parentKey="PVPRating" inherits="LFGListRequirementTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-5" y="-15"/>

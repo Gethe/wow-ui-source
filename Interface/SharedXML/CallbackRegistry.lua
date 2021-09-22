@@ -163,3 +163,7 @@ function CallbackRegistryMixin:GenerateCallbackEvents(events)
 		self.Event[eventName] = eventName;
 	end
 end
+
+function CallbackRegistryMixin.DoesFrameHaveEvent(frame, event)
+	return frame.Event and frame.Event[event];
+end

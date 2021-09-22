@@ -51,8 +51,12 @@ function ScrollBoxListGridViewMixin:SetStride(stride)
 	self.stride = stride;
 end
 
+function ScrollBoxListGridViewMixin:RequiresFullUpdateOnScrollTargetSizeChange()
+	return true;
+end
+
 function ScrollBoxListGridViewMixin:SetHorizontal(isHorizontal)
-	-- Horizontal layout not current supported at this time.
+	-- Horizontal layout not supported at this time.
 	isHorizontal = false;
 	ScrollDirectionMixin.SetHorizontal(self, isHorizontal);
 end
@@ -106,8 +110,12 @@ function ScrollBoxListGridViewMixin:CalculateDataIndices(scrollBox)
 	return ScrollBoxListViewMixin.CalculateDataIndices(self, scrollBox, self:GetStride(), self:GetVerticalSpacing());
 end
 
-function ScrollBoxListGridViewMixin:GetExtent(recalculate, scrollBox)
-	return ScrollBoxListViewMixin.GetExtent(self, recalculate, scrollBox, self:GetStride(), self:GetVerticalSpacing());
+function ScrollBoxListGridViewMixin:GetExtent(scrollBox)
+	return ScrollBoxListViewMixin.GetExtent(self, scrollBox, self:GetStride(), self:GetVerticalSpacing());
+end
+
+function ScrollBoxListGridViewMixin:RecalculateExtent(scrollBox)
+	return ScrollBoxListViewMixin.RecalculateExtent(self, scrollBox, self:GetStride(), self:GetVerticalSpacing());
 end
 
 function ScrollBoxListGridViewMixin:GetExtentUntil(scrollBox, dataIndex)

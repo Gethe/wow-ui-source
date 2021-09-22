@@ -1,28 +1,4 @@
 --------------------------------------------------
--- DEFAULT MODEL FRAME MIXIN
-DressUpModelFrameMixin = CreateFromMixins(ModelFrameMixin);
-
-function DressUpModelFrameMixin:OnLoad()
-	ModelFrameMixin.OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
-end
-
-function DressUpModelFrameMixin:OnHide()
-	self:SetSheathed(false);
-end
-
-function DressUpModelFrameMixin:OnDressModel()
-	self.gotDressed = true;
-end
-
-function DressUpModelFrameMixin:OnUpdate(elapsedTime)
-	ModelFrameMixin.OnUpdate(self, elapsedTime);
-	if (self.gotDressed) then
-		DressUpFrameOutfitDropDown:UpdateSaveButton();
-		self.gotDressed = nil;
-	end
-end
-
---------------------------------------------------
 -- DRESS UP MODEL FRAME RESET BUTTON MIXIN
 DressUpModelFrameResetButtonMixin = {};
 
@@ -82,15 +58,15 @@ DressUpModelFrameMaximizeMinimizeMixin = {};
 
 function DressUpModelFrameMaximizeMinimizeMixin:OnLoad()
 	local function OnMaximize(frame)
-		frame:GetParent():SetSize(450, 545);
-		UpdateUIPanelPositions(frame);
+		local isMinimized = false;
+		frame:GetParent():ConfigureSize(isMinimized);
 	end
 						
 	self:SetOnMaximizedCallback(OnMaximize);
 						
 	local function OnMinimize(frame)
-		frame:GetParent():SetSize(334, 423);
-		UpdateUIPanelPositions(frame);
+		local isMinimized = true;
+		frame:GetParent():ConfigureSize(isMinimized);
 	end
 						
 	self:SetOnMinimizedCallback(OnMinimize);
@@ -100,28 +76,69 @@ end
 
 --------------------------------------------------
 -- DEFAULT MODEL FRAME FRAME MIXIN
-DressUpModelFrameFrameMixin = {};
+DressUpModelFrameMixin = {};
 
-function DressUpModelFrameFrameMixin:OnLoad()
+function DressUpModelFrameMixin:OnLoad()
 	self.TitleText:SetText(DRESSUP_FRAME);
 end
 
-function DressUpModelFrameFrameMixin:OnShow()
+function DressUpModelFrameMixin:OnShow()
 	SetPortraitTexture(DressUpFramePortrait, "player");
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	local isAutomaticAction = true;
+	local minimized = GetCVarBool("miniDressUpFrame");
+	if minimized then
+		self.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
+	else
+		self.MaximizeMinimizeFrame:Maximize(isAutomaticAction);	
+	end
+	self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
 end
 
-function DressUpModelFrameFrameMixin:OnHide()
+function DressUpModelFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
-function DressUpModelFrameFrameMixin:OnDressModel()
+function DressUpModelFrameMixin:OnDressModel()
 	if self.OutfitDropDown then	
 		if not self.gotDressed then
 			self.gotDressed = true;
-			C_Timer.After(0, function() self.gotDressed = nil; self.OutfitDropDown:UpdateSaveButton(); end);
+			C_Timer.After(0, function()
+				self.gotDressed = nil;
+				self.OutfitDropDown:UpdateSaveButton();
+				self.OutfitDetailsPanel:OnAppearanceChange();
+			end);
 		end
 	end
+end
+
+function DressUpModelFrameMixin:ToggleOutfitDetails()
+	local show = not self.OutfitDetailsPanel:IsShown();
+	self:SetShownOutfitDetailsPanel(show);
+	SetCVar("showOutfitDetails", show);
+end
+
+function DressUpModelFrameMixin:ConfigureSize(isMinimized)
+	if isMinimized then
+		self:SetSize(334, 423);
+		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -4, -1);
+		self.OutfitDropDown:SetPoint("TOP", -42, -28);
+		UIDropDownMenu_SetWidth(self.OutfitDropDown, 120);
+	else
+		self:SetSize(450, 545);
+		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -9, -29);
+		self.OutfitDropDown:SetPoint("TOP", -23, -28);
+		UIDropDownMenu_SetWidth(self.OutfitDropDown, 163);
+	end
+	UpdateUIPanelPositions(self);
+end
+
+function DressUpModelFrameMixin:SetShownOutfitDetailsPanel(show)
+	self.OutfitDetailsPanel:SetShown(show);
+	local outfitDetailsPanelWidth = 307;
+	local extrawidth = show and outfitDetailsPanelWidth or 0;
+	SetUIPanelAttribute(self, "extraWidth", extrawidth);
+	UpdateUIPanelPositions(self);
 end
 
 --------------------------------------------------

@@ -2065,6 +2065,10 @@ function DropDownControlMixin:SetSelectedValue(value, isUserInput)
 	end
 end
 
+function DropDownControlMixin:ClearSelectedValue()
+	self:SetSelectedValue(nil, false);
+end
+
 function DropDownControlMixin:GetSelectedValue()
 	return self.selectedValue;
 end
@@ -2078,6 +2082,10 @@ end
 --   value: a unique value that identifies the option and is passed through to optionSelectedCallback.
 --   text: the text that appears in the dropdown list, and on the dropdown control when an option is selected.
 --   selectedText: an override for text that appears on the dropdown control when an option is selected.
+function DropDownControlMixin:CreateOption(value, text, selectedText)
+    return { value = value, text = text, selectedText = selectedText };
+end
+
 function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
 	self.options = options;
 	self:Initialize();
@@ -2098,6 +2106,10 @@ end
 
 function DropDownControlMixin:AdjustTextPointsOffset(...)
 	self.DropDownMenu.Text:AdjustPointsOffset(...);
+end
+
+function DropDownControlMixin:SetEnabled(enabled)
+	UIDropDownMenu_SetDropDownEnabled(self.DropDownMenu, enabled);
 end
 
 EnumDropDownControlMixin = CreateFromMixins(DropDownControlMixin);

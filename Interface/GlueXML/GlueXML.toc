@@ -69,7 +69,7 @@ GlueButtons.xml
 ..\SharedXML\UIDropDownMenu.xml
 GlueContextMenu.xml
 
-..\SharedXML\DataProvider.lua
+..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua

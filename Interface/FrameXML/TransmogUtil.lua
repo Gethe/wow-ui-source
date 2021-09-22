@@ -1,3 +1,19 @@
+TransmogSlotOrder = {
+	INVSLOT_HEAD,
+	INVSLOT_SHOULDER,
+	INVSLOT_BACK,
+	INVSLOT_CHEST,
+	INVSLOT_BODY,
+	INVSLOT_TABARD,
+	INVSLOT_WRIST,
+	INVSLOT_HAND,
+	INVSLOT_WAIST,
+	INVSLOT_LEGS,
+	INVSLOT_FEET,
+	INVSLOT_MAINHAND,
+	INVSLOT_OFFHAND,
+};
+
 TransmogUtil = {};
 
 function TransmogUtil.GetInfoForEquippedSlot(transmogLocation)

@@ -678,6 +678,8 @@ function LFGListEntryCreation_Clear(self)
 	C_LFGList.ClearCreationTextFields();
 	self.ItemLevel.CheckButton:SetChecked(false);
 	self.ItemLevel.EditBox:SetText("");
+	self.PvpItemLevel.CheckButton:SetChecked(false);
+	self.PvpItemLevel.EditBox:SetText("");
 	self.PVPRating.CheckButton:SetChecked(false);
 	self.PVPRating.EditBox:SetText("");
 	self.MythicPlusRating.CheckButton:SetChecked(false);
@@ -692,6 +694,7 @@ end
 function LFGListEntryCreation_ClearFocus(self)
 	self.Name:ClearFocus();
 	self.ItemLevel.EditBox:ClearFocus();
+	self.PvpItemLevel.EditBox:ClearFocus(); 
 	self.MythicPlusRating.EditBox:ClearFocus();
 	self.PVPRating.EditBox:ClearFocus();
 	self.VoiceChat.EditBox:ClearFocus();
@@ -735,17 +738,29 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_SHORT);
 	end
 	self.ItemLevel:ClearAllPoints();
+	self.PvpItemLevel:ClearAllPoints();
+
+	self.ItemLevel:SetShown(not activityInfo.isPvpActivity);
+	self.PvpItemLevel:SetShown(activityInfo.isPvpActivity);
+
 	if (self.MythicPlusRating:IsShown()) then 
 		self.ItemLevel:SetPoint("TOPLEFT", self.MythicPlusRating, "BOTTOMLEFT", 0, -3);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.MythicPlusRating, "BOTTOMLEFT", 0, -3);
 	elseif (self.PVPRating:IsShown()) then
 		self.ItemLevel:SetPoint("TOPLEFT", self.PVPRating, "BOTTOMLEFT", 0, -3);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.PVPRating, "BOTTOMLEFT", 0, -3);
 	elseif(self.PlayStyleDropdown:IsShown()) then 
 		self.ItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -5, -15);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -5, -15);
 	else 
 		self.ItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -5, -15);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -5, -15);
 	end
-
-	LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
+	if(self.ItemLevel:IsShown()) then 
+		LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
+	else 
+		LFGListRequirement_Validate(self.PvpItemLevel, self.PvpItemLevel.EditBox:GetText());
+	end 
 	LFGListEntryCreation_UpdateValidState(self);
 	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
@@ -994,7 +1009,13 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 end
 
 function LFGListEntryCreation_ListGroup(self)
-	local itemLevel = tonumber(self.ItemLevel.EditBox:GetText()) or 0;
+	
+	local itemLevel; 
+	if(self.ItemLevel:IsShown()) then 
+		itemLevel = tonumber(self.ItemLevel.EditBox:GetText()) or 0;
+	else 
+		itemLevel = tonumber(self.PvpItemLevel.EditBox:GetText()) or 0;
+	end		
 	local pvpRating =  tonumber(self.PVPRating.EditBox:GetText()) or 0;
 	local mythicPlusRating =  tonumber(self.MythicPlusRating.EditBox:GetText()) or 0;
 	local autoAccept = false;
@@ -1058,6 +1079,8 @@ function LFGListEntryCreation_UpdateValidState(self)
 		errorText = LFG_LIST_MUST_HAVE_NAME;
 	elseif ( self.ItemLevel.warningText ) then
 		errorText = self.ItemLevel.warningText;
+	elseif (self.PvpItemLevel.warningText) then 
+		errorText = self.PvpItemLevel.warningText;
 	elseif (self.MythicPlusRating.warningText) then
 		errorText = self.MythicPlusRating.warningText;
 	elseif (self.PVPRating.warningText) then 
@@ -1076,7 +1099,9 @@ end
 function LFGListEntryCreation_UpdateAuthenticatedState(self)
 	local isAuthenticated = C_LFGList.IsPlayerAuthenticatedForLFG(); 
 	self.Description.EditBox:SetEnabled(isAuthenticated);
-	self.Name:SetEnabled(isAuthenticated);
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo(); 
+	local isQuestListing = activeEntry and activeEntryInfo.questID or nil; 
+	self.Name:SetEnabled(isAuthenticated and not isQuestListing);
 	self.VoiceChat.EditBox:SetEnabled(isAuthenticated)
 end		
 
@@ -1123,7 +1148,12 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		else
 			self.Description.EditBox.Instructions:SetText(descInstructions or DESCRIPTION_OF_YOUR_GROUP);
 		end
-		self.ItemLevel.EditBox:SetText(activeEntryInfo.requiredItemLevel ~= 0 and activeEntryInfo.requiredItemLevel or "");
+
+		if (self.ItemLevel:IsShown()) then 
+			self.ItemLevel.EditBox:SetText(activeEntryInfo.requiredItemLevel ~= 0 and activeEntryInfo.requiredItemLevel or "");
+		else 
+			self.PvpItemLevel.EditBox:SetText(activeEntryInfo.requiredItemLevel ~= 0 and activeEntryInfo.requiredItemLevel or "");
+		end
 		self.MythicPlusRating.EditBox:SetText(activeEntryInfo.requiredDungeonScore or "" );
 		self.PVPRating.EditBox:SetText(activeEntryInfo.requiredPvpRating or "" )
 		self.PrivateGroup.CheckButton:SetChecked(activeEntryInfo.privateGroup);
@@ -1321,10 +1351,18 @@ function LFGListApplicationViewer_UpdateInfo(self)
 	end
 
 	local hasRestrictions = false;
-	if ( activeEntryInfo.requiredItemLevel == 0 ) then
-		self.ItemLevel:SetText("");
-	else
-		self.ItemLevel:SetFormattedText(LFG_LIST_ITEM_LEVEL_CURRENT, activeEntryInfo.requiredItemLevel);
+	if (activityInfo.isPvpActivity) then 
+		if ( activeEntryInfo.requiredItemLevel == 0 ) then
+			self.ItemLevel:SetText("");
+		else
+			self.ItemLevel:SetFormattedText(LFG_LIST_ITEM_LEVEL_CURRENT_PVP, activeEntryInfo.requiredItemLevel);
+		end
+	else 
+		if ( activeEntryInfo.requiredItemLevel == 0 ) then
+			self.ItemLevel:SetText("");
+		else
+			self.ItemLevel:SetFormattedText(LFG_LIST_ITEM_LEVEL_CURRENT, activeEntryInfo.requiredItemLevel);
+		end
 	end
 
 	if ( activeEntryInfo.privateGroup ) then
@@ -1631,7 +1669,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "declined_full" or status == "declined_delisted" or status == "invitedeclined" or status == "timedout" or status == "inviteaccepted" or status == "invitedeclined");
 	local noTouchy = (status == "invited");
 
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
 
 	member.memberIdx = memberIdx;
 
@@ -1666,11 +1704,16 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	end
 
 	LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, healer, damage, noTouchy, assignedRole);
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID); 
 
 	member.ItemLevel:SetShown(not grayedOut);
-	member.ItemLevel:SetText(math.floor(itemLevel));
+	if(activityInfo and activityInfo.isPvpActivity) then 
+		member.ItemLevel:SetText(math.floor(pvpItemLevel));
+	else 
+		member.ItemLevel:SetText(math.floor(itemLevel));
+	end 
 
-	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local pvpRatingForEntry = C_LFGList.GetApplicantPvpRatingInfoForListing(appID, memberIdx, activeEntryInfo.activityID);
 
 	if not grayedOut and LFGApplicationViewerRatingColumnHeader:IsShown() and pvpRatingForEntry then 
@@ -1752,10 +1795,9 @@ function LFGListApplicantMember_OnEnter(self)
 		return;
 	end 
 	local applicantInfo = C_LFGList.GetApplicantInfo(applicantID);
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore  = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel  = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local bestDungeonScoreForEntry = C_LFGList.GetApplicantDungeonScoreForListing(applicantID, memberIdx, activeEntryInfo.activityID);
 	local pvpRatingForEntry = C_LFGList.GetApplicantPvpRatingInfoForListing(applicantID, memberIdx, activeEntryInfo.activityID);
-
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 105, 0);
@@ -1767,7 +1809,13 @@ function LFGListApplicantMember_OnEnter(self)
 	else
 		GameTooltip:SetText(" ");	--Just make it empty until we get the name update
 	end
-	GameTooltip:AddLine(string.format(LFG_LIST_ITEM_LEVEL_CURRENT, itemLevel), 1, 1, 1);
+
+	if (activityInfo.isPvpActivity) then 
+		GameTooltip_AddColoredLine(GameTooltip, LFG_LIST_ITEM_LEVEL_CURRENT_PVP:format(pvpItemLevel), HIGHLIGHT_FONT_COLOR);
+	else 
+		GameTooltip_AddColoredLine(GameTooltip, LFG_LIST_ITEM_LEVEL_CURRENT:format(itemLevel), HIGHLIGHT_FONT_COLOR);
+	end		
+
 	if ( activityInfo.useHonorLevel ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_HONOR_LEVEL_CURRENT_PVP, honorLevel), 1, 1, 1);
 	end
@@ -2981,6 +3029,13 @@ function LFGListUtil_ValidateLevelReq(self, text)
 	end
 end
 
+function LFGListUtil_ValidatePvPLevelReq(self, text)
+	local _, _, avgItemLevelPvP = GetAverageItemLevel();
+	if ( text ~= "" and tonumber(text) > avgItemLevelPvP) then
+		return LFG_LIST_PVP_ILVL_ABOVE_YOURS;
+	end
+end
+
 function LFGListUtil_ValidatePvpRatingReq(self, text)	
 	local selectedActivity = self:GetParent().selectedActivity;
 	if(text ~= "" and selectedActivity and not C_LFGList.ValidateRequiredPvpRatingForActivity(selectedActivity, tonumber(text))) then
@@ -3441,7 +3496,11 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		tooltip:AddLine(GROUP_FINDER_PVP_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredPvpRating));
 	end
 	if ( searchResultInfo.requiredItemLevel > 0 ) then
-		tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL:format(searchResultInfo.requiredItemLevel));
+		if(activityInfo.isPvpActivity) then 
+			tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL_PVP:format(searchResultInfo.requiredItemLevel));
+		else 
+			tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL:format(searchResultInfo.requiredItemLevel));
+		end 
 	end
 	if ( activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
 		tooltip:AddLine(LFG_LIST_TOOLTIP_HONOR_LEVEL:format(searchResultInfo.requiredHonorLevel));
@@ -3650,16 +3709,17 @@ function LFGEditBoxMixin:OnShow()
 		self:SetEnabled(false);
 		self.LockButton:Show();
 	end
+	self.editBoxEnabled = self:IsEnabled(); 
 end		
 
 function LFGEditBoxMixin:OnEnter() 
-	if(not C_LFGList.IsPlayerAuthenticatedForLFG()) then 
+	if(not C_LFGList.IsPlayerAuthenticatedForLFG() and not self.editBoxEnabled) then 
 		self:DisplayTooltip();
 	end
 end 
 
 function LFGEditBoxMixin:OnMouseDown(button)
-	if(not C_LFGList.IsPlayerAuthenticatedForLFG()) then 
+	if(not C_LFGList.IsPlayerAuthenticatedForLFG() and not self.editBoxEnabled) then 
 		self:DisplayStaticPopup();
 	end
 end 
@@ -3692,6 +3752,7 @@ function LFGListCreationDescriptionMixin:OnLoad()
 	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
 	self.EditBox:SetEnabled(isAccountSecured);
 	self.LockButton:SetShown(not isAccountSecured);
+	self.editBoxEnabled = isAccountSecured; 
 end
 
 function LFGListCreationDescriptionMixin:OnShow()
@@ -3699,6 +3760,7 @@ function LFGListCreationDescriptionMixin:OnShow()
 	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
 	self.EditBox:SetEnabled(isAccountSecured);
 	self.LockButton:SetShown(not isAccountSecured);
+	self.editBoxEnabled = isAccountSecured; 
 end		
 
 LFGListCreateGroupDisabledStateButtonMixin = CreateFromMixins(LFGAuthenticatorMessagingMixin);

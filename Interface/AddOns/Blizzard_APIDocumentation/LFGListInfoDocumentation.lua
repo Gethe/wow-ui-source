@@ -493,6 +493,7 @@ local LFGListInfo =
 				{ Name = "isMythicPlusActivity", Type = "bool", Nilable = false },
 				{ Name = "isRatedPvpActivity", Type = "bool", Nilable = false },
 				{ Name = "isCurrentRaidActivity", Type = "bool", Nilable = false },
+				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
 			},
 		},
 		{
