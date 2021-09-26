@@ -109,7 +109,7 @@ function CharacterCreate_OnShow(self)
 		CharacterCreateRandomName:Show();
 	end
 
-	SetClassicLogo(CharacterCreateLogo);
+	SetGameLogo(CharacterCreateLogo);
 
 	if( IsKioskGlueEnabled() ) then
 		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();

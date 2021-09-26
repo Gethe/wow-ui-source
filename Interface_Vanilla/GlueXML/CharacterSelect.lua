@@ -1697,7 +1697,7 @@ end
 
 function AccountUpgradePanel_Update(isExpanded)
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-	SetClassicLogo(CharacterSelectLogo);
+	SetGameLogo(CharacterSelectLogo);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
         CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);

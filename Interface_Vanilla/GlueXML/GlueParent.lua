@@ -77,7 +77,7 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
 		if ( AccountLogin:IsVisible() ) then
-			SetClassicLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
+			SetGameLogo(AccountLogin.UI.GameLogo);
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
@@ -687,6 +687,49 @@ function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
 end
 
+gameLogo = {};
+do
+	gameLogo[LE_EXPANSION_CLASSIC] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
+			filename = 'Interface\\Glues\\Common\\GLUES-WOW-CLASSICLOGO', uv = { 0, 1, 0, 1 }
+		},
+		[LE_RELEASE_TYPE_MODERN] = {
+			filename = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR', uv = { 0.125, 0.875, 0.3125, 0.6875 }
+		},
+	};
+	gameLogo[LE_EXPANSION_BURNING_CRUSADE] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
+			filename = 'Interface\\Glues\\Common\\GLUES-WOW-BCLOGO', uv = { 0, 1, 0, 1 }
+		},
+		[LE_RELEASE_TYPE_MODERN] = {
+			filename = 'Interface\\Glues\\Common\\Glues-WoW-ClassicBurningCrusadeLogo', uv = { 0.125, 0.875, 0.3125, 0.6875 }
+		},
+	};
+end
+
+function SetGameLogo(texture, desiredExpansionLevel, desiredReleaseType)
+	local expansionLevel = desiredExpansionLevel or GetClientDisplayExpansionLevel();
+	local releaseType = desiredReleaseType or LE_RELEASE_TYPE_MODERN;
+
+	-- TODO: There's almost certainly a better way to do these overrides. It's just all a bit fragile right now, so going with the safe+verbose method.
+	local logo;
+	if (CLASSIC_ORIGINAL_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_CLASSIC and releaseType == LE_RELEASE_TYPE_ORIGINAL) then
+		logo = CLASSIC_ORIGINAL_LOGO_OVERRIDE;
+	elseif (CLASSIC_MODERN_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_CLASSIC and releaseType == LE_RELEASE_TYPE_MODERN) then
+		logo = CLASSIC_MODERN_LOGO_OVERRIDE;
+	elseif (BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_BURNING_CRUSADE and releaseType == LE_RELEASE_TYPE_ORIGINAL) then
+		logo = BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE;
+	elseif (BURNING_CRUSADE_MODERN_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_BURNING_CRUSADE and releaseType == LE_RELEASE_TYPE_MODERN) then
+		logo = BURNING_CRUSADE_MODERN_LOGO_OVERRIDE;
+	else
+		logo = gameLogo[expansionLevel][releaseType];
+	end
+
+	texture:SetTexture(logo.filename);
+	texture:SetTexCoord(unpack(logo.uv));
+	texture:Show();
+end
+
 function GetDisplayedExpansionLogo(expansionLevel)
 	local isTrial = expansionLevel == nil;
 	if isTrial then
@@ -715,14 +758,6 @@ function SetExpansionLogo(texture, expansionLevel)
 	else
 		texture:Hide();
 	end
-end
-
-classicLogo = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR';
-classicLogoTexCoords = { 0.125, 0.875, 0.3125, 0.6875 };
-function SetClassicLogo(texture)
-	texture:SetTexture(classicLogo);
-	texture:SetTexCoord(classicLogoTexCoords[1], classicLogoTexCoords[2], classicLogoTexCoords[3], classicLogoTexCoords[4]);
-	texture:Show();
 end
 
 function UpgradeAccount()

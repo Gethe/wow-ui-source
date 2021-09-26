@@ -3,7 +3,7 @@
 
 ## add snippets independent of modules here
 GlueCheck.lua
-Localization.xml
+..\..\Interface_Vanilla\FrameXML\Localization.xml
 Fonts.xml
 ..\..\Interface_Vanilla\FrameXML\FontStyles.xml
 ..\SharedXML\Mixin.lua

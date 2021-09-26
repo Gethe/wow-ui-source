@@ -16,17 +16,10 @@ end
 
 function CreditsFrame_Update(self)
 	PlayCreditsMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
-
-	-- TODO: This would be better if it was driven by data in Constants.lua.
 	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
-		SetClassicLogo(CreditsLogo);
+		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_MODERN);
 	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
-		local expansionInfo;
-		expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
-		if expansionInfo then
-			CreditsLogo:SetTexCoord(0, 1, 0, 1);
-			CreditsLogo:SetTexture(expansionInfo.logo);
-		end
+		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_ORIGINAL);
 	end
 	
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
