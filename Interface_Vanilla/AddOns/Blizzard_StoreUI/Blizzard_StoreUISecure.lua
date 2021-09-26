@@ -2060,7 +2060,7 @@ local StoreDropdownLists = {};
 local SelectedDestinationWowAccount = nil;
 local SelectedDestinationBnetAccount = nil;
 local SelectedDestinationBnetWowAccount = nil;
-local CharacterTransferFactionChangeBundle = nil;
+local CharacterTransferFactionChangeBundle = false;
 local RealmAutoCompleteList;
 local IsVasBnetTransferValidated = false;
 local RealmAutoCompleteIndexByKey = {};
@@ -2392,7 +2392,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
 	SelectedDestinationBnetWowAccount = nil;
-	CharacterTransferFactionChangeBundle = nil;
+	CharacterTransferFactionChangeBundle = false;
 	IsVasBnetTransferValidated = false;
 	RealmAutoCompleteList = nil;
 	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
@@ -2510,7 +2510,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			local isVas = entryInfo and (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) or false;
 			-- If we've already targeted a character GUID, skip the normal VAS steps and go straight to checkout.
 			if ( isVas and VasTargetedCharacterGUID ) then
-				C_StoreSecure.PurchaseVASProduct(entryInfo.productID, VasTargetedCharacterGUID);
+				C_StoreSecure.PurchaseVASProduct(entryInfo.productID, VasTargetedCharacterGUID, nil, nil, nil, nil, false);
 				return;
 			end
 		end
@@ -4221,7 +4221,8 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationWowAccount, true);
 		end
 	end
-	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], CharacterTransferFactionChangeBundle, wowAccountGUID, bnetAccountGUID) ) then
+	
+	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		WaitingOnVASToCompleteToken = WaitingOnVASToComplete;
