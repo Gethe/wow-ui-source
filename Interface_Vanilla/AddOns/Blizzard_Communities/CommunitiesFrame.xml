@@ -1,0 +1,289 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesFrame.lua"/>
+	
+	<Button name="CommunitiesSubPanelButtonScriptTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CallMethodOnNearestAncestor(self, "ToggleSubPanel", self.frame);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="CommunitiesControlFrameTemplate" mixin="CommunitiesControlFrameMixin" virtual="true">
+		<Frames>
+			<Button parentKey="CommunitiesSettingsButton" inherits="CommunitiesSettingsButtonTemplate">
+				<Size x="165" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CommunitiesFrameFriendTabTemplate" inherits="FriendsFrameTabTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CommunitiesFrameToggleToFriends(self:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>
+		
+	<Frame name="CommunitiesFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="CommunitiesFrameMixin">
+		<Size x="814" y="424"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.portrait"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="portrait"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitOverlay" setAllPoints="true" frameLevel="500">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture parentKey="Portrait">
+							<Size x="61" y="61"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="8" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture inherits="UI-Frame-Portrait" parentKey="PortraitFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-14" y="11"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Portrait"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="LEFT" x="6" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad" inherit="append"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentCommunitiesList" parentKey="CommunitiesList" useParentLevel="true" inherits="CommunitiesListFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-1" y="-23"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="170" y="29"/>
+				</Anchors>
+			</Frame>
+			<CheckButton parentKey="ChatTab" hidden="true" inherits="CommunitiesChatTabTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="RosterTab" hidden="true" inherits="CommunitiesRosterTabTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChatTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+			</CheckButton>
+			<Frame parentKey="StreamDropDownMenu" inherits="StreamDropDownMenuTemplate">
+				<Size x="40" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="188" y="-32"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
+				<Size x="40" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="-28"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="-26"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MemberList" inherits="CommunitiesMemberListFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-165" y="-63"/>
+					<Anchor point="BOTTOMRIGHT" x="-26" y="28"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Chat" inherits="CommunitiesChatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="31" y="-46"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.MemberList" relativePoint="BOTTOMLEFT" x="-22" y="28"/>
+				</Anchors>
+			</Frame>
+			<EditBox parentKey="ChatEditBox" frameLevel="1200" inherits="CommunitiesChatEditBoxTemplate">
+				<Size x="0" y="32"/>
+				<!-- Anchored in code -->
+			</EditBox>
+			<Frame parentKey="InvitationFrame" inherits="CommunitiesInvitationFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TicketFrame" inherits="CommunitiesTicketFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
+				<Size x="320" y="260"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NotificationSettingsDialog" frameStrata="DIALOG" inherits="CommunitiesNotificationSettingsDialogTemplate" hidden="true">
+				<Size x="638" y="508"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ChatEditBox" relativePoint="BOTTOMRIGHT" x="4" y="5"/>
+				</Anchors>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="CommunitiesControlFrame" inherits="CommunitiesControlFrameTemplate">
+				<Size x="500" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+			</Frame>
+			<Button name="CommunitiesFrameTab1" inherits="CommunitiesFrameFriendTabTemplate" id="1" text="FRIENDS" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="-2" y="-30"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(0);
+						PanelTemplates_TabResize(self, 0, nil);
+					</OnShow>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(FRIENDS, "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CommunitiesFrameTab2" inherits="CommunitiesFrameFriendTabTemplate" id="2" text="WHO" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CommunitiesFrameTab1" relativePoint="RIGHT" x="-14" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(0);
+						PanelTemplates_TabResize(self, 0, nil);
+					</OnShow>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(WHO, "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_WHOTAB, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CommunitiesFrameTab3" inherits="CommunitiesFrameFriendTabTemplate" id="3" text="GUILD" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CommunitiesFrameTab2" relativePoint="RIGHT" x="-14" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(0);
+						PanelTemplates_TabResize(self, 0, nil);
+					</OnShow>
+					<OnLoad>
+						self.selectedTextY = 4;
+						InGuildCheck(CommunitiesFrame);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CommunitiesFrameTab4" inherits="CommunitiesFrameFriendTabTemplate" id="4" text="RAID" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CommunitiesFrameTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(0);
+						PanelTemplates_TabResize(self, 0, nil);
+					</OnShow>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CommunitiesFrameTab5" inherits="CommunitiesFrameFriendTabTemplate" id="5" text="BLIZZARD_GROUPS_SHORT" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CommunitiesFrameTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(0);
+						PanelTemplates_TabResize(self, 0, nil);
+					</OnShow>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(BLIZZARD_GROUPS_BUTTON, "TOGGLEBATTLENETGROUPS"), 1.0, 1.0, 1.0, BLIZZARD_GROUPS_BUTTON_TOOLTIP, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

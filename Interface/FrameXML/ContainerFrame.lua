@@ -110,7 +110,13 @@ function ToggleBag(id)
 		return;
 	end
 	
-	local size = ContainerFrame_GetContainerNumSlots(id);
+	local size = 0;
+	if (id == KEYRING_CONTAINER ) then
+		size = GetKeyRingSize();
+	else
+		size = ContainerFrame_GetContainerNumSlots(id);
+	end
+
 	if ( size > 0 or id == KEYRING_CONTAINER ) then
 		local containerShowing;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
@@ -121,6 +127,10 @@ function ToggleBag(id)
 			end
 		end
 		if ( not containerShowing ) then
+			if ( CanAutoSetGamePadCursorControl(true) ) then
+				SetGamePadCursorControl(true);
+			end
+
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
 			-- Stop keyring button pulse
 			if (id == KEYRING_CONTAINER) then 
@@ -286,7 +296,7 @@ function ContainerFrame_OnShow(self)
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
 	end
  	ContainerFrame_Update(self);
-	
+	UpdateContainerFrameAnchors();
 	-- If there are tokens watched then decide if we should show the bar
 	--[[if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
@@ -977,7 +987,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 	-- Add the bag to the baglist
 	frame:Show();
-	UpdateContainerFrameAnchors();
 	frame:Raise();
 	if (ContainerFrame1.isHelpBoxShown and ContainerFrame1.helpBoxFrame) then
 		ContainerFrame1.helpBoxFrame:Raise();
@@ -1173,10 +1182,16 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	for i=1, currencyCount, 1 do
 		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
 		if ( currencyName ) then
+			local extraArgs = "";
+			if ( currencyTexture == HONOR_POINT_TEXTURES[1] or currencyTexture == HONOR_POINT_TEXTURES[2] ) then
+				-- Honor Point textures have some funky coordinates, so we'll fix them up here.
+				extraArgs = ":64:64:0:40:0:40";
+			end
+
 			if ( itemsString ) then
-				itemsString = itemsString .. ", |T"..currencyTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = itemsString .. ", |T"..currencyTexture..":0:0:0:-1"..extraArgs.."|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			else
-				itemsString = " |T"..currencyTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = " |T"..currencyTexture..":0:0:0:-1"..extraArgs.."|t "..format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			end
 		end
 	end
@@ -1254,6 +1269,15 @@ function ContainerFrameItemButton_OnClick(self, button)
 end
 
 function ContainerFrameItemButton_OnModifiedClick(self, button)
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+		if C_Item.DoesItemExist(itemLocation) then
+			if SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+				return;
+			end
+		end
+	end
+
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end

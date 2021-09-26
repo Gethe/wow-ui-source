@@ -1,0 +1,266 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CharacterFrame.lua"/>
+
+	<Texture name="Char-Stat-Bottom" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="169" y="46"/>
+		<TexCoords left="0.00390625" right="0.66406250" top="0.00781250" bottom="0.36718750"/>
+	</Texture>
+	<Texture name="Char-Stat-Minimized" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="169" y="14"/>
+		<TexCoords left="0.00390625" right="0.66406250" top="0.38281250" bottom="0.49218750"/>
+	</Texture>
+	<Texture name="Char-Stat-Top" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="169" y="9"/>
+		<TexCoords left="0.00390625" right="0.66406250" top="0.50781250" bottom="0.57812500"/>
+	</Texture>
+	<Texture name="Char-RightSlot" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="50" y="44"/>
+		<TexCoords left="0.00390625" right="0.19921875" top="0.59375000" bottom="0.93750000"/>
+	</Texture>
+	<Texture name="Char-Stat-Minus" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="3"/>
+		<TexCoords left="0.00390625" right="0.03125000" top="0.95312500" bottom="0.97656250"/>
+	</Texture>
+	<Texture name="Char-LeftSlot" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="49" y="44"/>
+		<TexCoords left="0.20703125" right="0.39843750" top="0.59375000" bottom="0.93750000"/>
+	</Texture>
+	<Texture name="Char-Corner-LowerRight" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.59375000" bottom="0.64843750"/>
+	</Texture>
+	<Texture name="Char-Corner-LowerLeft" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.66406250" bottom="0.71875000"/>
+	</Texture>
+	<Texture name="Char-Corner-UpperRight" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.73437500" bottom="0.78906250"/>
+	</Texture>
+	<Texture name="Char-Corner-UpperLeft" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.80468750" bottom="0.85937500"/>
+	</Texture>
+	<Texture name="Char-Stat-Plus" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="7"/>
+		<TexCoords left="0.40625000" right="0.43359375" top="0.87500000" bottom="0.92968750"/>
+	</Texture>
+	<Texture name="Char-BottomSlot" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="42" y="53"/>
+		<TexCoords left="0.67187500" right="0.83593750" top="0.00781250" bottom="0.42187500"/>
+	</Texture>
+	<Texture name="Char-Slot-Bottom-Right" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="7" y="54"/>
+		<TexCoords left="0.67187500" right="0.69921875" top="0.43750000" bottom="0.85937500"/>
+	</Texture>
+	<Texture name="Char-Slot-Bottom-Left" file="Interface\CharacterFrame\Char-Paperdoll-Parts" virtual="true" >
+		<Size x="6" y="54"/>
+		<TexCoords left="0.70703125" right="0.73046875" top="0.43750000" bottom="0.85937500"/>
+	</Texture>
+
+	<Texture name="Char-Inner-Bottom" file="Interface\CharacterFrame\Char-Paperdoll-Horizontal" horizTile="true" virtual="true">
+		<Size x="32" y="5"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.06250000" bottom="0.37500000"/>
+	</Texture>
+	<Texture name="Char-Inner-Top" file="Interface\CharacterFrame\Char-Paperdoll-Horizontal" horizTile="true" virtual="true">
+		<Size x="32" y="5"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.50000000" bottom="0.81250000"/>
+	</Texture>
+	<Texture name="Char-Inner-Left" file="Interface\CharacterFrame\Char-Paperdoll-Vertical" vertTile="true" virtual="true">
+		<Size x="5" y="32"/>
+		<TexCoords left="0.06250000" right="0.37500000" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+	<Texture name="Char-Inner-Right" file="Interface\CharacterFrame\Char-Paperdoll-Vertical" vertTile="true" virtual="true">
+		<Size x="5" y="32"/>
+		<TexCoords left="0.50000000" right="0.81250000" top="0.00000000" bottom="1.00000000"/>
+	</Texture>
+
+	<Frame name="CharacterStatFrameCategoryTemplate" virtual="true">
+		<Size x="197" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Title" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Title:SetText(self.titleText);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="CharacterFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="CharacterNameFrame">
+				<Size>
+					<AbsDimension x="109" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="6" y="232"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="CharacterNameText" inherits="GameFontNormal" text="NAME">
+							<Size>
+								<AbsDimension x="300" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="CharacterFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 4);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="62"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(CHARACTER_INFO, "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PET" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(PET, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(REPUTATION, "TOGGLECHARACTER2"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="SKILLS" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(SKILLS, "TOGGLECHARACTER1"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="PVP">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CharacterFrame_OnLoad"/>
+			<OnEvent function="CharacterFrame_OnEvent"/>
+			<OnShow function="CharacterFrame_OnShow"/>
+			<OnHide function="CharacterFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

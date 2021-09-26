@@ -29,6 +29,15 @@ local SpecializationInfo =
 				{ Name = "respecType", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "TalentsInvoluntarilyReset",
+			Type = "Event",
+			LiteralName = "TALENTS_INVOLUNTARILY_RESET",
+			Payload =
+			{
+				{ Name = "isPetTalents", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

@@ -1,0 +1,15 @@
+## Title: Blizzard Store UI
+## AllowLoad: Both
+..\..\SharedXML\Spline.lua
+..\..\SharedXML\Pools.lua
+..\..\SharedXML\ModelSceneTemplatesScripts.xml
+..\..\SharedXML\ModelSceneMixinScripts.xml
+..\..\SharedXML\ModelSceneActorMixinScripts.xml
+..\..\..\Interface_TBC\SharedXML\LayoutFrame.lua
+..\..\SharedXML\ManagedLayoutFrame.lua
+..\..\SharedXML\BulletPoint.lua
+..\..\SharedXML\SecureCurrencyUtil.lua
+Blizzard_SimpleCheckout.xml
+..\..\..\Interface_TBC\AddOns\Blizzard_StoreUI\Blizzard_StoreUI.xml
+Blizzard_StoreUIInsecure.xml
+Localization.lua

@@ -19,18 +19,7 @@
 		</Layers>
 	</GameTooltip>
 	
-	<GameTooltip name="GameTooltipTemplate" clampedToScreen="true" inherits="GameTooltipCommonTemplate" virtual="true">
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
+	<GameTooltip name="GameTooltipTemplate" clampedToScreen="true" inherits="GameTooltipCommonTemplate, TooltipBackdropTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTextLeft1" inherits="GameTooltipHeaderText" hidden="true">
@@ -255,7 +244,7 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				GameTooltip_OnLoad(self);
 			</OnLoad>
 			<OnHide>
@@ -273,18 +262,10 @@
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
-	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate" virtual="true">
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
+	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate, BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTextLeft1" inherits="GameFontNormalSmall" hidden="true">
@@ -377,9 +358,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				GameTooltip_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
 			<OnTooltipCleared>
 				GameTooltip_ClearMoney(self);
 				GameTooltip_ClearInsertedFrames(self);

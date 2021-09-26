@@ -1,0 +1,478 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CreditsFrame.lua"/>
+	<Button name="CreditsSpeedButtonTemplate" virtual="true">
+		<Size x="35" y="35"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<FontString name="CreditsNormal" inherits="GlueFontHighlightSmall" spacing="2" virtual="true"/>
+	<FontString name="CreditsHeader1" inherits="GlueFontNormalLarge" spacing="4" virtual="true"/>
+	<FontString name="CreditsHeader2" inherits="GlueFontHighlight" spacing="4" virtual="true"/>
+
+	<Button name="CreditsFrameSwitchButtonTemplate" inherits="GlueButtonSmallTemplate" virtual="true">
+		<Size x="260" y="28"/>
+		<Scripts>
+			<OnClick>
+				CreditsFrame:Switch(self:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="CreditsFrameExpansionsButtonTemplate" virtual="true">
+		<Size x="260" y="28"/>
+		<Scripts>
+			<OnClick>
+				self:GetParent():SetSelectedExpansion(self.expansion, self.releaseType);
+				self.Highlight:Hide();
+			</OnClick>
+			<OnEnter>
+				if not self.Selection:IsShown() then
+					self.Highlight:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				self.Highlight:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalFont style="GlueFontHighlightSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+		<Layers>
+			<Layer frameStrata="ARTWORK">
+				<Texture parentKey="Selection" setAllPoints="true" hidden="true" atlas="CreditsScreen-Selected">
+					<Color a="0.8" r="1.0" g="1.0" b="1.0"/>
+				</Texture>
+				<Texture parentKey="Highlight" setAllPoints="true" hidden="true" atlas="CreditsScreen-Highlight"/>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="CreditsExpansionListTemplate" frameStrata="DIALOG" enableMouse="true" hidden="false" mixin="CreditsExpansionListMixin" virtual="true">
+		<Size x="200" y="500"/>
+		<Frames>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="EXPANSION" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Button parentKey="OKButton" text="OKAY" inherits="GlueButtonSmallTemplate">
+				<Size x="100" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-2" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnOKClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" text="CANCEL" inherits="GlueButtonSmallTemplate">
+				<Size x="100" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OKButton" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCancelClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="CreditsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" mixin="CreditsFrameMixin">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="CreditsArt1">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt2">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArt1" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt3">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArt2" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt4">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArt3" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt5">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CreditsArt1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt6">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArt5" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt7">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArt6" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArt8">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArt7" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture name="CreditsArtAlt1">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt2">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtAlt1" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt3">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtAlt2" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt4">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtAlt3" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt5">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CreditsArtAlt1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt6">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtAlt5" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt7">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtAlt6" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtAlt8">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtAlt7" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache1">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache2">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtCache1" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache3">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtCache2" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache4">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtCache3" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache5">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CreditsArtCache1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache6">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtCache5" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache7">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtCache6" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsArtCache8">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsArtCache7" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="CreditsBackground1" file="Interface\Glues\Credits\Parchment1">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground2" file="Interface\Glues\Credits\Parchment2">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground1" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground3" file="Interface\Glues\Credits\Parchment3">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground2" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground4" file="Interface\Glues\Credits\Parchment4">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground3" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground5" file="Interface\Glues\Credits\Parchment5">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CreditsBackground1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground6" file="Interface\Glues\Credits\Parchment6">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground5" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground7" file="Interface\Glues\Credits\Parchment7">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground6" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground8" file="Interface\Glues\Credits\Parchment8">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground7" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="CreditsBackground9" file="Interface\Glues\Credits\Parchment4">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground4" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="CreditsBackground10" file="Interface\Glues\Credits\Parchment3">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground9" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="CreditsBackground11" file="Interface\Glues\Credits\Parchment8">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground8" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="CreditsBackground12" file="Interface\Glues\Credits\Parchment7">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CreditsBackground11" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Logo" file="Interface\Glues\Common\WOW_Classic-LogoHR">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.125" right="0.875" top="0.3125" bottom="0.6875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="CreditsBorder1" file="Interface\Glues\Credits\Border1">
+					<Size x="1408" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="CreditsBackground1" relativePoint="TOPLEFT" x="0" y="-10"/>
+					</Anchors>
+					<TexCoords left="0" right="11" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="CreditsBorder9" file="Interface\Glues\Credits\Border1">
+					<Size x="1408" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CreditsBackground5" relativePoint="BOTTOMLEFT" x="0" y="15"/>
+					</Anchors>
+					<TexCoords left="0" right="11" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="UpperBlackBar">
+					<Size x="1024" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+				<Texture name="LowerBlackBar">
+					<Size x="1024" y="126"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame">
+				<Size x="250" y="740"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-50" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<ScrollChild>
+					<SimpleHTML parentKey="Text">
+						<Size x="250" y="740"/>
+						<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
+						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
+						<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true"/>
+			<Slider parentKey="Slider" orientation="VERTICAL" minValue="0" maxValue="1000" valueStep="10" defaultValue="0" inherits="BackdropTemplate" hidden="true">
+				<Size x="16" y="0"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnValueChanged>
+						if self:IsDraggingThumb() then
+						CreditsFrame.scrollIdx = value;
+						end
+					</OnValueChanged>
+				</Scripts>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size x="32" y="32"/>
+				</ThumbTexture>
+			</Slider>
+			<Button parentKey="BackButton" text="BACK" inherits="GlueButtonSmallTemplate">
+				<Size x="150" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="GlueParent" relativePoint="BOTTOMLEFT" x="40" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GlueParent_CloseSecondaryScreen"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ExpansionsButton" text="EXPANSION" inherits="GlueButtonSmallTemplate">
+				<Size x="150" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.BackButton" relativePoint="TOP" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleExpansionList();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentRewindButton" inherits="CreditsSpeedButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="-50" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_REWIND);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\TimeManager\RWButton"/>
+			</Button>
+			<Button name="$parentPauseButton" inherits="CreditsSpeedButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRewindButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_PAUSE);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\TimeManager\PauseButton"/>
+			</Button>
+			<Button name="$parentPlayButton" inherits="CreditsSpeedButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPauseButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_PLAY);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+			</Button>
+			<Button name="$parentFastForwardButton" inherits="CreditsSpeedButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPlayButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CreditsFrame:SetSpeed(CREDITS_SCROLL_RATE_FASTFORWARD);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\TimeManager\FFButton"/>
+			</Button>
+			<Frame parentKey="ExpansionList" inherits="CreditsExpansionListTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</Frame>
+</Ui>

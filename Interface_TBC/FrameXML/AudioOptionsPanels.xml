@@ -1,0 +1,956 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- if you change something here you probably want to change the glue version too -->
+
+	<Script file="AudioOptionsPanels.lua"/>
+
+	<!-- Templates -->
+
+	<CheckButton name="AudioOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				AudioOptionsPanel_CheckButton_OnClick(self);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="AudioOptionsCheckButtonTemplate" virtual="true" inherits="AudioOptionsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	<CheckButton name="AudioOptionsSmallCheckButtonTemplate" virtual="true" inherits="AudioOptionsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+
+	<!-- Sound Panel -->
+
+	<Frame name="AudioOptionsSoundPanel" hidden="true" parent="VideoOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDisplayHeader" text="SOUND_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEnableSound" inherits="AudioOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="24" y="-64"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableAllSound";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
+				<Size x="186" y="264"/>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-116"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						_G[self:GetName().."Title"]:SetText(PLAYBACK);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentSoundEffects" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayback">
+						<Offset x="8" y="-6"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableSFX";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentPetSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundEffects" relativePoint="BOTTOMLEFT">
+						<Offset x="8" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnablePetSounds";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEmoteSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPetSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableEmoteSounds";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableMusic";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentLoopMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMusic" relativePoint="BOTTOMLEFT">
+						<Offset x="8" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_ZoneMusicNoDelay";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelMusic, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAmbientSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoopMusic" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableAmbience";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentDialogSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAmbientSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableDialog";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentErrorSpeech" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDialogSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="8" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableErrorSpeech";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelDialogSounds, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSoundInBG" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentErrorSpeech" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableSoundWhenGameIsInBG";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<!--CheckButton name="$parentReverb" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundInBG" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableReverb";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHRTF" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentReverb" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnablePositionalLowPassFilter";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton-->
+			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
+				<Size x="186" y="152"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
+						<Offset x="14" y="0"/>
+					</Anchor>
+				</Anchors>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						_G[self:GetName().."Title"]:SetText(HARDWARE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentHardwareDropDown" inherits="UIDropDownMenuTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="TOPLEFT">
+						<Offset x="-6" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="GAME_SOUND_OUTPUT">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						AudioOptionsSoundPanelHardwareDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSoundChannelsDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardwareDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-12"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="SOUND_CHANNELS">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSoundCacheSizeDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-12"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SOUND_CACHESIZE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_CACHE_SIZE, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<!--<CheckButton name="$parentUseHardware" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="22" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableHardware";
+						self.restart = true;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>-->
+			<Frame name="$parentVolume" inherits="OptionsBoxTemplate">
+				<Size x="186" y="174"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="TOPRIGHT">
+						<Offset x="14" y="0"/>
+					</Anchor>
+				</Anchors>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						_G[self:GetName().."Title"]:SetText(VOLUME);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Slider name="$parentMasterVolume" inherits="OptionsSliderTemplate">
+				<Size x="118" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentVolume">
+						<Offset>
+							<AbsDimension x="15" y="-27"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						local name = self:GetName();
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						self.label = _G[name .. "Label"];
+						self.cvar = "Sound_MasterVolume";
+						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						_G[name.."Text"]:SetPoint("BOTTOM", self, "TOP", 0, 4);
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						self.label:SetText(tostring(ceil(value * 100)).."%");
+						if (self:IsVisible()) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							end
+							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
+								GameTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentSoundVolume" inherits="OptionsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentVolume" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="SOUND_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						local name = self:GetName();
+						local label = _G[name.."Low"];
+						label:ClearAllPoints();
+						label:SetPoint("BOTTOMLEFT", "$parent", "TOPLEFT", -2, 4);
+						label = _G[name.."High"];
+						label:ClearAllPoints();
+						label:SetPoint("BOTTOMRIGHT", "$parent", "TOPRIGHT", 4, 4);
+						_G[name.."Text"]:Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_SFXVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							end
+							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
+								GameTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentMusicVolume" inherits="OptionsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentSoundVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="MUSIC_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						local name = self:GetName();
+						_G[name.."Low"]:Hide()
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_MusicVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Music");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							end
+							if (not AudioOptionsSoundPanelMusic:GetChecked()) then
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
+								GameTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentAmbienceVolume" inherits="OptionsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMusicVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="AMBIENCE_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						local name = self:GetName();
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_AmbienceVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Ambience");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							end
+							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
+								GameTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentDialogVolume" inherits="OptionsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentAmbienceVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmallLeft" text="DIALOG_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						local name = self:GetName();
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_DialogVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Dialog");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							end
+							if (not AudioOptionsSoundPanelDialogSounds:GetChecked()) then
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
+								GameTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AudioOptionsSoundPanel_OnLoad"/>
+			<OnShow function="VideoOptionsPanel_OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Voice Panel -->
+
+	<Frame name="AudioOptionsVoicePanel" hidden="true" parent="VideoOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDisplayHeader" text="VOICE_CHAT" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentDisplayHeaderUnderline" parentKey="DisplayHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ErrorStateMessage" inherits="GameFontRedLarge" text="ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT" hidden="true">
+					<Size x="600" y="100" />
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentOutputDeviceDropdown" parentKey="OutputDeviceDropdown" inherits="OptionsDropdownTemplate">
+				<Size x="160" y="32" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DisplayHeaderUnderline" x="170" y="-26" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_OUTPUT_DEVICE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="3" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Slider name="$parentVoiceChatVolume" parentKey="VoiceChatVolume" inherits="OptionsSliderTemplate">
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18" y="-10" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_VOLUME">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad" inherit="prepend"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentVoiceChatDucking" parentKey="VoiceChatDucking" inherits="OptionsSliderTemplate">
+				<KeyValues>
+					<KeyValue key="isValueNormalized" value="true" type="boolean"/>
+					<KeyValue key="isValueInverted" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18" y="-45" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_DUCKING_SCALE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad" inherit="prepend"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
+			
+			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
+				<Size x="160" y="32" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatVolume" relativePoint="BOTTOMLEFT" x="-17" y="-60" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_DEVICE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="3" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsVoicePanelMicDeviceDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			
+			<Slider name="$parentVoiceChatMicVolume" parentKey="VoiceChatMicVolume" inherits="OptionsSliderTemplate">
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MicDeviceDropdown" relativePoint="BOTTOMLEFT" x="17" y="-10" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_VOLUME">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad" inherit="prepend"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentVoiceChatMicSensitivity" parentKey="VoiceChatMicSensitivity" inherits="OptionsSliderTemplate">
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicVolume" relativePoint="BOTTOMLEFT" x="0" y="-20" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_SENSITIVITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad" inherit="prepend"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
+
+			<Frame name="$parentTestInputDevice" parentKey="TestInputDevice">
+				<Size x="160" y="32" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicSensitivity" relativePoint="BOTTOMLEFT" x="0" y="-16" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_TEST_MIC_DEVICE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="2" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ToggleTest" inherits="OptionsButtonTemplate">
+						<Size x="26" y="21"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Texture" file="Interface\OptionsFrame\VoiceChat-Play">
+									<Size x="10" y="10"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick function="AudioOptionsVoicePanelTestInputDevice_OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="VUMeter" inherits="OptionsBoxTemplate">
+						<Size x="100" y="25"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ToggleTest" relativePoint="RIGHT" x="3" y="0"/>
+							<Anchor point="RIGHT" x="-3" y="0"/>
+						</Anchors>
+						<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+						<KeyValues>
+							<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+							<KeyValue key="backdropColorAlpha" value=".5" type="number"/>
+							<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+						</KeyValues>
+						<Frames>
+							<StatusBar parentKey="Status" inherits="TextStatusBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="6" y="-6"/>
+									<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+								</Anchors>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="AudioOptionsVoicePanelTestInputDevice_OnLoad"/>
+					<OnShow function="AudioOptionsVoicePanelTestInputDevice_OnShow"/>
+					<OnHide function="AudioOptionsVoicePanelTestInputDevice_OnHide"/>
+					<OnEvent function="AudioOptionsVoicePanelTestInputDevice_OnEvent"/>
+				</Scripts>
+			</Frame>
+
+			<Frame name="$parentChatModeDropdown" parentKey="ChatModeDropdown" inherits="OptionsDropdownTemplate">
+				<Size x="160" y="32" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TestInputDevice" relativePoint="BOTTOMLEFT" x="-149" y="-40" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_MODE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="4" />
+							</Anchors>
+						</FontString>
+						<FontString name="$parentPushToTalkNotification" parentKey="PushToTalkNotification" inherits="GameFontWhite">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="20" y="-10" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsVoicePanelChatModeDropdown_OnLoad"/>
+					<OnEnter>
+						if ( UIDropDownMenu_IsEnabled(self) and self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -17,0);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AudioOptionsVoicePanel_OnLoad"/>
+			<OnShow function="AudioOptionsVoicePanel_OnShow"/>
+			<OnHide function="AudioOptionsVoicePanel_OnHide"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

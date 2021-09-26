@@ -74,11 +74,44 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 	end
 	if ( event == "TRAINER_UPDATE" ) then
 		if ( GetTrainerSelectionIndex() > 1 ) then
-			if ( GetTrainerSelectionIndex() > GetNumTrainerServices() ) then
+			if ( GetTrainerSelectionIndex() > GetNumTrainerServices() + 1) then
 				FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0);
 				ClassTrainerListScrollFrameScrollBar:SetValue(0);
 			end
-			ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+
+			-- Our selected index may no longer be "available". If so, try to select the next "available"
+			-- index relative to our last position.
+			if self.renewSelection then
+				local currentSelection = ClassTrainerFrame.selectedService;
+				local currentServiceType = select(3, GetTrainerServiceInfo(currentSelection));
+				local numServices = GetNumTrainerServices();
+				
+				if currentServiceType ~= "available" then
+					-- Collapsed groups already accounted for in sorting prior to the event.
+					currentSelection = 0;
+					while currentSelection <= numServices do
+						currentSelection = currentSelection + 1;
+						local serviceType = select(3, GetTrainerServiceInfo(currentSelection));
+						if serviceType == "available" then
+							self.renewSelection = nil;
+							break;
+						end
+					end
+				end
+				
+				if currentSelection <= numServices then
+					self.showSkillDetails = true;
+					ClassTrainer_SetSelection(currentSelection);
+					
+					-- Keep the entry in view.
+					local firstVisible = FauxScrollFrame_GetOffset(ClassTrainerListScrollFrame);
+					local lastVisible = firstVisible + CLASS_TRAINER_SKILLS_DISPLAYED;
+					if currentSelection < firstVisible or currentSelection > lastVisible then
+						local offset = math.max(0, currentSelection - CLASS_TRAINER_SKILLS_DISPLAYED);
+						ClassTrainerListScrollFrameScrollBar:SetValue(CLASS_TRAINER_SKILL_HEIGHT * offset);
+					end
+				end
+			end
 		else
 			ClassTrainer_SelectFirstLearnableSkill();
 		end
@@ -245,7 +278,7 @@ function ClassTrainer_SelectFirstLearnableSkill()
 	if ( GetNumTrainerServices() > 0 ) then
 		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainer_SetSelection(2);
-		FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0)		
+		FauxScrollFrame_SetOffset(ClassTrainerListScrollFrame, 0);
 	else
 		ClassTrainerFrame.showSkillDetails = nil;
 		ClassTrainer_SetSelection();
@@ -263,12 +296,19 @@ function ClassTrainer_SetSelection(id)
 
 	ClassTrainerSkillHighlightFrame:Show();
 	
+	-- When we have an available entry selected, we flag our selection to be sanitized
+	-- when receiving an update event. This event occurs when the list is collapsed or expanded,
+	-- and if entries are learned. In each of those cases, we can't trust our current position
+	-- to be an "available" entry, and we attempt to reselect an appropriate entry when possible.
 	if ( serviceType == "available" ) then
 		ClassTrainerSkillHighlight:SetVertexColor(0, 1.0, 0);
+		ClassTrainerFrame.renewSelection = true;
 	elseif ( serviceType == "used" ) then
 		ClassTrainerSkillHighlight:SetVertexColor(0.5, 0.5, 0.5);
+		ClassTrainerFrame.renewSelection = false;
 	elseif ( serviceType == "unavailable" ) then
 		ClassTrainerSkillHighlight:SetVertexColor(0.9, 0, 0);
+		ClassTrainerFrame.renewSelection = false;
 	else
 		-- Is header, so collapse or expand header
 		ClassTrainerSkillHighlightFrame:Hide();
@@ -533,6 +573,4 @@ function ClassTrainerFrameFilterDropDown_OnClick(self)
 		setglobal("TRAINER_FILTER_"..strupper(self.value), 0);
 		SetTrainerServiceTypeFilter(self.value, 0);
 	end
-	
-	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 end

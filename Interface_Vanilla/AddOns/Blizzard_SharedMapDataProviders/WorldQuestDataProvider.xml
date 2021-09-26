@@ -1,0 +1,120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="WorldQuestDataProvider.lua"/>
+
+	<Frame name="WorldQuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="WorldQuestPinMixin" virtual="true">
+		<Size x="50" y="50"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
+					<Size x="72" y="72" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="Underlay">
+					<Size x="80" y="80" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-3" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="BountyRing" atlas="worldquest-emissary-ring" hidden="true">
+					<Size x="72" y="72" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PushedBackground" textureSubLevel="-1" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedGlow" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TrackedCheck" atlas="worldquest-emissary-tracker-checkmark" hidden="true">
+					<Size x="42" y="37"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TimeLowFrame" hidden="true">
+				<Size x="44" y="44" />
+				<Anchors>
+					<Anchor point="CENTER" x="-17" y="-17" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="worldquest-icon-clock" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<CinematicModel name="WorldQuestSpellEffectPinTemplate" hidden="true" mixin="WorldQuestSpellEffectPinMixin" virtual="true">
+		<Size x="400" y="400"/>
+	</CinematicModel>
+
+	<Frame name="WorldQuestPingPinTemplate" mixin="WorldQuestPingPinMixin" virtual="true">
+		<Size x="70" y="70"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Expand" file="Interface/minimap/UI-Minimap-Ping-Expand" alpha="0">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="DriverAnimation" mixin="WorldQuestPinPingDriverAnimationMixin">
+				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1"                      duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".45"     duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1" startDelay=".575"    duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".95"     duration="0.2" order="1"/>
+
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ScaleAnimation" looping="REPEAT">
+				<Scale childKey="Expand" fromScaleX=".5" fromScaleY=".5" toScaleX="1.2" toScaleY="1.2" duration=".575" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

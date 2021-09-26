@@ -981,7 +981,8 @@
 			<TexCoords left="0" right="1.0" top="0.03" bottom="0.7175"/>
 		</HighlightTexture>
 	</Button>
-	<Button name="UIGoldBorderButtonTemplate" virtual="true">
+	
+<Button name="UIGoldBorderButtonTemplate" virtual="true">
 		<Size x="105" y="22"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="$parentDetails" x="0" y="5"/>
@@ -1017,21 +1018,13 @@
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
 
-	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
 		</HitRectInsets>
-		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="6" bottom="6"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
 			<Size x="32" y="32"/>
 		</ThumbTexture>
@@ -1175,28 +1168,16 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentBorder">
+			<Frame name="$parentBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
+					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1302,74 +1283,38 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="ScrollUpBorder">
+			<Frame parentKey="ScrollUpBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
+					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollUpButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
 			</Frame>
-			<Frame parentKey="ScrollDownBorder">
+			<Frame parentKey="ScrollDownBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
+					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollDownButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
 			</Frame>
-			<Frame parentKey="Border">
+			<Frame parentKey="Border" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
+					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1808,6 +1753,135 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="NineSliceCodeTemplate" mixin="NineSlicePanelMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!--
+*******************************************************************************
+   Frame border element
+	Can have any arbitrary NineSlice theme applied, appears over all frame
+	content, but under any elements like tutorials, notifications, custom
+	artwork, etc...
+*******************************************************************************
+-->
+	<Frame name="NineSlicePanelTemplate" inherits="NineSliceCodeTemplate" frameLevel="500" setAllPoints="true" virtual="true"/>
+	
+	<Frame name="DialogBorderNoCenterTemplate" useParentLevel="true" inherits="NineSlicePanelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="Dialog" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="DialogBorderTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderDarkTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<!-- TODO: Convert this to atlas -->
+				<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderTranslucentTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DialogBorderOpaqueTemplate" inherits="DialogBorderNoCenterTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+<!--
+*******************************************************************************
+	Dialog Header Template
+
+	Header used for dialogs
+*******************************************************************************
+-->
+	<Frame name="DialogHeaderTemplate" mixin="DialogHeaderMixin" virtual="true">
+		<Size x="200" y="39"/>
+		<KeyValues>
+			<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
+			<KeyValue key="headerTextPadding" value="64" type="number"/>
+
+			<!--Optional: Add this to inheriting frames in order to auotmatically set the text when the header loads-->
+			<!--<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>-->
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" y="11" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LeftBG" atlas="UI-Frame-DiamondMetal-Header-CornerLeft" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBG" atlas="UI-Frame-DiamondMetal-Header-CornerRight" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="32" y="39"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterBG" atlas="_UI-Frame-DiamondMetal-Header-Tile" horizTile="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftBG" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBG" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
 <!--
 *******************************************************************************
 	TruncatedButtonTemplate
@@ -1922,7 +1996,73 @@
 			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
 		</Scripts>
 	</Frame>
+	
+	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<!--
+		icon: texture file to be displayed on the button.
+		iconAtlas: atlas to be displayed on the button.
+		tooltipText: displayed on the right of the button by default.
+		onClickHandler: forwards the standard OnClick arguments.
+		<KeyValues>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+	
+	<Frame name="DropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownMenu" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 
+	<Frame name="EnumDropDownControlTemplate" mixin="EnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
+		<KeyValues>
+			<!-- Overwrite to change the dropdown text when the selected value is nil -->
+			<KeyValue key="noneSelectedText" value="NONE" type="global"/>
+		</KeyValues>
+	</Frame>
+	
+	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
 		<Scripts>

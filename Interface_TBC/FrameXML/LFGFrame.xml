@@ -1,0 +1,869 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="LFGFrame.lua"/>
+	<Button name="LFMFrameColumnHeaderTemplate" inherits="WhoFrameColumnHeaderTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:Disable();
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Button name="LFMButtonTemplate" hidden="true" virtual="true">
+		<Size x="298" y="16"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="88" y="14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentZone" parentKey="Zone" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="117" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size x="20" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentZone" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" parentKey="Class" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="100" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentPartyIcon" parentKey="PartyIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.resultID = 0;
+				self.isDelisted = false;
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick function="LFMButton_OnClick"/>
+			<OnEnter function="LFMButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size x="298" y="16"/>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Frame name="LFGParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent" mixin="LFGParentFrameMixin">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="LFGParentFrameIcon">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="12" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="LFGParentFrameBackground" file="Interface\LFGFrame\LFMFrame">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="LFGParentFrameTitle" inherits="GameFontNormal" text="LFM_TITLE">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Frames>
+			<!-- Start LFM Frame-->
+			<Frame name="LFMFrame" hidden="false" setAllPoints="true" mixin="LFMFrameMixin">
+				<Frames>
+					<Frame name="LFMFrameEntryDropDown" inherits="UIDropDownMenuTemplate"/>
+					<Frame name="LFMFrameInset" inherits="InsetFrameTemplate">
+						<Size x="329" y="266"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrame">
+								<Offset>
+									<AbsDimension x="22" y="-134"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFMFrameTypeDropDown" parentKey="TypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-80"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 100);
+								UIDropDownMenu_Initialize(self, LFMFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="LFMFrameActivityDropDown" parentKey="ActivityDropDown" inherits="UIDropDownMenuTemplate" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameTypeDropDown" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-28" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 184);
+								UIDropDownMenu_Initialize(self, LFMFrameActivityDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="LFMFrameColumnHeader1" inherits="LFMFrameColumnHeaderTemplate" text="NAME">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="26" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								WhoFrameColumn_SetWidth(self, 101);
+								self.sortType = "name";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader2" inherits="LFMFrameColumnHeaderTemplate" text="ZONE">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								WhoFrameColumn_SetWidth(self, 93);
+								self.sortType = "zone";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader3" inherits="LFMFrameColumnHeaderTemplate" text="LEVEL_ABBR">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								WhoFrameColumn_SetWidth(self, 29);
+								self.sortType = "level";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameColumnHeader4" inherits="LFMFrameColumnHeaderTemplate" text="CLASS">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LFMFrameColumnHeader3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								WhoFrameColumn_SetWidth(self, 75);
+								self.sortType = "class";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameButton1" inherits="LFMButtonTemplate" id="1" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="30" y="-137"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton2" inherits="LFMButtonTemplate" id="2" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton3" inherits="LFMButtonTemplate" id="3" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton4" inherits="LFMButtonTemplate" id="4" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton5" inherits="LFMButtonTemplate" id="5" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton6" inherits="LFMButtonTemplate" id="6" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton7" inherits="LFMButtonTemplate" id="7" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton8" inherits="LFMButtonTemplate" id="8" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton9" inherits="LFMButtonTemplate" id="9" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton10" inherits="LFMButtonTemplate" id="10" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton11" inherits="LFMButtonTemplate" id="11" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton12" inherits="LFMButtonTemplate" id="12" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton11" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton13" inherits="LFMButtonTemplate" id="13" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton12" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton14" inherits="LFMButtonTemplate" id="14" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton15" inherits="LFMButtonTemplate" id="15" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LFMFrameButton16" inherits="LFMButtonTemplate" id="16" parentArray="LFMFrameButton">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFMFrameButton15" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="LFMListScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size x="296" y="258"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="LFMFrame">
+								<Offset>
+									<AbsDimension x="-61" y="-139"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFMFrame_RefreshResults);
+								self:GetParent():RefreshResults();
+							</OnVerticalScroll>
+						</Scripts>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="226"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="0.8828125"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="31" y="106"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</ScrollFrame>
+					<Button name="LFMFrameGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+						<Size x="114" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-35" y="85"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								InviteUnit(LFMFrame.selectedName);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
+						<Size x="121" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="LFMFrameGroupInviteButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ChatFrame_SendTell(LFMFrame.selectedName);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="LFMFrameSearchButton" inherits="UIPanelButtonTemplate" text="REFRESH">
+						<Size x="88" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="LFMFrameSendMessageButton" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								LFMFrameSearchButton_OnClick(self, button);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+			<!-- End LFM Frame-->
+			<!-- Start LFG Frame -->
+			<Frame name="LFGFrame" setAllPoints="true" hidden="true" mixin="LFGFrameMixin">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="LFGLabel1" inherits="GameFontNormal" text="LOOKING_FOR_GROUP_LABEL" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="45" y="-85"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="LFGLabel2" inherits="GameFontNormal" text="LOOKING_FOR_GROUP_LABEL2" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="LFGLabel1" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-80"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="LFGLabel3" inherits="GameFontNormal" text="LOOKING_FOR_GROUP_LABEL2" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="LFGLabel2" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-80"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="LFGSearchBg1" file="Interface\LFGFrame\LFGFrame-SearchIcon-Background">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-44" y="-100"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="LFGSearchBg2" file="Interface\LFGFrame\LFGFrame-SearchIcon-Background">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="LFGSearchBg1" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-28"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="LFGSearchBg3" file="Interface\LFGFrame\LFGFrame-SearchIcon-Background">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="LFGSearchBg2" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-28"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="LFGSearchIcon1" parentArray="ActivityIcon">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="LFGSearchBg1">
+									<Offset>
+										<AbsDimension x="3" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="LFGSearchIcon2" parentArray="ActivityIcon">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="LFGSearchBg2">
+									<Offset>
+										<AbsDimension x="3" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="LFGSearchIcon3" parentArray="ActivityIcon">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="LFGSearchBg3">
+									<Offset>
+										<AbsDimension x="3" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="LFGSearchIcon1Shine" inherits="AnimatedShineTemplate">
+						<Size x="49" y="49"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="LFGSearchIcon1">
+								<Offset>
+									<AbsDimension x="-6" y="9"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFGSearchIcon2Shine" inherits="AnimatedShineTemplate">
+						<Size x="49" y="49"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="LFGSearchIcon2">
+								<Offset>
+									<AbsDimension x="-6" y="9"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFGSearchIcon3Shine" inherits="AnimatedShineTemplate">
+						<Size x="49" y="49"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="LFGSearchIcon3">
+								<Offset>
+									<AbsDimension x="-6" y="9"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFGEye" inherits="EyeTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-34" y="-33"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="LFGFrameTypeDropDown1" parentArray="TypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGLabel1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-19" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="LFGFrameActivityDropDown1" parentArray="ActivityDropDown" inherits="UIDropDownMenuTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGFrameTypeDropDown1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameActivityDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="LFGFrameTypeDropDown2" parentArray="TypeDropDown" inherits="UIDropDownMenuTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGLabel2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-19" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="LFGFrameActivityDropDown2" parentArray="ActivityDropDown" inherits="UIDropDownMenuTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGFrameTypeDropDown2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameActivityDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="LFGFrameTypeDropDown3" parentArray="TypeDropDown" inherits="UIDropDownMenuTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LFGLabel3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-19" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 205)
+								UIDropDownMenu_Initialize(self, LFGFrameTypeDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="LFGFrameActivityDropDown3" parentArray="ActivityDropDown" inherits="UIDropDownMenuTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="LFGFrameTypeDropDown3" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 205);
+								UIDropDownMenu_Initialize(self, LFGFrameActivityDropDown_Initialize);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<EditBox name="LFGComment" parentkey="Comment" inherits="InputBoxInstructionsTemplate" autoFocus="false" letters="128" bytes="64">
+						<Size x="288" y="16"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="43" y="124"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="LFGCommentLabel" inherits="GameFontNormal" text="COMMENT" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								StoreSecureReference("LFGComment", self);
+								self:SetSecurityDisableSetText();
+								self:SetSecurityDisablePaste();
+								self.Instructions:SetText(CLICK_TO_ENTER_COMMENT);
+							</OnLoad>
+							<OnTextChanged inherit="prepend">
+								LFGComment_OnTextChanged(self, userInput);
+							</OnTextChanged>
+							<OnEscapePressed>
+								self:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+					<Button name="LFGFrameClearAllButton" inherits="UIPanelButtonTemplate" text="CLEAR_ALL">
+						<Size x="111" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="26" y="84"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								LFGFrameClearAllButton_OnClick(self, button);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="LFGFramePostButton" parentKey="PostButton" inherits="UIPanelButtonTemplate" text="LFG_POST_GROUP" disable="true"  motionScriptsWhileDisabled="true">
+						<Size x="104" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-35" y="84"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad  function="LFGFramePostButton_OnLoad"/>
+							<OnEvent function="LFGFramePostButton_OnEvent"/>
+							<OnClick function="LFGFramePostButton_OnClick"/>
+							<OnEnter>
+								if ( self.errorText ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.errorText, nil, nil, nil, nil, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+			<!-- End LFG Frame -->
+			
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-26" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFGParentFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="LFG_TITLE">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						PanelTemplates_TabResize(self, 0);
+					</OnShow>
+					<OnClick>
+						LFGParentFrameTab1_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_TITLE, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFGTAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="LFGParentFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="LFM_TITLE">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFGParentFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						PanelTemplates_TabResize(self, 0);
+					</OnShow>
+					<OnClick>
+						LFGParentFrameTab2_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFM_TITLE, "TOGGLELFMTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFMTAB, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow>
+				UpdateMicroButtons();
+				SetPortraitTexture(LFGParentFrameIcon, "player");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

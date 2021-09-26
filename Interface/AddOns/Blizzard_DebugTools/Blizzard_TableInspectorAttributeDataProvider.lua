@@ -3,7 +3,7 @@ TableInspectorAttributeDataProviderMixin = CreateFromMixins(TableInspectorDataPr
 
 function TableInspectorAttributeDataProviderMixin:Initialize(tableInspector, parent)
 	TableInspectorDataProviderMixin.Initialize(self, tableInspector, parent);
-	self.linePool = CreatePoolCollection();
+	self.linePool = CreateFramePoolCollection();
 	self.linePool:CreatePool("FRAME", parent, "TableAttributeLineEditableTemplate");
 	self.linePool:CreatePool("FRAME", parent, "TableAttributeLineReferenceTemplate");
 	self.linePool:CreatePool("FRAME", parent, "TableAttributeLineFixedValueTemplate");

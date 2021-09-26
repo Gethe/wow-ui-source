@@ -38,6 +38,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOITimeLeft",
 			Type = "Function",
+			Documentation = { "Returns the number of minutes until the POI expires." },
 
 			Arguments =
 			{
@@ -89,6 +90,7 @@ local AreaPoiInfo =
 				{ Name = "textureIndex", Type = "number", Nilable = true },
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
 				{ Name = "atlasName", Type = "string", Nilable = true },
+				{ Name = "shouldGlow", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -7,6 +7,32 @@ local PvpInfo =
 	Functions =
 	{
 		{
+			Name = "GetArenaCrowdControlInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInBrawl",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInBrawl", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPVPMap",
 			Type = "Function",
 
@@ -15,10 +41,73 @@ local PvpInfo =
 				{ Name = "isPVPMap", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "RequestCrowdControlSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerToken", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "ArenaOpponentUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_OPPONENT_UPDATE",
+			Payload =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "updateReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ArenaRegistrarClosed",
+			Type = "Event",
+			LiteralName = "ARENA_REGISTRAR_CLOSED",
+		},
+		{
+			Name = "ArenaRegistrarShow",
+			Type = "Event",
+			LiteralName = "ARENA_REGISTRAR_SHOW",
+		},
+		{
+			Name = "ArenaRegistrarUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_REGISTRAR_UPDATE",
+		},
+		{
+			Name = "ArenaSeasonWorldState",
+			Type = "Event",
+			LiteralName = "ARENA_SEASON_WORLD_STATE",
+		},
+		{
+			Name = "ArenaTeamInviteRequest",
+			Type = "Event",
+			LiteralName = "ARENA_TEAM_INVITE_REQUEST",
+			Payload =
+			{
+				{ Name = "inviter", Type = "string", Nilable = false },
+				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ArenaTeamRosterUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_TEAM_ROSTER_UPDATE",
+			Payload =
+			{
+				{ Name = "allowQuery", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "ArenaTeamUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_TEAM_UPDATE",
+		},
 		{
 			Name = "BattlefieldQueueTimeout",
 			Type = "Event",

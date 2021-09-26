@@ -164,6 +164,16 @@ local ChatInfo =
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SwapChatChannelsByChannelIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "firstChannelIndex", Type = "number", Nilable = false },
+				{ Name = "secondChannelIndex", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -1786,6 +1796,31 @@ local ChatInfo =
 			Name = "ChatMsgTradeskills",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_TRADESKILLS",
+			Payload =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "languageName", Type = "string", Nilable = false },
+				{ Name = "channelName", Type = "string", Nilable = false },
+				{ Name = "playerName2", Type = "string", Nilable = false },
+				{ Name = "specialFlags", Type = "string", Nilable = false },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false },
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+				{ Name = "channelBaseName", Type = "string", Nilable = false },
+				{ Name = "unused", Type = "number", Nilable = false },
+				{ Name = "lineID", Type = "number", Nilable = false },
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "bnSenderID", Type = "number", Nilable = false },
+				{ Name = "isMobile", Type = "bool", Nilable = false },
+				{ Name = "isSubtitle", Type = "bool", Nilable = false },
+				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
+				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatMsgVoiceText",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_VOICE_TEXT",
 			Payload =
 			{
 				{ Name = "text", Type = "string", Nilable = false },

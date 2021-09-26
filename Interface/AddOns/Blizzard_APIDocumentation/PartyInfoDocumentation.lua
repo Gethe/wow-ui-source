@@ -7,6 +7,16 @@ local PartyInfo =
 	Functions =
 	{
 		{
+			Name = "ConfirmLeaveParty",
+			Type = "Function",
+			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetActiveCategories",
 			Type = "Function",
 

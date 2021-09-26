@@ -34,9 +34,31 @@ function FrameUtil.UnregisterFrameForEvents(frame, events)
 	end
 end
 
+function DoesAncestryInclude(ancestry, frame)
+	if ancestry then
+		local currentFrame = frame;
+		while currentFrame do
+			if currentFrame == ancestry then
+				return true;
+			end
+			currentFrame = currentFrame:GetParent();
+		end
+	end
+	return false;
+end
+
+function GetUnscaledFrameRect(frame, scale)
+	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetScaledRect();
+	if frameLeft == nil then
+		return 1, 1, 1, 1;
+	end
+
+	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;
+end
+
 function ApplyDefaultScale(frame, minScale, maxScale)
 	local scale = GetDefaultScale();
-	
+
 	if minScale then
 		scale = math.max(scale, minScale);
 	end
@@ -44,6 +66,28 @@ function ApplyDefaultScale(frame, minScale, maxScale)
 	if maxScale then
 		scale = math.min(scale, maxScale);
 	end
-	
+
 	frame:SetScale(scale);
 end
+
+function FitToParent(parent, frame)
+	local horizRatio = parent:GetWidth() / frame:GetWidth();
+	local vertRatio = parent:GetHeight() / frame:GetHeight();
+
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+		frame:SetPoint("CENTER", 0, 0);
+	end
+
+end
+
+function UpdateScaleForFit(frame)
+	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
+	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
+
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+	else
+		frame:SetScale(1);
+	end
+end 

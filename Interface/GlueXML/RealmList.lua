@@ -201,12 +201,7 @@ function RealmList_UpdateTabs()
 			tab:SetText(name);
 			GlueTemplates_TabResize(0, tab);
 			tab:Show();
-			if (isTournament and not C_RealmList.CanJoinTournamentRealms()) then
-				tab:SetDisabledFontObject("GlueFontDisableSmall");
-				tab.disabled = true;
-			else
-				tab:SetDisabledFontObject("GlueFontHighlightSmall");
-			end
+			tab:SetDisabledFontObject("GlueFontHighlightSmall");
 		else
 			tab:Hide();
 		end

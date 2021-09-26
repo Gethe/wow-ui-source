@@ -103,7 +103,7 @@
 		</Layers>
 	</CheckButton>
 	<CheckButton name="PopupButtonTemplate" virtual="true" inherits="SimplePopupButtonTemplate">
-		<NormalTexture name="$parentIcon">
+		<NormalTexture name="$parentIcon" parentKey="Icon">
 			<Size>
 				<AbsDimension x="36" y="36"/>
 			</Size>

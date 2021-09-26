@@ -560,7 +560,7 @@ EMOTE170_TOKEN = "GOLFCLAP";
 EMOTE171_TOKEN = "MOUNTSPECIAL";
 EMOTE304_TOKEN = "INCOMING";
 EMOTE306_TOKEN = "FLEE";
---[[EMOTE368_TOKEN = "BLAME"
+EMOTE368_TOKEN = "BLAME"
 EMOTE369_TOKEN = "BLANK"
 EMOTE370_TOKEN = "BRANDISH"
 EMOTE371_TOKEN = "BREATH"
@@ -637,13 +637,13 @@ EMOTE449_TOKEN = "LOOK"
 EMOTE450_TOKEN = "OBJECT"
 EMOTE451_TOKEN = "SWEAT"
 EMOTE452_TOKEN = "YW"
-EMOTE453_TOKEN = "READ"
 EMOTE517_TOKEN = "WHOA"
 EMOTE518_TOKEN = "OOPS"
-EMOTE521_TOKEN = "MEOW"]]
+EMOTE521_TOKEN = "MEOW"
+EMOTE522_TOKEN = "BOOP"
 
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 306;--521;
+local MAXEMOTEINDEX = 522;
 
 
 ICON_LIST = {
@@ -735,6 +735,18 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 	"g7",
 	"g8",
 };
+
+-- Arena Team Helper Function
+function ArenaTeam_GetTeamSizeID(teamsizearg)
+	local teamname, teamsize, id;
+	for i=1, MAX_ARENA_TEAMS do
+		teamname, teamsize = GetArenaTeam(i)
+		if ( teamsizearg == teamsize ) then
+			id = i;
+		end
+	end
+	return id;
+end
 
 local MAX_COMMUNITY_NAME_LENGTH = 12;
 local MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL = 24;
@@ -1411,7 +1423,7 @@ SecureCmdList["ASSIST"] = function(msg)
 	end
 end
 
---[[SecureCmdList["FOCUS"] = function(msg)
+SecureCmdList["FOCUS"] = function(msg)
 	if ( msg == "" ) then
 		FocusUnit();
 	else
@@ -1429,7 +1441,7 @@ SecureCmdList["CLEARFOCUS"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		ClearFocus();
 	end
-end]]
+end
 
 SecureCmdList["MAINTANKON"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
@@ -1641,6 +1653,116 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
 	end
 end
+
+SecureCmdList["TEAM_INVITE"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamInviteByName(teamsizeID, name);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_INVITE);
+end
+
+SecureCmdList["TEAM_QUIT"] = function(msg)
+	if ( msg ~= "" ) then
+		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
+		if ( team ) then
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamLeave(teamsizeID);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_QUIT);
+end
+
+SecureCmdList["TEAM_UNINVITE"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamUninviteByName(teamsizeID, name);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_UNINVITE);
+end
+
+SecureCmdList["TEAM_CAPTAIN"] = function(msg)
+	if ( msg ~= "" ) then
+		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
+		if ( team and name ) then
+			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
+				ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+				return;
+			end
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					ArenaTeamSetLeaderByName(teamsizeID, name);
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_CAPTAIN);
+end
+
+SecureCmdList["TEAM_DISBAND"] = function(msg)
+	if ( msg ~= "" ) then
+		local team = strmatch(msg, "^(%d+)[%w+%d+]*");
+		if ( team ) then
+			team = tonumber(team);
+			if ( team ) then
+				local teamsizeID = ArenaTeam_GetTeamSizeID(team);
+				if ( teamsizeID ) then
+					local teamName, teamSize = GetArenaTeam(teamsizeID);
+					for i = 1, teamSize * 2 do
+						local name, rank = GetArenaTeamRosterInfo(teamsizeID, i);
+						if ( rank == 0 ) then
+							if ( name == UnitName("player") ) then
+								local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", teamName);
+								if ( dialog ) then
+									dialog.data = teamsizeID;
+								end
+							end
+							break;
+						end
+					end
+				end
+				return;
+			end
+		end
+	end
+	ChatFrame_DisplayUsageError(ERROR_SLASH_TEAM_DISBAND);
+end
+
 
 SecureCmdList["QUIT"] = function(msg)
 	if (Kiosk.IsEnabled()) then
@@ -2126,7 +2248,7 @@ SlashCmdList["DISABLE_ADDONS"] = function(msg)
 	ReloadUI();
 end
 
---[[SlashCmdList["STOPWATCH"] = function(msg)
+SlashCmdList["STOPWATCH"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
 		UIParentLoadAddOn("Blizzard_TimeManager");
 	end
@@ -2164,7 +2286,7 @@ end
 				return;
 			end
 			-- try to match a countdown
-			-- kinda ghetto, but hey, it's simple and it works =)
+			-- kinda jank, but hey, it's simple and it works =)
 			local hour, minute, second = strmatch(msg, "(%d+):(%d+):(%d+)");
 			if ( not hour ) then
 				minute, second = strmatch(msg, "(%d+):(%d+)");
@@ -2177,7 +2299,7 @@ end
 			Stopwatch_Toggle();
 		end
 	end
-end]]
+end
 
 --[[SlashCmdList["CALENDAR"] = function(msg)
 	if ( not IsAddOnLoaded("Blizzard_Calendar") ) then
@@ -2216,10 +2338,7 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 end
 
 SlashCmdList["EVENTTRACE"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	if EventTrace then
-		EventTrace:Show();
-	end
+	UIParentLoadAddOn("Blizzard_EventTrace");
 end
 
 if IsGMClient() then
@@ -2381,7 +2500,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
 
-	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
+	C_Commentator.AssignPlayersToTeamInCurrentInstance(teamIndex, teamName);
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
@@ -2397,7 +2516,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 	end
 
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
+	C_Commentator.AssignPlayerToTeam(playerName, teamName);
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
@@ -2405,7 +2524,7 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 		return;
 	end
 
-	PvPCommentator:SetDefaultCommentatorSettings();
+	C_Commentator.ResetSettings();
 end
 
 SlashCmdList["VOICECHAT"] = function(msg)
@@ -2429,9 +2548,9 @@ SlashCmdList["VOICECHAT"] = function(msg)
 	local communityID;
 	local streamID;
 	if lowerName == string.lower(PARTY) then
-		channelType = Enum.ChatChannelType.Private_Party;
+		channelType = Enum.ChatChannelType.PrivateParty;
 	elseif lowerName == string.lower(INSTANCE) then
-		channelType = Enum.ChatChannelType.Public_Party;
+		channelType = Enum.ChatChannelType.PublicParty;
 	elseif lowerName == string.lower(GUILD) then
 		communityID, streamID = CommunitiesUtil.FindGuildStreamByType(Enum.ClubStreamType.Guild);
 	elseif lowerName == string.lower(OFFICER) then
@@ -2454,6 +2573,13 @@ SlashCmdList["VOICECHAT"] = function(msg)
 			ChannelFrame:TryJoinCommunityStreamChannel(communityID, streamID);
 		end
 	end
+end
+
+function RegisterNewSlashCommand(callback, command, commandAlias)
+	local name = string.upper(command);
+	_G["SLASH_"..name.."1"] = "/"..command;
+	_G["SLASH_"..name.."2"] = "/"..commandAlias;
+	SlashCmdList[name] = callback;
 end
 
 function ChatFrame_SetupListProxyTable(list)
@@ -4866,9 +4992,6 @@ function ChatMenu_OnShow(self)
 	EmoteMenu:Hide();
 	LanguageMenu:Hide();
 	VoiceMacroMenu:Hide();
-
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
 function EmoteMenu_Click(self)

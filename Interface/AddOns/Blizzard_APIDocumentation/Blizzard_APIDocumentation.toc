@@ -37,6 +37,8 @@ DeathInfoDocumentation.lua
 DuelInfoDocumentation.lua
 EncounterInfoDocumentation.lua
 ExpansionDocumentation.lua
+FogOfWarDocumentation.lua
+FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
 GossipInfoDocumentation.lua
 GuildInfoDocumentation.lua
@@ -45,6 +47,7 @@ ItemDocumentation.lua
 ItemTextDocumentation.lua
 KeyBindingsDocumentation.lua
 KnowledgeBaseDocumentation.lua
+LFGListInfoDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LootJournalDocumentation.lua
@@ -62,7 +65,6 @@ PlayerLocationDocumentation.lua
 PvpInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
-RecruitAFriendDocumentation.lua
 RestrictedActionsDocumentation.lua
 ScriptWarningsDocumentation.lua
 SecureTransferDocumentation.lua
@@ -90,6 +92,4 @@ VideoDocumentation.lua
 VoiceChatDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowTokenUIDocumentation.lua
-ClubDocumentation.lua
-FriendListDocumentation.lua
 # End documentation files here

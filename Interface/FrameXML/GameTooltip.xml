@@ -36,24 +36,13 @@
 			<OnUpdate function="GameTooltip_OnUpdate"/>
 		</Scripts>
 	</GameTooltip>
-	<Frame name="SmallTextTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent">
+	<Frame name="SmallTextTooltip" inherits="TooltipBackdropTemplate" frameStrata="TOOLTIP" hidden="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="10" y="32"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOM"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="SmallTextTooltipText" inherits="GameFontHighlightSmall">
@@ -68,10 +57,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
 			<OnShow>
 				self:SetWidth(SmallTextTooltipText:GetWidth() + 20);
 			</OnShow>
@@ -165,9 +150,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			<OnLoad inherit="prepend">
 				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 				self.updateTooltip = TOOLTIP_UPDATE_TIME;
 			</OnLoad>

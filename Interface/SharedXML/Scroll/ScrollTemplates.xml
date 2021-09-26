@@ -1,0 +1,367 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ScrollTemplates.lua"/>
+
+	<!--Intended for scroll boxes using a data provider.-->
+	<Frame name="WowScrollBoxList" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxListMixin" virtual="true"/>
+
+	<!--Intended for static scroll boxes such as a scroll box with a single frame containing a font string.-->
+	<Frame name="WowScrollBox" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxMixin" virtual="true"/>
+
+	<EventFrame name="VerticalScrollBarTemplate" inherits="ScrollBarBaseTemplate" mixin="ScrollBarMixin" virtual="true"/>
+	<EventFrame name="HorizontalScrollBarTemplate" inherits="ScrollBarBaseTemplate" mixin="ScrollBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+		</KeyValues>
+	</EventFrame>
+	
+	<Frame name="WowScrollBarStepperButtonScripts" mixin="WowScrollBarStepperButtonScriptsMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WowScrollBarThumbButtonScripts" mixin="WowScrollBarThumbButtonScriptsMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Frame>
+	
+	<EventFrame name="WowTrimScrollBar" inherits="VerticalScrollBarTemplate" mixin="WowTrimScrollBarMixin" virtual="true">
+		<Size x="25" y="560"/>
+		<KeyValues>
+			<KeyValue key="minThumbExtent" value="23" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" y="3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Background" useParentLevel="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Begin" atlas="UI-ScrollBar-EndCap-Top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="End" atlas="UI-ScrollBar-EndCap-Bottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="!UI-ScrollBar-Center" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Begin" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.End" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Track" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="22"/>
+				</Anchors>
+				<Frames>
+					<EventButton parentKey="Thumb" inherits="WowScrollBarThumbButtonScripts" enableMouse="true">
+						<Size x="18"/>
+						<Anchors>
+							<Anchor point="LEFT" x="2"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+							<KeyValue key="normalBeginTexture" value="UI-ScrollBar-Knob-EndCap-Top" type="string"/>
+							<KeyValue key="normalMiddleTexture" value="UI-ScrollBar-Knob-Center" type="string"/>
+							<KeyValue key="normalEndTexture" value="UI-ScrollBar-Knob-EndCap-Bottom" type="string"/>
+							<KeyValue key="overBeginTexture" value="UI-ScrollBar-Knob-MouseOver-EndCap-Top" type="string"/>
+							<KeyValue key="overMiddleTexture" value="UI-ScrollBar-Knob-MouseOver-Center" type="string"/>
+							<KeyValue key="overEndTexture" value="UI-ScrollBar-Knob-MouseOver-EndCap-Bottom" type="string"/>
+							<KeyValue key="disabledBeginTexture" value="UI-ScrollBar-Knob-EndCap-Top-Disabled" type="string"/>
+							<KeyValue key="disabledMiddleTexture" value="UI-ScrollBar-Knob-Center-Disabled" type="string"/>
+							<KeyValue key="disabledEndTexture" value="UI-ScrollBar-Knob-EndCap-Bottom-Disabled" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="Background" textureSubLevel="1">
+								<Texture parentKey="Middle">
+									<Anchors>
+										<Anchor point="TOPLEFT" y="-5"/>
+										<Anchor point="BOTTOMRIGHT" y="5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="Background" textureSubLevel="2">
+								<Texture parentKey="Begin">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="End">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnSizeChanged method="OnSizeChanged"/>
+						</Scripts>
+					</EventButton>
+				</Frames>
+			</Frame>
+			<EventButton parentKey="Back" inherits="WowScrollBarStepperButtonScripts">
+				<Size x="18" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-4"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+					<KeyValue key="normalTexture" value="UI-ScrollBar-ScrollUpButton-Up" type="string"/>
+					<KeyValue key="overTexture" value="UI-ScrollBar-ScrollUpButton-Highlight" type="string"/>
+					<KeyValue key="downTexture" value="UI-ScrollBar-ScrollUpButton-Down" type="string"/>
+					<KeyValue key="disabledTexture" value="UI-ScrollBar-ScrollUpButton-Disabled" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" hidden="true"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+			<EventButton parentKey="Forward" inherits="WowScrollBarStepperButtonScripts">
+				<Size x="18" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+					<KeyValue key="normalTexture" value="UI-ScrollBar-ScrollDownButton-Up" type="string"/>
+					<KeyValue key="overTexture" value="UI-ScrollBar-ScrollDownButton-Highlight" type="string"/>
+					<KeyValue key="downTexture" value="UI-ScrollBar-ScrollDownButton-Down" type="string"/>
+					<KeyValue key="disabledTexture" value="UI-ScrollBar-ScrollDownButton-Disabled" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" hidden="true"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EventFrame>
+	
+	<EventFrame name="WowTrimHorizontalScrollBar" inherits="HorizontalScrollBarTemplate" mixin="WowTrimScrollBarMixin" virtual="true">
+		<Size x="560" y="25"/>
+		<KeyValues>
+			<KeyValue key="minThumbExtent" value="23" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Background" useParentLevel="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Begin" atlas="UI-ScrollBar-EndCap-Left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="End" atlas="UI-ScrollBar-EndCap-Right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="_UI-ScrollBar-Center" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Begin" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.End" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Track" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="4"/>
+				</Anchors>
+				<Frames>
+					<EventButton parentKey="Thumb" inherits="WowScrollBarThumbButtonScripts" enableMouse="true">
+						<Size y="18"/>
+						<Anchors>
+							<Anchor point="LEFT" y="-2"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="isHorizontal" value="true" type="boolean"/>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+							<KeyValue key="normalBeginTexture" value="UI-ScrollBar-Knob-EndCap-Left" type="string"/>
+							<KeyValue key="normalMiddleTexture" value="UI-ScrollBar-Knob-Center-Horizontal" type="string"/>
+							<KeyValue key="normalEndTexture" value="UI-ScrollBar-Knob-EndCap-Right" type="string"/>
+							<KeyValue key="overBeginTexture" value="UI-ScrollBar-Knob-MouseOver-EndCap-Left" type="string"/>
+							<KeyValue key="overMiddleTexture" value="UI-ScrollBar-Knob-MouseOver-Center-Horizontal" type="string"/>
+							<KeyValue key="overEndTexture" value="UI-ScrollBar-Knob-MouseOver-EndCap-Right" type="string"/>
+							<KeyValue key="disabledBeginTexture" value="UI-ScrollBar-Knob-EndCap-Left-Disabled" type="string"/>
+							<KeyValue key="disabledMiddleTexture" value="UI-ScrollBar-Knob-Center-Disabled-Horizontal" type="string"/>
+							<KeyValue key="disabledEndTexture" value="UI-ScrollBar-Knob-EndCap-Right-Disabled" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="Background" textureSubLevel="1">
+								<Texture parentKey="Middle">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="5"/>
+										<Anchor point="BOTTOMRIGHT" x="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="Background" textureSubLevel="2">
+								<Texture parentKey="Begin">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="End">
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnSizeChanged method="OnSizeChanged"/>
+						</Scripts>
+					</EventButton>
+				</Frames>
+			</Frame>
+			<EventButton parentKey="Back" inherits="WowScrollBarStepperButtonScripts">
+				<Size x="16" y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-4"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+					<KeyValue key="normalTexture" value="UI-ScrollBar-ScrollLeftButton-Up" type="string"/>
+					<KeyValue key="overTexture" value="UI-ScrollBar-ScrollLeftButton-Highlight" type="string"/>
+					<KeyValue key="downTexture" value="UI-ScrollBar-ScrollLeftButton-Down" type="string"/>
+					<KeyValue key="disabledTexture" value="UI-ScrollBar-ScrollLeftButton-Disabled" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" hidden="true"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+			<EventButton parentKey="Forward" inherits="WowScrollBarStepperButtonScripts">
+				<Size x="16" y="18"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-4"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+					<KeyValue key="normalTexture" value="UI-ScrollBar-ScrollRightButton-Up" type="string"/>
+					<KeyValue key="overTexture" value="UI-ScrollBar-ScrollRightButton-Highlight" type="string"/>
+					<KeyValue key="downTexture" value="UI-ScrollBar-ScrollRightButton-Down" type="string"/>
+					<KeyValue key="disabledTexture" value="UI-ScrollBar-ScrollRightButton-Disabled" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" hidden="true"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EventFrame>
+	
+	<Frame name="ScrollingEditBoxTemplate" mixin="ScrollingEditBoxMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="textColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+			<KeyValue key="fontName" value="GameFontHighlightSmall" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBox">
+				<Frames>
+					<EventEditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+					</EventEditBox>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ScrollingFontTemplate" mixin="ScrollingFontMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBox">
+				<Frames>
+					<Frame parentKey="FontStringContainer">
+						<Size y="1"/>
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+						<Layers>
+							<Layer>
+								<FontString parentKey="FontString" nonspacewrap="true" justifyH="LEFT" justifyV="TOP"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

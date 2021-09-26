@@ -1,22 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GameMenuFrame.lua"/>
-	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
+	<Frame name="GameMenuFrame" inherits="BackdropTemplate" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size x="195" y="312"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -33,7 +25,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_HELP">
+			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_SUPPORT">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>
 				</Anchors>
@@ -231,6 +223,9 @@
 			<OnHide>
 				UpdateMicroButtons();
 				Enable_BagButtons();
+				if (CanAutoSetGamePadCursorControl(false)) then
+					SetGamePadCursorControl(false);
+				end
 			</OnHide>
 		</Scripts>
 	</Frame>

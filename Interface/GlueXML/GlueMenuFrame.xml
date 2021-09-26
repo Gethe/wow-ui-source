@@ -6,22 +6,14 @@
 			<AbsInset left="0" right="0" top="5" bottom="5"/>
 		</HitRectInsets>
 	</Button>
-	<Frame name="GlueMenuFrame" inherits="GlueModalFrameTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
+	<Frame name="GlueMenuFrame" inherits="GlueModalFrameTemplate, BackdropTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size x="195" y="255"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">

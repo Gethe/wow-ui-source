@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ScrollBar.lua"/>
+
+	<EventFrame name="ScrollBarBaseTemplate" mixin="ScrollBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="canInterpolateScroll" value="true" type="boolean"/>
+			<KeyValue key="useProportionalThumb" value="true" type="boolean"/>
+			<KeyValue key="minThumbExtent" value="10" type="number"/>
+			<KeyValue key="thumbAnchor" value="TOPLEFT" type="string"/>
+			<KeyValue key="panRepeatTime" value=".1" type="number"/>
+			<KeyValue key="panDelay" value=".5" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</EventFrame>
+</Ui>

@@ -1,0 +1,6 @@
+## Title: Blizzard NamePlates
+## LoadOnDemand: 0
+
+..\..\..\Interface_Vanilla\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.xml
+
+..\..\..\Interface_Vanilla\AddOns\Blizzard_NamePlates\Blizzard_NamePlatesCommentatorDisplay.xml

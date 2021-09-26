@@ -243,15 +243,17 @@ local UIWidgetManager =
 	Tables =
 	{
 		{
-			Name = "WidgetShownState",
+			Name = "IconAndTextWidgetState",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 3,
 			Fields =
 			{
-				{ Name = "Hidden", Type = "WidgetShownState", EnumValue = 0 },
-				{ Name = "Shown", Type = "WidgetShownState", EnumValue = 1 },
+				{ Name = "Hidden", Type = "IconAndTextWidgetState", EnumValue = 0 },
+				{ Name = "Shown", Type = "IconAndTextWidgetState", EnumValue = 1 },
+				{ Name = "ShownWithDynamicIconFlashing", Type = "IconAndTextWidgetState", EnumValue = 2 },
+				{ Name = "ShownWithDynamicIconNotFlashing", Type = "IconAndTextWidgetState", EnumValue = 3 },
 			},
 		},
 		{
@@ -269,40 +271,15 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "UIWidgetVisualizationType",
+			Name = "WidgetShownState",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 2,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
-				{ Name = "CaptureBar", Type = "UIWidgetVisualizationType", EnumValue = 1 },
-				{ Name = "StatusBar", Type = "UIWidgetVisualizationType", EnumValue = 2 },
-				{ Name = "DoubleStatusBar", Type = "UIWidgetVisualizationType", EnumValue = 3 },
-				{ Name = "IconTextAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 4 },
-				{ Name = "DoubleIconAndText", Type = "UIWidgetVisualizationType", EnumValue = 5 },
-				{ Name = "StackedResourceTracker", Type = "UIWidgetVisualizationType", EnumValue = 6 },
-				{ Name = "IconTextAndCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 7 },
-				{ Name = "TextWithState", Type = "UIWidgetVisualizationType", EnumValue = 8 },
-				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
-				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
-				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
-				{ Name = "TextureWithState", Type = "UIWidgetVisualizationType", EnumValue = 12 },
-			},
-		},
-		{
-			Name = "IconAndTextWidgetState",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Hidden", Type = "IconAndTextWidgetState", EnumValue = 0 },
-				{ Name = "Shown", Type = "IconAndTextWidgetState", EnumValue = 1 },
-				{ Name = "ShownWithDynamicIconFlashing", Type = "IconAndTextWidgetState", EnumValue = 2 },
-				{ Name = "ShownWithDynamicIconNotFlashing", Type = "IconAndTextWidgetState", EnumValue = 3 },
+				{ Name = "Hidden", Type = "WidgetShownState", EnumValue = 0 },
+				{ Name = "Shown", Type = "WidgetShownState", EnumValue = 1 },
 			},
 		},
 		{
@@ -362,28 +339,6 @@ local UIWidgetManager =
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "UIWidgetInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "widgetID", Type = "number", Nilable = false },
-				{ Name = "widgetSetID", Type = "number", Nilable = false },
-				{ Name = "widgetType", Type = "UIWidgetVisualizationType", Nilable = false },
-			},
-		},
-		{
-			Name = "UIWidgetCurrencyInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "iconFileID", Type = "number", Nilable = false },
-				{ Name = "leadingText", Type = "string", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
-				{ Name = "isCurrencyMaxed", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -507,6 +462,28 @@ local UIWidgetManager =
 				{ Name = "portraitTextureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "leadingText", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "isCurrencyMaxed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+				{ Name = "widgetSetID", Type = "number", Nilable = false },
+				{ Name = "widgetType", Type = "UIWidgetVisualizationType", Nilable = false },
 			},
 		},
 	},

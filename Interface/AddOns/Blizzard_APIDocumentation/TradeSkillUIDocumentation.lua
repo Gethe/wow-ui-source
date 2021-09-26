@@ -16,8 +16,25 @@ local TradeSkillUI =
 			LiteralName = "NEW_RECIPE_LEARNED",
 			Payload =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "baseRecipeID", Type = "number", Nilable = true },
 			},
+		},
+		{
+			Name = "ObliterumForgeClose",
+			Type = "Event",
+			LiteralName = "OBLITERUM_FORGE_CLOSE",
+		},
+		{
+			Name = "ObliterumForgePendingItemChanged",
+			Type = "Event",
+			LiteralName = "OBLITERUM_FORGE_PENDING_ITEM_CHANGED",
+		},
+		{
+			Name = "ObliterumForgeShow",
+			Type = "Event",
+			LiteralName = "OBLITERUM_FORGE_SHOW",
 		},
 		{
 			Name = "TradeSkillClose",

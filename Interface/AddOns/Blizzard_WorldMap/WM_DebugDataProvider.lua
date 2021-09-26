@@ -78,7 +78,7 @@ function WorldMap_DebugDataProviderMixin:RefreshPortLocs(mapID)
 end
 
 function WorldMap_DebugDataProviderMixin:OnCanvasClicked(button, cursorX, cursorY)
-	if button == "LeftButton" then
+	if IsAltKeyDown() and button == "LeftButton" then
 		return C_Debug.TeleportToMapLocation(self:GetMap():GetMapID(), cursorX, cursorY);
 	end
 	return false;

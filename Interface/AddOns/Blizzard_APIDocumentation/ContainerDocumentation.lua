@@ -67,6 +67,15 @@ local Container =
 			LiteralName = "BAG_UPDATE_DELAYED",
 		},
 		{
+			Name = "EquipBindRefundableConfirm",
+			Type = "Event",
+			LiteralName = "EQUIP_BIND_REFUNDABLE_CONFIRM",
+			Payload =
+			{
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "EquipBindTradeableConfirm",
 			Type = "Event",
 			LiteralName = "EQUIP_BIND_TRADEABLE_CONFIRM",

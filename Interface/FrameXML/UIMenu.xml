@@ -32,18 +32,7 @@
 		<HighlightFont style="GameFontHighlightLeft"/>
 		<DisabledFont style="GameFontDisableLeft"/>
 	</Button>
-	<Frame name="UIMenuTemplate" frameStrata="DIALOG" toplevel="true" virtual="true">
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="13"/>
-			</EdgeSize>
-		</Backdrop>
+	<Frame name="UIMenuTemplate" frameStrata="DIALOG" toplevel="true" inherits="TooltipBackdropTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentButton1" inherits="UIMenuButtonTemplate" id="1"/>
 			<Button name="$parentButton2" inherits="UIMenuButtonTemplate" id="2"/>
@@ -85,8 +74,6 @@
 			<OnShow>
 				UIMenu_OnShow(self);
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnShow>
 		</Scripts>
 	</Frame>

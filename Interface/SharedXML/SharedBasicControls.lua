@@ -272,12 +272,13 @@ function ScriptErrorsFrameMixin:ShowNext()
 	self:ChangeDisplayedIndex(1);
 end
 
-local function IsErrorCVarEnabled(errorTypeCVar)
+local function ShouldHideErrorFrame(errorTypeCVar)
 	return InGlue() or GetCVarBool(errorTypeCVar);
 end
 
 local function DisplayMessageInternal(errorTypeCVar, warnType, msg, messageType)
-	local hideErrorFrame = not IsErrorCVarEnabled(errorTypeCVar);
+	local hideErrorFrame = not ShouldHideErrorFrame(errorTypeCVar);
+	GetBuildInfo();
 	ScriptErrorsFrame:DisplayMessage(msg, warnType, hideErrorFrame, messageType);
 
 	return msg;

@@ -1,6 +1,9 @@
 function GameMenuFrame_OnShow(self)
 	UpdateMicroButtons();
 	Disable_BagButtons();
+	if (CanAutoSetGamePadCursorControl(true)) then
+		SetGamePadCursorControl(true);
+	end
 
 	GameMenuFrame_UpdateVisibleButtons(self);
 end

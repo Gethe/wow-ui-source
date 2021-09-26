@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="..\SharedXML\AddonList.lua"/>
+	<Script file="AddonList.lua"/>
 	
 	<Button name="AddonListEntryTemplate" virtual="true">
 		<Size x="520" y="16"/>
@@ -98,22 +98,8 @@
 	</Button>
 	<Frame name="AddonDialog" toplevel="true" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="AddonDialogBackground">
+			<Frame name="AddonDialogBackground" inherits="DialogBorderTemplate">
 				<Size x="512" y="256"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="AddonDialogText" inherits="GameFontNormalLarge">
@@ -135,6 +121,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				AddonDialogBackground:ClearAllPoints();
+				AddonDialogBackground:SetPoint("CENTER");
+			</OnLoad>
 			<OnShow>
 				self:Raise();
 			</OnShow>

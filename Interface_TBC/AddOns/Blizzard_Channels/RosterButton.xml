@@ -1,0 +1,49 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RosterButton.lua"/>
+
+	<Button name="ChannelRosterButtonTemplate" mixin="ChannelRosterButtonMixin" hidden="true" virtual="true">
+		<Size x="160" y="22"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" justifyH="LEFT" wordWrap="false" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" x="8" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Rank">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SelfDeafenButton" inherits="RosterSelfDeafenButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-12"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="SelfMuteButton" inherits="RosterSelfMuteButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SelfDeafenButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="MemberMuteButton" inherits="RosterMemberMuteButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-12"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background" alphaMode="ADD"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="voicechat-channellist-row-highlight" alphaMode="ADD"/>
+	</Button>
+</Ui>

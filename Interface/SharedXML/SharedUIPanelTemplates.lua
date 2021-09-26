@@ -1,6 +1,3 @@
-TOOLTIP_DEFAULT_COLOR = CreateColor(1, 1, 1);
-TOOLTIP_DEFAULT_BACKGROUND_COLOR = CreateColor(0.09, 0.09, 0.19);
-
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;
 PANEL_INSET_RIGHT_OFFSET = -6;
@@ -1006,23 +1003,6 @@ function ColumnDisplayButton_OnClick(self)
 	self:GetParent():OnClick(self:GetID());
 end
 
-DefaultScaleFrameMixin = {};
-
-function DefaultScaleFrameMixin:OnDefaultScaleFrameLoad()
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:UpdateScale();
-end
-
-function DefaultScaleFrameMixin:OnDefaultScaleFrameEvent(event, ...)
-	if event == "DISPLAY_SIZE_CHANGED" then
-		self:UpdateScale();
-	end
-end
-
-function DefaultScaleFrameMixin:UpdateScale()
-	ApplyDefaultScale(self, self.minScale, self.maxScale);
-end
-
 
 UIMenuButtonStretchMixin = {}
 
@@ -1085,6 +1065,240 @@ function UIMenuButtonStretchMixin:OnLeave()
 	end
 end
 
+DialogHeaderMixin = {};
+
+function DialogHeaderMixin:OnLoad()
+	if self.textString then
+		self:Setup(self.textString);
+	end
+end
+
+function DialogHeaderMixin:Setup(text)
+	self.Text:SetText(text);
+	self:SetWidth(self.Text:GetWidth() + self.headerTextPadding);
+end
+
+DefaultScaleFrameMixin = {};
+
+function DefaultScaleFrameMixin:OnDefaultScaleFrameLoad()
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UpdateScale();
+end
+
+function DefaultScaleFrameMixin:OnDefaultScaleFrameEvent(event, ...)
+	if event == "DISPLAY_SIZE_CHANGED" then
+		self:UpdateScale();
+	end
+end
+
+function DefaultScaleFrameMixin:UpdateScale()
+	ApplyDefaultScale(self, self.minScale, self.maxScale);
+end
+
+SquareIconButtonMixin = {};
+
+function SquareIconButtonMixin:OnLoad()
+	if self.icon then
+		self:SetIcon(self.icon);
+	elseif self.iconAtlas then
+		self:SetAtlas(self.iconAtlas);
+	end
+end
+
+function SquareIconButtonMixin:SetIcon(icon)
+	self.Icon:SetTexture(icon);
+end
+
+function SquareIconButtonMixin:SetAtlas(atlas)
+	self.Icon:SetAtlas(atlas);
+end
+
+function SquareIconButtonMixin:SetOnClickHandler(onClickHandler)
+	self.onClickHandler = onClickHandler;
+end
+
+function SquareIconButtonMixin:SetTooltipInfo(tooltipTitle, tooltipText)
+	self.tooltipTitle = tooltipTitle;
+	self.tooltipText = tooltipText;
+end
+
+function SquareIconButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		-- Square icon button template still uses down-to-the-left depress behavior to match the existing art.
+		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
+	end
+end
+
+function SquareIconButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
+end
+
+function SquareIconButtonMixin:OnEnter()
+	if self.tooltipTitle then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
+		GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+
+		if self.tooltipText then
+			local wrap = true;
+			GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
+		end
+
+		GameTooltip:Show();
+	end
+end
+
+function SquareIconButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function SquareIconButtonMixin:OnClick(...)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	if self.onClickHandler then
+		self.onClickHandler(self, ...);
+	end
+end
+
+function SquareIconButtonMixin:SetEnabledState(enabled)
+	self:SetEnabled(enabled);
+	self.Icon:SetDesaturated(not enabled);
+end
+
+DropDownControlMixin = {};
+
+function DropDownControlMixin:OnLoad()
+	local function InitializeDropDownFrame()
+		self:Initialize();
+	end
+
+	UIDropDownMenu_Initialize(self.DropDownMenu, InitializeDropDownFrame);
+
+	self:UpdateWidth(self:GetWidth());
+end
+
+function DropDownControlMixin:UpdateWidth(width)
+	UIDropDownMenu_SetWidth(self.DropDownMenu, width - 20);
+end
+
+function DropDownControlMixin:Initialize()
+	if self.options == nil then
+		return;
+	end
+
+	local function DropDownControlButton_OnClick(button)
+		local isUserInput = true;
+		self:SetSelectedValue(button.value, isUserInput);
+	end
+
+	for i, option in ipairs(self.options) do
+		local info = UIDropDownMenu_CreateInfo();
+		if not self.skipNormalSetup then
+			info.text = option.text;
+			info.minWidth = 108;
+			info.value = option.value;
+			info.checked = self.selectedValue == option.value;
+			info.func = DropDownControlButton_OnClick;
+		end
+
+		if self.customSetupCallback ~= nil then
+			self.customSetupCallback(info);
+		end
+
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function DropDownControlMixin:SetSelectedValue(value, isUserInput)
+	self.selectedValue = value;
+
+	if value == nil then
+		UIDropDownMenu_SetText(self.DropDownMenu, self.noneSelectedText);
+	elseif self.options ~= nil then
+		for i, option in ipairs(self.options) do
+			if option.value == value then
+				UIDropDownMenu_SetText(self.DropDownMenu, option.selectedText or option.text);
+			end
+		end
+	end
+
+	if self.optionSelectedCallback ~= nil then
+		self.optionSelectedCallback(value, isUserInput);
+	end
+end
+
+function DropDownControlMixin:GetSelectedValue()
+	return self.selectedValue;
+end
+
+function DropDownControlMixin:SetOptionSelectedCallback(optionSelectedCallback)
+	self.optionSelectedCallback = optionSelectedCallback;
+end
+
+-- options: an array of tables that contain info to display the different dropdown options.
+-- Option keys:
+--   value: a unique value that identifies the option and is passed through to optionSelectedCallback.
+--   text: the text that appears in the dropdown list, and on the dropdown control when an option is selected.
+--   selectedText: an override for text that appears on the dropdown control when an option is selected.
+function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
+	self.options = options;
+	self:Initialize();
+
+	if defaultSelectedValue then
+		self:SetSelectedValue(defaultSelectedValue);
+	end
+end
+
+function DropDownControlMixin:SetCustomSetup(customSetupCallback, skipNormalSetup)
+	self.customSetupCallback = customSetupCallback;
+	self.skipNormalSetup = skipNormalSetup;
+end
+
+function DropDownControlMixin:SetTextJustifyH(...)
+	self.DropDownMenu.Text:SetJustifyH(...);
+end
+
+function DropDownControlMixin:AdjustTextPointsOffset(...)
+	self.DropDownMenu.Text:AdjustPointsOffset(...);
+end
+
+EnumDropDownControlMixin = CreateFromMixins(DropDownControlMixin);
+
+function EnumDropDownControlMixin:SetEnum(enum, nameTranslation, ordering)
+	local options = {};
+	for enumKey, enumValue in pairs(enum) do
+		table.insert(options, { value = enumValue, text = nameTranslation(enumValue), });
+	end
+
+	if ordering then
+		local function EnumOrderingComparator(lhs, rhs)
+			return ordering[lhs.value] < ordering[rhs.value];
+		end
+
+		table.sort(options, EnumOrderingComparator);
+	else
+		local function EnumComparator(lhs, rhs)
+			return lhs.value < rhs.value;
+		end
+
+		table.sort(options, EnumComparator);
+	end
+
+	self:SetOptions(options);
+end
+
+-- Click to drag directly attached to frame itself.
+ClickToDragMixin = {};
+
+function ClickToDragMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function ClickToDragMixin:OnDragStart()
+	self:StartMoving();
+end
+
+function ClickToDragMixin:OnDragStop()
+	self:StopMovingOrSizing();
+end
 
 -- Click to drag attached to a subframe. For example, a title bar.
 PanelDragBarMixin = {};

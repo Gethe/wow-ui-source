@@ -72,7 +72,7 @@ function PetStable_Update()
 
 	-- Set slot statuseses
 	local numSlots = GetNumStableSlots();
-	local numPets = GetNumStablePets();
+	local numPets = C_StableInfo.GetNumStablePets();
 	
 	local icon, name, level, family, loyalty;
 	for i=1, NUM_PET_STABLE_SLOTS do

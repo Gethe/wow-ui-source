@@ -1,0 +1,258 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="BankFrame.lua"/>
+	<Button name="BankItemButtonGenericTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconQuestTexture">
+					<Size x="37" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>	
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BankFrameItemButton_OnLoad"/>
+			<OnEnter function="BankFrameItemButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip_Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					BankFrameItemButtonGeneric_OnModifiedClick(self, button);
+				else
+					BankFrameItemButtonGeneric_OnClick(self, button);
+				end
+			</OnClick>
+            <OnDragStart>
+                BankFrameItemButtonGeneric_OnClick(self, "LeftButton");
+            </OnDragStart>
+            <OnReceiveDrag>
+                BankFrameItemButtonGeneric_OnClick(self, "LeftButton");
+            </OnReceiveDrag>
+		</Scripts>
+	</Button>
+	<Button name="BankItemButtonBagTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+			<Frame name="$parentHighlightFrame" parentKey="HighlightFrame" setAllPoints="true">
+				<Layers>
+					<Layer>
+						<Texture name="$parentTexture" parentKey="HighlightTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BankFrameBagButton_OnLoad"/>
+			<OnEvent function="BankFrameBagButton_OnEvent"/>
+			<OnEnter function="BankFrameItemButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip_Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("PICKUPITEM") ) then
+					BankFrameItemButtonBag_Pickup(self);
+				else
+					BankFrameItemButtonBag_OnClick(self, button);
+				end
+			</OnClick>
+	        <OnDragStart>
+				BankFrameItemButtonBag_Pickup(self, button);
+			</OnDragStart>
+	        <OnReceiveDrag>
+				BankFrameItemButtonBag_OnClick(self, nil);
+			</OnReceiveDrag>
+		</Scripts>
+	</Button>
+
+	<Texture name="Bank-Slot-BG" file="Interface\BankFrame\Bank-Parts" virtual="true" >
+		<Size x="51" y="50"/>	
+		<TexCoords left="0.01562500" right="0.81250000" top="0.11718750" bottom="0.50781250"/>	
+	</Texture>
+	<Texture name="Bank-Rivet" file="Interface\BankFrame\Bank-Parts" virtual="true" >
+		<Size x="12" y="12"/>	
+		<TexCoords left="0.01562500" right="0.20312500" top="0.00781250" bottom="0.10156250"/>	
+	</Texture>
+
+	<Frame name="BankFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="BankPortraitTexture" >
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\BankFrame\UI-BankFrame">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="BankFrameTitleText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" x="6" y="232"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="ITEMSLOTTEXT">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-10" y="194"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="BAGSLOTTEXT">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-10" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="BankCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="3" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<!-- Bank Slots  -->
+			<Frame name="BankSlotsFrame" setAllPoints="true" useParentLevel="true" hidden="false">
+				<Frames>
+					<Button parentKey="Item1" name="BankFrameItem1" inherits="BankItemButtonGenericTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="40" y="-73"/>
+						</Anchors>
+					</Button>
+					<!-- The other 27 items are created in BankFrame_OnLoad -->
+
+					<Button parentKey="Bag1" inherits="BankItemButtonBagTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Item1" relativePoint="BOTTOMLEFT" x="0" y="-164"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag2" inherits="BankItemButtonBagTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag1" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag3" inherits="BankItemButtonBagTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag2" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag4" inherits="BankItemButtonBagTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag3" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag5" inherits="BankItemButtonBagTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag4" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag6" inherits="BankItemButtonBagTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag5" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Bag7" inherits="BankItemButtonBagTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Bag6" relativePoint="TOPRIGHT" x="12" y="0"/>
+						</Anchors>
+					</Button>
+					<Frame name="BankFramePurchaseInfo" hidden="false">
+						<Size x="300" y="72"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="BankFrame" relativePoint="CENTER" x="-15" y="-105"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontHighlight" text="BANKSLOTPURCHASE_LABEL" justifyH="LEFT">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" x="10" y="20"/>
+									</Anchors>
+								</FontString>
+								<FontString name="BankFrameSlotCost" inherits="GameFontNormal" text="COSTS_LABEL">
+									<Size x="0" y="12"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="LEFT" x="30" y="-10"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="BankFramePurchaseButton" inherits="UIPanelButtonTemplate" virtual="true" text="BANKSLOTPURCHASE">
+								<Size x="124" y="21"/>
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="RIGHT" x="-20" y="-10"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+										StaticPopup_Show("CONFIRM_BUY_BANK_SLOT");
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame name="BankFrameDetailMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="BankFrameSlotCost" relativePoint="RIGHT" x="10" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										SmallMoneyFrame_OnLoad(self);
+										MoneyFrame_SetType(self, "STATIC");
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame name="BankFrameMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="10" y="103"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="BankSlotsFrame_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BankFrame_OnLoad"/>
+			<OnEvent function="BankFrame_OnEvent"/>
+			<OnShow function="BankFrame_OnShow"/>
+			<OnHide function="BankFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

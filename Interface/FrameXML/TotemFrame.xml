@@ -1,0 +1,132 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TotemFrame.lua"/>
+	<Button name="TotemButtonTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
+					<Size x="34" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentDuration" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIcon">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true"/>
+				</Frames>
+			</Frame>
+			<Frame>
+				<Size x="38" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\CharacterFrame\TotemBorder"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(getglobal(self:GetParent():GetName().."Icon"):GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick function="TotemButton_OnClick"/>
+			<OnLoad>
+				self:RegisterForClicks("RightButtonUp");
+				getglobal(self:GetName().."Background"):SetAlpha(0.6);
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+				GameTooltip:SetTotem(self.slot);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="53"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+				<Offset>
+					<AbsDimension x="99" y="38"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="$parentTotem1" inherits="TotemButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentTotem2" inherits="TotemButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTotem1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentTotem3" inherits="TotemButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTotem2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentTotem4" inherits="TotemButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTotem3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="TotemFrame_OnLoad"/>
+			<OnEvent function="TotemFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

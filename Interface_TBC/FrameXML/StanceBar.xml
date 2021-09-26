@@ -1,0 +1,171 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StanceBar.lua"/>
+	
+	<CheckButton name="StanceButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				self.cooldown:SetSwipeColor(0, 0, 0);
+			</OnLoad>
+			<OnClick>
+				self:SetChecked(not self:GetChecked());
+				StanceBar_Select(self:GetID());
+			</OnClick>
+			<OnEnter function="StanceButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="54" y="54"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+	</CheckButton>
+	
+	<Frame name="StanceBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="29" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="30" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="StanceBarLeft" file="Interface\ShapeshiftBar\ShapeshiftBar">
+					<Size x="47" y="38"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.734375" top="0" bottom="0.296875"/>
+				</Texture>
+				<Texture name="StanceBarMiddle" file="Interface\ShapeshiftBar\ShapeshiftBarMiddle">
+					<Size x="37" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="StanceBarLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="2" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="StanceBarRight" file="Interface\ShapeshiftBar\ShapeshiftBar">
+					<Size x="43" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="StanceBarMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.328125" right="1" top="0.3125" bottom="0.6015625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="StanceButton1" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="11" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton2" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton3" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton4" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton5" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton6" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton7" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton8" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton9" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="StanceButton10" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="StanceButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="StanceBar_OnLoad"/>
+			<OnEvent function="StanceBar_OnEvent"/>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
+		</Scripts>
+	</Frame>
+</Ui>

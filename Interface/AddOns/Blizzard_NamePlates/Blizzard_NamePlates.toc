@@ -1,6 +1,0 @@
-## Title: Blizzard NamePlates
-## LoadOnDemand: 0
-
-Blizzard_NamePlates.xml
-
-Blizzard_NamePlatesCommentatorDisplay.xml

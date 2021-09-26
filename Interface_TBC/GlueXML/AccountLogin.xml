@@ -1,0 +1,819 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AccountLogin.lua"/>
+	
+	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+	
+	<Button name="AccountNameButton" virtual="true">
+		<Size x="250" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BGHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-20" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="WoWAccountSelectButton_OnClick"/>
+			<OnDoubleClick function="WoWAccountSelectButton_OnDoubleClick"/>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT" x="2" y="2"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+		<PushedTexture name="$parentPushedTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT" x="-20" y="0"/>
+				<Anchor point="RIGHT" x="-10" y="0"/>
+			</Anchors>
+		</PushedTexture>
+	</Button>
+	<Frame name="CachedLoginFrameTemplate" virtual="true" parentArray="Frames" hidden="true">
+		<Size x="230" y="45"/>
+		<Frames>
+			<Button parentKey="LoginButton" inherits="GlueButtonTemplateBlue">
+				<Size x="220" y="45"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CachedLoginButton_OnClick"/>
+					<OnUpdate>
+						self:SetEnabled(C_Login.IsLoginReady());
+					</OnUpdate>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="20" right="20" top="10" bottom="10"/>
+				</HitRectInsets>
+			</Button>
+			<Button parentKey="DeleteButton" inherits="GlueButtonTemplateBlue" text="X">
+				<Size x="30" y="45"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CachedLoginDeleteButton_OnClick"/>
+					<OnUpdate>
+						self:SetEnabled(C_Login.IsLoginReady());
+					</OnUpdate>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="10" bottom="10"/>
+				</HitRectInsets>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Button name="KoreanRatings" inherits="BackdropTemplate" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="KoreanRatingsViolence" file="Interface\Glues\Login\Glues-KoreanRating-3">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-50"/>
+					</Anchors>
+				</Texture>
+				<Texture name="KoreanRatingsCrime" file="Interface\Glues\Login\Glues-KoreanRating-4">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="KoreanRatingsViolence" relativePoint="TOPRIGHT" x="20" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="KoreanRatingsDrugs" file="Interface\Glues\Login\Glues-KoreanRating-2">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="KoreanRatingsViolence" relativePoint="TOPLEFT" x="-20" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="KoreanRatingsAge" file="Interface\Glues\Login\Glues-KoreanRating-1">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="KoreanRatingsViolence" relativePoint="BOTTOM" x="0" y="-20"/>
+					</Anchors>
+				</Texture>
+				<FontString name="KoreanRatingsText" inherits="GlueFontNormalGigantor" justifyH="CENTER" text="RATINGS_TEXT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="KoreanRatings" relativePoint="BOTTOMLEFT" x="50" y="400"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="KoreanRatings" relativePoint="BOTTOMRIGHT" x="-50" y="60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="KoreanRatings_OnLoad"/>
+			<OnEvent function="KoreanRatings_OnEvent"/>
+			<OnShow function="KoreanRatings_OnShow"/>
+		</Scripts>
+	</Button>
+	<Frame name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackLoginBackground">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.30">
+				<FogColor r="0.25" g="0.06" b="0.015"/>
+			</ModelFFX>
+			<Frame parentKey="UI" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Glues\Mainmenu\Glues-BlizzardLogo">
+							<Size x="100" y="100"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="8"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="BlizzDisclaimer" inherits="GlueFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ClientVersion" inherits="GlueFontNormalSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GameLogo">
+							<Size x="256" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="8" y="-16"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldOfWarcraftRating" hidden="true">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="AccountEditBox" inherits="AccountLoginBackdropTemplate" parentArray="ManualLoginRegions" letters="320">
+						<Size x="160" y="37"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="-2" y="345"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="Label" inherits="GlueFontNormal" justifyH="CENTER" text="ACCOUNT_NAME">
+									<Size>
+										<AbsDimension x="600" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-23"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<!--<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_YOUR_EMAIL">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>-->
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTabPressed function="AccountLogin_FocusPassword"/>
+							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
+							<OnEnterPressed>
+								if ( C_Login.IsLoginReady() ) then
+									AccountLogin_Login();
+								end
+							</OnEnterPressed>
+							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
+							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
+							<OnTextChanged>
+								local accountName = GetSavedAccountName();
+								if ( accountName ~= "" and accountName ~= self:GetText() ) then
+									SetSavedAccountName("");
+									ClearSavedAccountList();
+									AccountLogin_UpdateSavedData(AccountLogin);
+								end
+								--[[if ( self:GetText() ~= "" ) then
+									self.Fill:Hide();
+								else
+									self.Fill:Show();
+								end]]
+							</OnTextChanged>
+						</Scripts>
+						<FontString inherits="GlueEditBoxFont"/>
+						<TextInsets>
+							<AbsInset left="12" right="5" bottom="5"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox parentKey="PasswordEditBox" inherits="AccountLoginBackdropTemplate" parentArray="ManualLoginRegions" letters="128" password="1">
+						<Size x="160" y="37"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="270"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GlueFontNormal" justifyH="CENTER" text="PASSWORD">
+									<Size>
+										<AbsDimension x="256" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-23"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTabPressed function="AccountLogin_FocusAccount"/>
+							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
+							<OnEnterPressed>
+								if ( C_Login.IsLoginReady() ) then
+									AccountLogin_Login();
+								end
+							</OnEnterPressed>
+							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
+							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
+						</Scripts>
+						<FontString inherits="GlueEditBoxFont"/>
+						<TextInsets>
+							<AbsInset left="12" right="5" bottom="5"/>
+						</TextInsets>
+					</EditBox>
+					<Frame parentKey="CachedLoginFrameContainer" parentArray="ManualLoginRegions">
+						<Size x="230" y="45"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="AccountLogin" x="-5" y="5"/>
+						</Anchors>
+					</Frame>
+					<Button parentKey="LoginButton" parentArray="ManualLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
+						<Size x="170" y="45"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="10" y="249"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_Login"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button parentKey="ReconnectLoginButton" parentArray="ReconnectLoginRegions" inherits="GlueButtonTemplate" text="RECONNECT_BUTTON">
+						<Size x="250" y="60"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="290"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ReconnectLogin"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button parentKey="ReconnectSwitchButton" parentArray="ReconnectLoginRegions" inherits="GlueButtonSmallTemplate" text="SWITCH_ACCOUNTS_BUTTON">
+						<Size x="210" y="45"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="170"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ClearReconnectLogin"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="29"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_Exit"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="80"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GlueParent_ShowCreditsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CinematicsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CINEMATICS">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CreditsButton" relativePoint="TOP" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GlueParent_ShowCinematicsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="OptionsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="SYSTEMOPTIONS_MENU">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CinematicsButton" relativePoint="TOP" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								--JS_TODO - Handle Kiosk Mode
+							</OnShow>
+							<OnClick function="GlueParent_ShowOptionsScreen"/>
+						</Scripts>
+					</Button>
+					<Button name="AccountLoginCommunityButton" parentKey="CommunityButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="COMMUNITY_SITE">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="10" y="120"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_LaunchCommunitySite"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="ManageAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="MANAGE_ACCOUNT">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CommunityButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ManageAccount"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreateAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREATE_ACCOUNT">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ManageAccountButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ManageAccount"/>
+						</Scripts>
+					</Button>
+					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="ManualLoginRegions">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="AccountLoginCommunityButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
+									<Anchors>
+										<Anchor point="LEFT" x="24" y="0"/>
+									</Anchors>
+									<FontHeight>
+										<AbsValue val="10"/>
+									</FontHeight>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+									<Color r="1.0" g="0.78" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								local width = self.Label:GetWidth();
+								self:SetPoint("TOP", self:GetParent().LoginButton, "BOTTOM", -width / 2, 0);
+								if ( GetSavedAccountName() ~= "" ) then
+									self:SetChecked(true);
+								else
+									self:SetChecked(false);
+								end
+							</OnLoad>
+							<OnClick>
+								if ( self:GetChecked() ) then
+									SetSavedAccountName("");
+									ClearSavedAccountList();
+									AccountLogin_UpdateSavedData(AccountLogin);
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+								else
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
+						<Size>
+							<AbsDimension x="352" y="400"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="WoWAccountSelectDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color a="0.75" r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Background" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
+								<Size x="275" y="265"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="20" y="-20"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="TOSFont"  text="SELECT_ACCOUNT">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="5" y="-4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="Container" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="12" y="-52"/>
+											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
+										</Anchors>
+										<Frames>
+											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" x="12" y="-6"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button2" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button1" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button3" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button2" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button4" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button3" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button5" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button4" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button6" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button5" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button7" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button6" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button8" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button7" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<ScrollFrame parentKey="ScrollFrame" name="WoWAccountSelectDialogScrollFrame" inherits="GlueScrollFrameTemplate">
+												<Size>
+													<AbsDimension x="219" y="162"/>
+												</Size>
+												<Anchors>
+													<Anchor point="TOPLEFT">
+														<Offset x="0" y="-6"/>
+													</Anchor>
+												</Anchors>
+												<Scripts>
+													<OnVerticalScroll function="WoWAccountSelect_OnVerticalScroll"/>
+												</Scripts>
+												<ScrollChild>
+													<Frame parentKey="ChildFrame">
+														<Size x="510" y="395"/>
+													</Frame>
+												</ScrollChild>
+											</ScrollFrame>
+										</Frames>
+									</Frame>
+									<Button parentKey="AcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT_GLUE">
+										<Size>
+											<AbsDimension x="125" y="37"/>
+										</Size>
+										<Anchors>
+											<Anchor point="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="8" y="6"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_OK);
+												WoWAccountSelect_OnAccept();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+										<Size>
+											<AbsDimension x="125" y="37"/>
+										</Size>
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT">
+												<Offset>
+													<AbsDimension x="-8" y="6"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick function="WoWAccountSelect_OnCancel">
+												PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_CANCEL);
+												WoWAccountSelect_OnCancel();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad inherit="prepend" function="WoWAccountSelect_OnLoad"/>
+							<OnKeyDown function="WoWAccountSelect_OnKeyDown"/>
+							<OnShow function="WoWAccountSelect_OnShow"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="CaptchaEntryDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color a="0.75" r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Background" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
+								<Size>
+									<AbsDimension x="372" y="200"/>
+								</Size>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_CAPTCHA_TITLE">
+											<Size x="340" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-26"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="TOSFont"  text="ENTER_CAPTCHA_INFO">
+											<Size x="340" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="CaptchaImage">
+											<Size x="200" y="70"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+										</KeyValues>
+										<Size x="160" y="37"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="GlueFontNormal">
+													<Size x="256" y="64"/>
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEscapePressed function="CaptchaEntry_Cancel"/>
+											<OnEnterPressed function="CaptchaEntry_Okay"/>
+											<OnEditFocusLost>
+												self:HighlightText(0, 0);
+											</OnEditFocusLost>
+											<OnEditFocusGained>
+												self:HighlightText();
+											</OnEditFocusGained>
+										</Scripts>
+										<FontString inherits="GlueEditBoxFont"/>
+										<TextInsets>
+											<AbsInset left="15" bottom="5"/>
+										</TextInsets>
+									</EditBox>
+									<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+										<Anchors>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-5" y="-5"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="CaptchaEntry_Okay"/>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="5" y="-5"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="CaptchaEntry_Cancel"/>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnShow function="CaptchaEntry_OnShow"/>
+							<OnHide function="CaptchaEntry_OnHide"/>
+							<OnKeyDown function="CaptchaEntry_OnKeyDown"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="TokenEntryDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color a="0.75" r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Background" inherits="BackdropTemplate">
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
+								<Size>
+									<AbsDimension x="372" y="200"/>
+								</Size>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-26"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="TOSFont"  text="ENTER_AUTHCODE_INFO">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
+										<KeyValues>
+											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+										</KeyValues>
+										<Size x="160" y="37"/>
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="GlueFontNormal">
+													<Size x="256" y="64"/>
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEscapePressed function="TokenEntry_Cancel"/>
+											<OnEnterPressed function="TokenEntry_Okay"/>
+											<OnEditFocusLost>
+												self:HighlightText(0, 0);
+											</OnEditFocusLost>
+											<OnEditFocusGained>
+												self:HighlightText();
+											</OnEditFocusGained>
+										</Scripts>
+										<FontString inherits="GlueEditBoxFont"/>
+										<TextInsets>
+											<AbsInset left="15" bottom="5"/>
+										</TextInsets>
+									</EditBox>
+									<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="20" y="16"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="TokenEntry_Okay"/>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.OkayButton" relativePoint="RIGHT"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="TokenEntry_Cancel"/>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnShow function="TokenEntry_OnShow"/>
+							<OnHide function="TokenEntry_OnHide"/>
+							<OnKeyDown function="TokenEntry_OnKeyDown"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="GlueDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="AccountLoginDropDown_OnLoad"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnShow>
+						self.FadeIn:Play();
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AccountLogin_OnLoad"/>
+			<OnEvent function="AccountLogin_OnEvent"/>
+			<OnShow function="AccountLogin_OnShow"/>
+			<OnKeyDown function="AccountLogin_OnKeyDown"/>
+		</Scripts>
+	</Frame>
+</Ui>

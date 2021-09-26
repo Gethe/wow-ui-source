@@ -1,21 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GlueTooltip.lua"/>
-	<Frame name="GlueTooltipTemplate" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" virtual="true">
+	<Frame name="GlueTooltipTemplate" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="50" y="50"/>
 		</Size>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="3" bottom="3"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTextLeft1" inherits="GlueFontNormal" justifyH="LEFT" hidden="true" parentKey="TextLeft1">
@@ -103,9 +92,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				GlueTooltip_OnLoad(self);
-			</OnLoad>
+			<OnLoad inherit="prepend" function="GlueTooltip_OnLoad"/>
 			<OnHide>
 				self:Clear();
 				self.owner = nil;

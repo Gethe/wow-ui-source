@@ -306,6 +306,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="SystemFont_Med2_HSpacing" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="13" spacing="3"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13" spacing="3"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="14"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bKAI00M.TTF" height="14"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="13"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="SystemFont_Med3" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="14"/>

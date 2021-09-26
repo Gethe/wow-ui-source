@@ -159,7 +159,7 @@
 			<Frame name="$parentTrialErrorButton" parentKey="trialErrorButton" hidden="true">
 				<Size x="13" y="13"/>
 				<Anchors>
-					<Anchor point="LEFT"  x="-23" y="0" />
+					<Anchor point="LEFT" x="-23" y="0" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -199,11 +199,12 @@
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+					<!-- Overwritten in Lua. -->
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT"/>
+						<Anchor point="RIGHT" x="-1" y="1"/>
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</NormalTexture>
@@ -238,11 +239,12 @@
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+					<!-- Overwritten in Lua. -->
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT"/>
+						<Anchor point="RIGHT" x="-1" y="1"/>
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
@@ -277,11 +279,12 @@
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+					<!-- Overwritten in Lua. -->
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT"/>
+						<Anchor point="RIGHT" x="-1" y="1"/>
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</NormalTexture>
@@ -342,11 +345,12 @@
 			</Anchors>
 		</ButtonText>
 		<NormalTexture name="$parentTexture">
+			<!-- Overwritten in Lua. -->
 			<Size>
 				<AbsDimension x="13" y="13"/>
 			</Size>
 			<Anchors>
-				<Anchor point="LEFT"/>
+				<Anchor point="LEFT" x="-1" y="1"/>
 			</Anchors>
 		</NormalTexture>
 		<NormalFont style="NumberFontNormalRight"/>

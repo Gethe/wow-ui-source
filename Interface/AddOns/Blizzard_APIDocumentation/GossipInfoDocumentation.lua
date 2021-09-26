@@ -7,7 +7,16 @@ local GossipInfo =
 	Functions =
 	{
 		{
-			Name = "GetGossipPoiForUiMapID",
+			Name = "GetCustomGossipDescriptionString",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPoiForUiMapID",
 			Type = "Function",
 
 			Arguments =
@@ -21,7 +30,7 @@ local GossipInfo =
 			},
 		},
 		{
-			Name = "GetGossipPoiInfo",
+			Name = "GetPoiInfo",
 			Type = "Function",
 
 			Arguments =

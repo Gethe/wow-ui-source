@@ -1,0 +1,810 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ArenaRegistrarFrame.lua"/>
+	<Frame name="ArenaRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="ArenaRegistrarFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+					<Size x="128" y="256"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
+					<Size x="128" y="256"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="ArenaRegistrarText" inherits="QuestFont" justifyH="LEFT">
+					<Size x="270" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers> 
+ 		<Frames>
+			<Frame name="ArenaRegistrarNpcNameFrame">
+				<Size x="300" y="14"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ArenaRegistrarFrame" relativePoint="TOP" x="0" y="-23"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ArenaRegistrarFrameNpcNameText" inherits="GameFontHighlight"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="ArenaRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="ArenaRegistrarFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-42" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="ArenaRegistrarGreetingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ArenaAvailableServicesText" inherits="QuestTitleFont" text="ARENA_CHARTER_PURCHASE" justifyH="LEFT">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="35" y="-100"/>
+							</Anchors>
+						</FontString>
+						<FontString name="RegistrationText" inherits="QuestTitleFont" text="ARENA_CHARTER_TURN_IN" justifyH="LEFT" hidden="true">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ArenaAvailableServicesText" x="0" y="-100"/>
+							</Anchors>
+						</FontString>
+						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+							<Size x="128" y="64"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="22" y="68"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="ArenaRegistrarFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="ArenaRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-40" y="72"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(ArenaRegistrarFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarButton1" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_2V2" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaAvailableServicesText" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ArenaRegistrar_ShowPurchaseFrame(self, 2);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarButton2" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_3V3" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ArenaRegistrar_ShowPurchaseFrame(self, 3);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarButton3" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_5V5" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton2" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ArenaRegistrar_ShowPurchaseFrame(self, 5);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarButton4" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_2V2" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="RegistrationText" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ArenaRegistrar_TurnInPetition(2);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarButton5" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_3V3" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton4" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ArenaRegistrar_TurnInPetition(3);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarButton6" inherits="QuestTitleButtonTemplate" text="ARENA_TEAM_5V5" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarButton5" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ArenaRegistrar_TurnInPetition(5);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="ArenaRegistrarPurchaseFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ArenaRegistrarPurchaseText" inherits="QuestFont" text="ARENA_REGISTRAR_PURCHASE_TEXT" justifyH="LEFT">
+							<Size x="270" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="35" y="-95"/>
+							</Anchors>
+						</FontString>
+						<FontString name="ArenaRegistrarCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarPurchaseText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="ArenaRegistrarMoneyFrame" inherits="MoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="ArenaRegistrarCostLabel" relativePoint="RIGHT" x="15" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="ArenaRegistrarMoneyFrame_OnLoad"/>
+						</Scripts>
+					</Frame>
+					<Button name="ArenaRegistrarFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="75" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="ArenaRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-40" y="72"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(ArenaRegistrarFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ArenaRegistrarFramePurchaseButton" inherits="UIPanelButtonTemplate" text="PURCHASE">
+						<Size x="85" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="ArenaRegistrarFrame" x="22" y="72"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ArenaRegistrarFramePurchaseButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<EditBox name="ArenaRegistrarFrameEditBox" letters="24" historyLines="1">
+						<Size x="130" y="32"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaRegistrarCostLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size x="75" y="32"/>
+									<Anchors>
+										<Anchor point="LEFT" x="-10" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+									<Size x="75" y="32"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="10" y="0"/>
+									</Anchors>
+									<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed function="ArenaRegistrarFrameEditBox_OnEnterPressed"/>
+							<OnEscapePressed function="ArenaRegistrarFrameEditBox_OnEscapePressed"/>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>	
+				</Frames>
+			</Frame>
+ 		</Frames>
+		<Scripts>
+			<OnLoad function="ArenaRegistrar_OnLoad"/>
+			<OnEvent function="ArenaRegistrar_OnEvent"/>
+			<OnShow function ="ArenaRegistrar_OnShow"/>
+			<OnHide function ="ArenaRegistrar_OnHide"/>
+		</Scripts>
+ 	</Frame>
+	<Frame name="PVPBannerFrameCustomizeTemplate" virtual="true">
+		<Size x="164" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size>
+						<AbsDimension x="95" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size x="25" y="64"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentMiddle" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size x="25" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Size x="85" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentMiddle">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentLeftButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentLeft" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="21" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PVPBannerCustomization_Left(self:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentRightButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-19" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PVPBannerCustomization_Right(self:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="PVPBannerFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="384" y="512"/>
+		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="PVPBannerFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size x="128" y="256"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+					<Size x="128" y="256"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="PVPBannerFrameBackground" file="Interface\TabardFrame\TabardFrameBackground" hidden="false">
+					<Size x="316" y="325"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="23" y="-76"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="PVPBannerFrameOuterFrameTopLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="20" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="19" y="-73"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.109375" right="0.1875" top="0" bottom="0.3046875"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="280" y="6"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.8828125" top="0" bottom="0.046875"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameTopRight" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="20" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameTop" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8828125" right="0.9609375" top="0" bottom="0.3046875"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameLeftTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="7" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.02734375" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameLeftBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="7" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameLeftTop" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.02734375" right="0.0546875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameRightTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="7" y="128"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="PVPBannerFrameOuterFrameTopRight" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0546875" right="0.08203125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameRightBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="7" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameRightTop" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.08203125" right="0.109375" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameBottomLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="20" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameLeftBottom" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.109375" right="0.1875" top="0.3046875" bottom="0.6171875"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="280" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="PVPBannerFrameOuterFrameBottomLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.8828125" top="0.5546875" bottom="0.6171875"/>
+				</Texture>
+				<Texture name="PVPBannerFrameOuterFrameBottomRight" file="Interface\TabardFrame\TabardFrameOuterFrame">
+					<Size x="20" y="39"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="PVPBannerFrameOuterFrameBottom" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8828125" right="0.9609375" top="0.3046875" bottom="0.6171875"/>
+				</Texture>
+				<Texture name="PVPBannerFrameEmblemTopRight" alphaMode="ADD">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="PVPBannerFrameOuterFrameTopRight">
+							<Offset>
+								<AbsDimension x="35" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameEmblemBottomRight" alphaMode="ADD">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PVPBannerFrameEmblemTopRight" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameEmblemTopLeft" alphaMode="ADD">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="PVPBannerFrameEmblemTopRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PVPBannerFrameEmblemBottomLeft" alphaMode="ADD">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PVPBannerFrameEmblemTopLeft" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0" top="0" bottom="1"/>
+				</Texture>
+				<FontString name="PVPBannerFrameNameText" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="109" y="16"/>
+					</Size>
+					<Anchors>
+						 <Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="232"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PVPBannerFrameGreetingText" inherits="GameFontHighlight" text="ARENA_BANNER_VENDOR_GREETING">
+					<Size>
+						<AbsDimension x="250" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PVPBannerFrame">
+							<Offset>
+								<AbsDimension x="10" y="-39"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="PVPBannerFrameStandard">
+				<Size>
+					<AbsDimension x="128" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPBannerFrame">
+						<Offset>
+							<AbsDimension x="40" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBanner">
+							<Size>
+								<AbsDimension x="128" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentEmblemWatermark">
+							<Size>
+								<AbsDimension x="128" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentBanner" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="20" y="85"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentBorder">
+							<Size>
+								<AbsDimension x="128" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentEmblem">
+							<Size>
+								<AbsDimension x="70" y="70"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentBanner">
+									<Offset>
+										<AbsDimension x="-17" y="55"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="PVPBannerFrameCustomizationFrame">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="PVPBannerFrameCustomizationBorder" file="Interface\TabardFrame\TabardFrameCustomizationFrame">
+							<Size>
+								<AbsDimension x="256" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="PVPBannerFrame">
+									<Offset>
+										<AbsDimension x="-9" y="50"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="PVPBannerFrameCustomization1" inherits="PVPBannerFrameCustomizeTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameCustomizationBorder" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="48" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PVPBannerFrameCustomization1Text:SetText(EMBLEM_SYMBOL);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="PVPBannerFrameCustomization2" inherits="PVPBannerFrameCustomizeTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameCustomization1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PVPBannerFrameCustomization2Text:SetText(EMBLEM_BORDER);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="PVPColorPickerButton1" inherits="GameMenuButtonTemplate" text="EMBLEM_SYMBOL_COLOR">
+						<Size>
+							<AbsDimension x="115" y="25"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardEmblem);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="PVPColorPickerButton2" inherits="GameMenuButtonTemplate" text="EMBLEM_BORDER_COLOR">
+						<Size>
+							<AbsDimension x="115" y="25"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-31"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardBorder);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="PVPColorPickerButton3" inherits="GameMenuButtonTemplate" text="EMBLEM_BACKGROUND">
+						<Size>
+							<AbsDimension x="115" y="25"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-55"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardBanner);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="PVPBannerFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="305" y="-422"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(self:GetFrameLevel() + 1);
+							</OnLoad>
+							<OnClick>
+								HideUIPanel(self:GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="PVPBannerFrameSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="305" y="-422"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								-- PVPBannerFrame_SaveDesign();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Button name="PVPBannerFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PVPBannerFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="224" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVPBannerFrameAcceptButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="PVPBannerFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PVPBannerFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>	
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PVPBannerFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PVPBannerFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="PVPBannerFrameCloseButton_OnShow"/>
+			<OnHide function="PVPBannerFrameCloseButton_OnHide"/>
+			<OnKeyDown>
+				if (arg1 == "ESCAPE") then
+					HideUIPanel(self);
+				end
+			</OnKeyDown>
+	</Scripts>
+	</Frame>
+</Ui>

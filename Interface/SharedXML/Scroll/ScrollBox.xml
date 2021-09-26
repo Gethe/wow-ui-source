@@ -1,0 +1,34 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ScrollBoxView.lua"/>
+	<Script file="ScrollBoxLinearView.lua"/>
+	<Script file="ScrollBoxGridView.lua"/>
+	<Script file="ScrollBox.lua"/>
+	
+	<Frame name="ScrollBoxBaseTemplate" clipChildren="true" mixin="ScrollBoxBaseMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="canInterpolateScroll" value="true" type="boolean"/>
+			<!--
+			<KeyValue key="upperShadow" value="atlasName" type="string"/>
+			<KeyValue key="lowerShadow" value="atlasName" type="string"/>
+			-->
+		</KeyValues>
+		<Frames>
+			<EventFrame parentKey="ScrollTarget" useParentLevel="true"/>
+			<Frame parentKey="Shadows" setAllPoints="true">
+				<Layers>
+					<Layer>
+						<Texture parentKey="Lower" hidden="false"/>
+						<Texture parentKey="Upper" hidden="false"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

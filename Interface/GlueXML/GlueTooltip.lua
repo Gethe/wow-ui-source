@@ -9,8 +9,6 @@ function GlueTooltip_OnLoad(self)
 	self.SetOwner = GlueTooltip_SetOwner;
 	self.GetOwner = GlueTooltip_GetOwner;
 	self.IsOwned = GlueTooltip_IsOwned;
-	self:SetBackdropBorderColor(1.0, 1.0, 1.0);
-	self:SetBackdropColor(0.09, 0.09, 0.19 );
 	self.defaultColor = NORMAL_FONT_COLOR;
 end
 

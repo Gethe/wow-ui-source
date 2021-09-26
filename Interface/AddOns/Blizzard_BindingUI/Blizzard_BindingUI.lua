@@ -13,7 +13,7 @@ StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		AttemptToSaveBindings(KeyBindingFrame.which);
+		SaveBindings(KeyBindingFrame.which);
 		KeyBindingFrame.outputText:SetText("");
 		KeyBindingFrame_SetSelected(nil);
 		HideUIPanel(KeyBindingFrame);
@@ -628,7 +628,7 @@ function OkayButton_OnClick(self)
 			end
 		end
 	end
-	AttemptToSaveBindings(KeyBindingFrame.which);
+	SaveBindings(KeyBindingFrame.which);
 	KeyBindingFrame.outputText:SetText("");
 	KeyBindingFrame_SetSelected(nil);
 	HideUIPanel(KeyBindingFrame);

@@ -183,22 +183,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Dialog">
+							<Frame parentKey="Dialog" inherits="BackdropTemplate" >
+								<KeyValues>
+									<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+								</KeyValues>
 								<Size x="330" y="350"/>
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Text" inherits="GameFontHighlight" text="PRODUCT_CHOICE_NO_TAKE_BACKSIES">

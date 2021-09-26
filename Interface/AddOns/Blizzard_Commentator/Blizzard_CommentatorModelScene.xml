@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_CommentatorModelScene.lua"/>
+	
+	<ModelScene name="CommentatorModelSceneTemplate" inherits="ScriptAnimatedModelSceneTemplate" mixin="CommentatorModelSceneMixin" enableMouse="false" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</ModelScene>
+</Ui>

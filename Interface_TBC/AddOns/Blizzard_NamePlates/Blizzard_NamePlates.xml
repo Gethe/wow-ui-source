@@ -1,0 +1,137 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_NamePlates.lua" />
+
+	<Frame name="NamePlateDriverFrame" toplevel="true" mixin="NamePlateDriverMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="NamePlateFullBorderTemplate" mixin="NamePlateBorderTemplateMixin" setAllPoints="true" useParentLevel="true" virtual="true">
+		<Size x="128" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface/Tooltips/Nameplate-Border">
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="LEFT" x="-4" />
+		</Anchors>
+	</Frame>
+
+	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="disableMouse" value="true" type="boolean"/>
+			<KeyValue key="ignoreCUFNameRequirement" value="true" type="boolean"/>
+		</KeyValues>
+		
+		<Frames>
+			<StatusBar parentKey="healthBar" frameLevel="-1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="4" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-21" y="4"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="border" inherits="NamePlateFullBorderTemplate" />
+				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background">
+							<Color r=".2" g=".2" b=".2" a=".85"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+				<Scripts>
+					<OnLoad>
+						self:GetStatusBarTexture():SetDrawLayer("BORDER");
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+			
+			<StatusBar parentKey="CastBar" inherits="SmallCastingBarFrameTemplate" hidden="true">
+				<Size x="102" y="10"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.healthBar" relativePoint="BOTTOM" x="17" y="-6"/>
+				</Anchors>
+				<Scripts>
+					<OnShow function="Nameplate_CastBar_AdjustPosition"/>
+				</Scripts>
+			</StatusBar>
+			
+			<Frame parentKey="RaidTargetFrame">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-4" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="LevelFrame" frameStrata="HIGH">
+				<Size x="15" y="15" />
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.border" relativePoint="BOTTOMRIGHT" x="-11" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="levelText" inherits="SystemFont_NamePlateLevel" wordwrap="false" justifyH="CENTER" />
+						<Texture parentKey="highLevelTexture" file="Interface\TargetingFrame\UI-TargetingFrame-Skull" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			
+			<Layer level="ARTWORK">
+				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="CENTER" ignoreParentScale="false">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.healthBar.border" relativePoint="TOP" x="0" y="2" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="statusText" inherits="GameFontDisable" />
+			</Layer>
+			
+			<Layer level="OVERLAY">
+				<Texture parentKey="selectionHighlight" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha=".25" ignoreParentAlpha="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar.barTexture" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar.barTexture" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="CompactUnitFrame_OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+
+	<GameTooltip name="NamePlateTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnUpdate>
+				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
+				if self.updateTooltip > 0 then
+					return;
+				end
+				self.updateTooltip = TOOLTIP_UPDATE_TIME;
+				local owner = self:GetOwner();
+				if owner and owner.UpdateTooltip then
+					owner:UpdateTooltip();
+				end
+			</OnUpdate>
+		</Scripts>
+	</GameTooltip>
+</Ui>

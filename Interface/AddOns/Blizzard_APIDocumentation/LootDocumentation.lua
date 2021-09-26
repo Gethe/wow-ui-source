@@ -6,10 +6,28 @@ local Loot =
 
 	Functions =
 	{
+		{
+			Name = "IsLegacyLootModeEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isLegacyLootModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "AzeriteEmpoweredItemLooted",
+			Type = "Event",
+			LiteralName = "AZERITE_EMPOWERED_ITEM_LOOTED",
+			Payload =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+			},
+		},
 		{
 			Name = "CancelLootRoll",
 			Type = "Event",
@@ -156,6 +174,60 @@ local Loot =
 			Name = "OpenMasterLootList",
 			Type = "Event",
 			LiteralName = "OPEN_MASTER_LOOT_LIST",
+		},
+		{
+			Name = "ShowLootToastLegendaryLooted",
+			Type = "Event",
+			LiteralName = "SHOW_LOOT_TOAST_LEGENDARY_LOOTED",
+			Payload =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowLootToastUpgrade",
+			Type = "Event",
+			LiteralName = "SHOW_LOOT_TOAST_UPGRADE",
+			Payload =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "baseQuality", Type = "number", Nilable = false },
+				{ Name = "personalLootToast", Type = "bool", Nilable = false },
+				{ Name = "lessAwesome", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowPvpFactionLootToast",
+			Type = "Event",
+			LiteralName = "SHOW_PVP_FACTION_LOOT_TOAST",
+			Payload =
+			{
+				{ Name = "typeIdentifier", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "personalLootToast", Type = "bool", Nilable = false },
+				{ Name = "lessAwesome", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowRatedPvpRewardToast",
+			Type = "Event",
+			LiteralName = "SHOW_RATED_PVP_REWARD_TOAST",
+			Payload =
+			{
+				{ Name = "typeIdentifier", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "personalLootToast", Type = "bool", Nilable = false },
+				{ Name = "lessAwesome", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "StartLootRoll",

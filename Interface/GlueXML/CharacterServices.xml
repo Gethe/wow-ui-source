@@ -45,110 +45,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<CheckButton name="CharacterUpgradeSelectSpecRadioButtonTemplate" inherits="UIRadioButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="RoleIcon">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="48" y="-10" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentSpecOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="Frame">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
-					</Anchors>
-					<Size x="46" y="46"/>
-					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentSpecIcon" parentKey="SpecIcon">
-					<Size x="34" y="34"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP" wordwrap="false">
-					<Size x="150" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Frame" relativePoint="TOPRIGHT" x="6" y="-8"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Recommended" inherits="GameFontNormal" justifyH="LEFT" text="CHAR_SPEC_RECOMMENEDED">
-					<Size x="150" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-					<Color r="0.1172" g="1.0" b="0.0"/>
-				</FontString>
-				<FontString parentKey="RoleName" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="75" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-					<Color r="0.5" g="0.5" b="0.5"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<HitRectInsets>
-			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
-		</HitRectInsets>
-		<Scripts>
-			<OnClick function="CharacterUpgradeSelectSpecRadioButton_OnClick"/>
-			<OnEnter>
-				if (self.tooltip) then
-					GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 48, -4);
-					GlueTooltip:SetText(self.tooltipTitle);
-					GlueTooltip:AddLine(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, true);
-					GlueTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				if (self.tooltip) then
-					GlueTooltip:Hide();
-				end
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CharacterUpgradeSelectFactionRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentFactionOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="Frame">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
-					</Anchors>
-					<Size x="46" y="46"/>
-					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentFactionIcon" parentKey="FactionIcon">
-					<Size x="38" y="38"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentFactionName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="FactionName">
-					<Size>
-						<AbsDimension x="150" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="6" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<HitRectInsets>
-			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
-		</HitRectInsets>
-		<Scripts>
-			<OnClick function="CharacterUpgradeSelectFactionRadioButton_OnClick"/>
-		</Scripts>
-	</CheckButton>
-	<Frame name="CharacterServicesArrowTemplate" virtual="true">
+		<Frame name="CharacterServicesArrowTemplate" virtual="true">
 		<Size x="18" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -379,26 +276,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-		</Frames>
-	</Frame>
-	<Frame name="CharacterUpgradeSelectSpecFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
-		<Size x="300" y="250"/>
-		<Frames>
-			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
-		</Frames>
-	</Frame>
-	<Frame name="CharacterUpgradeSelectFactionFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
-		<Size x="300" y="150"/>
-		<Frames>
-			<Frame parentKey="ControlsFrame" setAllPoints="true">
-				<Frames>
-					<CheckButton parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="83" y="-73"/>
-						</Anchors>
-					</CheckButton>
-				</Frames>
-			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

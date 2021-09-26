@@ -1,0 +1,852 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PVPFrame.lua"/>
+	<Include file="PVPFrameTemplates.xml"/>
+	<Frame name="PVPFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" hidden="true" id="5">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="258" y="-257"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBackground" file="Interface\PVPFrame\UI-Character-PVP">
+					<Size>
+						<AbsDimension x="512" y="512"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="14" y="-36"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentHonor" hidden="false">
+				<Size x="300" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPFrameBackground">
+						<Offset x="118" y="-2"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="PVP_LABEL_HONOR">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentPoints" inherits="GameFontNormal" text="12,123,213" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="15" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentIcon">
+							<Size>
+								<AbsDimension x="28" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="4" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
+						GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="0" right="120" top="0" bottom="0"/>
+				</HitRectInsets>
+			</Frame>
+			<Frame name="PVPFrameArena">
+				<Size x="300" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPFrameBackground">
+						<Offset x="120" y="-95"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="PVP_LABEL_ARENA">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentPoints" inherits="GameFontNormal" text="12,123,213" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="15" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentIcon" file="Interface\PVPFrame\PVP-ArenaPoints-Icon">
+							<Size>
+								<AbsDimension x="17" y="15"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
+						GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="0" right="120" top="0" bottom="0"/>
+				</HitRectInsets>
+			</Frame>
+		<!-- Individual -->
+			<Frame name="PVPHonor">
+				<Size>
+					<AbsDimension x="300" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPFrameBackground" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-28"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentKillsLabel" inherits="GameFontDisableSmall" text="KILLS" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="40" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="PVPHonor">
+									<Offset>
+										<AbsDimension x="25" y="-33"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="PVPFrameLine1" file="Interface\PVPFrame\UI-Character-PVP-Elements">
+							<Size>
+								<AbsDimension x="250" y="3"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentKillsLabel" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-20" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.4140625" top="0.76171875" bottom="0.765625"/>
+						</Texture>
+						<!-- Today Begin -->
+						<FontString name="$parentTodayLabel" inherits="GameFontDisableSmall" text="HONOR_TODAY">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="PVPHonorKillsLabel" relativePoint="TOPRIGHT">
+									<Offset x="20" y="10"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTodayKills" inherits="GameFontHighlightSmall">
+							<Size>
+								<AbsDimension x="50" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTodayLabel" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<!-- Today End -->
+						<!-- Yesterday Begin -->
+						<FontString name="$parentYesterdayLabel" inherits="GameFontDisableSmall" text="HONOR_YESTERDAY">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="PVPHonorKillsLabel" relativePoint="TOPRIGHT">
+									<Offset x="80" y="10"/>
+								</Anchor>
+							</Anchors>	
+						</FontString>
+						<FontString name="$parentYesterdayKills" inherits="GameFontHighlightSmall">
+							<Size>
+								<AbsDimension x="50" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentYesterdayLabel" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<!-- Yesterday End -->
+						<!-- Lifetime Begin -->
+						<FontString name="$parentLifetimeLabel" inherits="GameFontDisableSmall" text="HONOR_LIFETIME">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="PVPHonorKillsLabel" relativePoint="TOPRIGHT">
+									<Offset x="160" y="10"/>
+								</Anchor>
+							</Anchors>	
+						</FontString>
+						<FontString name="$parentLifetimeKills" inherits="GameFontHighlightSmall">
+							<Size>
+								<AbsDimension x="50" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentLifetimeLabel" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<!-- Lifetime End -->
+					</Layer>
+				</Layers>
+			</Frame>
+		<!-- Arena Teams -->
+			<Frame name="PVPTeam1Standard" inherits="PVPTeamStandardTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPFrameBackground">
+						<Offset>
+							<AbsDimension x="13" y="85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="PVPTeam1" inherits="PVPTeamBorderTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeam1Standard">
+						<Offset>
+							<AbsDimension x="33" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Button>
+			<Frame name="PVPTeam2Standard" inherits="PVPTeamStandardTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPFrameBackground">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="PVPTeam2" inherits="PVPTeamBorderTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeam2Standard">
+						<Offset>
+							<AbsDimension x="33" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Button>
+			<Frame name="PVPTeam3Standard" inherits="PVPTeamStandardTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPFrameBackground">
+						<Offset>
+							<AbsDimension x="13" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="PVPTeam3" inherits="PVPTeamBorderTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeam3Standard">
+						<Offset>
+							<AbsDimension x="33" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Button>
+			<Button name="$parentToggleButton">
+				<Size>
+					<AbsDimension x="15" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="81"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVPFrameToggleButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<ButtonText justifyH="LEFT" text="Show Season Stats">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-15" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+				<PushedTextOffset>
+					<AbsDimension x="0" y="0"/>
+				</PushedTextOffset>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PVPFrame_OnLoad"/>
+			<OnShow function="PVPFrame_OnShow"/>
+			<OnHide function="PVPFrame_OnHide"/>
+			<OnEvent function="PVPFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<!-- PVPTeam Details -->
+	<Frame name="PVPTeamDetails" parent="PVPFrame" hidden="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="365" y="355"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PVPFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-30" y="-40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PVPFrame\UI-Character-PVP-Elements">
+					<Size>
+						<AbsDimension x="365" y="355"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.703125" top="0" bottom="0.693359375"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPTeamDetails" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSize" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\PVPFrame\UI-Character-PVP-Elements">
+					<Size>
+						<AbsDimension x="280" y="3"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="3" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.4140625" top="0.76171875" bottom="0.765625"/>
+				</Texture>
+				<FontString name="$parentStatsType" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentGamesLabel" inherits="GameFontDisableSmall" text="GAMES">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-30" y="-55"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentGames" inherits="GameFontHighlightSmall" text="45">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentGamesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentWinLossLabel" inherits="GameFontDisableSmall" text="WIN_LOSS">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentGamesLabel" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="52" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent-" inherits="GameFontHighlightSmall" text=" - ">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentWinLossLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="-2" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentWins" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent-" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLoss" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent-" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRankLabel" inherits="GameFontDisableSmall" text="RANK">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentWinLossLabel" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="52" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentRankLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRatingLabel" inherits="GameFontDisableSmall" text="ARENA_TEAM_RATING">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentRankLabel" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="52" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRating" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentRatingLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>	
+		</Layers>
+		<Frames>
+			<Frame name="PVPDropDown" inherits="UIDropDownMenuTemplate"/>
+			<Button name="PVPTeamDetailsCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="PVPTeamDetails" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsFrameColumnHeader1" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="NAME">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentStatsType" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-5" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(self, 96);
+						self.sortType = "name";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="PVPTeamDetailsFrameColumnHeader2" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="CLASS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeamDetailsFrameColumnHeader1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(self, 62);
+						self.sortType = "class";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="PVPTeamDetailsFrameColumnHeader3" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="PLAYED">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeamDetailsFrameColumnHeader2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(self, 55);
+						self.sortType = "played";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="PVPTeamDetailsFrameColumnHeader4" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="WIN_LOSS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeamDetailsFrameColumnHeader3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(self, 75);
+						self.sortType = "won";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="PVPTeamDetailsFrameColumnHeader5" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="RATING">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PVPTeamDetailsFrameColumnHeader4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(self, 55);
+						self.sortType = "rating";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="PVPTeamDetailsButton1" inherits="PVPTeamMemberButtonTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetails">
+						<Offset>
+							<AbsDimension x="15" y="-115"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton2" inherits="PVPTeamMemberButtonTemplate" id="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton3" inherits="PVPTeamMemberButtonTemplate" id="3" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton4" inherits="PVPTeamMemberButtonTemplate" id="4" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton5" inherits="PVPTeamMemberButtonTemplate" id="5" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton6" inherits="PVPTeamMemberButtonTemplate" id="6" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton7" inherits="PVPTeamMemberButtonTemplate" id="7" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton8" inherits="PVPTeamMemberButtonTemplate" id="8" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton9" inherits="PVPTeamMemberButtonTemplate" id="9" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsButton10" inherits="PVPTeamMemberButtonTemplate" id="10" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PVPTeamDetailsAddTeamMember" inherits="UIPanelButtonTemplate" text="ADDMEMBER_TEAM">
+				<Size>
+					<AbsDimension x="100" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PVPTeamDetailsButton10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVPTeamDetailsAddTeamMember_OnClick"/>
+					<OnEnter function="PVPTeamDetailsAddTeamMember_OnEnter"/>
+					<OnLeave function="PVPTeamDetailsAddTeamMember_OnLeave"/>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+			</Button>
+			<Button name="PVPTeamDetailsToggleButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-17" y="17"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVPTeamDetailsToggleButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<ButtonText justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="180" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+				<PushedTextOffset>
+					<AbsDimension x="0" y="0"/>
+				</PushedTextOffset>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PVPTeamDetails_OnShow();
+			</OnShow>
+			<OnHide>
+				PVPTeamDetails_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

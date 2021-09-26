@@ -1,0 +1,4 @@
+## Title: Blizzard GM Survey UI
+## LoadOnDemand: 1
+..\..\..\Interface_Vanilla\AddOns\Blizzard_GMSurveyUI\Blizzard_GMSurveyUI.xml
+..\..\..\Interface_Vanilla\AddOns\Blizzard_GMSurveyUI\Localization.lua

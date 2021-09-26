@@ -2,18 +2,10 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AccountReactivate.lua"/>
 	
-	<Frame name="ReactivateDialogBackground" virtual="true" >
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
+	<Frame name="ReactivateDialogBackground" virtual="true" inherits="BackdropTemplate">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture>
@@ -72,7 +64,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ReactivateAccountDialog_OnLoad"/>
+			<OnLoad inherit="prepend" function="ReactivateAccountDialog_OnLoad"/>
 			<OnEvent function="ReactivateAccountDialog_OnEvent"/>
 		</Scripts>
 	</Frame>

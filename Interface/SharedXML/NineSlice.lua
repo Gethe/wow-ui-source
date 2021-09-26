@@ -150,6 +150,31 @@ local nineSliceSetup =
 
 local layouts =
 {
+	Dialog =
+	{
+		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
+		TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
+		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
+		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
+		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
+	},
+
+	ChatBubble =
+	{
+		TopLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopLeft", },
+		TopRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopRight", },
+		BottomLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomLeft", },
+		BottomRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomRight", },
+		TopEdge = { atlas = "_ChatBubble-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_ChatBubble-NineSlice-EdgeBottom", },
+		LeftEdge = { atlas = "!ChatBubble-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!ChatBubble-NineSlice-EdgeRight", },
+		Center = { atlas = "ChatBubble-NineSlice-Center", },
+	},
+
 	UniqueCornersLayout =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },

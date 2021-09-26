@@ -1,0 +1,15 @@
+## Title: Blizzard_Commentator
+## SavedVariables: g_TeamDefinitions, g_TeamDisplaySavedVars
+## LoadOnDemand: 1
+
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\UnitFrameTemplates.xml
+
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\UnitFrame.lua
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\UnitFrameLayoutData.lua
+
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\TeamDisplay.xml
+
+FadeToBlack.xml
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\CommentatorVictoryFanfare.xml
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\PvPCommentator.xml
+..\..\..\Interface_Vanilla\AddOns\Blizzard_Commentator\CommentatorEventAlerts.xml

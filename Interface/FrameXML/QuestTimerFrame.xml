@@ -28,7 +28,10 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="QuestTimerFrame" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent">
+	<Frame name="QuestTimerFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="158" y="72"/>
 		</Size>
@@ -39,17 +42,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="QuestTimerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -256,9 +248,54 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="QuestTimer21" inherits="QuestTimerTemplate" hidden="true" id="21">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer20" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer22" inherits="QuestTimerTemplate" hidden="true" id="22">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer21" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer23" inherits="QuestTimerTemplate" hidden="true" id="23">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer22" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer24" inherits="QuestTimerTemplate" hidden="true" id="24">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer23" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="QuestTimer25" inherits="QuestTimerTemplate" hidden="true" id="25">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestTimer24" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="QuestTimerFrame_OnLoad" />
+			<OnLoad inherit="prepend" function="QuestTimerFrame_OnLoad" />
 			<OnUpdate function="QuestTimerFrame_OnUpdate" />
 			<OnEvent function="QuestTimerFrame_OnEvent" />
 			<OnShow function="QuestTimerFrame_OnShow" />

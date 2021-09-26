@@ -1,0 +1,37 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIParent.lua"/>
+	<Frame name="UIParent" setAllPoints="true" protected="true" frameStrata="MEDIUM">
+		<Attributes>
+			<Attribute name="DEFAULT_FRAME_WIDTH" type="number" value="384"/>
+			<Attribute name="TOP_OFFSET" type="number" value="-116"/>
+			<Attribute name="LEFT_OFFSET" type="number" value="16"/>
+			<Attribute name="CENTER_OFFSET" type="number" value="384"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
+			<Attribute name="RIGHT_OFFSET" type="number" value="768"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
+			<Attribute name="RIGHT_OFFSET_BUFFER" type="number" value="80"/>
+			<Attribute name="PANEl_SPACING_X" type="number" value="32"/>
+		</Attributes>
+		<Scripts>
+			<!-- Register here for any events you want to monitor globally -->
+			<OnLoad>
+				UIParent_OnLoad(self);
+				self.firstTimeLoaded = 1;
+			</OnLoad>
+			<!-- Respond here to any events you want to monitor globally -->
+			<OnEvent function="UIParent_OnEvent"/>
+			<OnUpdate>
+				FCF_OnUpdate(elapsed);
+				ButtonPulse_OnUpdate(elapsed);
+				UnitPopup_OnUpdate(elapsed);
+				AnimatedShine_OnUpdate(elapsed);
+				AutoCastShine_OnUpdate(nil, elapsed);
+				BattlefieldFrame_OnUpdate(elapsed);
+				HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
+			</OnUpdate>
+			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
+			<OnShow function="UIParent_OnShow"/>
+			<OnHide function="UIParent_OnHide"/>
+			<OnAttributeChanged function="UpdateUIPanelPositions"/>
+		</Scripts>
+	</Frame>
+</Ui>

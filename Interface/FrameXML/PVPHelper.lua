@@ -59,3 +59,25 @@ function PVPFramePopup_OnResponse(accepted)
 	
 	StaticPopupSpecial_Hide(PVPFramePopup);
 end
+
+-------------------------------------------------------------------------
+---- PVP Ready Dialog
+---------------------------------------------------------------------------
+
+function PVPReadyDialog_OnHide(self)
+	self.battlefieldIndex = nil;
+end
+
+function PVPReadyDialog_Showing(index)
+	return PVPReadyDialog:IsShown() and PVPReadyDialog.activeIndex == index;
+end
+
+function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, gameType, role)
+	PVPReadyDialog.activeIndex = index;
+	
+	PVPReadyDialog.text:SetFormattedText(CONFIRM_BATTLEFIELD_ENTRY, displayName, nil);
+
+	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
+	StaticPopupSpecial_Show(PVPReadyDialog);
+	FlashClientIcon();
+end

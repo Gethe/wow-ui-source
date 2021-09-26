@@ -1,0 +1,3002 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="InterfaceOptionsPanels.lua"/>
+
+  <!-- Templates -->
+
+  <CheckButton name="InterfaceOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true">
+    <Scripts>
+      <OnClick>
+        if ( self:GetChecked() ) then
+        PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+        else
+        PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+        end
+        InterfaceOptionsPanel_CheckButton_OnClick(self);
+      </OnClick>
+    </Scripts>
+  </CheckButton>
+  <CheckButton name="InterfaceOptionsCheckButtonTemplate" virtual="true" inherits="InterfaceOptionsBaseCheckButtonTemplate">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="Text">
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="2" y="1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+  </CheckButton>
+  <CheckButton name="InterfaceOptionsSmallCheckButtonTemplate" virtual="true" inherits="InterfaceOptionsBaseCheckButtonTemplate">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentText" inherits="GameFontHighlightSmall">
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="0" y="1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+  </CheckButton>
+
+  <!-- Controls Panel -->
+
+	<Frame name="InterfaceOptionsControlsPanel" hidden="false" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="CONTROLS_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="CONTROLS_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentStickyTargeting" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.invert = true;
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "deselectOnClick";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAutoDismount" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentStickyTargeting" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoDismountFlying";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAutoClearAFK" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoDismount" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoClearAFK";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAutoLootCorpse" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoClearAFK" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoLootDefault";
+						self.setFunc = InterfaceOptionsControlsPanelAutoLootKeyDropDown_Update;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentAutoLootKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-13" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_LOOT_KEY_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentInteractOnLeftClick" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "interactOnLeftClick";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentLootAtMouse" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInteractOnLeftClick" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "lootUnderMouse";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = CONTROLS_LABEL;
+				self.options = ControlsPanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
+				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+  <!-- Combat panel -->
+
+	<Frame name="InterfaceOptionsCombatPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="COMBAT_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="COMBAT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEnableCombatDamage" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextCombatDamage";
+						self.uvar = "SHOW_DAMAGE";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEnablePeriodicDamage" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentEnableCombatDamage" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="10" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextCombatLogPeriodicSpells";
+						self.uvar = "LOG_PERIODIC_EFFECTS";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableCombatDamageText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEnablePetDamage" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentEnablePeriodicDamage" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextPetMeleeDamage";
+						self.uvar = "SHOW_PET_MELEE_DAMAGE";
+						self.setFunc = function (value)
+						BlizzardOptionsPanel_SetCVarSafe("floatingCombatTextPetSpellDamage", value)
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableCombatDamageText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEnableCombatHealing" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnablePetDamage" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-16" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextCombatHealing";
+						self.uvar = "SHOW_COMBAT_HEALING";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentEnableFloatingCombatText" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableCombatHealing" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableFloatingCombatText";
+						self.uvar = "SHOW_COMBAT_TEXT";
+						self.setFunc = function (value)
+							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
+							InterfaceOptions_CombatTextComboPoints(value);
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentCombatTextFloatModeDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableFloatingCombatText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="COMBAT_TEXT_FLOAT_MODE_LABEL">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+						self.cvar = "floatingCombatTextFloatMode";
+						self.uvar = "COMBAT_TEXT_FLOAT_MODE";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsCombatPanelCombatTextFloatModeDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentCombatTextLowManaHealth" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextFloatModeDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextLowManaHealth";
+						self.uvar = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextAuras" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextLowManaHealth" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextAuras";
+						self.uvar = "COMBAT_TEXT_SHOW_AURAS";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextAuraFade" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextAuras" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextAuraFade";
+						self.uvar = "COMBAT_TEXT_SHOW_AURA_FADE";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextState" inherits="InterfaceOptionsCheckButtonTemplate">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentCombatTextAuraFade" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self.type = CONTROLTYPE_CHECKBOX;
+							self.cvar = "floatingCombatTextCombatState";
+							self.uvar = "COMBAT_TEXT_SHOW_COMBAT_STATE";
+							self.setFunc = function (value)
+							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+							UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
+							end;
+							BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+							BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+						</OnLoad>
+					</Scripts>
+				</CheckButton>
+			<CheckButton name="$parentCombatTextParryDodgeMiss" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextState" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextDodgeParryMiss";
+						self.uvar = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextResistances" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextParryDodgeMiss" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextDamageReduction";
+						self.uvar = "COMBAT_TEXT_SHOW_RESISTANCES";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextReputation" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextResistances" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextRepChanges";
+						self.uvar = "COMBAT_TEXT_SHOW_REPUTATION";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextReactives" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextReputation" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextReactives";
+						self.uvar = "COMBAT_TEXT_SHOW_REACTIVES";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextFriendlyNames" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextReactives" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextFriendlyHealers";
+						self.uvar = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextComboPoints" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextFriendlyNames" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextComboPoints";
+						self.uvar = "COMBAT_TEXT_SHOW_COMBO_POINTS";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						--BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+						InterfaceOptions_CombatTextComboPoints(GetCVarBool("enableFloatingCombatText"));
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextEnergyGains" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextComboPoints" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextEnergyGains";
+						self.uvar = "COMBAT_TEXT_SHOW_ENERGIZE";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCombatTextHonorGains" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatTextEnergyGains" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextHonorGains";
+						self.uvar = "COMBAT_TEXT_SHOW_HONOR_GAINED";
+						self.setFunc = function (value)
+						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+						UIParentLoadAddOn("Blizzard_CombatText");
+						end
+						BlizzardOptionsPanel_UpdateCombatText();
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentTargetOfTarget" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableCombatDamage" relativePoint="TOPRIGHT" x="260" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showTargetOfTarget";
+						self.uvar = "SHOW_TARGET_OF_TARGET";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentFlashLowHealthWarning" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "doNotFlashLowHealthWarning";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAutoRange" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFlashLowHealthWarning" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoRangedCombat";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoRange" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-28"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="FOCUS_CAST_KEY_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSelfCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFocusCastKeyDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_SELF_CAST_KEY_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentAutoSelfCast" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfCastKeyDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoSelfCast";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InterfaceOptionsCombatPanel_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+  <!-- Display panel -->
+
+	<Frame name="InterfaceOptionsDisplayPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="DISPLAY_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="DISPLAY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentShowHelm" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = _G[self:GetName().."Text"];
+						self.text:SetText(SHOW_HELM);
+						self.tooltipText = OPTION_TOOLTIP_SHOW_HELM;
+						self.defaultValue = "1";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+						self.GetValue = function (self) return ( (ShowingHelm() and "1") or "0" ); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); ShowHelm(value and value ~= "0"); end
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+					</OnLoad>
+					<OnClick>
+						local value = ((self:GetChecked() and "1") or "0")
+						if ( value == "1" ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+						end
+						self:SetValue(value);
+					</OnClick>
+					<OnEvent>
+						local arg1 = ...;
+						if ( arg1 == "player" ) then
+							self:SetChecked(ShowingHelm());
+							self.value = ((ShowingHelm() and "1") or "0");
+						end
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowCloak" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHelm" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = _G[self:GetName().."Text"];
+						self.text:SetText(SHOW_CLOAK);
+						self.tooltipText = OPTION_TOOLTIP_SHOW_CLOAK;
+						self.defaultValue = "1";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+						self.GetValue = function (self) return ( (ShowingCloak() and "1") or "0" ); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); ShowCloak(value and value ~= "0"); end
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+					</OnLoad>
+					<OnClick>
+						local value = ((self:GetChecked() and "1") or "0")
+						if ( value == "1" ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+						end
+						self:SetValue(value);
+					</OnClick>
+					<OnEvent>
+						local arg1 = ...;
+						if ( arg1 == "player" ) then
+							self:SetChecked(ShowingCloak());
+							self.value = ((ShowingCloak() and "1") or "0");
+						end
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentInstantQuestText" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowCloak" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "instantQuestText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAutoQuestWatch" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInstantQuestText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoQuestWatch";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHideOutdoorWorldState" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHelm" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="260" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "hideOutdoorWorldState";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentRotateMinimap" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHideOutdoorWorldState" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "rotateMinimap";
+						self.setFunc = function (value) Minimap_UpdateRotationSetting(); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowMinimapClock" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRotateMinimap" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showMinimapClock";
+						self.setFunc = function (value)
+							if (IsAddOnLoaded("Blizzard_TimeManager")) then
+								TimeManagerClockButton_UpdateShowClockSetting();
+							end
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowDetailedTooltips" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowMinimapClock" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showNewbieTips";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowLoadingScreenTip" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowDetailedTooltips" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showLoadingScreenTips";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentShowTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowLoadingScreenTip" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showTutorials";
+						self.defaultValue = "1";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
+				<Size>
+					<AbsDimension x="128" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentShowTutorials" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						if ( CanResetTutorials() ) then
+							self:Enable();
+						else
+							self:Disable();
+						end
+					</OnShow>
+					<OnClick>
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+						SetCVar("closedInfoFrames", ""); -- reset the help plates too
+						SetCVar("showTutorials", "1");
+						ResetTutorials();
+						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "ShowTutorials"];
+						if ( not tutorialsCheckButton:GetChecked() ) then
+							tutorialsCheckButton:SetChecked(1);
+						end
+						TutorialFrame_HideAllAlerts();
+						self:Disable();
+					</OnClick>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+			</Button>
+            <Frame name="$parentDisplayDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoQuestWatch" relativePoint="BOTTOMLEFT" x="-12" y="-30"/>
+				</Anchors>
+                <Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="STATUSTEXT_LABEL">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="16" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self.event = "STATUS_TEXT_DISPLAY";
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsStatusTextDisplayDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+            <Frame name="$parentChatBubblesDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayDropDown" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="CHAT_BUBBLES_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnShow function="InterfaceOptionsDisplayPanelChatBubblesDropDown_OnShow"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InterfaceOptionsDisplayPanel_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+  <!-- Social panel -->
+
+	<Frame name="InterfaceOptionsSocialPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="SOCIAL_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="SOCIAL_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentProfanityFilter" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "profanityFilter";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSpamFilter" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "spamFilter";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowLootSpam" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSpamFilter" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showLootSpam";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentGuildMemberAlert" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowLootSpam" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "guildMemberNotify";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentBlockTrades" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildMemberAlert" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "blockTrades";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentBlockGuildInvites" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBlockTrades" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = _G[self:GetName().."Text"];
+						self.text:SetText(BLOCK_GUILD_INVITES);
+						self.tooltipText = OPTION_TOOLTIP_BLOCK_GUILD_INVITES;
+						self.defaultValue = "0";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+						self.GetValue = function (self) return ( (GetAutoDeclineGuildInvites() and "1") or "0" ); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); SetAutoDeclineGuildInvites(value and value ~= "0"); end
+						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+					</OnLoad>
+					<OnClick>
+						local value = ((self:GetChecked() and "1") or "0")
+						if ( value == "1" ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+						end
+						self:SetValue(value);
+					</OnClick>
+					<OnEvent>
+						local arg1 = ...;
+						if ( arg1 == "player" ) then
+							self:SetChecked(GetAutoDeclineGuildInvites());
+							self.value = ((GetAutoDeclineGuildInvites() and "1") or "0");
+						end
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentBlockChatChannelInvites" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBlockGuildInvites" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "blockChannelInvites";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentOnlineFriends" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="TOPRIGHT" x="260" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showToastOnline";
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentOfflineFriends" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOnlineFriends" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showToastOffline";
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentBroadcasts" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOfflineFriends" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showToastBroadcast";
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentFriendRequests" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBroadcasts" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showToastFriendRequest";
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowToastWindow" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendRequests" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "showToastWindow";
+						self.setFunc = function(value) BNToastFrame:SetToastsEnabled(value == "1"); end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEnableTwitter" parentKey="EnableTwitter" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowToastWindow" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="LoginStatus" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" text="SOCIAL_TWITTER_STATUS_NOT_CONNECTED">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="28" y="-6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableTwitter";
+						self.setFunc = Twitter_SetEnabled;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self.Text:SetWidth(180);
+						self.Text:SetPoint("LEFT", self, "RIGHT", 18, 1);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentTwitterLoginButton" parentKey="TwitterLoginButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_SIGN_IN"  hidden="true">
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnableTwitter.LoginStatus" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="Twitter_LoginButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentChatStyle" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBlockChatChannelInvites" relativePoint="BOTTOMLEFT" x="-12" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="CHAT_STYLE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsSocialPanelChatStyle_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentTimestamps" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentChatStyle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="TIMESTAMPS_LABEL">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsSocialPanelTimestamps_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentWhisperMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTimestamps" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="WHISPER_MODE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsSocialPanelWhisperMode_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Button name="$parentRedockChat" parentKey="RedockChat" inherits="UIPanelButtonTemplate">
+				<Size x="134" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWhisperMode" relativePoint="BOTTOMLEFT" x="16" y="-5"/>
+				</Anchors>
+				<ButtonText name="$parentText" parentKey="text" justifyH="LEFT" justifyV="MIDDLE" text="RESET_CHAT_POSITION">
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+				</ButtonText>
+				<Scripts>
+					<OnLoad>
+						self.tooltip = OPTION_TOOLTIP_RESET_CHAT_POSITION;
+						self:SetWidth(self.text:GetWidth() + 40);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick function="InterfaceOptionsSocialPanelRedockChat_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InterfaceOptionsSocialPanel_OnLoad"/>
+			<OnShow function="Twitter_Update"/>
+			<OnHide function="InterfaceOptionsSocialPanel_OnHide"/>
+			<OnEvent function="InterfaceOptionsSocialPanel_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+  <!-- ActionBars panel -->
+
+  <Frame name="InterfaceOptionsActionBarsPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ACTIONBARS_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="ACTIONBARS_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="4" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <CheckButton name="$parentBottomLeft" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "bottomLeftActionBar";
+            self.uvar = "SHOW_MULTI_ACTIONBAR_1";
+            self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+            self.GetValue = function () return self.value or ((select(1, GetActionBarToggles()) and "1") or "0"); end;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentBottomRight" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "bottomRightActionBar";
+            self.uvar = "SHOW_MULTI_ACTIONBAR_2";
+            self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+            self.GetValue = function () return self.value or ((select(2, GetActionBarToggles()) and "1") or "0"); end;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentRight" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "rightActionBar";
+            self.uvar = "SHOW_MULTI_ACTIONBAR_3";
+            self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+            self.GetValue = function () return self.value or ((select(3, GetActionBarToggles()) and "1") or "0"); end;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentRightTwo" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="16" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "rightTwoActionBar";
+            self.uvar = "SHOW_MULTI_ACTIONBAR_4";
+            self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+            self.GetValue = function () return self.value or ((select(4, GetActionBarToggles()) and "1") or "0"); end;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelRight, self);
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentStackRightBars" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-42"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "multiBarRightVerticalLayout";
+            self.uvar = "STACK_RIGHT_BARS";
+            self.setFunc = function (value) InterfaceOptions_UpdateMultiActionBars(); end;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentLockActionBars" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentStackRightBars" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "lockActionBars";
+            self.uvar = "LOCK_ACTIONBAR";
+            self.setFunc = InterfaceOptions_UpdateMultiActionBars;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Frame name="$parentPickupActionKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentLockActionBars" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlight" text="PICKUP_ACTION_KEY_TEXT">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="16" y="3"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_DROPDOWN;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelLockActionBars, self);
+            self:RegisterEvent("PLAYER_ENTERING_WORLD");
+          </OnLoad>
+          <OnEnter>
+            if ( not self.isDisabled ) then
+            GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+            GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+            end
+          </OnEnter>
+          <OnEvent function="InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent"/>
+          <OnLeave function="GameTooltip_Hide"/>
+        </Scripts>
+      </Frame>
+      <CheckButton name="$parentAlwaysShowActionBars" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentPickupActionKeyDropDown" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "alwaysShowActionBars";
+            self.uvar = "ALWAYS_SHOW_MULTIBARS";
+            self.setFunc = function (value) MultiActionBar_UpdateGridVisibility(); InterfaceOptions_UpdateMultiActionBars(); end;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentCountdownCooldowns" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAlwaysShowActionBars" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "countdownForCooldowns";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+    </Frames>
+    <Scripts>
+      <OnLoad function="InterfaceOptionsActionBarsPanel_OnLoad"/>
+      <OnEvent function="InterfaceOptionsActionBarsPanel_OnEvent"/>
+    </Scripts>
+  </Frame>
+
+  <!-- Names panel -->
+
+	<Frame name="InterfaceOptionsNamesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="NAMES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="NAMES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentMyName" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameOwn";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentNPCNames" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="286" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameNPC";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentGuildNames" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNamePlayerGuild";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentTitles" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildNames" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNamePlayerPVPTitle";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentNonCombatCreature" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildNames" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="286" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameNonCombatCreatureName";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentFriendly">
+				<Size>
+					<AbsDimension x="135" y="48"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitles" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parentPlayerNames" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameFriendlyPlayerName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentPlayerNames" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameFriendlyMinionName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="$parentEnemy">
+				<Size>
+					<AbsDimension x="135" y="48"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendly" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="151" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parentPlayerNames" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyPlayerName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentPlayerNames" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyMinionName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+                </Frames>
+			</Frame>
+			<Frame name="$parentUnitNameplates">
+				<Size>
+					<AbsDimension x="135" y="75"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendly" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" text="UNIT_NAMEPLATES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentShowAll" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowAll";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemies" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShowAll" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemies";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+                            <OnShow>
+                                local text = GetBindingKey("NAMEPLATES");
+	                            if (text and text ~= "") then
+                                    self.Text:SetText(UNIT_NAMEPLATES_SHOW_ENEMIES.." ("..text..")");
+                                else
+                                    self.Text:SetText(UNIT_NAMEPLATES_SHOW_ENEMIES);
+                                end
+                            </OnShow>
+							<OnEnter function="InterfaceOptionsNameplateEnemies_OnEnter"/>
+							<OnLeave function="InterfaceOptionsNameplateEnemies_OnLeave"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemyMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="BOTTOMLEFT" x="10" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemyMinions";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnemyMinus" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyMinions" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemyMinus";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriends" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyMinus" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriends";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+							<OnShow>
+								local text = GetBindingKey("FRIENDNAMEPLATES");
+								if (text and text ~= "") then
+									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS.." ("..text..")");
+								else
+									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS);
+								end
+							</OnShow>
+							<OnEnter function="InterfaceOptionsNameplateFriends_OnEnter"/>
+							<OnLeave function="InterfaceOptionsNameplateFriends_OnLeave"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriendlyMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="BOTTOMLEFT" x="10" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriendlyMinions";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parentMotionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShowAll" relativePoint="TOPRIGHT" x="248" y="-20"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="UNIT_NAMEPLATES_TYPES">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="16" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_DROPDOWN;
+								self:RegisterEvent("PLAYER_ENTERING_WORLD");
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+							<OnEnter>
+								if ( not self.isDisabled ) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+								end
+							</OnEnter>
+							<OnEvent function="InterfaceOptionsNameplateMotionDropDown_OnEvent"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Slider name="$parentNameplateMaxDistanceSlider" obeyStepOnDrag="true" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentMotionDropDown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self.type = CONTROLTYPE_SLIDER;
+								self.cvar = "nameplateMaxDistance";
+								self.SetDisplayValue = self.SetValue;
+								self.SetValue = function (self, value)
+									self:SetDisplayValue(value);
+									self.value = value;
+									SetCVar(self.cvar, value);
+									SetCVar("nameplateMaxDistance", value);
+								end
+
+								self.GetCurrentValue = function(self)
+									return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+								end;
+								self.ValueText = _G[self:GetName().."High"];
+								self.ValueText:ClearAllPoints();
+								self.ValueText:SetPoint("TOP", self, "BOTTOM", 0, 0);
+								_G[self:GetName().."Low"]:Hide();
+
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+							<OnValueChanged>
+								self.value = value;
+								SetCVar(self.cvar, value);
+								self.ValueText:SetText(RANGE_ABBR:format(self:GetCurrentValue()));
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = NAMES_LABEL;
+				self.options = NamePanelOptions;
+				InterfaceOptionsPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+  <!-- Camera Panel -->
+
+	<Frame name="InterfaceOptionsCameraPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="CAMERA_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="CAMERA_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentWaterCollision" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraWaterCollision";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentMaxDistanceSlider" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWaterCollision" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "cameraDistanceMaxZoomFactor";
+						_G[self:GetName().."Low"]:SetText(LOW);
+						_G[self:GetName().."High"]:SetText(HIGH);
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+						self:SetDisplayValue(value);
+						self.value = value;
+						SetCVar(self.cvar, value);
+						SetCVar("cameraDistanceMaxZoomFactor", value);
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentFollowSpeedSlider" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaxDistanceSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "cameraYawSmoothSpeed";
+						_G[self:GetName().."Low"]:SetText(SLOW);
+						_G[self:GetName().."High"]:SetText(FAST);
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							self.value = value;
+							SetCVar(self.cvar, value);
+							SetCVar("cameraPitchSmoothSpeed", value/4);
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Frame name="$parentStyleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFollowSpeedSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-28" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="CAMERA_FOLLOWING_STYLE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="18" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsCameraPanelStyleDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentFollowTerrain" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWaterCollision" relativePoint="TOPRIGHT" x="260" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraTerrainTilt";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHeadBob" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFollowTerrain" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraBobbing";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSmartPivot" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeadBob" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "cameraPivot";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsCameraPanel_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+  <!-- Mouse panel -->
+
+  <Frame name="InterfaceOptionsMousePanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="MOUSE_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="MOUSE_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <CheckButton name="$parentInvertMouse" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "mouseInvertPitch";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Slider name="$parentMouseLookSpeedSlider" inherits="OptionsSliderTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentInvertMouse" relativePoint="BOTTOM">
+            <Offset>
+              <AbsDimension x="-2" y="-32"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad inherit="prepend">
+            self.type = CONTROLTYPE_SLIDER;
+            self.cvar = "cameraYawMoveSpeed";
+            _G[self:GetName().."Low"]:SetText(SLOW);
+            _G[self:GetName().."High"]:SetText(FAST);
+            self.SetDisplayValue = self.SetValue;
+            self.SetValue = function (self, value)
+            self:SetDisplayValue(value);
+            self.value = value;
+            SetCVar(self.cvar, value);
+            SetCVar("cameraPitchMoveSpeed", value/2);
+            end
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+          <OnValueChanged>
+            self.value = value;
+            SetCVar(self.cvar, value);
+            SetCVar("cameraPitchMoveSpeed", value/2);
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+      <CheckButton name="$parentEnableMouseSpeed" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="300" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "enableMouseSpeed";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Slider name="$parentMouseSensitivitySlider" inherits="OptionsSliderTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentMouseLookSpeedSlider" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="300" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+					<OnLoad inherit="prepend">
+            self.type = CONTROLTYPE_SLIDER;
+            self.cvar = "mouseSpeed";
+            self.SetDisplayValue = self.SetValue;
+            self.SetValue = function (self, value)
+            self:SetDisplayValue(value);
+            self.value = value;
+            SetCVar(self.cvar, value);
+            end
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelEnableMouseSpeed, self);
+          </OnLoad>
+          <OnValueChanged>
+            self.value = value;
+            SetCVar(self.cvar, value);
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+      <CheckButton name="$parentLockCursorToScreen" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentMouseSensitivitySlider" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-6" y="-60"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            if ( not IsWindowsClient() ) then
+            self:Hide();
+            else
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "ClipCursor";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            end
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentClickToMove" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentMouseLookSpeedSlider" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-6" y="-60"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.cvar = "autointeract";
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Frame name="$parentClickMoveStyleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentClickToMove" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-16" y="-32"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlight" text="CLICK_CAMERA_STYLE">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="18" y="3"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_DROPDOWN;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelClickToMove, self);
+            self:RegisterEvent("PLAYER_ENTERING_WORLD");
+          </OnLoad>
+          <OnEnter>
+            if ( not self.isDisabled ) then
+            GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+            GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+            end
+          </OnEnter>
+          <OnEvent>
+            InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, ...);
+          </OnEvent>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        self.name = MOUSE_LABEL;
+        self.options = MousePanelOptions;
+        InterfaceOptionsPanel_OnLoad(self);
+        InterfaceOptionsMousePanelEnableMouseSpeed:Show();
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <!-- Accessibility panel -->
+
+  <Texture name="ColorblindExampleIconTemplate" virtual="true">
+    <Size x="54" y="54" />
+    <TexCoords left=".140625" right=".859375" top=".140625" bottom=".859375"/>
+  </Texture>
+
+  <FontString name="ColorblindItemQualityTemplate" parentArray="ItemQuality" inherits="OptionsFontSmall" justifyH="LEFT" justifyV="TOP" virtual="true">
+    <Size x="0" y="14"/>
+  </FontString>
+
+  <Frame name="InterfaceOptionsAccessibilityPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ACCESSIBILITY_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT" x="16" y="-16" />
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="ACCESSIBILITY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size y="32" x="0" />
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+            <Anchor point="RIGHT" x="-32" y="0" />
+          </Anchors>
+        </FontString>
+
+        <FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT" x="18" y="-174" />
+          </Anchors>
+        </FontString>
+
+				<Texture parentKey="ColorblindFiltersSeparator">
+					<Size x="600" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-190"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentMovePad" parentKey="MovePad" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableMovePad"
+						self.SetDisplayValue = self.SetValue;
+						self.setFunc = function(value)
+							if ( value == "1" ) then
+								UIParentLoadAddOn("Blizzard_MovePad");
+								MovePadFrame:Show();
+							elseif(IsAddOnLoaded("Blizzard_MovePad")) then
+								MovePadFrame:Hide();
+							end
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+						if (Kiosk.IsEnabled()) then
+							self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						end
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentCinematicSubtitles" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "movieSubtitle";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "colorblindMode";
+						self.uvar = "ENABLE_COLORBLIND_MODE";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+
+      <Frame parentKey="ColorblindFilterExamples">
+        <Size x="580" y="280" />
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-16" />
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString parentKey="Instructions" text="COLORBLIND_OPTIONS_INSTRUCTIONS" inherits="GameFontHighlight" justifyH="LEFT">
+              <Size x="550" />
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+              </Anchors>
+            </FontString>
+
+            <Texture parentKey="ColorWheel" atlas="colorblind-colorwheel" useAtlasSize="true">
+              <Anchors>
+                <Anchor point="BOTTOMRIGHT" x="-60" y="45" />
+              </Anchors>
+            </Texture>
+
+            <Texture parentKey="Hostile" atlas="colorblind-bar-red" useAtlasSize="true">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" x="5" y="155" />
+              </Anchors>
+            </Texture>
+            <FontString parentKey="HostileLabel" text="COLORBLIND_HOSTILE" inherits="OptionsFontSmall">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativeKey="$parent.Hostile" relativePoint="TOPLEFT" x="5" y="3" />
+              </Anchors>
+              <Color r="0.5" g="0.5" b="0.5"/>
+            </FontString>
+
+            <Texture parentKey="Neutral" atlas="colorblind-bar-yellow" useAtlasSize="true">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.Hostile" relativePoint="BOTTOMLEFT" y="-30" />
+              </Anchors>
+            </Texture>
+            <FontString parentKey="NeutralLabel" text="COLORBLIND_NEUTRAL" inherits="OptionsFontSmall">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativeKey="$parent.Neutral" relativePoint="TOPLEFT" x="5" y="3" />
+              </Anchors>
+              <Color r="0.5" g="0.5" b="0.5"/>
+            </FontString>
+
+            <Texture parentKey="Friendly" atlas="colorblind-bar-green" useAtlasSize="true">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.Neutral" relativePoint="BOTTOMLEFT" y="-30" />
+              </Anchors>
+            </Texture>
+            <FontString parentKey="FriendlyLabel" text="COLORBLIND_FRIENDLY" inherits="OptionsFontSmall">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativeKey="$parent.Friendly" relativePoint="TOPLEFT" x="5" y="3" />
+              </Anchors>
+              <Color r="0.5" g="0.5" b="0.5"/>
+            </FontString>
+
+            <Texture parentKey="ExampleIcon1" file="Interface\Icons\Achievement_Character_Nightelf_Female" inherits="ColorblindExampleIconTemplate">
+              <Anchors>
+                <Anchor point="BOTTOM" x="-110" y="125" />
+              </Anchors>
+            </Texture>
+
+            <Texture parentKey="ExampleIcon2" file="Interface\Icons\Achievement_Character_Dwarf_Male" inherits="ColorblindExampleIconTemplate">
+              <Anchors>
+                <Anchor point="LEFT" relativeKey="$parent.ExampleIcon1" relativePoint="RIGHT" x="10" />
+              </Anchors>
+            </Texture>
+
+            <Texture parentKey="ExampleIcon3" file="Interface\Icons\Achievement_Character_Troll_Male" inherits="ColorblindExampleIconTemplate">
+              <Anchors>
+                <Anchor point="LEFT" relativeKey="$parent.ExampleIcon2" relativePoint="RIGHT" x="10" />
+              </Anchors>
+            </Texture>
+
+						<Texture parentKey="ExampleIcon4" file="Interface\Icons\INV_Misc_Gem_Variety_02" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ExampleIcon1" relativePoint="BOTTOM" y="-10" />
+							</Anchors>
+						</Texture>
+
+            <Texture parentKey="ExampleIcon5" file="Interface\Icons\Spell_Shadow_Metamorphosis" inherits="ColorblindExampleIconTemplate">
+              <Anchors>
+                <Anchor point="LEFT" relativeKey="$parent.ExampleIcon4" relativePoint="RIGHT" x="10" />
+              </Anchors>
+            </Texture>
+
+						<Texture parentKey="ExampleIcon6" file="Interface\Icons\Spell_Holy_SealOfRighteousness" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon5" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+
+            <FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
+              <Size x="112" y="10"/>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
+              </Anchors>
+            </FontString>
+
+            <FontString inherits="ColorblindItemQualityTemplate">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+          <Layer level="BACKGROUND">
+            <Texture parentKey="ExampleIcon1Border">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon1" x="-1" y="1" />
+                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon1" x="1" y="-1" />
+              </Anchors>
+              <Color r=".214" g=".214" b=".214" />
+            </Texture>
+            <Texture parentKey="ExampleIcon2Border">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon2" x="-1" y="1" />
+                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon2" x="1" y="-1" />
+              </Anchors>
+              <Color r=".214" g=".214" b=".214" />
+            </Texture>
+            <Texture parentKey="ExampleIcon3Border">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon3" x="-1" y="1" />
+                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon3" x="1" y="-1" />
+              </Anchors>
+              <Color r=".214" g=".214" b=".214" />
+            </Texture>
+            <Texture parentKey="ExampleIcon4Border">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon4" x="-1" y="1" />
+                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon4" x="1" y="-1" />
+              </Anchors>
+              <Color r=".214" g=".214" b=".214" />
+            </Texture>
+            <Texture parentKey="ExampleIcon5Border">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon5" x="-1" y="1" />
+                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon5" x="1" y="-1" />
+              </Anchors>
+              <Color r=".214" g=".214" b=".214" />
+            </Texture>
+            <Texture parentKey="ExampleIcon6Border">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon6" x="-1" y="1" />
+                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon6" x="1" y="-1" />
+              </Anchors>
+              <Color r=".214" g=".214" b=".214" />
+            </Texture>
+          </Layer>
+        </Layers>
+      </Frame>
+
+      <Frame name="$parentColorFilterDropDown" parentKey="ColorblindFilterDropDown" inherits="UIDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFilterExamples" x="83" y="-36" />
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="OptionsFontSmall" text="COLORBLIND_FILTER">
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="LEFT"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_DROPDOWN;
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+            self:RegisterEvent("PLAYER_ENTERING_WORLD");
+          </OnLoad>
+          <OnEvent function="InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent"/>
+        </Scripts>
+      </Frame>
+
+      <Slider name="$parentColorblindStrengthSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+        <Size x="200" y="17"/>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
+        </Anchors>
+        <Scripts>
+					<OnLoad inherit="prepend">
+            local name = self:GetName();
+            self.type = CONTROLTYPE_SLIDER;
+            self.cvar = "colorblindWeaknessFactor";
+
+            _G[name.."High"]:Hide();
+
+            self.Label = _G[name.."Low"];
+            self.Label:ClearAllPoints();
+            self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
+            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+          <OnValueChanged>
+            BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+            self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor(value * 100));
+            self.value = value;
+          </OnValueChanged>
+          <OnShow>
+            self.oldValue = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+            self:SetValue(self.oldValue);
+
+            if BlizzardOptionsPanel_GetCVarSafe("colorblindSimulator") == 0 then
+            self:Disable();
+            else
+            self:Enable();
+            end
+          </OnShow>
+        </Scripts>
+      </Slider>
+    </Frames>
+    <Scripts>
+      <OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
+    </Scripts>
+  </Frame>
+
+  <!-- Social Browser Frame -->
+
+  <Frame name="SocialBrowserFrame" frameStrata="DIALOG" hidden="true" enableMouse="true" parent="InterfaceOptionsFrame" inherits="BasicFrameTemplate">
+    <Size x="666" y="630"/>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Frames>
+      <Browser name="SocialBrowser" IMEFont="ChatFontNormal">
+        <Size x="660" y="606"/>
+        <Anchors>
+          <Anchor point="BOTTOM" x="-1" y="3"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            C_Social.RegisterSocialBrowser(self);
+          </OnLoad>
+          <OnShow>
+            PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+          </OnShow>
+          <OnHide>
+            PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+          </OnHide>
+          <OnExternalLink>
+            StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
+          </OnExternalLink>
+          <OnEscapePressed>
+            self:ClearFocus();
+          </OnEscapePressed>
+        </Scripts>
+      </Browser>
+    </Frames>
+  </Frame>
+
+</Ui>

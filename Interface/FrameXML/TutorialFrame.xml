@@ -1,7 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="TutorialFrame.lua"/>
-	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true">
+	<Frame name="TutorialFrame" inherits="BackdropTemplate" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TUTORIAL_16_16" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="230" y="128"/>
 		</Size>
@@ -13,17 +16,6 @@
 			</Anchor>
 		</Anchors>
 		<TitleRegion setAllPoints="true"/>
-		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="5" top="3" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="TutorialFrameTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -108,7 +100,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:RegisterEvent("TUTORIAL_TRIGGER");
 				self:RegisterEvent("CINEMATIC_STOP");
 				self:RegisterForDrag("LeftButton", "RightButton");

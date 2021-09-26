@@ -244,14 +244,6 @@
 		<Frame name="WowTokenDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="216" />
 			<!-- Anchors are set by the dialogs in lua -->
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-				<TileSize>
-					<AbsValue val="32" />
-				</TileSize>
-				<EdgeSize>
-					<AbsValue val="32" />
-				</EdgeSize>
-			</Backdrop>
 			<Layers>
 				<Layer level="BACKGROUND">
 					<Texture>
@@ -315,6 +307,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
 				<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="16"/>
@@ -345,7 +338,7 @@
 				</Button>
 			</Frames>
 			<Scripts>
-				<OnLoad function="WowTokenDialog_OnLoad"/>
+				<OnLoad inherit="prepend" function="WowTokenDialog_OnLoad"/>
 				<OnEvent function="WowTokenDialog_OnEvent"/>
 				<OnShow function="WowTokenDialog_OnShow"/>
 				<OnHide function="WowTokenDialog_OnHide"/>

@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Backdrop.lua"/>
+	<Frame name="BackdropTemplate" mixin="BackdropTemplateMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnBackdropLoaded"/>
+			<OnSizeChanged method="OnBackdropSizeChanged"/>
+		</Scripts>
+	</Frame>
+	<Frame name="TooltipBackdropTemplate" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="TOOLTIP_BACKDROP_STYLE_DEFAULT" type="global"/>
+			<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="TooltipBorderBackdropTemplate" inherits="BackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

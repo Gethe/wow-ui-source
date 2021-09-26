@@ -10,19 +10,11 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="PVPFramePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+	<Frame name="PVPFramePopup" inherits="BackdropTemplate" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Size x="306" y="193"/>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentBackground" file="Interface\PVPFrame\PVP-Conquest-Misc" >
@@ -104,9 +96,106 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="PVPFramePopup_OnLoad"/>
+			<OnLoad inherit="prepend" function="PVPFramePopup_OnLoad"/>
 			<OnUpdate function="PVPFramePopup_OnUpdate"/>
 			<OnEvent function="PVPFramePopup_OnEvent"/>
 		</Scripts>
+	</Frame>
+	<Frame name="PVPReadyDialog" inherits="BackdropTemplate" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="320" y="84"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="290" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontNormalSmall">
+					<Size x="290" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentAlertIcon">
+					<Size>
+						<AbsDimension x="36" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="24" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Separator" hidden="true">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+						<Anchor point="RIGHT" x="-30" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="56"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CoverFrame" frameLevel="1" enableMouse="true" enableKeyboard="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnKeyDown function="nop"/>
+					<OnKeyUp function="nop"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
+			<Button name="$parentEnterBattleButton" inherits="StaticPopupButtonTemplate" text="ENTER_BATTLE" parentKey="enterButton" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, true) ) then
+						if( StaticPopup_Visible( "DEATH" ) ) then
+						StaticPopup_Hide( "DEATH" );
+						end
+						StaticPopupSpecial_Hide(self:GetParent());
+						end
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentHideButton" inherits="StaticPopupButtonTemplate" text="HIDE" parentKey="hideButton" id="2">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(self:GetParent());
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+					</OnClick>
+				</Scripts>			
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide function="PVPReadyDialog_OnHide"/>
+		</Scripts>		
 	</Frame>
 </Ui>

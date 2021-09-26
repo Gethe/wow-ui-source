@@ -1,0 +1,137 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+    <Script file="Blizzard_InspectUI.lua"/>
+    <Frame name="InspectFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="InspectFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="InspectNameFrame">
+				<Size>
+					<AbsDimension x="109" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="6" y="232"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="InspectNameText" inherits="GameFontHighlight" text="NAME">
+							<Size>
+								<AbsDimension x="109" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="InspectFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="InspectFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="InspectFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
+                <Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="62"/>
+						</Offset>
+					</Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+			</Button>
+			<Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PVP">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+			</Button>
+			<Button name="InspectFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="TALENTS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TALENTS, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+        <Scripts>
+			<OnLoad function="InspectFrame_OnLoad"/>
+            <OnEvent function="InspectFrame_OnEvent"/>
+            <OnShow function="InspectFrame_OnShow"/>
+			<OnHide function="InspectFrame_OnHide"/>
+        </Scripts>
+    </Frame>
+</Ui>

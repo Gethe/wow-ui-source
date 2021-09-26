@@ -27,7 +27,7 @@
 	</Button>
 	<Frame name="GlueDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="GlueDialogBackground">
+			<Frame name="GlueDialogBackground" inherits="BackdropTemplate">
 				<Size>
 					<AbsDimension x="512" y="256"/>
 				</Size>
@@ -38,17 +38,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="GlueDialogTitle" inherits="GlueFontNormalLarge">
@@ -184,7 +173,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GlueDialog_OnLoad"/>
+			<OnLoad inherit="prepend" function="GlueDialog_OnLoad"/>
 			<OnShow function="GlueDialog_OnShow"/>
 			<OnHide function="GlueDialog_OnHide"/>
 			<OnUpdate function="GlueDialog_OnUpdate"/>

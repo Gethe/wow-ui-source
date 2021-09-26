@@ -130,7 +130,7 @@ MoneyTypeInfo["GUILDBANKWITHDRAW"] = {
 	end,
 
 	UpdateFunc = function(self)
-		GuildBankFrame_UpdateWithdrawMoney();
+		self:GetParent():UpdateWithdrawMoney();
 		return nil;
 	end,
 
@@ -177,7 +177,7 @@ MoneyTypeInfo["BLACKMARKET"] = {
 	collapse = 1,
 };
 
-function MoneyFrame_OnLoad (self)
+function MoneyFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("PLAYER_TRADE_MONEY");
 	self:RegisterEvent("TRADE_MONEY_CHANGED");
@@ -257,7 +257,7 @@ function MoneyFrame_SetType(self, type)
 
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
-		message("Invalid money type: "..type);
+		message("Invalid money type: "..(type or "INVALID TYPE"));
 		return;
 	end
 	self.info = info;
@@ -297,7 +297,7 @@ local function CreateMoneyButtonNormalTexture (button, iconWidth)
 	texture:SetTexture("Interface\\MoneyFrame\\UI-MoneyIcons");
 	texture:SetWidth(iconWidth);
 	texture:SetHeight(iconWidth);
-	texture:SetPoint("RIGHT");
+	texture:SetPoint("RIGHT", -1, 1);
 	button:SetNormalTexture(texture);
 	
 	return texture;
@@ -570,12 +570,13 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 		fontColor = DISABLED_FONT_COLOR;
 	end
 	button.Text:SetTextColor(fontColor.r, fontColor.g, fontColor.b);
-	if ( button.pointType == HONOR_POINTS ) then
+
+	if ( texture == HONOR_POINT_TEXTURES[1] or texture == HONOR_POINT_TEXTURES[2] ) then
 		iconWidth = 24;
-		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", -1, -6);
+		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", -3, -5);
 	else
 		iconWidth = MONEY_ICON_WIDTH_SMALL;
-		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", 0, 0);
+		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", -1, 1);
 	end
 	buttonTexture:SetWidth(iconWidth);
 	buttonTexture:SetHeight(iconWidth);

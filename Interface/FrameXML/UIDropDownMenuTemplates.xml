@@ -171,38 +171,12 @@
 	</Button>
 	<Button name="UIDropDownListTemplate" hidden="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
 		<Frames>
-			<Frame name="$parentBackdrop" setAllPoints="true">
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="11" top="11" bottom="9"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
+			<Frame name="$parentBackdrop" inherits="BackdropTemplate" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+				</KeyValues>
 			</Frame>
-			<Frame name="$parentMenuBackdrop" setAllPoints="true">
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="4" top="4" bottom="4"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			<Frame name="$parentMenuBackdrop" inherits="TooltipBackdropTemplate" setAllPoints="true"/>
 			<Button name="$parentButton1" inherits="UIDropDownMenuButtonTemplate" id="1"/>
 			<Button name="$parentButton2" inherits="UIDropDownMenuButtonTemplate" id="2"/>
 			<Button name="$parentButton3" inherits="UIDropDownMenuButtonTemplate" id="3"/>

@@ -26,6 +26,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "ShouldKnowUnitHealth",
+			Type = "Function",
+			Documentation = { "Whether the player would have been able to know the unit's exact health value in the original game release." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldKnowUnitHealth", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitClass",
 			Type = "Function",
 
@@ -149,6 +164,26 @@ local Unit =
 
 	Events =
 	{
+		{
+			Name = "ArenaCooldownsUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_COOLDOWNS_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ArenaCrowdControlSpellUpdate",
+			Type = "Event",
+			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "AutofollowBegin",
 			Type = "Event",
@@ -296,6 +331,11 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerFocusChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_FOCUS_CHANGED",
+		},
+		{
 			Name = "PlayerLeaveCombat",
 			Type = "Event",
 			LiteralName = "PLAYER_LEAVE_COMBAT",
@@ -326,6 +366,15 @@ local Unit =
 				{ Name = "staminaDelta", Type = "number", Nilable = false },
 				{ Name = "intellectDelta", Type = "number", Nilable = false },
 				{ Name = "spiritDelta", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerMaxLevelUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_MAX_LEVEL_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -362,14 +411,34 @@ local Unit =
 			LiteralName = "PLAYER_REGEN_ENABLED",
 		},
 		{
+			Name = "PlayerStartedLooking",
+			Type = "Event",
+			LiteralName = "PLAYER_STARTED_LOOKING",
+		},
+		{
 			Name = "PlayerStartedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_MOVING",
 		},
 		{
+			Name = "PlayerStartedTurning",
+			Type = "Event",
+			LiteralName = "PLAYER_STARTED_TURNING",
+		},
+		{
+			Name = "PlayerStoppedLooking",
+			Type = "Event",
+			LiteralName = "PLAYER_STOPPED_LOOKING",
+		},
+		{
 			Name = "PlayerStoppedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_MOVING",
+		},
+		{
+			Name = "PlayerStoppedTurning",
+			Type = "Event",
+			LiteralName = "PLAYER_STOPPED_TURNING",
 		},
 		{
 			Name = "PlayerTargetChanged",

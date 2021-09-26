@@ -1,0 +1,1241 @@
+<Bindings>
+
+	<!-- User interface key bindings header="MOVEMENT" -->
+	<Binding name="MOVEANDSTEER" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveAndSteerStart();
+		else
+			MoveAndSteerStop();
+		end
+	</Binding>
+	<Binding name="MOVEFORWARD" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveForwardStart();
+		else
+			MoveForwardStop();
+		end
+	</Binding>
+	<Binding name="MOVEBACKWARD" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveBackwardStart();
+		else
+			MoveBackwardStop();
+		end
+	</Binding>
+	<Binding name="TURNLEFT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			TurnLeftStart();
+		else
+			TurnLeftStop();
+		end
+	</Binding>
+	<Binding name="TURNRIGHT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			TurnRightStart();
+		else
+			TurnRightStop();
+		end
+	</Binding>
+	<Binding name="STRAFELEFT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			StrafeLeftStart();
+		else
+			StrafeLeftStop();
+		end
+	</Binding>
+	<Binding name="STRAFERIGHT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			StrafeRightStart();
+		else
+			StrafeRightStop();
+		end
+	</Binding>
+	<Binding name="JUMP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			JumpOrAscendStart();
+		else
+			AscendStop();
+		end
+	</Binding>
+	<Binding name="SITORSTAND" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			SitStandOrDescendStart();
+		else
+			DescendStop();
+		end
+	</Binding>
+	<Binding name="TOGGLESHEATH" category="BINDING_HEADER_MOVEMENT">
+		ToggleSheath();
+	</Binding>
+	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		ToggleAutoRun();
+	</Binding>
+	<Binding name="STARTAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StartAutoRun();
+	</Binding>
+	<Binding name="STOPAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StopAutoRun();
+	</Binding>
+	<Binding name="PITCHUP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			PitchUpStart();
+		else
+			PitchUpStop();
+		end
+	</Binding>
+	<Binding name="PITCHDOWN" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			PitchDownStart();
+		else
+			PitchDownStop();
+		end
+	</Binding>
+	<Binding name="TOGGLERUN" category="BINDING_HEADER_MOVEMENT">
+		ToggleRun();
+	</Binding>
+	<Binding name="FOLLOWTARGET" category="BINDING_HEADER_MOVEMENT">
+		FollowUnit("target");
+	</Binding>
+	<!-- Chat frame bindings header="CHAT" -->
+	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
+		ChatFrame_OpenChat("");
+	</Binding>
+	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
+		ChatFrame_OpenChat("/");
+	</Binding>
+	<Binding name="CHATPAGEUP" category="BINDING_HEADER_CHAT">
+		ChatFrame_ChatPageUp();
+	</Binding>
+	<Binding name="CHATPAGEDOWN" category="BINDING_HEADER_CHAT">
+		ChatFrame_ChatPageDown();
+	</Binding>
+	<Binding name="CHATBOTTOM" category="BINDING_HEADER_CHAT">
+		ChatFrame_ScrollToBottom();
+	</Binding>
+	<Binding name="REPLY" category="BINDING_HEADER_CHAT">
+		ChatFrame_ReplyTell();
+	</Binding>
+	<Binding name="REPLY2" category="BINDING_HEADER_CHAT">
+		ChatFrame_ReplyTell2();
+	</Binding>
+	<Binding name="COMBATLOGPAGEUP" category="BINDING_HEADER_CHAT">
+		ChatFrame2:PageUp();
+	</Binding>
+	<Binding name="COMBATLOGPAGEDOWN" category="BINDING_HEADER_CHAT">
+		ChatFrame2:PageDown();
+	</Binding>
+	<Binding name="COMBATLOGBOTTOM" category="BINDING_HEADER_CHAT">
+		ChatFrame2:ScrollToBottom();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleMutedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleDeafenedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
+		nop(); -- Action handler is custom
+	</Binding>
+	<!-- Action bar bindings header="ACTIONBAR" -->
+	<Binding name="ACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(1);
+		else
+			ActionButtonUp(1);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(2);
+		else
+			ActionButtonUp(2);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(3);
+		else
+			ActionButtonUp(3);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(4);
+		else
+			ActionButtonUp(4);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(5);
+		else
+			ActionButtonUp(5);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(6);
+		else
+			ActionButtonUp(6);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON7" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(7);
+		else
+			ActionButtonUp(7);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON8" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(8);
+		else
+			ActionButtonUp(8);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON9" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(9);
+		else
+			ActionButtonUp(9);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON10" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(10);
+		else
+			ActionButtonUp(10);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON11" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(11);
+		else
+			ActionButtonUp(11);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON12" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(12);
+		else
+			ActionButtonUp(12);
+		end
+	</Binding>
+
+	<Binding name="SHAPESHIFTBUTTON1" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(1)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON2" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(2)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON3" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(3)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON4" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(4)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON5" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(5)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON6" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(6)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON7" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(7)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON8" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(8)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON9" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(9)
+	</Binding>
+	<Binding name="SHAPESHIFTBUTTON10" category="BINDING_HEADER_ACTIONBAR">
+		StanceBar_Select(10)
+	</Binding>
+
+	<Binding name="BONUSACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(1);
+			else
+				PetActionButtonUp(1);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(2);
+			else
+				PetActionButtonUp(2);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(3);
+			else
+				PetActionButtonUp(3);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(4);
+			else
+				PetActionButtonUp(4);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(5);
+			else
+				PetActionButtonUp(5);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(6);
+			else
+				PetActionButtonUp(6);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON7" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(7);
+			else
+				PetActionButtonUp(7);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON8" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(8);
+			else
+				PetActionButtonUp(8);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON9" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(9);
+			else
+				PetActionButtonUp(9);
+			end
+		end
+	</Binding>
+	<Binding name="BONUSACTIONBUTTON10" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				PetActionButtonDown(10);
+			else
+				PetActionButtonUp(10);
+			end
+		end
+	</Binding>
+
+	<Binding name="ACTIONPAGE1" category="BINDING_HEADER_ACTIONBAR">
+		ChangeActionBarPage(1);
+	</Binding>
+	<Binding name="ACTIONPAGE2" category="BINDING_HEADER_ACTIONBAR">
+		ChangeActionBarPage(2);
+	</Binding>
+	<Binding name="ACTIONPAGE3" category="BINDING_HEADER_ACTIONBAR">
+		ChangeActionBarPage(3);
+	</Binding>
+	<Binding name="ACTIONPAGE4" category="BINDING_HEADER_ACTIONBAR">
+		ChangeActionBarPage(4);
+	</Binding>
+	<Binding name="ACTIONPAGE5" category="BINDING_HEADER_ACTIONBAR">
+		ChangeActionBarPage(5);
+	</Binding>
+	<Binding name="ACTIONPAGE6" category="BINDING_HEADER_ACTIONBAR">
+		ChangeActionBarPage(6);
+	</Binding>
+	<Binding name="PREVIOUSACTIONPAGE" category="BINDING_HEADER_ACTIONBAR">
+		ActionBar_PageDown();
+	</Binding>
+	<Binding name="NEXTACTIONPAGE" category="BINDING_HEADER_ACTIONBAR">
+		ActionBar_PageUp();
+	</Binding>
+	<Binding name="TOGGLEACTIONBARLOCK" category="BINDING_HEADER_ACTIONBAR">
+		if ( LOCK_ACTIONBAR == "1" ) then
+			LOCK_ACTIONBAR = "0";
+		else
+			LOCK_ACTIONBAR = "1";
+		end
+	</Binding>
+	<Binding name="TOGGLEAUTOSELFCAST" category="BINDING_HEADER_ACTIONBAR">
+		if ( GetCVar("autoSelfCast") == "1" ) then
+			SetCVar("autoSelfCast", "0");
+		else
+			SetCVar("autoSelfCast", "1");
+		end
+	</Binding>
+
+	<!-- MultiAction bar bindings header="MULTIACTIONBAR" -->
+	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 1);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON2" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 2);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON3" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 3);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON4" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 4);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON5" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 5);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON6" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 6);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON7" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 7);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON8" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 8);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON9" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 9);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON10" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 10);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON11" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 11);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON12" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 12);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 12);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON1" runOnUp="true" header="BLANK4" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 1);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON2" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 2);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON3" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 3);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON4" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 4);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON5" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 5);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON6" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 6);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON7" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 7);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON8" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 8);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON9" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 9);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON10" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 10);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON11" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 11);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR2BUTTON12" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomRight", 12);
+		else
+			MultiActionButtonUp("MultiBarBottomRight", 12);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON1" runOnUp="true" header="BLANK5" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 1);
+		else
+			MultiActionButtonUp("MultiBarRight", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON2" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 2);
+		else
+			MultiActionButtonUp("MultiBarRight", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON3" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 3);
+		else
+			MultiActionButtonUp("MultiBarRight", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON4" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 4);
+		else
+			MultiActionButtonUp("MultiBarRight", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON5" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 5);
+		else
+			MultiActionButtonUp("MultiBarRight", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON6" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 6);
+		else
+			MultiActionButtonUp("MultiBarRight", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON7" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 7);
+		else
+			MultiActionButtonUp("MultiBarRight", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON8" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 8);
+		else
+			MultiActionButtonUp("MultiBarRight", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON9" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 9);
+		else
+			MultiActionButtonUp("MultiBarRight", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON10" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 10);
+		else
+			MultiActionButtonUp("MultiBarRight", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON11" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 11);
+		else
+			MultiActionButtonUp("MultiBarRight", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR3BUTTON12" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarRight", 12);
+		else
+			MultiActionButtonUp("MultiBarRight", 12);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON1" runOnUp="true" header="BLANK6" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 1);
+		else
+			MultiActionButtonUp("MultiBarLeft", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON2" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 2);
+		else
+			MultiActionButtonUp("MultiBarLeft", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON3" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 3);
+		else
+			MultiActionButtonUp("MultiBarLeft", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON4" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 4);
+		else
+			MultiActionButtonUp("MultiBarLeft", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON5" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 5);
+		else
+			MultiActionButtonUp("MultiBarLeft", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON6" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 6);
+		else
+			MultiActionButtonUp("MultiBarLeft", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON7" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 7);
+		else
+			MultiActionButtonUp("MultiBarLeft", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON8" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 8);
+		else
+			MultiActionButtonUp("MultiBarLeft", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON9" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 9);
+		else
+			MultiActionButtonUp("MultiBarLeft", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON10" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 10);
+		else
+			MultiActionButtonUp("MultiBarLeft", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON11" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 11);
+		else
+			MultiActionButtonUp("MultiBarLeft", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR4BUTTON12" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarLeft", 12);
+		else
+			MultiActionButtonUp("MultiBarLeft", 12);
+		end
+	</Binding>
+
+	<!-- Target function key bindings header="TARGETING" -->
+	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetNearestEnemy();
+			TargetPriorityHighlightStart(true);
+		else
+			TargetPriorityHighlightEnd(true);
+		end
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemy(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETSCANENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetPriorityHighlightStart(false);
+		else
+			TargetPriorityHighlightEnd(true);
+		end
+	</Binding>
+	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriend();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIEND" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriend(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTENEMYPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemyPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMYPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemyPlayer(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTFRIENDPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriendPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIENDPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriendPlayer(true);	-- true means reverse!
+	</Binding>
+<!-- These didn't end up getting used, but might be useful at some point.
+	<Binding name="TARGETNEAREST" category="BINDING_HEADER_TARGETING">
+		TargetNearest();
+	</Binding>
+	<Binding name="TARGETPREVIOUS" category="BINDING_HEADER_TARGETING">
+		TargetNearest(true);
+	</Binding>
+-->
+	<Binding name="TARGETSELF" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("player", "target") ) then
+			TargetUnit("pet", true);
+		else
+			TargetUnit("player");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party1", "target") ) then
+			TargetUnit("partypet1");
+		else
+			TargetUnit("party1");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party2", "target") ) then
+			TargetUnit("partypet2");
+		else
+			TargetUnit("party2");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party3", "target") ) then
+			TargetUnit("partypet3");
+		else
+			TargetUnit("party3");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party4", "target") ) then
+			TargetUnit("partypet4");
+		else
+			TargetUnit("party4");
+		end
+	</Binding>
+	<Binding name="TARGETPET" category="BINDING_HEADER_TARGETING">
+		TargetUnit("pet");
+	</Binding>
+	<Binding name="TARGETPARTYPET1" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet1");
+	</Binding>
+	<Binding name="TARGETPARTYPET2" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet2");
+	</Binding>
+	<Binding name="TARGETPARTYPET3" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet3");
+	</Binding>
+	<Binding name="TARGETPARTYPET4" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet4");
+	</Binding>
+	<Binding name="TARGETLASTHOSTILE" category="BINDING_HEADER_TARGETING">
+		TargetLastEnemy();
+	</Binding>
+	<Binding name="TARGETLASTTARGET" category="BINDING_HEADER_TARGETING">
+		TargetLastTarget();
+	</Binding>
+
+	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
+		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
+		if ( SHOW_ENEMIES ) then
+			SetCVar("nameplateShowEnemies", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		else
+			SetCVar("nameplateShowEnemies", 1);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
+		end
+	</Binding>
+	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
+		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
+		if ( SHOW_FRIENDS ) then
+			SetCVar("nameplateShowFriends", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		else
+			SetCVar("nameplateShowFriends", 1);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
+		end
+	</Binding>
+	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
+		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
+		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
+		if ( not SHOW_ENEMIES or not SHOW_FRIENDS ) then
+			SetCVar("nameplateShowEnemies", 1);
+			SetCVar("nameplateShowFriends", 1);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
+		else
+			SetCVar("nameplateShowEnemies", 0);
+			SetCVar("nameplateShowFriends", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		end
+	</Binding>
+	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
+		if ( not InteractUnit("mouseover") ) then
+			InteractUnit("target");
+		end
+	</Binding>
+	<Binding name="INTERACTTARGET" category="BINDING_HEADER_TARGETING">
+		InteractUnit("target");
+	</Binding>
+	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
+		AssistUnit("target");
+	</Binding>
+	<Binding name="ATTACKTARGET" category="BINDING_HEADER_TARGETING">
+		AttackTarget();
+	</Binding>
+  <Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
+    StartAttack();
+  </Binding>
+	<Binding name="PETATTACK" category="BINDING_HEADER_TARGETING">
+		PetAttack();
+	</Binding>
+	<Binding name="FOCUSTARGET" category="BINDING_HEADER_TARGETING">
+		FocusUnit("target");
+	</Binding>
+	<Binding name="TARGETFOCUS" category="BINDING_HEADER_TARGETING">
+		TargetUnit("focus");
+	</Binding>
+	<Binding name="TARGETMOUSEOVER" category="BINDING_HEADER_TARGETING">
+		TargetUnit("mouseover");
+	</Binding>
+	<Binding name="TARGETTALKER" category="BINDING_HEADER_TARGETING">
+		nop();
+	</Binding>
+
+	<!-- UI Panels header="INTERFACE" -->
+	<Binding name="TOGGLEGAMEMENU" category="BINDING_HEADER_INTERFACE">
+		ToggleGameMenu();
+	</Binding>
+	<Binding name="TOGGLEBACKPACK" category="BINDING_HEADER_INTERFACE">
+		ToggleBackpack();
+	</Binding>
+	<Binding name="TOGGLEBAG1" category="BINDING_HEADER_INTERFACE">
+		ToggleBag(4);
+	</Binding>
+	<Binding name="TOGGLEBAG2" category="BINDING_HEADER_INTERFACE">
+		ToggleBag(3);
+	</Binding>
+	<Binding name="TOGGLEBAG3" category="BINDING_HEADER_INTERFACE">
+		ToggleBag(2);
+	</Binding>
+	<Binding name="TOGGLEBAG4" category="BINDING_HEADER_INTERFACE">
+		ToggleBag(1);
+	</Binding>
+	<Binding name="OPENALLBAGS" category="BINDING_HEADER_INTERFACE">
+		ToggleAllBags();
+	</Binding>
+
+	<Binding name="TOGGLECHARACTER0" header="BLANK8" category="BINDING_HEADER_INTERFACE">
+		ToggleCharacter("PaperDollFrame");
+	</Binding>
+	<Binding name="TOGGLECHARACTER3" category="BINDING_HEADER_INTERFACE">
+		ToggleCharacter("PetPaperDollFrame");
+	</Binding>
+	<Binding name="TOGGLECHARACTER2" category="BINDING_HEADER_INTERFACE">
+		ToggleCharacter("ReputationFrame");
+	</Binding>
+	<Binding name="TOGGLECHARACTER1" category="BINDING_HEADER_INTERFACE">
+		ToggleCharacter("SkillFrame");
+	</Binding>
+	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
+		ToggleCharacter("PVPFrame");
+	</Binding>
+
+	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
+		ToggleSpellBook(BOOKTYPE_SPELL);
+	</Binding>
+	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
+		ToggleSpellBook(BOOKTYPE_PET);
+	</Binding>
+	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
+		ToggleTalentFrame();
+	</Binding>
+
+	<Binding name="TOGGLEQUESTLOG" header="BLANK11" category="BINDING_HEADER_INTERFACE">
+		ToggleQuestLog();
+	</Binding>
+	<Binding name="TOGGLEWORLDMAP" category="BINDING_HEADER_INTERFACE">
+		ToggleWorldMap();
+	</Binding>
+	<Binding name="TOGGLEMINIMAP" category="BINDING_HEADER_INTERFACE">
+		ToggleMinimap();
+	</Binding>
+	<Binding name="TOGGLEMINIMAPROTATION" category="BINDING_HEADER_INTERFACE">
+		ToggleMiniMapRotation();
+	</Binding>
+	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
+		ToggleBattlefieldMap();
+	</Binding>
+	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
+		ToggleWorldStateScoreFrame();
+	</Binding>
+
+	<Binding name="TOGGLESOCIAL" header="BLANK12" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame();
+	</Binding>
+	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
+	</Binding>
+	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame(FRIEND_TAB_WHO);
+	</Binding>
+	<Binding name="TOGGLEGUILDTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame(FRIEND_TAB_GUILD);
+	</Binding>
+	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleRaidFrame();
+	</Binding>
+	<Binding name="TOGGLEBLIZZARDGROUPSTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleCommunitiesFrame();
+	</Binding>
+	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleChannelFrame();
+	</Binding>
+	<Binding name="TOGGLELFGPARENT" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame();
+	</Binding>
+	<Binding name="TOGGLELFGTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame(1);
+	</Binding>
+	<Binding name="TOGGLELFMTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame(2);
+	</Binding>
+
+  <!-- Misc header="MISC" -->
+	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
+		SpellStopCasting();
+	</Binding>
+	<Binding name="STOPATTACK" category="BINDING_HEADER_MISC">
+		StopAttack();
+	</Binding>
+	<Binding name="DISMOUNT" category="BINDING_HEADER_MISC">
+		Dismount();
+	</Binding>
+	<Binding name="MINIMAPZOOMIN" category="BINDING_HEADER_MISC">
+		Minimap_ZoomIn();
+	</Binding>
+	<Binding name="MINIMAPZOOMOUT" category="BINDING_HEADER_MISC">
+		Minimap_ZoomOut();
+	</Binding>
+	<Binding name="TOGGLEMUSIC" category="BINDING_HEADER_MISC">
+		Sound_ToggleMusic();
+	</Binding>
+	<Binding name="TOGGLESOUND" category="BINDING_HEADER_MISC">
+		Sound_ToggleSound();
+	</Binding>
+	<Binding name="MASTERVOLUMEUP" category="BINDING_HEADER_MISC">
+		Sound_MasterVolumeUp();
+	</Binding>
+	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
+		Sound_MasterVolumeDown();
+	</Binding>
+	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
+		if ( UIParent:IsShown() ) then
+			securecall("CloseMenus");
+			securecall("CloseAllWindows");
+			SetUIVisibility(false);
+			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"))))
+		else
+			SetUIVisibility(true);
+		end
+	</Binding>
+	<Binding name="TOGGLEFPS" category="BINDING_HEADER_MISC">
+		ToggleFramerate();
+	</Binding>
+	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
+		Screenshot();
+	</Binding>
+	<Binding name="ITEMCOMPARISONCYCLING" category="BINDING_HEADER_MISC">
+		GameTooltip_CycleSecondaryComparedItem(GameTooltip);
+	</Binding>
+	<Binding name="TOGGLEGRAPHICSSETTINGS" category="BINDING_HEADER_MISC">
+		if ( GetCVarBool("RAIDsettingsEnabled") ) then
+			local setting = GetCurrentGraphicsSetting()
+			if (setting == 0) then
+				SetCurrentGraphicsSetting( 1 );
+				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_RAID_NOTICE, 1.0, 0.1, 0.1, 1.0);
+			else
+				SetCurrentGraphicsSetting( 0 );
+				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_NORMAL_NOTICE, 1.0, 0.1, 0.1, 1.0);
+			end
+		end
+	</Binding>
+	<Binding name="TOGGLESELFHIGHLIGHT" category="BINDING_HEADER_MISC">
+		local text;
+		if ( ToggleSelfHighlight() ) then
+			text = SELF_HIGHLIGHT_ON;
+		else
+			text = SELF_HIGHLIGHT_OFF;
+		end
+		UIErrorsFrame:AddMessage(text, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	</Binding>
+	<Binding name="TOGGLEWINDOWED" category="BINDING_HEADER_MISC">
+		ToggleWindowed();
+	</Binding>
+
+	<!-- Debug function key bindings -->
+	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleStats();
+	</Binding>
+	<Binding name="TOGGLETRIS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleTris();
+	</Binding>
+	<Binding name="TOGGLEPORTALS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePortals();
+	</Binding>
+	<Binding name="TOGGLECOLLISION" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCollision();
+	</Binding>
+	<Binding name="TOGGLECOLLISIONDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCollisionDisplay();
+	</Binding>
+	<Binding name="TOGGLEPLAYERBOUNDS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePlayerBounds();
+	</Binding>
+  <Binding name="TOGGLEPERFORMANCEPAUSE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    TogglePerformancePause();
+  </Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePerformanceValues(1);
+	</Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    TogglePerformanceValues(0);
+  </Binding>
+  <Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ResetPerformanceValues();
+	</Binding>
+	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleAnimKitDisplay();
+	</Binding>
+	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleDebugAIDisplay();
+	</Binding>
+	<!-- Commentator Mode Bindings -->
+	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_Commentator.ToggleCheats();
+	</Binding>
+
+	<!-- Camera key bindings header="CAMERA" -->
+	<Binding name="NEXTVIEW" category="BINDING_HEADER_CAMERA">
+		NextView();
+	</Binding>
+	<Binding name="PREVVIEW" category="BINDING_HEADER_CAMERA">
+		PrevView();
+	</Binding>
+	<Binding name="CAMERAZOOMIN" category="BINDING_HEADER_CAMERA">
+			CameraZoomIn(1.0);
+	</Binding>
+	<Binding name="CAMERAZOOMOUT" category="BINDING_HEADER_CAMERA">
+			CameraZoomOut(1.0);
+	</Binding>
+	<Binding name="SETVIEW1" category="BINDING_HEADER_CAMERA">
+		SetView(1);
+	</Binding>
+	<Binding name="SETVIEW2" category="BINDING_HEADER_CAMERA">
+		SetView(2);
+	</Binding>
+	<Binding name="SETVIEW3" category="BINDING_HEADER_CAMERA">
+		SetView(3);
+	</Binding>
+	<Binding name="SETVIEW4" category="BINDING_HEADER_CAMERA">
+		SetView(4);
+	</Binding>
+	<Binding name="SETVIEW5" category="BINDING_HEADER_CAMERA">
+		SetView(5);
+	</Binding>
+	<Binding name="SAVEVIEW1" category="BINDING_HEADER_CAMERA">
+		SaveView(1);
+	</Binding>
+	<Binding name="SAVEVIEW2" category="BINDING_HEADER_CAMERA">
+		SaveView(2);
+	</Binding>
+	<Binding name="SAVEVIEW3" category="BINDING_HEADER_CAMERA">
+		SaveView(3);
+	</Binding>
+	<Binding name="SAVEVIEW4" category="BINDING_HEADER_CAMERA">
+		SaveView(4);
+	</Binding>
+	<Binding name="SAVEVIEW5" category="BINDING_HEADER_CAMERA">
+		SaveView(5);
+	</Binding>
+	<Binding name="RESETVIEW1" category="BINDING_HEADER_CAMERA">
+		ResetView(1);
+	</Binding>
+	<Binding name="RESETVIEW2" category="BINDING_HEADER_CAMERA">
+		ResetView(2);
+	</Binding>
+	<Binding name="RESETVIEW3" category="BINDING_HEADER_CAMERA">
+		ResetView(3);
+	</Binding>
+	<Binding name="RESETVIEW4" category="BINDING_HEADER_CAMERA">
+		ResetView(4);
+	</Binding>
+	<Binding name="RESETVIEW5" category="BINDING_HEADER_CAMERA">
+		ResetView(5);
+	</Binding>
+	<Binding name="FLIPCAMERAYAW" category="BINDING_HEADER_CAMERA">
+		FlipCameraYaw(180);
+	</Binding>
+	<!--  header="RAID_TARGET" -->
+	<Binding name="RAIDTARGET8" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 8);
+	</Binding>
+		<Binding name="RAIDTARGET7" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 7);
+	</Binding>
+		<Binding name="RAIDTARGET6" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 6);
+	</Binding>
+		<Binding name="RAIDTARGET5" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 5);
+	</Binding>
+		<Binding name="RAIDTARGET4" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 4);
+	</Binding>
+		<Binding name="RAIDTARGET3" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 3);
+	</Binding>
+		<Binding name="RAIDTARGET2" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 2);
+	</Binding>
+	<Binding name="RAIDTARGET1" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 1);
+	</Binding>
+	<Binding name="RAIDTARGETNONE" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTarget("target", 0);
+	</Binding>
+
+<!-- Hidden bindings -->
+	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
+		if ( keystate == "down" ) then
+			TurnOrActionStart();
+		else
+			TurnOrActionStop();
+		end
+	</Binding>
+	<Binding name="CAMERAORSELECTORMOVE" runOnUp="true" hidden="true">
+		if ( keystate == "down" ) then
+			CameraOrSelectOrMoveStart();
+		else
+			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
+		end
+	</Binding>
+
+	<!-- Modified Click Actions -->
+	<ModifiedClick action="SELFCAST" default="ALT"/>
+	<ModifiedClick action="FOCUSCAST" default="NONE"/>
+	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
+	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
+	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
+	<ModifiedClick action="EXPANDITEM" default="SHIFT-BUTTON2"/>
+	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
+	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
+	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>
+	<ModifiedClick action="COMPAREITEMS" default="SHIFT"/>
+	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
+	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
+	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
+</Bindings>
