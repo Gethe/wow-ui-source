@@ -121,7 +121,7 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 	);
 end
 
-function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
+function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY)
 	return ("|A:%s:%d:%d:%d:%d|a"):format(
 		  atlasName
 		, height or 0

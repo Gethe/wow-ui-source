@@ -85,6 +85,12 @@
 				</Scripts>
 			</CheckButton>
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Size x="186" y="264"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -92,9 +98,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(PLAYBACK);
 					</OnLoad>
 				</Scripts>
@@ -266,10 +270,14 @@
 						<Offset x="14" y="0"/>
 					</Anchor>
 				</Anchors>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(HARDWARE);
 					</OnLoad>
 				</Scripts>
@@ -396,10 +404,13 @@
 						<Offset x="14" y="0"/>
 					</Anchor>
 				</Anchors>
+				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+				<KeyValues>
+					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
 				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
+					<OnLoad inherit="prepend">
 						_G[self:GetName().."Title"]:SetText(VOLUME);
 					</OnLoad>
 				</Scripts>
@@ -427,7 +438,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide();
 						_G[name.."High"]:Hide();
@@ -483,7 +494,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						local label = _G[name.."Low"];
 						label:ClearAllPoints();
@@ -541,7 +552,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide()
 						_G[name.."High"]:Hide();
@@ -595,7 +606,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide();
 						_G[name.."High"]:Hide();
@@ -649,7 +660,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						local name = self:GetName();
 						_G[name.."Low"]:Hide();
 						_G[name.."High"]:Hide();
@@ -752,7 +763,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>			
@@ -791,7 +802,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -811,7 +822,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
@@ -856,12 +867,12 @@
 							<Anchor point="LEFT" relativeKey="$parent.ToggleTest" relativePoint="RIGHT" x="3" y="0"/>
 							<Anchor point="RIGHT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-								self:SetBackdropColor(0.15, 0.15, 0.15, 0.5);
-							</OnLoad>
-						</Scripts>
+						<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
+						<KeyValues>
+							<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+							<KeyValue key="backdropColorAlpha" value=".5" type="number"/>
+							<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+						</KeyValues>
 						<Frames>
 							<StatusBar parentKey="Status" inherits="TextStatusBar">
 								<Anchors>

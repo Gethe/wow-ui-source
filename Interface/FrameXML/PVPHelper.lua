@@ -64,6 +64,29 @@ end
 ---- PVP Ready Dialog
 ---------------------------------------------------------------------------
 
+function PVPReadyDialog_OnLoad(self)
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+end
+
+function PVPReadyDialog_OnEvent(self, event, ...)
+	if ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+		local i = ...;
+		PVPReadyDialog_Update(self, i);
+		self.battlefieldIndex = i;
+	end
+end
+
+function PVPReadyDialog_Update(self, index) 
+	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(index);
+	if ( status == "confirm" ) then
+		PVPReadyDialog_Display(self, index, mapName, registeredMatch, queueType, gameType, role);
+	else
+		if ( PVPReadyDialog_Showing(index) ) then
+			StaticPopupSpecial_Hide(self);
+		end
+	end
+end
+
 function PVPReadyDialog_OnHide(self)
 	self.battlefieldIndex = nil;
 end

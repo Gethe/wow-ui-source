@@ -2895,6 +2895,16 @@ end
 
 local frameFadeManager = CreateFrame("FRAME");
 
+local function UIFrameFadeContains(frame)
+	for i, fadeFrame in ipairs(FADEFRAMES) do
+		if ( fadeFrame == frame ) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 -- Generic fade function
 function UIFrameFade(frame, fadeInfo)
 	if (not frame) then
@@ -2927,12 +2937,9 @@ function UIFrameFade(frame, fadeInfo)
 	frame:Show();
 
 	local index = 1;
-	while FADEFRAMES[index] do
-		-- If frame is already set to fade then return
-		if ( FADEFRAMES[index] == frame ) then
-			return;
-		end
-		index = index + 1;
+	-- secure so we don't spread taint to other frames in FADEFRAMES
+	if securecall(UIFrameFadeContains, frame) then
+		return;
 	end
 	tinsert(FADEFRAMES, frame);
 	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);

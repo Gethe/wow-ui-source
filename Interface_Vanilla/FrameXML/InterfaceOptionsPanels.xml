@@ -2216,7 +2216,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraDistanceMaxZoomFactor";
 						_G[self:GetName().."Low"]:SetText(LOW);
@@ -2245,7 +2245,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraYawSmoothSpeed";
 						_G[self:GetName().."Low"]:SetText(SLOW);
@@ -2405,7 +2405,7 @@
           </Anchor>
         </Anchors>
         <Scripts>
-          <OnLoad>
+          <OnLoad inherit="prepend">
             self.type = CONTROLTYPE_SLIDER;
             self.cvar = "cameraYawMoveSpeed";
             _G[self:GetName().."Low"]:SetText(SLOW);
@@ -2451,7 +2451,7 @@
           </Anchor>
         </Anchors>
         <Scripts>
-          <OnLoad>
+          <OnLoad inherit="prepend">
             self.type = CONTROLTYPE_SLIDER;
             self.cvar = "mouseSpeed";
             self.SetDisplayValue = self.SetValue;
@@ -2844,7 +2844,7 @@
           <Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
         </Anchors>
         <Scripts>
-          <OnLoad>
+          <OnLoad inherit="prepend">
             local name = self:GetName();
             self.type = CONTROLTYPE_SLIDER;
             self.cvar = "colorblindWeaknessFactor";

@@ -446,10 +446,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 		end
 		tooltip = nil;
 
-		if ( not tooltipOnly and (status ~= "confirm") ) then
-			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
-		end
-
 		if ( status ~= "none" ) then
 			numberQueues = numberQueues+1;
 			if ( status == "queued" ) then
@@ -479,10 +475,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)));
 				if ( not tooltipOnly ) then
-					PVPReadyDialog_Display(self, i, mapName, false, bgtype, bgtype, nil);
-					if ( dialog ) then
-						dialog.data = i;
-					end
 					PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 					MiniMapBattlefieldFrame:Show();
 				end

@@ -155,14 +155,6 @@
 			<OnHide function="LootFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="GroupLootDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="GroupLootDropDown_OnLoad"/>
-		</Scripts>
-	</Frame>
 	<Frame name="GroupLootFrameTemplate" inherits="BackdropTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size x="243" y="84"/>
 		<Layers>

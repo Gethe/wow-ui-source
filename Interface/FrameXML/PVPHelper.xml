@@ -195,6 +195,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad function="PVPReadyDialog_OnLoad" inherit="prepend"/>
+			<OnEvent function="PVPReadyDialog_OnEvent"/>
 			<OnHide function="PVPReadyDialog_OnHide"/>
 		</Scripts>		
 	</Frame>
