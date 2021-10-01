@@ -196,8 +196,13 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 
 			BattlefieldMapTab:ClearAllPoints();
 			if ( BattlefieldMapOptions.position ) then
-				BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
-				BattlefieldMapTab:SetUserPlaced(true);
+				if (BattlefieldMapOptions.position.x == 0 and BattlefieldMapOptions.position.y == 0) then
+					-- If our saved data is suspiciously bad... let's just drop it.
+					UIParent_ManageFramePositions();
+				else
+					BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
+					BattlefieldMapTab:SetUserPlaced(true);
+				end
 			else
 				UIParent_ManageFramePositions();
 			end

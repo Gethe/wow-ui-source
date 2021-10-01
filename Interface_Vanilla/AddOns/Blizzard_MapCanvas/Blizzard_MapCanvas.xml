@@ -51,10 +51,6 @@
 
 	<Frame name="MapCanvasFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" frameStrata="MEDIUM" mixin="MapCanvasMixin" virtual="true">
 		<Size x="1004" y="689"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnUpdate method="OnUpdate"/>

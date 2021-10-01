@@ -4055,7 +4055,7 @@ TRAVEL PASS
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self.exclusive = true;
 				self.hideOnEscape = true;
 			</OnLoad>

@@ -2701,8 +2701,8 @@ function GuildStatus_Update()
 		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
 		PersonalNoteText:SetText(note);
 		-- Update officer note
-		if ( CanViewOfficerNote() ) then
-			if ( CanEditOfficerNote() ) then
+		if ( C_GuildInfo.CanViewOfficerNote() ) then
+			if ( C_GuildInfo.CanEditOfficerNote() ) then
 				if ( (not officernote) or (officernote == "") ) then
 					officernote = GUILD_OFFICERNOTE_EDITLABEL;
 				end
@@ -2710,7 +2710,7 @@ function GuildStatus_Update()
 			else
 				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
 			end
-			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+			GuildMemberOfficerNoteBackground:EnableMouse(C_GuildInfo.CanEditOfficerNote());
 			OfficerNoteText:SetText(officernote);
 
 			-- Resize detail frame
