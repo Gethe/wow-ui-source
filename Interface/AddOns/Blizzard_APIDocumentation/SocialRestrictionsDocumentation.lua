@@ -73,6 +73,15 @@ local SocialRestrictions =
 				{ Name = "disabled", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "ChatDisabledChanged",
+			Type = "Event",
+			LiteralName = "CHAT_DISABLED_CHANGED",
+			Payload =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

@@ -7,6 +7,21 @@ local TransmogItems =
 	Functions =
 	{
 		{
+			Name = "AccountCanCollectSource",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasItemData", Type = "bool", Nilable = false },
+				{ Name = "canCollect", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanAppearanceHaveIllusion",
 			Type = "Function",
 

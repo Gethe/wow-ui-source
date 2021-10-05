@@ -713,6 +713,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
             C_Garrison.ClearCompleteTalent(self.garrisonType);
         end
 	end
+	maxContentWidth = math.max(maxContentWidth, currentTierWidth or 0);
 
 	-- size window
 	local frameWidth = math.max(layoutOptions.minimumWidth, maxContentWidth + layoutOptions.spacingHorizontal);

@@ -3,6 +3,11 @@ local queuedMessages = {};
 
 local TextToSpeechChatTypes = {
 	"MONSTER_SAY",
+	"MONSTER_YELL",
+	"MONSTER_WHISPER",
+	"MONSTER_EMOTE",
+	"RAID_BOSS_EMOTE",
+	"RAID_BOSS_WHISPER",
 	"SYSTEM",
 	"EMOTE",
 	"WHISPER",
@@ -136,7 +141,6 @@ function TextToSpeech_Speak(text, voice)
 	end
 
 	playbackActive = true;
-
 	C_VoiceChat.SpeakText(
 		voice.voiceID,
 		text,
@@ -824,6 +828,17 @@ local chatTypesWithTtsFormat = {
 	BN_WHISPER = true,
 	WHISPER_INFORM = true,
 	BN_WHISPER_INFORM = true,
+	MONSTER_YELL = true,
+	MONSTER_WHISPER = true,
+	EMOTE = true,
+};
+
+local chatTypesWithToken = {
+	GUILD_ACHIEVEMENT = true,
+	ACHIEVEMENT = true,
+	MONSTER_EMOTE = true,
+	RAID_BOSS_EMOTE = true,
+	RAID_BOSS_WHISPER = true,
 };
 
 function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
@@ -841,8 +856,8 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		local name = Ambiguate(arg2 or "", "none");
 
 		local type = strsub(event, 10);
-		if ( type == "GUILD_ACHIEVEMENT" or type == "ACHIEVEMENT" ) then
-			-- Achievement messages have a token for player name that needs filled in.
+		if ( chatTypesWithToken[type] ) then
+			-- These messages have a token for sender name that needs filled in.
 			message = message:format(name);
 		elseif ( type ~= "TEXT_EMOTE" and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AddCharacterNameToSpeech) and name ~= "" ) then
 			-- Format messages as "<Player> says <message>" except for certain types.

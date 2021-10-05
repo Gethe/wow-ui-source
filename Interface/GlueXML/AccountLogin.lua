@@ -1,3 +1,13 @@
+local function ShouldShowRegulationOverlay()
+	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.IsLauncherLogin());
+end
+
+AccountLoginEditBoxBehaviorMixin = {}
+
+function AccountLoginEditBoxBehaviorMixin:OnKeyDown(key)
+	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
+end
+
 function AccountLogin_OnLoad(self)
 	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -67,17 +77,26 @@ end
 function AccountLogin_Update()
 	local showButtonsAndStuff = true;
     local shouldCheckSystemReqs = true;
-	if ( SHOW_KOREAN_RATINGS ) then
-		KoreanRatings:Show();
+	if ( ShouldShowRegulationOverlay() ) then
 		showButtonsAndStuff = false;
+		if ( SHOW_KOREAN_RATINGS ) then
+			KoreanRatings:Show();
+		elseif ( SHOW_CHINA_AGE_APPROPRIATENESS_WARNING ) then
+			ChinaAgeAppropriatenessWarning:Show();
+		end
 	else
 		KoreanRatings:Hide();
+		ChinaAgeAppropriatenessWarning:Hide();
 	end
 
-	if ( C_Login.IsLauncherLogin() ) then
-		ServerAlert_Disable(ServerAlertFrame);
+	local isLauncherLogin = C_Login.IsLauncherLogin();
+	if ( isLauncherLogin ) then
 		showButtonsAndStuff = false;
         shouldCheckSystemReqs = false;
+	end
+
+	if (isLauncherLogin or ShouldShowRegulationOverlay()) then
+		ServerAlert_Disable(ServerAlertFrame);
 	else
 		ServerAlert_Enable(ServerAlertFrame);
 	end
@@ -98,7 +117,7 @@ function AccountLogin_Update()
 	if (HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON) then
 		AccountLogin.UI.SaveAccountNameCheckButton:Hide();
 	end
-	
+
 	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not isReconnectMode) then
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
@@ -107,7 +126,7 @@ function AccountLogin_Update()
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 275);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
 		AccountLogin.UI.AccountsDropDown:Hide();
-	end	
+	end
 
 end
 
@@ -138,6 +157,8 @@ function AccountLogin_OnKeyDown(self, key)
 			AccountLogin_ClearReconnectLogin();
 		end
 	end
+
+	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
 end
 
 function AccountLogin_Login()
@@ -427,7 +448,7 @@ function AccountLogin_OnTimerFinished()
 end
 
 function AccountLogin_CanAutoLogin()
-	return not SHOW_KOREAN_RATINGS and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or GetKioskLoginInfo()) and AccountLogin:IsVisible();
+	return not ShouldShowRegulationOverlay() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or GetKioskLoginInfo()) and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()
@@ -505,4 +526,10 @@ function KoreanRatings_OnUpdate(self, elapsed)
 		AccountLogin_Update();
 		AccountLogin_CheckAutoLogin();
 	end
+end
+
+function ChinaAgeAppropriatenessWarning_Close()
+	SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = false;
+	AccountLogin_Update();
+	AccountLogin_CheckAutoLogin();
 end

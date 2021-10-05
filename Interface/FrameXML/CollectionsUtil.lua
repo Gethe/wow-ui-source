@@ -321,3 +321,67 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	tooltip:Show();
 	return headerIndex, canCycle;
 end
+
+-- if the sourceID is not collectable, this will try to find a collectable one that has the same appearance
+-- returns: preferredSourceID, hasAllDataAvailable, canCollect
+-- if all data was not available, calling this after TRANSMOG_COLLECTION_ITEM_UPDATE and TRANSMOG_SOURCE_COLLECTABILITY_UPDATE events may result in a better sourceID returned
+function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearanceInfo)
+	if not appearanceInfo then
+		appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(initialSourceID);
+	end
+
+	local hasAllData = true;
+	if not appearanceInfo then
+		-- either uncollected with all sources HiddenUntilCollected or uncollectable
+		local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(initialSourceID);
+		if canCollect then
+			return initialSourceID, hasData, canCollect;
+		end
+		-- the initialSourceID is not collectable, try to find another one
+		local category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
+		if itemAppearanceID then
+			local sourceIDs = C_TransmogCollection.GetAllAppearanceSources(itemAppearanceID);
+			for i, sourceID in pairs(sourceIDs) do
+				-- we've already checked initialSourceID
+				if sourceID ~= initialSourceID then
+					hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(sourceID);
+					if canCollect then
+						return sourceID, hasData, canCollect;
+					end
+					if not hasData then
+						hasAllData = false;
+					end
+				end
+			end
+		end
+		-- couldn't find a valid one for player
+		return initialSourceID, hasAllData, false;
+	else
+		-- if initialSourceID is known and the collection state matches, we're good
+		if appearanceInfo.sourceIsKnown and appearanceInfo.appearanceIsCollected == appearanceInfo.sourceIsCollected then
+			return initialSourceID, hasAllData, true;
+		end
+		-- If we're here, there are 2 possibilities:
+		-- 1. the initialSourceID is not known (HiddenUntilCollected or not available to player)
+		-- 2. the appearance is collected but the initialSourceID is not
+		-- In either case, grab the first valid one from the list
+		local sourceInfos = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID);
+		for i, sourceInfo in ipairs(sourceInfos) do
+			if not sourceInfo.name then
+				hasAllData = false;
+			end
+		end
+		return sourceInfos[1].sourceID, hasAllData, true;
+	end
+end
+
+-- This wraps C_TransmogCollection.PlayerCanCollectSource but calls C_TransmogCollection.GetAppearanceInfoBySource first
+-- since that covers the majority of cases and doesn't need sparse
+-- returns: hasData, canCollect
+function CollectionWardrobeUtil.PlayerCanCollectSource(sourceID)
+	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(sourceID);
+	if appearanceInfo then
+		return true, true;
+	end
+	return C_TransmogCollection.PlayerCanCollectSource(sourceID);
+end

@@ -1,10 +1,11 @@
 local DisplayData = {};
 
-local function InsertDisplayData(notificationType, label, icon, title, message)
+local function InsertDisplayData(notificationType, label, icon, soundKit, title, message)
 	DisplayData[notificationType] = {
 		notification = {
 			label = label,
 			icon =  icon,
+			soundKit = soundKit,
 		},
 		details = {
 			title = title,
@@ -13,8 +14,11 @@ local function InsertDisplayData(notificationType, label, icon, title, message)
 	};
 end
 
-InsertDisplayData("ComplaintWarning_Social", BEHAVIORAL_NOTIFICATION_WARNING, "gmchat-icon-alert", BEHAVIORAL_DETAILS_SOCIAL_TITLE, BEHAVIORAL_DETAILS_SOCIAL_MESSAGE);
-InsertDisplayData("ComplaintThankYou_Social", BEHAVIORAL_NOTIFICATION_TY, "gmchat-icon-wow", BEHAVIORAL_DETAILS_TY_TITLE, BEHAVIORAL_DETAILS_TY_MESSAGE);
+InsertDisplayData("ComplaintWarning_Social", BEHAVIORAL_NOTIFICATION_WARNING, "gmchat-icon-alert", 
+	SOUNDKIT.BEHAVIORAL_NOTIFICATION_WARNING, BEHAVIORAL_DETAILS_SOCIAL_TITLE, BEHAVIORAL_DETAILS_SOCIAL_MESSAGE);
+
+InsertDisplayData("ComplaintThankYou_Social", BEHAVIORAL_NOTIFICATION_TY, "gmchat-icon-wow", 
+	SOUNDKIT.BEHAVIORAL_NOTIFICATION_TY, BEHAVIORAL_DETAILS_TY_TITLE, BEHAVIORAL_DETAILS_TY_MESSAGE);
 
 BehavioralMessagingNotificationMixin = {}
 
@@ -76,11 +80,14 @@ function BehavioralMessagingNotificationMixin:PushInstance(id)
 	local function HasId(tbl)
 		return tbl.id == id;
 	end
+
 	if not ContainsIf(self.instances, HasId) then
 		local tbl = {id = id, createTimeSeconds = GetTime()};
 		table.insert(self.instances, tbl);
 		self:Update();
+		return true;
 	end
+	return false;
 end
 
 function BehavioralMessagingNotificationMixin:PopInstance()
@@ -128,7 +135,10 @@ function BehavioralMessagingTrayMixin:OnEvent(event, ...)
 				notification:SetScript("OnClick", OnClick);
 			end
 
-			notification:PushInstance(id);
+			local success = notification:PushInstance(id);
+			if success then
+				PlaySound(displayData.notification.soundKit);
+			end
 		end
 	end
 
@@ -173,6 +183,10 @@ function BehavioralMessagingDetailsMixin:OnLoad()
 	self.CloseButton:SetWidth(fontString:GetStringWidth() + 50);
 end
 
+function BehavioralMessagingDetailsMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+end
+
 function BehavioralMessagingDetailsMixin:DisplayInternal(titleText, bodyText)
 	self.Body.TitleText:SetText(titleText);
 	self.Body.BodyText:SetText(bodyText);
@@ -189,7 +203,6 @@ function BehavioralMessagingDetailsMixin:DisplayNotification(details, notificati
 	self:DisplayInternal(details.title, details.message);
 	
 	local function OnClick(button, buttonName, down)
-		PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		HideUIPanel(self);
 
 		BehavioralMessagingTray:OnNotificationAchknowledged(notification);

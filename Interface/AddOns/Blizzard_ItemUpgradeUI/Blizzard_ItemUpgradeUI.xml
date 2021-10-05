@@ -1,5 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
+	<FontString name="ItemUpgradePreviewBigTextTemplate" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" hidden="true" virtual="true">
+		<Size x="220"/>
+	</FontString>
+
 	<GameTooltip name="ItemUpgradeTooltipTemplate" inherits="SharedTooltipTemplate" mixin="ItemUpgradePreviewMixin" virtual="true">
 		<Size x="240" y="190"/>
 		<KeyValues>
@@ -205,13 +209,8 @@
 					<Color color="RED_FONT_COLOR"/>
 				</FontString>
 				
-				<FontString parentKey="LeftPreviewBigText" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size x="220"/>
-				</FontString>
-				
-				<FontString parentKey="RightPreviewBigText" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size x="220"/>
-				</FontString>
+				<FontString parentKey="LeftPreviewBigText" inherits="ItemUpgradePreviewBigTextTemplate"/>
+				<FontString parentKey="RightPreviewBigText" inherits="ItemUpgradePreviewBigTextTemplate"/>
 			</Layer>
 		</Layers>
 
@@ -293,7 +292,7 @@
 			
 			<GameTooltip name="$parentLeftItemPreviewFrame" parentKey="LeftItemPreviewFrame" inherits="ItemUpgradePreviewTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-180"/>
+					<Anchor point="TOPLEFT" x="15" y="-180"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isUpgrade" value="false" type="boolean"/>
@@ -302,7 +301,7 @@
 			
 			<GameTooltip name="$parentRightItemPreviewFrame" parentKey="RightItemPreviewFrame" inherits="ItemUpgradePreviewTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-20" y="-180"/>
+					<Anchor point="TOPRIGHT" x="-15" y="-180"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isUpgrade" value="true" type="boolean"/>
@@ -337,7 +336,7 @@
 			<Button parentKey="UpgradeButton" mixin="ItemUpgradeButtonMixin" inherits="UIPanelButtonTemplate, TruncatedButtonTemplate, DisabledTooltipButtonTemplate" text="UPGRADE">
 				<Size x="160" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" y="57"/>
+					<Anchor point="BOTTOM" y="52"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -387,8 +386,11 @@
 			</Frame>
 			
 			<Frame parentKey="PlayerCurrencies" inherits="CurrencyHorizontalLayoutFrameTemplate">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="12" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5" y="-2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5"/>
 				</Anchors>
 			</Frame>
 

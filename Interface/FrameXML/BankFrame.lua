@@ -320,9 +320,8 @@ function BankFrame_OnShow (self)
 	UpdateBagSlotStatus();
 	OpenAllBags(self);
 
-	if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK)) then
-		local numSlots,full = GetNumBankSlots();
-		if (full and not IsReagentBankUnlocked()) then
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK)) then
+		if (not IsReagentBankUnlocked()) then
 			local helpTipInfo = {
 				text = REAGENT_BANK_HELP,
 				buttonStyle = HelpTip.ButtonStyle.Close,

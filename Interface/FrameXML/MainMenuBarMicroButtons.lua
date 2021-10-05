@@ -412,6 +412,8 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		self:SetNewClubId(newClubId);
 		self.showOfflineJoinAlert = true;
 		self:EvaluateAlertVisibility(); 
+	elseif ( event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" ) then
+		self:UpdateNotificationIcon(GuildMicroButton);
 	end
 end
 
@@ -452,7 +454,7 @@ end
 
 function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
-		self.NotificationOverlay:SetShown(self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
+		self.NotificationOverlay:SetShown(not C_SocialRestrictions.IsChatDisabled() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else
 		self.NotificationOverlay:SetShown(false);
 	end

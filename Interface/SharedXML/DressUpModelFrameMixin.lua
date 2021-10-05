@@ -130,8 +130,32 @@ function DressUpModelFrameMaximizeMinimizeMixin:OnLoad()
 end
 
 --------------------------------------------------
+-- BASE MODEL FRAME FRAME MIXIN
+DressUpModelFrameBaseMixin = { };
+
+function DressUpModelFrameBaseMixin:SetMode(mode)
+	self.mode = mode;
+	if self.hasOutfitControls then
+		local inPlayerMode = mode == "player";
+		self.ResetButton:SetShown(inPlayerMode);
+		self.LinkButton:SetShown(inPlayerMode);
+		self.ToggleOutfitDetailsButton:SetShown(inPlayerMode);
+		self.OutfitDropDown:SetShown(inPlayerMode);
+		if not inPlayerMode then
+			self:SetShownOutfitDetailsPanel(false);
+		else
+			self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
+		end
+	end
+end
+
+function DressUpModelFrameBaseMixin:GetMode()
+	return self.mode;
+end
+
+--------------------------------------------------
 -- DEFAULT MODEL FRAME FRAME MIXIN
-DressUpModelFrameMixin = {};
+DressUpModelFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function DressUpModelFrameMixin:OnLoad()
 	self.TitleText:SetText(DRESSUP_FRAME);
@@ -140,18 +164,18 @@ end
 function DressUpModelFrameMixin:OnShow()
 	SetPortraitTexture(DressUpFramePortrait, "player");
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-	local isAutomaticAction = true;
-	local minimized = GetCVarBool("miniDressUpFrame");
-	if minimized then
-		self.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
-	else
-		self.MaximizeMinimizeFrame:Maximize(isAutomaticAction);	
-	end
-	self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
 end
 
 function DressUpModelFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	if self.forcedMaximized then
+		self.forcedMaximized = nil;
+		local minimized = GetCVarBool("miniDressUpFrame");
+		if minimized then
+			local isAutomaticAction = true;
+			self.MaximizeMinimizeFrame:Minimize(isAutomaticAction);
+		end
+	end
 end
 
 function DressUpModelFrameMixin:OnDressModel()
@@ -196,9 +220,16 @@ function DressUpModelFrameMixin:SetShownOutfitDetailsPanel(show)
 	UpdateUIPanelPositions(self);
 end
 
+function DressUpModelFrameMixin:ForceOutfitDetailsOn()
+	self.forcedMaximized = true;
+	local isAutomaticAction = true;
+	self.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
+	self:SetShownOutfitDetailsPanel(true);
+end
+
 --------------------------------------------------
 -- SIDE DRESS UP MODEL FRAME FRAME MIXIN
-SideDressUpModelFrameFrameMixin = {};
+SideDressUpModelFrameFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function SideDressUpModelFrameFrameMixin:OnShow()
 	SetUIPanelAttribute(self.parentFrame, "width", self.openWidth);
@@ -212,7 +243,7 @@ function SideDressUpModelFrameFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
-TransmogAndMountDressupFrameMixin = {};
+TransmogAndMountDressupFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function TransmogAndMountDressupFrameMixin:OnLoad()
 	local checkButton = self.ShowMountCheckButton; 

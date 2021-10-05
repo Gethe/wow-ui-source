@@ -10,6 +10,12 @@
 		</KeyValues>
 	</Frame>
 
+	<EditBox name="AccountLoginEditBoxBehaviorTemplate" mixin="AccountLoginEditBoxBehaviorMixin" virtual="true">
+		<Scripts>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</EditBox>
+
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -90,6 +96,46 @@
 			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
+	<Button name="ChinaAgeAppropriatenessWarning" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\Glues\Login\Glues-CADPA16">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-80"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TextTitle" inherits="GlueFontNormalLarge" justifyH="CENTER" text="CHINA_AGE_APPROPRIATENESS_TEXT_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GlueFontNormalLarge" justifyH="LEFT" text="CHINA_AGE_APPROPRIATENESS_TEXT">
+					<Size x="940" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TextTitle" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button parentKey="OkayButton" inherits="GlueButtonTemplate" text="OKAY">
+				<Size x="150" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-50"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ChinaAgeAppropriatenessWarning_Close"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHyperlinkClick>
+				LoadURLIndex(tonumber(link));
+			</OnHyperlinkClick>
+		</Scripts>
+	</Button>
 	<Frame name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -138,7 +184,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="AccountEditBox" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginEditBoxBehaviorTemplate AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="-2" y="345"/>
@@ -197,7 +243,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="PasswordEditBox" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginEditBoxBehaviorTemplate AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="-2" y="275"/>

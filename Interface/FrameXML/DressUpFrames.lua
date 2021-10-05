@@ -161,11 +161,10 @@ function DressUpBattlePet(creatureID, displayID, speciesID)
 	local frame = GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
-	if ( not frame:IsShown() or frame.mode ~= "battlepet" ) then
+	frame:SetMode("battlepet");if ( not frame:IsShown() or frame:GetMode() ~= "battlepet" ) then
+		frame:SetMode("battlepet");
 		ShowUIPanel(frame);
 	end
-	frame.mode = "battlepet";
-	frame.ResetButton:Hide();
 
 	local _, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
 
@@ -207,11 +206,10 @@ function DressUpMount(mountID, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
-	if ( not frame:IsShown() or frame.mode ~= "mount" ) then
+	if ( not frame:IsShown() or frame:GetMode() ~= "mount" ) then
+		frame:SetMode("mount");
 		ShowUIPanel(frame);
 	end
-	frame.mode = "mount";
-	frame.ResetButton:Hide();
 
 	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
 	frame.ModelScene:ClearScene();
@@ -268,10 +266,8 @@ function SetDressUpBackground(frame, raceFilename, classFilename)
 end
 
 function DressUpFrame_Show(frame)
-	if ( not frame:IsShown() or frame.mode ~= "player") then
-		frame.mode = "player";
-
-		frame.ResetButton:SetShown(frame ~= TransmogAndMountDressupFrame);
+	if ( not frame:IsShown() or frame:GetMode() ~= "player") then
+		frame:SetMode("player");
 
 		-- If there's not enough space as-is, try minimizing.
 		if not CanShowRightUIPanel(frame) and frame.MaximizeMinimizeFrame and not frame.MaximizeMinimizeFrame:IsMinimized() then
@@ -317,10 +313,7 @@ function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails)
 	end
 
 	if showOutfitDetails then
-		-- need to maximize the window and show the details without setting either cvar
-		local isAutomaticAction = true;
-		frame.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
-		frame:SetShownOutfitDetailsPanel(true);
+		frame:ForceOutfitDetailsOn();
 	end
 end
 
@@ -391,17 +384,30 @@ end
 
 function DressUpOutfitDetailsPanelMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
+	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 	self:Refresh();
 end
 
 function DressUpOutfitDetailsPanelMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
+	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 end
 
-function DressUpOutfitDetailsPanelMixin:OnEvent()
-	if self.mousedOverFrame then
-		self.mousedOverFrame:RefreshAppearanceTooltip();
+function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
+	if event == "TRANSMOG_COLLECTION_ITEM_UPDATE" then
+		if self.waitingOnItemData then
+			self:Refresh();
+		elseif self.mousedOverFrame then
+			self.mousedOverFrame:RefreshAppearanceTooltip();
+		end
+	elseif event == "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE" then
+		self:MarkDirty();
 	end
+end
+
+function DressUpOutfitDetailsPanelMixin:OnUpdate()
+	self:SetScript("OnUpdate", nil);
+	self:Refresh();
 end
 
 function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
@@ -411,6 +417,14 @@ function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
 	else
 		self:SetPropagateKeyboardInput(true);
 	end
+end
+
+function DressUpOutfitDetailsPanelMixin:MarkDirty()
+	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function DressUpOutfitDetailsPanelMixin:MarkWaitingOnItemData()
+	self.waitingOnItemData = true;
 end
 
 function DressUpOutfitDetailsPanelMixin:OnAppearanceChange()
@@ -427,6 +441,7 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 	self.slotPool:ReleaseAll();
 	self.lastFrame = nil;
 	self.validMainHand = false;
+	self.waitingOnItemData = false;
 
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	if not playerActor then
@@ -513,6 +528,11 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 		return;
 	end
 
+	if self.item and not self.item:IsItemDataCached() then
+		self:GetParent():MarkDirty();
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if self.isHiddenVisual then
 		GameTooltip_AddColoredLine(GameTooltip, self.name, NORMAL_FONT_COLOR);
@@ -525,11 +545,19 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, LIGHTBLUE_FONT_COLOR);
 		end
 	elseif self.slotState == OUTFIT_SLOT_STATE_ERROR then
-		local nameColor = self.item:GetItemQualityColor().color;
-		GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
-		local slotName = TransmogUtil.GetSlotName(self.slotID);
-		GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNUSABLE, RED_FONT_COLOR);		
+		local hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(self.transmogID);
+		-- hasData should be true, there's a check that the item data is cached at the top of the function
+		if canCollect then
+			local nameColor = self.item:GetItemQualityColor().color;
+			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+			local slotName = TransmogUtil.GetSlotName(self.slotID);
+			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNUSABLE);
+		else
+			local hideVendorPrice = true;
+			GameTooltip:SetHyperlink(self.item:GetItemLink(), nil, nil, nil, hideVendorPrice);
+			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNCOLLECTABLE);
+		end
 	elseif self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
 		if C_TransmogCollection.PlayerKnowsSource(self.transmogID) then
 			self:GetParent():SetMousedOverFrame(self);
@@ -609,44 +637,6 @@ function DressUpOutfitDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
 	end
 end
 
--- Calculates whether a different transmogID should be shown in the list
-local function GetDisplayableTransmogID(transmogID, appearanceInfo)
-	if not appearanceInfo then
-		-- either uncollected with all sources HiddenUntilCollected or uncollectable
-		local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(transmogID);
-		if canCollect then
-			return transmogID;
-		end
-		-- this specific transmogID is not valid for player, try to find another one
-		local category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(transmogID);
-		if itemAppearanceID then
-			local sourceIDs = C_TransmogCollection.GetAllAppearanceSources(itemAppearanceID);
-			for i, sourceID in pairs(sourceIDs) do
-				-- we've already checked transmogID
-				if sourceID ~= transmogID then
-					hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(sourceID);
-					if canCollect then
-						return sourceID;
-					end
-				end
-			end
-		end
-		-- couldn't find a valid one for player
-		return transmogID;
-	else
-		-- if transmogID is known and the collection state matches, we're good
-		if appearanceInfo.sourceIsKnown and appearanceInfo.appearanceIsCollected == appearanceInfo.sourceIsCollected then
-			return transmogID;
-		end
-		-- If we're here, there are 2 possibilities:
-		-- 1. this specific transmogID is not known (HiddenUntilCollected or not available to player)
-		-- 2. the appearance is collected but this specific transmogID is not
-		-- In either case, grab the first valid one from the list
-		local sourcesInfos = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID);
-		return sourcesInfos[1].sourceID;
-	end
-end
-
 function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecondary)
 	local itemID = C_TransmogCollection.GetSourceItemID(transmogID);
 	if not itemID then
@@ -664,7 +654,11 @@ function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecon
 		self.transmogID = nil;
 	else
 		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(transmogID);
-		transmogID = GetDisplayableTransmogID(transmogID, appearanceInfo);
+		local hasAllData = false;
+		transmogID, hasAllData = CollectionWardrobeUtil.GetPreferredSourceID(transmogID, appearanceInfo);
+		if not hasAllData then
+			self:GetParent():MarkWaitingOnItemData();
+		end
 		itemID = C_TransmogCollection.GetSourceItemID(transmogID);
 
 		self.item = Item:CreateFromItemID(itemID);

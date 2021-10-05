@@ -72,7 +72,7 @@ function VoiceTranscription_GetChatTypeAndInfo()
 					local chatChannel, channelIdx = Chat_GetCommunitiesChannel(channel.clubId, channel.streamId);
 					local channelName, channelColor;
 					if (chatChannel) then
-						channelName = string.format("%d. %s", channelIdx, clubInfo.shortName);
+						channelName = string.format("%d. %s", channelIdx, clubInfo.shortName or clubInfo.name);
 						local channelInfo = ChatTypeInfo[chatChannel];
 						channelColor = {
 							r = channelInfo.r,
@@ -80,7 +80,7 @@ function VoiceTranscription_GetChatTypeAndInfo()
 							b = channelInfo.b,
 						};
 					else
-						channelName = clubInfo.shortName;
+						channelName = clubInfo.shortName or clubInfo.name;
 						channelColor = (clubInfo.clubType == Enum.ClubType.BattleNet) and BATTLENET_FONT_COLOR or DEFAULT_CHAT_CHANNEL_COLOR;
 					end
 					chatInfo =

@@ -46,7 +46,7 @@ function TransmogUtil.GetWeaponInfoForEnchant(transmogLocation)
 	if TransmogUtil.CanEnchantSource(selectedSourceID) then
 		return selectedSourceID, selectedVisualID;
 	else
-		local appearanceSourceID = C_TransmogCollection.GetIllusionFallbackWeaponSource();
+		local appearanceSourceID = C_TransmogCollection.GetFallbackWeaponAppearance();
 		local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
 		return appearanceSourceID, appearanceVisualID;
 	end

@@ -147,6 +147,8 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	SetItemButtonTexture(self.UpgradeItemButton, self.upgradeInfo.iconID);
 	SetItemButtonQuality(self.UpgradeItemButton, self.upgradeInfo.displayQuality);
 
+	self:CalculateTotalCostTable();
+
 	self.MissingDescription:Hide();
 	self:PopulatePreviewFrames();
 end
@@ -219,16 +221,16 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 	self.UpgradeCostFrame:Clear();
 	self.PlayerCurrencies:Clear();
 
-	local currTotalUpgradeCosts = self:CalculateTotalCostTable();
-	for currencyID, totalCurrencyCost in pairs(currTotalUpgradeCosts) do
+	local currentUpgradeCosts = self:GetUpgradeCostTable();
+	for currencyID, currencyCost in pairs(currentUpgradeCosts) do
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 
-		if (totalCurrencyCost > currencyInfo.quantity) then
+		if currencyCost > currencyInfo.quantity then
 			buttonDisabledState = true;
 			self.UpgradeButton:SetDisabledTooltip();
-			self.UpgradeCostFrame:AddCurrency(currencyID, totalCurrencyCost, RED_FONT_COLOR);
+			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost, RED_FONT_COLOR);
 		else
-			self.UpgradeCostFrame:AddCurrency(currencyID, totalCurrencyCost);
+			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost);
 		end
 		self.PlayerCurrencies:AddCurrency(currencyID);
 	end
@@ -271,22 +273,51 @@ function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 end
 
 function ItemUpgradeMixin:CalculateTotalCostTable()
-	local currTotalUpgradeCosts = {};
+	self.upgradeCosts = {};
 
-	for upgradeIndex = 1, self.numUpgradeLevels+1 do
-		local upgradeLevel = self.upgradeInfo.upgradeLevelInfos[upgradeIndex];
-		if not upgradeLevel then
-			return;
+	for _, upgradeLevelInfo in ipairs(self.upgradeInfo.upgradeLevelInfos) do
+		local previousRank = upgradeLevelInfo.upgradeLevel - 1;
+
+		local levelCostTable;
+		if self.upgradeCosts[previousRank] then
+			levelCostTable = CopyTable(self.upgradeCosts[previousRank], true);
+		else
+			levelCostTable = {};
 		end
 
-		for _, levelCost in ipairs(upgradeLevel.costsToUpgrade) do
-			if not currTotalUpgradeCosts[levelCost.currencyID] then
-				currTotalUpgradeCosts[levelCost.currencyID] = 0;
-			end
-			currTotalUpgradeCosts[levelCost.currencyID] = currTotalUpgradeCosts[levelCost.currencyID] + levelCost.cost; 
+		for _, levelCost in ipairs(upgradeLevelInfo.costsToUpgrade) do
+			local currentCost = levelCostTable[levelCost.currencyID] or 0;
+			levelCostTable[levelCost.currencyID] = currentCost + levelCost.cost; 
+		end
+
+		self.upgradeCosts[upgradeLevelInfo.upgradeLevel] = levelCostTable;
+	end
+end
+
+function ItemUpgradeMixin:GetUpgradeCostTable(upgradeLevel)
+	return self.upgradeCosts[upgradeLevel or self.targetUpgradeLevel];
+end
+
+function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
+	local currencyStringTable = {};
+	local checkQuantity = (upgradeLevel ~= nil);
+
+	local costTable = self:GetUpgradeCostTable(upgradeLevel);
+	for currencyID, currencyCost in pairs(costTable) do
+		local hasEnough = true;
+		if checkQuantity then
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+			hasEnough = currencyCost <= currencyInfo.quantity
+		end
+
+		if not hasEnough then
+			table.insert(currencyStringTable, GetCurrencyString(currencyID, currencyCost, RED_FONT_COLOR_CODE));
+		else
+			table.insert(currencyStringTable, GetCurrencyString(currencyID, currencyCost));
 		end
 	end
-	return currTotalUpgradeCosts;
+
+	return table.concat(currencyStringTable, " ");
 end
 
 function ItemUpgradeMixin:InitDropdown()
@@ -303,24 +334,12 @@ function ItemUpgradeMixin:InitDropdown()
 		info.value = i;
 		info.notCheckable = true;
 		info.minWidth = 120;
-		info.func = function() UIDropDownMenu_SetSelectedValue(ItemUpgradeFrame.Dropdown, i); 
-							   ItemUpgradeFrame:Update(i); end;
-
-		local costTable = ItemUpgradeFrame:CalculateTotalCostTable(i - currUpgradeLevel);
-		local currencyTable = {};
-
-		for currencyID, totalCurrencyCost in pairs(costTable) do
-			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
-			if totalCurrencyCost > currencyInfo.quantity then
-				currencyTable[#currencyTable + 1] = GetCurrencyString(currencyID, totalCurrencyCost, RED_FONT_COLOR_CODE);
-			else
-				currencyTable[#currencyTable + 1] = GetCurrencyString(currencyID, totalCurrencyCost);
-			end
-		end
+		info.func = function() UIDropDownMenu_SetSelectedValue(ItemUpgradeFrame.Dropdown, i); ItemUpgradeFrame:Update(i); end;
 
 		info.tooltipOnButton = 1;
 		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = table.concat(currencyTable, " ");
+		info.tooltipTitle = ItemUpgradeFrame:GetUpgradeCostString(i);
+
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -372,11 +391,6 @@ ItemUpgradeButtonMixin = {};
 function ItemUpgradeButtonMixin:OnClick()
 	self:SetEnabled(false);
 	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
-	local costTable = ItemUpgradeFrame:CalculateTotalCostTable(1);
-	local currencyTable = {};
-	for currencyID, totalCurrencyCost in pairs(costTable) do
-		currencyTable[#currencyTable + 1] = GetCurrencyString(currencyID, totalCurrencyCost);
-	end
 
 	local data = {
 		texture = upgradeInfo.iconID,
@@ -385,7 +399,7 @@ function ItemUpgradeButtonMixin:OnClick()
 		link = C_ItemUpgrade.GetItemHyperlink(),
 	};
 
-	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", table.concat(currencyTable, " "), "", data);
+	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", ItemUpgradeFrame:GetUpgradeCostString(), "", data);
 end
 
 ItemUpgradePreviewMixin = {};
@@ -408,11 +422,14 @@ function ItemUpgradePreviewMixin:OnLeave()
 	ItemUpgradeFrame.ItemHoverPreviewFrame:Hide();
 end
 
-local MAX_TOOLTIP_TRUNCATION_HEIGHT = 230;
+local MAX_TOOLTIP_TRUNCATION_HEIGHT = 245;
+local TOOLTIP_MIN_WIDTH = 230.4;
+local TOOLTIP_LINE_HEIGHT = 17;
+local TOOLTIP_LINE_SPACING = 5;
 
 function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
-	local currentItemLevel = C_ItemUpgrade.GetItemUpgradeCurrentLevel();
+	local currentItemLevel, isPvpItemLevel = C_ItemUpgrade.GetItemUpgradeCurrentLevel();
 	local numUpgradeLevels = ItemUpgradeFrame.numUpgradeLevels;
 	local upgradeLevelInfo = isUpgrade and ItemUpgradeFrame.targetUpgradeLevelInfo or ItemUpgradeFrame.currentUpgradeLevelInfo;
 
@@ -423,8 +440,8 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		self:SetOwner(ItemUpgradeFrame, "ANCHOR_PRESERVE");
 	end
 
-	self:SetMinimumWidth(220, true);
-	self:SetCustomLineSpacing(5);
+	self:SetMinimumWidth(TOOLTIP_MIN_WIDTH, true);
+	self:SetCustomLineSpacing(TOOLTIP_LINE_SPACING);
 
 	local itemQualityColor = isUpgrade and upgradeInfo.targetQualityColor or upgradeInfo.itemQualityColor;
 
@@ -436,11 +453,18 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		ItemUpgradeFrame.Ring:SetVertexColor(itemQualityColor:GetRGB());
 	end
 
+	local itemLevelFormatString;
 	if isUpgrade then
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT:format(currentItemLevel + upgradeLevelInfo.itemLevelIncrement, upgradeLevelInfo.itemLevelIncrement), false);
+		itemLevelFormatString = isPvpItemLevel and ITEM_UPGRADE_PVP_ITEM_LEVEL_BONUS_STAT_FORMAT or ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT;
+	else
+		itemLevelFormatString = isPvpItemLevel and ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT or ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT;
+	end
+
+	if isUpgrade then
+		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel + upgradeLevelInfo.itemLevelIncrement, upgradeLevelInfo.itemLevelIncrement), false);
 		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade + numUpgradeLevels, upgradeInfo.maxUpgrade), false);
 	else
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT:format(currentItemLevel), false);
+		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel), false);
 		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade), false);
 	end
 
@@ -451,42 +475,76 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		end
 	end
 
-	GameTooltip_AddBlankLineToTooltip(self);
+	--Effect Text -----------------------------------------------------------------------------------------
+	local effectText = nil;
+	for index = 1, C_ItemUpgrade.GetNumItemUpgradeEffects() do
+		local originalText, upgradeText = C_ItemUpgrade.GetItemUpgradeEffect(index, numUpgradeLevels);
+		if isUpgrade and upgradeText then
+			effectText = ItemUpgradeFrame:GetTrinketUpgradeText(originalText, upgradeText);
+			break; 
+		elseif originalText then 
+			effectText = originalText;
+			break; 
+		end
+	end 
 
-	--Trinket Text -----------------------------------------------------------------------------------------
-	local text, upgradeText = C_ItemUpgrade.GetItemUpgradeEffect(1, numUpgradeLevels);
-	if isUpgrade and upgradeText then
-		text = ItemUpgradeFrame:GetTrinketUpgradeText(text, upgradeText);
+	local pvpItemLevel, newPvpItemLevel = C_ItemUpgrade.GetItemUpgradePvpItemLevelDeltaValues(numUpgradeLevels);
+	local pvpItemLevelText = pvpItemLevel and PVP_ITEM_LEVEL_TOOLTIP:format(isUpgrade and newPvpItemLevel or pvpItemLevel);
+
+	local bigText;
+	if not parentFrame then
+		bigText = isUpgrade and ItemUpgradeFrame.RightPreviewBigText or ItemUpgradeFrame.LeftPreviewBigText;
+		bigText:Hide();
 	end
 
-	if text then
-		if not parentFrame then
-			local bigText = isUpgrade and ItemUpgradeFrame.RightPreviewBigText or ItemUpgradeFrame.LeftPreviewBigText;
-		
-			--Temp to force calc height
-			self:SetPadding(self:GetPadding());
+	if effectText or pvpItemLevelText then
+		GameTooltip_AddBlankLineToTooltip(self);
+	end
+
+	self.truncated = false;
+	self:SetPadding(0, 6);	-- This needs to be done after the above lines are set in order to get an accurate tooltip height below
+
+	if effectText then
+		if bigText then
 			bigText:ClearAllPoints();
 			bigText:SetPoint("TOP", self, "TOP", 0, 0);
 			bigText:SetHeight(0);
-			bigText:SetText(text);
-		
-			local maxHeight = MAX_TOOLTIP_TRUNCATION_HEIGHT - self:GetHeight();
-			if bigText:GetStringHeight() > maxHeight then
-				bigText:SetHeight(maxHeight);
-				self.truncated = true;
-			else
-				self.truncated = false;
+
+			local maxTextHeight = MAX_TOOLTIP_TRUNCATION_HEIGHT - self:GetHeight();
+			if pvpItemLevelText then
+				-- There will be an extra line at the end, so deduct that from the available height
+				bigText:SetText(pvpItemLevelText);
+				maxTextHeight = maxTextHeight - bigText:GetStringHeight() - TOOLTIP_LINE_HEIGHT - TOOLTIP_LINE_SPACING;
 			end
 
-			--Used to truncate the tooltipHeight down to fit the text in an effort to solve
-			--spacing problem caused by the custom line spacing
-			local actualTooltipHeight = self:GetHeight() + bigText:GetHeight() + 12;
-			GameTooltip_InsertFrame(self, bigText);
-			self:Show();
-			self:SetHeight(actualTooltipHeight);
+			bigText:SetHeight(0);
+			bigText:SetText(effectText);
+
+			if bigText:GetStringHeight() > maxTextHeight then
+				self.truncated = true;
+				bigText:SetHeight(maxTextHeight);
+
+				local truncatedHeight = bigText:GetStringHeight();
+				local usedHeight = GameTooltip_InsertFrame(self, bigText);
+				local extraHeight = usedHeight - truncatedHeight;
+
+				if not pvpItemLevelText and extraHeight > 0 then
+					self:SetPadding(0, 6 - extraHeight);
+				end
+			else
+				GameTooltip_AddHighlightLine(self, effectText, true);
+
+				if pvpItemLevelText then
+					GameTooltip_AddBlankLineToTooltip(self);
+				end
+			end
 		else
-			GameTooltip_AddHighlightLine(self, text, true);
+			GameTooltip_AddHighlightLine(self, effectText, true);
 		end
+	end
+
+	if pvpItemLevelText then
+		GameTooltip_AddInstructionLine(self, pvpItemLevelText, true);
 	end
 
 	self:Show();

@@ -504,6 +504,8 @@ end
 local COMMUNITIES_LIST_ENTRY_EVENTS = {
 	"STREAM_VIEW_MARKER_UPDATED",
 	"PLAYER_GUILD_UPDATE",
+	"CHAT_DISABLED_CHANGE_FAILED",
+	"CHAT_DISABLED_CHANGED",
 }
 
 CommunitiesListEntryMixin = {};
@@ -858,6 +860,8 @@ function CommunitiesListEntryMixin:OnEvent(event, ...)
 		end
 	elseif event == "PLAYER_GUILD_UPDATE" then
 		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
+	elseif event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" then
+		self:UpdateUnreadNotification();
 	end
 end
 

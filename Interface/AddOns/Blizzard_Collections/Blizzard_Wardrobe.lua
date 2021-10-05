@@ -3128,7 +3128,7 @@ function WardrobeSetsDataProviderMixin:GetVariantSets(baseSetID)
 
 	local variantSets = self.variantSets[baseSetID];
 	if ( not variantSets ) then
-		variantSets = C_TransmogSets.GetVariantSets(baseSetID);
+		variantSets = C_TransmogSets.GetVariantSets(baseSetID) or { };
 		self.variantSets[baseSetID] = variantSets;
 		if ( #variantSets > 0 ) then
 			-- add base to variants and sort

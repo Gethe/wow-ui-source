@@ -1732,6 +1732,7 @@
 							<KeyValue key="width" value="188" type="number"/>
 							<KeyValue key="minMenuStringWidth" value="152" type="number"/>
 							<KeyValue key="maxMenuStringWidth" value="216" type="number"/>
+							<KeyValue key="replaceInvalidSources" value="false" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-14" y="28"/>

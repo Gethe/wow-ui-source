@@ -245,7 +245,7 @@ StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
 	showAlert = 1,
 	timeout = 0,
 	exclusive = 0,
-	hideOnEscape = 0,
+	hideOnEscape = false,
 	whileDead = 1,
 }
 
@@ -270,7 +270,7 @@ StaticPopupDialogs["MAC_OPEN_INPUT_MONITORING"] = {
 	showAlert = 1,
 	timeout = 0,
 	exclusive = 0,
-	hideOnEscape = 0,
+	hideOnEscape = false,
 	whileDead = 1,
 }
 
@@ -3842,9 +3842,9 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame:SaveOutfit(self.data) end,
+	OnAccept = function (self) WardrobeOutfitFrame:OverwriteOutfit(self.data.outfitID) end,
 	OnCancel = function (self)
-		local name = self.data;
+		local name = self.data.name;
 		self:Hide();
 		local dialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT");
 		if ( dialog ) then
@@ -4250,7 +4250,7 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
 	end,
 	timeout = 0,
-	hideOnEscape = 0,
+	hideOnEscape = false,
 	exclusive = 1,
 };
 
@@ -4264,7 +4264,6 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 		ChatConfigFrame_OnChatDisabledChanged(disabled);
 	end,
 	timeout = 0,
-	hideOnEscape = 0,
 	exclusive = 1,
 };
 

@@ -52,7 +52,15 @@ function WardrobeOutfitDropDownMixin:UpdateSaveButton()
 end
 
 function WardrobeOutfitDropDownMixin:OnOutfitSaved(outfitID)
-	-- Override in your mixin, called when a new outfit is saved
+	if self:ShouldReplaceInvalidSources() then
+		self:LoadOutfit(outfitID);
+	end
+end
+
+function WardrobeOutfitDropDownMixin:OnOutfitModified(outfitID)
+	if self:ShouldReplaceInvalidSources() then
+		self:LoadOutfit(outfitID);
+	end
 end
 
 function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
@@ -116,60 +124,8 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 	return true;
 end
 
-function WardrobeOutfitDropDownMixin:CheckOutfitForSave(outfitID)
-	local pendingAppearances = { };
-	local hasInvalidAppearances = false;
-	local hasValidAppearances = false;
-	local itemTransmogInfoList = self:GetItemTransmogInfoList();
-
-	-- only need to check main appearanceIDs
-	-- secondaryAppearanceIDs will only be set at the transmogrifier or from ctrl-clicking in the collection, and as such are automatically valid
-	-- all illusions are collectible
-	for slotID, itemTransmogInfo in ipairs(itemTransmogInfoList) do
-		local isValidAppearance = false;
-		if TransmogUtil.IsValidTransmogSlotID(slotID) then
-			local appearanceID = itemTransmogInfo.appearanceID;
-			local isValidSlot = appearanceID ~= Constants.Transmog.NoTransmogID;
-			-- skip offhand if mainhand is an appeance from Legion Artifacts category and the offhand matches the paired appearance
-			if isValidSlot and slotID == INVSLOT_OFFHAND then
-				local mhInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
-				if mhInfo:IsMainHandPairedWeapon() then
-					isValidSlot = appearanceID ~= C_TransmogCollection.GetPairedArtifactAppearance(mhInfo.appearanceID);
-				end
-			end
-			if isValidSlot then
-				isValidAppearance = C_TransmogCollection.PlayerKnowsSource(appearanceID);
-				if not isValidAppearance then
-					local isInfoReady, canCollect = C_TransmogCollection.PlayerCanCollectSource(itemTransmogInfo.appearanceID);
-					if isInfoReady then
-						isValidAppearance = canCollect;
-					else
-						pendingAppearances[appearanceID] = slotID;
-					end
-				end
-
-				if isValidAppearance then
-					hasValidAppearances = true;
-				else
-					hasInvalidAppearances = true;
-				end
-			end
-		end
-		if not isValidAppearance then
-			itemTransmogInfo:Clear();
-		end
-	end
-
-	-- store the state for this save
-	WardrobeOutfitFrame.pendingAppearances = pendingAppearances;
-	WardrobeOutfitFrame.itemTransmogInfoList = itemTransmogInfoList;
-	WardrobeOutfitFrame.hasValidAppearances = hasValidAppearances;
-	WardrobeOutfitFrame.hasInvalidAppearances = hasInvalidAppearances;
-	WardrobeOutfitFrame.outfitID = outfitID;
-	-- save the dropdown
-	WardrobeOutfitFrame.popupDropDown = self;
-
-	WardrobeOutfitFrame:EvaluateSaveState();
+function WardrobeOutfitDropDownMixin:ShouldReplaceInvalidSources()
+	return self.replaceInvalidSources;
 end
 
 --===================================================================================================================================
@@ -331,7 +287,7 @@ function WardrobeOutfitFrameMixin:NameOutfit(newName, outfitID)
 			if ( outfitID ) then
 				UIErrorsFrame:AddMessage(TRANSMOG_OUTFIT_ALREADY_EXISTS, 1.0, 0.1, 0.1, 1.0);
 			else
-				WardrobeOutfitFrame:ShowPopup("CONFIRM_OVERWRITE_TRANSMOG_OUTFIT", newName, nil, newName);
+				WardrobeOutfitFrame:ShowPopup("CONFIRM_OVERWRITE_TRANSMOG_OUTFIT", newName, nil, { name = name, outfitID = outfits[i] });
 			end
 			return;
 		end
@@ -373,27 +329,111 @@ function WardrobeOutfitFrameMixin:ClosePopups(requestingDropDown)
 
 	-- clean up
 	self.itemTransmogInfoList = nil;
-	self.pendingAppearances = nil;
-	self.hasValidAppearances = nil;
-	self.hasInvalidAppearances = nil;
+	self.hasAnyPendingAppearances = nil;
+	self.hasAnyValidAppearances = nil;
+	self.hasAnyInvalidAppearances = nil;
 	self.outfitID = nil;
 	self.popupDropDown = nil;
 end
 
+function WardrobeOutfitFrameMixin:StartOutfitSave(popupDropDown, outfitID)
+	self.popupDropDown = popupDropDown;
+	self.outfitID = outfitID;
+	self:EvaluateAppearances();
+end
+
+function WardrobeOutfitFrameMixin:EvaluateAppearance(appearanceID)
+	local preferredAppearanceID, hasAllData, canCollect;
+	if self.popupDropDown:ShouldReplaceInvalidSources() then
+		preferredAppearanceID, hasAllData, canCollect = CollectionWardrobeUtil.GetPreferredSourceID(appearanceID);
+	else
+		preferredAppearanceID = appearanceID;
+		hasAllData, canCollect = CollectionWardrobeUtil.PlayerCanCollectSource(appearanceID);
+	end
+
+	if canCollect then
+		self.hasAnyValidAppearances = true;
+	else
+		if hasAllData then
+			self.hasAnyInvalidAppearances = true;
+		else
+			self.hasAnyPendingAppearances = true;
+		end
+	end
+	local isInvalidAppearance = hasAllData and not canCollect;
+	return preferredAppearanceID, isInvalidAppearance;
+end
+
+function WardrobeOutfitFrameMixin:EvaluateAppearances()
+	self.hasAnyInvalidAppearances = false;
+	self.hasAnyValidAppearances = false;
+	self.hasAnyPendingAppearances = false;
+	self.itemTransmogInfoList = self.popupDropDown:GetItemTransmogInfoList();
+	-- all illusions are collectible
+	for slotID, itemTransmogInfo in ipairs(self.itemTransmogInfoList) do
+		local isValidAppearance = false;
+		if TransmogUtil.IsValidTransmogSlotID(slotID) then
+			local appearanceID = itemTransmogInfo.appearanceID;
+			isValidAppearance = appearanceID ~= Constants.Transmog.NoTransmogID;
+			-- skip offhand if mainhand is an appeance from Legion Artifacts category and the offhand matches the paired appearance
+			if isValidAppearance and slotID == INVSLOT_OFFHAND then
+				local mhInfo = self.itemTransmogInfoList[INVSLOT_MAINHAND];
+				if mhInfo:IsMainHandPairedWeapon() then
+					isValidAppearance = appearanceID ~= C_TransmogCollection.GetPairedArtifactAppearance(mhInfo.appearanceID);
+				end
+			end
+			if isValidAppearance then
+				local preferredAppearanceID, isInvalidAppearance = self:EvaluateAppearance(appearanceID);
+				if isInvalidAppearance then
+					isValidAppearance = false;
+				else
+					itemTransmogInfo.appearanceID = preferredAppearanceID;
+				end
+				-- secondary check
+				if itemTransmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
+					local secondaryPreferredAppearanceID, secondaryIsInvalidAppearance = self:EvaluateAppearance(itemTransmogInfo.secondaryAppearanceID);
+					if secondaryIsInvalidAppearance then
+						-- secondary is invalid, clear it
+						itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.NoTransmogID;
+					else
+						if isInvalidAppearance then
+							-- secondary is valid but primary is invalid, make the secondary the primary
+							isValidAppearance = true;
+							itemTransmogInfo.appearanceID = secondaryPreferredAppearanceID;
+							itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.NoTransmogID;
+						else
+							-- both primary and secondary are valid
+							itemTransmogInfo.secondaryAppearanceID = secondaryPreferredAppearanceID;
+						end
+					end
+				end
+			end
+		end
+		if not isValidAppearance then
+			itemTransmogInfo:Clear();
+		end
+	end
+	
+	self:EvaluateSaveState();
+end
+
 function WardrobeOutfitFrameMixin:EvaluateSaveState()
-	if next(self.pendingAppearances) then
+	if self.hasAnyPendingAppearances then
 		-- wait
 		if ( not StaticPopup_Visible("TRANSMOG_OUTFIT_CHECKING_APPEARANCES") ) then
 			WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_CHECKING_APPEARANCES", nil, nil, nil, WardrobeOutfitCheckAppearancesFrame);
 		end
-	elseif not self.hasValidAppearances then
-		-- stop
-		WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES");
-	elseif self.hasInvalidAppearances then
-		-- warn
-		WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES");
 	else
-		WardrobeOutfitFrame:ContinueWithSave();
+		StaticPopup_Hide("TRANSMOG_OUTFIT_CHECKING_APPEARANCES");
+		if not self.hasAnyValidAppearances then
+			-- stop
+			WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES");
+		elseif self.hasAnyInvalidAppearances then
+			-- warn
+			WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES");
+		else
+			WardrobeOutfitFrame:ContinueWithSave();
+		end
 	end
 end
 
@@ -401,6 +441,7 @@ function WardrobeOutfitFrameMixin:ContinueWithSave()
 	if self.outfitID then
 		C_TransmogCollection.ModifyOutfit(self.outfitID, self.itemTransmogInfoList);
 		self:SaveLastOutfit(self.outfitID);
+		self.popupDropDown:OnOutfitModified(self.outfitID);
 		WardrobeOutfitFrame:ClosePopups();
 	else
 		WardrobeOutfitFrame:ShowPopup("NAME_TRANSMOG_OUTFIT");
@@ -417,6 +458,11 @@ function WardrobeOutfitFrameMixin:SaveLastOutfit(outfitID)
 	end
 end
 
+function WardrobeOutfitFrameMixin:OverwriteOutfit(outfitID)
+	self.outfitID = outfitID;
+	self:ContinueWithSave();
+end
+
 --===================================================================================================================================
 WardrobeOutfitButtonMixin = { };
 
@@ -430,7 +476,7 @@ function WardrobeOutfitButtonMixin:OnClick()
 			HelpTip:Hide(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
 		end
-		WardrobeOutfitFrame.dropDown:CheckOutfitForSave();
+		WardrobeOutfitFrame:StartOutfitSave(WardrobeOutfitFrame.dropDown);
 	end
 end
 
@@ -467,25 +513,23 @@ function WardrobeOutfitCheckAppearancesMixin:OnLoad()
 end
 
 function WardrobeOutfitCheckAppearancesMixin:OnShow()
+	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 end
 
 function WardrobeOutfitCheckAppearancesMixin:OnHide()
+	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+	self.reevaluate = nil;
 end
 
-function WardrobeOutfitCheckAppearancesMixin:OnEvent(event, appearanceID, canCollect)
-	local slotID = WardrobeOutfitFrame.pendingAppearances[appearanceID];
-	if slotID then
-		if not canCollect then
-			WardrobeOutfitFrame.hasInvalidAppearances = true;
-			for i, itemTransmogInfo in ipairs(WardrobeOutfitFrame.itemTransmogInfoList) do
-				if itemTransmogInfo.appearanceID == appearanceID then
-					itemTransmogInfo:Clear();
-				end
-			end
-		end
-		WardrobeOutfitFrame.pendingAppearances[appearanceID] = nil;
-		WardrobeOutfitFrame:EvaluateSaveState();
+function WardrobeOutfitCheckAppearancesMixin:OnEvent(event)
+	self.reevaluate = true;
+end
+
+function WardrobeOutfitCheckAppearancesMixin:OnUpdate()
+	if self.reevaluate then
+		self.reevaluate = nil;
+		WardrobeOutfitFrame:EvaluateAppearances();
 	end
 end

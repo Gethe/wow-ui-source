@@ -2793,6 +2793,9 @@ function ChatFrame_RegisterForMessages(self, ...)
 			self.messageTypeList[index] = select(i, ...);
 			for index, value in pairs(messageGroup) do
 				self:RegisterEvent(value);
+				if ( value == "CHAT_MSG_VOICE_TEXT" ) then
+					self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				end
 			end
 			index = index + 1;
 		end

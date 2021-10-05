@@ -44,6 +44,7 @@ local ItemUpgrade =
 			Returns =
 			{
 				{ Name = "itemLevel", Type = "number", Nilable = false },
+				{ Name = "isPvpItemLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -69,6 +70,21 @@ local ItemUpgrade =
 			Returns =
 			{
 				{ Name = "itemInfo", Type = "ItemUpgradeItemInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemUpgradePvpItemLevelDeltaValues",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "numUpgradeLevels", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currentPvPItemLevel", Type = "number", Nilable = false },
+				{ Name = "upgradedPvPItemLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
