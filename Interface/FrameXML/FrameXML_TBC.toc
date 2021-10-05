@@ -27,6 +27,7 @@ Fonts.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\RegionUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
@@ -51,7 +52,7 @@ Fonts.xml
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 ..\SharedXML\Frame\EventEditBox.xml
-..\SharedXML\DataProvider.lua
+..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua

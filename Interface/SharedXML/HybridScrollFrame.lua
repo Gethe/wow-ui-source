@@ -55,7 +55,7 @@ function HybridScrollFrame_UpdateButtonStates (self, currValue)
 end
 
 function HybridScrollFrame_OnMouseWheel (self, delta, stepSize)
-	if ( not self.scrollBar:IsVisible() ) then
+	if ( not self.scrollBar:IsVisible() or not self.scrollBar:IsEnabled() ) then
 		return;
 	end
 
@@ -99,11 +99,13 @@ function HybridScrollFrame_Update (self, totalHeight, displayedHeight)
 	if ( range > 0 and self.scrollBar ) then
 		local minVal, maxVal = self.scrollBar:GetMinMaxValues();
 		if ( math.floor(self.scrollBar:GetValue()) >= math.floor(maxVal) ) then
-			self.scrollBar:SetMinMaxValues(0, range)
-			if ( math.floor(self.scrollBar:GetValue()) ~= math.floor(range) ) then
-				self.scrollBar:SetValue(range);
-			else
-				HybridScrollFrame_SetOffset(self, range); -- If we've scrolled to the bottom, we need to recalculate the offset.
+			self.scrollBar:SetMinMaxValues(0, range);
+			if ( range < maxVal ) then
+				if ( math.floor(self.scrollBar:GetValue()) ~= math.floor(range) ) then
+					self.scrollBar:SetValue(range);
+				else
+					HybridScrollFrame_SetOffset(self, range); -- If we've scrolled to the bottom, we need to recalculate the offset.
+				end
 			end
 		else
 			self.scrollBar:SetMinMaxValues(0, range)
@@ -261,4 +263,37 @@ function HybridScrollFrame_SetDoNotHideScrollBar (self, doNotHide)
 
 	self.scrollBar.doNotHide = doNotHide;
 	HybridScrollFrame_Update(self, self.totalHeight or 0, self.scrollChild:GetHeight());
+end
+
+function HybridScrollFrame_ScrollToIndex(self, index, getHeightFunc)
+	local totalHeight = 0;
+	local scrollFrameHeight = self:GetHeight();
+	for i = 1, index do
+		local entryHeight = getHeightFunc(entry, i);
+		if i == index then
+			local offset = 0;
+			-- we don't need to do anything if the entry is fully displayed with the scroll all the way up
+			if ( totalHeight + entryHeight > scrollFrameHeight ) then
+				if ( entryHeight > scrollFrameHeight ) then
+					-- this entry is larger than the entire scrollframe, put it at the top
+					offset = totalHeight;
+				else
+					-- otherwise place it in the center
+					local diff = scrollFrameHeight - entryHeight;
+					offset = totalHeight - diff / 2;
+				end
+				-- because of valuestep our positioning might change
+				-- we'll do the adjustment ourselves to make sure the entry ends up above the center rather than below
+				local valueStep = self.scrollBar:GetValueStep();
+				offset = offset + valueStep - mod(offset, valueStep);
+				-- but if we ended up moving the entry so high up that its top is not visible, move it back down
+				if ( offset > totalHeight ) then
+					offset = offset - valueStep;
+				end
+			end
+			self.scrollBar:SetValue(offset);
+			break;
+		end
+		totalHeight = totalHeight + entryHeight;
+	end
 end

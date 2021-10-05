@@ -285,22 +285,8 @@ info.icon = [TEXTURE] -- An icon for the button.
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 ]]
 
-local UIDropDownMenu_ButtonInfo = {};
-
---Until we get around to making this betterz...
-local UIDropDownMenu_SecureInfo = {};
-
-local wipe = table.wipe;
-
 function UIDropDownMenu_CreateInfo()
-	-- Reuse the same table to prevent memory churn
-
-	if ( issecure() ) then
-		securecall(wipe, UIDropDownMenu_SecureInfo);
-		return UIDropDownMenu_SecureInfo;
-	else
-		return wipe(UIDropDownMenu_ButtonInfo);
-	end
+	return {};
 end
 
 function UIDropDownMenu_CreateFrames(level, index)

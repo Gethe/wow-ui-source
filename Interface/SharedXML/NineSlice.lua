@@ -188,6 +188,32 @@ local layouts =
 		["Center"] = { atlas = "%s-NineSlice-Center" },
 	};
 
+	GMChatRequest =
+	{
+		["TopRightCorner"] = { atlas = "GMChat-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "GMChat-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "GMChat-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "GMChat-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_GMChat-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_GMChat-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!GMChat-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!GMChat-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
+	TooltipDefaultLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
 	IdenticalCornersLayout =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },

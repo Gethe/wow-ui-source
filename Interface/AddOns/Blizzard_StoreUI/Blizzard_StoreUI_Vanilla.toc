@@ -1,5 +1,6 @@
 ## Title: Blizzard Store UI
 ## AllowLoad: Both
+..\..\SharedXML\Mixin.lua
 ..\..\SharedXML\Spline.lua
 ..\..\SharedXML\Pools.lua
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml
