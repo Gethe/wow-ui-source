@@ -1,0 +1,106 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Frame name="PreLoadFrame" parent="UIParent" frameStrata="LOW" toplevel="true" hidden="true">
+        <Layers>
+          <Layer level="BACKGROUND" >
+            <Texture file="Interface\Cursor\Attack.blp" />	
+            <Texture file="Interface\Cursor\Buy.blp" />	
+            <Texture file="Interface\Cursor\Cast.blp" />	
+            <Texture file="Interface\Cursor\GatherHerbs.blp" />	
+            <Texture file="Interface\Cursor\Innkeeper.blp" />	
+            <Texture file="Interface\Cursor\Inspect.blp" />	
+            <Texture file="Interface\Cursor\Interact.blp" />	
+            <Texture file="Interface\Cursor\Item.blp" />	
+            <Texture file="Interface\Cursor\LootAll.blp" />	
+            <Texture file="Interface\Cursor\Mail.blp" />	
+            <Texture file="Interface\Cursor\Mine.blp" />	
+            <Texture file="Interface\Cursor\PickLock.blp" />	
+            <Texture file="Interface\Cursor\Pickup.blp" />	
+            <Texture file="Interface\Cursor\Point.blp" />
+            <Texture file="Interface\Cursor\Quest.blp" />	
+            <Texture file="Interface\Cursor\QuestRepeatable.blp" />	
+            <Texture file="Interface\Cursor\QuestTurnIn.blp" />	
+            <Texture file="Interface\Cursor\Repair.blp" />	
+            <Texture file="Interface\Cursor\RepairNPC.blp" />	
+            <Texture file="Interface\Cursor\Skin.blp" />	
+            <Texture file="Interface\Cursor\SkinAlliance.blp" />	
+            <Texture file="Interface\Cursor\SkinHorde.blp" />	
+            <Texture file="Interface\Cursor\Speak.blp" />	
+            <Texture file="Interface\Cursor\Taxi.blp" />	
+            <Texture file="Interface\Cursor\Trainer.blp" />	
+            <Texture file="Interface\Cursor\UnableAttack.blp" />	
+            <Texture file="Interface\Cursor\UnableBuy.blp" />	
+            <Texture file="Interface\Cursor\UnableCast.blp" />	
+            <Texture file="Interface\Cursor\UnableGatherHerbs.blp" />
+            <Texture file="Interface\Cursor\UnableInnkeeper.blp" />	
+            <Texture file="Interface\Cursor\UnableInspect.blp" />	
+            <Texture file="Interface\Cursor\UnableInteract.blp" />	
+            <Texture file="Interface\Cursor\UnableItem.blp" />	
+            <Texture file="Interface\Cursor\UnableLootAll.blp" />	
+            <Texture file="Interface\Cursor\UnableMail.blp" />	
+            <Texture file="Interface\Cursor\UnableMine.blp" />	
+            <Texture file="Interface\Cursor\UnablePickLock.blp" />	
+            <Texture file="Interface\Cursor\UnablePickup.blp" />	
+            <Texture file="Interface\Cursor\UnablePoint.blp" />	
+            <Texture file="Interface\Cursor\UnableQuest.blp" />	
+            <Texture file="Interface\Cursor\UnableQuestRepeatable.blp" />	
+            <Texture file="Interface\Cursor\UnableQuestTurnIn.blp" />	
+            <Texture file="Interface\Cursor\UnableRepair.blp" />	
+            <Texture file="Interface\Cursor\UnableRepairNPC.blp" />	
+            <Texture file="Interface\Cursor\UnableSkin.blp" />	
+            <Texture file="Interface\Cursor\UnableSkinAlliance.blp" />	
+            <Texture file="Interface\Cursor\UnableSkinHorde.blp" />	
+            <Texture file="Interface\Cursor\UnableSpeak.blp" />	
+            <Texture file="Interface\Cursor\UnableTaxi.blp" />	
+            <Texture file="Interface\Cursor\UnableTrainer.blp" />	
+            <Texture file="Interface\Cursor\UnablevehichleCursor.blp" />	
+            <Texture file="Interface\Buttons\Spell-Reset.blp" />
+            <Texture file="Interface\Glues\loading.blp" />
+            <Texture file="Interface\Glues\LoadingBar\Loading-BarBorder.blp" />
+            <Texture file="Interface\Glues\LoadingBar\Loading-BarFill.blp" />
+            <Texture file="Interface\Minimap\MinimapArrow.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Achievement-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Help-Down.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Help-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-LFG-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-MainMenu-Down.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-MainMenu-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Quest-Down.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Quest-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Socials-Down.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Socials-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Spellbook-Down.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Spellbook-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButton-Talents-Up.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButtonCharacter-Down.blp" />
+            <Texture file="Interface\Buttons\UI-MicroButtonCharacter-Up.blp" />
+            <Texture file="Interface\ContainerFrame\UI-BackpackBackground.blp" />
+            <Texture file="Interface\Cursor\vehichleCursor.blp" />	
+            <Texture file="Interface\DialogFrame\UI-DialogBox-Background.blp" />
+            <Texture file="Interface\DialogFrame\UI-DialogBox-Border.blp" />
+            <Texture file="Interface\FriendsFrame\UI-ChannelFrame-BotLeft.blp" />
+            <Texture file="Interface\FriendsFrame\UI-ChannelFrame-BotRight.blp" />
+            <Texture file="Interface\FriendsFrame\WhoFrame-BotLeft.blp" />
+            <Texture file="Interface\FriendsFrame\WhoFrame-BotRight.blp" />
+            <Texture file="Interface\TargetingFrame\UI-PVP-Horde.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Bottom1.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Bottom2.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Bottom3.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Bottom4.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Middle1.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Middle2.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Middle3.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Middle4.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Top1.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Top2.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Top3.blp" />
+            <Texture file="Interface\WorldMap\UI-WorldMap-Top4.blp" />
+            <Texture file="Interface\Buttons\Button-Backpack-Up.blp" />
+          </Layer>
+        </Layers>
+  </Frame>
+</Ui>
+
+
+
+

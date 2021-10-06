@@ -1,0 +1,122 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Texture name="services-checkmark" file="Interface\Store\Services" virtual="true" >
+		<Size x="41" y="44"/>	
+		<TexCoords left="0.00097656" right="0.04101563" top="0.00097656" bottom="0.04394531"/>	
+	</Texture>
+	<Texture name="services-icon-bonus-large" file="Interface\Store\Services" virtual="true" >
+		<Size x="34" y="34"/>	
+		<TexCoords left="0.00097656" right="0.03417969" top="0.04589844" bottom="0.07910156"/>	
+	</Texture>
+	<Texture name="services-icon-bonus-red" file="Interface\Store\Services" virtual="true" >
+		<Size x="19" y="19"/>	
+		<TexCoords left="0.00097656" right="0.01953125" top="0.08105469" bottom="0.09960938"/>	
+	</Texture>
+	<Texture name="services-icon-bonus" file="Interface\Store\Services" virtual="true" >
+		<Size x="19" y="19"/>	
+		<TexCoords left="0.02148438" right="0.04003906" top="0.08105469" bottom="0.09960938"/>	
+	</Texture>
+	<Texture name="services-ring-countcircle" file="Interface\Store\Services" virtual="true" >
+		<Size x="32" y="32"/>	
+		<TexCoords left="0.00097656" right="0.03222656" top="0.10156250" bottom="0.13281250"/>	
+	</Texture>
+	<Texture name="services-yellowarrow" file="Interface\Store\Services" virtual="true" >
+		<Size x="18" y="32"/>	
+		<TexCoords left="0.00097656" right="0.01855469" top="0.13476563" bottom="0.16601563"/>	
+	</Texture>
+	<Texture name="services-cover-ring" file="Interface\Store\Services" virtual="true" >
+		<Size x="80" y="82"/>	
+		<TexCoords left="0.04296875" right="0.12109375" top="0.00097656" bottom="0.08105469"/>	
+	</Texture>
+	<Texture name="services-icon-processing" file="Interface\Store\Services" virtual="true" >
+		<Size x="42" y="37"/>	
+		<TexCoords left="0.12304688" right="0.16406250" top="0.00097656" bottom="0.03710938"/>	
+	</Texture>
+	<Texture name="services-number-1" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.16601563" right="0.23535156" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-2" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.23730469" right="0.30664063" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-3" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.30859375" right="0.37792969" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-4" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.37988281" right="0.44921875" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-5" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.45117188" right="0.52050781" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-6" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.52246094" right="0.59179688" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-7" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.59375000" right="0.66308594" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-8" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.66503906" right="0.73437500" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-number-9" file="Interface\Store\Services" virtual="true" >
+		<Size x="71" y="79"/>	
+		<TexCoords left="0.73632813" right="0.80566406" top="0.00097656" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="services-popup-botleft" file="Interface\Store\Services" virtual="true" >
+		<Size x="104" y="44"/>	
+		<TexCoords left="0.80761719" right="0.90917969" top="0.00097656" bottom="0.04394531"/>	
+	</Texture>
+	<Texture name="services-ring-large" file="Interface\Store\Services" virtual="true" >
+		<Size x="72" y="73"/>	
+		<TexCoords left="0.91113281" right="0.98144531" top="0.00097656" bottom="0.07226563"/>	
+	</Texture>
+	<Texture name="services-cover" file="Interface\Store\Services" virtual="true" >
+		<Size x="421" y="724"/>	
+		<TexCoords left="0.04296875" right="0.45410156" top="0.08300781" bottom="0.79003906"/>	
+	</Texture>
+	<Texture name="services-popup-bot" file="Interface\Store\Services" virtual="true" >
+		<Size x="198" y="44"/>	
+		<TexCoords left="0.04296875" right="0.23632813" top="0.79199219" bottom="0.83496094"/>	
+	</Texture>
+	<Texture name="services-popup-botright" file="Interface\Store\Services" virtual="true" >
+		<Size x="104" y="44"/>	
+		<TexCoords left="0.04296875" right="0.14453125" top="0.83691406" bottom="0.87988281"/>	
+	</Texture>
+	<Texture name="services-popup-top" file="Interface\Store\Services" virtual="true" >
+		<Size x="198" y="60"/>	
+		<TexCoords left="0.04296875" right="0.23632813" top="0.88183594" bottom="0.94042969"/>	
+	</Texture>
+	<Texture name="services-popup-topleft" file="Interface\Store\Services" virtual="true" >
+		<Size x="106" y="60"/>	
+		<TexCoords left="0.23828125" right="0.34179688" top="0.79199219" bottom="0.85058594"/>	
+	</Texture>
+	<Texture name="services-popup-topright" file="Interface\Store\Services" virtual="true" >
+		<Size x="106" y="60"/>	
+		<TexCoords left="0.34375000" right="0.44726563" top="0.79199219" bottom="0.85058594"/>	
+	</Texture>
+	<Texture name="services-ring-large-glowpulse" file="Interface\Store\Services" virtual="true" >
+		<Size x="145" y="138"/>	
+		<TexCoords left="0.23828125" right="0.37988281" top="0.85253906" bottom="0.98730469"/>	
+	</Texture>
+	<Texture name="services-ring-wod" file="Interface\Store\Services" virtual="true" >
+		<Size x="72" y="68"/>	
+		<TexCoords left="0.38183594" right="0.45214844" top="0.85253906" bottom="0.91894531"/>	
+	</Texture>
+	<Texture name="services-ring" file="Interface\Store\Services" virtual="true" >
+		<Size x="59" y="60"/>	
+		<TexCoords left="0.38183594" right="0.43945313" top="0.92089844" bottom="0.97949219"/>	
+	</Texture>
+	<Texture name="services-ring-large-glow" file="Interface\Store\Services" virtual="true" >
+		<Size x="253" y="256"/>	
+		<TexCoords left="0.45605469" right="0.70312500" top="0.08300781" bottom="0.33300781"/>	
+	</Texture>
+	<Texture name="services-ring-large-glowspin" file="Interface\Store\Services" virtual="true" >
+		<Size x="253" y="256"/>	
+		<TexCoords left="0.70507813" right="0.95214844" top="0.08300781" bottom="0.33300781"/>	
+	</Texture>
+</Ui>
