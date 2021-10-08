@@ -12,7 +12,9 @@ local BehavioralMessaging =
 
 			Arguments =
 			{
-				{ Name = "notificationType", Type = "string", Nilable = false },
+				{ Name = "dbId", Type = "string", Nilable = false },
+				{ Name = "openTimeSeconds", Type = "number", Nilable = false },
+				{ Name = "readTimeSeconds", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -26,7 +28,7 @@ local BehavioralMessaging =
 			Payload =
 			{
 				{ Name = "notificationType", Type = "string", Nilable = false },
-				{ Name = "count", Type = "number", Nilable = false },
+				{ Name = "dbId", Type = "string", Nilable = false },
 			},
 		},
 	},

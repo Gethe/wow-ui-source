@@ -4242,7 +4242,9 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 	button1 = REGIONAL_RESTRICT_CHAT_DIALOG_ENABLE,
 	button2 = REGIONAL_RESTRICT_CHAT_DIALOG_DISABLE,
 	OnAccept = function()
-		ChatConfigFrameToggleChatButton_CommitSetChatDisabled(false);
+		local disabled = false;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
 	end,
 	OnShow = function(self)
 		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
@@ -4257,7 +4259,9 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	button1 = RESTRICT_CHAT_CONFIG_DIALOG_DISABLE,
 	button2 = RESTRICT_CHAT_CONFIG_DIALOG_CANCEL,
 	OnAccept = function()
-		ChatConfigFrameToggleChatButton_CommitSetChatDisabled(true);
+		local disabled = true;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
 	end,
 	timeout = 0,
 	hideOnEscape = 0,

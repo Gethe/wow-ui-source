@@ -30,6 +30,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Button>
 
 	<Frame name="BehavioralMessagingTray" inherits="HorizontalLayoutFrame" mixin="BehavioralMessagingTrayMixin" parent="UIParent" hidden="true">

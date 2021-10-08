@@ -410,12 +410,12 @@
 	<Frame name="EventToastChallengeModeToastTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastChallengeModeToastMixin" enableMouse="true" alpha="0" virtual="true">
 		<Size x="418" y="72"/>
 		<KeyValues>
-			<KeyValue key="animInStartDelay" value="10" type="number"/>
-			<KeyValue key="animInEndDelay" value="0" type="number"/>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="animInEndDelay" value="6" type="number"/>
 		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate">
-				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="10" endDelay="2.3" order="1" parentKey="anim2"/>
+				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0" endDelay="8.3" order="1" parentKey="anim2"/>
 			</AnimationGroup>
 
 			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate">
@@ -436,7 +436,7 @@
 				</FontString>
 				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="8"/>
+						<Anchor point="BOTTOM" x="0" y="10"/>
 					</Anchors>
 					<Color color="NORMAL_FONT_COLOR"/>
 				</FontString>
@@ -451,7 +451,7 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="MedalFlare" atlas="challenges-bannershine" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
 						</Texture>
 					</Layer>

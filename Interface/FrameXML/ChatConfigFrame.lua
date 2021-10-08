@@ -116,7 +116,16 @@ CHAT_CONFIG_CHAT_LEFT = {
 		text = VOICE_CHAT_TRANSCRIPTION,
 		type = "VOICE_TEXT",
 		checked = function () return IsListeningForMessageType("VOICE_TEXT"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "VOICE_TEXT"); end;
+		func = function (self, checked) 
+			ToggleChatMessageGroup(checked, "VOICE_TEXT");
+			local chatFrame = FCF_GetCurrentChatFrame();
+			if ( checked ) then
+				chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
+			else
+				chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+			end
+		end;
 		disabled = ShouldDisplayDisabled;
 	},
 };
@@ -716,6 +725,8 @@ function ChatConfigFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHANNEL_UI_UPDATE");
 	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
+	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
+
 	ChatConfigCombatSettingsFilters.selectedFilter = 1;
 end
 
@@ -759,6 +770,9 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		if ChatConfigChannelSettings:IsVisible() then
 			ChatConfigChannelSettings_OnShow();
 		end
+	elseif event == "CHAT_DISABLED_CHANGE_FAILED" then
+		local disabled = ...;
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
 	end
 end
 
@@ -2192,13 +2206,12 @@ function ChatConfigFrameToggleChatButton_OnClick()
 	if newDisabled then
 		StaticPopup_Show("CHAT_CONFIG_DISABLE_CHAT");
 	else
-		ChatConfigFrameToggleChatButton_CommitSetChatDisabled(newDisabled);
+		C_SocialRestrictions.SetChatDisabled(newDisabled);
+		ChatConfigFrame_OnChatDisabledChanged(newDisabled);
 	end
 end
 
-function ChatConfigFrameToggleChatButton_CommitSetChatDisabled(disabled)
-	C_SocialRestrictions.SetChatDisabled(disabled);
-
+function ChatConfigFrame_OnChatDisabledChanged(disabled)
 	ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled);
 	ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled);
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);

@@ -342,11 +342,9 @@ function Chat_GetCommunitiesChannel(clubId, streamId)
 	for i = 1, MAX_WOW_CHAT_CHANNELS do
 		local channelID, channelName = GetChannelName(i);
 		if channelName and channelName == communitiesChannelName then
-			return "CHANNEL"..i;
+			return "CHANNEL"..i, i;
 		end
 	end
-
-	return nil;
 end
 
 function Chat_GetCommunitiesChannelColor(clubId, streamId)
@@ -2613,6 +2611,14 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	end
 end
 
+SlashCmdList["TRANSMOG_OUTFIT"] = function(msg)
+	local itemTransmogInfoList = TransmogUtil.ParseOutfitSlashCommand(msg);
+	if itemTransmogInfoList then
+		local showOutfitDetails = true;
+		DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+	end
+end
+
 SlashCmdList["COMMUNITY"] = function(msg)
 	if msg == "" then
 		local info = ChatTypeInfo["SYSTEM"];
@@ -3886,6 +3892,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		return true;
+	elseif ( event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" ) then
+		local _, isNowTranscribing = ...
+		if ( not self.isTranscribing and isNowTranscribing ) then
+			ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_STARTED);
+		end
+		self.isTranscribing = isNowTranscribing;
 	end
 end
 
@@ -4290,6 +4302,8 @@ function ChatEdit_OnLoad(self)
 	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
 
 	self:SetParent(UIParent);
+
+	self.HasStickyFocus = ChatEdit_HasStickyFocus;
 end
 
 function ChatEdit_OnEvent(self, event, ...)
@@ -4645,11 +4659,13 @@ function ChatEdit_UpdateHeader(editBox)
 		return;
 	end
 
+	local info;
 	if ( type == "VOICE_TEXT" ) then
-		type = VoiceTranscription_DetermineChatType(false);
+		type, info = VoiceTranscription_GetChatTypeAndInfo();
+	else
+		info = ChatTypeInfo[type];
 	end
 
-	local info = ChatTypeInfo[type];
 	local header = _G[editBox:GetName().."Header"];
 	local headerSuffix = _G[editBox:GetName().."HeaderSuffix"];
 	if ( not header ) then
@@ -4707,6 +4723,8 @@ function ChatEdit_UpdateHeader(editBox)
 		end
 		ChatEdit_UpdateHeader(editBox);
 		return;
+	elseif ( type == "COMMUNITIES_CHANNEL" and info.channelName ) then
+		header:SetFormattedText(CHAT_CHANNEL_SEND_NO_ID, info.channelName);
 	else
 		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
@@ -5227,6 +5245,25 @@ function ChatEdit_ExtractChannel(editBox, msg)
 	editBox:SetAttribute("chatType", "CHANNEL");
 	editBox:SetText(msg);
 	ChatEdit_UpdateHeader(editBox);
+end
+
+local stickyFocusFrames = { };
+
+function ChatEdit_RegisterForStickyFocus(frame)
+	stickyFocusFrames[frame] = 1;
+end
+
+function ChatEdit_UnregisterForStickyFocus(frame)
+	stickyFocusFrames[frame] = nil;
+end
+
+function ChatEdit_HasStickyFocus()
+	for frame in pairs(stickyFocusFrames) do
+		if frame:HasStickyFocus() then
+			return true;
+		end
+	end
+	return false;
 end
 
 -- Chat menu functions

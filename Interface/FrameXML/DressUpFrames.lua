@@ -104,18 +104,20 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 		itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID);
 	end
 
-	local slotID = nil;
+	local weaponSlotID = nil;
 	if categoryID then
 		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
 		-- weapons that can go in either hand need the slot specified
-		slotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
-		-- legion artifacts might set both weapons
-		if TransmogUtil.IsCategoryLegionArtifact(categoryID) then
-			itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.MainHandTransmogFromPairedCategory;
+		weaponSlotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
+		-- legion artifacts need the secondary configured and the weapon slot specified
+		local isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+		if isLegionArtifact and transmogLocation.slotID == INVSLOT_MAINHAND then
+			weaponSlotID = transmogLocation.slotID;
+			itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
 		end
 	end
 
-	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID);
+	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, weaponSlotID);
 	if result ~= Enum.ItemTryOnReason.Success then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end
@@ -424,6 +426,7 @@ end
 function DressUpOutfitDetailsPanelMixin:Refresh()
 	self.slotPool:ReleaseAll();
 	self.lastFrame = nil;
+	self.validMainHand = false;
 
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	if not playerActor then
@@ -456,6 +459,11 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 end
 
 function DressUpOutfitDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field)
+	-- hide offhand if empty and mainhand has something
+	if slotID == INVSLOT_OFFHAND and self.validMainHand and transmogInfo.appearanceID == Constants.Transmog.NoTransmogID then
+		return;
+	end
+
 	local frame = self.slotPool:Acquire();
 	local isValid = false;
 	if transmogInfo then
@@ -475,6 +483,10 @@ function DressUpOutfitDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field
 			frame:SetPoint("TOPLEFT", 18, -38);
 		end
 		self.lastFrame = frame;
+
+		if isValid and slotID == INVSLOT_MAINHAND and transmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+			self.validMainHand = true;
+		end
 	else
 		frame:Hide();
 	end
@@ -522,12 +534,13 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 		if C_TransmogCollection.PlayerKnowsSource(self.transmogID) then
 			self:GetParent():SetMousedOverFrame(self);
 			self:RefreshAppearanceTooltip();
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 		else
 			local nameColor = self.item:GetItemQualityColor().color;
 			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
 			local slotName = TransmogUtil.GetSlotName(self.slotID);
 			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);		
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 		end
 	else
 		local nameColor = self.item:GetItemQualityColor().color;
@@ -544,6 +557,22 @@ function DressUpOutfitDetailsSlotMixin:OnLeave()
 	self.tooltipSourceIndex = nil;
 	self.tooltipCycle = nil;
 	GameTooltip:Hide();
+end
+
+function DressUpOutfitDetailsSlotMixin:OnMouseUp()
+	if IsModifiedClick("CHATLINK") and self.transmogID then
+		local link;
+		if self.item then
+			link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(self.transmogID));
+		else
+			link = select(2, C_TransmogCollection.GetIllusionStrings(self.transmogID));
+		end
+		if link then
+			if not ChatEdit_InsertLink(link) then
+				ChatFrame_OpenChat(link);
+			end
+		end
+	end
 end
 
 function DressUpOutfitDetailsSlotMixin:OnCycleKeyDown()

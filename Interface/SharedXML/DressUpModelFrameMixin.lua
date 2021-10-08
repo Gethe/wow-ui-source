@@ -22,16 +22,71 @@ end
 -- DRESS UP MODEL FRAME LINK BUTTON MIXIN
 DressUpModelFrameLinkButtonMixin = {};
 
-function DressUpModelFrameLinkButtonMixin:OnClick()
-	local playerActor = self:GetParent().ModelScene:GetPlayerActor();
-	if playerActor then
-		local list = playerActor:GetItemTransmogInfoList();
-		local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(list);
+function DressUpModelFrameLinkButtonMixin:OnShow()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT) then
+		local helpTipInfo = {
+			text = LINK_TRANSMOG_OUTFIT_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Left,
+			offsetY = 5,
+		};
+		HelpTip:Show(self, helpTipInfo);
+	end
+
+	ChatEdit_RegisterForStickyFocus(self);
+end
+
+function DressUpModelFrameLinkButtonMixin:OnHide()
+	ChatEdit_UnregisterForStickyFocus(self);
+end
+
+local function LinkOutfitDropDownInit()
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	local itemTransmogInfoList = playerActor and playerActor:GetItemTransmogInfoList();
+	
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	
+	info.text = TRANSMOG_OUTFIT_POST_IN_CHAT;
+	info.func = function()
+		local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
 		if not ChatEdit_InsertLink(hyperlink) then
 			ChatFrame_OpenChat(hyperlink);
- 	 	end
-		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+		end
+	end;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD;
+	info.func = function()
+		local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
+		CopyToClipboard(slashCommand);
+	end;
+	UIDropDownMenu_AddButton(info);
+end
+
+function DressUpModelFrameLinkButtonMixin:OnLoad()
+	UIDropDownMenu_Initialize(self.DropDown, LinkOutfitDropDownInit, "MENU");
+end
+
+function DressUpModelFrameLinkButtonMixin:OnClick()
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT, true);
+	HelpTip:Hide(self, LINK_TRANSMOG_OUTFIT_HELPTIP);
+
+	ToggleDropDownMenu(1, nil, self.DropDown, self, 136, 73);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function DressUpModelFrameLinkButtonMixin:HasStickyFocus()
+	if self:IsMouseOver() then
+		return true;
 	end
+	if UIDropDownMenu_GetCurrentDropDown() == self.DropDown and DropDownList1:IsMouseOver() then
+		return true;
+	end
+	return false;
 end
 
 --------------------------------------------------

@@ -83,6 +83,10 @@ local Torghast_TalentTreeLayoutOptions =
 	customUnavailableTalentErrorCallback = CustomTorghastTalentErrorCallback,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
+	currencyHelpTipFormat = TORGHAST_EARN_TOWER_KNOWLEDGE_TUTORIAL_TEXT,
+	currencyHelpTipFlag = LE_FRAME_TUTORIAL_TORGHAST_EARN_TOWER_KNOWLEDGE,
+	spendHelpTipText = TORGHAST_SPEND_TOWER_KNOWLEDGE_TUTORIAL_TEXT,
+	spendHelpTipFlag = LE_FRAME_TUTORIAL_TORGHAST_SPEND_TOWER_KNOWLEDGE,
 };
 
 local function FramePool_HideAndClearAnchorsWithResetCallback(pool, frame)
@@ -268,18 +272,27 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
 	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_OPEN);
 
-	local helpTipInfo = {
-		text = self:GetFormattedCurrencyTooltipText(TORGHAST_EARN_TOWER_KNOWLEDGE_TUTORIAL_TEXT),
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_EARN_TOWER_KNOWLEDGE,
-		checkCVars = true,
-		targetPoint = HelpTip.Point.RightEdgeCenter,
-		offsetX = -5,
-		onAcknowledgeCallback = GenerateClosure(self.CheckSpendTutorial, self),
-	};
+	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
+	if garrTalentTreeID ~= nil then
+		local layoutOptions = GetTalentTreeLayoutOptions(garrTalentTreeID);
+		local currencyHelpTipFormat = layoutOptions.currencyHelpTipFormat;
+		local currencyHelpTipFlag = layoutOptions.currencyHelpTipFlag;
 
-	HelpTip:Show(self, helpTipInfo, self.Currency);
+		if (currencyHelpTipFormat ~= nil) and (currencyHelpTipFlag ~= nil) then
+			local helpTipInfo = {
+				text = self:GetFormattedCurrencyTooltipText(currencyHelpTipFormat),
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = currencyHelpTipFlag,
+				checkCVars = true,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -5,
+				onAcknowledgeCallback = GenerateClosure(self.CheckSpendTutorial, self),
+			};
+
+			HelpTip:Show(self, helpTipInfo, self.Currency);
+		end
+	end
 end
 
 function OrderHallTalentFrameMixin:OnHide()
@@ -338,18 +351,27 @@ function OrderHallTalentFrameMixin:GetFormattedCurrencyTooltipText(tooltipFormat
 end
 
 function OrderHallTalentFrameMixin:CheckSpendTutorial()
-	local helpTipInfo = {
-		text = self:GetFormattedCurrencyTooltipText(TORGHAST_SPEND_TOWER_KNOWLEDGE_TUTORIAL_TEXT),
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_SPEND_TOWER_KNOWLEDGE,
-		checkCVars = true,
-		targetPoint = HelpTip.Point.RightEdgeTop,
-		offsetX = -50,
-		offsetY = -115,
-	};
+	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
+	if garrTalentTreeID ~= nil then
+		local layoutOptions = GetTalentTreeLayoutOptions(garrTalentTreeID);
+		local spendHelpTipText = layoutOptions.spendHelpTipText;
+		local spendHelpTipFlag = layoutOptions.spendHelpTipFlag;
 
-	HelpTip:Show(self, helpTipInfo, self);
+		if (spendHelpTipText ~= nil) and (spendHelpTipFlag ~= nil) then
+			local helpTipInfo = {
+				text = self:GetFormattedCurrencyTooltipText(spendHelpTipText),
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = spendHelpTipFlag,
+				checkCVars = true,
+				targetPoint = HelpTip.Point.RightEdgeTop,
+				offsetX = -50,
+				offsetY = -115,
+			};
+
+			HelpTip:Show(self, helpTipInfo, self.Currency);
+		end
+	end
 end
 
 function OrderHallTalentFrameMixin:GetActiveAnimationFrame(talentID)

@@ -247,6 +247,11 @@ local LFGListInfo =
 			Name = "IsPlayerAuthenticatedForLFG",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = true },
+			},
+
 			Returns =
 			{
 				{ Name = "isAuthenticated", Type = "bool", Nilable = false },

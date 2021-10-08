@@ -206,3 +206,21 @@ function ItemTransmogInfoMixin:Clear()
 	self.secondaryAppearanceID = Constants.Transmog.NoTransmogID;
 	self.illusionID = Constants.Transmog.NoTransmogID;
 end
+
+-- There is no slot info in ItemTransmogInfo so the following 3 MainHand functions must be used with correct itemTransmogInfo at call site
+function ItemTransmogInfoMixin:ConfigureSecondaryForMainHand(isLegionArtifact)
+	if isLegionArtifact then
+		self.secondaryAppearanceID = Constants.Transmog.MainHandTransmogIsPairedWeapon;
+	else
+		self.secondaryAppearanceID = Constants.Transmog.MainHandTransmogIsIndividualWeapon;
+	end
+end
+
+function ItemTransmogInfoMixin:IsMainHandIndividualWeapon()
+	return self.secondaryAppearanceID == Constants.Transmog.MainHandTransmogIsIndividualWeapon;
+end
+
+function ItemTransmogInfoMixin:IsMainHandPairedWeapon()
+	-- paired weapon can be value Constants.Transmog.MainHandTransmogIsPairedWeapon or greater
+	return not self:IsMainHandIndividualWeapon();
+end

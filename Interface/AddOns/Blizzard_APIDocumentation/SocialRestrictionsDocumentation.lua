@@ -64,6 +64,15 @@ local SocialRestrictions =
 			Type = "Event",
 			LiteralName = "ALERT_REGIONAL_CHAT_DISABLED",
 		},
+		{
+			Name = "ChatDisabledChangeFailed",
+			Type = "Event",
+			LiteralName = "CHAT_DISABLED_CHANGE_FAILED",
+			Payload =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

@@ -133,7 +133,7 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(outfitID)
 			-- skip offhand if mainhand is an appeance from Legion Artifacts category and the offhand matches the paired appearance
 			if isValidSlot and slotID == INVSLOT_OFFHAND then
 				local mhInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
-				if mhInfo.secondaryAppearanceID == Constants.Transmog.MainHandTransmogFromPairedCategory then
+				if mhInfo:IsMainHandPairedWeapon() then
 					isValidSlot = appearanceID ~= C_TransmogCollection.GetPairedArtifactAppearance(mhInfo.appearanceID);
 				end
 			end

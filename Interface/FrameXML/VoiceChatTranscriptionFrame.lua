@@ -43,57 +43,68 @@ function VoiceTranscriptionFrame_UpdateVisibility(self)
 	end
 end
 
-function VoiceTranscription_DetermineChatType(isLeader)
+function VoiceTranscription_GetChatTypeAndInfo()
 	local chatType = "PARTY";
 	local channelType = C_VoiceChat.GetActiveChannelType();
-	local infoType = nil;
+	local chatInfo = nil;
 
 	if (channelType == Enum.ChatChannelType.Private_Party) then
 		if (IsInRaid()) then
-			if (isLeader) then
-				chatType = "RAID_LEADER";
-			else
-				chatType = "RAID";
-			end
+			chatType = "RAID";
 		else
-			if (isLeader) then
-				chatType = "PARTY_LEADER";
-			else
-				chatType = "PARTY";
-			end
+			chatType = "PARTY";
 		end
 	elseif (channelType == Enum.ChatChannelType.Public_Party) then
-		if (isLeader) then
-			chatType = "INSTANCE_CHAT_LEADER";
-		else
-			chatType = "INSTANCE_CHAT";
-		end
+		chatType = "INSTANCE_CHAT";
 	elseif (channelType == Enum.ChatChannelType.Communities) then
 		local channel = C_VoiceChat.GetChannel(C_VoiceChat.GetActiveChannelID()) or {};
 		local streamInfo = C_Club.GetStreamInfo(channel.clubId, channel.streamId);
-		if streamInfo then
+		if (streamInfo) then
 			if streamInfo.streamType == Enum.ClubStreamType.Guild then
 				chatType = "GUILD";
 			elseif streamInfo.streamType == Enum.ClubStreamType.Officer then
 				chatType = "OFFICER";
 			else
 				chatType = "COMMUNITIES_CHANNEL";
-				infoType = Chat_GetCommunitiesChannel(channel.clubId, channel.streamId);
+				-- Check if the channel is registered as a chat channel
+				local clubInfo = C_Club.GetClubInfo(channel.clubId);
+				if (clubInfo) then
+					local chatChannel, channelIdx = Chat_GetCommunitiesChannel(channel.clubId, channel.streamId);
+					local channelName, channelColor;
+					if (chatChannel) then
+						channelName = string.format("%d. %s", channelIdx, clubInfo.shortName);
+						local channelInfo = ChatTypeInfo[chatChannel];
+						channelColor = {
+							r = channelInfo.r,
+							g = channelInfo.g,
+							b = channelInfo.b,
+						};
+					else
+						channelName = clubInfo.shortName;
+						channelColor = (clubInfo.clubType == Enum.ClubType.BattleNet) and BATTLENET_FONT_COLOR or DEFAULT_CHAT_CHANNEL_COLOR;
+					end
+					chatInfo =
+						{
+							channelName = channelName,
+							r = channelColor.r,
+							g = channelColor.g,
+							b = channelColor.b,
+						};
+				end
 			end
 		end
 	end
 
-	if infoType == nil then
-		infoType = chatType;
+	if (not chatInfo) then
+		chatInfo = ChatTypeInfo[chatType];
 	end;
 
-	return infoType, chatType;
+	return chatType, chatInfo;
 end
 
 function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 	-- Determine tab color based on channel type
-	local chatType = VoiceTranscription_DetermineChatType(false);
-	local chatInfo = ChatTypeInfo[chatType];
+	local _, chatInfo = VoiceTranscription_GetChatTypeAndInfo();
 	
 	-- Set tab texture vertex colors
 	local tab = self.Tab;

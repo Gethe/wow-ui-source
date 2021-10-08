@@ -2,7 +2,7 @@ function ipairs_reverse(table)
 	local function Enumerator(table, index)
 		index = index - 1;
 		local value = table[index];
-		if value then
+		if value ~= nil then
 			return index, value;
 		end
 	end
@@ -17,7 +17,7 @@ function CreateTableEnumerator(tbl, indexBegin, indexEnd)
 		index = index + 1;
 		if index <= indexEnd then
 			local value = tbl[index];
-			if value then
+			if value ~= nil then
 				return index, value;
 			end
 		end
@@ -198,7 +198,11 @@ end
 function GetOrCreateTableEntry(table, key, defaultValue)
 	local currentValue = table[key];
 	if currentValue == nil then
-		currentValue = defaultValue or {};
+		if defaultValue ~= nil then
+			currentValue = defaultValue;
+		else
+			currentValue = {};
+		end
 		table[key] = currentValue;
 	end
 

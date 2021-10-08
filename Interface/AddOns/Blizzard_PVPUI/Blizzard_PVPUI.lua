@@ -1871,10 +1871,13 @@ function PVPConquestLockTooltipShow(self)
 end
 
 function PVPConquestBarMixin:Update()
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
+	local shouldShowConquestBar = currencyInfo and currencyInfo.maxQuantity > 0; 
+	self:SetShown(shouldShowConquestBar);
+
 	self.locked = not IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(self.locked);
 
-	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
 	local maxProgress = currencyInfo.maxQuantity;
 	local progress = math.min(currencyInfo.totalEarned, maxProgress);
 

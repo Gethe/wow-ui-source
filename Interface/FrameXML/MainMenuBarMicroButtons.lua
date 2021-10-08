@@ -840,6 +840,7 @@ function TalentMicroButtonMixin:OnLoad()
 
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -891,7 +892,8 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 end
 
 function TalentMicroButtonMixin:HasPvpTalentAlertToShow()
-	if not IsPlayerInWorld() or not C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
+	local isInterestedInPvP = C_PvP.IsWarModeDesired() or PVPUtil.IsInActiveBattlefield();
+	if not isInterestedInPvP or not IsPlayerInWorld() or not C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
 		return nil, LOWEST_TALENT_FRAME_PRIORITY;
 	end
 
@@ -939,7 +941,7 @@ end
 
 --Talent button specific functions
 function TalentMicroButtonMixin:OnEvent(event, ...)
-	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_LEVEL_CHANGED" ) then
+	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_LEVEL_CHANGED" or event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		self:EvaluateAlertVisibility();
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or event == "HONOR_LEVEL_UPDATE" ) then
 		UpdateMicroButtons();

@@ -859,15 +859,13 @@ function TransmogSlotButtonMixin:RefreshItemModel()
 		if self.transmogLocation:IsMainHand() then
 			mainHandCategoryID = C_Transmog.GetSlotEffectiveCategory(self.transmogLocation);
 			isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(mainHandCategoryID);
+			itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
 		end
 		-- update only if there is a change or it can recurse (offhand is processed first and mainhand might override offhand)
 		if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) or isLegionArtifact then
 			-- don't specify a slot for ranged weapons
 			if mainHandCategoryID and TransmogUtil.IsCategoryRangedWeapon(mainHandCategoryID) then
 				slotID = nil;
-			end
-			if isLegionArtifact then
-				itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.MainHandTransmogFromPairedCategory;
 			end
 			actor:SetItemTransmogInfo(itemTransmogInfo, slotID);
 		end

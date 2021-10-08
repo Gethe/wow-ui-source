@@ -681,7 +681,7 @@
 						InputBoxInstructions_OnTextChanged(self);
 					</OnTextChanged>
 					<OnEditFocusLost>
-						if ( self:GetText() == "" ) then
+						if ( self:GetText() == "" and not self:GetParent().CheckButton:IsMouseOver()) then
 							self:GetParent().CheckButton:SetChecked(false);
 						end
 					</OnEditFocusLost>
@@ -1799,7 +1799,7 @@
 								LFGListEntryCreation_UpdateValidState(self:GetParent());
 							</OnTextChanged>
 							<OnDisable inherit="append">
-								self:SetMaxLetters(0);
+								self:SetMaxLetters(129);
 							</OnDisable>
 							<OnEnable inherit="append">
 								self:SetMaxLetters(31);

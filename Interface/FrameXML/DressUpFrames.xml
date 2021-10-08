@@ -39,6 +39,7 @@
 			<OnHide method="OnHide"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
 
@@ -288,15 +289,21 @@
 					<OnClick method="OnClick" />
 				</Scripts>
 			</Button>
-			<Button parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_OUTFIT">
+			<DropDownToggleButton parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_OUTFIT">
 				<Size x="159" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="2" y="4"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
-			</Button>
+				<Frames>
+					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
+				</Frames>
+			</DropDownToggleButton>	
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
