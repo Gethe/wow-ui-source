@@ -9,11 +9,13 @@ Fonts.xml
 ..\SharedXML\Mixin.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
 ..\..\Interface_Vanilla\SharedXML\TextureUtil.lua
 ..\..\Interface_Vanilla\SharedXML\Util.lua
 ..\SharedXML\Constants.lua
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -38,7 +40,6 @@ Fonts.xml
 ..\..\Interface_Vanilla\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua

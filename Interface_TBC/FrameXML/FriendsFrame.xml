@@ -3071,7 +3071,7 @@ TRAVEL PASS
             </Scripts>
             <FontString inherits="ChatFontNormal"/>
           </EditBox>
-					<Frame name="GuildControlPopupFrameTabPermissions" inherits="BackdropTemplate">
+					<Frame name="GuildControlPopupFrameTabPermissions" inherits="TooltipBackdropTemplate">
 						<Size>
 							<AbsDimension x="268" y="62"/>
 						</Size>
@@ -3081,7 +3081,6 @@ TRAVEL PASS
 							</Anchor>
 						</Anchors>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
 							<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
 							<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
 						</KeyValues>

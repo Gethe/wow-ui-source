@@ -2674,6 +2674,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
 	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
+	self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
+
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -3081,6 +3083,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	elseif ( event == "BN_DISCONNECTED" ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
+	elseif ( event == "NOTIFY_CHAT_SUPPRESSED" ) then
+		local hyperlink = string.format("|Haadcopenconfig|h[%s]", RESTRICT_CHAT_CONFIG_HYPERLINK);
+		local message = string.format(RESTRICT_CHAT_CHATFRAME_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(hyperlink));
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(message, info.r, info.g, info.b, info.id);
+		return true;
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);

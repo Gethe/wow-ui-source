@@ -800,77 +800,7 @@
 			<OnLoad function="MagicButton_OnLoad" />
 		</Scripts>
 	</Button>
-
-<!--
-*******************************************************************************
-    Tooltip bordered frame
-*******************************************************************************
--->
-	<Frame name="TooltipBorderedFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BorderTopLeft" file="Interface\Tooltips\UI-Tooltip-TL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderTopRight" file="Interface\Tooltips\UI-Tooltip-TR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderBottomRight" file="Interface\Tooltips\UI-Tooltip-BR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderBottomLeft" file="Interface\Tooltips\UI-Tooltip-BL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderTop" file="Interface\Tooltips\UI-Tooltip-T">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderRight" file="Interface\Tooltips\UI-Tooltip-R">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderBottom" file="Interface\Tooltips\UI-Tooltip-B">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BorderLeft" file="Interface\Tooltips\UI-Tooltip-L">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Background">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
+	
 
 	<Texture name="GreenCheckMarkTemplate" file="Interface\Scenarios\ScenarioIcon-Check" virtual="true">
 		<Size x="16" y="16"/>
@@ -1171,7 +1101,6 @@
 			<Frame name="$parentBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
 					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 				</KeyValues>
 				<Anchors>
@@ -1286,7 +1215,6 @@
 			<Frame parentKey="ScrollUpBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
 					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 				</KeyValues>
 				<Anchors>
@@ -1297,7 +1225,6 @@
 			<Frame parentKey="ScrollDownBorder" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
 					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 				</KeyValues>
 				<Anchors>
@@ -1308,7 +1235,6 @@
 			<Frame parentKey="Border" inherits="TooltipBorderBackdropTemplate">
 				<Size x="24" y="0"/>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_12_0055" type="global"/>
 					<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 				</KeyValues>
 				<Anchors>

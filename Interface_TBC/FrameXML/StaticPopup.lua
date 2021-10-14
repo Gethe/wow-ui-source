@@ -4303,16 +4303,36 @@ do
 	}
 end
 
-StaticPopupDialogs["AADC_ALERT"] = {
-	text = NORMAL_FONT_COLOR_CODE..UK_AADC_POPUP_TEXT..FONT_COLOR_CODE_CLOSE,
-	button1 = OKAY,
+StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
+	text = REGIONAL_RESTRICT_CHAT_DIALOG_TITLE,
+	subText = REGIONAL_RESTRICT_CHAT_DIALOG_MESSAGE,
+	button1 = REGIONAL_RESTRICT_CHAT_DIALOG_ENABLE,
+	button2 = REGIONAL_RESTRICT_CHAT_DIALOG_DISABLE,
 	OnAccept = function()
-		AcknowledgeAADCAlert();
+		local disabled = false;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	OnShow = function(self)
+		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
 	end,
 	timeout = 0,
 	hideOnEscape = 0,
 	exclusive = 1,
-	showAlert = 1,
+};
+
+StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
+	text = RESTRICT_CHAT_CONFIG_DIALOG_MESSAGE,
+	button1 = RESTRICT_CHAT_CONFIG_DIALOG_DISABLE,
+	button2 = RESTRICT_CHAT_CONFIG_DIALOG_CANCEL,
+	OnAccept = function()
+		local disabled = true;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	timeout = 0,
+	hideOnEscape = 0,
+	exclusive = 1,
 };
 
 function StaticPopup_FindVisible(which, data)

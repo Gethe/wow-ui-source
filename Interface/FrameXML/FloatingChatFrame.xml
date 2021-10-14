@@ -119,10 +119,6 @@
 		<NormalFont style="GameFontNormalSmallLeft"/>
 	</Button>
 	<Frame name="DockManagerOverflowListTemplate" inherits="TooltipBackdropTemplate" hidden="true" clampedToScreen="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="TOOLTIP_BACKDROP_STYLE_DEFAULT" type="global"/>
-			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
-		</KeyValues>
 		<Size x="160" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -899,4 +895,3 @@
 		</Scripts>
 	</Frame>
 </Ui>
-

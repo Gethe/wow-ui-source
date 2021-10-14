@@ -1,3 +1,6 @@
+
+local type = type;
+
 -- The "modified attribute" takes the form of: modifier-name-button
 -- The modifier is one of "shift-", "ctrl-", "alt-", and the button is a number from 1 through 5.
 --
@@ -584,6 +587,10 @@ function SecureActionButton_OnClick(self, button, down)
         if ( button ~= origButton ) then
             unit = SecureButton_GetModifiedUnit(self, button);
         end
+    end
+
+	if ( type(button) ~= "string" ) then
+        return;
     end
 
     -- Don't do anything if our unit doesn't exist

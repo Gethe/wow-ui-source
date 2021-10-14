@@ -106,7 +106,7 @@
 		</Layers>
 	</Frame>
 
-	<CheckButton name="ChatConfigBaseCheckButtonTemplate" virtual="true">
+	<CheckButton name="ChatConfigBaseCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>
@@ -272,10 +272,8 @@
 			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 	</Frame>
-	<Frame name="ChatConfigSwatchTemplate" inherits="BackdropTemplate" virtual="true">
+	<Frame name="ChatConfigSwatchTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-			<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 		</KeyValues>
 		<Size>
@@ -946,10 +944,8 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
-							<Frame name="$parentHighlighting" inherits="BackdropTemplate">
+							<Frame name="$parentHighlighting" inherits="TooltipBorderBackdropTemplate">
 								<KeyValues>
-									<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-									<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 									<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 								</KeyValues>
 								<Size>
@@ -1086,10 +1082,8 @@
 									</Anchor>
 								</Anchors>
 								<Frames>
-									<Frame name="$parentUnitName" inherits="BackdropTemplate">
+									<Frame name="$parentUnitName" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 										</KeyValues>
 										<Size>
@@ -1144,10 +1138,8 @@
 											</CheckButton>
 										</Frames>
 									</Frame>
-									<Frame name="$parentSpellNames" inherits="BackdropTemplate">
+									<Frame name="$parentSpellNames" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 										</KeyValues>
 										<Size>
@@ -1243,10 +1235,8 @@
 											</Button>
 										</Frames>
 									</Frame>
-									<Frame name="$parentDamageNumber" inherits="BackdropTemplate">
+									<Frame name="$parentDamageNumber" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 										</KeyValues>
 										<Size>
@@ -1342,10 +1332,8 @@
 											</Button>
 										</Frames>
 									</Frame>
-									<Frame name="$parentDamageSchool" inherits="BackdropTemplate">
+									<Frame name="$parentDamageSchool" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 										</KeyValues>
 										<Size>
@@ -1385,10 +1373,8 @@
 											</CheckButton>
 										</Frames>
 									</Frame>
-									<Frame name="$parentEntireLine" inherits="BackdropTemplate">
+									<Frame name="$parentEntireLine" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 										</KeyValues>
 										<Size>
@@ -1842,6 +1828,15 @@
 				<Scripts>
 					<OnClick function="ChatConfigFrameRedockButton_OnClick"/>
 					<OnLoad function="ChatConfigFrameRedockButton_OnLoad"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ToggleChatButton" inherits="UIPanelButtonTemplate" hidden="true">
+				<Size x="148" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RedockButton" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ChatConfigFrameToggleChatButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">

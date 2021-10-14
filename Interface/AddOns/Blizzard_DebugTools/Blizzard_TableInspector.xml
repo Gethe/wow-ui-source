@@ -292,10 +292,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Frame parentKey="ScrollFrameArt" inherits="BackdropTemplate">
-				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-				</KeyValues>
+			<Frame parentKey="ScrollFrameArt" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LinesScrollFrame" x="0" y="6"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LinesScrollFrame.ScrollBar" x="6" y="-22"/>

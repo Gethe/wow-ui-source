@@ -4186,6 +4186,38 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK"] = Mixin({
 	end,
 }, StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"]);
 
+StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
+	text = REGIONAL_RESTRICT_CHAT_DIALOG_TITLE,
+	subText = REGIONAL_RESTRICT_CHAT_DIALOG_MESSAGE,
+	button1 = REGIONAL_RESTRICT_CHAT_DIALOG_ENABLE,
+	button2 = REGIONAL_RESTRICT_CHAT_DIALOG_DISABLE,
+	OnAccept = function()
+		local disabled = false;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	OnShow = function(self)
+		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
+	end,
+	timeout = 0,
+	hideOnEscape = 0,
+	exclusive = 1,
+};
+
+StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
+	text = RESTRICT_CHAT_CONFIG_DIALOG_MESSAGE,
+	button1 = RESTRICT_CHAT_CONFIG_DIALOG_DISABLE,
+	button2 = RESTRICT_CHAT_CONFIG_DIALOG_CANCEL,
+	OnAccept = function()
+		local disabled = true;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	timeout = 0,
+	hideOnEscape = 0,
+	exclusive = 1,
+};
+
 do
 	local warningSeenBefore = false;
 	StaticPopupDialogs["RAF_GRANT_LEVEL_ALLIED_RACE"] = {

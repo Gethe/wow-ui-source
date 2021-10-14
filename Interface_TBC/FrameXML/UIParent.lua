@@ -285,7 +285,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SCRIPT_DEPRECATED");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
-	self:RegisterEvent("SHOW_AADC_ALERT");
+	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -1125,8 +1125,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "GOSSIP_CONFIRM_CANCEL" or event == "GOSSIP_CLOSED" ) then
 		StaticPopup_Hide("GOSSIP_CONFIRM");
 		StaticPopup_Hide("GOSSIP_ENTER_CODE");
-	elseif ( event == "SHOW_AADC_ALERT" ) then
-		StaticPopup_Show("AADC_ALERT")
+	elseif ( event == "ALERT_REGIONAL_CHAT_DISABLED" ) then
+		StaticPopup_Show("REGIONAL_CHAT_DISABLED")
 
 	--Events for handling Auction UI
 	elseif ( event == "AUCTION_HOUSE_SHOW" ) then

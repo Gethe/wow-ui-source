@@ -2,6 +2,7 @@
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\NineSliceLayouts.lua
 ..\..\SharedXML\NineSlice.lua
 ..\..\..\Interface_TBC\AddOns\Blizzard_Communities\CommunitiesList.xml
 ..\..\..\Interface_TBC\AddOns\Blizzard_Communities\CommunitiesMemberList.xml

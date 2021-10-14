@@ -317,14 +317,16 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	end
 end
 
-function CommunitiesChatMixin:AddDateNotification(date, backfill)
+function CommunitiesChatMixin:AddDateNotification(calendarTime, backfill)
 	local notification = nil;
-	if AreFullDatesEqual(C_DateAndTime.GetTodaysDate(), date) then
+	local today = C_DateAndTime.GetCurrentCalendarTime();
+	local yesterday = C_DateAndTime.AdjustTimeByDays(today, -1);
+	if CalendarUtil.AreDatesEqual(today, calendarTime) then
 		notification = COMMUNITIES_CHAT_FRAME_TODAY_NOTIFICATION;
-	elseif AreFullDatesEqual(C_DateAndTime.GetYesterdaysDate(), date) then
+	elseif CalendarUtil.AreDatesEqual(yesterday, calendarTime) then
 		notification = COMMUNITIES_CHAT_FRAME_YESTERDAY_NOTIFICATION;
 	else
-		notification = FormateFullDateWithoutYear(date);
+		notification = CalendarUtil.FormatCalendarTimeWeekday(calendarTime);
 	end
 	
 	self:AddNotification(notification, "communities-chat-date-line", 0.4, 0.4, 0.4, backfill);
@@ -375,9 +377,9 @@ function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 		self:RegisterForMemberUpdate(clubId, message.author.memberId);
 	end
 	
-	local messageDate = C_DateAndTime.GetDateFromEpoch(message.messageId.epoch);
+	local messageDate = C_DateAndTime.GetCalendarTimeFromEpoch(message.messageId.epoch);
 	local previousMessageId = select(7, self.MessageFrame:GetMessageInfo(backfill and 1 or self.MessageFrame:GetNumMessages()));
-	local previousMessageDate = previousMessageId and C_DateAndTime.GetDateFromEpoch(previousMessageId.epoch);
+	local previousMessageDate = previousMessageId and C_DateAndTime.GetCalendarTimeFromEpoch(previousMessageId.epoch);
 	if previousMessageDate and (messageDate.day ~= previousMessageDate.day or messageDate.month ~= previousMessageDate.month) then
 		self:AddDateNotification(backfill and previousMessageDate or messageDate, backfill);
 	end

@@ -262,10 +262,7 @@
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
-	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate, BackdropTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
-		</KeyValues>
+	<GameTooltip name="ShoppingTooltipTemplate" inherits="GameTooltipCommonTemplate, TooltipBackdropTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTextLeft1" inherits="GameFontNormalSmall" hidden="true">
