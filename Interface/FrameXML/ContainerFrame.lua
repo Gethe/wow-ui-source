@@ -1290,8 +1290,8 @@ local function SplitStack(button, split)
 end
 
 function ContainerFrameItemButton_OnModifiedClick(self, button)
+	local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 	if ( IsModifiedClick("EXPANDITEM") ) then
-		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 		if C_Item.DoesItemExist(itemLocation) then
 			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) and C_Item.CanViewItemPowers(itemLocation) then
 				OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
@@ -1310,7 +1310,7 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 		end
 	end
 
-	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
+	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID()), itemLocation) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then

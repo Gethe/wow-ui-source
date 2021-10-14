@@ -28,6 +28,7 @@
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua

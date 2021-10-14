@@ -11,6 +11,17 @@ function DressUpItemLink(link)
 	return false;
 end
 
+function DressUpItemLocation(itemLocation)
+	if( itemLocation and itemLocation:IsValid() ) then 
+		local itemTransmogInfo = C_Item.GetCurrentItemTransmogInfo(itemLocation);
+		-- non-equippable items won't have an appearanceID
+		if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+			return DressUpItemTransmogInfo(itemTransmogInfo);
+		end
+	end
+	return false;
+end
+
 function DressUpTransmogLink(link)
 	if ( not link or not (strsub(link, 1, 16) == "transmogillusion" or strsub(link, 1, 18) == "transmogappearance") ) then
 		return false;
@@ -299,6 +310,19 @@ function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
 	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
 end
 
+function DressUpItemTransmogInfo(itemTransmogInfo)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor or not itemTransmogInfo then
+		return false;
+	end
+
+	playerActor:SetItemTransmogInfo(itemTransmogInfo);
+	return true;
+end
+
 function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails)
 	local frame = GetFrameAndSetBackground();
 	DressUpFrame_Show(frame);
@@ -372,12 +396,17 @@ end
 
 DressUpOutfitDetailsPanelMixin = { };
 
+local CLASS_BACKGROUND_SETTINGS = {
+	["DEFAULT"] = { desaturation = 0.5, alpha = 0.25 },
+}
+
 function DressUpOutfitDetailsPanelMixin:OnLoad()
 	self.slotPool = CreateFramePool("FRAME", self, "DressUpOutfitSlotFrameTemplate");
 	local classFilename = select(2, UnitClass("player"));
 	self.ClassBackground:SetAtlas("dressingroom-background-"..classFilename);
-	self.ClassBackground:SetDesaturation(0.5);
-	self.ClassBackground:SetAlpha(0.25);
+	local settings = CLASS_BACKGROUND_SETTINGS[classFilename] or CLASS_BACKGROUND_SETTINGS["DEFAULT"];
+	self.ClassBackground:SetDesaturation(settings.desaturation);
+	self.ClassBackground:SetAlpha(settings.alpha);
 	local frameLevel = self:GetParent().NineSlice:GetFrameLevel();
 	self:SetFrameLevel(frameLevel + 1);
 end
@@ -523,6 +552,8 @@ local OUTFIT_SLOT_STATE_UNCOLLECTED = 3;
 
 local GRAY_FONT_ALPHA = 0.7;
 
+local TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK = "|A:common-icon-checkmark:16:16:0:-1|a "..TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN;
+
 function DressUpOutfitDetailsSlotMixin:OnEnter()
 	if not self.transmogID then
 		return;
@@ -542,7 +573,7 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 		if self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
 			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 		else
-			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, LIGHTBLUE_FONT_COLOR);
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
 		end
 	elseif self.slotState == OUTFIT_SLOT_STATE_ERROR then
 		local hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(self.transmogID);
@@ -575,7 +606,7 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 		GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
 		local slotName = TransmogUtil.GetSlotName(self.slotID);
 		GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, LIGHTBLUE_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
 	end
 	GameTooltip:Show();
 end
@@ -706,15 +737,10 @@ function DressUpOutfitDetailsSlotMixin:SetIllusion(transmogID)
 	end
 
 	local name = C_TransmogCollection.GetIllusionStrings(illusionInfo.sourceID);
-	self.Name:SetText(name);
-	self.Icon:SetTexture(illusionInfo.icon);
-	self.Icon:SetSize(14, 14);
-	self.IconBorder:SetAtlas("dressingroom-itemborder-small-white");
-
 	local useSmallIcon = true;
 	local slotState = illusionInfo.isCollected and OUTFIT_SLOT_STATE_COLLECTED or OUTFIT_SLOT_STATE_UNCOLLECTED;
 	local isHiddenVisual = illusionInfo.isHideVisual;
-	self:SetDetails(transmogID, illusionInfo.icon, name, useSmallIcon, slotState, isHiddenVisual);
+	self:SetDetails(transmogID, illusionInfo.icon, TRANSMOGRIFIED_ENCHANT:format(name), useSmallIcon, slotState, isHiddenVisual);
 
 	return true;
 end

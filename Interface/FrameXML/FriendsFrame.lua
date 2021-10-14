@@ -1182,6 +1182,10 @@ function ToggleIgnorePanel()
 	ToggleFriendsSubPanel(FRIEND_HEADER_TAB_IGNORE);
 end
 
+function ToggleRafPanel()
+	ToggleFriendsSubPanel(FRIEND_HEADER_TAB_RAF);
+end		
+
 function ToggleQuickJoinPanel()
 	ToggleFriendsFrame(FRIEND_TAB_QUICK_JOIN);
 end

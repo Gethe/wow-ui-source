@@ -1568,8 +1568,8 @@ function PaperDollItemSlotButton_OnClick(self, button)
 end
 
 function PaperDollItemSlotButton_OnModifiedClick(self, button)
+	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 	if ( IsModifiedClick("EXPANDITEM") ) then
-		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 		if C_Item.DoesItemExist(itemLocation) then
 			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
 				if C_Item.CanViewItemPowers(itemLocation) then 
@@ -1590,7 +1590,7 @@ function PaperDollItemSlotButton_OnModifiedClick(self, button)
 		end
 		return;
 	end
-	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID())) ) then
+	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID()), itemLocation) ) then
 		return;
 	end
 end

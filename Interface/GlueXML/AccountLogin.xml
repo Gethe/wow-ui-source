@@ -4,7 +4,7 @@
 
 	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
+			<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>
 			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
@@ -480,7 +480,7 @@
 											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
 										</Anchors>
 										<KeyValues>
-											<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
+											<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>
 											<KeyValue key="backdropColorAlpha" value="0" type="number"/>
 										</KeyValues>
 										<Frames>

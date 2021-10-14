@@ -63,6 +63,7 @@ local function LinkOutfitDropDownInit()
 	info.func = function()
 		local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
 		CopyToClipboard(slashCommand);
+		DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE, YELLOW_FONT_COLOR:GetRGB());
 	end;
 	UIDropDownMenu_AddButton(info);
 end

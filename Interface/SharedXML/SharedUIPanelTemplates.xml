@@ -1008,36 +1008,7 @@
 		</Scripts>
 	</Button>
 
-<!--
-*******************************************************************************
-    Tooltip backdrops
-*******************************************************************************
--->
-
-	<Frame name="TooltipBackdropTemplate" mixin="TooltipBackdropTemplateMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
-		</KeyValues>
-		<Frames>
-			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true"/>
-		</Frames>
-		<Scripts>
-			<OnLoad method="TooltipBackdropOnLoad"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="TooltipBorderBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="backdropColorAlpha" value="0" type="number"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="TooltipBorderedFrameTemplate" inherits="TooltipBackdropTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="backdropColorAlpha" value="0.8" type="number"/>
-		</KeyValues>
-	</Frame>
-
+	
 	<Texture name="GreenCheckMarkTemplate" file="Interface\Scenarios\ScenarioIcon-Check" virtual="true">
 		<Size x="16" y="16"/>
 	</Texture>

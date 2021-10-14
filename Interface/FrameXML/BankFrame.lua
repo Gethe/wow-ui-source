@@ -367,7 +367,8 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	if ( self.isBag ) then
 		return;
 	end
-	if ( HandleModifiedItemClick(GetContainerItemLink(container, self:GetID())) ) then
+	local itemLocation = ItemLocation:CreateFromBagAndSlot(container, self:GetID());
+	if ( HandleModifiedItemClick(GetContainerItemLink(container, self:GetID()), itemLocation) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then

@@ -628,7 +628,6 @@
 				<KeyValues>
 					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
 					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
-					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 				</KeyValues>
 				<Frames>
 					<ScrollFrame name="CalendarViewEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
@@ -871,7 +870,6 @@
 				<KeyValues>
 					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
 					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
-					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
 				</KeyValues>
 				<Frames>
 					<ScrollFrame name="CalendarCreateEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">

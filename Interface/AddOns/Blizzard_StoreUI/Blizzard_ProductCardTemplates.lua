@@ -394,9 +394,12 @@ function StoreCardMixin:ShowIcon(displayData)
 	local icon = displayData.texture or self:GetDefaultIconName();
 	local overrideTexture = displayData.overrideTexture;
 	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
+	local iconItemQuantity = displayData.itemQuantity;
 	
 	self.IconBorder:Show();
 	self.Icon:Show();
+	self.ItemQuantity:Hide();
+	self.ItemQuantityCircle:Hide();
 
 	self.Icon:ClearAllPoints();
 	self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
@@ -415,6 +418,21 @@ function StoreCardMixin:ShowIcon(displayData)
 			self.IconBorder:ClearAllPoints();
 			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -3);
 		else -- round icon borders use textures
+			if iconItemQuantity and iconItemQuantity ~= 0 then
+				self.ItemQuantityCircle:Show();
+				self.ItemQuantityCircle:ClearAllPoints();
+				self.ItemQuantityCircle:SetPoint("CENTER", self.Icon, "CENTER", 29, -29);
+
+				self.ItemQuantity:Show();
+				self.ItemQuantity:ClearAllPoints();
+				self.ItemQuantity:SetText(iconItemQuantity);
+				if iconItemQuantity == 1 then
+					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", -1, 2);
+				else
+					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", 0, 2);
+				end
+			end
+
 			SetPortraitToTexture(self.Icon, icon);
 			self.IconBorder:ClearAllPoints();
 			self.IconBorder:SetTexture("Interface\\Store\\Store-Main");
@@ -445,6 +463,8 @@ end
 function StoreCardMixin:HideIcon()
 	self.Icon:Hide();
 	self.IconBorder:Hide();
+	self.ItemQuantityCircle:Hide();
+	self.ItemQuantity:Hide();
 	self.GlowSpin:Hide();
 	self.GlowSpin.SpinAnim:Stop();
 	self.GlowPulse:Hide();

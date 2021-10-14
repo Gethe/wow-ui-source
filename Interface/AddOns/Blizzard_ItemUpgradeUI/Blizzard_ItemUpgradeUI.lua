@@ -42,6 +42,7 @@ function ItemUpgradeMixin:OnShow()
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
 function ItemUpgradeMixin:OnHide()
@@ -50,6 +51,7 @@ function ItemUpgradeMixin:OnHide()
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
@@ -83,7 +85,7 @@ function ItemUpgradeMixin:OnEvent(event, ...)
 		StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	elseif event == "BAG_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:UpdateIfTargetReached();
-	elseif event == "ITEM_UPGRADE_FAILED" then
+	elseif event == "ITEM_UPGRADE_FAILED" or event == "DISPLAY_SIZE_CHANGED" then
 		self:Update();
 	elseif event == "GLOBAL_MOUSE_DOWN" then
 		local buttonName = ...;
@@ -114,6 +116,7 @@ function ItemUpgradeMixin:Update(fromDropDown)
 		self.UpgradeItemButton:SetPushedAtlas("itemupgrade_greenplusicon_pressed");
 		self.UpgradeItemButton.EmptySlotGlow:Show();
 		self.UpgradeItemButton.PulseEmptySlotGlow:Restart();
+		self.UpgradeButton:SetDisabledTooltip();
 		self.MissingDescription:Show();
 		self.LeftItemPreviewFrame:Hide();
 		self.RightItemPreviewFrame.ReappearAnim:Stop();
@@ -182,6 +185,8 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 	local buttonDisabledState = true;
 
+	self.UpgradeButton:SetDisabledTooltip();
+
 	if canUpgradeItem  then
 		buttonDisabledState = false;
 		self.FrameErrorText:Hide();
@@ -208,8 +213,20 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 		self.RightItemPreviewFrame.ReappearAnim:Stop();
 		self.RightItemPreviewFrame:Hide();
 		self.UpgradeCostFrame:Hide();
-		self.PlayerCurrencies:Hide();
 		self.upgradeAnimationsInProgress = false;
+
+		local checkUpgrade = (self.upgradeInfo.currUpgrade > 1) and self.upgradeInfo.currUpgrade or (self.upgradeInfo.currUpgrade + 1);
+		local currentUpgradeCosts = self:GetUpgradeCostTable(checkUpgrade);
+		if currentUpgradeCosts then
+			self.PlayerCurrencies:Clear();
+			for currencyID, currencyCost in pairs(currentUpgradeCosts) do
+				self.PlayerCurrencies:AddCurrency(currencyID);
+			end
+			self.PlayerCurrencies:Show();
+		else
+			self.PlayerCurrencies:Hide();
+		end
+
 		return;
 	end
 
@@ -227,7 +244,6 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 		if currencyCost > currencyInfo.quantity then
 			buttonDisabledState = true;
-			self.UpgradeButton:SetDisabledTooltip();
 			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost, RED_FONT_COLOR);
 		else
 			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost);
@@ -242,7 +258,7 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 end
 
 -- compare 2 strings finding numeric differences
--- return the text of the 2nd string with (+x) in front of each number that is higher than in the 1st string
+-- return the text of the 2nd string with (+x) after each number that is higher than in the 1st string
 function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 	local output = "";
 	local index2 = 1;	-- where we're at in string2
@@ -250,19 +266,26 @@ function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 	local start1, end1, substring1 = string.find(string1, "([%d,%.]+)");
 	local start2, end2, substring2 = string.find(string2, "([%d,%.]+)");
 	while start1 and start2 do
-		output = output .. string.sub(string2, index2, start2 - 1);
+		output = output..string.sub(string2, index2, start2 - 1);
+		
+		local diff;
 		if substring1 ~= substring2 then
 			-- need to remove , and . because of locale
 			local temp1 = gsub(substring1, "[,%.]", "");
 			local temp2 = gsub(substring2, "[,%.]", "");
 			local number1 = tonumber(temp1);
 			local number2 = tonumber(temp2);
-			if ( number1 and number2 and number2 > number1 ) then		-- if 2nd number isn't larger then something is wrong
-				local diff = number2 - number1;
-				output = output..GREEN_FONT_COLOR_CODE..string.format(ITEM_UPGRADE_BONUS_FORMAT, diff)..FONT_COLOR_CODE_CLOSE;
+			if number1 and number2 and number2 > number1 then
+				diff = number2 - number1;
 			end
 		end
-		output = output..substring2;
+
+		if diff then
+			output = output..ITEM_UPGRADE_BONUS_FORMAT_COLORIZED:format(substring2, diff);
+		else
+			output = output..substring2;
+		end
+
 		index2 = end2 + 1;
 
 		start1, end1, substring1 = string.find(string1, "([%d,%.]+)", end1 + 1);
@@ -279,7 +302,7 @@ function ItemUpgradeMixin:CalculateTotalCostTable()
 		local previousRank = upgradeLevelInfo.upgradeLevel - 1;
 
 		local levelCostTable;
-		if self.upgradeCosts[previousRank] then
+		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeCosts[previousRank] then
 			levelCostTable = CopyTable(self.upgradeCosts[previousRank], true);
 		else
 			levelCostTable = {};
@@ -392,11 +415,17 @@ function ItemUpgradeButtonMixin:OnClick()
 	self:SetEnabled(false);
 	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
 
+	local function StaticPopupItemOnEnter(itemFrame)
+		GameTooltip:SetOwner(itemFrame, "ANCHOR_RIGHT");
+		GameTooltip:SetUpgradeItem();
+		GameTooltip:Show();
+	end
+
 	local data = {
 		texture = upgradeInfo.iconID,
 		name = upgradeInfo.name,
 		color = {upgradeInfo.itemQualityColor:GetRGBA()},
-		link = C_ItemUpgrade.GetItemHyperlink(),
+		itemFrameOnEnter = StaticPopupItemOnEnter,
 	};
 
 	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", ItemUpgradeFrame:GetUpgradeCostString(), "", data);

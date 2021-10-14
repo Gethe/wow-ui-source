@@ -69,7 +69,7 @@ local TransmogShared =
 				{ Name = "Ability", Type = "TransmogUseErrorType", EnumValue = 3 },
 				{ Name = "Faction", Type = "TransmogUseErrorType", EnumValue = 4 },
 				{ Name = "Holiday", Type = "TransmogUseErrorType", EnumValue = 5 },
-				{ Name = "ArtifactSpec", Type = "TransmogUseErrorType", EnumValue = 6 },
+				{ Name = "HotRecheckFailed", Type = "TransmogUseErrorType", EnumValue = 6 },
 			},
 		},
 	},

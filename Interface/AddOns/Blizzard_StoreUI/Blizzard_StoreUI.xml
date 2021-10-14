@@ -7,6 +7,15 @@
 
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 
+		<Frame name="StoreTooltipBackdrop" inherits="NineSlicePanelTemplate" mixin="StoreTooltipBackdropMixin" virtual="true">
+			<KeyValues>
+				<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+			</KeyValues>
+			<Scripts>
+				<OnLoad method="StoreTooltipOnLoad" inherit="append"/>
+			</Scripts>
+		</Frame>
+
 		<Button name="StoreButtonTemplate" mixin="StoreButtonMixin" virtual="true">
 			<Size x="146" y="35" />
 			<Layers>
@@ -356,11 +365,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
-						<Frame parentKey="Border" inherits="NineSlicePanelTemplate">
-							<KeyValues>
-								<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
-							</KeyValues>
-						</Frame>
+						<Frame parentKey="Border" inherits="StoreTooltipBackdrop"/>
 						<Button inherits="StoreAutoCompleteButtonTemplate">
 							<Anchors>
 								<Anchor point="TOP" x="6" y="-12"/>
@@ -1764,7 +1769,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="NineSlicePanelTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="StoreTooltipBackdrop" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">
@@ -1782,9 +1787,6 @@
 					</FontString>
 				</Layer>
 			</Layers>
-			<KeyValues>
-				<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
-			</KeyValues>
 		</Frame>
 
 		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" mixin="StoreBulletPointMixin" hyperlinksEnabled="true" virtual="true">

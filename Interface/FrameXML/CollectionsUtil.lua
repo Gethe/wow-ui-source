@@ -72,8 +72,8 @@ function CollectionWardrobeUtil.SortSources(sources, primaryVisualID, primarySou
 	return sources;
 end
 
-function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID)
-	local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, category)
+	local sources = C_TransmogCollection.GetAppearanceSources(visualID, category);
 	return CollectionWardrobeUtil.SortSources(sources);
 end
 

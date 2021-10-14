@@ -175,7 +175,8 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	end
 
 	-- don't update if nothing's changed, could screw up OnClick
-	if self.previousZoneAbilities and tCompare(self.previousZoneAbilities, displayedZoneAbilities) then
+	local depth = 3;
+	if self.previousZoneAbilities and tCompare(self.previousZoneAbilities, displayedZoneAbilities, depth) then
 		return;
 	end
 

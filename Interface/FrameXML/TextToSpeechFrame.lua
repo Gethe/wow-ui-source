@@ -745,7 +745,7 @@ end
 local ignoredMsgTypes = {
 	ACHIEVEMENT = true,
 	GUILD_ACHIEVEMENT = true,
-	--SYSTEM = true,
+	RAID_BOSS_EMOTE = true, -- Some quests transform the player then use boss emotes sent from the (transformed) player
 }
 
 local function IsMessageFromPlayer(msgType, msgSenderName)

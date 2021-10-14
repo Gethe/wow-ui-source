@@ -336,6 +336,7 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	hasItemFrame = 1,
+	compactItemFrame = true,
 }
 
 StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
@@ -4252,6 +4253,7 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 	timeout = 0,
 	hideOnEscape = false,
 	exclusive = 1,
+	wide = true,
 };
 
 StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
@@ -4265,6 +4267,7 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+	wide = true,
 };
 
 function StaticPopup_FindVisible(which, data)

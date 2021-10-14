@@ -5322,6 +5322,15 @@ function ServicesLogoutPopupCancelButton_OnClick(self)
 	ServicesLogoutPopup:Hide();
 end
 
+StoreTooltipBackdropMixin = {};
+
+function StoreTooltipBackdropMixin:StoreTooltipOnLoad()
+	NineSliceUtil.DisableSharpening(self);
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self:SetCenterColor(bgR, bgG, bgB, 1);
+end
+
 --------------------------------------
 local priceUpdateTimer, currentPollTimeSeconds;
 

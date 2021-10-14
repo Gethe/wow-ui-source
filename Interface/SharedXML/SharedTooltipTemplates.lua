@@ -5,9 +5,9 @@ local function SetupTextFont(fontString, fontObject)
 end
 
 function SharedTooltip_OnLoad(self)
+	NineSliceUtil.DisableSharpening(self.NineSlice);
 	local style = nil;
 	local isEmbedded = false;
-	NineSliceUtil.DisableSharpening(self.NineSlice);
 	SharedTooltip_SetBackdropStyle(self, style, isEmbedded);
 	self:SetClampRectInsets(0, 0, 15, 0);
 
@@ -47,6 +47,9 @@ function SharedTooltip_SetBackdropStyle(self, style, embedded)
 		NineSliceUtil.ApplyLayout(self.NineSlice, layout);
 		self.NineSlice:Show();
 	end
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self.NineSlice:SetCenterColor(bgR, bgG, bgB, 1);
 
 	if self.TopOverlay then
 		if style and style.overlayAtlasTop then
@@ -145,11 +148,49 @@ function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 		tooltipFrame.insertedFrames = { };
 	end
 	local frameWidth = frame:GetWidth();
-	if ( tooltipFrame:GetMinimumWidth() < frameWidth ) then
+	if tooltipFrame:GetMinimumWidth() < frameWidth then
 		tooltipFrame:SetMinimumWidth(frameWidth);
 	end
 	frame:Show();
 	tinsert(tooltipFrame.insertedFrames, frame);
 	-- return space taken so inserted frame can resize if needed
 	return (numLinesNeeded * textHeight) + (numLinesNeeded - 1) * textSpacing;
+end
+
+
+TooltipBackdropTemplateMixin = {};
+
+function TooltipBackdropTemplateMixin:TooltipBackdropOnLoad()
+	NineSliceUtil.DisableSharpening(self.NineSlice);
+
+	local bgColor = self.backdropColor or TOOLTIP_DEFAULT_BACKGROUND_COLOR;
+	local bgAlpha = self.backdropColorAlpha or 1;
+	local bgR, bgG, bgB = bgColor:GetRGB();
+	self:SetBackdropColor(bgR, bgG, bgB, bgAlpha);
+
+	if self.backdropBorderColor then
+		local borderR, borderG, borderB = self.backdropBorderColor:GetRGB();
+		local borderAlpha = self.backdropBorderColorAlpha or 1;
+		self:SetBackdropBorderColor(borderR, borderG, borderB, borderAlpha);
+	end
+end
+
+function TooltipBackdropTemplateMixin:SetBackdropColor(r, g, b, a)
+	self.NineSlice:SetCenterColor(r, g, b, a);
+end
+
+function TooltipBackdropTemplateMixin:GetBackdropColor()
+	return self.NineSlice:GetCenterColor();
+end
+
+function TooltipBackdropTemplateMixin:SetBackdropBorderColor(r, g, b, a)
+	self.NineSlice:SetBorderColor(r, g, b, a);
+end
+
+function TooltipBackdropTemplateMixin:GetBackdropBorderColor()
+	return self.NineSlice:GetBorderColor();
+end
+
+function TooltipBackdropTemplateMixin:SetBorderBlendMode(blendMode)
+	self.NineSlice:SetBorderBlendMode(blendMode);
 end

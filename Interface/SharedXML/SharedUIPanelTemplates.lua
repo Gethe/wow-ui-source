@@ -2179,39 +2179,3 @@ end
 function AlphaHighlightButtonMixin:OnMouseUp()
 	self:SetHighlightAtlas(self.NormalTexture:GetAtlas());
 end
-
-TooltipBackdropTemplateMixin = {};
-
-function TooltipBackdropTemplateMixin:TooltipBackdropOnLoad()
-	NineSliceUtil.DisableSharpening(self.NineSlice);
-
-	local bgColor = self.backdropColor or TOOLTIP_DEFAULT_COLOR;
-	local bgAlpha = self.backdropColorAlpha or 1;
-	local bgR, bgG, bgB = bgColor:GetRGB();
-	self:SetBackdropColor(bgR, bgG, bgB, bgAlpha);
-
-	local borderColor = self.backdropBorderColor or TOOLTIP_DEFAULT_COLOR;
-	local borderAlpha = self.backdropBorderColorAlpha or 1;
-	local borderR, borderG, borderB = borderColor:GetRGB();
-	self:SetBackdropBorderColor(borderR, borderG, borderB, borderAlpha);
-end
-
-function TooltipBackdropTemplateMixin:SetBackdropColor(r, g, b, a)
-	self.NineSlice:SetCenterColor(r, g, b, a);
-end
-
-function TooltipBackdropTemplateMixin:GetBackdropColor()
-	return self.NineSlice:GetCenterColor();
-end
-
-function TooltipBackdropTemplateMixin:SetBackdropBorderColor(r, g, b, a)
-	self.NineSlice:SetBorderColor(r, g, b, a);
-end
-
-function TooltipBackdropTemplateMixin:GetBackdropBorderColor()
-	return self.NineSlice:GetBorderColor();
-end
-
-function TooltipBackdropTemplateMixin:SetBorderBlendMode(blendMode)
-	self.NineSlice:SetBorderBlendMode(blendMode);
-end

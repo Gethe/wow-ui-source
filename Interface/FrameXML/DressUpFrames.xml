@@ -240,6 +240,12 @@
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 						self:GetParent():ToggleOutfitDetails();
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
+						GameTooltip_SetTitle(GameTooltip, DRESSING_ROOM_APPEARANCE_LIST);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="OutfitDetailsPanel" mixin="DressUpOutfitDetailsPanelMixin" enableKeyboard="true">

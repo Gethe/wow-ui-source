@@ -485,7 +485,6 @@ EMOTE60_TOKEN = "KNEEL";
 EMOTE61_TOKEN = "LAUGH";
 EMOTE62_TOKEN = "LAYDOWN";
 EMOTE63_TOKEN = "MASSAGE";
-EMOTE64_TOKEN = "MOAN";
 EMOTE65_TOKEN = "MOON";
 EMOTE66_TOKEN = "MOURN";
 EMOTE67_TOKEN = "NO";
@@ -503,7 +502,6 @@ EMOTE78_TOKEN = "RUDE";
 EMOTE79_TOKEN = "SALUTE";
 EMOTE80_TOKEN = "SCRATCH";
 EMOTE81_TOKEN = "SEXY";
-EMOTE82_TOKEN = "SHAKE";
 EMOTE83_TOKEN = "SHOUT";
 EMOTE84_TOKEN = "SHRUG";
 EMOTE85_TOKEN = "SHY";
@@ -557,7 +555,6 @@ EMOTE132_TOKEN = "SMIRK";
 EMOTE133_TOKEN = "SNIFF";
 EMOTE134_TOKEN = "SNUB";
 EMOTE135_TOKEN = "SOOTHE";
-EMOTE136_TOKEN = "STINK";
 EMOTE137_TOKEN = "TAUNT";
 EMOTE138_TOKEN = "TEASE";
 EMOTE139_TOKEN = "THIRSTY";
@@ -679,9 +676,13 @@ EMOTE517_TOKEN = "WHOA"
 EMOTE518_TOKEN = "OOPS"
 EMOTE521_TOKEN = "MEOW"
 EMOTE522_TOKEN = "BOOP"
+EMOTE623_TOKEN = "WINCE"
+EMOTE624_TOKEN = "HUZZAH"
+EMOTE625_TOKEN = "IMPRESSED"
+EMOTE626_TOKEN = "MAGNIFICENT"
 
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 522;
+local MAXEMOTEINDEX = 626;
 
 
 ICON_LIST = {
@@ -2647,6 +2648,12 @@ SlashCmdList["COMMUNITY"] = function(msg)
 	end
 end
 
+SlashCmdList["RAF"] = function(msg)
+	if(C_RecruitAFriend.IsEnabled()) then 
+		ToggleRafPanel(); 
+	end
+end 
+
 function RegisterNewSlashCommand(callback, command, commandAlias)
 	local name = string.upper(command);
 	_G["SLASH_"..name.."1"] = "/"..command;
@@ -4459,7 +4466,7 @@ function ChatEdit_ChooseBoxForSend(preferredChatFrame)
 end
 
 function ChatEdit_SetLastActiveWindow(editBox)
-	if ( editBox.disableActivate ) then
+	if ( editBox ~= nil and editBox.disableActivate ) then
 		return;
 	end
 

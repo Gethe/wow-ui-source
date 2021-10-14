@@ -66,6 +66,8 @@ function PlayerChoiceTorghastOptionTemplateMixin:FadeOut()
 		self:EnableMouse(false);
 		self.FadeoutUnselected:Restart();
 	end
+
+	self.OptionButtonsContainer:DisableButtons();
 end
 
 function PlayerChoiceTorghastOptionTemplateMixin:OnSelected()

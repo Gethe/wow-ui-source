@@ -220,7 +220,7 @@ function SetItemButtonReagentCount(button, reagentCount, playerReagentCount)
 	end
 end
 
-function HandleModifiedItemClick(link)
+function HandleModifiedItemClick(link, itemLocation)
 	if ( not link ) then
 		return false;
 	end
@@ -240,7 +240,7 @@ function HandleModifiedItemClick(link)
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
-		return DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
+		return DressUpItemLocation(itemLocation) or DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
 	end
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(link) then

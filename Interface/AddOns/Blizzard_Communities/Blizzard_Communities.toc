@@ -4,6 +4,7 @@
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\NineSliceLayouts.lua
 ..\..\SharedXML\NineSlice.lua
 CommunitiesList.xml
 CommunitiesMemberList.xml

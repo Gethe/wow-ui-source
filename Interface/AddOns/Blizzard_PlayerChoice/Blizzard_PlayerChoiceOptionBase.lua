@@ -449,6 +449,12 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, numColumn
 	AnchorUtil.GridLayout(buttons, self.initialAnchor, self.layout);
 end
 
+function PlayerChoiceBaseOptionButtonsContainerMixin:DisableButtons()
+	for button in self.buttonPool:EnumerateActive() do
+		button:Disable();
+	end
+end
+
 PlayerChoiceBaseOptionCurrencyRewardMixin = {};
 
 function PlayerChoiceBaseOptionCurrencyRewardMixin:Setup(currencyRewardInfo, fontColor)

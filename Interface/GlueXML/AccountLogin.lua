@@ -1,5 +1,5 @@
 local function ShouldShowRegulationOverlay()
-	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.IsLauncherLogin());
+	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
 end
 
 AccountLoginEditBoxBehaviorMixin = {}
