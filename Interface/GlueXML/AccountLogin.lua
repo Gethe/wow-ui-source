@@ -1,3 +1,7 @@
+local function ShouldShowRegulationOverlay()
+	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
+end
+
 function AccountLogin_OnLoad(self)
 	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -67,17 +71,26 @@ end
 function AccountLogin_Update()
 	local showButtonsAndStuff = true;
     local shouldCheckSystemReqs = true;
-	if ( SHOW_KOREAN_RATINGS ) then
-		KoreanRatings:Show();
+	if ( ShouldShowRegulationOverlay() ) then
 		showButtonsAndStuff = false;
+		if ( SHOW_KOREAN_RATINGS ) then
+			KoreanRatings:Show();
+		elseif ( SHOW_CHINA_AGE_APPROPRIATENESS_WARNING ) then
+			ChinaAgeAppropriatenessWarning:Show();
+		end
 	else
 		KoreanRatings:Hide();
+		ChinaAgeAppropriatenessWarning:Hide();
 	end
 
-	if ( C_Login.IsLauncherLogin() ) then
-		ServerAlert_Disable(ServerAlertFrame);
+	local isLauncherLogin = C_Login.IsLauncherLogin();
+	if ( isLauncherLogin ) then
 		showButtonsAndStuff = false;
         shouldCheckSystemReqs = false;
+	end
+
+	if (isLauncherLogin or ShouldShowRegulationOverlay()) then
+		ServerAlert_Disable(ServerAlertFrame);
 	else
 		ServerAlert_Enable(ServerAlertFrame);
 	end
@@ -427,7 +440,7 @@ function AccountLogin_OnTimerFinished()
 end
 
 function AccountLogin_CanAutoLogin()
-	return not SHOW_KOREAN_RATINGS and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or GetKioskLoginInfo()) and AccountLogin:IsVisible();
+	return not ShouldShowRegulationOverlay() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or GetKioskLoginInfo()) and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()
@@ -505,4 +518,10 @@ function KoreanRatings_OnUpdate(self, elapsed)
 		AccountLogin_Update();
 		AccountLogin_CheckAutoLogin();
 	end
+end
+
+function ChinaAgeAppropriatenessWarning_Close()
+	SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = false;
+	AccountLogin_Update();
+	AccountLogin_CheckAutoLogin();
 end
