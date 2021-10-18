@@ -213,7 +213,7 @@ function PvPCommentatorMixin:SetDefaultBindings()
 	SetBinding("B", "TOGGLEWORLDSTATESCORES");
 	SetBinding("L", "TOGGLE_COMMENTATOR_UNIT_FRAMES");
 
-	AttemptToSaveBindings(GetCurrentBindingSet());
+	SaveBindings(GetCurrentBindingSet());
 end
 
 function PvPCommentatorMixin:SetNeedsFullRefresh(needed)
