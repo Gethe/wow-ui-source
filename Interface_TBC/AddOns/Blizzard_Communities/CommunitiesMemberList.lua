@@ -783,6 +783,10 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	end
 
 	local clubId = self:GetMemberList():GetSelectedClubId();
+	if not clubId then
+		return;
+	end
+
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if not clubInfo then
 		return;

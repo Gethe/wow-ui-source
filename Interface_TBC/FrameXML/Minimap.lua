@@ -303,6 +303,7 @@ end
 function MiniMapTrackingDropDown_Initialize(self, level)
 	local name, texture, active, category, nested, numTracking;
 	local count = GetNumTrackingTypes();
+	local info;
 	local _, class = UnitClass("player");
 
 	if (level == 1) then
@@ -315,6 +316,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		end
 			
 		if (numTracking > 1) then
+			info = UIDropDownMenu_CreateInfo();
 			info.text = TRACKING;
 			info.func =  nil;
 			info.notCheckable = true;
@@ -557,11 +559,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)));
 				if ( not tooltipOnly ) then
-
-					if (bgtype == "WARGAME") then
-						local dialog = StaticPopup_Show("CONFIRM_WARGAME_ENTRY", mapName, nil, i);
-					end
-
 					PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 					MiniMapBattlefieldFrame:Show();
 				end

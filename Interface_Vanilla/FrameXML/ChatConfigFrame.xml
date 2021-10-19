@@ -38,8 +38,7 @@
 		</Scripts>
 	</Button>
 	<Frame name="ChatConfigBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
-		
-<KeyValues>
+		<KeyValues>
 			<KeyValue key="backdropColorAlpha" value=".5" type="number"/>
 		</KeyValues>
 	</Frame>
@@ -195,7 +194,7 @@
 				</Anchors>
 			</CheckButton>
 		</Frames>
-		</Frame>
+	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentColorSwatch" parentKey="ColorSwatch">
@@ -280,8 +279,7 @@
 		<Size>
 			<AbsDimension x="200" y="26"/>
 		</Size>
-		
-<Layers>
+		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontHighlight">
 					<Anchors>
@@ -329,7 +327,7 @@
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
 		</Frames>
-		</Frame>
+	</Frame>
 	<Button name="ChatConfigTabTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="64" y="32"/>
@@ -1075,7 +1073,7 @@
 										</Scripts>
 									</CheckButton>
 								</Frames>
-								</Frame>
+							</Frame>
 							<Frame name="$parentColorize">
 								<Size x="10" y="10"/>
 								<Anchors>
@@ -1139,8 +1137,7 @@
 												</Scripts>
 											</CheckButton>
 										</Frames>
-										
-</Frame>
+									</Frame>
 									<Frame name="$parentSpellNames" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
@@ -1237,7 +1234,7 @@
 												<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 											</Button>
 										</Frames>
-										</Frame>
+									</Frame>
 									<Frame name="$parentDamageNumber" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
@@ -1334,8 +1331,7 @@
 												<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 											</Button>
 										</Frames>
-										
-</Frame>
+									</Frame>
 									<Frame name="$parentDamageSchool" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
@@ -1376,8 +1372,7 @@
 												</Scripts>
 											</CheckButton>
 										</Frames>
-									
-</Frame>
+									</Frame>
 									<Frame name="$parentEntireLine" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
 											<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
@@ -1456,7 +1451,7 @@
 												</Scripts>
 											</CheckButton>
 										</Frames>
-										</Frame>
+									</Frame>
 								</Frames>
 							</Frame>
 						</Frames>

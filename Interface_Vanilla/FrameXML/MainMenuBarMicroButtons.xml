@@ -263,6 +263,25 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="WorldMapMicroButton" realtivePoint="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "LFG");
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+			</OnEvent>
+			<OnClick>
+				ToggleLFGParentFrame();
+			</OnClick>
+		</Scripts>
+	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="WorldMapMicroButton" relativePoint="BOTTOMRIGHT">

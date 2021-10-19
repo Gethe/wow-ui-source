@@ -346,7 +346,6 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 	local clubId = self:GetSelectedClubId();
 	if clubId then
 		local displayMode = self:GetDisplayMode();
-		local clubInfo = C_Club.GetClubInfo(clubId);
 		self.accountMuted = C_Club.IsAccountMuted(clubId);
 		self.accountChatDisabled = C_SocialRestrictions.IsChatDisabled();
 
@@ -426,6 +425,10 @@ function CommunitiesFrameMixin:UpdatePortrait()
 end
 
 function CommunitiesFrameMixin:OnChatDisabledChanged(disabled)
+	local clubId = self:GetSelectedClubId();
+	self.accountMuted = clubID and C_Club.IsAccountMuted(clubId);
+	self.accountChatDisabled = C_SocialRestrictions.IsChatDisabled();
+
 	if disabled then
 		local displayMode = self:GetDisplayMode();
 		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then

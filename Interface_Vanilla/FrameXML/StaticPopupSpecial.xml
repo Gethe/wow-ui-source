@@ -51,9 +51,6 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.hideOnEscape = 1;
-			</OnLoad>
 			<OnUpdate>
 				if ( C_PetBattles.CanAcceptQueuedPVPMatch() == true ) then
 				  self.AcceptButton:Enable();

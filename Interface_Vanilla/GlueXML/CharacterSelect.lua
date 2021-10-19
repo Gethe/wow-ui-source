@@ -346,6 +346,8 @@ function CharacterSelect_OnHide(self)
 
     AccountReactivate_CloseDialogs();
     SetInCharacterSelect(false);
+
+	GlowEmitterFactory:Hide(CharSelectChangeRealmButton);
 end
 
 function CharacterSelect_SetAutoSwitchRealm(isAuto)
@@ -632,6 +634,9 @@ function CharacterSelect_OnEvent(self, event, ...)
     elseif ( event == "CHARACTER_LIST_RETRIEVAL_RESULT" ) then
         local success = ...;
         CharacterSelect_SetRetrievingCharacters(false, success);
+		if( success ) then
+			CharacterSelect_ShowSeasonNotification();
+		end
     elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVING" ) then
         CharacterSelect_SetRetrievingCharacters(true);
     elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVAL_RESULT" ) then
@@ -3350,6 +3355,17 @@ function CharacterSelect_ShowBoostUnlockDialog(guid)
     end
 
     return false;
+end
+
+function CharacterSelect_ShowSeasonNotification()
+	if(GetSoMNotificationEnabled() and GetCVar("seenSoMNotification") == "0" and not C_Seasons.HasActiveSeason()) then
+		RealmCallout:Show();
+		GlowEmitterFactory:SetOffset(3, 1);
+		GlowEmitterFactory:Show(CharSelectChangeRealmButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+		RealmCallout.Text:SetText(SEASON_CHARACTER_SELECT_NOTIFICATIONS[Enum.SeasonID.SeasonOfMastery]);
+	else
+		RealmCallout:Hide();
+	end
 end
 
 function CharSelectEnterWorldButton_OnEnter(button)

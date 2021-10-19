@@ -611,7 +611,7 @@ end
 
 local function SetBorderColor(frame, r, g, b, a)
 	frame.healthBar.border:SetVertexColor(r, g, b, a);
-	if frame.CastBar.border then
+	if frame.CastBar and frame.CastBar.border then
 		frame.CastBar.border:SetVertexColor(r, g, b, a);
 	end
 end

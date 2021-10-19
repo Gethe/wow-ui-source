@@ -113,7 +113,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
 				</Anchors>
-	      <Scripts>
+				<Scripts>
 					<!--CommunitiesFrameTabTemplate:OnClick() is called conditionally. See CommunitiesChatTabMixin:OnClick().-->
 					<OnClick method="OnClick"/>
 				</Scripts>

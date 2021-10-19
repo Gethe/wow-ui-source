@@ -249,7 +249,7 @@ function CommunitiesMemberListMixin:OnShow()
 	end
 
 	self.streamSelectedCallback = StreamSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback, self);
 	
 	local function ClubSelectedCallback(event, clubId)
 		self:UpdateInvitations();
@@ -257,7 +257,7 @@ function CommunitiesMemberListMixin:OnShow()
 	end
 
 	self.clubSelectedCallback = ClubSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback, self);
 
 	local function CommunitiesDisplayModeChangedCallback(event, displayMode)
 		local expandedDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
@@ -265,7 +265,7 @@ function CommunitiesMemberListMixin:OnShow()
 	end
 	
 	self.displayModeChangedCallback = CommunitiesDisplayModeChangedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback, self);
 end
 
 function CommunitiesMemberListMixin:OnUpdate()
@@ -406,9 +406,9 @@ end
 
 function CommunitiesMemberListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self);
 end
 
 function CommunitiesMemberListMixin:GetCommunitiesFrame()

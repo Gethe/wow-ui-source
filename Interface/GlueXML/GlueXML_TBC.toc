@@ -70,7 +70,7 @@ GlueTooltip.xml
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
 ..\..\Interface_TBC\GlueXML\AccountLogin.xml
-RealmList.xml
+..\..\Interface_TBC\GlueXML\RealmList.xml
 CharacterServicesPatchwerk.xml
 ..\..\Interface_TBC\GlueXML\CharacterSelect.xml
 AccountReactivate.xml

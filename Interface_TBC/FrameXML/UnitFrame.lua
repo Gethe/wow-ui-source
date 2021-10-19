@@ -301,7 +301,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	local info = PowerBarColor[powerToken];
 	if ( info ) then
 		if ( not manaBar.lockColor ) then
-			local playerDeadOrGhost = (manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")));
+			local playerDeadOrGhost = manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")) and not UnitIsFeignDeath("player");
 			if ( info.atlas ) then
 				manaBar:SetStatusBarAtlas(info.atlas);
 				manaBar:SetStatusBarColor(1, 1, 1);

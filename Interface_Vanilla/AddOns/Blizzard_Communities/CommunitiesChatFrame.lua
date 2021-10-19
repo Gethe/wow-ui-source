@@ -35,7 +35,7 @@ function CommunitiesChatMixin:OnShow()
 	end
 
 	self.streamSelectedCallback = StreamSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback, self);
 	
 	self:UpdateChatColor();
 	self:DisplayChat();
@@ -108,7 +108,7 @@ end
 function CommunitiesChatMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_CHAT_FRAME_EVENTS);
 	if self.streamSelectedCallback then
-		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self);
 		self.streamSelectedCallback = nil;
 	end
 end
@@ -380,7 +380,7 @@ function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 	local messageDate = C_DateAndTime.GetCalendarTimeFromEpoch(message.messageId.epoch);
 	local previousMessageId = select(7, self.MessageFrame:GetMessageInfo(backfill and 1 or self.MessageFrame:GetNumMessages()));
 	local previousMessageDate = previousMessageId and C_DateAndTime.GetCalendarTimeFromEpoch(previousMessageId.epoch);
-	if previousMessageDate and (messageDate.day ~= previousMessageDate.day or messageDate.month ~= previousMessageDate.month) then
+	if previousMessageDate and (messageDate.monthDay ~= previousMessageDate.monthDay or messageDate.month ~= previousMessageDate.month) then
 		self:AddDateNotification(backfill and previousMessageDate or messageDate, backfill);
 	end
 	

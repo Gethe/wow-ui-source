@@ -86,6 +86,7 @@ UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0,		xoffset
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -166,8 +167,6 @@ end
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
-	"ScrollOfResurrectionFrame",
-	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
 	"FloatingGarrisonShipyardFollowerTooltip"
@@ -312,6 +311,9 @@ function UIParent_OnLoad(self)
 	-- Events for WoW Mouse
 	self:RegisterEvent("WOW_MOUSE_NOT_FOUND");
 
+	-- Events for talent wipes
+	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
+
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
@@ -426,10 +428,6 @@ function TradeSkillFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TradeSkillUI");
 end
 
-function GMSurveyFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_GMSurveyUI");
-end
-
 function TimeManager_LoadUI()
 	UIParentLoadAddOn("Blizzard_TimeManager");
 end
@@ -451,10 +449,6 @@ end
 
 function Store_LoadUI()
 	UIParentLoadAddOn("Blizzard_StoreUI");
-end
-
-function FlightMap_LoadUI()
-	UIParentLoadAddOn("Blizzard_FlightMap");
 end
 
 function APIDocumentation_LoadUI()
@@ -512,19 +506,17 @@ function ToggleTalentFrame()
 	end
 end
 
-function BattlefieldMapAllowed()
-	return UIWidgetManager.widgetPools:GetNumActive() > 0 or (MiniMapBattlefieldFrame and MiniMapBattlefieldFrame.status == "active");
+function GetBattlefieldMapInstanceType()
+	local _, instanceType = IsInInstance();
+	if instanceType == "pvp" or instanceType == "none" then
+		return instanceType;
+	end
+	return nil;
 end
 
 function ToggleBattlefieldMap()
 	BattlefieldMap_LoadUI();
-	if ( BattlefieldMapFrame ) then
-		if (BattlefieldMapAllowed()) then
-			BattlefieldMapFrame:Toggle();
-		else
-			BattlefieldMapFrame:Hide();
-		end
-	end
+	BattlefieldMapFrame:Toggle();
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
@@ -649,7 +641,7 @@ local function PlayBattlefieldBanner(self)
 		local bannerName, bannerDescription;
 
 		for i=1, GetMaxBattlefieldID() do
-			local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			local status, _, _, _, _, _, _, _, _, _, _, _, asGroup, shortDescription = GetBattlefieldStatus(i);
 			if ( status and status == "active" ) then
 				bannerName = mapName;
 				bannerDescription = shortDescription;
@@ -676,10 +668,6 @@ function UIParent_OnEvent(self, event, ...)
 		UIParent.variablesLoaded = true;
 
 		LocalizeFrames();
-
-		if ( not BattlefieldMapFrame and GetCVar("showBattlefieldMinimap") == "1" ) then
-			BattlefieldMap_LoadUI();
-		end
 
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");
 		if ( lastTalkedToGM ~= "" ) then
@@ -753,20 +741,13 @@ function UIParent_OnEvent(self, event, ...)
 		FlashClientIcon();
 		
 		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
+		local text = isXRealm and INVITATION_XREALM or INVITATION;
+		text = string.format(text, name);
 
-		-- if there's a role, it's an LFG invite
-		if ( tank or healer or damage ) then
-			StaticPopupSpecial_Show(LFGInvitePopup);
-			LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles);
-		else
-			local text = isXRealm and INVITATION_XREALM or INVITATION;
-			text = string.format(text, name);
-
-			if ( WillAcceptInviteRemoveQueues() ) then
-				text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
-			end
-			StaticPopup_Show("PARTY_INVITE", text);
+		if ( WillAcceptInviteRemoveQueues() ) then
+			text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
 		end
+		StaticPopup_Show("PARTY_INVITE", text);
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
 		StaticPopupSpecial_Hide(LFGInvitePopup);
@@ -854,6 +835,9 @@ function UIParent_OnEvent(self, event, ...)
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
+		if ( not BattlefieldMapFrame and DoesInstanceTypeMatchBattlefieldMapSettings() ) then
+			BattlefieldMap_LoadUI();
+		end
 
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
@@ -902,6 +886,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		self.battlefieldBannerShown = nil;
+
+		SetLookingForGroupUIAvailable(C_LFGList.IsLookingForGroupEnabled());
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -976,11 +962,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
-		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-			INTERFACE_ACTION_BLOCKED_SHOWN = true;
-		end
+		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
@@ -994,33 +976,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		CloseAllWindows_WithExceptions();
 
-		--[[
-		-- Disable all microbuttons except the main menu
-		SetDesaturation(MicroButtonPortrait, true);
-
-		Designers previously wanted these disabled when feared, they seem to have changed their minds
-		CharacterMicroButton:Disable();
-		SpellbookMicroButton:Disable();
-		TalentMicroButton:Disable();
-		QuestLogMicroButton:Disable();
-		GuildMicroButton:Disable();
-		WorldMapMicroButton:Disable();
-		]]
-
 		UIParent.isOutOfControl = 1;
 	elseif ( event == "PLAYER_CONTROL_GAINED" ) then
-		--[[
-		-- Enable all microbuttons
-		SetDesaturation(MicroButtonPortrait, false);
-
-		CharacterMicroButton:Enable();
-		SpellbookMicroButton:Enable();
-		TalentMicroButton:Enable();
-		QuestLogMicroButton:Enable();
-		GuildMicroButton:Enable();
-		WorldMapMicroButton:Enable();
-		]]
-
 		UIParent.isOutOfControl = nil;
 	elseif ( event == "START_LOOT_ROLL" ) then
 		GroupLootFrame_OpenNewFrame(arg1, arg2);
@@ -1537,9 +1494,6 @@ function UIParent_OnEvent(self, event, ...)
 		local uiMapSystem = ...;
 		if (uiMapSystem == Enum.UIMapSystem.Taxi) then
 			ShowUIPanel(TaxiFrame);
-		else
-				FlightMap_LoadUI();
-			ShowUIPanel(FlightMapFrame);
 		end
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
@@ -1647,7 +1601,7 @@ function UIParent_UpdateTopFramePositions()
 			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
 		else
 			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-	end
+		end
 		
 		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
 		notificationAnchorTo = TicketStatusFrame;
@@ -1660,7 +1614,7 @@ function UIParent_UpdateTopFramePositions()
 			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
 		else
 			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
-		end
+	end
 
 		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
 	end
@@ -2993,8 +2947,8 @@ function UIFrameFade(frame, fadeInfo)
 	local index = 1;
 	-- secure so we don't spread taint to other frames in FADEFRAMES
 	if securecall(UIFrameFadeContains, frame) then
-			return;
-		end
+		return;
+	end
 	tinsert(FADEFRAMES, frame);
 	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);
 end
@@ -3420,7 +3374,7 @@ function ToggleGameMenu()
 		UIParent:Show();
 		SetUIVisibility(true);
 	elseif ( C_Commentator.IsSpectating() and IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") ) then
-		PvPCommentator:SetFrameLock(false);
+		Commentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
@@ -4502,7 +4456,7 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		local status, _, _, _, _, _, _, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
 		if ( ( status == "queued" or status == "confirmed" ) and asGroup ) then
 			return true;
 		end
@@ -4667,5 +4621,23 @@ function DisplayInterfaceActionBlockedMessage()
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
+end
+
+-- Set the overall UI state to show or not show the LFG UI.
+function SetLookingForGroupUIAvailable(available)
+	local success = false;
+	if (available) then
+		success = UIParentLoadAddOn("Blizzard_LookingForGroupUI");
+	end
+
+	if (success) then
+		WorldMapMicroButton:Hide()
+		LFGMicroButton:Show();
+		MiniMapWorldMapButton:Show();
+	else
+		WorldMapMicroButton:Show()
+		LFGMicroButton:Hide();
+		MiniMapWorldMapButton:Hide();
 	end
 end

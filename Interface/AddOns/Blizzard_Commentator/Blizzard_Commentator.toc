@@ -3,7 +3,7 @@
 ## LoadOnDemand: 1
 
 FadeToBlack.xml
-..\..\..\Interface_TBC\AddOns\Blizzard_Commentator\CommentatorVictoryFanfare.xml
+CommentatorVictoryFanfare.xml
 
 Blizzard_CommentatorConstants.lua
 Blizzard_CommentatorUtil.lua

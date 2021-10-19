@@ -237,7 +237,6 @@ ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
-..\..\Interface_TBC\FrameXML\LFGFrame.xml
 PVPFrame.xml
 
 

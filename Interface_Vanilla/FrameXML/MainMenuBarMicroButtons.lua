@@ -9,6 +9,7 @@ MICRO_BUTTONS = {
 	"QuestLogMicroButton",
 	"SocialsMicroButton",
 	"WorldMapMicroButton",
+	"LFGMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 }
@@ -121,6 +122,12 @@ function UpdateMicroButtons()
 		WorldMapMicroButton:SetButtonState("PUSHED", true);
 	else
 		WorldMapMicroButton:SetButtonState("NORMAL");
+	end
+
+	if (  LFGParentFrame and LFGParentFrame:IsShown() ) then
+		LFGMicroButton:SetButtonState("PUSHED", true);
+	else
+		LFGMicroButton:SetButtonState("NORMAL");
 	end
 
 	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )

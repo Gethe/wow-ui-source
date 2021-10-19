@@ -116,8 +116,6 @@ function InspectPaperDollItemSlotButton_OnEvent(self, event, ...)
 end
 
 function InspectPaperDollItemSlotButton_OnClick(self, button)
-	local itemLink = GetInventoryItemLink(InspectFrame.unit, self:GetID());
-
 	HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
 end
 

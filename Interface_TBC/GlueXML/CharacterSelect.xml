@@ -356,7 +356,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TBCIcon" useAtlasSize="true"/>
-				</Layer>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="TBCInfoPaneTemplate_OnLoad"/>

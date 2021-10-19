@@ -261,10 +261,39 @@
 						WorldMapZoneDropDown_OnLoad(self);
 					</OnLoad>
 					<OnShow>
-						WorldMapZoneDropDown_Initialize(self);
+						UIDropDownMenu_Initialize(self, WorldMapZoneDropDown_Initialize);
 					</OnShow>
 				</Scripts>
 			</Frame>
+			<Frame name="WorldMapZoneMinimapDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="WorldMapContinentDropDown" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontNormalSmall" text="BATTLEFIELD_MINIMAP">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="WorldMapZoneMinimapDropDown_OnLoad"/>
+					<OnShow function="WorldMapZoneMinimapDropDown_Initialize"/>
+					<OnEnter function="WorldMapZoneMinimapDropDown_OnEnter"/>
+					<OnLeave function="WorldMapZoneMinimapDropDown_OnLeave"/>
+				</Scripts>
+			</Frame>
+			
 			<Button name="WorldMapZoomOutButton" inherits="UIPanelButtonTemplate" text="ZOOM_OUT">
 				<Size>
 					<AbsDimension x="110" y="22"/>

@@ -3088,7 +3088,7 @@ TRAVEL PASS
             <DisabledFont style="GameFontDisableSmall"/>
           </Button>
         </Frames>
-        </Frame>
+      </Frame>
       <Frame name="GuildMemberDetailFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" hidden="true">
         <KeyValues>
 					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
@@ -4055,10 +4055,6 @@ TRAVEL PASS
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend">
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
 			<OnShow function="AddFriendFrame_OnShow"/>
 			<OnHide>
 				AddFriendFrame.editFocus = nil;
@@ -4101,7 +4097,7 @@ TRAVEL PASS
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-74"/>
 				</Anchors>
-				</Frame>
+			</Frame>
 			<Button name="FriendsFriendsButton1" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsList" x="4" y="-8"/>
@@ -4215,8 +4211,6 @@ TRAVEL PASS
 				self:RegisterEvent("BN_REQUEST_FOF_SUCCEEDED");
 				self:RegisterEvent("BN_DISCONNECTED");
 				self.requested = { };
-				self.hideOnEscape = true;
-				self.exclusive = true;
 				UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
 			</OnLoad>
 			<OnShow>
@@ -4284,11 +4278,5 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

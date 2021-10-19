@@ -260,9 +260,10 @@ CombatPanelOptions = {
 	floatingCombatTextComboPoints = { text = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
 	floatingCombatTextEnergyGains = { text = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
 	floatingCombatTextHonorGains = { text = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
-	floatingCombatTextCombatDamage = { text = "SHOW_DAMAGE_TEXT_TEXT" },
+	floatingCombatTextCombatDamage = { text = "SHOW_DAMAGE_TEXT", tooltip = OPTION_TOOLTIP_SHOW_DAMAGE },
 	floatingCombatTextCombatLogPeriodicSpells = { text = "LOG_PERIODIC_EFFECTS_TEXT" },
 	floatingCombatTextPetMeleeDamage = { text = "SHOW_PET_MELEE_DAMAGE_TEXT" },
+	floatingCombatTextCombatHealing = { text = "SHOW_COMBAT_HEALING_TEXT" },
 }
 
 -- [[ Self Cast key dropdown ]] --

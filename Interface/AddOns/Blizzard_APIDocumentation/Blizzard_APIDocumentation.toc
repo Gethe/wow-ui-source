@@ -124,6 +124,7 @@ DateAndTimeDocumentation.lua
 FriendListDocumentation.lua
 MapDocumentation.lua
 ScriptedAnimationsDocumentation.lua
+SeasonsDocumentation.lua
 SocialRestrictionsDocumentation.lua
 SystemDocumentation.lua
 ActionDocumentation.lua
@@ -168,4 +169,5 @@ VehicleConstantsDocumentation.lua
 CurrencyConstants_ClassicDocumentation.lua
 ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
+SeasonsConstantsDocumentation.lua
 # End documentation files here

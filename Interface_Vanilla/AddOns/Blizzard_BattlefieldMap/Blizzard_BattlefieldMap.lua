@@ -2,9 +2,9 @@
 BATTLEFIELD_TAB_SHOW_DELAY = 0.2;
 BATTLEFIELD_TAB_FADE_TIME = 0.15;
 BATTLEFIELD_TAB_DEFAULT_ALPHA = 0.75;
-BATTLEFIELD_MAP_PARTY_MEMBER_SIZE = 8;
-BATTLEFIELD_MAP_RAID_MEMBER_SIZE = 8;
-BATTLEFIELD_MAP_PLAYER_SIZE = 12;
+BATTLEFIELD_MAP_PARTY_MEMBER_SIZE = 16;
+BATTLEFIELD_MAP_RAID_MEMBER_SIZE = 16;
+BATTLEFIELD_MAP_PLAYER_SIZE = 16;
 BATTLEFIELD_MAP_POI_SCALE = 0.6;
 BATTLEFIELD_MAP_WIDTH = 305;  -- +5 pixels for border
 
@@ -134,13 +134,20 @@ end
 BattlefieldMapMixin = {};
 
 function BattlefieldMapMixin:Toggle()
-	if (BattlefieldMapAllowed()) then
+	local instanceType = GetBattlefieldMapInstanceType();
+	if instanceType ~= nil then
 		if self:IsShown() then
 			SetCVar("showBattlefieldMinimap", "0");	
 			self:Hide();
 		else
-			SetCVar("showBattlefieldMinimap", "1");
-			self:Show();
+			if instanceType == "pvp" then
+				SetCVar("showBattlefieldMinimap", "1");
+				self:Show();
+			else
+				SetCVar("showBattlefieldMinimap", "2");
+				self:Show();
+			end
+			
 		end
 	else
 		self:Hide();
@@ -211,7 +218,7 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 			self:UnregisterEvent("ADDON_LOADED");
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "UPDATE_ALL_UI_WIDGETS" or event == "UPDATE_UI_WIDGET" then
-		if GetCVar("showBattlefieldMinimap") == "1" and BattlefieldMapAllowed() then
+		if DoesInstanceTypeMatchBattlefieldMapSettings() then
 			local mapID = MapUtil.GetDisplayableMapForPlayer();
 			self:SetMapID(mapID);
 			self:Show();
@@ -287,13 +294,11 @@ end
 
 function BattlefieldMapMixin:UpdateUnitsVisibility()
 	if BattlefieldMapOptions.showPlayers then
-		self.groupMembersDataProvider:SetUnitPinSize("player", BATTLEFIELD_MAP_PLAYER_SIZE);
 		self.groupMembersDataProvider:SetUnitPinSize("party", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 		self.groupMembersDataProvider:SetUnitPinSize("raid", BATTLEFIELD_MAP_RAID_MEMBER_SIZE);
 		self.spectatorDataProvider:SetUnitPinSize("spectateda", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 		self.spectatorDataProvider:SetUnitPinSize("spectatedb", BATTLEFIELD_MAP_PARTY_MEMBER_SIZE);
 	else
-		self.groupMembersDataProvider:SetUnitPinSize("player", 0);
 		self.groupMembersDataProvider:SetUnitPinSize("party", 0);
 		self.groupMembersDataProvider:SetUnitPinSize("raid", 0);
 		self.spectatorDataProvider:SetUnitPinSize("spectateda", 0);

@@ -40,7 +40,7 @@ function RealmList_Update()
 
 		if ( idx <= #realms ) then
 			local realmAddr = realms[idx];
-			local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+			local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
 
 			button.realmAddr = realmAddr;
 			local isSelectedRealm = realmAddr == RealmList.selectedRealm;
@@ -178,7 +178,7 @@ function RealmList_UpdateOKButton()
 		return;
 	end
 
-	local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 	RealmListOkButton:SetEnabled(populationState and populationState ~= "OFFLINE");
 end
 
@@ -237,7 +237,7 @@ end
 function RealmList_OnOk()
 	if (RealmList.selectedRealm) then
 		-- If trying to join a Full realm then popup a dialog
-		local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+		local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
 		if ( populationState == "FULL" and numChars == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
@@ -303,7 +303,7 @@ function RealmList_GetInfoFromName(name)
 		local realms = C_RealmList.GetRealmsInCategory(categories[i]);
 		for j=1, #realms do
 			local realmAddr = realms[j];
-			local realmName, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+			local realmName, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
 
 			if ( realmName == name ) then
 				return realmAddr, categories[i];

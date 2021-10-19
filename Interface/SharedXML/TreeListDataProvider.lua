@@ -96,7 +96,7 @@ function TreeListDataProviderMixin:Init()
 	self.node = CreateTreeListNode(self);
 end
 
-function EnumerateInternal(indexBegin, indexEnd, root, includeCollapsed)
+local function EnumerateInternal(indexBegin, indexEnd, root, includeCollapsed)
 	indexBegin = indexBegin and (indexBegin - 1) or 0;
 	indexEnd = indexEnd or math.huge;
 
