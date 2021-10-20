@@ -943,15 +943,17 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         self.PartyMembers[i]:SetUp(sortedUnitTokens[i]);
     end
 
-
-    C_Timer.After(self.timeToHold, function()
-        self:PerformAnimOut();
-    end);
+	self.AnimOutTimer = C_Timer.NewTimer(self.timeToHold, GenerateClosure(self.PerformAnimOut, self));
 end
 
 function ChallengeModeCompleteBannerMixin:StopBanner()
-    self.AnimIn:Stop();
-    self:Hide();
+	if self.AnimOutTimer then
+		self.AnimOutTimer:Cancel();
+		self.AnimOutTimer = nil;
+	end
+
+	self.AnimIn:Stop();
+	self:Hide();
 end
 
 function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()

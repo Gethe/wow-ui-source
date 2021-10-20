@@ -98,6 +98,10 @@ function TimerTracker_OnEvent(self, event, ...)
 				end
 			end
 			
+			if(timer and timer.type == TIMER_TYPE_PLAYER_COUNTDOWN) then 
+				FreeTimerTrackerTimer(timer);
+			end 
+
 			if not timer then
 				timer = CreateFrame("FRAME", self:GetName().."Timer"..(#self.timerList+1), self, "StartTimerBar");
 				self.timerList[#self.timerList+1] = timer;

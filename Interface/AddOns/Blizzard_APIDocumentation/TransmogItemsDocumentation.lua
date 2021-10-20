@@ -669,6 +669,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "PlayerHasTransmogByItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasTransmog", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerHasTransmogItemModifiedAppearance",
 			Type = "Function",
 

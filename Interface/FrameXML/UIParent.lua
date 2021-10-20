@@ -1288,7 +1288,6 @@ function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( SpellCanTargetGarrisonFollower(0) or SpellCanTargetGarrisonFollowerAbility(0, 0) ) then
-
 			local followerTypeID = GetFollowerTypeIDFromSpell();
 			local frame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
 
@@ -1298,19 +1297,22 @@ function UIParent_OnEvent(self, event, ...)
 				end
 			else
 				local landingPageTabIndex;
+				local garrisonType = C_Garrison.GetLandingPageGarrisonType();
 				local garrTypeID = GarrisonFollowerOptions[followerTypeID].garrisonType;
-				if (C_Garrison.HasGarrison(garrTypeID)) then
-					if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
-						landingPageTabIndex = 3;
-					else
-						landingPageTabIndex = 2;
-					end
+				if(garrTypeID == garrisonType) then
+					if (C_Garrison.HasGarrison(garrTypeID)) then
+						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+							landingPageTabIndex = 3;
+						else
+							landingPageTabIndex = 2;
+						end
 
-					ShowGarrisonLandingPage(garrTypeID);
+						ShowGarrisonLandingPage(garrTypeID);
 
-					-- switch to the followers tab
-					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
-						GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
+						-- switch to the followers tab
+						if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
+							GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
+						end
 					end
 				end
 			end

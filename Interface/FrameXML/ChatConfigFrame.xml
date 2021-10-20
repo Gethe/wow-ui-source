@@ -89,9 +89,17 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, (self.tooltipStyle or true));
 				end
+				
+				if self.onEnterCallback then
+					self.onEnterCallback();
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+
+				if self.onLeaveCallback then
+					self.onLeaveCallback();
+				end
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>

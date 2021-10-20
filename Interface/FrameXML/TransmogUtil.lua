@@ -216,6 +216,8 @@ function TransmogUtil.GetEmptyItemTransmogInfoList()
 	return list;
 end
 
+local NUM_OUTFIT_SLASH_COMMAND_VALUES = 17;
+
 -- Outfit slash command sample:
 -- /outfit v1 7019,7017,0,0,7022,0,0,7015,7020,7016,7018,7021,70216,0,0,0,0
 -- "v1" is the version so future formats won't break older slash commands
@@ -273,6 +275,11 @@ function TransmogUtil.ParseOutfitSlashCommand(msg)
 		local readlist = { };
 		for value in  string.gmatch(string.sub(msg, 4), "%-?%d+") do
 			table.insert(readlist, tonumber(value));
+		end
+
+		if #readlist ~= NUM_OUTFIT_SLASH_COMMAND_VALUES then
+			DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_LINK_INVALID, RED_FONT_COLOR:GetRGB());
+			return;
 		end
 
 		-- accessor for next value

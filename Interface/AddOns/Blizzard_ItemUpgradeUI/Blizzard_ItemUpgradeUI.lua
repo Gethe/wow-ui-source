@@ -68,7 +68,7 @@ function ItemUpgradeMixin:HasReachedTargetUpgradeLevel()
 	end
 
 	local upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
-	return upgradeInfo and upgradeInfo.currUpgrade == self.targetUpgradeLevel;
+	return upgradeInfo and upgradeInfo.currUpgrade >= self.targetUpgradeLevel;
 end
 
 function ItemUpgradeMixin:UpdateIfTargetReached()
@@ -135,12 +135,17 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	self.UpgradeItemButton.EmptySlotGlow:Hide();
 	self.UpgradeItemButton.PulseEmptySlotGlow:Stop();
 
-	self.targetUpgradeLevel = fromDropDown or (self.upgradeInfo.currUpgrade + 1);
+	if fromDropDown and (fromDropDown >  self.upgradeInfo.currUpgrade) and (fromDropDown <= self.upgradeInfo.maxUpgrade) then
+		self.targetUpgradeLevel = fromDropDown;
+	else
+		self.targetUpgradeLevel = self.upgradeInfo.currUpgrade + 1;
+	end
 	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
 
 	self.currentUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[1] 
 	self.targetUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels + 1] 
 
+	HideDropDownMenu(1);
 	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
 	UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel));
 
@@ -179,7 +184,7 @@ end
 
 function ItemUpgradeMixin:PopulatePreviewFrames()
 	local itemMaxedOut =  self.upgradeInfo.currUpgrade >= self.upgradeInfo.maxUpgrade;
-	local failureMessage = itemMaxedOut and ITEM_UPGRADE_NO_MORE_UPGRADES or self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels+1].failureMessage;
+	local failureMessage = itemMaxedOut and ITEM_UPGRADE_NO_MORE_UPGRADES or self.targetUpgradeLevelInfo.failureMessage;
 	local canUpgradeItem = self.upgradeInfo.itemUpgradeable and not failureMessage;
 	local showRightPreview = self.upgradeInfo.itemUpgradeable and not itemMaxedOut;
 

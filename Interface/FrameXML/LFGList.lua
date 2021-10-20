@@ -728,6 +728,9 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	local shouldShowPlayStyleDropdown = (categoryInfo.showPlaystyleDropdown) and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity); 
 	self.PlayStyleDropdown:SetShown(shouldShowPlayStyleDropdown);
 	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
+	if(not shouldShowPlayStyleDropdown)  then 
+		self.selectedPlaystyle = nil
+	end 
 	self.MythicPlusRating:SetShown(activityInfo.isMythicPlusActivity); 
 	self.PVPRating:SetShown(activityInfo.isRatedPvpActivity);
 	
@@ -737,6 +740,14 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	else
 		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_SHORT);
 	end
+
+	self.NameLabel:ClearAllPoints(); 
+	if (not self.ActivityDropDown:IsShown() and not self.GroupDropDown:IsShown()) then
+		self.NameLabel:SetPoint("TOPLEFT", 20, -80);
+	else 
+		self.NameLabel:SetPoint("TOPLEFT", 20, -120);
+	end 
+
 	self.ItemLevel:ClearAllPoints();
 	self.PvpItemLevel:ClearAllPoints();
 
@@ -783,7 +794,6 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 			local filters = bit.bor(self.selectedFilters, self.baseFilters, LE_LFG_LIST_FILTER_RECOMMENDED);
 			local recGroups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory, filters);
 			local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, filters);
-
 
 			--If we have some recommended, just display those
 			if ( #recGroups + #recActivities > 0 ) then
@@ -2000,7 +2010,6 @@ function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilt
 	self.SearchBox.Instructions:SetText(categoryInfo.searchPromptOverride or FILTER);
 	local name = LFGListUtil_GetDecoratedCategoryName(categoryInfo.name, filters, false);
 	self.CategoryName:SetText(name);
-	PVEFrame.TitleText:SetText(name);
 end
 
 function LFGListSearchPanel_DoSearch(self)
@@ -3680,7 +3689,7 @@ end
 
 LFGAuthenticatorMessagingMixin = {}
 function LFGAuthenticatorMessagingMixin:DisplayTooltip()
-	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, LFG_AUTHENTICATOR_BUTTON_TOOLTIP);
 	GameTooltip:Show(); 
 end 
@@ -3780,7 +3789,7 @@ end
 function LFGListCreateGroupDisabledStateButtonMixin:OnEnter()
 	local parentErrorText = self:GetParent().errorText; 
 	if(parentErrorText) then 
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_AddNormalLine(GameTooltip, parentErrorText);
 		GameTooltip:Show(); 
 	end

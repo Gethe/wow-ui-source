@@ -551,7 +551,7 @@
 		<Frames>
 			<Button parentKey="LockButton" inherits="LFGListLockButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="12" y="14"/>
+					<Anchor point="TOPRIGHT" x="12" y="13"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -795,7 +795,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
 					<Size x="0" y="14"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-6"/>
@@ -1831,13 +1831,14 @@
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnMouseDown method="OnMouseDown"/>
 							<OnShow method="OnShow"/>
 						</Scripts>
 						<Frames>
 							<Button parentKey="LockButton" inherits="LFGListLockButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="17" y="20"/>
+									<Anchor point="TOPRIGHT" x="17" y="19"/>
 								</Anchors>
 							</Button>
 						</Frames>

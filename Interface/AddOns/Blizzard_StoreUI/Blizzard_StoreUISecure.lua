@@ -343,6 +343,7 @@ Import("BLIZZARD_STORE_VAS_REALM_NAME");
 Import("BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
 Import("BLIZZARD_STORE_VAS_EMAIL_ADDRESS");
+Import("ACCOUNT_NAME");
 Import("BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE");
 Import("BLIZZARD_STORE_VAS_REALMS_PREVIOUS");
@@ -3202,7 +3203,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.TransferRealmEditbox.Label:SetText(VAS_DESTINATION_REALM_LABEL);
 	self.CharacterSelectionFrame.TransferRealmEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_REALM_NAME);
 	self.CharacterSelectionFrame.TransferAccountCheckbox.Label:SetText(BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT);
-	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_EMAIL_ADDRESS);
+	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox.EmptyText:SetText(ACCOUNT_NAME);
 
 	self.CharacterSelectionFrame.FollowGuildCheckbox.Label:SetMaxLines(2);
 
@@ -5178,7 +5179,7 @@ function VASCharacterSelectionTransferCheckEditBoxes()
 
 	if frame.TransferAccountCheckbox:GetChecked() and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET then
 		local text = frame.TransferBattlenetAccountEditbox:GetText();
-		if not(text and text ~= "" and string.find(text, ".+@.+%...+")) then
+		if not (text and text ~= "") then
 			return false;
 		end
 	end
