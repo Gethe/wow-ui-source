@@ -798,8 +798,9 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			local remainingRows = extraRows;
 
 			-- Calculate the number of background textures we're going to need
-			bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
-			
+			local bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
+			local height;
+
 			-- Try to cycle all the middle bg textures
 			for i=1, bgTextureCount do
 				bgTextureMiddle = _G[name.."BackgroundMiddle"..i];

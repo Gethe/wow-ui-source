@@ -2604,6 +2604,12 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 	if ( strsub(event, 1, 9) == "CHAT_MSG_" ) then
 		local chatType = strsub(event, 10);
 		local chatGroup = Chat_GetChatCategory(chatType);
+		local isGM = (select(6, ...) == "GM");
+
+		if ( isGM ) then
+			-- GM messages are handled by the GMChatUI addon
+			return;
+		end
 
 		if ( (chatGroup == "BN_WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))
 			or (chatGroup == "WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))) then

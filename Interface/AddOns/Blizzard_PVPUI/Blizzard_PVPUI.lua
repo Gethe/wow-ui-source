@@ -2079,7 +2079,23 @@ end
 
 
 PVPWeeklyRatedPanelMixin = { };
+
 function PVPWeeklyRatedPanelMixin:OnShow()
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
+	self:Update()
+end
+
+function PVPWeeklyRatedPanelMixin:OnHide()
+	self:UnregisterEvent("PVP_RATED_STATS_UPDATE");
+end
+
+function PVPWeeklyRatedPanelMixin:OnEvent(event, ...)
+	if event == "PVP_RATED_STATS_UPDATE" then
+		self:Update();
+	end
+end
+
+function PVPWeeklyRatedPanelMixin:Update()
 	local showSeasonReward = false;
 	local seasonState = ConquestFrame.seasonState;
 	if seasonState ~= SEASON_STATE_PRESEASON then

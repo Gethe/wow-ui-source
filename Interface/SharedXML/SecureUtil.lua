@@ -73,7 +73,7 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 end
 
 --------------------------------------------------
-function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress)
+function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons)
 	if not modelScene then
 		return;
 	end
@@ -81,14 +81,11 @@ function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheathe
 	local actor = modelScene:GetPlayerActor();
 	if actor then
 		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
+		hideWeapons = (hideWeapons == nil) or hideWeapons;
 		if IsOnGlueScreen() then
-			actor:SetPlayerModelFromGlues();
-			if not autoDress then
-				actor:Undress();
-			end
-			actor:SetSheathed(sheatheWeapons);
+			actor:SetPlayerModelFromGlues(sheatheWeapons, autoDress, hideWeapons);
 		else
-			actor:SetModelByUnit("player", sheatheWeapons, autoDress);
+			actor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons);
 		end
 
 		if itemModifiedAppearanceIDs then

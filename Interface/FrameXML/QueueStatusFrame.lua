@@ -478,10 +478,10 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 			local brawlInfo = C_PvP.GetActiveBrawlInfo();
 			if (brawlInfo and brawlInfo.canQueue and brawlInfo.longDescription) then
 				title = brawlInfo.name;
-				if (subtitle) then
-					subtitle = QUEUED_STATUS_BRAWL_RULES_SUBTITLE:format(brawlInfo.longDescription, subtitle);
+				if (subTitle) then
+					subTitle = QUEUED_STATUS_BRAWL_RULES_SUBTITLE:format(brawlInfo.longDescription, subTitle);
 				else
-					subtitle = brawlInfo.longDescription;
+					subTitle = brawlInfo.longDescription;
 				end
 			end
 		else

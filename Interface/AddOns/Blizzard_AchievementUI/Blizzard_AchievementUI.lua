@@ -3909,7 +3909,7 @@ function AchievementFrame_UpdateFullSearchResults()
 
 			local categoryID = GetAchievementCategory(achievementID);
 			local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
-			path = categoryName;
+			local path = categoryName;
 			while ( not (parentCategoryID == -1) ) do
 				categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 				path = categoryName.." > "..path;

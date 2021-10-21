@@ -287,9 +287,11 @@ function TextToSpeechFrame_LoadLegacySettings()
 		C_TTSSettings.SetChatTypeEnabled(chatType, chatTypeEnabled);
 	end
 
-	for channelKey, channelEnabled in pairs(TEXTTOSPEECH_CONFIG.enabledChannelTypes) do
-		if channelEnabled then
-			C_TTSSettings.SetChannelKeyEnabled(channelKey, channelEnabled);
+	if TEXTTOSPEECH_CONFIG.enabledChannelTypes then
+		for channelKey, channelEnabled in pairs(TEXTTOSPEECH_CONFIG.enabledChannelTypes) do
+			if channelEnabled then
+				C_TTSSettings.SetChannelKeyEnabled(channelKey, channelEnabled);
+			end
 		end
 	end
 

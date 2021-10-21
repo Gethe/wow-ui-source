@@ -183,7 +183,7 @@ function EventToastManagerFrameMixin:DisplayToastLink(chatFrame, link)
 	if(not link or link == "") then 
 		return;
 	end 
-	info = ChatTypeInfo["SYSTEM"];
+	local info = ChatTypeInfo["SYSTEM"];
 	chatFrame:AddMessage(link, info.r, info.g, info.b, info.id);
 end
 

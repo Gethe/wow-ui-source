@@ -101,7 +101,10 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		local actor = display.ModelScene:GetActorByTag("item");
 		SetupItemPreviewActor(actor, displayID);
 	else
-		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs, true, true);
+		local sheatheWeapons = true;
+		local autoDress = true;
+		local hideWeapons = true;
+		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs, sheathWeapons, autoDress, hideWeapons);
 	end
 	ModelPreviewFrame:Show();
 end

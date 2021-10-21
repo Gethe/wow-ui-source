@@ -1630,7 +1630,7 @@
 						<FontString parentKey="PlayStyleLabel" justifyH="LEFT" inherits="GameFontHighlightSmall">
 							<Size x="125" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" x="0" y="-90"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" x="0" y="-95"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1790,7 +1790,7 @@
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnEditFocusGained function="nop"/> <!--Override the base one that selects all text-->
@@ -1809,7 +1809,7 @@
 					<Frame parentKey="GroupDropDown" name="LFGListEntryCreationGroupDropDown" inherits="UIDropDownMenuTemplate">
 						<Size x="175" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-75"/>
+							<Anchor point="TOPLEFT" x="0" y="-76"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="ActivityDropDown" name="LFGListEntryCreationActivityDropDown" inherits="UIDropDownMenuTemplate">
@@ -1821,7 +1821,7 @@
 					<ScrollFrame parentKey="Description" name="LFGListCreationDescription" mixin="LFGListCreationDescriptionMixin" inherits="InputScrollFrameTemplate">
 						<Size x="283" y="46"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="maxLetters" value="255" type="number"/>
@@ -1846,7 +1846,7 @@
 					<Frame parentKey="PlayStyleDropdown" name="LFGListEntryCreationPlayStyleDropdown" inherits="UIDropDownMenuTemplate">
 						<Size x="175" y="32"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="RIGHT" x="3" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="RIGHT" x="6" y="-2"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="ItemLevel" inherits="LFGListRequirementTemplate">
@@ -1875,7 +1875,7 @@
 					</Frame>
 					<Frame parentKey="PVPRating" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-5" y="-15"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-1" y="-15"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="label" value="GROUP_FINDER_PVP_RATING_REQ_LABEL" type="global"/>
@@ -1886,7 +1886,7 @@
 					</Frame>
 					<Frame parentKey="MythicPlusRating" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-5" y="-15"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-1" y="-15"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="label" value="GROUP_FINDER_MYTHIC_RATING_REQ_LABEL" type="global"/>
@@ -1899,6 +1899,7 @@
 						<KeyValues>
 							<KeyValue key="maxLetters" value="31" type="number"/>
 							<KeyValue key="secureReferenceStr" value="LFGListCreationVoiceChat" type="string"/>
+							<KeyValue key="hideLockButton" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>

@@ -202,7 +202,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	
 	MerchantPageText:SetFormattedText(MERCHANT_PAGE_NUMBER, MerchantFrame.page, math.ceil(numMerchantItems / MERCHANT_ITEMS_PER_PAGE));
 
-	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost;
+	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID, spellID;
 	for i=1, MERCHANT_ITEMS_PER_PAGE do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 		local itemButton = _G["MerchantItem"..i.."ItemButton"];

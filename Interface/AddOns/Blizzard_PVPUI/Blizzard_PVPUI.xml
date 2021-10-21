@@ -1618,6 +1618,8 @@
 								</Frames>
 								<Scripts>
 									<OnShow method="OnShow"/>
+									<OnHide method="OnHide"/>
+									<OnEvent method="OnEvent"/>
 								</Scripts>
 							</Frame>
 						</Frames>

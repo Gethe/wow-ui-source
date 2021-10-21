@@ -169,7 +169,7 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	else
 		headerIndex = CollectionWardrobeUtil.GetValidIndexForNumSources(selectedIndex, #sources);
 	end
-	headerSourceID = sources[headerIndex].sourceID;
+	local headerSourceID = sources[headerIndex].sourceID;
 
 	local name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[headerIndex], inLegionArtifactCategory);
 	local sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[headerIndex]);

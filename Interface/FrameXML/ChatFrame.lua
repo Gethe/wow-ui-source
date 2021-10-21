@@ -2663,7 +2663,7 @@ end
 
 SlashCmdList["COUNTDOWN"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)", "%2");
-	if(num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then
+	if(num1 and num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then
 		C_PartyInfo.DoCountdown(num1);
 	end
 end

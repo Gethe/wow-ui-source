@@ -177,7 +177,7 @@ function VoiceChatHeadsetButtonMixin:SetCommunityInfo(clubId, streamInfo)
 	self:SetChannelType(Enum.ChatChannelType.Communities);
 	self:GetParent():SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
 	self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(Enum.ChatChannelType.Communities, self.clubId, self.streamId));
-	self:SetEnabled(not C_VoiceChat.GetJoinClubVoiceChannelError(self.clubId));
+	self:SetEnabled(self:ShouldEnable());
 end
 
 function VoiceChatHeadsetButtonMixin:IsCommunityChannel()
@@ -231,14 +231,18 @@ function VoiceChatHeadsetButtonMixin:ShowTooltip()
 		else
 			GameTooltip_SetTitle(tooltip, VOICECHAT_DISABLED, RED_FONT_COLOR);
 		end
+	elseif not self:IsEnabled() then
+		-- COMMUNITY_FEATURE_UNAVAILABLE_MUTED is actually for if parental control is blocking a feature...
+		local errMsg = C_VoiceChat.IsParentalDisabled() and COMMUNITY_FEATURE_UNAVAILABLE_MUTED or VOICECHAT_DISABLED;
+		GameTooltip_SetTitle(tooltip, errMsg, RED_FONT_COLOR);
 	else
 		GameTooltip_SetTitle(tooltip, message);
 	end
 	tooltip:Show();
 end
 
-function VoiceChatHeadsetButtonMixin:ShouldEnable()
-	if self:GetVoiceChannel() or (self:IsCommunityChannel() and C_VoiceChat.CanPlayerUseVoiceChat()) then
+function VoiceChatHeadsetButtonMixin:ShouldShow()
+	if self:GetVoiceChannel() or self:IsCommunityChannel() then
 		return true;
 	end
 
@@ -250,13 +254,27 @@ function VoiceChatHeadsetButtonMixin:ShouldEnable()
 	return false;
 end
 
+function VoiceChatHeadsetButtonMixin:ShouldEnable()
+	if not C_VoiceChat.CanPlayerUseVoiceChat() then
+		return false;
+	end
+
+	if self:IsCommunityChannel() and C_VoiceChat.GetJoinClubVoiceChannelError(self.clubId) ~= nil then
+		return false;
+	end
+
+	return true;
+end
+
 function VoiceChatHeadsetButtonMixin:Update()
-	if self:ShouldEnable() then
+	if self:ShouldShow() then
 		self:SetShown(true);
+		self:SetEnabled(self:ShouldEnable());
 
 		local isActive = self:IsVoiceActive();
 		local atlas = isActive and "voicechat-channellist-icon-headphone-on" or "voicechat-channellist-icon-headphone-off";
 		self:SetNormalAtlas(atlas);
+		self:SetDisabledAtlas(atlas);
 		self:SetHighlightAtlas(atlas);
 
 		if GameTooltip:GetOwner() == self then

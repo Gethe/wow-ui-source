@@ -299,15 +299,17 @@ function DressUpFrame_Show(frame)
 		
 		local sheatheWeapons = false;
 		local autoDress = true;
+		local hideWeapons = false;
 		local itemModifiedAppearanceIDs = nil;
-		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
+		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons);
 	end
 end
 
 function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
 	local sheatheWeapons = false;
 	local autoDress = true;
-	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
+	local hideWeapons = false;
+	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons);
 end
 
 function DressUpItemTransmogInfo(itemTransmogInfo)
@@ -601,7 +603,6 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 		if C_TransmogCollection.PlayerKnowsSource(self.transmogID) then
 			self:GetParent():SetMousedOverFrame(self);
 			self:RefreshAppearanceTooltip();
-			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 		else
 			local nameColor = self.item:GetItemQualityColor().color;
 			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
@@ -662,6 +663,8 @@ function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
 	local slotName = TransmogUtil.GetSlotName(self.slotID);
 	local subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]);
 	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString);
+	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+	GameTooltip:Show();
 end
 
 function DressUpOutfitDetailsSlotMixin:SetUp(slotID, transmogInfo, field)

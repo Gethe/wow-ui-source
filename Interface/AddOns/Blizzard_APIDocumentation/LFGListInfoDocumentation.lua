@@ -188,7 +188,7 @@ local LFGListInfo =
 			Arguments =
 			{
 				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = false },
-				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
+				{ Name = "activityInfo", Type = "GroupFinderActivityInfo", Nilable = false },
 			},
 
 			Returns =
@@ -499,6 +499,7 @@ local LFGListInfo =
 				{ Name = "isRatedPvpActivity", Type = "bool", Nilable = false },
 				{ Name = "isCurrentRaidActivity", Type = "bool", Nilable = false },
 				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
+				{ Name = "isMythicActivity", Type = "bool", Nilable = false },
 			},
 		},
 		{

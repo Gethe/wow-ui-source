@@ -188,6 +188,9 @@ function GMChatStatusFrame_OnLoad(self)
 
 	self:SetWidth(math.max(self.TitleText:GetWidth(), self.SubtitleText:GetWidth()) + 50);
 	self:SetHeight(self.TitleText:GetHeight() + self.SubtitleText:GetHeight() + 20);
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self.NineSlice:SetCenterColor(bgR, bgG, bgB, 1);
 end
 
 function GMChatStatusFrame_OnClick()

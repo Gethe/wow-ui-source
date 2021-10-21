@@ -595,7 +595,7 @@ end
 local numChargeCooldowns = 0;
 local function CreateChargeCooldownFrame(parent)
 	numChargeCooldowns = numChargeCooldowns + 1;
-	cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
+	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
 

@@ -243,7 +243,7 @@ NineSliceLayouts =
 		["BottomEdge"] = { atlas = "_GMChat-NineSlice-EdgeBottom" },
 		["LeftEdge"] = { atlas = "!GMChat-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!GMChat-NineSlice-EdgeRight" },
-		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -2, y = 2, x1 = 2, y1 = -2 },
 	};
 
 	TooltipDefaultLayout =

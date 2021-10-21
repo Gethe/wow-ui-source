@@ -397,7 +397,7 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		UpdateMicroButtons();
 	elseif ( event == "INITIAL_CLUBS_LOADED" ) then
 		self:UpdateNotificationIcon(GuildMicroButton);
-		previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
+		local previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
 		DISPLAYED_COMMUNITIES_INVITATIONS = {};
 		local invitations = C_Club.GetInvitationsForSelf();
 		for i, invitation in ipairs(invitations) do

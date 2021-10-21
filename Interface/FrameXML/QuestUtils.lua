@@ -461,6 +461,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 		else
 			-- we want to do an abbreviated item description
 			local name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(1, questID);
+			local text;
 			if numItems > 1 then
 				text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(numItems), name);
 			elseif texture and name then

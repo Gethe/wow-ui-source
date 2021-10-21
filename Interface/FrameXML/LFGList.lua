@@ -57,17 +57,6 @@ LFG_LIST_GROUP_DATA_ATLASES = {
 	DAMAGER = "groupfinder-icon-role-large-dps",
 };
 
-local pvpPlaystyleStrings = {
-	[Enum.LfgEntryPlaystyle.Standard] = GROUP_FINDER_PVP_PLAYSTYLE1,
-	[Enum.LfgEntryPlaystyle.Casual] = GROUP_FINDER_PVP_PLAYSTYLE3,
-	[Enum.LfgEntryPlaystyle.Hardcore] = GROUP_FINDER_PVP_PLAYSTYLE3,
-}
-
-local pvePlaystyleStrings = {
-	[Enum.LfgEntryPlaystyle.Standard] = GROUP_FINDER_PVE_PLAYSTYLE1,
-	[Enum.LfgEntryPlaystyle.Casual] = GROUP_FINDER_PVE_PLAYSTYLE2,
-	[Enum.LfgEntryPlaystyle.Hardcore] = GROUP_FINDER_PVE_PLAYSTYLE3,
-}
 --Fill out classes
 for i=1, #CLASS_SORT_ORDER do
 	LFG_LIST_GROUP_DATA_ATLASES[CLASS_SORT_ORDER[i]] = "groupfinder-icon-class-"..string.lower(CLASS_SORT_ORDER[i]);
@@ -725,7 +714,12 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	UIDropDownMenu_SetText(self.GroupDropDown, groupName or activityInfo.shortName);
 	self.ActivityDropDown:SetShown(groupName and not categoryInfo.autoChooseActivity);
 	self.GroupDropDown:SetShown(not categoryInfo.autoChooseActivity);
-	local shouldShowPlayStyleDropdown = (categoryInfo.showPlaystyleDropdown) and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity); 
+	
+	local shouldShowPlayStyleDropdown = (categoryInfo.showPlaystyleDropdown) and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity or activityInfo.isMythicActivity); 
+	if(shouldShowPlayStyleDropdown) then 
+		LFGListEntryCreation_OnPlayStyleSelected(self, self.PlayStyleDropdown, self.selectedPlaystyle or Enum.LfgEntryPlaystyle.Standard);
+	end	
+
 	self.PlayStyleDropdown:SetShown(shouldShowPlayStyleDropdown);
 	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
 	if(not shouldShowPlayStyleDropdown)  then 
@@ -743,7 +737,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 
 	self.NameLabel:ClearAllPoints(); 
 	if (not self.ActivityDropDown:IsShown() and not self.GroupDropDown:IsShown()) then
-		self.NameLabel:SetPoint("TOPLEFT", 20, -80);
+		self.NameLabel:SetPoint("TOPLEFT", 20, -82);
 	else 
 		self.NameLabel:SetPoint("TOPLEFT", 20, -120);
 	end 
@@ -761,11 +755,11 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 		self.ItemLevel:SetPoint("TOPLEFT", self.PVPRating, "BOTTOMLEFT", 0, -3);
 		self.PvpItemLevel:SetPoint("TOPLEFT", self.PVPRating, "BOTTOMLEFT", 0, -3);
 	elseif(self.PlayStyleDropdown:IsShown()) then 
-		self.ItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -5, -15);
-		self.PvpItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -5, -15);
+		self.ItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -1, -15);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -1, -15);
 	else 
-		self.ItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -5, -15);
-		self.PvpItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -5, -15);
+		self.ItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -6, -19);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -6, -19);
 	end
 	if(self.ItemLevel:IsShown()) then 
 		LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
@@ -933,42 +927,42 @@ function LFGListEntryCreation_SetupPlayStyleDropDown(self, dropdown, info)
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
 
 	if (activityInfo.isRatedPvpActivity) then 
-		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Standard, activityInfo.isRatedPvpActivity);
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Standard, activityInfo);
 		info.value = Enum.LfgEntryPlaystyle.Standard;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Standard); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text =  C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Casual, activityInfo.isRatedPvpActivity);
+		info.text =  C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Casual, activityInfo);
 		info.value = Enum.LfgEntryPlaystyle.Casual;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Casual); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Hardcore, activityInfo.isRatedPvpActivity);
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Hardcore, activityInfo);
 		info.value = Enum.LfgEntryPlaystyle.Hardcore;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Hardcore); end;  
 		UIDropDownMenu_AddButton(info);
 	else
-		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Standard, activityInfo.isRatedPvpActivity);
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Standard, activityInfo);
 		info.value = Enum.LfgEntryPlaystyle.Standard;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Standard); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Casual, activityInfo.isRatedPvpActivity);
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Casual, activityInfo);
 		info.value = Enum.LfgEntryPlaystyle.Casual;
 		info.checked = false;
 		info.isRadio = true;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Casual); end;  
 		UIDropDownMenu_AddButton(info);
 
-		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Hardcore, activityInfo.isRatedPvpActivity);
+		info.text = C_LFGList.GetPlaystyleString(Enum.LfgEntryPlaystyle.Hardcore, activityInfo);
 		info.value = Enum.LfgEntryPlaystyle.Hardcore;
 		info.func = function() LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, Enum.LfgEntryPlaystyle.Hardcore); end;  
 		info.checked = false;
@@ -976,11 +970,19 @@ function LFGListEntryCreation_SetupPlayStyleDropDown(self, dropdown, info)
 		UIDropDownMenu_AddButton(info);
 	end 
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(self.selectedCategory);
-	local shouldShowPlayStyleDropdown = categoryInfo.showPlaystyleDropdown and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity); 
+	local shouldShowPlayStyleDropdown = categoryInfo.showPlaystyleDropdown and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity or activityInfo.isMythicActivity); 
 
 	dropdown:SetShown(shouldShowPlayStyleDropdown);
-	self.PlayStyleLabel:SetShown(showPlayStyleDropdown or not shouldHidePlayStyleDropdown);
-	local labelText = activityInfo.isRatedPvpActivity and LFG_PLAYSTYLE_LABEL_PVP or LFG_PLAYSTYLE_LABEL_PVE;
+	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
+	local labelText;
+
+	if(activityInfo.isRatedPvpActivity) then
+		labelText = LFG_PLAYSTYLE_LABEL_PVP
+	elseif (activityInfo.isMythicPlusActivity) then 
+		labelText = LFG_PLAYSTYLE_LABEL_PVE;
+	else 
+		labelText = LFG_PLAYSTYLE_LABEL_PVE_MYTHICZERO;
+	end 
 	self.PlayStyleLabel:SetText(labelText);
 end
 
@@ -996,7 +998,7 @@ function LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, playstyle)
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
 	self.selectedPlaystyle = playstyle;
 	UIDropDownMenu_SetSelectedValue(dropdown, playstyle); 
-	UIDropDownMenu_SetText(dropdown, C_LFGList.GetPlaystyleString(playstyle, activityInfo.isRatedPvpActivity));
+	UIDropDownMenu_SetText(dropdown, C_LFGList.GetPlaystyleString(playstyle, activityInfo));
 	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
 
@@ -1167,7 +1169,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		self.MythicPlusRating.EditBox:SetText(activeEntryInfo.requiredDungeonScore or "" );
 		self.PVPRating.EditBox:SetText(activeEntryInfo.requiredPvpRating or "" )
 		self.PrivateGroup.CheckButton:SetChecked(activeEntryInfo.privateGroup);
-		if(self.MythicPlusRating:IsShown() or self.PVPRating:IsShown()) then
+		if(self.PlayStyleDropdown:IsShown()) then
 			LFGListEntryCreation_OnPlayStyleSelected(self, self.PlayStyleDropdown, activeEntryInfo.playstyle);
 		end 
 
@@ -3486,11 +3488,8 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	tooltip:AddLine(activityName);
 
 	if (searchResultInfo.playstyle > 0) then 
-		if(activityInfo.isMythicPlusActivity) then 
-			GameTooltip_AddColoredLine(tooltip, pvePlaystyleStrings[searchResultInfo.playstyle], GREEN_FONT_COLOR); 
-		elseif(activityInfo.isRatedPvpActivity) then 
-			GameTooltip_AddColoredLine(tooltip, pvpPlaystyleStrings[searchResultInfo.playstyle], GREEN_FONT_COLOR); 
-		end 
+		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
+		GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
 	end		
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
 		searchResultInfo.comment = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
@@ -3721,7 +3720,7 @@ function LFGEditBoxMixin:OnShow()
 		self.LockButton:Hide();
 	else 
 		self:SetEnabled(false);
-		self.LockButton:Show();
+		self.LockButton:SetShown(not self:GetParent().hideLockButton);
 	end
 	self.editBoxEnabled = self:IsEnabled(); 
 end		
