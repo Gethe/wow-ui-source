@@ -3,7 +3,7 @@
 
 	<Script file="AlertFrameIntrinsic.lua"/>
 
-	<Button name="ContainedAlertFrame" secureMixin="ContainedAlertFrameMixin" intrinsic="true">
+	<Button name="ContainedAlertFrame" mixin="ContainedAlertFrameMixin" intrinsic="true">
 		<Scripts>
 			<OnShow method="OnPostShow" intrinsicOrder="postcall"/>
 			<OnHide method="OnPostHide" intrinsicOrder="postcall"/>

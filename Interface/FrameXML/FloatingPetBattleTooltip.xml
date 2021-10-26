@@ -120,7 +120,7 @@ UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="BattlePetTooltip_OnLoad"/>
+			<OnLoad function="BattlePetTooltip_OnLoad" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 	

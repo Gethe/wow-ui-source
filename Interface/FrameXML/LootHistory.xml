@@ -299,7 +299,7 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="LootHistoryFrame_OnLoad"/>
+			<OnLoad function="LootHistoryFrame_OnLoad" inherit="prepend"/>
 			<OnEvent function="LootHistoryFrame_OnEvent"/>
 			<OnHide function="LootHistoryFrame_OnHide"/>
 		</Scripts>

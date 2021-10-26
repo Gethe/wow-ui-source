@@ -766,6 +766,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	else 
 		LFGListRequirement_Validate(self.PvpItemLevel, self.PvpItemLevel.EditBox:GetText());
 	end 
+	LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo);
 	LFGListEntryCreation_UpdateValidState(self);
 	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
@@ -976,6 +977,14 @@ function LFGListEntryCreation_SetupPlayStyleDropDown(self, dropdown, info)
 	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
 	local labelText;
 
+	LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo);
+end
+
+function LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo) 
+	if(not activityInfo) then 
+		return; 
+	end 
+	local labelText;
 	if(activityInfo.isRatedPvpActivity) then
 		labelText = LFG_PLAYSTYLE_LABEL_PVP
 	elseif (activityInfo.isMythicPlusActivity) then 
@@ -984,7 +993,7 @@ function LFGListEntryCreation_SetupPlayStyleDropDown(self, dropdown, info)
 		labelText = LFG_PLAYSTYLE_LABEL_PVE_MYTHICZERO;
 	end 
 	self.PlayStyleLabel:SetText(labelText);
-end
+end		
 
 function LFGListEntryCreation_OnActivitySelected(self, activityID, buttonType)
 	if ( buttonType == "activity" ) then
@@ -1082,7 +1091,7 @@ function LFGListEntryCreation_UpdateValidState(self)
 	local errorText;
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity)
 	local maxNumPlayers = activityInfo and  activityInfo.maxNumPlayers or 0; 
-	local mythicPlusDisableActivity = not C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedActivity) and (activityInfo.isMythicPlusActivity and not C_MythicPlus.GetOwnedKeystoneLevel());
+	local mythicPlusDisableActivity = not C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedActivity) and (activityInfo.isMythicPlusActivity and not C_LFGList.GetKeystoneForActivity(self.selectedActivity));
 	if ( maxNumPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxNumPlayers ) then
 		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxNumPlayers);
 	elseif (mythicPlusDisableActivity) then 
@@ -1126,8 +1135,8 @@ function LFGListEntryCreation_SetTitleFromActivityInfo(self)
 	if(not self.selectedActivity or not self.selectedGroup or not self.selectedCategory or activeEntryInfo) then 
 		return; 
 	end
-
-	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity); 
+	local activityID = activeEntryInfo and activeEntryInfo.activityID or (self.selectedActivity or 0);
+	local activityInfo =  C_LFGList.GetActivityInfoTable(activityID); 
 	if((activityInfo and activityInfo.isMythicPlusActivity) or not C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedActivity)) then 
 		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle);
 	end
@@ -1181,9 +1190,17 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		self.Name:SetEnabled(isAccountSecured);
 		self.Description.EditBox.Instructions:SetText(descInstructions or DESCRIPTION_OF_YOUR_GROUP);
 		local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity); 
-		if(activityInfo and activityInfo.isMythicPlusActivity) then 
-			local activityID, groupID = C_LFGList.GetOwnedKeystoneActivityAndGroup(); 
-			LFGListEntryCreation_OnGroupSelected(self, groupID, "group");
+
+		if(activityInfo and self.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS) then 
+			local activityID, groupID = C_LFGList.GetOwnedKeystoneActivityAndGroupAndLevel(); --Prioritize regular keystones
+			if(activityID) then 
+				LFGListEntryCreation_Select(self, self.selectedFilters, self.selectedCategory, groupID, activityID);
+			else 
+				local activityID, groupID = C_LFGList.GetOwnedKeystoneActivityAndGroupAndLevel(true);  -- Check for a timewalking keystone. 
+				if(activityID) then 
+					LFGListEntryCreation_Select(self, self.selectedFilters, self.selectedCategory, groupID, activityID);
+				end 
+			end 
 		end 	
 	end
 end

@@ -1733,7 +1733,7 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(transmogLocation, category, 
 				local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = self:GetActiveSlotInfo();
 				if ( selectedSourceID ~= Constants.Transmog.NoTransmogID ) then
 					category = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
-					if not self:IsValidWeaponCategoryForSlot(category) then
+					if category and not self:IsValidWeaponCategoryForSlot(category) then
 						category = nil;
 					end
 				end

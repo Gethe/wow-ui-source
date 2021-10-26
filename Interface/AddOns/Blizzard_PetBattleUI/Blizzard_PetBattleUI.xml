@@ -618,7 +618,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				PetBattleUnitTooltip_OnLoad(self);
 			</OnLoad>
 		</Scripts>

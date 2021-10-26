@@ -109,7 +109,7 @@ UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="SharedPetBattleAbilityTooltip_OnLoad"/>
+			<OnLoad function="SharedPetBattleAbilityTooltip_OnLoad" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 </Ui>

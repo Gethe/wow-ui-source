@@ -158,6 +158,20 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetKeystoneForActivity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLfgCategoryInfo",
 			Type = "Function",
 
@@ -172,13 +186,19 @@ local LFGListInfo =
 			},
 		},
 		{
-			Name = "GetOwnedKeystoneActivityAndGroup",
+			Name = "GetOwnedKeystoneActivityAndGroupAndLevel",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "getTimewalking", Type = "bool", Nilable = false, Default = false },
+			},
 
 			Returns =
 			{
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "groupID", Type = "number", Nilable = false },
+				{ Name = "keystoneLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
