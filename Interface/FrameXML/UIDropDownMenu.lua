@@ -34,7 +34,7 @@ end
 
 UIDropDownMenuDelegate:SetScript("OnAttributeChanged", UIDropDownMenuDelegate_OnAttributeChanged);
 
-function UIDropDownMenu_InitializeHelper (frame)
+function UIDropDownMenu_InitializeHelper(frame)
 	-- This deals with the potentially tainted stuff!
 	if ( frame ~= UIDROPDOWNMENU_OPEN_MENU ) then
 		UIDROPDOWNMENU_MENU_LEVEL = 1;
@@ -290,7 +290,6 @@ function UIDropDownMenu_CreateInfo()
 end
 
 function UIDropDownMenu_CreateFrames(level, index)
-
 	while ( level > UIDROPDOWNMENU_MAXLEVELS ) do
 		UIDROPDOWNMENU_MAXLEVELS = UIDROPDOWNMENU_MAXLEVELS + 1;
 		local newList = CreateFrame("Button", "DropDownList"..UIDROPDOWNMENU_MAXLEVELS, nil, "UIDropDownListTemplate");
@@ -315,11 +314,8 @@ function UIDropDownMenu_CreateFrames(level, index)
 	end
 end
 
-local separatorInfo;
-
 function UIDropDownMenu_AddSeparator(level)
-	if not separatorInfo then
-		separatorInfo =	{
+	local separatorInfo = {
 			hasArrow = false;
 			dist = 0;
 			isTitle = true;
@@ -344,7 +340,6 @@ function UIDropDownMenu_AddSeparator(level)
 				tFitDropDownSizeX = true
 			},
 		};
-	end
 
 	UIDropDownMenu_AddButton(separatorInfo, level);
 end
@@ -742,6 +737,7 @@ function UIDropDownMenu_GetButtonWidth(button)
 
 	return math.max(minWidth, width);
 end
+
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	local maxWidth = 0;
 	local somethingChecked = nil;

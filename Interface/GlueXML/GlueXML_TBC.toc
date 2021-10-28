@@ -29,7 +29,7 @@ GlueCheck.lua
 ..\..\Interface_TBC\GlueXML\Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
-GlueLocalization.xml
+..\..\Interface_TBC\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
 ..\..\Interface_TBC\SharedXML\TextureUtil.lua
 ..\SharedXML\Backdrop.xml

@@ -829,7 +829,7 @@ function AutoQuestWatch_OnUpdate(self, elapsed)
 end
 
 function GetQuestIDFromLogIndex(questIndex)
-	local questID = return select(8, GetQuestLogTitle(questIndex));
+	local questID = select(8, GetQuestLogTitle(questIndex));
 	return questID;
 end
 

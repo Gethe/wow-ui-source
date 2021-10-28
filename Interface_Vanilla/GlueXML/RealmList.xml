@@ -293,7 +293,7 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</Texture>
-								<Texture file="Interface\HelpFrame\HelpFrame-Top">
+								<Texture name="RealmListTopTexture" file="Interface\HelpFrame\HelpFrame-Top">
 									<Size>
 										<AbsDimension x="386" y="256"/>
 									</Size>
@@ -321,7 +321,7 @@
 										<Anchor point="BOTTOMLEFT"/>
 									</Anchors>
 								</Texture>
-								<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+								<Texture name="RealmListBottomTexture" file="Interface\HelpFrame\HelpFrame-Bottom">
 									<Size>
 										<AbsDimension x="386" y="256"/>
 									</Size>

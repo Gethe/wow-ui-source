@@ -15,12 +15,18 @@ end
 
 function RealmList_OnEvent(self, event, ...)
 	if ( event == "QUEUE_IS_FULL" ) then
+		local realmName, characterCapReached = ...;
 		if( self:IsVisible() ) then
-			RealmList_ShowQueueIsFull(...)
+			if( characterCapReached ) then
+				RealmList_ShowCharacterCapReached();
+			else
+				RealmList_ShowQueueIsFull(realmName);
+			end
 		else
 			-- Queue the popup for the next time we show ourselves
 			self.showQueueIsFull = true;
-			self.queueIsFullRealmName = ...;
+			self.queueIsFullRealmName = realmName;
+			self.characterCapReached = characterCapReached;
 		end
 	end
 end
@@ -307,9 +313,14 @@ end
 
 function RealmList_OnShow(self)
 	if ( self.showQueueIsFull ) then
-		RealmList_ShowQueueIsFull(self.queueIsFullRealmName);
+		if ( self.characterCapReached ) then
+			RealmList_ShowCharacterCapReached();
+		else
+			RealmList_ShowQueueIsFull(self.queueIsFullRealmName);
+		end
 		self.showQueueIsFull = false;
 		self.queueIsFullRealmName = nil;
+		self.characterCapReached = false;
 	end
 
 	local name = GetServerName();
@@ -473,6 +484,10 @@ function RealmList_ShowQueueIsFull(realmName)
 	GlueDialog_Show("OKAY_MUST_ACCEPT", dialogString);
 end
 
+function RealmList_ShowCharacterCapReached()
+	GlueDialog_Show("OKAY_MUST_ACCEPT", NAME_RESERVATION_CHARACTER_CAP_REACHED);
+end
+
 function RealmListUtility_SortRealmsCB(realm1, realm2)
 	for i=1, #REALM_LIST_SORT_ORDERING do
 		local ordering = REALM_LIST_SORT_DEFINITIONS[REALM_LIST_SORT_ORDERING[i].sortBy].func(realm1, realm2);
@@ -510,4 +525,20 @@ function RealmButton_RemoveTooltip(self)
 	if (GlueTooltip_GetOwner(GlueTooltip) == self) then
 		GlueTooltip:Hide();
 	end
+end
+
+function RealmListUtility_ResizeRealmTypeColumn(offsetX, offsetY)
+	local scrollFrame = RealmListScrollFrame;
+	for i=1, #scrollFrame.buttons do
+		local button = scrollFrame.buttons[i];
+		button:SetWidth(button:GetWidth() + offsetX);
+		button.RealmType:SetWidth(button.RealmType:GetWidth() + offsetX);
+	end
+
+	RealmListBackground:SetWidth(RealmListBackground:GetWidth() + offsetX);
+	RealmTypeSort:SetWidth(RealmTypeSort:GetWidth() + offsetX);
+	RealmListHighlight:SetWidth(RealmListHighlight:GetWidth() + offsetX);
+	RealmListTopTexture:SetWidth(RealmListTopTexture:GetWidth() + offsetX);
+	RealmListBottomTexture:SetWidth(RealmListBottomTexture:GetWidth() + offsetX);
+	RealmListScrollFrame:SetPoint("BOTTOMRIGHT", RealmListBackground, "TOPLEFT", RealmListScrollFrame:GetWidth() + offsetX, -RealmListScrollFrame:GetHeight());
 end

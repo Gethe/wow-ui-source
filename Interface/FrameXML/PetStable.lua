@@ -213,6 +213,7 @@ function PetStable_Update()
 end
 
 function PetStable_NoPetsAllowed()
+	local button;
 	for i=1, NUM_PET_STABLE_SLOTS do
 		button = _G["PetStableStabledPet"..i];
 		button.tooltip = EMPTY_STABLE_SLOT;
