@@ -359,7 +359,7 @@
 			<Frame parentKey="ConduitList" inherits="ConduitListTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.Background"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" y="35"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="ActivateSoulbindButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="SOULBIND_ACTIVATE_BUTTON">

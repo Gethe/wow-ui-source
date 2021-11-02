@@ -167,7 +167,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="EventTrace" mixin="EventTracePanelMixin" inherits="ButtonFrameTemplate" parent="UIParent" movable="true" resizable="true" enableMouse="true" clampedToScreen="true">
+	<Frame name="EventTrace" mixin="EventTracePanelMixin" inherits="ButtonFrameTemplate" parent="UIParent" toplevel="true" movable="true" resizable="true" enableMouse="true" clampedToScreen="true">
 		<Size x="600" y="400"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

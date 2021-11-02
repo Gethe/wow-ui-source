@@ -136,15 +136,7 @@ function RuneforgeCreateFrameMixin:UpdateCost()
 			end
 		end
 
-		local initFunction = nil;
-		local initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Cost.Currencies, "TOPLEFT");
-		local stride = #currenciesCost;
-		local paddingX = 10;
-		local paddingY = nil;
-		local fixedWidth = 62;
-		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, paddingX, paddingY, fixedWidth);
-		local tooltipAnchor = "ANCHOR_TOP";
-		self.Cost.Currencies:SetCurrencies(currenciesCost, initFunction, initialAnchor, layout, tooltipAnchor);
+		RuneforgeUtil.SetCurrencyCosts(self.Cost.Currencies, currenciesCost);
 		self.Cost:MarkDirty();
 	end
 end

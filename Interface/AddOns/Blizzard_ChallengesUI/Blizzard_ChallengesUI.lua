@@ -832,10 +832,10 @@ end
 
 function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
     if (event == "CHALLENGE_MODE_COMPLETED") then
-        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun, oldDungeonScore, newDungeonScore, isAffixRecord, isMapRecord, primaryAffix, upgradeMembers = C_ChallengeMode.GetCompletionInfo();
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun, oldDungeonScore, newDungeonScore, isAffixRecord, isMapRecord, primaryAffix, isEligibleForScore, upgradeMembers = C_ChallengeMode.GetCompletionInfo();
 
 		if not practiceRun then
-			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels, isMapRecord = isMapRecord, isAffixRecord = isAffixRecord, primaryAffix = primaryAffix, upgradeMembers = upgradeMembers });
+			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels, isMapRecord = isMapRecord, isAffixRecord = isAffixRecord, primaryAffix = primaryAffix, isEligibleForScore = isEligibleForScore, upgradeMembers = upgradeMembers });
 		end
     end
 end
@@ -914,12 +914,25 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		end
 	end		
 
-	local gainedScore = data.newDungeonScore - data.oldDungeonScore;
-	local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
-	if (not color) then 
-		color = HIGHLIGHT_FONT_COLOR; 
+	if (data.isEligibleForScore) then
+		local gainedScore = data.newDungeonScore - data.oldDungeonScore;
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
+		if (not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end
+		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
+		
+		if(gainedScore > 0) then 
+			local chatString;
+			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then 
+				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore, data.keystoneUpgradeLevels);
+			else 
+				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore);
+			end
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
+		end
 	end
-	self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
 	local sortedUnitTokens = self:GetSortedPartyMembers();
 
     self:Show();
@@ -930,15 +943,17 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         self.PartyMembers[i]:SetUp(sortedUnitTokens[i]);
     end
 
-
-    C_Timer.After(self.timeToHold, function()
-        self:PerformAnimOut();
-    end);
+	self.AnimOutTimer = C_Timer.NewTimer(self.timeToHold, GenerateClosure(self.PerformAnimOut, self));
 end
 
 function ChallengeModeCompleteBannerMixin:StopBanner()
-    self.AnimIn:Stop();
-    self:Hide();
+	if self.AnimOutTimer then
+		self.AnimOutTimer:Cancel();
+		self.AnimOutTimer = nil;
+	end
+
+	self.AnimIn:Stop();
+	self:Hide();
 end
 
 function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
@@ -1054,3 +1069,13 @@ end
 function DungeonScoreInfoMixin:OnLeave()
 	GameTooltip:Hide(); 
 end 
+
+function DungeonScoreInfoMixin:OnClick() 
+	if( IsModifiedClick("CHATLINK")) then
+		local dungeonScore = C_ChallengeMode.GetOverallDungeonScore(); 
+		local link = GetDungeonScoreLink(dungeonScore, UnitName("player"));
+		if not ChatEdit_InsertLink(link) then
+			ChatFrame_OpenChat(link);
+		end
+	end 
+end		

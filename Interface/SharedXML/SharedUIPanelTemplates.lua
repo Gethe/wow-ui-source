@@ -1730,6 +1730,76 @@ local function GetFailedReqSelectionTextFontColor(selectionData, isSelected)
 	end
 end
 
+function SelectionPopoutDetailsMixin:GetFontColors(selectionData, isSelected, hasAFailedReq)
+	if self.selectable then
+		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
+		local fontColor = fontColorFunction(selectionData, isSelected);
+		local showAsNew = (selectionData.isNew and self.selectable);
+		if showAsNew then
+			return fontColor, HIGHLIGHT_FONT_COLOR;
+		else
+			return fontColor, fontColor;
+		end
+	else
+		return NORMAL_FONT_COLOR, NORMAL_FONT_COLOR;
+	end
+end
+
+function SelectionPopoutDetailsMixin:UpdateFontColors(selectionData, isSelected, hasAFailedReq)
+	local nameColor, numberColor = self:GetFontColors(selectionData, isSelected, hasAFailedReq);
+	self.SelectionName:SetTextColor(nameColor:GetRGB());
+	self.SelectionNumber:SetTextColor(numberColor:GetRGB());
+end
+
+local function startsWithOne(index)
+	local indexString = tostring(index);
+	return indexString:sub(1, 1) == "1";
+end
+
+function SelectionPopoutDetailsMixin:SetShowAsNew(showAsNew)
+	if showAsNew then
+		self.SelectionNumber:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
+
+		local halfStringWidth = self.SelectionNumber:GetStringWidth() / 2;
+		local extraOffset = startsWithOne(self.index) and 1 or 0;
+		self.NewGlow:SetPoint("CENTER", self.SelectionNumber, "LEFT", halfStringWidth + extraOffset, -2);
+		self.SelectionNumberBG:Show();
+		self.NewGlow:Show();
+	else
+		self.SelectionNumber:SetShadowColor(BLACK_FONT_COLOR:GetRGBA());
+		self.SelectionNumberBG:Hide();
+		self.NewGlow:Hide();
+	end
+end
+
+function SelectionPopoutDetailsMixin:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, hasColors)
+	self:UpdateFontColors(selectionData, isSelected, hasAFailedReq);
+
+	self.SelectionNumber:SetText(self.index);
+	self.SelectionNumberBG:SetText(self.index);
+
+	if hasColors then
+		self.SelectionName:Hide();
+		self.SelectionNumber:SetWidth(25);
+		self.SelectionNumberBG:SetWidth(25);
+	elseif selectionData.name ~= "" then
+		self.SelectionName:Show();
+		self.SelectionName:SetWidth(0);
+		self.SelectionName:SetText(selectionData.name);
+		self.SelectionNumber:SetWidth(25);
+		self.SelectionNumberBG:SetWidth(25);
+	else
+		self.SelectionName:Hide();
+		self.SelectionNumber:SetWidth(0);
+		self.SelectionNumberBG:SetWidth(0);
+	end
+
+	self.SelectionNumber:SetShown(not hideNumber);
+
+	local showAsNew = (self.selectable and not hideNumber and selectionData.isNew);
+	self:SetShowAsNew(showAsNew);
+end
+
 function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
 	self.name = selectionData.name;
 	self.index = index;
@@ -1751,48 +1821,32 @@ function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelect
 		self.ColorSwatch1:Show();
 		self.ColorSwatch1Glow:Show();
 		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
-
-		self.SelectionName:Hide();
-		self.SelectionNumber:SetWidth(25);
 	elseif selectionData.name ~= "" then
 		self.ColorSwatch1:Hide();
 		self.ColorSwatch1Glow:Hide();
 		self.ColorSwatch2:Hide();
 		self.ColorSwatch2Glow:Hide();
-		self.SelectionName:Show();
-		self.SelectionName:SetWidth(0);
-		self.SelectionName:SetText(selectionData.name);
-		self.SelectionNumber:SetWidth(25);
 	else
 		self.ColorSwatch1:Hide();
 		self.ColorSwatch1Glow:Hide();
 		self.ColorSwatch2:Hide();
 		self.ColorSwatch2Glow:Hide();
-		self.SelectionName:Hide();
-		self.SelectionNumber:SetWidth(0);
 	end
 
-	if isSelected ~= nil then
-		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
-		local fontColor = fontColorFunction(selectionData, isSelected);
-		self.SelectionNumber:SetTextColor(fontColor:GetRGB());
-		self.SelectionName:SetTextColor(fontColor:GetRGB());
-		self.ColorSelected:SetShown(color1 and isSelected);
-	end
+	self.ColorSelected:SetShown(self.selectable and color1 and isSelected);
 
-	local hideNumber = ((isSelected == nil) and (color1 or (selectionData.name ~= "")));
+	local hideNumber = (not self.selectable and (color1 or (selectionData.name ~= "")));
 	if hideNumber then
-		self.SelectionNumber:Hide();
 		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
 		self.ColorSwatch1:SetPoint("LEFT", self, "LEFT", 0, 0);
 		self.ColorSwatch2:SetPoint("LEFT", self, "LEFT", 18, -2);
 	else
-		self.SelectionNumber:Show();
-		self.SelectionNumber:SetText(index);
 		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
 		self.ColorSwatch1:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
 		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 18, -2);
 	end
+
+	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
 end
 
 SelectionPopoutMixin = {};
@@ -1818,6 +1872,7 @@ function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, 
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
 	self.popoutHasAFailedReq = hasAFailedReq;
+	self.isNew = selectionData.isNew;
 
 	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq);
 	self.SelectionDetails:AdjustWidth(multipleColumns, 116);
@@ -1840,11 +1895,7 @@ end
 function SelectionPopoutEntryMixin:OnLeave()
 	if not self.isSelected then
 		self.HighlightBGTex:SetAlpha(0);
-
-		local fontColorFunction = self.popoutHasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
-		local fontColor = fontColorFunction(self.selectionData, self.isSelected);
-		self.SelectionDetails.SelectionNumber:SetTextColor(fontColor:GetRGB());
-		self.SelectionDetails.SelectionName:SetTextColor(fontColor:GetRGB());
+		self.SelectionDetails:UpdateFontColors(self.selectionData, self.isSelected, self.popoutHasAFailedReq);
 	end
 
 	self.parentButton:OnEntryMouseLeave(self);
@@ -2014,6 +2065,10 @@ function DropDownControlMixin:SetSelectedValue(value, isUserInput)
 	end
 end
 
+function DropDownControlMixin:ClearSelectedValue()
+	self:SetSelectedValue(nil, false);
+end
+
 function DropDownControlMixin:GetSelectedValue()
 	return self.selectedValue;
 end
@@ -2027,6 +2082,10 @@ end
 --   value: a unique value that identifies the option and is passed through to optionSelectedCallback.
 --   text: the text that appears in the dropdown list, and on the dropdown control when an option is selected.
 --   selectedText: an override for text that appears on the dropdown control when an option is selected.
+function DropDownControlMixin:CreateOption(value, text, selectedText)
+    return { value = value, text = text, selectedText = selectedText };
+end
+
 function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
 	self.options = options;
 	self:Initialize();
@@ -2047,6 +2106,10 @@ end
 
 function DropDownControlMixin:AdjustTextPointsOffset(...)
 	self.DropDownMenu.Text:AdjustPointsOffset(...);
+end
+
+function DropDownControlMixin:SetEnabled(enabled)
+	UIDropDownMenu_SetDropDownEnabled(self.DropDownMenu, enabled);
 end
 
 EnumDropDownControlMixin = CreateFromMixins(DropDownControlMixin);
@@ -2077,9 +2140,11 @@ end
 DisabledTooltipButtonMixin = {};
 
 function DisabledTooltipButtonMixin:OnEnter()
-	local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
-	if disabledTooltip ~= nil then
-		GameTooltip_ShowDisabledTooltip(GameTooltip, self, disabledTooltip, disabledTooltipAnchor);
+	if not self:IsEnabled() then
+		local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
+		if disabledTooltip ~= nil then
+			GameTooltip_ShowDisabledTooltip(GameTooltip, self, disabledTooltip, disabledTooltipAnchor);
+		end
 	end
 end
 

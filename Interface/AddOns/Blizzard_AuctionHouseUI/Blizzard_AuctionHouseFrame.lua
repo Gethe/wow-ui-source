@@ -683,6 +683,7 @@ function AuctionHouseFrameMixin:QueryAll(searchContext)
 		C_AuctionHouse.SearchForFavorites(sorts);
 		self:TriggerEvent(AuctionHouseFrameMixin.Event.BrowseSearchStarted);
 		self:SetDisplayMode(AuctionHouseFrameDisplayMode.Buy);
+		self.BrowseResultsFrame:UpdateHeaders();
 	elseif searchContext == AuctionHouseSearchContext.AllAuctions then
 		C_AuctionHouse.QueryOwnedAuctions(sorts);
 	elseif searchContext == AuctionHouseSearchContext.AllBids then
@@ -698,6 +699,7 @@ function AuctionHouseFrameMixin:SendBrowseQuery(searchString, minLevel, maxLevel
 	local browseSearchContext = self:GetCategorySearchContext();
 	self:SendBrowseQueryInternal(browseSearchContext, searchString, minLevel, maxLevel, filtersArray);
 	self:TriggerEvent(AuctionHouseFrameMixin.Event.BrowseSearchStarted);
+	self.BrowseResultsFrame:UpdateHeaders();
 end
 
 function AuctionHouseFrameMixin:SendBrowseQueryInternal(browseSearchContext, searchString, minLevel, maxLevel, filtersArray)

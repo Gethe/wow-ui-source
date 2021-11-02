@@ -121,7 +121,7 @@ function VerticalLargeStoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay
 end
 
 function VerticalLargeStoreCardMixin:ShouldShowIcon(entryInfo)
-	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and not entryInfo.sharedData.overrideBackground;
+	return entryInfo.sharedData.overrideTexture or StoreCardMixin.ShouldShowIcon(self, entryInfo) and not entryInfo.sharedData.overrideBackground;
 end
 
 function VerticalLargeStoreCardMixin:SetupDescription(entryInfo)
@@ -132,7 +132,9 @@ function VerticalLargeStoreCardMixin:SetupDescription(entryInfo)
 	end
 
 	self.ProductName:SetPoint("BOTTOM", self, "CENTER", 0, -41);
-	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -8);
+
+	self.Description:ClearAllPoints();
+	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -10);
 	self.Description:Show();
 
 	if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken then
@@ -173,21 +175,34 @@ function VerticalLargeStoreCardMixin:SetDefaultCardTexture()
 	self.Card:SetAllPoints(self);
 end
 
+function VerticalLargeStoreCardMixin:ShouldModelShowShadows()
+	return false;
+end
+
+function VerticalLargeStoreCardMixin:ShowIcon(displayData)
+	local overrideTexture = displayData.overrideTexture;
+
+	if overrideTexture then
+		self.IconBorder:Hide();
+		self.Icon:SetAtlas(overrideTexture, true);
+		self.Icon:SetPoint("TOPLEFT", 4, -4);
+	else
+		self.Icon:ClearAllPoints();
+		self.Icon:SetSize(63, 63);
+		self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
+	
+		self.IconBorder:ClearAllPoints();
+		self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -5);
+		self.IconBorder:Show();
+	end
+	self.Icon:Show();
+end
+
 function VerticalLargeStoreCardMixin:Layout()
 	local width, height = StoreFrame_GetCellPixelSize("VerticalLargeStoreCardTemplate");
 	self:SetSize(width, height);
 
 	self:SetDefaultCardTexture();
-
-	self.Shadows:ClearAllPoints();
-	self.Shadows:SetPoint("CENTER");
-	
-	self.Icon:ClearAllPoints();
-	self.Icon:SetSize(63, 63);
-	self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
-	
-	self.IconBorder:ClearAllPoints();
-	self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -5);
 	
 	self.CurrentMarketPrice:Hide();
 	
@@ -205,7 +220,7 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
 	
 	self.ProductName:ClearAllPoints();
-	self.ProductName:SetPoint("BOTTOM", 0, 69);
+	self.ProductName:SetPoint("BOTTOM", self, "CENTER", 0, -156);
 	self.ProductName:SetSize(250, 50);
 	self.ProductName:SetFontObject("GameFontNormalLarge");
 	self.ProductName:SetJustifyH("CENTER");
@@ -214,7 +229,9 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 	self.ProductName:SetShadowOffset(1, -1);
 
-	self.Description:ClearAllPoints();
+	self.Description:SetFontObject("GameFontNormalMed1");
+	self.Description:SetWidth(245);
+	self.Description:SetJustifyH("CENTER");
 	self.Description:Hide();
 	
 	self.SelectedTexture:Hide();
@@ -253,9 +270,9 @@ function VerticalLargeStoreCardMixin:Layout()
 	self.Strikethrough:SetPoint("BOTTOMRIGHT", self.NormalPrice, "BOTTOMRIGHT", 0, 0);
 	
 	self.ModelScene:ClearAllPoints();
-	self.ModelScene:SetPoint("TOPLEFT", 3, -5);
-	self.ModelScene:SetPoint("BOTTOMRIGHT", -3, 5);
-	self.ModelScene:SetViewInsets(20, 20, 20, 160);
+	self.ModelScene:SetPoint("TOPLEFT", 6, -5);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -7, 5);
+	self.ModelScene:SetViewInsets(0, 0, 0, 0);
 	
 	self.Magnifier:ClearAllPoints();
 	self.Magnifier:SetSize(31, 35);
@@ -345,14 +362,39 @@ function VerticalLargeStoreCardWithBuyButtonMixin:Layout()
 
 	self.BuyButton:ClearAllPoints();
 	self.BuyButton:SetSize(146, 35);
-	self.BuyButton:SetPoint("BOTTOM", 0, 20);
+	self.BuyButton:SetPoint("BOTTOM", 0, 22);
 
 	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
 	self.PurchasedText:ClearAllPoints();
-	self.PurchasedText:SetPoint("BOTTOM", 0, 20);
+	self.PurchasedText:SetPoint("BOTTOM", 0, 22);
 	self.PurchasedText:Hide();
 
 	self.PurchasedMark:Hide();
+end
+
+--------------------------------------------------
+-- VERTICAL LARGE PAGEABLE STORE CARD WITH A BUY BUTTON MIXIN
+VerticalLargePageableStoreCardWithBuyButtonMixin = CreateFromMixins(VerticalLargeStoreCardWithBuyButtonMixin);
+
+function VerticalLargePageableStoreCardWithBuyButtonMixin:Layout()
+	VerticalLargeStoreCardWithBuyButtonMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("VerticalLargePageableStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+
+	self.ProductName:SetPoint("BOTTOM", self, "CENTER", 0, -138);
+
+	self.Description:ClearAllPoints();
+	self.Description:Hide();
+end
+
+function VerticalLargePageableStoreCardWithBuyButtonMixin:SetDefaultCardTexture()
+	self.Card:SetAtlas("store-card-transmog", true);
+	self.Card:SetTexCoord(0, 1, 0, 1);
+end
+
+function VerticalLargePageableStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)
+	-- do nothing
 end
 
 --------------------------------------------------

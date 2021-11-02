@@ -1683,6 +1683,9 @@ function FCF_Close(frame, fallback)
 	FCF_UnDockFrame(frame);
 	HideUIPanel(frame);
 	_G[frame:GetName().."Tab"]:Hide();
+	if ( GetCVar("chatStyle") == "im" and LAST_ACTIVE_CHAT_EDIT_BOX == frame.editBox ) then
+		ChatEdit_SetLastActiveWindow(DEFAULT_CHAT_FRAME.editBox);
+	end
 	FCF_FlagMinimizedPositionReset(frame);
 	if ( frame.minFrame and frame.minFrame:IsShown() ) then
 		frame.minFrame:Hide();
@@ -2601,6 +2604,12 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 	if ( strsub(event, 1, 9) == "CHAT_MSG_" ) then
 		local chatType = strsub(event, 10);
 		local chatGroup = Chat_GetChatCategory(chatType);
+		local isGM = (select(6, ...) == "GM");
+
+		if ( isGM ) then
+			-- GM messages are handled by the GMChatUI addon
+			return;
+		end
 
 		if ( (chatGroup == "BN_WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))
 			or (chatGroup == "WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))) then

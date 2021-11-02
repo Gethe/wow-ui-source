@@ -65,10 +65,25 @@ do
 		return link, complete;
 	end
 
-	-- These functions return individual criterion data:
+	-- These functions return individual criterion data, but they use a cached :
 	-- Display Text (nil means not to show it to the user)
 	-- IsComplete
 	-- Error state to enter if not complete, if there's no error state, the "request to guide" pane is shown
+
+	local mentorRequirements;
+	local function GetMentorRequirements()
+		if not mentorRequirements then
+			local achievementIDs, optionalAchievementIDs, optionalCompleteAtLeastCount = C_PlayerMentorship.GetMentorRequirements();
+			mentorRequirements = { achievementIDs = achievementIDs, optionalAchievementIDs = optionalAchievementIDs, optionalCompleteAtLeastCount = optionalCompleteAtLeastCount, };
+		end
+
+		return mentorRequirements;
+	end
+
+	local function MarkMentorRequirementsDirty()
+		mentorRequirements = nil;
+	end
+
 	local criteria =
 	{
 		function()
@@ -77,16 +92,17 @@ do
 		end,
 
 		function()
-			local link, completed = MakeAchievementLink(978);
+			local requirements = GetMentorRequirements();
+			local link, completed = MakeAchievementLink(requirements.achievementIDs[1]);
 			return NPEV2_CHAT_GUIDE_FRAME_ACHIEVEMENT_EARNED:format(link), completed;
 		end,
 
 		function()
-			local achievements = C_PlayerMentorship.GetMentorOptionalAchievementIDs();
+			local requirements = GetMentorRequirements();
 			local achievementStrings = {};
-			local mustEarnAtLeast = 2;
+			local mustEarnAtLeast = requirements.optionalCompleteAtLeastCount;
 			local completedCount = 0;
-			for index, achievementID in ipairs(achievements) do
+			for index, achievementID in ipairs(requirements.optionalAchievementIDs) do
 				local link, completed = MakeAchievementLink(achievementID);
 
 				if completed or not AchievementUtil.IsFeatOfStrength(achievementID) then
@@ -96,6 +112,10 @@ do
 				if completed  then
 					completedCount = completedCount + 1;
 				end
+			end
+
+			if completedCount == 0 then
+				return nil, true;
 			end
 
 			achievementStrings = table.concat(achievementStrings, "\n");
@@ -117,7 +137,9 @@ do
 	};
 
 	local function AddUserCriteria(objectivesFrame)
+		MarkMentorRequirementsDirty();
 		objectivesFrame:ClearCriteria();
+
 		for index, criterion in ipairs(criteria) do
 			local text, isComplete = criterion();
 			if text then
@@ -129,6 +151,8 @@ do
 	end
 
 	local function EvaluateCriteria()
+		MarkMentorRequirementsDirty();
+
 		for index, criterion in ipairs(criteria) do
 			local _, isComplete, errorState = criterion();
 			if not isComplete then

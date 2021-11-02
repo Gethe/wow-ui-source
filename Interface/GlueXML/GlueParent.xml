@@ -23,6 +23,19 @@
 					</Frame>
 				</Frames>
 			</Frame>
+			<Frame parentKey="BlockingFrame" setAllPoints="true" frameStrata="HIGH" frameLevel="10000" hidden="true" enableMouse="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.75"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnKeyDown function="GlueParentBlockingFrame_OnKeyDown"/>
+					<OnMouseWheel function="nop"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GlueParent_OnLoad"/>

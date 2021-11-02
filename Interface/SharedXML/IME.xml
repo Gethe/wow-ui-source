@@ -22,7 +22,7 @@
     </Layers>
   </Frame>
 
-  <Frame name="IMECandidatesFrame" frameStrata="TOOLTIP" hidden="true" parent="UIParent" virtual="false" inherits="TooltipBorderBackdropTemplate">
+  <Frame name="IMECandidatesFrame" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="TooltipBorderBackdropTemplate">
     <Anchors>
       <Anchor point="TOPLEFT"/>
     </Anchors>

@@ -113,6 +113,10 @@ function PlayerChoiceFrameMixin:TryShow()
 	ShowUIPanel(self);
 end
 
+function PlayerChoiceFrameMixin:GetObjectGUID()
+	return self.choiceInfo and self.choiceInfo.objectGUID;
+end
+
 local PLAYER_CHOICE_FRAME_EVENTS = {
 	"PLAYER_ENTERING_WORLD",
 	"PLAYER_DEAD",

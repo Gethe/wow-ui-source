@@ -367,7 +367,8 @@ function LevelUpDisplay_InitPlayerStates(self)
 end
 
 function LevelUpDisplay_BuildCharacterList(self)
-	local name, icon, spellLink = "",nil,nil;
+	local name = "";
+	local icon, spellLink, link;
 	self.unlockList = {};
 
 	for func, stateInfo in pairs(LEVEL_UP_PLAYER_STATE_CHECKS) do

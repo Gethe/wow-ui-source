@@ -2777,8 +2777,8 @@ function CalendarEventDescriptionScrollFrame_OnLoad(self)
 	-- first: resize the scrollbar
 	local scrollBar = _G[self:GetName().."ScrollBar"];
 	scrollBar:ClearAllPoints();
-	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
-	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 0, 10);
+	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -11);
+	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 0, 11);
 	-- second: reposition the up and down buttons
 	_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
 	_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);

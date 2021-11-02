@@ -792,7 +792,7 @@ end
 function AdventuresPuckHealthBarMixin:UpdateHealthBar()
 	if self.health and self.maxHealth and self.maxHealth ~= 0 then
 		local healthPercent = math.min(self.health / self.maxHealth, 1);
-		local healthBarWidth = self.Background:GetWidth();
+		local healthBarWidth = self.Background:GetWidth() + HealthBarBorderSize;
 		self.Health:SetPoint("RIGHT", self.Background, "LEFT", healthBarWidth * healthPercent, 0);
 	end
 end

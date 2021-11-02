@@ -562,7 +562,6 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 			local truncatedLine = string.format(color.."+%d"..FONT_COLOR_CODE_CLOSE, 1 + #self.displayedQueues - MAX_NUM_DISPLAYED_QUEUES);
 			queueObj:SetText(truncatedLine);
 			queueObj:Show();
-			truncationLine = queueObj;
 			break;
 		end
 

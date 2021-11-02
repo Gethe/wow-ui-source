@@ -342,11 +342,9 @@ function Chat_GetCommunitiesChannel(clubId, streamId)
 	for i = 1, MAX_WOW_CHAT_CHANNELS do
 		local channelID, channelName = GetChannelName(i);
 		if channelName and channelName == communitiesChannelName then
-			return "CHANNEL"..i;
+			return "CHANNEL"..i, i;
 		end
 	end
-
-	return nil;
 end
 
 function Chat_GetCommunitiesChannelColor(clubId, streamId)
@@ -487,7 +485,6 @@ EMOTE60_TOKEN = "KNEEL";
 EMOTE61_TOKEN = "LAUGH";
 EMOTE62_TOKEN = "LAYDOWN";
 EMOTE63_TOKEN = "MASSAGE";
-EMOTE64_TOKEN = "MOAN";
 EMOTE65_TOKEN = "MOON";
 EMOTE66_TOKEN = "MOURN";
 EMOTE67_TOKEN = "NO";
@@ -505,7 +502,6 @@ EMOTE78_TOKEN = "RUDE";
 EMOTE79_TOKEN = "SALUTE";
 EMOTE80_TOKEN = "SCRATCH";
 EMOTE81_TOKEN = "SEXY";
-EMOTE82_TOKEN = "SHAKE";
 EMOTE83_TOKEN = "SHOUT";
 EMOTE84_TOKEN = "SHRUG";
 EMOTE85_TOKEN = "SHY";
@@ -559,7 +555,6 @@ EMOTE132_TOKEN = "SMIRK";
 EMOTE133_TOKEN = "SNIFF";
 EMOTE134_TOKEN = "SNUB";
 EMOTE135_TOKEN = "SOOTHE";
-EMOTE136_TOKEN = "STINK";
 EMOTE137_TOKEN = "TAUNT";
 EMOTE138_TOKEN = "TEASE";
 EMOTE139_TOKEN = "THIRSTY";
@@ -681,9 +676,13 @@ EMOTE517_TOKEN = "WHOA"
 EMOTE518_TOKEN = "OOPS"
 EMOTE521_TOKEN = "MEOW"
 EMOTE522_TOKEN = "BOOP"
+EMOTE623_TOKEN = "WINCE"
+EMOTE624_TOKEN = "HUZZAH"
+EMOTE625_TOKEN = "IMPRESSED"
+EMOTE626_TOKEN = "MAGNIFICENT"
 
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 522;
+local MAXEMOTEINDEX = 626;
 
 
 ICON_LIST = {
@@ -1170,36 +1169,6 @@ function SecureCmdUseItem(name, bag, slot, target)
 	else
 		UseItemByName(name, target);
 	end
-end
-
---These functions are terrible, but they support legacy slash commands.
-function ValueToBoolean(valueToCheck, defaultValue, defaultReturn)
-	if ( type(valueToCheck) == "nil" ) then
-		return false;
-	elseif ( type(valueToCheck) == "boolean" ) then
-		return valueToCheck;
-	elseif ( type(valueToCheck) == "number" ) then
-		return valueToCheck ~= 0;
-	elseif ( type(valueToCheck) == "string" ) then
-		return StringToBoolean(valueToCheck, defaultReturn);
-	else
-		return defaultReturn;
-	end
-end
-
-function StringToBoolean(stringToCheck, defaultReturn)
-	stringToCheck = string.lower(stringToCheck);
-	local firstChar = string.sub(stringToCheck, 1, 1);
-
-	if ( firstChar == "0" or firstChar == "n" or firstChar == "f" or stringToCheck == "off" or stringToCheck == "disabled" ) then
-		return false;
-	elseif ( firstChar == "1" or firstChar == "2" or firstChar == "3" or firstChar == "4" or firstChar == "5" or
-				firstChar == "6" or firstChar == "7" or firstChar == "8" or firstChar == "9" or firstChar == "y" or
-				firstChar == "t" or stringToCheck == "on" or stringToCheck == "enabled" ) then
-		return true;
-	end
-
-	return defaultReturn;
 end
 
 SecureCmdList["STARTATTACK"] = function(msg)
@@ -2643,6 +2612,14 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	end
 end
 
+SlashCmdList["TRANSMOG_OUTFIT"] = function(msg)
+	local itemTransmogInfoList = TransmogUtil.ParseOutfitSlashCommand(msg);
+	if itemTransmogInfoList then
+		local showOutfitDetails = true;
+		DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+	end
+end
+
 SlashCmdList["COMMUNITY"] = function(msg)
 	if msg == "" then
 		local info = ChatTypeInfo["SYSTEM"];
@@ -2671,6 +2648,12 @@ SlashCmdList["COMMUNITY"] = function(msg)
 	end
 end
 
+SlashCmdList["RAF"] = function(msg)
+	if(C_RecruitAFriend.IsEnabled()) then 
+		ToggleRafPanel(); 
+	end
+end 
+
 function RegisterNewSlashCommand(callback, command, commandAlias)
 	local name = string.upper(command);
 	_G["SLASH_"..name.."1"] = "/"..command;
@@ -2680,8 +2663,9 @@ end
 
 SlashCmdList["COUNTDOWN"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)", "%2");
-	if(num1 ~= "" and tonumber(num1) <= MAX_COUNTDOWN_SECONDS) then
-		C_PartyInfo.DoCountdown(num1);
+	local number = tonumber(num1);
+	if(number and number <= MAX_COUNTDOWN_SECONDS) then
+		C_PartyInfo.DoCountdown(number);
 	end
 end
 
@@ -2797,6 +2781,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("NEWCOMER_GRADUATION");
 	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
 	self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
+	self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
+
 	self.channelList = {};
 	self.zoneChannelList = {};
 	self.messageTypeList = {};
@@ -2815,6 +2801,9 @@ function ChatFrame_RegisterForMessages(self, ...)
 			self.messageTypeList[index] = select(i, ...);
 			for index, value in pairs(messageGroup) do
 				self:RegisterEvent(value);
+				if ( value == "CHAT_MSG_VOICE_TEXT" ) then
+					self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				end
 			end
 			index = index + 1;
 		end
@@ -3344,6 +3333,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
 		return true;
+	elseif event == "NOTIFY_CHAT_SUPPRESSED" then
+		local hyperlink = string.format("|Haadcopenconfig|h[%s]", RESTRICT_CHAT_CONFIG_HYPERLINK);
+		local message = string.format(RESTRICT_CHAT_CHATFRAME_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(hyperlink));
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(message, info.r, info.g, info.b, info.id);
+		return true;
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
@@ -3353,7 +3348,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local streamIDs = C_ChatInfo.GetClubStreamIDs(clubId);
 		for k, streamID in pairs(streamIDs) do
 			local channelName = Chat_GetCommunitiesChannelName(clubId, streamID);
-			
+
 			local function RemoveClubChannelFromChatWindow(chatWindow, chatWindowIndex)
 				if ChatFrame_ContainsChannel(chatWindow, channelName) then
 					local omitMessage = true;
@@ -3548,9 +3543,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		local channelLength = strlen(arg4);
 		local infoType = type;
 
-		if type == "VOICE_TEXT" then
-			infoType, type = VoiceTranscription_DetermineChatType(UnitIsGroupLeader(arg2));
-			info = ChatTypeInfo[infoType];
+		if type == "VOICE_TEXT" and not GetCVarBool("speechToText") then
+			return;
 
 		elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
@@ -3909,6 +3903,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		return true;
+	elseif ( event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" ) then
+		local _, isNowTranscribing = ...
+		if ( not self.isTranscribing and isNowTranscribing ) then
+			ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_STARTED);
+		end
+		self.isTranscribing = isNowTranscribing;
 	end
 end
 
@@ -4187,7 +4187,7 @@ function ChatFrame_DisplayChatHelp(frame)
 		frame:AddMessage(text, info.r, info.g, info.b, info.id);
 		i = i + 1;
 		-- hack fix for removing a line without causing localization problems
-		if ( i == 15 ) then
+		if ( i == 10 or i == 15 ) then
 			i = i + 1;
 		end
 		text = _G["CHAT_HELP_TEXT_LINE"..i];
@@ -4313,6 +4313,8 @@ function ChatEdit_OnLoad(self)
 	AutoCompleteEditBox_SetCustomAutoCompleteFunction(self, ChatEditAutoComplete);
 
 	self:SetParent(UIParent);
+
+	self.HasStickyFocus = ChatEdit_HasStickyFocus;
 end
 
 function ChatEdit_OnEvent(self, event, ...)
@@ -4465,7 +4467,7 @@ function ChatEdit_ChooseBoxForSend(preferredChatFrame)
 end
 
 function ChatEdit_SetLastActiveWindow(editBox)
-	if ( editBox.disableActivate ) then
+	if ( editBox ~= nil and editBox.disableActivate ) then
 		return;
 	end
 
@@ -4668,11 +4670,13 @@ function ChatEdit_UpdateHeader(editBox)
 		return;
 	end
 
+	local info;
 	if ( type == "VOICE_TEXT" ) then
-		type = VoiceTranscription_DetermineChatType(false);
+		type, info = VoiceTranscription_GetChatTypeAndInfo();
+	else
+		info = ChatTypeInfo[type];
 	end
 
-	local info = ChatTypeInfo[type];
 	local header = _G[editBox:GetName().."Header"];
 	local headerSuffix = _G[editBox:GetName().."HeaderSuffix"];
 	if ( not header ) then
@@ -4730,6 +4734,8 @@ function ChatEdit_UpdateHeader(editBox)
 		end
 		ChatEdit_UpdateHeader(editBox);
 		return;
+	elseif ( type == "COMMUNITIES_CHANNEL" and info.channelName ) then
+		header:SetFormattedText(CHAT_CHANNEL_SEND_NO_ID, info.channelName);
 	else
 		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
@@ -5250,6 +5256,25 @@ function ChatEdit_ExtractChannel(editBox, msg)
 	editBox:SetAttribute("chatType", "CHANNEL");
 	editBox:SetText(msg);
 	ChatEdit_UpdateHeader(editBox);
+end
+
+local stickyFocusFrames = { };
+
+function ChatEdit_RegisterForStickyFocus(frame)
+	stickyFocusFrames[frame] = 1;
+end
+
+function ChatEdit_UnregisterForStickyFocus(frame)
+	stickyFocusFrames[frame] = nil;
+end
+
+function ChatEdit_HasStickyFocus()
+	for frame in pairs(stickyFocusFrames) do
+		if frame:HasStickyFocus() then
+			return true;
+		end
+	end
+	return false;
 end
 
 -- Chat menu functions

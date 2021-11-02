@@ -53,7 +53,8 @@
 				if ( self:GetAlpha() > 0 ) then
 					if (self.objectType == "item") then
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetQuestItem(self.type, self:GetID());
+						local showCollectionText = false;
+						GameTooltip:SetQuestItem(self.type, self:GetID(), showCollectionText);
 						GameTooltip_ShowCompareItem(GameTooltip);
 					elseif (self.objectType == "currency") then
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

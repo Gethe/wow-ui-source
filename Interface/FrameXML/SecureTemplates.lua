@@ -1,3 +1,6 @@
+
+local type = type;
+
 local LOCAL_CHECK_Frame = CreateFrame("Frame");
 
 -- The "modified attribute" takes the form of: modifier-name-button
@@ -624,6 +627,10 @@ function SecureActionButton_OnClick(self, button, down)
         if ( button ~= origButton ) then
             unit = SecureButton_GetModifiedUnit(self, button);
         end
+    end
+
+    if ( type(button) ~= "string" ) then
+        return;
     end
 
     -- Don't do anything if our unit doesn't exist

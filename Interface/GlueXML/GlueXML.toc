@@ -29,9 +29,11 @@
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\RegionUtil.lua
 ..\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
@@ -41,7 +43,9 @@
 ..\SharedXML\AnchorUtil.lua
 ..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\StringUtil.lua
+..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
+..\SharedXML\NewFeatureLabel.xml
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -51,6 +55,7 @@ GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
 ..\SharedXML\Backdrop.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
@@ -65,7 +70,7 @@ GlueButtons.xml
 ..\SharedXML\UIDropDownMenu.xml
 GlueContextMenu.xml
 
-..\SharedXML\DataProvider.lua
+..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua
@@ -84,7 +89,6 @@ GlueContextMenu.xml
 ..\SharedXML\ModelSceneActorMixin.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\FrameStack.lua
 
 ##New stuff!!!

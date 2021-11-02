@@ -156,7 +156,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="TimerTracker" toplevel="true" parent="UIParent" setAllPoints="true">
+	<Frame name="TimerTracker" parent="UIParent" setAllPoints="true">
 		<Scripts>
 			<OnLoad function="TimerTracker_OnLoad"/>
 			<OnEvent function="TimerTracker_OnEvent"/>

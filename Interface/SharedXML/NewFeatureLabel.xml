@@ -1,13 +1,26 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\SharedXML\UI.xsd">
 	<Script file="NewFeatureLabel.lua"/>
-	<Frame name="NewFeatureLabelTemplate" mixin="NewFeatureLabelMixin" virtual="true">
-		<Size x="1" y="1"/>
+
+	<!--Used to call out a new feature. Includes a pulsing animation to call player's attention. Use NewFeatureLabelNoAnimateTemplate if you don't want the animation-->
+	<Frame name="NewFeatureLabelTemplate" inherits="ResizeLayoutFrame" mixin="NewFeatureLabelMixin" virtual="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="animateGlow" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="BGLabel" inherits="GameFontNormal_NoShadow" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0.5" y="-0.5"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="Label" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
 					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 					</Shadow>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -28,8 +41,15 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnShow method="OnShow"/>
+			<OnShow inherit="prepend" method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
+	</Frame>
+
+	<!--Inherit this if you don't want the glow texture to pulse-->
+	<Frame name="NewFeatureLabelNoAnimateTemplate" inherits="NewFeatureLabelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="animateGlow" value="false" type="boolean"/>
+		</KeyValues>
 	</Frame>
 </Ui>

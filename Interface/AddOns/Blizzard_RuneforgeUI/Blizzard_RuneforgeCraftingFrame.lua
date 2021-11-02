@@ -113,6 +113,7 @@ end
 
 function RuneforgeCraftingFrameMixin:SetUpgradeItem(item)
 	self.UpgradeItemSlot:SetItem(item);
+	StaticPopup_Hide("CONFIRM_RUNEFORGE_LEGENDARY_CRAFT");
 end
 
 function RuneforgeCraftingFrameMixin:SetItem(item, autoSelectSlot)

@@ -13,6 +13,12 @@ end
 function CharCustomizeParentFrameBaseMixin:ResetCustomizationPreview(clearSavedChoices)
 end
 
+function CharCustomizeParentFrameBaseMixin:MarkCustomizationChoiceAsSeen(choiceID)
+end
+
+function CharCustomizeParentFrameBaseMixin:MarkCustomizationOptionAsSeen(optionID)
+end
+
 function CharCustomizeParentFrameBaseMixin:SetViewingAlteredForm(viewingAlteredForm, resetCategory)
 end
 
@@ -294,6 +300,8 @@ function CharCustomizeMaskedButtonMixin:OnLoad()
 	self.CircleMask:SetPoint("TOPLEFT", self, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
 	self.CircleMask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
 
+	self.New:SetPoint("CENTER", self, "BOTTOM", 0, self.newTagYOffset);
+
 	local hasRingSizes = self.ringWidth and self.ringHeight;
 	if hasRingSizes then
 		self.Ring:SetAtlas(self.ringAtlas);
@@ -459,6 +467,8 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
 	end
 
+	self.New:SetShown(categoryData.hasNewChoices);
+
 	if selectedCategoryID == categoryData.id then
 		self:SetChecked(true);
 		self:SetIconAtlas(categoryData.selectedIcon);
@@ -533,6 +543,10 @@ function CharCustomizeOptionSliderMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("BOTTOMLEFT", self.Slider.Thumb, "TOPRIGHT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
+function CharCustomizeOptionSliderMixin:RefreshOption()
+	self:SetupOption(self.optionData);
+end
+
 function CharCustomizeOptionSliderMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.currentChoice = nil;
@@ -579,9 +593,15 @@ end
 
 CharCustomizeOptionCheckButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
 
+function CharCustomizeOptionCheckButtonMixin:RefreshOption()
+	self:SetupOption(self.optionData);
+end
+
 function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
 	self.optionData = optionData;
 	self.checked = (optionData.currentChoiceIndex == 2);
+
+	self.New:SetShown(optionData.hasNewChoices);
 
 	if showDebugTooltipInfo then
 		self:ClearTooltipLines();
@@ -599,6 +619,10 @@ function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 
 	local newChoiceIndex = self.checked and 2 or 1;
 	local newChoiceData = self.optionData.choices[newChoiceIndex];
+
+	if self.New:IsShown() then
+		CharCustomizeFrame:MarkCustomizationOptionAsSeen(self.optionData.id);
+	end
 
 	CharCustomizeFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
@@ -661,10 +685,16 @@ function CharCustomizeOptionSelectionPopoutMixin:GetMaxPopoutHeight()
 	return self:GetBottom() - POPOUT_CLEARANCE;
 end
 
+function CharCustomizeOptionSelectionPopoutMixin:RefreshOption()
+	self:SetupOption(self.optionData);
+end
+
 function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
+
+	self.New:SetShown(optionData.hasNewChoices);
 
 	self:ClearTooltipLines();
 
@@ -730,6 +760,7 @@ end
 function CharCustomizeMixin:OnHide()
 	local clearSavedChoices = true;
 	self:ResetCustomizationPreview(clearSavedChoices);
+	self:SaveSeenChoices();
 end
 
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
@@ -751,6 +782,18 @@ end
 
 function CharCustomizeMixin:ResetCustomizationPreview(clearSavedChoices)
 	self.parentFrame:ResetCustomizationPreview(clearSavedChoices);
+end
+
+function CharCustomizeMixin:MarkCustomizationChoiceAsSeen(choiceID)
+	self.parentFrame:MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function CharCustomizeMixin:MarkCustomizationOptionAsSeen(optionID)
+	self.parentFrame:MarkCustomizationOptionAsSeen(optionID);
+end
+
+function CharCustomizeMixin:SaveSeenChoices()
+	self.parentFrame:SaveSeenChoices();
 end
 
 function CharCustomizeMixin:Reset()
@@ -1090,6 +1133,10 @@ function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)
 	if not entry.isSelected then
 		self.previewIsDirty = false;
 		self:PreviewCustomizationChoice(option.optionData.id, entry.selectionData.id);
+	end
+
+	if entry.isNew then
+		self:MarkCustomizationChoiceAsSeen(entry.selectionData.id);
 	end
 end
 

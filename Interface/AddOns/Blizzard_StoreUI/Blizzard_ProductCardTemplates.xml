@@ -70,6 +70,8 @@
 					<Texture parentKey="IconBorder" inherits="store-itemicon-border" hidden="true" />
 				</Layer>
 				<Layer level="ARTWORK">
+					<Texture parentKey="ItemQuantityCircle" atlas="shop-count-ring" useAtlasSize="true" hidden="true" />
+					<FontString parentKey="ItemQuantity" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true" />
 					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true" />
 					<FontString parentKey="CurrentPrice" inherits="GameFontNormalMed3" />
 					<FontString parentKey="NormalPrice" inherits="GameFontNormalSmall2" hidden="true" />
@@ -276,6 +278,8 @@
 		<Button name="HorizontalLargeStoreCardWithBuyButtonTemplate" mixin="HorizontalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
 
 		<Button name="VerticalLargeStoreCardWithBuyButtonTemplate" mixin="VerticalLargeStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
+
+		<Button name="VerticalLargePageableStoreCardWithBuyButtonTemplate" mixin="VerticalLargePageableStoreCardWithBuyButtonMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
 
 		<Button name="HorizontalFullStoreCardWithBuyButtonTemplate" mixin="HorizontalFullStoreCardMixin" inherits="LargeStoreCardBuyButtonTemplate" virtual="true" />
 

@@ -2,7 +2,51 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DressUpFrames.lua"/>
 
+	<Frame name="DressUpOutfitSlotFrameTemplate" virtual="true" mixin="DressUpOutfitDetailsSlotMixin">
+		<Size x="272" y="24"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="20"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormalSmall2" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="7"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="HiddenIcon" atlas="transmog-icon-hidden" useAtlasSize="false" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="SideDressUpFrame" flattenRenderLayers="true" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="hasOutfitControls" value="false" type="boolean"/>
+		</KeyValues>
 		<Size x="187" y="389"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -84,6 +128,9 @@
 	</Frame>
 
 	<Frame name="TransmogAndMountDressupFrame" mixin="TransmogAndMountDressupFrameMixin" flattenRenderLayers="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="hasOutfitControls" value="false" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<CheckButton parentKey="ShowMountCheckButton" inherits="UICheckButtonTemplate">
 				<Size x="30" y="30"/>
@@ -105,17 +152,12 @@
 					<KeyValue key="normalIntensity" value="0.75" type="number"/>
 					<KeyValue key="highlightIntensity" value="1.2" type="number"/>
 				</KeyValues>
-			</ModelScene>
-			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" inherits="UIPanelButtonTemplate" text="RESET" hidden="true">
-				<Size x="80" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.ModelScene" x="0" y="0"/>
-				</Anchors>
 				<Scripts>
-					<OnLoad method="OnLoad" />
-					<OnClick method="OnClick" />
+					<OnDressModel>
+						self:GetParent():OnDressModel();
+					</OnDressModel>
 				</Scripts>
-			</Button>
+			</ModelScene>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -123,7 +165,10 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="DressUpFrame" mixin="DressUpModelFrameFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
+	<Frame name="DressUpFrame" mixin="DressUpModelFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
+		<KeyValues>
+			<KeyValue key="hasOutfitControls" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="450" y="545"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="70" y="-104"/>
@@ -137,6 +182,7 @@
 					<KeyValue key="width" value="163" type="number"/>
 					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
 					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
+					<KeyValue key="replaceInvalidSources" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" x="-23" y="-28"/>
@@ -181,6 +227,69 @@
 					</OnDressModel>
 				</Scripts>
 			</ModelScene>
+			<Button parentKey="ToggleOutfitDetailsButton">
+				<Size x="27" y="25"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-11" y="-30"/>
+				</Anchors>
+				<NormalTexture atlas="dressingroom-button-appearancelist-up"/>
+				<PushedTexture atlas="dressingroom-button-appearancelist-down"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+					<Size x="24" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+						self:GetParent():ToggleOutfitDetails();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
+						GameTooltip_SetTitle(GameTooltip, DRESSING_ROOM_APPEARANCE_LIST);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="OutfitDetailsPanel" mixin="DressUpOutfitDetailsPanelMixin" enableKeyboard="true">
+				<Size x="313" y="473"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-9" y="-29"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BlackBackground">
+							<Size x="301" y="445"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="6" y="-19"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ClassBackground">
+							<Size x="301" y="445"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parentKey.BlackBackground"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parentKey.BlackBackground"/>
+							</Anchors>
+							<TexCoords left="0.1599099099099099" right="0.8378378378378378" top="0" bottom="0.9612068965517241"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="dressingroom-sideframe" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnKeyDown method="OnKeyDown"/>
+				</Scripts>
+			</Frame>
 			<Button parentKey="ResetButton" mixin="DressUpModelFrameResetButtonMixin" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 				<Size x="80" y="22"/>
 				<Anchors>
@@ -191,6 +300,21 @@
 					<OnClick method="OnClick" />
 				</Scripts>
 			</Button>
+			<DropDownToggleButton parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_OUTFIT">
+				<Size x="159" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="2" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<Frames>
+					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
+				</Frames>
+			</DropDownToggleButton>	
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

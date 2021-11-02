@@ -245,7 +245,7 @@ StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
 	showAlert = 1,
 	timeout = 0,
 	exclusive = 0,
-	hideOnEscape = 0,
+	hideOnEscape = false,
 	whileDead = 1,
 }
 
@@ -270,7 +270,7 @@ StaticPopupDialogs["MAC_OPEN_INPUT_MONITORING"] = {
 	showAlert = 1,
 	timeout = 0,
 	exclusive = 0,
-	hideOnEscape = 0,
+	hideOnEscape = false,
 	whileDead = 1,
 }
 
@@ -322,11 +322,10 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		UpgradeItem();
-		PlaySound(SOUNDKIT.UI_REFORGING_REFORGE);
+		ItemUpgradeFrame:OnConfirm();
 	end,
 	OnCancel = function()
-		ItemUpgradeFrame_Update();
+		ItemUpgradeFrame:Update();
 	end,
 	OnShow = function()
 
@@ -337,6 +336,7 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	hasItemFrame = 1,
+	compactItemFrame = true,
 }
 
 StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
@@ -3843,9 +3843,9 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame:SaveOutfit(self.data) end,
+	OnAccept = function (self) WardrobeOutfitFrame:OverwriteOutfit(self.data.outfitID) end,
 	OnCancel = function (self)
-		local name = self.data;
+		local name = self.data.name;
 		self:Hide();
 		local dialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT");
 		if ( dialog ) then
@@ -4040,7 +4040,17 @@ StaticPopupDialogs["BACKPACK_INCREASE_SIZE"] = {
 	timeout = 0,
 	whileDead = 0,
 }
-
+StaticPopupDialogs["GROUP_FINDER_AUTHENTICATOR_POPUP"] = {
+	text = GROUP_FINDER_AUTHENTICATOR_POPUP_DESC,
+	button1 = ACTIVATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		LoadURLIndex(41);
+	end,
+	wide = true,
+	timeout = 0,
+	whileDead = 0,
+}
 StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	text = BACKPACK_AUTHENTICATOR_FULL_INVENTORY,
 	button1 = OKAY,
@@ -4227,16 +4237,37 @@ StaticPopupDialogs["CONFIRM_RAF_REMOVE_RECRUIT"] = {
 	end
 };
 
-StaticPopupDialogs["AADC_ALERT"] = {
-	text = NORMAL_FONT_COLOR_CODE..UK_AADC_POPUP_TEXT..FONT_COLOR_CODE_CLOSE,
-	button1 = OKAY,
+StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
+	text = REGIONAL_RESTRICT_CHAT_DIALOG_TITLE,
+	subText = REGIONAL_RESTRICT_CHAT_DIALOG_MESSAGE,
+	button1 = REGIONAL_RESTRICT_CHAT_DIALOG_ENABLE,
+	button2 = REGIONAL_RESTRICT_CHAT_DIALOG_DISABLE,
 	OnAccept = function()
-		AcknowledgeAADCAlert();
+		local disabled = false;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	OnShow = function(self)
+		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
 	end,
 	timeout = 0,
-	hideOnEscape = 0,
+	hideOnEscape = false,
 	exclusive = 1,
-	showAlert = 1,
+	wide = true,
+};
+
+StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
+	text = RESTRICT_CHAT_CONFIG_DIALOG_MESSAGE,
+	button1 = RESTRICT_CHAT_CONFIG_DIALOG_DISABLE,
+	button2 = RESTRICT_CHAT_CONFIG_DIALOG_CANCEL,
+	OnAccept = function()
+		local disabled = true;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	wide = true,
 };
 
 function StaticPopup_FindVisible(which, data)
@@ -4296,9 +4327,17 @@ function StaticPopup_Resize(dialog, which)
 	if ( dialog.insertedFrame ) then
 		width = max(width, dialog.insertedFrame:GetWidth());
 	end
-	if ( width > maxWidthSoFar )  then
+	if ( width > maxWidthSoFar ) then
 		dialog:SetWidth(width);
 		dialog.maxWidthSoFar = width;
+	end
+
+	if ( info.wideText ) then
+		dialog.text:SetWidth(360);
+		dialog.SubText:SetWidth(360);
+	else
+		dialog.text:SetWidth(290);
+		dialog.SubText:SetWidth(290);
 	end
 
 	local height = 32 + text:GetHeight() + 2;
@@ -4319,7 +4358,11 @@ function StaticPopup_Resize(dialog, which)
 		height = height + dialog.insertedFrame:GetHeight();
 	end
 	if ( info.hasItemFrame ) then
-		height = height + 64;
+		if ( info.compactItemFrame ) then
+			height = height + 44;
+		else
+			height = height + 64;
+		end
 	end
 	if ( dialog.SubText:IsShown() ) then
 		height = height + dialog.SubText:GetHeight() + 8;
@@ -4927,6 +4970,10 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			local info = StaticPopupDialogs[dialog.which];
 			dialog.button1:SetText(info.button1);
 			dialog.acceptDelay = nil;
+
+			if info.OnAcceptDelayExpired ~= nil then
+				info.OnAcceptDelayExpired(dialog, dialog.data);
+			end
 		else
 			dialog.button1:Disable();
 			dialog.button1:SetText(math.ceil(dialog.acceptDelay));

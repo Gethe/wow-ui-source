@@ -2,88 +2,51 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CoinPickupFrame.lua"/>
 	<Frame name="CoinPickupFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
-		<Size>
-			<AbsDimension x="172" y="96"/>
-		</Size>
+		<Size x="172" y="96"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\MoneyFrame\UI-MoneyFrame">
-					<Size>
-						<AbsDimension x="256" y="32"/>
-					</Size>
+					<Size x="256" y="32"/>
 					<TexCoords left="0" right="0.671875" top="0" bottom="0.75"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="CoinPickupGoldIcon" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+				<Texture name="CoinPickupGoldIcon" atlas="coin-gold" hidden="true">
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="19"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-32" y="19"/>
 					</Anchors>
-					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="CoinPickupSilverIcon" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+				<Texture name="CoinPickupSilverIcon" atlas="coin-silver" hidden="true">
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="19"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-32" y="19"/>
 					</Anchors>
-					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="CoinPickupCopperIcon" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+				<Texture name="CoinPickupCopperIcon" atlas="coin-silver" hidden="true">
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="19"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-32" y="19"/>
 					</Anchors>
-					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</Texture>
 				<FontString name="CoinPickupLabel" text="COPPER_AMOUNT_SYMBOL" font="GameFontHighlight" hidden="true">
 					<Size x="14" y="14"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-32" y="19"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-32" y="19"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CoinPickupText" inherits="GameFontHighlight" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-50" y="18"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-50" y="18"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="CoinPickupLeftButton">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="CENTER">
-						<Offset>
-							<AbsDimension x="-59" y="18"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativePoint="CENTER" x="-59" y="18"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CoinPickupFrameLeft_Click"/>
@@ -93,15 +56,9 @@
 				<DisabledTexture file="Interface\MoneyFrame\Arrow-Left-Disabled"/>
 			</Button>
 			<Button name="CoinPickupRightButton">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="CENTER">
-						<Offset>
-							<AbsDimension x="64" y="18"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="CENTER" x="64" y="18"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CoinPickupFrameRight_Click"/>
@@ -111,30 +68,18 @@
 				<DisabledTexture file="Interface\MoneyFrame\Arrow-Right-Disabled"/>
 			</Button>
 			<Button name="CoinPickupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size>
-					<AbsDimension x="64" y="24"/>
-				</Size>
+				<Size x="64" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-3" y="32"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" x="-3" y="32"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CoinPickupFrameOkay_Click"/>
 				</Scripts>
 			</Button>
 			<Button name="CoinPickupCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
-				<Size>
-					<AbsDimension x="64" y="24"/>
-				</Size>
+				<Size x="64" y="24"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="5" y="32"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="BOTTOM"  x="5" y="32"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CoinPickupFrameCancel_Click"/>

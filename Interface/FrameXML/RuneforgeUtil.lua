@@ -277,19 +277,6 @@ RuneforgeUtil.FlyoutType = {
 	UpgradeItem = 3,
 };
 
-function RuneforgeUtil.GetCostsString(costs)
-	local resultString = "";
-	for i, cost in ipairs(costs) do
-		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(cost.currencyID);
-		if currencyInfo then
-			local currencyMarkup = CreateTextureMarkup(currencyInfo.icon, 64, 64, 14, 14, 0, 1, 0, 1);
-			resultString = resultString.." "..cost.amount.." "..currencyMarkup;
-		end
-	end
-
-	return resultString;
-end
-
 function RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation)
 	return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and not C_LegendaryCrafting.IsRuneforgeLegendaryMaxLevel(itemLocation);
 end
@@ -322,6 +309,18 @@ local CovenantIDToPowerSigilInfo = {
 
 function RuneforgeUtil.GetSigilInfoForCovenant(covenantID)
 	return CovenantIDToPowerSigilInfo[covenantID];
+end
+
+function RuneforgeUtil.SetCurrencyCosts(currencyFrame, costs)
+	local initFunction = nil;
+	local initialAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", currencyFrame, "TOPRIGHT");
+	local stride = #costs;
+	local paddingX = 10;
+	local paddingY = nil;
+	local fixedWidth = 62;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX, paddingY, fixedWidth);
+	local tooltipAnchor = "ANCHOR_TOP";
+	currencyFrame:SetCurrencies(costs, initFunction, initialAnchor, layout, tooltipAnchor);
 end
 
 Enum.RuneforgePowerState =

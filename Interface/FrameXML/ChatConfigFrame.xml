@@ -73,7 +73,7 @@
 		</Layers>
 	</Frame>
 
-	<CheckButton name="ChatConfigBaseCheckButtonTemplate" virtual="true">
+	<CheckButton name="ChatConfigBaseCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
 			<OnClick>
@@ -89,9 +89,17 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, (self.tooltipStyle or true));
 				end
+				
+				if self.onEnterCallback then
+					self.onEnterCallback();
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+
+				if self.onLeaveCallback then
+					self.onLeaveCallback();
+				end
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -106,7 +114,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="2"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1479,6 +1487,15 @@
 					<OnLoad function="ChatConfigFrameRedockButton_OnLoad"/>
 				</Scripts>
 			</Button>
+			<Button parentKey="ToggleChatButton" inherits="UIPanelButtonTemplate" hidden="true">
+				<Size x="148" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RedockButton" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ChatConfigFrameToggleChatButton_OnClick"/>
+				</Scripts>
+			</Button>
 			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">
 				<Size x="170" y="22"/>
 				<Anchors>
@@ -1499,6 +1516,20 @@
 					<OnClick function="TextToSpeechFrameDefaults_OnClick"/>
 				</Scripts>
 			</Button>
+			<CheckButton name="TextToSpeechCharacterSpecificButton" inherits="UICheckButtonTemplate" mixin="TextToSpeechCharacterSpecificButtonMixin">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TextToSpeechDefaultButton" relativePoint="RIGHT" x="5" y ="0"/>
+				</Anchors>
+				<HitRectInsets left="0" right="-100" top="0" bottom="0"/>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnHide"/>
+				</Scripts>
+			</CheckButton>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL" hidden="true">
 				<Size x="78" y="22"/>
 				<Anchors>

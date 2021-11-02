@@ -10,6 +10,7 @@
 ..\..\SharedXML\LayoutFrame.lua
 ..\..\SharedXML\ManagedLayoutFrame.lua
 ..\..\SharedXML\BulletPoint.lua
+..\..\SharedXML\NineSliceLayouts.lua
 ..\..\SharedXML\NineSlice.lua
 ..\..\SharedXML\SecureUtil.lua
 ..\..\SharedXML\PortraitFrame.lua

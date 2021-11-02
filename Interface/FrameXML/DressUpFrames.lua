@@ -11,6 +11,17 @@ function DressUpItemLink(link)
 	return false;
 end
 
+function DressUpItemLocation(itemLocation)
+	if( itemLocation and itemLocation:IsValid() ) then 
+		local itemTransmogInfo = C_Item.GetCurrentItemTransmogInfo(itemLocation);
+		-- non-equippable items won't have an appearanceID
+		if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+			return DressUpItemTransmogInfo(itemTransmogInfo);
+		end
+	end
+	return false;
+end
+
 function DressUpTransmogLink(link)
 	if ( not link or not (strsub(link, 1, 16) == "transmogillusion" or strsub(link, 1, 18) == "transmogappearance") ) then
 		return false;
@@ -104,17 +115,20 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 		itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID);
 	end
 
-	local slotID = nil;
-	local canRecurse = false;
+	local weaponSlotID = nil;
 	if categoryID then
 		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
 		-- weapons that can go in either hand need the slot specified
-		slotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
-		-- legion artifacts might set both weapons
-		canRecurse = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+		weaponSlotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
+		-- legion artifacts need the secondary configured and the weapon slot specified
+		local isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(categoryID);
+		if isLegionArtifact and transmogLocation.slotID == INVSLOT_MAINHAND then
+			weaponSlotID = transmogLocation.slotID;
+			itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
+		end
 	end
 
-	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID, canRecurse);
+	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, weaponSlotID);
 	if result ~= Enum.ItemTryOnReason.Success then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end
@@ -158,11 +172,10 @@ function DressUpBattlePet(creatureID, displayID, speciesID)
 	local frame = GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
-	if ( not frame:IsShown() or frame.mode ~= "battlepet" ) then
+	frame:SetMode("battlepet");if ( not frame:IsShown() or frame:GetMode() ~= "battlepet" ) then
+		frame:SetMode("battlepet");
 		ShowUIPanel(frame);
 	end
-	frame.mode = "battlepet";
-	frame.ResetButton:Hide();
 
 	local _, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
 
@@ -204,11 +217,10 @@ function DressUpMount(mountID, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
-	if ( not frame:IsShown() or frame.mode ~= "mount" ) then
+	if ( not frame:IsShown() or frame:GetMode() ~= "mount" ) then
+		frame:SetMode("mount");
 		ShowUIPanel(frame);
 	end
-	frame.mode = "mount";
-	frame.ResetButton:Hide();
 
 	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
 	frame.ModelScene:ClearScene();
@@ -265,10 +277,8 @@ function SetDressUpBackground(frame, raceFilename, classFilename)
 end
 
 function DressUpFrame_Show(frame)
-	if ( not frame:IsShown() or frame.mode ~= "player") then
-		frame.mode = "player";
-
-		frame.ResetButton:SetShown(frame ~= TransmogAndMountDressupFrame);
+	if ( not frame:IsShown() or frame:GetMode() ~= "player") then
+		frame:SetMode("player");
 
 		-- If there's not enough space as-is, try minimizing.
 		if not CanShowRightUIPanel(frame) and frame.MaximizeMinimizeFrame and not frame.MaximizeMinimizeFrame:IsMinimized() then
@@ -289,34 +299,47 @@ function DressUpFrame_Show(frame)
 		
 		local sheatheWeapons = false;
 		local autoDress = true;
+		local hideWeapons = false;
 		local itemModifiedAppearanceIDs = nil;
-		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
+		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons);
 	end
 end
 
 function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
 	local sheatheWeapons = false;
 	local autoDress = true;
-	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress);
+	local hideWeapons = false;
+	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons);
 end
 
-function DressUpItemTransmogInfoList(itemTransmogInfoList)
-	if not itemTransmogInfoList then
-		return true;
+function DressUpItemTransmogInfo(itemTransmogInfo)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor or not itemTransmogInfo then
+		return false;
 	end
 
-	local raceFilename = nil;
-	local classFilename = select(2, UnitClass("player"));
-	SetDressUpBackground(DressUpFrame, raceFilename, classFilename);
-	DressUpFrame_Show(DressUpFrame);
+	playerActor:SetItemTransmogInfo(itemTransmogInfo);
+	return true;
+end
 
-	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
-	if not playerActor then
-		return true;
+function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails)
+	local frame = GetFrameAndSetBackground();
+	DressUpFrame_Show(frame);
+
+	local playerActor = frame.ModelScene:GetPlayerActor();
+	if not playerActor or not itemTransmogInfoList then
+		return false;
 	end
 
 	for slotID, itemTransmogInfo in ipairs(itemTransmogInfoList) do
 		playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID);
+	end
+
+	if showOutfitDetails then
+		frame:ForceOutfitDetailsOn();
 	end
 end
 
@@ -371,4 +394,442 @@ function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID, 
 
 	self:SetParent(parentFrame);
 	self:SetPoint(point, parentFrame, relativePoint, offsetX, offsetY);
+end
+
+DressUpOutfitDetailsPanelMixin = { };
+
+local CLASS_BACKGROUND_SETTINGS = {
+	["DEFAULT"] = { desaturation = 0.5, alpha = 0.25 },
+	["DEATHKNIGHT"] = { desaturation = 0.5, alpha = 0.30 },
+	["DEMONHUNTER"] = { desaturation = 0.5, alpha = 0.30 },
+	["HUNTER"] = { desaturation = 0.5, alpha = 0.45 },
+	["MAGE"] = { desaturation = 0.5, alpha = 0.45 },
+	["PALADIN"] = { desaturation = 0.5, alpha = 0.21 },
+	["ROGUE"] = { desaturation = 0.5, alpha = 0.65 },
+	["SHAMAN"] = { desaturation = 0.5, alpha = 0.40 },
+	["WARLOCK"] = { desaturation = 0.5, alpha = 0.40 },	
+}
+
+function DressUpOutfitDetailsPanelMixin:OnLoad()
+	self.slotPool = CreateFramePool("FRAME", self, "DressUpOutfitSlotFrameTemplate");
+	local classFilename = select(2, UnitClass("player"));
+	self.ClassBackground:SetAtlas("dressingroom-background-"..classFilename);
+	local settings = CLASS_BACKGROUND_SETTINGS[classFilename] or CLASS_BACKGROUND_SETTINGS["DEFAULT"];
+	self.ClassBackground:SetDesaturation(settings.desaturation);
+	self.ClassBackground:SetAlpha(settings.alpha);
+	local frameLevel = self:GetParent().NineSlice:GetFrameLevel();
+	self:SetFrameLevel(frameLevel + 1);
+end
+
+function DressUpOutfitDetailsPanelMixin:OnShow()
+	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
+	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+	self:Refresh();
+end
+
+function DressUpOutfitDetailsPanelMixin:OnHide()
+	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
+	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+end
+
+function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
+	if event == "TRANSMOG_COLLECTION_ITEM_UPDATE" then
+		if self.waitingOnItemData then
+			self:Refresh();
+		elseif self.mousedOverFrame then
+			self.mousedOverFrame:RefreshAppearanceTooltip();
+		end
+	elseif event == "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE" then
+		self:MarkDirty();
+	end
+end
+
+function DressUpOutfitDetailsPanelMixin:OnUpdate()
+	self:SetScript("OnUpdate", nil);
+	self:Refresh();
+end
+
+function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
+	if key == WARDROBE_CYCLE_KEY and self.mousedOverFrame then
+		self:SetPropagateKeyboardInput(false);
+		self.mousedOverFrame:OnCycleKeyDown();
+	else
+		self:SetPropagateKeyboardInput(true);
+	end
+end
+
+function DressUpOutfitDetailsPanelMixin:MarkDirty()
+	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function DressUpOutfitDetailsPanelMixin:MarkWaitingOnItemData()
+	self.waitingOnItemData = true;
+end
+
+function DressUpOutfitDetailsPanelMixin:OnAppearanceChange()
+	if self:IsShown() then
+		self:Refresh();
+	end
+end
+
+function DressUpOutfitDetailsPanelMixin:SetMousedOverFrame(frame)
+	self.mousedOverFrame = frame;
+end
+
+function DressUpOutfitDetailsPanelMixin:Refresh()
+	self.slotPool:ReleaseAll();
+	self.lastFrame = nil;
+	self.validMainHand = false;
+	self.waitingOnItemData = false;
+
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if not playerActor then
+		return;
+	end
+	local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
+	if not itemTransmogInfoList then
+		return;
+	end
+
+	for _, slotID in ipairs(TransmogSlotOrder) do
+		local transmogInfo = itemTransmogInfoList[slotID];
+		if transmogInfo then
+			-- spacer before weapons
+			if slotID == INVSLOT_MAINHAND then
+				self:AddSlotFrame(nil, nil, nil);
+			end
+			-- primary
+			self:AddSlotFrame(slotID, transmogInfo, "appearanceID");
+			-- secondary
+			if transmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
+				self:AddSlotFrame(slotID, transmogInfo, "secondaryAppearanceID");
+			end
+			-- illusion
+			if transmogInfo.illusionID ~= Constants.Transmog.NoTransmogID then
+				self:AddSlotFrame(slotID, transmogInfo, "illusionID");
+			end
+		end
+	end
+end
+
+function DressUpOutfitDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field)
+	-- hide offhand if empty and mainhand has something
+	if slotID == INVSLOT_OFFHAND and self.validMainHand and transmogInfo.appearanceID == Constants.Transmog.NoTransmogID then
+		return;
+	end
+
+	local frame = self.slotPool:Acquire();
+	local isValid = false;
+	if transmogInfo then
+		isValid = frame:SetUp(slotID, transmogInfo, field);
+		frame:Show();
+	else
+		-- spacer
+		isValid = true;
+		frame:Hide();
+	end
+
+	if isValid then
+		frame.slotID = slotID;
+		if self.lastFrame then
+			frame:SetPoint("TOPLEFT", self.lastFrame, "BOTTOMLEFT");
+		else
+			frame:SetPoint("TOPLEFT", 18, -38);
+		end
+		self.lastFrame = frame;
+
+		if isValid and slotID == INVSLOT_MAINHAND and transmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+			self.validMainHand = true;
+		end
+	else
+		frame:Hide();
+	end
+end
+
+DressUpOutfitDetailsSlotMixin = { };
+
+function DressUpOutfitDetailsSlotMixin:OnHide()
+	if self.itemDataLoadedCancelFunc then
+		self.itemDataLoadedCancelFunc();
+		self.itemDataLoadedCancelFunc = nil;
+	end
+	self.item = nil;
+end
+
+local OUTFIT_SLOT_STATE_ERROR = 1;
+local OUTFIT_SLOT_STATE_COLLECTED = 2;
+local OUTFIT_SLOT_STATE_UNCOLLECTED = 3;
+
+local GRAY_FONT_ALPHA = 0.7;
+
+local TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK = "|A:common-icon-checkmark:16:16:0:-1|a "..TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN;
+
+function DressUpOutfitDetailsSlotMixin:OnEnter()
+	if not self.transmogID then
+		return;
+	end
+
+	if self.item and not self.item:IsItemDataCached() then
+		self:GetParent():MarkDirty();
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.isHiddenVisual then
+		GameTooltip_AddColoredLine(GameTooltip, self.name, NORMAL_FONT_COLOR);
+	elseif not self.item then
+		-- illusion
+		GameTooltip_AddColoredLine(GameTooltip, self.name, NORMAL_FONT_COLOR);
+		if self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+		else
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
+		end
+	elseif self.slotState == OUTFIT_SLOT_STATE_ERROR then
+		local hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(self.transmogID);
+		-- hasData should be true, there's a check that the item data is cached at the top of the function
+
+		if not canCollect and (self.slotID == INVSLOT_MAINHAND or self.slotID == INVSLOT_OFFHAND) then
+			local pairedTransmogID = C_TransmogCollection.GetPairedArtifactAppearance(self.transmogID);
+			if pairedTransmogID then
+				hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(pairedTransmogID);
+				if not hasData then
+					self:GetParent():MarkDirty();
+					return;
+				end
+			end
+		end
+
+		if canCollect then
+			local nameColor = self.item:GetItemQualityColor().color;
+			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+			local slotName = TransmogUtil.GetSlotName(self.slotID);
+			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNUSABLE);
+		else
+			local hideVendorPrice = true;
+			GameTooltip:SetHyperlink(self.item:GetItemLink(), nil, nil, nil, hideVendorPrice);
+			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNCOLLECTABLE);
+		end
+	elseif self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
+		if C_TransmogCollection.PlayerKnowsSource(self.transmogID) then
+			self:GetParent():SetMousedOverFrame(self);
+			self:RefreshAppearanceTooltip();
+		else
+			local nameColor = self.item:GetItemQualityColor().color;
+			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+			local slotName = TransmogUtil.GetSlotName(self.slotID);
+			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+		end
+	else
+		local nameColor = self.item:GetItemQualityColor().color;
+		GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
+		local slotName = TransmogUtil.GetSlotName(self.slotID);
+		GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
+	end
+	GameTooltip:Show();
+end
+
+function DressUpOutfitDetailsSlotMixin:OnLeave()
+	self:GetParent():SetMousedOverFrame(nil);
+	self.tooltipSourceIndex = nil;
+	self.tooltipCycle = nil;
+	GameTooltip:Hide();
+end
+
+function DressUpOutfitDetailsSlotMixin:OnMouseUp()
+	if IsModifiedClick("CHATLINK") and self.transmogID then
+		local link;
+		if self.item then
+			link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(self.transmogID));
+		else
+			link = select(2, C_TransmogCollection.GetIllusionStrings(self.transmogID));
+		end
+		if link then
+			if not ChatEdit_InsertLink(link) then
+				ChatFrame_OpenChat(link);
+			end
+		end
+	end
+end
+
+function DressUpOutfitDetailsSlotMixin:OnCycleKeyDown()
+	if not self.tooltipCycle and not self.tooltipSourceIndex then
+		return;
+	end
+	if IsShiftKeyDown() then
+		self.tooltipSourceIndex = self.tooltipSourceIndex - 1;
+	else
+		self.tooltipSourceIndex = self.tooltipSourceIndex + 1;
+	end
+	self:RefreshAppearanceTooltip();
+end
+
+function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
+	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(self.transmogID);
+	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID);
+	local showUseError = true;	
+	local inLegionArtifactCategory = false;
+	local slotName = TransmogUtil.GetSlotName(self.slotID);
+	local subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]);
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString);
+	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
+	GameTooltip:Show();
+end
+
+function DressUpOutfitDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
+	local transmogID = transmogInfo[field];
+	local isSecondary = true;
+	if field == "appearanceID" then
+		return self:SetAppearance(slotID, transmogID, not isSecondary);
+	elseif field == "secondaryAppearanceID" then
+		return self:SetAppearance(slotID, transmogID, isSecondary);
+	elseif field == "illusionID" then
+		return self:SetIllusion(transmogID);
+	end
+end
+
+function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecondary)
+	local itemID = C_TransmogCollection.GetSourceItemID(transmogID);
+	if not itemID then
+		-- no empty slot for secondaries
+		if isSecondary then
+			return false;
+		end
+		self.Icon:SetTexture(nil);
+		self.IconBorder:SetTexture(nil);
+		self.HiddenIcon:Hide();
+		local slotName = TransmogUtil.GetSlotName(slotID);
+		self.Name:SetFormattedText(TRANSMOG_EMPTY_SLOT_FORMAT, _G[slotName]);
+		self.Name:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		self.Name:SetAlpha(GRAY_FONT_ALPHA);
+		self.transmogID = nil;
+	else
+		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(transmogID);
+		local hasAllData = false;
+		transmogID, hasAllData = CollectionWardrobeUtil.GetPreferredSourceID(transmogID, appearanceInfo);
+		if not hasAllData then
+			self:GetParent():MarkWaitingOnItemData();
+		end
+		itemID = C_TransmogCollection.GetSourceItemID(transmogID);
+
+		self.item = Item:CreateFromItemID(itemID);
+		if not self.item:IsItemDataCached() then
+			self.Icon:SetTexture(nil);
+			self.IconBorder:SetTexture(nil);
+			self.Name:SetText(nil);
+		end
+		self.itemDataLoadedCancelFunc = self.item:ContinueWithCancelOnItemLoad(GenerateClosure(self.SetItemInfo, self, transmogID, appearanceInfo, isSecondary));
+	end
+
+	return true;
+end
+
+function DressUpOutfitDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, isSecondary)
+	local icon = C_TransmogCollection.GetSourceIcon(transmogID);
+	local name = self.item:GetItemName();
+	local slotState, isHiddenVisual;
+
+	if not appearanceInfo then
+		-- either uncollectable, or collectable but hidden until collected
+		local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(transmogID);
+		if canCollect then
+			slotState = OUTFIT_SLOT_STATE_UNCOLLECTED;
+		else
+			slotState = OUTFIT_SLOT_STATE_ERROR;
+		end
+	elseif appearanceInfo.appearanceIsCollected then
+		-- collected
+		slotState = OUTFIT_SLOT_COLLECTED;
+		isHiddenVisual = C_TransmogCollection.IsAppearanceHiddenVisual(transmogID);	
+	else
+		-- uncollected
+		slotState = OUTFIT_SLOT_STATE_UNCOLLECTED;
+	end
+
+	local useSmallIcon = isSecondary;
+	self:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual);
+end
+
+function DressUpOutfitDetailsSlotMixin:SetIllusion(transmogID)
+	local illusionInfo = C_TransmogCollection.GetIllusionInfo(transmogID);
+	if not illusionInfo then
+		return false;
+	end
+
+	local name = C_TransmogCollection.GetIllusionStrings(illusionInfo.sourceID);
+	local useSmallIcon = true;
+	local slotState = illusionInfo.isCollected and OUTFIT_SLOT_STATE_COLLECTED or OUTFIT_SLOT_STATE_UNCOLLECTED;
+	local isHiddenVisual = illusionInfo.isHideVisual;
+	self:SetDetails(transmogID, illusionInfo.icon, TRANSMOGRIFIED_ENCHANT:format(name), useSmallIcon, slotState, isHiddenVisual);
+
+	return true;
+end
+
+local s_qualityToAtlasColorName = {
+	[Enum.ItemQuality.Poor] = "gray",
+	[Enum.ItemQuality.Common] = "white",
+	[Enum.ItemQuality.Uncommon] = "green",
+	[Enum.ItemQuality.Rare] = "blue",
+	[Enum.ItemQuality.Epic] = "purple",
+	[Enum.ItemQuality.Legendary] = "orange",
+	[Enum.ItemQuality.Artifact] = "artifact",
+	[Enum.ItemQuality.Heirloom] = "account"
+};
+
+function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
+	-- info for tooltip
+	self.transmogID = transmogID;
+	self.name = name;
+	self.slotState = slotState;
+	self.isHiddenVisual = isHiddenVisual;
+
+	local nameColor = NORMAL_FONT_COLOR;
+	local nameAlpha = 1;
+	local borderType = "white";
+	if slotState == OUTFIT_SLOT_STATE_ERROR then
+		nameColor = RED_FONT_COLOR;
+		borderType = "error";
+	elseif slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
+		nameColor = GRAY_FONT_COLOR;
+		borderType = "uncollected";
+		nameAlpha = GRAY_FONT_ALPHA;
+	elseif isHiddenVisual then
+		borderType = "uncollected";
+	elseif self.item then
+		nameColor = self.item:GetItemQualityColor().color;
+		local quality = self.item:GetItemQuality();
+		local colorName = s_qualityToAtlasColorName[quality];
+		borderType = colorName;
+	end
+
+	self.Name:SetText(name);
+	self.Name:SetTextColor(nameColor:GetRGB());
+	self.Name:SetAlpha(nameAlpha);
+
+	self.Icon:SetTexture(icon);
+	if slotState == OUTFIT_SLOT_STATE_UNCOLLECTED or isHiddenVisual then
+		self.Icon:SetAlpha(0.3);
+		self.Icon:SetDesaturated(true);
+	else
+		self.Icon:SetAlpha(1);
+		self.Icon:SetDesaturated(false);
+	end
+
+	if useSmallIcon then
+		borderType = "small-"..borderType;
+		self.Icon:SetSize(14, 14);
+		if isHiddenVisual then
+			self.HiddenIcon:SetSize(24, 20);
+		end
+	else
+		self.Icon:SetSize(20, 20);
+		if isHiddenVisual then
+			self.HiddenIcon:SetSize(26, 22);
+		end
+	end
+	self.IconBorder:SetAtlas("dressingroom-itemborder-"..borderType);
+	self.HiddenIcon:SetShown(isHiddenVisual);
 end

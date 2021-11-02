@@ -77,7 +77,6 @@ function GMChatFrame_OnEvent(self, event, ...)
 
 		if ( not GMChatFrame:IsShown() ) then
 			GMChatStatusFrame:Show();
-			GMChatStatusFrame.pulse:Play();
 			table.insert(self.lastGM,arg2);
 			PlaySound(SOUNDKIT.GM_CHAT_WARNING);
 
@@ -178,6 +177,20 @@ end
 
 function GMChatFrame_Close()
 	GMChatFrame:Hide();
+end
+
+function GMChatStatusFrame_OnLoad(self)
+	NineSliceUtil.ApplyUniqueCornersLayout(self.Pulse, "gmglow");
+	for index, region in enumerate_regions(self.Pulse) do
+		region:SetBlendMode("ADD");
+	end
+	self.Pulse.Anim:Play();
+
+	self:SetWidth(math.max(self.TitleText:GetWidth(), self.SubtitleText:GetWidth()) + 50);
+	self:SetHeight(self.TitleText:GetHeight() + self.SubtitleText:GetHeight() + 20);
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self.NineSlice:SetCenterColor(bgR, bgG, bgB, 1);
 end
 
 function GMChatStatusFrame_OnClick()

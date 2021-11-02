@@ -1,5 +1,17 @@
+CommunitiesFrameTabMixin = {};
 
-function CommunitiesFrameTab_OnEnter(self)
+function CommunitiesFrameTabMixin:OnLoad()
+	self.Icon:SetTexture(self.iconTexture);
+end
+
+function CommunitiesFrameTabMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:SetChecked(true);
+
+	self:GetParent():SetDisplayMode(self.displayMode);
+end
+
+function CommunitiesFrameTabMixin:OnEnter()
 	if self.tooltip then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.tooltip);
@@ -10,6 +22,19 @@ function CommunitiesFrameTab_OnEnter(self)
 	end
 end
 
-function CommunitiesFrameTab_OnLeave(self)
+function CommunitiesFrameTabMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+CommunitiesChatTabMixin = CreateFromMixins(CommunitiesFrameTabMixin);
+
+function CommunitiesChatTabMixin:OnClick(buttonName, down)
+	if IsShiftKeyDown() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		ShowUIPanel(ChatConfigFrame);
+	elseif self:GetParent():IsChatAccessible() then
+		CommunitiesFrameTabMixin.OnClick(self, buttonName, down);
+	else
+		self:SetChecked(false);
+	end
 end

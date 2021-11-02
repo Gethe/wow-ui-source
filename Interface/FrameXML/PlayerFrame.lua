@@ -363,8 +363,8 @@ function PlayerFrame_IsAnimatedOut(self)
 end
 
 function PlayerFrame_UpdateArt(self)
-	if ( self.animFinished and self.inSeat and self.inSequence) then
-		if ( self:IsUserPlaced() ) then
+	if (self.inSeat) then
+		if (self.animFinished and self:IsUserPlaced() and self.inSequence) then
 			PlayerFrame_SequenceFinished(PlayerFrame);
 		else
 			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)

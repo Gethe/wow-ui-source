@@ -2,6 +2,12 @@ local function ShouldShowRegulationOverlay()
 	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
 end
 
+AccountLoginEditBoxBehaviorMixin = {}
+
+function AccountLoginEditBoxBehaviorMixin:OnKeyDown(key)
+	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
+end
+
 function AccountLogin_OnLoad(self)
 	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -111,7 +117,7 @@ function AccountLogin_Update()
 	if (HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON) then
 		AccountLogin.UI.SaveAccountNameCheckButton:Hide();
 	end
-	
+
 	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not isReconnectMode) then
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 255);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 160);
@@ -120,7 +126,7 @@ function AccountLogin_Update()
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 275);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 180);
 		AccountLogin.UI.AccountsDropDown:Hide();
-	end	
+	end
 
 end
 
@@ -151,6 +157,8 @@ function AccountLogin_OnKeyDown(self, key)
 			AccountLogin_ClearReconnectLogin();
 		end
 	end
+
+	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
 end
 
 function AccountLogin_Login()

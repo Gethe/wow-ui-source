@@ -4,9 +4,18 @@
 	<Script file="Blizzard_StoreUIInbound.lua" />
 	<Script file="Blizzard_StoreUIOutbound.lua" />
 	<Script file="Blizzard_StoreUISecure.lua" />
-	
+
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		
+
+		<Frame name="StoreTooltipBackdrop" inherits="NineSlicePanelTemplate" mixin="StoreTooltipBackdropMixin" virtual="true">
+			<KeyValues>
+				<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+			</KeyValues>
+			<Scripts>
+				<OnLoad method="StoreTooltipOnLoad" inherit="append"/>
+			</Scripts>
+		</Frame>
+
 		<Button name="StoreButtonTemplate" mixin="StoreButtonMixin" virtual="true">
 			<Size x="146" y="35" />
 			<Layers>
@@ -329,7 +338,7 @@
 				</Layer>
 			</Layers>
 		</EditBox>
-		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
+		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" frameLevel="600" virtual="true">
 			<Size x="140" y="14"/>
 			<ButtonText parentKey="Text" justifyH="LEFT"/>
 			<NormalFont style="GameFontWhiteTiny2"/>
@@ -339,10 +348,10 @@
 		</Button>
 		<EditBox name="StoreEditBoxWithAutoCompleteTemplate" inherits="StoreEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
 			<Frames>
-				<Frame parentKey="AutoCompleteBox" inherits="TooltipBorderedFrameTemplate" hidden="true">
+				<Frame parentKey="AutoCompleteBox" hidden="true">
 					<Size x="150" y="5"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="14"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="0"/>
 					</Anchors>
 					<Layers>
 						<Layer level="BACKGROUND">
@@ -356,6 +365,7 @@
 						</Layer>
 					</Layers>
 					<Frames>
+						<Frame parentKey="Border" inherits="StoreTooltipBackdrop"/>
 						<Button inherits="StoreAutoCompleteButtonTemplate">
 							<Anchors>
 								<Anchor point="TOP" x="6" y="-12"/>
@@ -862,7 +872,7 @@
 				<Layer level="ARTWORK">
 					<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-98" y="46" />
+							<Anchor point="BOTTOMRIGHT" x="-98" y="29" />
 						</Anchors>
 					</FontString>
 				</Layer>
@@ -1112,7 +1122,7 @@
 				<Button parentKey="PrevPageButton">
 					<Size x="32" y="32" />
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-57" y="36" />
+						<Anchor point="BOTTOMRIGHT" x="-57" y="18" />
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFramePrevPageButton_OnClick" />
@@ -1125,7 +1135,7 @@
 				<Button parentKey="NextPageButton">
 					<Size x="32" y="32" />
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-22" y="36" />
+						<Anchor point="BOTTOMRIGHT" x="-22" y="18" />
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameNextPageButton_OnClick" />
@@ -1759,7 +1769,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="StoreTooltipBackdrop" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">

@@ -8,6 +8,22 @@ CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
 CHATCONFIG_CHANNELS_MAXWIDTH = 145;
 
+local function ShouldDisplayDisabled()
+	return not C_SocialRestrictions.IsMuted() and C_SocialRestrictions.IsChatDisabled();
+end
+
+local function SetChatButtonGlowEnabled(enabled)
+	GlowEmitterFactory:SetShown(ChatConfigFrame.ToggleChatButton, enabled, GlowEmitterMixin.Anims.FadeAnim);
+end
+
+local function EnableChatButtonGlow()
+	SetChatButtonGlowEnabled(true);
+end
+
+local function DisableChatButtonGlow()
+	SetChatButtonGlowEnabled(false);
+end
+
 --Chat options
 --NEW_CHAT_TYPE - Add a new chat type to one of the below sections so that people can change it in the Chat Config.
 CHAT_CONFIG_CHAT_LEFT = {
@@ -15,28 +31,43 @@ CHAT_CONFIG_CHAT_LEFT = {
 		type = "SAY",
 		checked = function () return IsListeningForMessageType("SAY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "SAY"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[2] = {
 		type = "EMOTE",
 		checked = function () return IsListeningForMessageType("EMOTE"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "EMOTE"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[3] = {
 		type = "YELL",
 		checked = function () return IsListeningForMessageType("YELL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "YELL"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[4] = {
 		text = GUILD_CHAT,
 		type = "GUILD",
 		checked = function () return IsListeningForMessageType("GUILD"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[5] = {
 		text = OFFICER_CHAT,
 		type = "OFFICER",
 		checked = function () return IsListeningForMessageType("OFFICER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "OFFICER"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[6] = {
 		type = "GUILD_ACHIEVEMENT",
@@ -52,47 +83,92 @@ CHAT_CONFIG_CHAT_LEFT = {
 		type = "WHISPER",
 		checked = function () return IsListeningForMessageType("WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[9] = {
 		type = "BN_WHISPER",
 		noClassColor = 1,
 		checked = function () return IsListeningForMessageType("BN_WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_WHISPER"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[10] = {
 		type = "PARTY",
 		checked = function () return IsListeningForMessageType("PARTY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[11] = {
 		type = "PARTY_LEADER",
 		checked = function () return IsListeningForMessageType("PARTY_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_LEADER"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[12] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[13] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[14] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[15] = {
 		type = "INSTANCE_CHAT",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[16] = {
 		type = "INSTANCE_CHAT_LEADER",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
+	},
+	[17] = {
+		text = VOICE_CHAT_TRANSCRIPTION,
+		type = "VOICE_TEXT",
+		checked = function () return IsListeningForMessageType("VOICE_TEXT"); end;
+		func = function (self, checked) 
+			ToggleChatMessageGroup(checked, "VOICE_TEXT");
+			local chatFrame = FCF_GetCurrentChatFrame();
+			if ( checked ) then
+				chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
+			else
+				chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+			end
+		end;
+		disabled = ShouldDisplayDisabled;
+		onEnterCallback = EnableChatButtonGlow;
+		onLeaveCallback = DisableChatButtonGlow;
 	},
 };
 
@@ -691,12 +767,15 @@ function ChatConfigFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHANNEL_UI_UPDATE");
 	self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
+	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
+
 	ChatConfigCombatSettingsFilters.selectedFilter = 1;
 end
 
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Chat Settings
+		ChatConfigFrame_ReplaceChatConfigLeftTooltips(C_SocialRestrictions.IsChatDisabled());
 		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
@@ -733,6 +812,9 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		if ChatConfigChannelSettings:IsVisible() then
 			ChatConfigChannelSettings_OnShow();
 		end
+	elseif event == "CHAT_DISABLED_CHANGE_FAILED" then
+		local disabled = ...;
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
 	end
 end
 
@@ -756,6 +838,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 			checkBox = CreateFrame("Frame", checkBoxName, frame, checkBoxTemplate);
 			checkBox:SetID(index);
 		end
+
 		if ( not width ) then
 			width = checkBox:GetWidth();
 			height = checkBox:GetHeight();
@@ -778,6 +861,8 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		check.func = value.func;
 		check:SetID(index);
 		check.tooltip = value.tooltip;
+		check.onEnterCallback = value.onEnterCallback;
+		check.onLeaveCallback = value.onLeaveCallback;
 		if ( value.maxWidth ) then
 			checkBoxFontString:SetWidth(0);
 			if ( checkBoxFontString:GetWidth() > value.maxWidth ) then
@@ -971,6 +1056,9 @@ function ChatConfig_UpdateCheckboxes(frame)
 					BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
 				end
 			end
+
+			checkBox.tooltip = value.tooltip;
+
 			if ( type(value.hidden) == "function" ) then
 				if ( value.hidden() ) then
 					checkBox:GetParent():Hide();
@@ -1520,12 +1608,20 @@ function ChatConfigCategory_OnClick(self)
 	end
 end
 
-function UpdateDefaultButtons(combatLogSelected, textToSpeechSelected)
+local function UpdateDefaultButtons(combatLogSelected, textToSpeechSelected)
 	TextToSpeechDefaultButton:SetShown(textToSpeechSelected);
 	TextToSpeechDefaultButton:SetWidth(TextToSpeechDefaultButton.Text:GetWidth() + 32);
+	TextToSpeechCharacterSpecificButton:SetPoint("LEFT", TextToSpeechDefaultButton, "RIGHT", 5, 0);
+	TextToSpeechCharacterSpecificButton:SetShown(textToSpeechSelected);
 	CombatLogDefaultButton:SetShown(combatLogSelected);
-	ChatConfigFrame.DefaultButton:SetShown(not combatLogSelected and not textToSpeechSelected);
-	ChatConfigFrame.RedockButton:SetShown(not combatLogSelected and not textToSpeechSelected);
+
+	local showChatButtons = not combatLogSelected and not textToSpeechSelected;
+	ChatConfigFrame.DefaultButton:SetShown(showChatButtons);
+	ChatConfigFrame.RedockButton:SetShown(showChatButtons);
+	ChatConfigFrame.ToggleChatButton:SetShown(showChatButtons and not C_SocialRestrictions.IsMuted());
+	if showChatButtons then
+		ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(C_SocialRestrictions.IsChatDisabled());
+	end
 end
 
 function ChatConfigCategory_UpdateEnabled()
@@ -1607,7 +1703,7 @@ function CreateChatTextToSpeechChannelList(self, ...)
 		end
 		
 		local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(channel);
-		local checked = TextToSpeechFrame_GetChannelEnabled(channelInfo);
+		local checked = C_TTSSettings.GetChannelEnabled(channelInfo);
 
 		while count < channelID do
 			-- Leave empty entries for missing channels to allow for re-ordering.
@@ -2082,13 +2178,24 @@ function ChatConfigChannelSettings_OnShow()
 	UpdateDefaultButtons(false);
 end
 
+local ChannelTypeFormat = "CHANNEL%d";
+function ChatConfigChannelSettings_SwapChannelsByIndex(firstChannelIndex, secondChannelIndex)
+	local firstChatType = ChannelTypeFormat:format(firstChannelIndex);
+	local secondChatType = ChannelTypeFormat:format(secondChannelIndex);
+	local firstTypeInfo = ChatTypeInfo[firstChatType];
+	local secondTypeInfo = ChatTypeInfo[secondChatType];
+	ChatTypeInfo[firstChatType] = secondTypeInfo;
+	ChatTypeInfo[secondChatType] = firstTypeInfo;
+	C_ChatInfo.SwapChatChannelsByChannelIndex(firstChannelIndex, secondChannelIndex);
+	ChatConfigChannelSettings_UpdateCheckboxes();
+end
+
 function ChatConfigChannelSettings_MoveChannelDown(channelIndex)
 	if channelIndex == #CHAT_CONFIG_CHANNEL_LIST then
 		return;
 	end
 
-	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex + 1);
-	ChatConfigChannelSettings_UpdateCheckboxes();
+	ChatConfigChannelSettings_SwapChannelsByIndex(channelIndex, channelIndex + 1)
 end
 
 function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
@@ -2096,8 +2203,7 @@ function ChatConfigChannelSettings_MoveChannelUp(channelIndex)
 		return;
 	end
 
-	C_ChatInfo.SwapChatChannelsByChannelIndex(channelIndex, channelIndex - 1);
-	ChatConfigChannelSettings_UpdateCheckboxes();
+	ChatConfigChannelSettings_SwapChannelsByIndex(channelIndex, channelIndex - 1)
 end
 
 function ChatConfigOtherSettings_UpdateCheckboxes()
@@ -2137,6 +2243,52 @@ end
 
 function ChatConfigFrameRedockButton_OnLoad(self)
 	self:SetWidth(self:GetTextWidth() + 31);
+end
+
+function ChatConfigFrameToggleChatButton_OnClick()
+	local newDisabled = not C_SocialRestrictions.IsChatDisabled();
+	if newDisabled then
+		StaticPopup_Show("CHAT_CONFIG_DISABLE_CHAT");
+	else
+		C_SocialRestrictions.SetChatDisabled(newDisabled);
+		ChatConfigFrame_OnChatDisabledChanged(newDisabled);
+	end
+end
+
+function ChatConfigFrame_OnChatDisabledChanged(disabled)
+	ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled);
+	ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled);
+	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
+	
+	if disabled then
+		local unsubscribe = true;
+		C_Club.UnfocusAllStreams(unsubscribe);
+	else
+		C_Club.FocusCommunityStreams();
+	end
+
+	EventRegistry:TriggerEvent("AccountInfo.ChatDisabled", disabled);
+end
+
+function ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled)
+	if disabled then
+		local tooltip = string.format(RESTRICT_CHAT_CONFIG_TOOLTIP, RESTRICT_CHAT_CONFIG_ENABLE);
+		for index, tbl in pairs(CHAT_CONFIG_CHAT_LEFT) do
+			if tbl.disabled ~= nil then
+				tbl.tooltip = tooltip;
+			end
+		end
+	else
+		for index, tbl in pairs(CHAT_CONFIG_CHAT_LEFT) do
+			tbl.tooltip = nil;
+		end
+	end
+end
+
+function ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled)
+	local button = ChatConfigFrame.ToggleChatButton;
+	button:SetText(disabled and RESTRICT_CHAT_CONFIG_ENABLE or RESTRICT_CHAT_CONFIG_DISABLE);
+	button:SetWidth(button:GetTextWidth() + 31);
 end
 
 ChatWindowTabMixin = {};
@@ -2378,7 +2530,7 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	local channelIndex = self:GetID();
 	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
-			C_ChatInfo.SwapChatChannelsByChannelIndex(i, i + 1);
+			ChatConfigChannelSettings_SwapChannelsByIndex(i, i + 1);
 		end
 	else
 		LeaveChannelByLocalID(CHAT_CONFIG_CHANNEL_LIST[channelIndex].channelID);
@@ -2393,4 +2545,38 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	end
 
 	ChatConfigChannelSettings_UpdateCheckboxes();
+end
+
+TextToSpeechCharacterSpecificButtonMixin = {};
+
+function TextToSpeechCharacterSpecificButtonMixin:OnLoad()
+	local descriptionText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(CHARACTER_SPECIFIC_SETTINGS);
+	self.text:SetText(descriptionText);
+	self.text:SetFontObject(GameFontNormal);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnShow()
+	local checked = GetCVarBool("TTSUseCharacterSettings");
+	self:SetChecked(checked);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnClick(button, down)
+	local checked = self:GetChecked();
+	if (checked) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+	
+	SetCVar("TTSUseCharacterSettings", checked);
+	TextToSpeechFrame_Update(TextToSpeechFrame);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(CHARACTER_SPECIFIC_SETTINGS_TOOLTIP, nil, nil, nil, nil, true);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnHide()
+	GameTooltip_Hide();
 end

@@ -554,7 +554,7 @@
 				</Frames>
 			</Frame>
 	
-			<Frame parentKey="BuildingLevelTooltip" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="TOOLTIP" clampedToScreen="true">
+			<Frame parentKey="BuildingLevelTooltip" inherits="TooltipBackdropTemplate" hidden="true" frameStrata="TOOLTIP" clampedToScreen="true">
 				<Size x="230" y="300"/>
 				<Layers>
 					<Layer level="ARTWORK">

@@ -183,7 +183,7 @@ function EventToastManagerFrameMixin:DisplayToastLink(chatFrame, link)
 	if(not link or link == "") then 
 		return;
 	end 
-	info = ChatTypeInfo["SYSTEM"];
+	local info = ChatTypeInfo["SYSTEM"];
 	chatFrame:AddMessage(link, info.r, info.g, info.b, info.id);
 end
 
@@ -725,6 +725,15 @@ end
 function EventToastAnimationsMixin:PauseAnimations()
 	self.hideAnim:Stop();
 	self.showAnim:Stop();
+
+	if(self.BannerFrame and self.BannerFrame:IsShown()) then 
+		self.BannerFrame:SetAlpha(1);
+	end 
+
+	if(self.NewStageTextureKit) then 
+		self.NewStageTextureKit:Stop();
+	end 
+
 	self:SetAlpha(1);
 end
 

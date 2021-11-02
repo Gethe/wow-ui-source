@@ -1,3 +1,19 @@
+TransmogSlotOrder = {
+	INVSLOT_HEAD,
+	INVSLOT_SHOULDER,
+	INVSLOT_BACK,
+	INVSLOT_CHEST,
+	INVSLOT_BODY,
+	INVSLOT_TABARD,
+	INVSLOT_WRIST,
+	INVSLOT_HAND,
+	INVSLOT_WAIST,
+	INVSLOT_LEGS,
+	INVSLOT_FEET,
+	INVSLOT_MAINHAND,
+	INVSLOT_OFFHAND,
+};
+
 TransmogUtil = {};
 
 function TransmogUtil.GetInfoForEquippedSlot(transmogLocation)
@@ -30,7 +46,7 @@ function TransmogUtil.GetWeaponInfoForEnchant(transmogLocation)
 	if TransmogUtil.CanEnchantSource(selectedSourceID) then
 		return selectedSourceID, selectedVisualID;
 	else
-		local appearanceSourceID = C_TransmogCollection.GetIllusionFallbackWeaponSource();
+		local appearanceSourceID = C_TransmogCollection.GetFallbackWeaponAppearance();
 		local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
 		return appearanceSourceID, appearanceVisualID;
 	end
@@ -166,7 +182,132 @@ function TransmogUtil.IsValidTransmogSlotID(slotID)
 	local lookupKey = TransmogUtil.GetTransmogLocationLookupKey(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
 	return not not TRANSMOG_SLOTS[lookupKey];
 end
-	
+
+function TransmogUtil.OpenCollectionToItem(sourceID)
+	if TransmogUtil.OpenCollectionUI() then
+		WardrobeCollectionFrame:GoToItem(sourceID);
+	end
+end
+
+function TransmogUtil.OpenCollectionToSet(setID)
+	if TransmogUtil.OpenCollectionUI() then
+		WardrobeCollectionFrame:GoToSet(setID);
+	end
+end
+
+function TransmogUtil.OpenCollectionUI()
+	if not CollectionsJournal then
+		CollectionsJournal_LoadUI();
+	end
+	if CollectionsJournal then
+		if not CollectionsJournal:IsVisible() or not WardrobeCollectionFrame:IsVisible() then
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
+		return true;
+	end
+	return false;
+end
+
+function TransmogUtil.GetEmptyItemTransmogInfoList()
+	local list = { };
+	for i = 1, INVSLOT_LAST_EQUIPPED do
+		table.insert(list, ItemUtil.CreateItemTransmogInfo(0, 0, 0));
+	end
+	return list;
+end
+
+local NUM_OUTFIT_SLASH_COMMAND_VALUES = 17;
+
+-- Outfit slash command sample:
+-- /outfit v1 7019,7017,0,0,7022,0,0,7015,7020,7016,7018,7021,70216,0,0,0,0
+-- "v1" is the version so future formats won't break older slash commands
+-- The comma-separated values are as follows:
+-- 		Head		- appearanceID
+--		Shoulder	- appearanceID
+--		Shoulder	- secondaryAppearanceID (0 if shoulders aren't split)
+-- 		Back		- appearanceID
+--		Chest		- appearanceID
+--		Body		- appearanceID
+--		Tabard		- appearanceID
+--		Wrist		- appearanceID
+--		Hand		- appearanceID
+--		Waist		- appearanceID
+--		Legs		- appearanceID
+--		Feet		- appearanceID
+--		MainHand	- appearanceID
+--		MainHand	- secondaryAppearanceID (0 if the weapon is from Legion Artifacts category, -1 otherwise)
+--		MainHand	- illusionID
+--		OffHand		- appearanceID
+--		OffHand		- illusionID
+
+function TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList)
+	local slashCommand = "/outfit v1 ";
+	local isPairedWeapons = false;
+	for index, slotID in ipairs(TransmogSlotOrder) do
+		local transmogInfo = itemTransmogInfoList[slotID];
+		if transmogInfo then
+			local appearanceID = transmogInfo.appearanceID;
+			if slotID == INVSLOT_OFFHAND and isPairedWeapons then
+				appearanceID = -1;
+			end
+			if index == 1 then
+				slashCommand = slashCommand..appearanceID;
+			else
+				slashCommand = slashCommand..","..appearanceID;
+			end
+			-- secondaries
+			if slotID == INVSLOT_SHOULDER or slotID == INVSLOT_MAINHAND then
+				slashCommand = slashCommand..","..transmogInfo.secondaryAppearanceID;
+			end
+			-- illusions
+			if slotID == INVSLOT_MAINHAND or slotID == INVSLOT_OFFHAND then
+				slashCommand = slashCommand..","..transmogInfo.illusionID;
+			end
+		end
+	end
+	return slashCommand;
+end
+
+function TransmogUtil.ParseOutfitSlashCommand(msg)
+	-- check version #
+	if string.sub(msg, 1, 3) == "v1 " then
+		-- read off the values
+		local readlist = { };
+		for value in  string.gmatch(string.sub(msg, 4), "%-?%d+") do
+			table.insert(readlist, tonumber(value));
+		end
+
+		if #readlist ~= NUM_OUTFIT_SLASH_COMMAND_VALUES then
+			DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_LINK_INVALID, RED_FONT_COLOR:GetRGB());
+			return;
+		end
+
+		-- accessor for next value
+		local readIndex = 0;
+		local function GetNextReadValue()
+			readIndex = readIndex + 1; 
+			return readlist[readIndex];
+		end
+
+		-- set the values
+		local itemTransmogInfoList = TransmogUtil.GetEmptyItemTransmogInfoList();
+		for _, slotID in ipairs(TransmogSlotOrder) do
+			local info = itemTransmogInfoList[slotID];
+			info.appearanceID = GetNextReadValue();
+			-- secondaries
+			if slotID == INVSLOT_SHOULDER or slotID == INVSLOT_MAINHAND then
+				info.secondaryAppearanceID = GetNextReadValue();
+			end
+			-- illusions
+			if slotID == INVSLOT_MAINHAND or slotID == INVSLOT_OFFHAND then
+				info.illusionID = GetNextReadValue();
+			end
+		end
+		return itemTransmogInfoList;
+	end
+	return nil;
+end
+
 TransmogPendingInfoMixin = {};
 
 function TransmogPendingInfoMixin:Init(pendingType, transmogID, category)

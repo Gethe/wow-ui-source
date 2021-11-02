@@ -767,7 +767,7 @@ function LFDRoleCheckPopup_Update()
 
 	local displayName;
 	if( isLFGList ) then
-		displayName = C_LFGList.GetActivityInfo(activityID);
+		displayName = C_LFGList.GetActivityFullName(activityID);
 	elseif ( bgQueue ) then
 		displayName = GetLFGRoleUpdateBattlegroundInfo();
 	elseif ( slots == 1 ) then

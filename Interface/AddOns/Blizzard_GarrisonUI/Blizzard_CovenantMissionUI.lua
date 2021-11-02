@@ -220,7 +220,14 @@ function CovenantMission:SelectTab(id)
 	GarrisonFollowerMission.SelectTab(self, id);
 	self.BackgroundTile:SetShown(id ~= 3);
 	self:HideStaticPopups();
-	self:ClearQueuedTutorials();
+
+	self:UpdateMissionParty();
+
+	if self.MissionTab:IsShown() and self.queuedTutorials then
+		self.tutorialIndex = 1;
+		self.currentTutorial = nil;
+		self:ProcessTutorials();
+	end
 end
 
 function CovenantMission:CloseMission()
@@ -778,7 +785,7 @@ function CovenantMission:QueueAutoTroopsTutorial()
 					checkCVars = true,
 				}
 
-				self:QueueTutorial(self, helpTipInfo, button);
+				self:QueueTutorial(helpTipInfo, button);
 				return;
 			end
 		end
@@ -804,7 +811,7 @@ function CovenantMission:QueueSingleTargetTutorial(abilityTargetInfos)
 					checkCVars = true,
 				}
 
-				self:QueueTutorial(self, helpTipInfo, anchorFrame);
+				self:QueueTutorial(helpTipInfo, anchorFrame);
 				return;
 			end
 		end
@@ -830,7 +837,7 @@ function CovenantMission:QueueTargetColumnTutorial(abilityTargetInfos)
 					checkCVars = true,
 				}
 				
-				self:QueueTutorial(self, helpTipInfo, anchorFrame);
+				self:QueueTutorial(helpTipInfo, anchorFrame);
 				return;
 			end
 		end
@@ -860,7 +867,7 @@ function CovenantMission:QueueTargetRowTutorial(abilityTargetInfos)
 			checkCVars = true,
 		}
 
-		self:QueueTutorial(self, helpTipInfo, anchorFrame);
+		self:QueueTutorial(helpTipInfo, anchorFrame);
 	end
 end
 
@@ -880,7 +887,7 @@ function CovenantMission:QueueTargetAllTutorial()
 			checkCVars = true,
 		}
 
-		self:QueueTutorial(self, helpTipInfo, anchorFrame);
+		self:QueueTutorial(helpTipInfo, anchorFrame);
 	end
 end
 
@@ -898,20 +905,36 @@ function CovenantMission:QueueTargetingTutorials(autoSpellInfos, abilityTargetIn
 	end
 end
 
-function CovenantMission:QueueTutorial(parentFrame, helptip, anchorFrame)
-	table.insert(self.queuedTutorials, {parent = parentFrame, helpTipInfo = helptip, anchor = anchorFrame});
+function CovenantMission:QueueTutorial(helptip, anchorFrame)
+	local missionPage = self:GetMissionPage();
+	if not missionPage:IsVisible() then
+		return;
+	end
+
+	for i, tutorialInfo in ipairs(self.queuedTutorials) do
+		if tutorialInfo.helpTipInfo.text == helptip.text then
+			return;
+		end
+	end
+
+	table.insert(self.queuedTutorials, {helpTipInfo = helptip, anchor = anchorFrame});
 end
 
 function CovenantMission:ClearQueuedTutorials()
 	self.queuedTutorials = {};
 	if self.currentTutorial then
-		HelpTip:Hide(self, self.currentTutorial);
+		HelpTip:Hide(self:GetMissionPage(), self.currentTutorial);
 	end
 	self.currentTutorial = nil;
 	self.tutorialIndex = 1;
 end
 
 function CovenantMission:ProcessTutorials()
+	local missionPage = self:GetMissionPage();
+	if HelpTip:IsShowingAnyInSystem("CovenantMissionStrategy") or not missionPage:IsVisible() then
+		return;
+	end
+
 	if self.currentTutorial then
 		HelpTip:Acknowledge(self.currentTutorial);
 	end
@@ -920,7 +943,7 @@ function CovenantMission:ProcessTutorials()
 		local nextTutorial = self.queuedTutorials[i];
 		if not GetCVarBitfield(nextTutorial.helpTipInfo.cvarBitfield, nextTutorial.helpTipInfo.bitfieldFlag) then
 			
-			HelpTip:Show(nextTutorial.parent, nextTutorial.helpTipInfo, nextTutorial.anchor);
+			HelpTip:Show(missionPage, nextTutorial.helpTipInfo, nextTutorial.anchor);
 			self.currentTutorial = nextTutorial.helpTipInfo.text;
 			self.tutorialIndex = i + 1;
 			return;
@@ -929,32 +952,40 @@ function CovenantMission:ProcessTutorials()
 end
 
 function CovenantMission:ShowStrategicPositioningTutorials()
+	local missionPage = self:GetMissionPage();
+
 	local showSecondTutorial = function () 
 		local secondAnchorIndex = Enum.GarrAutoBoardIndex.AllyRightFront;
-		local secondAnchorFrame = self:GetMissionPage().Board:GetSocketByBoardIndex(secondAnchorIndex);
+		local secondAnchorFrame = missionPage.Board:GetSocketByBoardIndex(secondAnchorIndex);
 		local secondHelpTip = {
 			text = COVENANT_MISSIONS_TUTORIAL_STRATEGY2,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			offsetX = 0,
 			offsetY = 0,
+			onHideCallback = GenerateClosure(self.ProcessTutorials, self); 
 		}
 
-		HelpTip:Show(self, secondHelpTip, secondAnchorFrame);
+		HelpTip:Show(missionPage, secondHelpTip, secondAnchorFrame);
 	end
 
 	local anchorIndex = Enum.GarrAutoBoardIndex.EnemyLeftBack;
-	local anchorFrame = self:GetMissionPage().Board:GetSocketByBoardIndex(anchorIndex);
+	local anchorFrame = missionPage.Board:GetSocketByBoardIndex(anchorIndex);
 	local helpTipInfo = {
 		text = COVENANT_MISSIONS_TUTORIAL_STRATEGY1,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = 0,
 		offsetY = 0,
-		onHideCallback = function(acknowledged, closeFlag) showSecondTutorial(); end;
+		onHideCallback = function(acknowledged, closeFlag)
+			if missionPage:IsVisible() then
+				showSecondTutorial();
+			end;
+		end,
+		system = "CovenantMissionStrategy",
 	}
 
-	HelpTip:Show(self, helpTipInfo, anchorFrame);
+	HelpTip:Show(missionPage, helpTipInfo, anchorFrame);
 end
 
 function CovenantMission:ClearStrategicPositioningTutorials()
@@ -1025,6 +1056,9 @@ function CovenantMissionPage_OnShow(self)
 	mainFrame.FollowerList.showUncollected = false;
 	mainFrame.FollowerList:Show();
 	mainFrame:UpdateStartButton(self);
+	if self.missionInfo then
+		mainFrame:SetupShowMissionTutorials(self.missionInfo);
+	end
 end
 
 function CovenantMissionPage_OnHide(self)

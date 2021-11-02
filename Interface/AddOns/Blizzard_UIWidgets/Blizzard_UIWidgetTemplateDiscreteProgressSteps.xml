@@ -2,6 +2,10 @@
 ..\..\FrameXML\UI.xsd">
 	<Frame name="UIWidgetTemplateDiscreteProgressSteps" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateDiscreteProgressStepsMixin">
 		<Size x="140" y="140"/>
+		<KeyValues>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+			<KeyValue key="tooltipYOffset" value="-20" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" hidden="true">

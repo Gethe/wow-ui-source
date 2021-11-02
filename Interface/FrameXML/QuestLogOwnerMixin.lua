@@ -77,7 +77,7 @@ end
 function QuestLogOwnerMixin:HandleUserActionMaximizeSelf()
 	SetCVar("miniWorldMap", 0);
 	self.wasShowingQuestLog = self.QuestLog:IsShown();
-	displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
+	local displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
 	self:SetDisplayState(displayState);
 end
 

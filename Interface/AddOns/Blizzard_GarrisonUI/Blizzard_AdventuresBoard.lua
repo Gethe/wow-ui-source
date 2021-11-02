@@ -561,7 +561,7 @@ function AdventuresSocketMixin:SetBoardPreviewState(targetInfo)
 			checkCVars = true,
 		}
 		local mainFrame = self:GetBoard():GetMainFrame();
-		mainFrame:QueueTutorial(mainFrame, helpTipInfo, self.AuraContainer);
+		mainFrame:QueueTutorial(helpTipInfo, self.AuraContainer);
 	end
 
 	self:UpdateAuraVisibility();

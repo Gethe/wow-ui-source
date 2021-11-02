@@ -251,19 +251,19 @@
 
 	<FontFamily name="NumberFont_OutlineThick_Mono_Small" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Fonts\ARIALN.TTF" height="12" outline="THICK" monochrome="true"/>
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="11" outline="THICK" monochrome="true"/>
+			<Font font="Fonts\2002.TTF" height="11" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\FRIZQT__.TTF" height="11" outline="NORMAL" monochrome="true"/>
+			<Font font="Fonts\FRIZQT__.TTF" height="11" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\arheiuhk_bd.TTF" height="11" outline="THICK" monochrome="true"/>
+			<Font font="Fonts\arheiuhk_bd.TTF" height="11" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="russian">
-			<Font font="Fonts\ARIALN.TTF" height="12" outline="THICK" monochrome="true"/>
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
 		</Member>
 	</FontFamily>
 

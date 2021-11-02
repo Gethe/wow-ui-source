@@ -201,49 +201,64 @@
 			<AbsInset left="-25" right="0" top="-15" bottom="0"/>
 		</HitRectInsets>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\Common\friendship-parts">  <!-- the bar itself -->
-					<Size x="267" y="38"/>
+			<Layer level="ARTWORK" textureSubLevel="-2">
+				<Texture parentKey="BarBorder" atlas="friendship-parts-bar" useAtlasSize="true"> <!-- the bar's border -->
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-31" y="18"/>
+						<Anchor point="TOPLEFT" x="-26" y="5"/>
 					</Anchors>
-					<TexCoords left="0.01367188" right="0.53515625" top="0.01562500" bottom="0.60937500"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="BarRingBackground" atlas="friendship-parts-background" useAtlasSize="true"> <!-- the bar's ring's background -->
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-24" y="13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
 				<Texture file="Interface\Common\friendship-heart" parentKey="icon">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-27" y="12"/>
+						<Anchor point="TOPLEFT" x="-27" y="16"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNotch1" file="Interface\Common\friendship-parts">
-					<Size x="4" y="17"/>
+				<MaskTexture parentKey="FriendshipIconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="43" y="1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-1" y="1"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.00976563" top="0.01562500" bottom="0.28125000"/>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="BarCircle" atlas="friendship-parts-circle" useAtlasSize="true"> <!-- the bar's ring -->
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-32" y="19"/>
+					</Anchors>
 				</Texture>
-				<Texture name="$parentNotch2" file="Interface\Common\friendship-parts">
-					<Size x="4" y="17"/>
+				<Texture parentKey="Notch1" atlas="friendship-parts-divider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNotch1" x="47" y="0"/>
+						<Anchor point="TOPLEFT" x="43" y="2"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.00976563" top="0.01562500" bottom="0.28125000"/>
 				</Texture>
-				<Texture name="$parentNotch3" file="Interface\Common\friendship-parts">
-					<Size x="4" y="17"/>
+				<Texture parentKey="Notch2" atlas="friendship-parts-divider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNotch2" x="47" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Notch1" x="47" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.00976563" top="0.01562500" bottom="0.28125000"/>
 				</Texture>
-				<Texture name="$parentNotch4" file="Interface\Common\friendship-parts">
+				<Texture parentKey="Notch3" atlas="friendship-parts-divider" useAtlasSize="true">
 					<Size x="4" y="17"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNotch3" x="47" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Notch2" x="47" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.00976563" top="0.01562500" bottom="0.28125000"/>
+				</Texture>
+				<Texture parentKey="Notch4" atlas="friendship-parts-divider" useAtlasSize="true">
+					<Size x="4" y="17"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Notch3" x="47" y="0"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
@@ -255,8 +270,6 @@
 		<Scripts>
 			<OnLoad>
 				self:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
-				self:GetStatusBarTexture():SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
-				self:SetStatusBarColor(1, 0, 0);
 			</OnLoad>
 			<OnEnter function="NPCFriendshipStatusBar_OnEnter"/>
 			<OnLeave>

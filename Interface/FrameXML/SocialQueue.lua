@@ -62,7 +62,7 @@ function SocialQueueUtil_GetQueueName(queue, nameFormatter)
 			end
 		else
 			if ( queue.activityID ) then
-				name = C_LFGList.GetActivityInfo(queue.activityID);
+				name = C_LFGList.GetActivityFullName(queue.activityID);
 			end
 		end
 

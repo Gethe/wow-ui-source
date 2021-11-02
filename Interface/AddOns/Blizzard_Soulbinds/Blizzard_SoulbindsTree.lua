@@ -235,10 +235,6 @@ function SoulbindTreeMixin:StopNodeAnimations()
 	end
 end
 
-local function AreConduitsResettingOrIsUninstalled(nodeFrame)
-	return Soulbinds.IsConduitResetPending() or (C_Soulbinds.GetConduitCharges() > 0 or not C_Soulbinds.IsConduitInstalled(nodeFrame:GetID()));
-end
-
 local function IsInstallingConduitsOrNotPending(soulbindID, nodeFrame)
 	if not Soulbinds.IsConduitCommitPending() then
 		return true;
@@ -259,9 +255,9 @@ function SoulbindTreeMixin:ApplyConduitPickupAnim(conduitType, conduitID)
 			-- evaluable in the sense that their actual state would not match their expected state. 
 			-- For example a commit is in flight, entering the collection would incorrectly animate
 			-- a conduit that is about to be installed. Similarly, if conduits are being reset, entering the 
-			-- collection would incorrect disallow animation because it would still appear installed. 
+			-- collection would incorrect disallow animation because it would still appear installed.
 			return nodeFrame:IsConduit() and nodeFrame:IsConduitType(conduitType) and 
-				AreConduitsResettingOrIsUninstalled(nodeFrame) and IsInstallingConduitsOrNotPending(self.soulbindID, nodeFrame);
+				IsInstallingConduitsOrNotPending(self.soulbindID, nodeFrame);
 		end
 
 		if C_Soulbinds.IsUnselectedConduitPendingInSoulbind(self.soulbindID) then
@@ -416,11 +412,6 @@ function SoulbindTreeMixin:StopThenApplySelectableAndUnsocketedAnims()
 end
 
 function SoulbindTreeMixin:TryInstallConduitInSlot(nodeID, conduitID)
-	if C_Soulbinds.GetTotalConduitChargesPending() >= C_Soulbinds.GetConduitCharges() then
-		UIErrorsFrame:AddExternalErrorMessage(CONDUIT_CHARGE_ERROR);	
-		return;
-	end
-
 	local pendingInstallConduitID = C_Soulbinds.GetConduitIDPendingInstall(nodeID);
 	if pendingInstallConduitID and pendingInstallConduitID == conduitID then
 		return;

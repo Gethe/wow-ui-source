@@ -1,19 +1,11 @@
-local next = next;
+local secureexecuterange = secureexecuterange;
 local securecall = securecall;
+local securecallfunction  = securecallfunction;
 local unpack = unpack;
 local error = error;
-local issecure = issecure;
-
-local function SecureNext(elements, key)
-    return securecall(next, elements, key);
-end
-
-local function SecureInvoke(func, ...)
-	if type(func) ~= "function" then
-        error("SecureInvoke 'func' requires function type.");
-    end
-    securecall(func, ...);
-end
+local pairs = pairs;
+local rawset = rawset;
+local next = next;
 
 local InsertEventAttribute = "insert-secure-event";
 local AttributeDelegate = CreateFrame("FRAME");
@@ -63,7 +55,8 @@ end
 
 function CallbackRegistryMixin:HasRegistrantsForEvent(event)
 	for callbackType, callbackTable in pairs(self:GetCallbackTables()) do
-		if callbackTable[event] then
+		local callbacks = callbackTable[event];
+		if callbacks and securecallfunction(next, callbacks) then
 			return true;
 		end
 	end
@@ -94,7 +87,7 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 	end
 
 	local count = select("#", ...);
-	if not issecure() or (count > 0) then
+	if count > 0 then
 		local callbacks = self:GetCallbacksByEvent(CallbackType.Closure, event);
 		callbacks[owner] = GenerateClosure(func, owner, ...);
 	else
@@ -112,16 +105,20 @@ function CallbackRegistryMixin:TriggerEvent(event, ...)
 
 	local closures = self:GetCallbacksByEvent(CallbackType.Closure, event);
 	if closures then
-		for owner, closure in SecureNext, closures do
-			SecureInvoke(closure, ...);
+		local function CallbackRegistryExecuteClosurePair(owner, closure, ...)
+			securecallfunction(closure, ...);
 		end
+
+		secureexecuterange(closures, CallbackRegistryExecuteClosurePair, ...);
 	end
 
 	local funcs = self:GetCallbacksByEvent(CallbackType.Function, event);
 	if funcs then
-		for owner, func in SecureNext, funcs do
-			SecureInvoke(func, owner, ...);
+		local function CallbackRegistryExecuteOwnerPair(owner, func, ...)
+			securecallfunction(func, owner, ...);
 		end
+
+		secureexecuterange(funcs, CallbackRegistryExecuteOwnerPair, ...);
 	end
 end
 
@@ -167,4 +164,8 @@ function CallbackRegistryMixin:GenerateCallbackEvents(events)
 		end
 		self.Event[eventName] = eventName;
 	end
+end
+
+function CallbackRegistryMixin.DoesFrameHaveEvent(frame, event)
+	return frame.Event and frame.Event[event];
 end

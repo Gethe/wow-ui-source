@@ -106,6 +106,9 @@ end
 
 function AlertFrameQueueMixin:OnFrameHide(frame)
 	self.alertFramePool:Release(frame);
+	if frame.OnRelease then
+		frame:OnRelease();
+	end
 end
 
 function AlertFrameQueueMixin:AddAlert(...)
@@ -443,6 +446,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
+	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -639,6 +643,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
 		local powerID = ...;
 		NewRuneforgePowerAlertSystem:AddAlert(powerID);
+	elseif ( event == "TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED") then
+		local itemModifiedAppearanceID = ...;
+		NewCosmeticAlertFrameSystem:AddAlert(itemModifiedAppearanceID);
 	end
 end
 

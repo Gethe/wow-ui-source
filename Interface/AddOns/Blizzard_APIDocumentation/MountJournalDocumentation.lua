@@ -334,7 +334,35 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "IsTypeChecked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidSourceFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidTypeFilter",
 			Type = "Function",
 
 			Arguments =
@@ -380,6 +408,15 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "SetAllTypeFilters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCollectedFilterSetting",
 			Type = "Function",
 
@@ -410,6 +447,16 @@ local MountJournal =
 		},
 		{
 			Name = "SetSourceFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTypeFilter",
 			Type = "Function",
 
 			Arguments =
@@ -463,6 +510,31 @@ local MountJournal =
 
 	Tables =
 	{
+		{
+			Name = "MountType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Ground", Type = "MountType", EnumValue = 0 },
+				{ Name = "Flying", Type = "MountType", EnumValue = 1 },
+				{ Name = "Aquatic", Type = "MountType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "MountTypeFlag",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "IsFlyingMount", Type = "MountTypeFlag", EnumValue = 1 },
+				{ Name = "IsAquaticMount", Type = "MountTypeFlag", EnumValue = 2 },
+			},
+		},
 		{
 			Name = "MountCreatureDisplayInfo",
 			Type = "Structure",

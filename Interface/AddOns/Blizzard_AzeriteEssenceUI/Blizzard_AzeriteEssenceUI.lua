@@ -111,7 +111,7 @@ function AzeriteEssenceUIMixin:SetupMilestones()
 
 	for i, milestoneInfo in ipairs(milestones) do
 		local template;
-		if milestoneInfo.slot == Enum.AzeriteEssence.MainSlot then
+		if milestoneInfo.slot == Enum.AzeriteEssenceSlot.MainSlot then
 			template = "AzeriteMilestoneMajorSlotTemplate";
 		elseif milestoneInfo.rank then
 			template = "AzeriteMilestoneRankedTemplate";
@@ -852,7 +852,7 @@ function AzeriteEssenceListMixin:Refresh()
 					button.Background:SetDesaturated(not isAzeriteItemEnabled);
 					local essenceSlot = slotEssences[essenceInfo.ID];
 					if essenceSlot then
-						if essenceSlot == Enum.AzeriteEssence.MainSlot then
+						if essenceSlot == Enum.AzeriteEssenceSlot.MainSlot then
 							activatedMarker = button.ActivatedMarkerMain;
 						else
 							activatedMarker = button.ActivatedMarkerPassive;
@@ -1419,7 +1419,7 @@ end
 AzeriteEssenceLearnAnimFrameMixin = { };
 
 function AzeriteEssenceLearnAnimFrameMixin:OnLoad()
-	self:SetPoint("CENTER", AzeriteEssenceUI:GetSlotFrame(Enum.AzeriteEssence.MainSlot));
+	self:SetPoint("CENTER", AzeriteEssenceUI:GetSlotFrame(Enum.AzeriteEssenceSlot.MainSlot));
 end
 
 function AzeriteEssenceLearnAnimFrameMixin:PlayAnim()

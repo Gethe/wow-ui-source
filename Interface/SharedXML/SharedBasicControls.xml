@@ -462,22 +462,4 @@
 			<OnLoad method="OnLoad" inherit="prepend"/>
 		</Scripts>
 	</Frame>
-
-	<Frame name="NewCallout" inherits="ResizeLayoutFrame" virtual="true" hidden="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
-					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
-					</Shadow>
-				</FontString>
-				<Texture parentKey="Glow" atlas="collections-newglow">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Text" x="-20" y="10"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" x="20" y="-10"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
 </Ui>

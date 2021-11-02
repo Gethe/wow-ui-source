@@ -1059,19 +1059,22 @@ QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth 
 function QuestInfoRewardItemCodeTemplate_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
+	local showCollectionText = false;
+
 	if (self.objectType == "questSessionBonusReward") then
 		GameTooltip:SetItemByID(self:GetID());
 		GameTooltip_ShowCompareItem(GameTooltip);
 	elseif ( QuestInfoFrame.questLog ) then
 		if (self.objectType == "item") then
-			GameTooltip:SetQuestLogItem(self.type, self:GetID());
+			local questID = nil;
+			GameTooltip:SetQuestLogItem(self.type, self:GetID(), questID, showCollectionText);
 			GameTooltip_ShowCompareItem(GameTooltip);
 		elseif (self.objectType == "currency") then
 			GameTooltip:SetQuestLogCurrency(self.type, self:GetID());
 		end
 	else
 		if (self.objectType == "item") then
-			GameTooltip:SetQuestItem(self.type, self:GetID());
+			GameTooltip:SetQuestItem(self.type, self:GetID(), showCollectionText);
 			GameTooltip_ShowCompareItem(GameTooltip);
 		elseif (self.objectType == "currency") then
 			GameTooltip:SetQuestCurrency(self.type, self:GetID());

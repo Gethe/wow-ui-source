@@ -1,3 +1,6 @@
+
+local type = type;
+
 SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP = 1;
 SCROLLING_MESSAGE_FRAME_INSERT_MODE_BOTTOM = 2;
 
@@ -72,10 +75,12 @@ function ScrollingMessageFrameMixin:AdjustMessageColors(transformFunction)
 	for i, entry in self.historyBuffer:EnumerateIndexedEntries() do
 		local changeColor, newR, newG, newB = transformFunction(self:UnpackageEntry(entry));
 		if changeColor then
-			entry.r = newR;
-			entry.g = newG;
-			entry.b = newB;
-			self:MarkDisplayDirty();
+			if (type(newR) == "number") or (type(newG) == "number") or (type(newB) == "number") then
+				entry.r = newR;
+				entry.g = newG;
+				entry.b = newB;
+				self:MarkDisplayDirty();
+			end
 		end
 	end
 end

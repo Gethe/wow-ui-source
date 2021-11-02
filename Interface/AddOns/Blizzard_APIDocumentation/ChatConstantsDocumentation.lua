@@ -44,6 +44,33 @@ local ChatConstants =
 				{ Name = "Custom", Type = "PermanentChatChannelType", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "TtsBoolSetting",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "PlaySoundSeparatingChatLineBreaks", Type = "TtsBoolSetting", EnumValue = 0 },
+				{ Name = "AddCharacterNameToSpeech", Type = "TtsBoolSetting", EnumValue = 1 },
+				{ Name = "PlayActivitySoundWhenNotFocused", Type = "TtsBoolSetting", EnumValue = 2 },
+				{ Name = "AlternateSystemVoice", Type = "TtsBoolSetting", EnumValue = 3 },
+				{ Name = "NarrateMyMessages", Type = "TtsBoolSetting", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "TtsVoiceType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Standard", Type = "TtsVoiceType", EnumValue = 0 },
+				{ Name = "Alternate", Type = "TtsVoiceType", EnumValue = 1 },
+			},
+		},
 	},
 };
 

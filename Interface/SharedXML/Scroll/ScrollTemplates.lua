@@ -214,7 +214,7 @@ function ScrollingEditBoxMixin:SetFontObject(fontName)
 	padding:SetBottom(fontHeight * .5);
 
 	scrollBox:SetPanExtent(fontHeight);
-	scrollBox:UpdateImmediately();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
@@ -227,7 +227,7 @@ function ScrollingEditBoxMixin:SetText(text)
 	editBox:ApplyText(text);
 
 	local scrollBox = self:GetScrollBox();
-	scrollBox:UpdateImmediately();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
@@ -262,7 +262,7 @@ end
 
 function ScrollingEditBoxMixin:OnEditBoxTextChanged(editBox, userChanged)
 	local scrollBox = self:GetScrollBox();
-	scrollBox:UpdateImmediately();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 
 	self:TriggerEvent("OnTextChanged", editBox, userChanged);
 end
@@ -273,7 +273,7 @@ end
 
 function ScrollingEditBoxMixin:OnEditBoxCursorChanged(editBox, x, y, width, height, context)
 	local scrollBox = self:GetScrollBox();
-	scrollBox:UpdateImmediately();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 
 	local allowCursorClipping = context ~= Enum.InputContext.Keyboard;
 	self:ScrollCursorIntoView(allowCursorClipping);
@@ -392,7 +392,7 @@ function ScrollingFontMixin:SetText(text)
 	fontStringContainer:SetHeight(height);
 
 	local scrollBox = self:GetScrollBox();
-	scrollBox:UpdateImmediately();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
@@ -415,6 +415,6 @@ function ScrollingFontMixin:SetFontObject(fontName)
 	padding:SetBottom(fontHeight * .5);
 
 	scrollBox:SetPanExtent(fontHeight);
-	scrollBox:UpdateImmediately();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end

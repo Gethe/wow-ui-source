@@ -97,6 +97,7 @@
 		<KeyValues>
 			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
 			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
+			<KeyValue key="newTagYOffset" value="-5" type="number"/>
 		</KeyValues>
 		<NormalTexture parentKey="NormalTexture"/>
 		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.5"/>
@@ -156,6 +157,11 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		
 		<Scripts>
@@ -204,6 +210,7 @@
 			<KeyValue key="tooltipXOffset" value="30" type="number"/>
 			<KeyValue key="tooltipYOffset" value="-16" type="number"/>
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="newTagYOffset" value="15" type="number"/>
 		</KeyValues>
 		<HitRectInsets left="15" right="15" top="15" bottom="15"/>
 	</CheckButton>
@@ -251,11 +258,19 @@
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
 	</Frame>
-	<Frame name="CharCustomizeOptionSelectionPopoutTemplate" inherits="SelectionPopoutWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSelectionPopoutMixin" virtual="true">
+	
+<Frame name="CharCustomizeOptionSelectionPopoutTemplate" inherits="SelectionPopoutWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSelectionPopoutMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 		</KeyValues>
+		<Frames>
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="TOPRIGHT" x="-18" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="CharCustomizeOptionCheckButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionCheckButtonMixin" virtual="true">
@@ -288,6 +303,12 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
+			
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Button" relativePoint="TOPRIGHT" x="3" y="-5"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

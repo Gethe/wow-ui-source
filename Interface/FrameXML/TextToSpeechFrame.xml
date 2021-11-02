@@ -108,7 +108,7 @@
 	<Frame name="TextToSpeechFrameTtsVoicePickerTemplate" inherits="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" virtual="true">
 		<Size x="350" y="115"/>
 		<Frames>
-			<Frame inherits="TooltipBorderedFrameTemplate" useParentLevel="true">
+			<Frame inherits="TooltipBackdropTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-10" y="10"/>
 					<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>

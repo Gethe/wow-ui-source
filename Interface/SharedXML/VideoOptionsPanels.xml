@@ -1483,10 +1483,54 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentContrastSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" obeyStepOnDrag="true">
+			<Slider name="$parentResampleSharpnessSlider" inherits="VideoOptionsSliderTemplate" minValue="0.0" maxValue="2.0" valueStep=".1" obeyStepOnDrag="true">
 				<Size x="180" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetFPSSlider" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "ResampleSharpness";
+						self.tooltip = OPTION_TOOLTIP_SHARPNESS;
+						self.name = RESAMPLE_SHARPNESS;
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						self.GetCurrentValue =
+							function (self)
+								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(RESAMPLE_SHARPNESS);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						self.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value)
+							VideoOptions_OnClick(self, value);
+						end
+						self.Label:SetFormattedText(GAMMA_FORMAT, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentContrastSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResampleSharpnessSlider" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-25"/>
 					</Anchor>
 				</Anchors>

@@ -7,6 +7,21 @@ local TransmogItems =
 	Functions =
 	{
 		{
+			Name = "AccountCanCollectSource",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasItemData", Type = "bool", Nilable = false },
+				{ Name = "canCollect", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanAppearanceHaveIllusion",
 			Type = "Function",
 
@@ -157,6 +172,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
+				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
 			},
 
 			Returns =
@@ -335,6 +351,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetItemTransmogInfoListFromOutfitHyperlink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "hyperlink", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "list", Type = "table", InnerType = "table", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLatestAppearance",
 			Type = "Function",
 
@@ -360,6 +390,20 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfitHyperlinkFromItemTransmogInfoList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "table", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hyperlink", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -440,6 +484,20 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "sourceInfo", Type = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSourceItemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -603,6 +661,20 @@ local TransmogItems =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "itemAppearanceModID", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "hasTransmog", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerHasTransmogByItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
 			},
 
 			Returns =
@@ -787,6 +859,7 @@ local TransmogItems =
 				{ Name = "appearanceMeetsNonLevelRequirements", Type = "bool", Nilable = false },
 				{ Name = "appearanceIsUsable", Type = "bool", Nilable = false },
 				{ Name = "appearanceNumSources", Type = "number", Nilable = false },
+				{ Name = "sourceIsKnown", Type = "bool", Nilable = false },
 			},
 		},
 		{

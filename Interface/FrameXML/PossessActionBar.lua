@@ -61,9 +61,9 @@ function PossessButton_OnClick (self)
 			TaxiRequestEarlyLanding();
 			
 			-- Show that the request for landing has been received.
-			icon = _G["PossessButton"..id.."Icon"];
+			local icon = _G["PossessButton"..id.."Icon"];
 			icon:SetDesaturated(true);
-			button = _G["PossessButton"..id];
+			local button = _G["PossessButton"..id];
 			button:SetChecked(true);
 			button:Disable();
 		elseif ( UnitControllingVehicle("player") and CanExitVehicle() ) then

@@ -9,18 +9,11 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Sta
 
 UIWidgetTemplateStackedResourceTrackerMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-local frameTextureKitRegions = {
-	["Frame"] = "%s-frame",
-}
-
 function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self.resourcePool:ReleaseAll();
 
 	local previousResourceFrame;
-
-	local hasFrame = widgetInfo.frameTextureKit ~= nil;
-
 	local resourceWidth = 0;
 	local resourceHeight = 0;
 
@@ -35,12 +28,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);
 			resourceHeight = resourceHeight + resourceFrame:GetHeight() + 6;
 		else
-			if hasFrame then
-				resourceFrame:SetPoint("TOPLEFT", self.Frame, "TOPLEFT", 49, -38);
-			else
-				resourceFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-			end
-
+			resourceFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 			resourceHeight = resourceFrame:GetHeight();
 		end
 
@@ -50,16 +38,9 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 
 		previousResourceFrame = resourceFrame;
 	end
-	
-	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
-	if hasFrame then
-		self:SetWidth(self.Frame:GetWidth() + 45);
-		self:SetHeight(self.Frame:GetHeight());
-	else
-		self:SetWidth(resourceWidth);
-		self:SetHeight(resourceHeight);
-	end
+	self:SetWidth(resourceWidth);
+	self:SetHeight(resourceHeight);
 end
 
 function UIWidgetTemplateStackedResourceTrackerMixin:OnLoad()

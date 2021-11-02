@@ -456,10 +456,7 @@
 			<KeyValue key="fontName" value="GameFontHighlightSmall" type="string"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="ScrollBox" inherits="WowScrollBox">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
+			<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBox">
 				<Frames>
 					<EventEditBox parentKey="EditBox" multiLine="true" autoFocus="false">
 						<KeyValues>

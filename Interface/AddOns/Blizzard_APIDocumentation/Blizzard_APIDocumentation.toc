@@ -58,6 +58,7 @@ ItemUpgradeDocumentation.lua
 KeyBindingsDocumentation.lua
 KnowledgeBaseDocumentation.lua
 LFGInfoDocumentation.lua
+LFGListInfoDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
@@ -85,7 +86,6 @@ SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
-SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
@@ -124,6 +124,7 @@ AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BarberShopDocumentation.lua
 BattleNetDocumentation.lua
+BehavioralMessagingDocumentation.lua
 CVarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua
@@ -145,8 +146,6 @@ InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua
 ItemInteractionUIDocumentation.lua
-LFGListInfoDocumentation.lua
-LFGuildInfoDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
@@ -165,10 +164,12 @@ ResearchInfoDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScriptedAnimationsDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoulbindsDocumentation.lua
 SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
+TTSSettingsDocumentation.lua
 TalkingHeadDocumentation.lua
 TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
@@ -182,6 +183,7 @@ ZoneAbilityDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
+AzeriteConstantsDocumentation.lua
 BaseDocumentation.lua
 BattlePetConstantsDocumentation.lua
 BountySharedDocumentation.lua
@@ -223,6 +225,7 @@ CurrencyConstants_MainlineDocumentation.lua
 GarrisonSharedDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua
+MythicPlusInfoSharedDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
 QuestConstants_MainlineDocumentation.lua
 RecruitAFriendSharedDocumentation.lua

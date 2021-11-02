@@ -2386,6 +2386,10 @@ end
 
 ClubFinderTabMixin = { };
 
+function ClubFinderTabMixin:OnClick(buttonName, down)
+	self:SetTab();
+end
+
 function ClubFinderTabMixin:SetTab()
 	local parent = self:GetParent();
 

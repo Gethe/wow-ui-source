@@ -316,9 +316,10 @@
 								</Anchors>
 							</Button>
 
-							<Button name="RealmListCloseButton" inherits="GlueCloseButton">
+							<Button name="RealmListCloseButton" inherits="BigRedExitButtonTemplate">
+								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="-42" y="-3"/>
+									<Anchor point="TOPRIGHT" x="-45" y="-5"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>

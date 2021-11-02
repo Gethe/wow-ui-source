@@ -36,6 +36,10 @@ local stepsTextureKitRegionInfo = {
 	["Step5Activation"] = {formatString = "%s-step5-enable", setVisibility = false, useAtlasSize = true},
 };
 
+local textureKitTooltipBackdropStyles = {
+	["eyeofthejailer"] = GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY,
+};
+
 UIWidgetTemplateDiscreteProgressStepsMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateDiscreteProgressStepsMixin:SetupStepAnchors(stepIndex, positionVector, rotationDegrees)
@@ -137,6 +141,9 @@ function UIWidgetTemplateDiscreteProgressStepsMixin:Setup(widgetInfo, widgetCont
 
 	local deadSpacePercentage = 0.2;
 	self.Bar:Setup(widgetContainer, progMin, progMax, adjustedProgCurr, deadSpacePercentage, textureKit);
+
+	local tooltipTextureKit = strsub(textureKit, 1, 14);
+	self.tooltipBackdropStyle = textureKitTooltipBackdropStyles[tooltipTextureKit];
 
 	SetupTextureKitsFromRegionInfo(textureKit, self, textureKitRegionInfo);
 	SetupTextureKitsFromRegionInfo(textureKit, self.Steps, stepsTextureKitRegionInfo);

@@ -28,6 +28,7 @@
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
@@ -58,7 +59,7 @@
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 ..\SharedXML\Frame\EventEditBox.xml
-..\SharedXML\DataProvider.lua
+..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua
@@ -66,6 +67,7 @@
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\StringUtil.lua
+..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 MixinUtil.lua
 
@@ -144,14 +146,14 @@ ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 ExtraAbilityContainer.xml
 CurrencyContainer.lua
-## IME.xml needs to be loaded after UIParent.xml
-..\SharedXML\IME.xml
 MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+## IME.xml needs to be loaded after UIParent.xml
+..\SharedXML\IME.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\CustomBindingButtonTemplate.xml
 CustomBindingManager.lua

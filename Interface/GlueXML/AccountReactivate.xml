@@ -320,13 +320,10 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button parentKey="CloseButton" inherits="GlueCloseButton">
+			<Button parentKey="CloseButton" inherits="BigRedExitButtonTemplate">
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT"  x="-4" y="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

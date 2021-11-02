@@ -162,10 +162,10 @@ UI.xsd">
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="GarrisonFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="GarrisonFollowerTooltipContentsTemplate,TooltipBorderedFrameTemplate">
+	<Frame name="GarrisonFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="GarrisonFollowerTooltipContentsTemplate,TooltipBackdropTemplate">
 	</Frame>
 
-	<Frame name="GarrisonShipyardFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="GarrisonShipyardFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="260" y="80"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="2">
@@ -301,7 +301,7 @@ UI.xsd">
 
 
 	<!-- 6.x style -->
-	<Frame name="GarrisonFollowerAbilityTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="GarrisonFollowerAbilityTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="240" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -359,7 +359,7 @@ UI.xsd">
 	</Frame>
 
 	<!-- 7.0 style -->
-	<Frame name="GarrisonFollowerAbilityWithoutCountersTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="GarrisonFollowerAbilityWithoutCountersTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="240" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -400,7 +400,7 @@ UI.xsd">
 	</Frame>
 
 	<!-- 7.0 style for the mission page -->
-	<Frame name="GarrisonFollowerMissionAbilityWithoutCountersTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="GarrisonFollowerMissionAbilityWithoutCountersTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="240" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -478,7 +478,7 @@ UI.xsd">
 		</Scripts>
 	</Frame>
 
-	<Frame name="FloatingGarrisonMissionTooltip" movable="true" toplevel="true" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="FloatingGarrisonMissionTooltip" movable="true" toplevel="true" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="240" y="70"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="80"/>

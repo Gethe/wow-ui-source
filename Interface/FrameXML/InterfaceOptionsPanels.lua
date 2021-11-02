@@ -2244,6 +2244,72 @@ function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick(self)
 	InterfaceOptionsAccessibilityPanelShakeIntensityDropdown:SetValue(self.value);
 end
 
+local cursorSizeOptions = {
+	{ text= DEFAULT, value = -1 },
+	{ text= "32x32", value = 0 },
+	{ text= "48x48", value = 1 },
+	{ text= "64x64", value = 2 },
+	{ text= "96x96", value = 3 },
+	{ text= "128x128", value = 4 },
+};
+
+function GetCursorSizeSelected()
+	local value = tonumber(GetCVar("cursorSizePreferred"));
+	for index, option in ipairs(cursorSizeOptions) do
+		if value == option.value then
+			return value;
+		end
+	end
+
+	return -1;
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnLoad(self)
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self.value = GetCursorSizeSelected();
+	self.oldValue = value;
+
+	UIDropDownMenu_SetWidth(self, 130);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+
+	self.SetValue =
+		function (self, value)
+			self.value = value;
+
+			BlizzardOptionsPanel_SetCVarSafe("cursorSizePreferred", value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+		end
+
+	self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelCursorSizeDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnClick;
+
+	for index, option in ipairs(cursorSizeOptions) do
+		info.text = option.text;
+		info.value = option.value;
+		info.checked = option.value == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelCursorSizeDropdown:SetValue(self.value);
+end
+
 ColorblindPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },

@@ -2127,6 +2127,11 @@ local ChatInfo =
 			LiteralName = "LANGUAGE_LIST_CHANGED",
 		},
 		{
+			Name = "NotifyChatSuppressed",
+			Type = "Event",
+			LiteralName = "NOTIFY_CHAT_SUPPRESSED",
+		},
+		{
 			Name = "QuestBossEmote",
 			Type = "Event",
 			LiteralName = "QUEST_BOSS_EMOTE",
@@ -2210,19 +2215,6 @@ local ChatInfo =
 
 	Tables =
 	{
-		{
-			Name = "ChatChannelInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "shortcut", Type = "string", Nilable = false },
-				{ Name = "localID", Type = "number", Nilable = false },
-				{ Name = "instanceID", Type = "number", Nilable = false },
-				{ Name = "zoneChannelID", Type = "number", Nilable = false },
-				{ Name = "channelType", Type = "PermanentChatChannelType", Nilable = false },
-			},
-		},
 	},
 };
 

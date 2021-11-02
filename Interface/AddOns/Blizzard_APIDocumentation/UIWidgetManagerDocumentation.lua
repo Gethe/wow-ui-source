@@ -399,10 +399,20 @@ local UIWidgetManager =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "isGuid", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
 			Name = "SetProcessingUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "SetProcessingUnitGuid",
 			Type = "Function",
 
 			Arguments =
@@ -417,6 +427,7 @@ local UIWidgetManager =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "isGuid", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 	},

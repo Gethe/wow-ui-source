@@ -674,7 +674,7 @@
 			<OnClick function="MasterLooterPlayerFrame_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="UIParent" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="DIALOG">
+	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate" hidden="true" frameStrata="DIALOG">
 		<Size x="10" y="10"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

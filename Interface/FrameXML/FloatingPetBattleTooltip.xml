@@ -31,7 +31,7 @@ UI.xsd">
 		</Scripts>
 	</Frame>
 	
-	<Frame name="BattlePetTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="BattlePetTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="260" y="150"/>
 		<Layers>	
 			<Layer level="ARTWORK">
@@ -120,7 +120,7 @@ UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="BattlePetTooltip_OnLoad"/>
+			<OnLoad function="BattlePetTooltip_OnLoad" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 	
