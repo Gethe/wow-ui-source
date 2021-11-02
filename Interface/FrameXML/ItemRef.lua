@@ -273,10 +273,13 @@ function SetItemRef(link, text, button, chatFrame)
 		TransmogUtil.OpenCollectionToSet(setID);
 		return;
 	elseif ( strsub(link, 1, 6) == "outfit" ) then
-		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
-		if itemTransmogInfoList then
-			local showOutfitDetails = true;
-			DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+		local fixedLink = GetFixedLink(text);
+		if not HandleModifiedItemClick(fixedLink) then
+			local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
+			if itemTransmogInfoList then
+				local showOutfitDetails = true;
+				DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+			end
 		end
 		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then

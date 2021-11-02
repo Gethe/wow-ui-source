@@ -2,11 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_BehavioralMessaging.lua"/>
 
-	<Frame name="BehaviorMessagingBackgroundTemplate" inherits="NineSlicePanelTemplate" setAllPoints="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
-		</KeyValues>
-	</Frame>
+	<Frame name="BehaviorMessagingBackgroundTemplate" inherits="TooltipBackdropTemplate" setAllPoints="true" virtual="true"/>
 	
 	<Button name="BehaviorMessagingNotificationTemplate" mixin="BehavioralMessagingNotificationMixin" virtual="true">
 		<Size x="180" y="41"/>

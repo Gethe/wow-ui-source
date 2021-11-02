@@ -588,6 +588,18 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 	elseif self.slotState == OUTFIT_SLOT_STATE_ERROR then
 		local hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(self.transmogID);
 		-- hasData should be true, there's a check that the item data is cached at the top of the function
+
+		if not canCollect and (self.slotID == INVSLOT_MAINHAND or self.slotID == INVSLOT_OFFHAND) then
+			local pairedTransmogID = C_TransmogCollection.GetPairedArtifactAppearance(self.transmogID);
+			if pairedTransmogID then
+				hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(pairedTransmogID);
+				if not hasData then
+					self:GetParent():MarkDirty();
+					return;
+				end
+			end
+		end
+
 		if canCollect then
 			local nameColor = self.item:GetItemQualityColor().color;
 			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);

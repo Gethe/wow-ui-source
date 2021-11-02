@@ -247,7 +247,6 @@ function CovenantPreviewFrameMixin:SetupModelSceneFrame(transmogSetID, mountID)
 	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0, true); 
 	local sources = C_TransmogSets.GetAllSourceIDs(transmogSetID);
 	DressUpTransmogSet(sources, TransmogAndMountDressupFrame);
-	TransmogAndMountDressupFrame:RemoveWeapons();
 end 
 
 function CovenantPreviewFrameMixin:SetupCovenantInfoPanel(covenantInfo) 

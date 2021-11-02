@@ -152,6 +152,11 @@
 					<KeyValue key="normalIntensity" value="0.75" type="number"/>
 					<KeyValue key="highlightIntensity" value="1.2" type="number"/>
 				</KeyValues>
+				<Scripts>
+					<OnDressModel>
+						self:GetParent():OnDressModel();
+					</OnDressModel>
+				</Scripts>
 			</ModelScene>
 		</Frames>
 		<Scripts>

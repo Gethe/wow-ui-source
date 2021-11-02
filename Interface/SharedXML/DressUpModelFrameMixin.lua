@@ -259,6 +259,10 @@ function TransmogAndMountDressupFrameMixin:OnHide()
 	self.transmogSetID = nil; 
 	self.removeWeapons = nil; 
 	self.ShowMountCheckButton:SetChecked(false);
+	if self.removingWeapons then
+		self.removingWeapons = nil;
+		self:SetScript("OnUpdate", nil);
+	end
 end 
 
 function TransmogAndMountDressupFrameMixin:RemoveWeapons()
@@ -278,8 +282,18 @@ function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
 		DressUpTransmogSet(sources, self);
 	end
 
-	if(self.removeWeapons) then 
-		self:RemoveWeapons(); 
-	end 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function TransmogAndMountDressupFrameMixin:OnDressModel()
+	if self.removeWeapons and not self.removingWeapons then
+		self.removingWeapons = true;
+		self:SetScript("OnUpdate", self.OnUpdate);
+	end
+end
+
+function TransmogAndMountDressupFrameMixin:OnUpdate()
+	self:RemoveWeapons();
+	self.removingWeapons = nil;
+	self:SetScript("OnUpdate", nil);
 end

@@ -4,11 +4,8 @@
 
 
 	<Frame name="HelpFrameContainerFrameTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
-		</KeyValues>
 		<Frames>
-			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="Background" useParentLevel="true" inherits="TooltipBackdropTemplate" setAllPoints="true"/>
 		</Frames>
 	</Frame>
 
