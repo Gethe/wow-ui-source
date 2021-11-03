@@ -681,6 +681,8 @@ local function UnitPopup_TryCreatePlayerLocation(menu, guid)
 		return PlayerLocation:CreateFromGUID(guid);
 	elseif menu.unit then
 		return PlayerLocation:CreateFromUnit(menu.unit);
+	elseif menu.whoIndex then
+		return PlayerLocation:CreateFromWhoIndex(menu.whoIndex);
 	end
 
 	return nil;

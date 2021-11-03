@@ -780,28 +780,6 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	multiple = 1
 };
 
-StaticPopupDialogs["CONFIRM_WARGAME_ENTRY"] = {
-	text = CONFIRM_BATTLEFIELD_ENTRY,
-	button1 = ENTER_BATTLE,
-	button2 = LEAVE_QUEUE,
-	OnAccept = function(self, data)
-		if ( not AcceptBattlefieldPort(data, true) ) then
-			return 1;
-		end
-		if( StaticPopup_Visible( "DEATH" ) ) then
-			StaticPopup_Hide( "DEATH" );
-		end
-	end,
-	OnCancel = function(self, data)
-		AcceptBattlefieldPort(data,false);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	noCancelOnReuse = 1,
-	noCancelOnEscape = 1,
-	multiple = 1
-};
-
 StaticPopupDialogs["BFMGR_CONFIRM_WORLD_PVP_QUEUED"] = {
 	text = WORLD_PVP_QUEUED,
 	button1 = OKAY,

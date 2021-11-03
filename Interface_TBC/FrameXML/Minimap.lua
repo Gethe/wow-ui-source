@@ -557,12 +557,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)));
 				if ( not tooltipOnly ) then
-
-					if (bgtype == "WARGAME") then
-						local dialog = StaticPopup_Show("CONFIRM_WARGAME_ENTRY", mapName, nil, i);
-					end
-
-					PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 					MiniMapBattlefieldFrame:Show();
 				end
 				showRightClickText = 1;

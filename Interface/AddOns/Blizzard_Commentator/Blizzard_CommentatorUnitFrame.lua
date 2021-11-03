@@ -255,7 +255,7 @@ end
 
 function CommentatorUnitFrameMixin:GetPlayerNameText()
 	if self.lifeState == LifeState.Dead then
-		return COMMENTATOR_UNITFRAME_DEAD_STR;
+		return self:GetPlayerName() .. " " .. COMMENTATOR_UNITFRAME_DEAD_STR;
 	elseif self.ccDisplayText and GetCVarBool("commentatorLossOfControlTextUnitFrame") then
 		return self.ccDisplayText;
 	else
