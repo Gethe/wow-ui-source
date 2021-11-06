@@ -549,9 +549,9 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 			},
 			[5] = {
 				text = SPECIAL,
-				type = {"SPELL_INSTAKILL"};
+				type = {"SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE", "SPELL_DURABILITY_DAMAGE_ALL"};
 				checked = function () return HasMessageType("SPELL_INSTAKILL"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE", "SPELL_DURABILITY_DAMAGE_ALL"); end;
 				tooltip = SPELL_INSTAKILL_COMBATLOG_TOOLTIP,
 			},
 			[6] = {

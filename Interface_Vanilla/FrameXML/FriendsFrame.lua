@@ -192,7 +192,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid, whoIndex)
 	HideDropDownMenu(1);
 	if ( connected or friendsList ) then
 		if ( connected ) then
@@ -215,6 +215,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.bnetIDAccount = nil;
 		FriendsDropDown.isMobile = isMobile;
 		FriendsDropDown.guid = guid;
+		FriendsDropDown.whoIndex = whoIndex;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
@@ -743,6 +744,12 @@ function WhoList_Update()
 		-- The WHO_LIST_UPDATE handler also clears it, but that event doesn't fire if the Who Frame isn't shown.
 		WhoFrame.selectedWho = nil;
 	end
+	-- If we're in the process of reporting someone from the Who Frame, back out since their index might change.
+	HideDropDownMenu(1);
+	if (PlayerReportFrame and PlayerReportFrame.playerLocation and PlayerReportFrame.playerLocation:IsWhoIndex()) then
+		PlayerReportFrame:CancelReport();
+	end
+
 	WhoFrame.numWhos = numWhos;
 
 	local name, guild, level, race, class, zone;
@@ -1064,7 +1071,7 @@ function FriendsFrameWhoButton_OnClick(self, button)
 		WhoList_Update();
 	else
 		local name = _G["WhoFrameButton"..self:GetID().."Name"]:GetText();
-		FriendsFrame_ShowDropdown(name, 1);
+		FriendsFrame_ShowDropdown(name, 1, nil, nil, nil, nil , nil, nil, nil, nil, nil , nil, _G["WhoFrameButton"..self:GetID()].whoIndex);
 	end
 end
 

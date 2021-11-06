@@ -45,6 +45,19 @@ NineSliceLayouts =
 		Center = { atlas = "ChatBubble-NineSlice-Center", },
 	};
 
+	GMChatRequest =
+	{
+		["TopRightCorner"] = { atlas = "GMChat-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "GMChat-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "GMChat-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "GMChat-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_GMChat-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_GMChat-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!GMChat-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!GMChat-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
 	TooltipDefaultLayout =
 	{
 		["TopRightCorner"] = { atlas = "Tooltip-NineSlice-CornerTopRight" },

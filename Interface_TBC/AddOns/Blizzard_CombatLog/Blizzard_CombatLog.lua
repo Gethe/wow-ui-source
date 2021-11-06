@@ -143,8 +143,8 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_INSTAKILL"] = true,
 	["SPELL_INTERRUPT"] = true,
 	["SPELL_EXTRA_ATTACKS"] = true,
-	["SPELL_DURABILITY_DAMAGE"] = false,
-	["SPELL_DURABILITY_DAMAGE_ALL"] = false,
+	["SPELL_DURABILITY_DAMAGE"] = true,
+	["SPELL_DURABILITY_DAMAGE_ALL"] = true,
 	["SPELL_AURA_APPLIED"] = false,
 	["SPELL_AURA_APPLIED_DOSE"] = false,
 	["SPELL_AURA_REMOVED"] = false,
@@ -408,8 +408,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["SPELL_INSTAKILL"] = false,
 					      ["SPELL_INTERRUPT"] = false,
 					      ["SPELL_EXTRA_ATTACKS"] = false,
-					      --["SPELL_DURABILITY_DAMAGE"] = true,
-					      --["SPELL_DURABILITY_DAMAGE_ALL"] = true,
+					      ["SPELL_DURABILITY_DAMAGE"] = false,
+					      ["SPELL_DURABILITY_DAMAGE_ALL"] = false,
 					      ["SPELL_AURA_APPLIED"] = false,
 					      ["SPELL_AURA_APPLIED_DOSE"] = false,
 					      ["SPELL_AURA_REMOVED"] = false,
@@ -461,8 +461,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["SPELL_INSTAKILL"] = true,
 					      ["SPELL_INTERRUPT"] = true,
 					      ["SPELL_EXTRA_ATTACKS"] = true,
-					      --["SPELL_DURABILITY_DAMAGE"] = true,
-					      --["SPELL_DURABILITY_DAMAGE_ALL"] = true,
+					      ["SPELL_DURABILITY_DAMAGE"] = true,
+					      ["SPELL_DURABILITY_DAMAGE_ALL"] = true,
 					      --["SPELL_AURA_APPLIED"] = true,
 					      --["SPELL_AURA_APPLIED_DOSE"] = true,
 					      --["SPELL_AURA_REMOVED"] = true,
@@ -2472,9 +2472,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 			unconsciousOnDeath = select(5, ...);
 		elseif ( event == "SPELL_DURABILITY_DAMAGE" ) then
+			itemId, itemName = select(4, ...);
+
 			-- Disable appropriate sections
+			valueIsItem = true;
 			resultEnabled = false;
-			valueEnabled = false;
+			valueEnabled = true;
 			schoolEnabled = false;
 		elseif ( event == "SPELL_DURABILITY_DAMAGE_ALL" ) then
 			-- Disable appropriate sections
@@ -2676,6 +2679,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		valueIsItem = true;
 		itemEnabled = true;
 		resultEnabled = false;
+		forceDestPossessive = true;
 	elseif ( event == "ENCHANT_REMOVED" ) then
 		-- Get the enchant name, item id and item name
 		spellName, itemId, itemName = ...;
@@ -2686,7 +2690,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		itemEnabled = true;
 		resultEnabled = false;
 		sourceEnabled = false;
-
+		forceDestPossessive = true;
 	elseif ( event == "UNIT_DIED" or event == "UNIT_DESTROYED" or event == "UNIT_DISSIPATES" ) then
 		local recapID;
 		recapID, unconsciousOnDeath = ...;
@@ -2890,7 +2894,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		end
 
 		-- Apply the possessive form to the dest if the dest has a spell
-		if ( ( extraSpellName or forceDestPossessive  or itemName ) and destName ) then
+		if ( ( extraSpellName or forceDestPossessive ) and destName ) then
 			destNameStr = format(TEXT_MODE_A_STRING_POSSESSIVE, destNameStr);
 		end
 	end
