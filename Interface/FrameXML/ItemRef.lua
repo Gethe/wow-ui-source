@@ -662,7 +662,7 @@ end
 function GetDungeonScoreLink(dungeonScore, playerName)
 	local _, _, class = UnitClass("player");
 	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
-	local runHistory = C_MythicPlus.GetRunHistory(true);
+	local runHistory = C_MythicPlus.GetRunHistory(true, true);
 	local dungeonScoreTable = {C_ChallengeMode.GetOverallDungeonScore(), UnitGUID("player"), playerName, class, math.ceil(avgItemLevel), UnitLevel("player"), runHistory and #runHistory or 0, unpack(DungeonScoreLinkAddDungeonsToTable())};
 	return NORMAL_FONT_COLOR:WrapTextInColorCode(FormatLink("dungeonScore", DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
 end		
