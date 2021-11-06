@@ -36,6 +36,15 @@ function CycleFollowCameraTransitionPreset(index)
 	C_Commentator.SetFollowCameraSpeeds(unpack(FOLLOW_CAM_TRANSITION_SPEEDS[CurrentCamTransitionIndex]));
 end
 
+function SetSpectatorModeForOtherFrames(spectatorMode)
+	if (UIWidgetTopCenterContainerFrame) then
+		UIWidgetTopCenterContainerFrame:SetSpectatorMode(spectatorMode, Commentator.Scoreboard.Clock);
+	end
+	if (BattlefieldMapFrame) then
+		BattlefieldMapFrame:SetSpectatorMode(spectatorMode);
+	end
+end
+
 CommentatorMixin = {}
 
 function CommentatorMixin:OnLoad()
@@ -276,6 +285,7 @@ function CommentatorMixin:Shutdown()
 	self.Scoreboard:Hide();
 	self:ClearUnitFrames();
 	self:SetFrameLock(false);
+	SetSpectatorModeForOtherFrames(false);
 end
 
 function CommentatorMixin:Reset()
@@ -457,6 +467,7 @@ function CommentatorMixin:OnObserverStateChanged(oldState, newState)
 		self:ClearUnitFrames();
 
 		self:SetFrameLock(true);
+		SetSpectatorModeForOtherFrames(true);
 	elseif newState == TOURNAMENTARENA_ZONESTATE_OBSERVING or newState == TOURNAMENTARENA_ZONESTATE_PREMATCH then
 		ClearTarget();
 
@@ -466,6 +477,7 @@ function CommentatorMixin:OnObserverStateChanged(oldState, newState)
 		self.currentSpeedFactor = nil;
 
 		self:SetFrameLock(true);
+		SetSpectatorModeForOtherFrames(true);
 	elseif newState == TOURNAMENTARENA_ZONESTATE_SCANNING then
 		ClearTarget();
 
@@ -477,6 +489,7 @@ function CommentatorMixin:OnObserverStateChanged(oldState, newState)
 		self:ClearUnitFrames();
 
 		self:SetFrameLock(false);
+		SetSpectatorModeForOtherFrames(false);
 	end
 end
 
