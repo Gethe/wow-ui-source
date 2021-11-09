@@ -1,15 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="AccountLogin.lua"/>
-
+	
 	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
-
+	
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -248,7 +248,7 @@
 							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
-								AccountLogin_Login();
+									AccountLogin_Login();
 								end
 							</OnEnterPressed>
 							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
@@ -256,14 +256,14 @@
 							<OnTextChanged>
 								local accountName = GetSavedAccountName();
 								if ( accountName ~= "" and accountName ~= self:GetText() ) then
-								SetSavedAccountName("");
-								ClearSavedAccountList();
-								AccountLogin_UpdateSavedData(AccountLogin);
+									SetSavedAccountName("");
+									ClearSavedAccountList();
+									AccountLogin_UpdateSavedData(AccountLogin);
 								end
 								--[[if ( self:GetText() ~= "" ) then
-								self.Fill:Hide();
+									self.Fill:Hide();
 								else
-								self.Fill:Show();
+									self.Fill:Show();
 								end]]
 							</OnTextChanged>
 						</Scripts>
@@ -298,7 +298,7 @@
 							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
-								AccountLogin_Login();
+									AccountLogin_Login();
 								end
 							</OnEnterPressed>
 							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
@@ -324,9 +324,9 @@
 							<OnClick function="AccountLogin_Login"/>
 							<OnUpdate>
 								if ( C_Login.IsLoginReady() ) then
-								self:Enable();
+									self:Enable();
 								else
-								self:Disable();
+									self:Disable();
 								end
 							</OnUpdate>
 						</Scripts>
@@ -340,9 +340,9 @@
 							<OnClick function="AccountLogin_ReconnectLogin"/>
 							<OnUpdate>
 								if ( C_Login.IsLoginReady() ) then
-								self:Enable();
+									self:Enable();
 								else
-								self:Disable();
+									self:Disable();
 								end
 							</OnUpdate>
 						</Scripts>
@@ -356,9 +356,9 @@
 							<OnClick function="AccountLogin_ClearReconnectLogin"/>
 							<OnUpdate>
 								if ( C_Login.IsLoginReady() ) then
-								self:Enable();
+									self:Enable();
 								else
-								self:Disable();
+									self:Disable();
 								end
 							</OnUpdate>
 						</Scripts>
@@ -455,19 +455,19 @@
 								local width = self.Label:GetWidth();
 								self:SetPoint("TOP", self:GetParent().LoginButton, "BOTTOM", -width / 2, 0);
 								if ( GetSavedAccountName() ~= "" ) then
-								self:SetChecked(true);
+									self:SetChecked(true);
 								else
-								self:SetChecked(false);
+									self:SetChecked(false);
 								end
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then
-								SetSavedAccountName("");
-								ClearSavedAccountList();
-								AccountLogin_UpdateSavedData(AccountLogin);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+									SetSavedAccountName("");
+									ClearSavedAccountList();
+									AccountLogin_UpdateSavedData(AccountLogin);
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 							</OnClick>
 						</Scripts>
@@ -521,9 +521,9 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="Container" inherits="BackdropTemplate">
+									<Frame parentKey="Container" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
@@ -677,12 +677,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
-										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
-											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
-										</KeyValues>
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
@@ -771,12 +766,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
-										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
-											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
-										</KeyValues>
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="CENTER"/>

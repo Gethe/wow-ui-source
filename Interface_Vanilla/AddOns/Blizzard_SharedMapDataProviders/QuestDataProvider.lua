@@ -25,15 +25,15 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 		self.clearFocusedQuestIDCallback = function(event, ...) self:ClearFocusedQuestID(...); end;
 	end
 	
-	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
-	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback, self);
+	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback, self);
 end
 
 function QuestDataProviderMixin:OnRemoved(mapCanvas)
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 
-	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
-	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
+	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 end
 
 function QuestDataProviderMixin:SetFocusedQuestID(questID)

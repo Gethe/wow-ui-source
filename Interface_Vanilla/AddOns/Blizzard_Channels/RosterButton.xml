@@ -6,7 +6,7 @@
 		<Size x="160" y="22"/>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Name" justifyH="LEFT" wordWrap="false" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="LEFT" x="8" y="0" />
 					</Anchors>
@@ -41,6 +41,7 @@
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background" alphaMode="ADD"/>
 		<HighlightTexture parentKey="HighlightTexture" atlas="voicechat-channellist-row-highlight" alphaMode="ADD"/>

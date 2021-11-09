@@ -631,8 +631,8 @@ end
 
 local channelTypeToNameLookup =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHANNEL_NAME_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHANNEL_NAME_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHANNEL_NAME_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHANNEL_NAME_INSTANCE,
 };
 
 function ChannelFrame_GetIdealChannelName(channel)

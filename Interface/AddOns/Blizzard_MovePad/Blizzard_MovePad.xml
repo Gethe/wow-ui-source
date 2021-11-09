@@ -7,9 +7,9 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="MovePadFrame" inherits="BackdropTemplate" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND">
+	<Frame name="MovePadFrame" inherits="TooltipBackdropTemplate" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
 		</KeyValues>
 		<Size x="126" y="124" />
 		<Anchors>

@@ -182,6 +182,7 @@ end
 
 function PetCastingBarFrame_OnLoad (self)
 	CastingBarFrame_OnLoad(self, "pet", false, false);
+	self.Icon:Hide();
 
 	self:RegisterEvent("UNIT_PET");
 

@@ -23,12 +23,12 @@ function LFGParentFrameMixin:OnEvent(event, ...)
 end
 
 function ToggleLFGParentFrame(tab)
-	local hideLFGParent;
-	if ( LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown() ) then
-		hideLFGParent = 1;
-	end
-	if ( LFGParentFrame:IsShown() and not tab ) then
-		hideLFGParent = 1;
+	local hideLFGParent = false;
+	if ((not C_LFGList.IsLookingForGroupEnabled()) or
+		(LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown()) or
+		(LFGParentFrame:IsShown() and not tab)
+	) then
+		hideLFGParent = true;
 	end
 
 	if ( hideLFGParent ) then
@@ -374,6 +374,7 @@ function LFMFrameActivityDropDown_Initialize(self)
 	end
 
 	if ( selectedType > 0 ) then
+		local info = UIDropDownMenu_CreateInfo();
 		UIDropDownMenu_EnableDropDown(self);
 		local currentSelectedValue = UIDropDownMenu_GetSelectedValue(self);
 		local activities = C_LFGList.GetAvailableActivities(selectedType);
@@ -796,6 +797,7 @@ function LFGFrameActivityDropDown_Initialize(self)
 		selectedType = UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0;
 	end
 	if ( selectedType > 0 ) then
+		local info = UIDropDownMenu_CreateInfo();
 		local activities = C_LFGList.GetAvailableActivities(selectedType);
 		for i=1, #activities do
 			-- Filter out activities that are already selected by a different dropdown.

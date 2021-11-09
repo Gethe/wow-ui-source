@@ -4,7 +4,7 @@
 	
 	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
@@ -521,9 +521,9 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="Container" inherits="BackdropTemplate">
+									<Frame parentKey="Container" inherits="TooltipBorderBackdropTemplate">
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
@@ -677,12 +677,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
-										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
-											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
-										</KeyValues>
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
@@ -771,12 +766,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<EditBox parentKey="EditBox" letters="16" inherits="BackdropTemplate">
-										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
-											<KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
-											<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
-										</KeyValues>
+									<EditBox parentKey="EditBox" letters="16" inherits="AccountLoginBackdropTemplate">
 										<Size x="160" y="37"/>
 										<Anchors>
 											<Anchor point="CENTER"/>

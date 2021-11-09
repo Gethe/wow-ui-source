@@ -43,6 +43,12 @@ end
 	return playerLocation;
 end
 
+--[[static]] function PlayerLocation:CreateFromWhoIndex(whoIndex)
+	local playerLocation = CreateFromMixins(PlayerLocationMixin);
+	playerLocation:SetWhoIndex(whoIndex);
+	return playerLocation;
+end
+
 --[[public api]]
 function PlayerLocationMixin:SetGUID(guid)
 	self:ClearAndSetField("guid", guid);
@@ -116,6 +122,18 @@ end
 
 function PlayerLocationMixin:GetVoiceID()
 	return self.voiceMemberID, self.voiceChannelID;
+end
+
+function PlayerLocationMixin:SetWhoIndex(whoIndex)
+	self:ClearAndSetField("whoIndex", whoIndex);
+end
+
+function PlayerLocationMixin:IsWhoIndex()
+	return self.whoIndex ~= nil;
+end
+
+function PlayerLocationMixin:GetWhoIndex()
+	return self.whoIndex;
 end
 
 function PlayerLocationMixin:SetCommunityData(clubID, streamID, epoch, position)

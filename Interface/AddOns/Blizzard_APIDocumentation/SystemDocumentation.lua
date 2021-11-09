@@ -99,11 +99,6 @@ local System =
 			LiteralName = "SEARCH_DB_LOADED",
 		},
 		{
-			Name = "ShowAADCAlert",
-			Type = "Event",
-			LiteralName = "SHOW_AADC_ALERT",
-		},
-		{
 			Name = "StreamingIcon",
 			Type = "Event",
 			LiteralName = "STREAMING_ICON",

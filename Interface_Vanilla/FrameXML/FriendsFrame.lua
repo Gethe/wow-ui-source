@@ -71,7 +71,8 @@ local INVITE_RESTRICTION_INFO = 5;
 local INVITE_RESTRICTION_WOW_PROJECT_ID = 6;
 local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
-local INVITE_RESTRICTION_NONE = 8;
+local INVITE_RESTRICTION_WOW_PROJECT_BCC = 9;
+local INVITE_RESTRICTION_NONE = 10;
 
 local FriendListEntries = { };
 local playerRealmID;
@@ -191,7 +192,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid, whoIndex)
 	HideDropDownMenu(1);
 	if ( connected or friendsList ) then
 		if ( connected ) then
@@ -214,6 +215,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.bnetIDAccount = nil;
 		FriendsDropDown.isMobile = isMobile;
 		FriendsDropDown.guid = guid;
+		FriendsDropDown.whoIndex = whoIndex;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
@@ -742,6 +744,12 @@ function WhoList_Update()
 		-- The WHO_LIST_UPDATE handler also clears it, but that event doesn't fire if the Who Frame isn't shown.
 		WhoFrame.selectedWho = nil;
 	end
+	-- If we're in the process of reporting someone from the Who Frame, back out since their index might change.
+	HideDropDownMenu(1);
+	if (PlayerReportFrame and PlayerReportFrame.playerLocation and PlayerReportFrame.playerLocation:IsWhoIndex()) then
+		PlayerReportFrame:CancelReport();
+	end
+
 	WhoFrame.numWhos = numWhos;
 
 	local name, guild, level, race, class, zone;
@@ -848,7 +856,11 @@ end
 
 function WhoFrameColumn_SetWidth(frame, width)
 	frame:SetWidth(width);
-	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
+	local name = frame:GetName().."Middle";
+	local middleFrame = _G[name];
+	if middleFrame then
+		middleFrame:SetWidth(width - 9);
+	end
 end
 
 function WhoFrameDropDown_Initialize()
@@ -881,13 +893,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 				if ( button.summonButton:IsShown() ) then
 					FriendsFrame_SummonButton_Update(button.summonButton);
 				end
-			end
-		end
-	elseif ( event == "PARTY_REFER_A_FRIEND_UPDATED" ) then
-		if ( self:IsShown() ) then
-			local buttons = FriendsFrameFriendsScrollFrame.buttons;
-			for _, button in pairs(buttons) do
-				FriendsFrame_SummonButton_Update(button.summonButton);
 			end
 		end
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
@@ -1066,7 +1071,7 @@ function FriendsFrameWhoButton_OnClick(self, button)
 		WhoList_Update();
 	else
 		local name = _G["WhoFrameButton"..self:GetID().."Name"]:GetText();
-		FriendsFrame_ShowDropdown(name, 1);
+		FriendsFrame_ShowDropdown(name, 1, nil, nil, nil, nil , nil, nil, nil, nil, nil , nil, _G["WhoFrameButton"..self:GetID()].whoIndex);
 	end
 end
 
@@ -1304,7 +1309,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 	if (client ~= BNET_CLIENT_WOW) or (wowProjectID ~= WOW_PROJECT_ID) then
 		-- If they are not in wow or in a different version of wow, always show rich presence only
 		return true;
-	elseif (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
+	elseif ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
 		-- If we are both in wow classic and our factions or realms don't match, show rich presence only
 		return true;
 	else
@@ -2283,6 +2288,8 @@ function FriendsFrame_GetInviteRestriction(index)
 			if ( wowProjectID ~= WOW_PROJECT_ID ) then
 				if (wowProjectID == WOW_PROJECT_CLASSIC) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
+				elseif(wowProjectID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_BCC, restriction);
 				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
@@ -2292,7 +2299,8 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif ( realmID ~= playerRealmID ) then
+				-- The Classics don't allow grouping across realms
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			else
 				-- there is at lease 1 game account that can be invited
@@ -2322,6 +2330,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_MAINLINE_OVERRIDE;
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CLASSIC ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_BCC ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_BCC_OVERRIDE
 	else
 		return "";
 	end
@@ -2396,7 +2406,8 @@ function TravelPassDropDown_Initialize(self)
 				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
 			elseif ( realmID == 0 ) then
 				restriction = INVITE_RESTRICTION_INFO;
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif ( realmID ~= playerRealmID ) then
+				-- The Classics don't allow grouping across realms
 				restriction = INVITE_RESTRICTION_REALM;
 			end
 			if ( restriction == INVITE_RESTRICTION_NONE ) then

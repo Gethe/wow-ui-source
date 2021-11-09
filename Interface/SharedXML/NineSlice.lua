@@ -80,7 +80,7 @@ end
 
 local function SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout)
 	local left, right, top, bottom = 0, 1, 0, 1;
-	
+
 	local pieceMirrored = pieceLayout.mirrorLayout;
 	if pieceMirrored == nil then
 		pieceMirrored = userLayout and userLayout.mirrorLayout;
@@ -102,7 +102,7 @@ local function SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout
 end
 
 local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, userLayout)
-	--- Change texture coordinates before applying atlas.
+	-- Change texture coordinates before applying atlas.
 	SetupTextureCoordinates(piece, setupInfo, pieceLayout, userLayout);
 
 	-- textureKit is optional, that's fine; but if it's nil the caller should ensure that there are no format specifiers in .atlas
@@ -148,69 +148,16 @@ local nineSliceSetup =
 	{ pieceName = "Center", fn = SetupCenter, },
 };
 
-local layouts =
-{
-	Dialog =
-	{
-		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
-		TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
-		BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
-		BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
-		TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
-		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
-		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
-		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
-	},
-
-	ChatBubble =
-	{
-		TopLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopLeft", },
-		TopRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopRight", },
-		BottomLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomLeft", },
-		BottomRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomRight", },
-		TopEdge = { atlas = "_ChatBubble-NineSlice-EdgeTop", },
-		BottomEdge = { atlas = "_ChatBubble-NineSlice-EdgeBottom", },
-		LeftEdge = { atlas = "!ChatBubble-NineSlice-EdgeLeft", },
-		RightEdge = { atlas = "!ChatBubble-NineSlice-EdgeRight", },
-		Center = { atlas = "ChatBubble-NineSlice-Center", },
-	},
-
-	UniqueCornersLayout =
-	{
-		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
-		["TopLeftCorner"] = { atlas = "%s-NineSlice-CornerTopLeft" },
-		["BottomLeftCorner"] = { atlas = "%s-NineSlice-CornerBottomLeft" },
-		["BottomRightCorner"] = { atlas = "%s-NineSlice-CornerBottomRight" },
-		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
-		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
-		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
-		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
-		["Center"] = { atlas = "%s-NineSlice-Center" },
-	};
-
-	IdenticalCornersLayout =
-	{
-		["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
-		["TopLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true,},
-		["BottomLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
-		["BottomRightCorner"] = { atlas = "%s-NineSlice-Corner",  mirrorLayout = true,},
-		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
-		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
-		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
-		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
-		["Center"] = { atlas = "%s-NineSlice-Center" },
-	};
-};
 --------------------------------------------------
 -- NINE SLICE UTILS
 NineSliceUtil = {};
 
 function NineSliceUtil.ApplyUniqueCornersLayout(self, textureKit)
-	NineSliceUtil.ApplyLayout(self, layouts.UniqueCornersLayout, textureKit);
+	NineSliceUtil.ApplyLayout(self, NineSliceLayouts.UniqueCornersLayout, textureKit);
 end
 
 function NineSliceUtil.ApplyIdenticalCornersLayout(self, textureKit)
-	NineSliceUtil.ApplyLayout(self, layouts.IdenticalCornersLayout, textureKit);
+	NineSliceUtil.ApplyLayout(self, NineSliceLayouts.IdenticalCornersLayout, textureKit);
 end
 
 function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
@@ -248,11 +195,11 @@ function NineSliceUtil.ApplyLayoutByName(container, userLayoutName, textureKit)
 end
 
 function NineSliceUtil.GetLayout(layoutName)
-	return layouts[layoutName];
+	return NineSliceLayouts[layoutName];
 end
 
 function NineSliceUtil.AddLayout(layoutName, layout)
-	layouts[layoutName] = layout;
+	NineSliceLayouts[layoutName] = layout;
 end
 
 --------------------------------------------------
@@ -263,9 +210,61 @@ function NineSlicePanelMixin:GetFrameLayoutType()
 	return self.layoutType or self:GetParent().layoutType;
 end
 
+function NineSlicePanelMixin:GetFrameLayoutTextureKit()
+	return self.layoutTextureKit or self:GetParent().layoutTextureKit;
+end
+
 function NineSlicePanelMixin:OnLoad()
 	local layout = NineSliceUtil.GetLayout(self:GetFrameLayoutType());
 	if layout then
-		NineSliceUtil.ApplyLayout(self, layout, self.layoutTextureKit);
+		NineSliceUtil.ApplyLayout(self, layout, self:GetFrameLayoutTextureKit());
+	end
+end
+
+function NineSlicePanelMixin:SetCenterColor(r, g, b, a)
+	local center = self["Center"];
+	if center then
+		center:SetVertexColor(r, g, b, a or 1);
+	end
+end
+
+function NineSlicePanelMixin:GetCenterColor()
+	local center = self["Center"];
+	if center then
+		return center:GetVertexColor();
+	end
+end
+
+function NineSlicePanelMixin:SetBorderColor(r, g, b, a)
+	for _, section in ipairs(nineSliceSetup) do
+		if section.pieceName ~= "Center" then
+			local piece = self[section.pieceName];
+			if piece then
+				piece:SetVertexColor(r, g, b, a or 1);
+			end
+		end
+	end
+end
+
+function NineSlicePanelMixin:GetBorderColor()
+	-- return the vertex color of any valid piece
+	for _, section in ipairs(nineSliceSetup) do
+		if section.pieceName ~= "Center" then
+			local piece = self[section.pieceName];
+			if piece then
+				return piece:GetVertexColor();
+			end
+		end
+	end
+end
+
+function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
+	for _, section in ipairs(nineSliceSetup) do
+		if section.pieceName ~= "Center" then
+			local piece = self[section.pieceName];
+			if piece then
+				piece:SetBlendMode(blendMode);
+			end
+		end
 	end
 end

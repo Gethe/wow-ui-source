@@ -3,7 +3,6 @@ MAX_OBJECTIVES = 10;
 QUESTLOG_QUEST_HEIGHT = 16;
 UPDATE_DELAY = 0.1;
 MAX_QUESTWATCH_LINES = 30;
-MAX_WATCHABLE_QUESTS = 5;
 MAX_NUM_PARTY_MEMBERS = 4;
 
 --[[
@@ -830,7 +829,7 @@ function AutoQuestWatch_OnUpdate(self, elapsed)
 end
 
 function GetQuestIDFromLogIndex(questIndex)
-	questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questIndex);
+	local questID = select(8, GetQuestLogTitle(questIndex));
 	return questID;
 end
 

@@ -205,7 +205,7 @@ function UnitFrame_OnEvent(self, event, ...)
 				UnitFrameManaBar_UpdateType(self.manabar);
 			end
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
-			local name, text, texture, startTime, endTime, isTradeSkill, castID--[[, notInterruptible]], spellID = UnitCastingInfo(unit);
+			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then
@@ -301,7 +301,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	local info = PowerBarColor[powerToken];
 	if ( info ) then
 		if ( not manaBar.lockColor ) then
-			local playerDeadOrGhost = (manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")));
+			local playerDeadOrGhost = manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")) and not UnitIsFeignDeath("player");
 			if ( info.atlas ) then
 				manaBar:SetStatusBarAtlas(info.atlas);
 				manaBar:SetStatusBarColor(1, 1, 1);

@@ -394,10 +394,10 @@ function ActionButton_Update(self)
 	-- Update Action Text
 	local actionName = self.Name;
 	if actionName then
-		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
-			actionName:SetText(GetActionText(action));
-		else
+		if ( IsItemAction(action) and (IsConsumableAction(action) or IsStackableAction(action)) ) then
 			actionName:SetText("");
+		else
+			actionName:SetText(GetActionText(action));
 		end
 	end
 

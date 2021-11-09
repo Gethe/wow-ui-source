@@ -343,6 +343,9 @@ function SetItemRef(link, text, button, chatFrame)
 			CommunitiesHyperlink.OnClickLink(ticketId);
 		end
 		return;
+	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
+		ShowUIPanel(ChatConfigFrame);
+		return;
 	end
 
 	if ( IsModifiedClick() ) then

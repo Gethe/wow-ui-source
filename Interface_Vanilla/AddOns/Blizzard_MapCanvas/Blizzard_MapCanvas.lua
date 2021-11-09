@@ -1,7 +1,9 @@
-MapCanvasMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+MapCanvasMixin = CreateFromMixins(CallbackRegistryMixin);
 
 function MapCanvasMixin:OnLoad()
-	CallbackRegistryBaseMixin.OnLoad(self);
+	CallbackRegistryMixin.OnLoad(self);
+	self:SetUndefinedEventsAllowed(true);
+
 	self.detailLayerPool = CreateFramePool("FRAME", self:GetCanvas(), "MapCanvasDetailLayerTemplate");
 	self.dataProviders = {};
 	self.dataProviderEventsCount = {};

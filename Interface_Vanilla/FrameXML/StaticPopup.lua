@@ -575,23 +575,6 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	hideOnEscape = 1,
 };
 
-StaticPopupDialogs["TAKE_GM_SURVEY"] = {
-	text = TAKE_GM_SURVEY,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		GMSurveyFrame_LoadUI();
-		ShowUIPanel(GMSurveyFrame);
-		TicketStatusFrame:Hide();
-	end,
-	OnCancel = function(self)
-		TicketStatusFrame.hasGMSurvey = false;
-		TicketStatusFrame:Hide();
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
-};
-
 StaticPopupDialogs["CONFIRM_RESET_INSTANCES"] = {
 	text = CONFIRM_RESET_INSTANCES,
 	button1 = YES,
@@ -1165,87 +1148,6 @@ StaticPopupDialogs["RESET_CHAT"] = {
 	end,
 	hideOnEscape = 1,
 	exclusive = 1,
-};
-
-StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
-	text = HELP_TICKET_ABANDON_CONFIRM,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self, prevFrame)
-		DeleteGMTicket();
-	end,
-	OnCancel = function(self, prevFrame)
-	end,
-	OnShow = function(self)
-		HideUIPanel(HelpFrame);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["HELP_TICKET"] = {
-	text = HELP_TICKET_EDIT_ABANDON,
-	button1 = HELP_TICKET_EDIT,
-	button2 = HELP_TICKET_ABANDON,
-	OnAccept = function(self)
-		if ( HelpFrame_IsGMTicketQueueActive() ) then
-			HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
-		else
-			HideUIPanel(HelpFrame);
-			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
-		end
-	end,
-	OnCancel = function(self)
-		local currentFrame = self:GetParent();
-		local dialogFrame = StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");
-		dialogFrame.data = currentFrame;
-	end,
-	timeout = 0,
-	whileDead = 1,
-	closeButton = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_NEED_MORE_HELP"] = {
-	text = GM_RESPONSE_POPUP_NEED_MORE_HELP_WARNING,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		HelpFrame_GMResponse_Acknowledge();
-	end,
-	OnCancel = function(self)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_RESOLVE_CONFIRM"] = {
-	text = GM_RESPONSE_POPUP_RESOLVE_CONFIRM,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		HelpFrame_GMResponse_Acknowledge(true);
-	end,
-	OnCancel = function(self)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-};
-StaticPopupDialogs["GM_RESPONSE_MUST_RESOLVE_RESPONSE"] = {
-	text = GM_RESPONSE_POPUP_MUST_RESOLVE_RESPONSE,
-	button1 = GM_RESPONSE_POPUP_VIEW_RESPONSE,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		HelpFrame_ShowFrame(HELPFRAME_GM_RESPONSE);
-	end,
-	OnCancel = function(self)
-	end,
-	OnShow = function(self)
-		HideUIPanel(HelpFrame);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
 };
 StaticPopupDialogs["PETRENAMECONFIRM"] = {
 	text = PET_RENAME_CONFIRMATION,
@@ -1843,6 +1745,24 @@ StaticPopupDialogs["LOOT_BIND"] = {
 };
 StaticPopupDialogs["EQUIP_BIND"] = {
 	text = EQUIP_NO_DROP,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self, slot)
+		EquipPendingItem(slot);
+	end,
+	OnCancel = function(self, slot)
+		CancelPendingEquip(slot);
+	end,
+	OnHide = function(self, slot)
+		CancelPendingEquip(slot);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["EQUIP_BIND_REFUNDABLE"] = {
+	text = END_REFUND,
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self, slot)
@@ -2999,6 +2919,18 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		BindEnchant();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["REFUNDABLE_SOCKET"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_ItemSocketInfo.CompleteSocketing();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -4186,6 +4118,38 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK"] = Mixin({
 	end,
 }, StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"]);
 
+StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
+	text = REGIONAL_RESTRICT_CHAT_DIALOG_TITLE,
+	subText = REGIONAL_RESTRICT_CHAT_DIALOG_MESSAGE,
+	button1 = REGIONAL_RESTRICT_CHAT_DIALOG_ENABLE,
+	button2 = REGIONAL_RESTRICT_CHAT_DIALOG_DISABLE,
+	OnAccept = function()
+		local disabled = false;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	OnShow = function(self)
+		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
+	end,
+	timeout = 0,
+	hideOnEscape = 0,
+	exclusive = 1,
+};
+
+StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
+	text = RESTRICT_CHAT_CONFIG_DIALOG_MESSAGE,
+	button1 = RESTRICT_CHAT_CONFIG_DIALOG_DISABLE,
+	button2 = RESTRICT_CHAT_CONFIG_DIALOG_CANCEL,
+	OnAccept = function()
+		local disabled = true;
+		C_SocialRestrictions.SetChatDisabled(disabled);
+		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	end,
+	timeout = 0,
+	hideOnEscape = 0,
+	exclusive = 1,
+};
+
 do
 	local warningSeenBefore = false;
 	StaticPopupDialogs["RAF_GRANT_LEVEL_ALLIED_RACE"] = {
@@ -4266,8 +4230,6 @@ function StaticPopup_Resize(dialog, which)
 			width = 420;
 		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
 			width = width + (info.editBoxWidth - 260);
-		elseif ( which == "HELP_TICKET" ) then
-			width = 350;
 		elseif ( which == "GUILD_IMPEACH" ) then
 			width = 375;
 		end

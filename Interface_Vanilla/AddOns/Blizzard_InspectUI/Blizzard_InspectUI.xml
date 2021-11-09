@@ -45,14 +45,13 @@
 				</Anchors>
 				<Layers>
 					<Layer>
-						<FontString name="InspectNameText" inherits="GameFontNormal" text="NAME">
+						<FontString name="InspectNameText" inherits="GameFontHighlight" text="NAME">
 							<Size>
 								<AbsDimension x="109" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
-							<Color r="1.0" g="1.0" b="1.0"/>
 						</FontString>
 					</Layer>
 				</Layers>

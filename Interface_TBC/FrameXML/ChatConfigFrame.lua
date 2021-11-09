@@ -8,6 +8,10 @@ CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
 CHATCONFIG_CHANNELS_MAXWIDTH = 145;
 
+local function ShouldDisplayDisabled()
+	return not C_SocialRestrictions.IsMuted() and C_SocialRestrictions.IsChatDisabled();
+end
+
 --Chat options
 --NEW_CHAT_TYPE - Add a new chat type to one of the below sections so that people can change it in the Chat Config.
 CHAT_CONFIG_CHAT_LEFT = {
@@ -15,74 +19,88 @@ CHAT_CONFIG_CHAT_LEFT = {
 		type = "SAY",
 		checked = function () return IsListeningForMessageType("SAY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "SAY"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[2] = {
 		type = "EMOTE",
 		checked = function () return IsListeningForMessageType("EMOTE"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "EMOTE"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[3] = {
 		type = "YELL",
 		checked = function () return IsListeningForMessageType("YELL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "YELL"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[4] = {
 		text = GUILD_CHAT,
 		type = "GUILD",
 		checked = function () return IsListeningForMessageType("GUILD"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[5] = {
 		text = OFFICER_CHAT,
 		type = "OFFICER",
 		checked = function () return IsListeningForMessageType("OFFICER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "OFFICER"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[6] = {
 		type = "WHISPER",
 		checked = function () return IsListeningForMessageType("WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[7] = {
 		type = "BN_WHISPER",
 		noClassColor = 1,
 		checked = function () return IsListeningForMessageType("BN_WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_WHISPER"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[8] = {
 		type = "PARTY",
 		checked = function () return IsListeningForMessageType("PARTY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[9] = {
 		type = "PARTY_LEADER",
 		checked = function () return IsListeningForMessageType("PARTY_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_LEADER"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[10] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[11] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[12] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[13] = {
 		type = "INSTANCE_CHAT",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 	[14] = {
 		type = "INSTANCE_CHAT_LEADER",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
+		disabled = ShouldDisplayDisabled;
 	},
 };
 
@@ -531,9 +549,9 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 			},
 			[5] = {
 				text = SPECIAL,
-				type = {"SPELL_INSTAKILL"};
+				type = {"SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE", "SPELL_DURABILITY_DAMAGE_ALL"};
 				checked = function () return HasMessageType("SPELL_INSTAKILL"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE", "SPELL_DURABILITY_DAMAGE_ALL"); end;
 				tooltip = SPELL_INSTAKILL_COMBATLOG_TOOLTIP,
 			},
 			[6] = {
@@ -664,6 +682,7 @@ end
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Chat Settings
+		ChatConfigFrame_ReplaceChatConfigLeftTooltips(C_SocialRestrictions.IsChatDisabled());
 		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
@@ -1001,6 +1020,9 @@ function ChatConfig_UpdateCheckboxes(frame)
 					BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
 				end
 			end
+
+			checkBox.tooltip = value.tooltip;
+
 			if ( type(value.hidden) == "function" ) then
 				if ( value.hidden() ) then
 					checkBox:GetParent():Hide();
@@ -1555,7 +1577,7 @@ function ChatConfigCategory_OnClick(self)
 	end
 end
 
-function UpdateDefaultButtons(combatLogSelected)
+local function UpdateDefaultButtons(combatLogSelected)
 	if ( combatLogSelected ) then
 		ChatConfigFrame.DefaultButton:Hide();
 		ChatConfigFrame.RedockButton:Hide();
@@ -1564,6 +1586,9 @@ function UpdateDefaultButtons(combatLogSelected)
 		ChatConfigFrame.DefaultButton:Show();
 		ChatConfigFrame.RedockButton:Show();
 		CombatLogDefaultButton:Hide();
+
+		ChatConfigFrame.ToggleChatButton:SetShown(not C_SocialRestrictions.IsMuted());
+		ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(C_SocialRestrictions.IsChatDisabled());
 	end
 end
 
@@ -2091,6 +2116,52 @@ end
 
 function ChatConfigFrameRedockButton_OnLoad(self)
 	self:SetWidth(self:GetTextWidth() + 31);
+end
+
+function ChatConfigFrameToggleChatButton_OnClick()
+	local newDisabled = not C_SocialRestrictions.IsChatDisabled();
+	if newDisabled then
+		StaticPopup_Show("CHAT_CONFIG_DISABLE_CHAT");
+	else
+		C_SocialRestrictions.SetChatDisabled(newDisabled);
+		ChatConfigFrame_OnChatDisabledChanged(newDisabled);
+	end
+end
+
+function ChatConfigFrame_OnChatDisabledChanged(disabled)
+	ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled);
+	ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled);
+	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
+	
+	if disabled then
+		local unsubscribe = true;
+		C_Club.UnfocusAllStreams(unsubscribe);
+	else
+		C_Club.FocusCommunityStreams();
+	end
+
+	EventRegistry:TriggerEvent("AccountInfo.ChatDisabled", disabled);
+end
+
+function ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled)
+	if disabled then
+		local tooltip = string.format(RESTRICT_CHAT_CONFIG_TOOLTIP, RESTRICT_CHAT_CONFIG_ENABLE);
+		for index, tbl in pairs(CHAT_CONFIG_CHAT_LEFT) do
+			if tbl.disabled ~= nil then
+				tbl.tooltip = tooltip;
+			end
+		end
+	else
+		for index, tbl in pairs(CHAT_CONFIG_CHAT_LEFT) do
+			tbl.tooltip = nil;
+		end
+	end
+end
+
+function ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled)
+	local button = ChatConfigFrame.ToggleChatButton;
+	button:SetText(disabled and RESTRICT_CHAT_CONFIG_ENABLE or RESTRICT_CHAT_CONFIG_DISABLE);
+	button:SetWidth(button:GetTextWidth() + 31);
 end
 
 ChatWindowTabMixin = {};

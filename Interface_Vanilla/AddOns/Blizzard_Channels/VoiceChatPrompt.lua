@@ -1,25 +1,25 @@
 local partyChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local raidChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local partyChannelTypeToActivatedNotification =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 local raidChannelTypeToActivatedNotification =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 function Voice_GetChannelActivatePrompt(channel)
@@ -63,6 +63,27 @@ end
 
 VoiceChatActivateChannelPromptMixin = {};
 
+function VoiceChatActivateChannelPromptMixin:OnShow()
+	self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
+end
+
+function VoiceChatActivateChannelPromptMixin:OnHide()
+	self:UnregisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
+end
+
+function VoiceChatActivateChannelPromptMixin:OnEvent(event, ...)
+	if event == "VOICE_CHAT_CHANNEL_ACTIVATED" then
+		self:OnVoiceChannelActivated(...);
+	end
+end
+
+function VoiceChatActivateChannelPromptMixin:OnVoiceChannelActivated(channelID)
+	-- Hide prompt when channel is externally activated.
+	if channelID == self.channel.channelID then
+		self:Hide();
+	end
+end
+
 function VoiceChatActivateChannelPromptMixin:Setup(channel)
 	self.Icon:SetAtlas("voicechat-icon-headphone-pending");
 
@@ -77,6 +98,7 @@ function VoiceChatActivateChannelPromptMixin:ShowPrompt(channel)
 
 	self:SetExternallyManagedOutroAnimation(true);
 	AlertFrame_ShowNewAlert(self);
+	VoiceChatChannelActivatedNotification:ListenForChannelActivation(self.channel);
 
     C_Timer.After(10, function()
     	self:SetExternallyManagedOutroAnimation(false);
@@ -106,15 +128,16 @@ function VoiceChatActivateChannelPromptMixin:ShouldPromptForChannelActivate(chan
 end
 
 function VoiceChatActivateChannelPromptMixin:ActivateChannel()
-	VoiceChatChannelActivatedNotification:ListenForChannelActivation(self.channel);
 	C_VoiceChat.ActivateChannel(self.channel.channelID);
+	self:UnregisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 end
 
 VoiceChatActivateChannelPromptButtonMixin = {};
 
 function VoiceChatActivateChannelPromptButtonMixin:OnClick()
-	self:GetParent():ActivateChannel();
-	self:GetParent():Hide();
+	local parent = self:GetParent();
+	parent:ActivateChannel();
+	parent:Hide();
 end
 
 VoiceChatChannelActivatedNotificationMixin = {};

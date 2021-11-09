@@ -1,0 +1,85 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Texture name="PowerSwirlScale" scale="1.7079419299744" virtual="true" />
+
+	<Frame name="PowerSwirlTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-2">
+				<Texture parentKey="LightRune" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-Whirls-Soulbinds" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="1" g="0.83921568627451" b="0.45098039215686"/>
+				</Texture>
+				<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-SpinningGlowys-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-YellowRing-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.45098039215686" g="0.83921568627451" b="1"/>
+				</Texture>
+				<Texture parentKey="WhiteStarBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-WhiteStarBurst" useAtlasSize="true" inherits="PowerSwirlScale">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ring" alphaMode="ADD" alpha="0" atlas="PowerSwirlAnimation-BlueRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="7">
+				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="PowerSwirlAnimation-StarBurst-Soulbinds" useAtlasSize="true" inherits="PowerSwirlScale">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<!--<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BigWhirls" startDelay="0.25" duration="0.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.25" toScaleY="1.25"/>
+				<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" degrees="-90"/>
+				<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>-->
+
+				<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.75" toScaleY="0.75"/>
+				<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="1" degrees="-180"/>
+				<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>
+				<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
+				<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="StarBurst" smoothing="IN" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="StarBurst" startDelay="0.4" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="StarBurst" smoothing="IN" duration="0.4" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1.5" toScaleY="1.5"/>
+
+				<Alpha childKey="RingBurst" smoothing="OUT" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingBurst" startDelay="0.4" smoothing="OUT" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.75" toScaleY="0.75"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+</Ui>

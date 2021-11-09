@@ -178,22 +178,22 @@
 							</OnClick>
 							<OnShow>
 								if (GameLimitedMode_IsActive()) then
-								self.tooltip = RED_FONT_COLOR_CODE..TRIAL_RESTRICTED..FONT_COLOR_CODE_CLOSE;
-								self:Disable();
+									self.tooltip = RED_FONT_COLOR_CODE..TRIAL_RESTRICTED..FONT_COLOR_CODE_CLOSE;
+									self:Disable();
 								else
-								self.tooltip = nil;
-								self:Enable();
+									self.tooltip = nil;
+									self:Enable();
 								end
 							</OnShow>
 							<OnEnter>
 								if (self.tooltip) then
-								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+									GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave>
 								if self == GameTooltip:GetOwner() then
-								GameTooltip:Hide();
+									GameTooltip:Hide();
 								end
 							</OnLeave>
 						</Scripts>

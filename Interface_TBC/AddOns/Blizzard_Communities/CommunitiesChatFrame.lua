@@ -318,7 +318,7 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 end
 
 function CommunitiesChatMixin:AddDateNotification(calendarTime, backfill)
-local notification = nil;
+	local notification = nil;
 	local today = C_DateAndTime.GetCurrentCalendarTime();
 	local yesterday = C_DateAndTime.AdjustTimeByDays(today, -1);
 	if CalendarUtil.AreDatesEqual(today, calendarTime) then

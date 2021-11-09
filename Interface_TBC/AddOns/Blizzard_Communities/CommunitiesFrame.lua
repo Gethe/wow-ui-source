@@ -49,6 +49,8 @@ function CommunitiesFrameMixin:OnLoad()
 	self.newClubIds = {};
 
 	self:UpdateCommunitiesButtons();
+
+	EventRegistry:RegisterCallback("AccountInfo.ChatDisabled", self.OnChatDisabledChanged, self);
 end
 
 function CommunitiesFrameMixin:OnShow()
@@ -344,17 +346,46 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 	local clubId = self:GetSelectedClubId();
 	if clubId then
 		local displayMode = self:GetDisplayMode();
-		local clubInfo = C_Club.GetClubInfo(clubId);
+		self.accountMuted = C_Club.IsAccountMuted(clubId);
+		self.accountChatDisabled = C_SocialRestrictions.IsChatDisabled();
+
+		local chatAccessible = self:IsChatAccessible();
+		self.defaultMode = chatAccessible and COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER
+
 		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET then
-			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+			self:SetDisplayMode(self.defaultMode);
+		elseif not chatAccessible and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
+			self:SetDisplayMode(self.defaultMode);
+		elseif not chatAccessible and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
+			self.MaximizeMinimizeFrame.MaximizeButton:Click();
 		elseif displayMode == nil then
-			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+			self:SetDisplayMode(self.defaultMode);
 		end
+
+		self:UpdateTabsChatAccessible();
 	end	
+end
+
+function CommunitiesFrameMixin:UpdateTabsChatAccessible()
+	local chatAccessible = self:IsChatAccessible();
+
+	self.ChatTab.IconOverlay:SetShown(not chatAccessible);
+	if self.accountMuted then
+		self.ChatTab.tooltip2 = ERR_PARENTAL_CONTROLS_CHAT_MUTED;
+	elseif self.accountChatDisabled then
+		local instruction = GREEN_FONT_COLOR:WrapTextInColorCode(RESTRICT_CHAT_COMMUNITIES_TOOLTIP_INSTRUCTION);
+		self.ChatTab.tooltip2 = string.format(RESTRICT_CHAT_TOOLTIP_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, instruction);
+	else
+		self.ChatTab.tooltip2 = nil;
+	end
 end
 
 function CommunitiesFrameMixin:GetDisplayMode()
 	return self.displayMode;
+end
+
+function CommunitiesFrameMixin:IsChatAccessible()
+	return not (self.accountMuted or self.accountChatDisabled);
 end
 
 function CommunitiesFrameMixin:UpdateCommunitiesTabs()
@@ -390,6 +421,26 @@ function CommunitiesFrameMixin:UpdatePortrait()
 		SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\achievement_guildperk_havegroup willtravel");
 	else
 		C_Club.SetAvatarTexture(self.PortraitOverlay.Portrait, clubInfo.avatarId, clubInfo.clubType);
+	end
+end
+
+function CommunitiesFrameMixin:OnChatDisabledChanged(disabled)
+	local clubId = self:GetSelectedClubId();
+	self.accountMuted = clubID and C_Club.IsAccountMuted(clubId);
+	self.accountChatDisabled = C_SocialRestrictions.IsChatDisabled();
+
+	if disabled then
+		local displayMode = self:GetDisplayMode();
+		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
+			self.MaximizeMinimizeFrame.MaximizeButton:Click();
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		end
+
+		self:UpdateTabsChatAccessible();
+	else
+		self:SelectClub(nil);
 	end
 end
 

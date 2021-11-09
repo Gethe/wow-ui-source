@@ -34,6 +34,12 @@ function FrameUtil.UnregisterFrameForEvents(frame, events)
 	end
 end
 
+function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
+	for i, event in ipairs(events) do 
+		frame:RegisterUnitEvent(event, ...);
+	end
+end
+
 function DoesAncestryInclude(ancestry, frame)
 	if ancestry then
 		local currentFrame = frame;

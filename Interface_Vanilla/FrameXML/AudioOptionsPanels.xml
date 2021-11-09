@@ -85,13 +85,12 @@
 				</Scripts>
 			</CheckButton>
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
+				<Size x="186" y="264"/>
 				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
 					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
 					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
 				</KeyValues>
-				<Size x="186" y="264"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -272,7 +271,6 @@
 				</Anchors>
 				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
 					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
 					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
 				</KeyValues>
@@ -766,7 +764,31 @@
 					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad" inherit="prepend"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
-			</Slider>			
+			</Slider>
+
+			<Slider name="$parentVoiceChatDucking" parentKey="VoiceChatDucking" inherits="OptionsSliderTemplate">
+				<KeyValues>
+					<KeyValue key="isValueNormalized" value="true" type="boolean"/>
+					<KeyValue key="isValueInverted" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18" y="-45" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_DUCKING_SCALE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatDuckingSlider_OnLoad" inherit="prepend"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatDuckingSlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
 			
 			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />

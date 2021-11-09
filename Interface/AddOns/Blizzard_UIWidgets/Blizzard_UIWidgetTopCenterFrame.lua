@@ -50,7 +50,7 @@ end
 function UIWidgetTopCenterContainerMixin:SetSpectatorMode(spectatorMode, relativeFrame)
 	if (spectatorMode) then
 		if (relativeFrame) then
-			self:SetPoint("TOP", relativeFrame, "BOTTOM", 0, -5);
+			self:SetPoint("TOP", relativeFrame, "BOTTOM", 0, 0);
 		end
 		self:SetScale(1.5);
 	else

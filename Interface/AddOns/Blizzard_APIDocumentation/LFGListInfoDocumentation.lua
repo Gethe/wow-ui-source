@@ -95,6 +95,15 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "IsLookingForGroupEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Search",
 			Type = "Function",
 

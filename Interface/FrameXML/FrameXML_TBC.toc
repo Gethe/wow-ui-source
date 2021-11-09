@@ -9,11 +9,13 @@ Fonts.xml
 ..\SharedXML\Mixin.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
 ..\..\Interface_TBC\SharedXML\TextureUtil.lua
 ..\..\Interface_TBC\SharedXML\Util.lua
 ..\SharedXML\Constants.lua
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -27,6 +29,7 @@ Fonts.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\RegionUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
@@ -37,7 +40,6 @@ Fonts.xml
 ..\..\Interface_TBC\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
@@ -51,7 +53,7 @@ Fonts.xml
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 ..\SharedXML\Frame\EventEditBox.xml
-..\SharedXML\DataProvider.lua
+..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua
@@ -235,7 +237,6 @@ ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
-..\..\Interface_TBC\FrameXML\LFGFrame.xml
 PVPFrame.xml
 
 

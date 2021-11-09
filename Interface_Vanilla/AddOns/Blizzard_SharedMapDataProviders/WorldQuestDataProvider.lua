@@ -69,9 +69,9 @@ function WorldQuestDataProviderMixin:EvaluateCheckBounties()
 		if not self.setBountyQuestIDCallback then
 			self.setBountyQuestIDCallback = function(event, ...) self:SetBountyQuestID(...); end;
 		end
-		self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+		self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback, self);
 	else
-		self:GetMap():UnregisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+		self:GetMap():UnregisterCallback("SetBountyQuestID", self);
 	end
 end
 
@@ -108,10 +108,10 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 		self.pingQuestIDCallback = function(event, ...) self:PingQuestID(...); end;
 	end
 
-	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
-	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
-	self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
-	self:GetMap():RegisterCallback("PingQuestID", self.pingQuestIDCallback);
+	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback, self);
+	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback, self);
+	self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback, self);
+	self:GetMap():RegisterCallback("PingQuestID", self.pingQuestIDCallback, self);
 
 	self:EvaluateSpellEffectPin();
 	self:EvaluateCheckBounties();
@@ -120,9 +120,10 @@ end
 function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 
-	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
-	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
-	self:GetMap():UnregisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
+	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
+	self:GetMap():UnregisterCallback("SetBountyQuestID", self);
+	self:GetMap():UnregisterCallback("PingQuestID", self);
 end
 
 function WorldQuestDataProviderMixin:SetFocusedQuestID(questID)

@@ -1,4 +1,4 @@
- <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GuildRegistrarFrame.lua"/>
 	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
@@ -50,8 +50,8 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-		</Layers> 
- 		<Frames>
+		</Layers>
+		<Frames>
 			<Frame name="GuildRegistrarNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>
@@ -230,15 +230,15 @@
 							</OnEscapePressed>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
-					</EditBox>	
+					</EditBox>
 				</Frames>
 			</Frame>
- 		</Frames>
+		</Frames>
 		<Scripts>
 			<OnLoad function="GuildRegistrar_OnLoad"/>
 			<OnEvent function="GuildRegistrar_OnEvent"/>
 			<OnShow function="GuildRegistrar_OnShow"/>
 			<OnHide function="GuildRegistrar_OnHide"/>
 		</Scripts>
- 	</Frame>
- </Ui>
+	</Frame>
+</Ui>

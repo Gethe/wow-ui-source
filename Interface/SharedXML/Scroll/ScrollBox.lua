@@ -11,8 +11,11 @@ BaseScrollBoxEvents = CopyValuesAsKeys(BaseScrollBoxEvents);
 
 ScrollBoxConstants =
 {
+	UpdateQueued = false,
+	UpdateImmediately = true,
 	NoScrollInterpolation = true,
 	RetainScrollPosition = true,
+	DiscardScrollPosition = false,
 	AlignBegin = 0,
 	AlignCenter = .5,
 	AlignEnd = 1,
@@ -53,7 +56,7 @@ function ScrollBoxBaseMixin:SetView(view)
 	end
 
 	self.view = view;
-	view:SetScrollTarget(self:GetScrollTarget());
+	view:SetScrollBox(self);
 
 	local isHorizontal = view:IsHorizontal();
 	self:SetHorizontal(isHorizontal);
@@ -81,23 +84,36 @@ function ScrollBoxBaseMixin:GetScrollTarget()
 	return self.ScrollTarget;
 end
 
+function ScrollBoxBaseMixin:OnScrollTargetSizeChanged(width, height)
+	local view = self:GetView();
+	if view and view:RequiresFullUpdateOnScrollTargetSizeChange() then
+		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	end
+end
+
 function ScrollBoxBaseMixin:OnSizeChanged(width, height)
-	self:Update();
+	local view = self:GetView();
+	if view and view:RequiresFullUpdateOnScrollTargetSizeChange() then
+		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	else
+		local forceLayout = true;
+		self:Update(forceLayout);
+	end
 
 	self:TriggerEvent("OnSizeChanged", width, height, self:GetVisibleExtentPercentage());
 end
 
-function ScrollBoxBaseMixin:QueueUpdate()
-	self:SetScript("OnUpdate", self.UpdateImmediately);
-end
-
-function ScrollBoxBaseMixin:UpdateImmediately()
-	self:SetScript("OnUpdate", nil);
-	self:FullUpdate();
-end
-
-function ScrollBoxBaseMixin:OnScrollTargetSizeChanged(width, height)
-	self:QueueUpdate();
+function ScrollBoxBaseMixin:FullUpdate(immediately)
+	if immediately then
+		self:SetScript("OnUpdate", nil);
+		self:FullUpdateInternal();
+	else
+		local function OnUpdate(self, dt)
+			self:SetScript("OnUpdate", nil);
+			self:FullUpdateInternal();
+		end
+		self:SetScript("OnUpdate", OnUpdate);
+	end
 end
 
 function ScrollBoxBaseMixin:SetUpdateLocked(locked)
@@ -108,11 +124,13 @@ function ScrollBoxBaseMixin:IsUpdateLocked()
 	return self.updateLock;
 end
 
-function ScrollBoxBaseMixin:FullUpdate()
+function ScrollBoxBaseMixin:FullUpdateInternal()
 	local oldScrollOffset = self:GetDerivedScrollOffset();
-
-	local recalculate = true;
-	self:GetDerivedExtent(recalculate);
+	
+	-- Note to do some optimizations so that recalculations of element extents is only
+	-- done when either data provider size changes or an element's size changes, and to avoid
+	-- recalculating every extent if we can just recalculate a single element.
+	self:RecalculateDerivedExtent();
 
 	local scrollRange = self:GetDerivedScrollRange();
 	if scrollRange > 0 then
@@ -157,8 +175,8 @@ function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 		self:TriggerEvent(BaseScrollBoxEvents.OnScroll, scrollPercentage, self:GetVisibleExtentPercentage(), self:GetPanExtentPercentage());
 		
 		local hasScrollableExtent = self:HasScrollableExtent();
-		local showLower = hasScrollableExtent and (scrollPercentage > MathUtil.Epsilon);
-		local showUpper = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < (1 - MathUtil.Epsilon));
+		local showLower = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
+		local showUpper = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
 		self:SetShadowsShown(showUpper, showLower);
 	end
 end
@@ -321,10 +339,18 @@ function ScrollBoxBaseMixin:GetVisibleExtentPercentage()
 	return 0;
 end
 
-function ScrollBoxBaseMixin:GetDerivedExtent(recalculate)
+function ScrollBoxBaseMixin:RecalculateDerivedExtent()
 	local view = self:GetView();
 	if view then
-		return view:GetExtent(recalculate, self);
+		return view:RecalculateExtent(self);
+	end
+	return 0;
+end
+
+function ScrollBoxBaseMixin:GetDerivedExtent()
+	local view = self:GetView();
+	if view then
+		return view:GetExtent(self);
 	end
 	return 0;
 end
@@ -521,7 +547,7 @@ function ScrollBoxListMixin:IsVirtualized()
 end
 
 function ScrollBoxListMixin:GetElementExtent(dataIndex)
-	return self:GetView():GetElementExtent(self, dataIndex);
+	return self:GetView():GetElementExtent(dataIndex);
 end
 
 function ScrollBoxListMixin:GetExtentUntil(dataIndex)
@@ -550,7 +576,7 @@ function ScrollBoxListMixin:GetDataProviderSize()
 end
 
 function ScrollBoxListMixin:OnViewDataChanged()
-	self:UpdateImmediately();
+	self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 end
 
 function ScrollBoxListMixin:Rebuild()
@@ -570,9 +596,9 @@ function ScrollBoxListMixin:IsAcquireLocked()
 	return view and view:IsAcquireLocked();
 end
 
-function ScrollBoxListMixin:FullUpdate()
+function ScrollBoxListMixin:FullUpdateInternal()
 	if not self:IsAcquireLocked() then
-		ScrollBoxBaseMixin.FullUpdate(self);
+		ScrollBoxBaseMixin.FullUpdateInternal(self);
 	end
 end
 
@@ -607,7 +633,6 @@ function ScrollBoxListMixin:ScrollToNearest(dataIndex, noInterpolation)
 	elseif self:GetExtentUntil(dataIndex) < scrollOffset then
 		return self:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignBegin, noInterpolation);
 	end
-	return nil;
 end
 
 function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation)
@@ -622,7 +647,6 @@ function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, noInt
 			return elementData;
 		end
 	end
-	return nil;
 end
 
 function ScrollBoxListMixin:ScrollToElementData(elementData, alignment, noInterpolation)
@@ -630,7 +654,6 @@ function ScrollBoxListMixin:ScrollToElementData(elementData, alignment, noInterp
 	if dataIndex then
 		return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
 	end
-	return nil;
 end
 
 function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment, noInterpolation)
@@ -645,8 +668,6 @@ function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment,
 			return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
 		end
 	end
-	
-	return nil;
 end
 
 ScrollBoxMixin = CreateFromMixins(ScrollBoxBaseMixin);

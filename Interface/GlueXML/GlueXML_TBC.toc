@@ -11,6 +11,7 @@ GlueCheck.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
@@ -28,11 +29,12 @@ GlueCheck.lua
 ..\..\Interface_TBC\GlueXML\Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
-GlueLocalization.xml
+..\..\Interface_TBC\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
 ..\..\Interface_TBC\SharedXML\TextureUtil.lua
 ..\SharedXML\Backdrop.xml
 ..\..\Interface_TBC\SharedXML\LayoutFrame.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -53,7 +55,6 @@ GlueContextMenu.xml
 ..\SharedXML\ModelSceneActorMixin.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\GameTooltipTemplate.xml
 ..\SharedXML\FrameStack.lua
 
@@ -69,7 +70,7 @@ GlueTooltip.xml
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
 ..\..\Interface_TBC\GlueXML\AccountLogin.xml
-RealmList.xml
+..\..\Interface_TBC\GlueXML\RealmList.xml
 CharacterServicesPatchwerk.xml
 ..\..\Interface_TBC\GlueXML\CharacterSelect.xml
 AccountReactivate.xml

@@ -707,7 +707,7 @@
 			<Frame name="$parentMenuBackdrop" inherits="TooltipBackdropTemplate" setAllPoints="true" alpha=".7">
 				<KeyValues>
 					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
-					</KeyValues>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<HitRectInsets>

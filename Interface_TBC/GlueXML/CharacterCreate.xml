@@ -1048,12 +1048,12 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<EditBox name="CharacterCreateNameEdit" inherits="BackdropTemplate" letters="12">
+					<EditBox name="CharacterCreateNameEdit" inherits="TooltipBackdropTemplate" letters="12">
 						<Size>
 							<AbsDimension x="156" y="40"/>
 						</Size>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 							<KeyValue key="backdropColor" value="GLUE_ALLIANCE_COLOR" type="global"/>
 							<KeyValue key="backdropBorderColor" value="GLUE_ALLIANCE_BORDER_COLOR" type="global"/>
 						</KeyValues>
