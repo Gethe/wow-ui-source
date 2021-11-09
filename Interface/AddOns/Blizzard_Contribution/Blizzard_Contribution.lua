@@ -189,7 +189,7 @@ function ContributeButtonMixin:UpdateTooltip()
 			if currencyID then
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 				rcName = currencyInfo.name;
-				rcAvailable = currencyInfo.quantity > 0;
+				rcAvailable = currencyInfo.quantity;
 				rcAmount = currencyAmount;
 				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT;
 			elseif itemID then
