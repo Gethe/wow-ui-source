@@ -85,6 +85,20 @@ local Transmog =
 			Type = "Function",
 		},
 		{
+			Name = "ExtractTransmogIDList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "input", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "transmogIDList", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetApplyCost",
 			Type = "Function",
 
