@@ -110,9 +110,7 @@ function RealmList_Update()
 				button.Load:SetText(LOAD_HIGH);
 				button.Load:SetTextColor(RED_FONT_COLOR:GetRGB());
 			elseif ( populationState == "NEW" ) then
-				--button.Load:SetText(LOAD_NEW);
-				-- CLASSIC TODO: Overriding the "NEW" state here to show a server as "Layered". This makes the hotfix a lot simpler, but ideally we should do this with a new population state.
-				button.Load:SetText(REALM_LAYERED);
+				button.Load:SetText(LOAD_NEW);
 				button.Load:SetTextColor(BLUE_FONT_COLOR:GetRGB());
 			elseif ( populationState == "RECOMMENDED" ) then
 				--button.Load:SetText(LOAD_RECOMMENDED);
