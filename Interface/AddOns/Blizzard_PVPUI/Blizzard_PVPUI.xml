@@ -394,6 +394,15 @@
 	</Frame>
 
 	<Frame name="PVPQuestRewardTemplate" inherits="PVPRewardTemplate" mixin="PVPQuestRewardMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="14" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
