@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Button name="TalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.selectedTextY = 4;
+				self:RegisterEvent("PLAYER_LEVEL_UP");
+			</OnLoad>
+			<OnEvent>
+				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID()) then
+					SetButtonPulse(self, 60, 0.75);
+				end
+			</OnEvent>
+			<OnClick>
+				TalentFrameTab_OnClick(self);
+			</OnClick>
+			<OnEnter>
+
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Texture name="TalentBranchTemplate" file="Interface\TalentFrame\UI-TalentBranches" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Texture>
+	<Texture name="TalentArrowTemplate" file="Interface\TalentFrame\UI-TalentArrows" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Texture>
+	<Button name="TalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSlot" file="Interface\Buttons\UI-EmptySlot-White">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRankBorder" file="Interface\TalentFrame\TalentFrame-RankBorder">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentRank" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentRankBorder">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("CHARACTER_POINTS_CHANGED");
+			</OnLoad>
+			<OnEvent>
+				if (self.talentButton_OnEvent) then
+					self.talentButton_OnEvent(self);
+				end
+			</OnEvent>
+			<OnEnter>
+				if (self.talentButton_OnEnter) then
+					self.talentButton_OnEnter(self);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if (self.talentButton_OnClick) then
+					self.talentButton_OnClick(self, button);
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+</Ui>

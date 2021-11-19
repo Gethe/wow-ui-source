@@ -1,0 +1,93 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ItemRef.lua"/>
+	<GameTooltip name="ItemRefShoppingTooltip1" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ItemRefShoppingTooltip2" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ItemRefTooltip" inherits="GameTooltipTemplate" parent="UIParent" enableMouse="true" toplevel="true" movable="true" frameStrata="TOOLTIP" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="64"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="80"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="ItemRefCloseButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(ItemRefTooltip);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				GameTooltip_OnLoad(self);
+				self:SetPadding(16, 0);
+				self:RegisterForDrag("LeftButton");
+				self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
+				self.UpdateTooltip = function(self)
+					if ( not self.comparing and IsModifiedClick("COMPAREITEMS")) then
+						GameTooltip_ShowCompareItem(self);
+						self.comparing = true;
+					elseif ( self.comparing and not IsModifiedClick("COMPAREITEMS")) then
+						for _, frame in pairs(self.shoppingTooltips) do
+							frame:Hide();
+						end
+						
+						self.needsReset = true;
+						self.comparing = false;
+					end
+				end
+			</OnLoad>
+			<OnTooltipSetItem>
+				if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver()) then
+					GameTooltip_ShowCompareItem(self);
+					self.comparing = true;
+				end
+			</OnTooltipSetItem>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+				ValidateFramePosition(self);
+				if ( IsModifiedClick("COMPAREITEMS") ) then --We do this to choose where the comparison is shown
+					GameTooltip_ShowCompareItem(self);
+					self.comparing = true;
+				end
+			</OnDragStop> 
+			<OnEnter>
+				self:SetScript("OnUpdate", self.UpdateTooltip);
+			</OnEnter>
+			<OnLeave>
+				for _, frame in pairs(self.shoppingTooltips) do
+					frame:Hide();
+				end
+				self.comparing = false;
+				self:SetScript("OnUpdate", nil);
+			</OnLeave>
+			<OnHide>
+				GameTooltip_OnHide(self);
+				--While it is true that OnUpdate won't fire while the frame is hidden, we don't want to have to check-and-unregister when we show it
+				self:SetScript("OnUpdate", nil);
+			</OnHide>
+		</Scripts>
+	</GameTooltip>
+</Ui>

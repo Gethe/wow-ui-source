@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIOptions.lua"/>
+	<Frame name="DropDownMenuTemplate" inherits="UIDropDownMenuTemplate" virtual="true"/>
+	<Font name="OptionsFontSmall" inherits="GameFontNormalSmall" virtual="true"/>
+	<Font name="OptionsFontHighlightSmall" inherits="GameFontHighlightSmall" virtual="true"/>
+	<Font name="OptionsFontHighlight" inherits="GameFontHighlight" virtual="true"/>
+	<Font name="OptionsFontLarge" inherits="GameFontNormalLarge" virtual="true"/>
+	<Font name="OptionsFontLeft" inherits="GameFontNormal" virtual="true"/>
+	<Script file="OptionsPanelTemplates.lua"/>
+</Ui>
+

@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UIDropDownMenu.lua"/>
+	<Include file="UIDropDownMenuTemplates.xml"/>
+	<Button name="DropDownList1" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="1">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				local fontName, fontHeight, fontFlags = _G["DropDownList1Button1NormalText"]:GetFont();
+				UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = fontHeight;
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Button name="DropDownList2" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="2">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+	</Button>
+</Ui>

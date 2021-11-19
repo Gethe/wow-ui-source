@@ -1,0 +1,125 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+  <Script file="RestrictedInfrastructure.lua"/>
+  <Script file="RestrictedEnvironment.lua"/>
+  <Script file="RestrictedExecution.lua"/>
+  <Script file="RestrictedFrames.lua"/>
+  <Script file="SecureHandlers.lua"/>
+
+  <!-- Templates for the common handler actions, use Wrap to
+       enable less common features -->
+
+  <Frame name="SecureHandlerBaseTemplate" inherits="SecureFrameTemplate"
+         virtual="true">
+    <Size x="2" y="2"/>
+    <Scripts>
+      <OnLoad function="SecureHandler_OnLoad"/>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerStateTemplate" inherits="SecureFrameTemplate"
+         virtual="true">
+    <Size x="2" y="2"/>
+    <Scripts>
+      <OnLoad function="SecureHandler_OnLoad"/>
+      <OnAttributeChanged function="SecureHandler_StateOnAttributeChanged"/>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerAttributeTemplate" inherits="SecureFrameTemplate"
+         virtual="true">
+    <Size x="2" y="2"/>
+    <Scripts>
+      <OnLoad function="SecureHandler_OnLoad"/>
+      <OnAttributeChanged function="SecureHandler_AttributeOnAttributeChanged"/>
+    </Scripts>
+  </Frame>
+
+  <Button name="SecureHandlerClickTemplate"
+          inherits="SecureHandlerBaseTemplate"
+          virtual="true">
+    <Scripts>
+      <OnClick>
+        SecureHandler_OnClick(self, "_onclick", button, down);
+      </OnClick>
+    </Scripts>
+  </Button>
+
+  <Button name="SecureHandlerDoubleClickTemplate"
+          inherits="SecureHandlerBaseTemplate"
+          virtual="true">
+    <Scripts>
+      <OnDoubleClick>
+        SecureHandler_OnClick(self, "_ondoubleclick", button);
+      </OnDoubleClick>
+    </Scripts>
+  </Button>
+
+  <Frame name="SecureHandlerDragTemplate"
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnDragStart>
+	SecureHandler_OnDragEvent(self, "_ondragstart", button);
+      </OnDragStart>
+      <OnReceiveDrag>
+	SecureHandler_OnDragEvent(self, "_onreceivedrag");
+      </OnReceiveDrag>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerShowHideTemplate"
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnShow>
+        SecureHandler_OnSimpleEvent(self, "_onshow");
+      </OnShow>
+      <OnHide>
+        SecureHandler_OnSimpleEvent(self, "_onhide");
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerMouseUpDownTemplate"
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnMouseUp>
+	SecureHandler_OnMouseUpDown(self, "_onmouseup", button);
+      </OnMouseUp>
+      <OnMouseDown>
+	SecureHandler_OnMouseUpDown(self, "_onmousedown", button);
+      </OnMouseDown>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerMouseWheelTemplate"
+	 inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+	SecureHandler_OnLoad(self);
+	self:EnableMouseWheel(true);
+      </OnLoad>
+      <OnMouseWheel>
+	SecureHandler_OnMouseWheel(self, "_onmousewheel", delta);
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+
+  <Frame name="SecureHandlerEnterLeaveTemplate"
+         inherits="SecureHandlerBaseTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        if ( motion ) then
+            self:SetAttribute("_entered", true);
+            SecureHandler_OnSimpleEvent(self, "_onenter");
+        end
+      </OnEnter>
+      <OnLeave>
+        if ( motion and self:GetAttribute("_entered") ) then
+            self:SetAttribute("_entered", nil);
+            SecureHandler_OnSimpleEvent(self, "_onleave");
+        end
+      </OnLeave>
+    </Scripts>
+  </Frame>
+</Ui>

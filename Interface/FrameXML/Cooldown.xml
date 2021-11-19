@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Cooldown.lua"/>
+	<Cooldown name="CooldownFrameTemplate" setAllPoints="true" hidden="true" virtual="true">
+		<SwipeTexture>
+			<Color r="0" g="0" b="0" a="0.8"/>
+		</SwipeTexture>
+		<EdgeTexture file="Interface\Cooldown\edge"/>
+		<BlingTexture file="Interface\Cooldown\star4">
+			<Color r="0.3" g="0.6" b="1" a="0.8"/>
+		</BlingTexture>
+	</Cooldown>
+</Ui>

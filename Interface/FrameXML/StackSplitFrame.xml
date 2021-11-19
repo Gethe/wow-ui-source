@@ -1,0 +1,102 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StackSplitFrame.lua"/>
+	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="172" y="96"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\MoneyFrame\UI-MoneyFrame">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<TexCoords left="0" right="0.671875" top="0" bottom="0.75"/>
+				</Texture>
+				<FontString name="StackSplitText" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-50" y="18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="StackSplitLeftButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="-59" y="18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="StackSplitFrameLeft_Click"/>
+				</Scripts>
+				<NormalTexture file="Interface\MoneyFrame\Arrow-Left-Up"/>
+				<PushedTexture file="Interface\MoneyFrame\Arrow-Left-Down"/>
+				<DisabledTexture file="Interface\MoneyFrame\Arrow-Left-Disabled"/>
+			</Button>
+			<Button name="StackSplitRightButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="64" y="18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="StackSplitFrameRight_Click"/>
+				</Scripts>
+				<NormalTexture file="Interface\MoneyFrame\Arrow-Right-Up"/>
+				<PushedTexture file="Interface\MoneyFrame\Arrow-Right-Down"/>
+				<DisabledTexture file="Interface\MoneyFrame\Arrow-Right-Disabled"/>
+			</Button>
+			<Button name="StackSplitOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="64" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-3" y="32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="StackSplitFrameOkay_Click"/>
+				</Scripts>
+			</Button>
+			<Button name="StackSplitCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="64" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="5" y="32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="StackSplitFrameCancel_Click"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide function="StackSplitFrame_OnHide"/>
+			<OnChar function="StackSplitFrame_OnChar"/>
+			<OnKeyDown function="StackSplitFrame_OnKeyDown"/>
+			<OnKeyUp function="StackSplitFrame_OnKeyUp"/>
+		</Scripts>
+	</Frame>
+</Ui>

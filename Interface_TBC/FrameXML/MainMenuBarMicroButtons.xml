@@ -1,0 +1,421 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MainMenuBarMicroButtons.lua"/>
+	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
+		<Size>
+			<AbsDimension x="29" y="58"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="18" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentFlash" file="Interface\Buttons\Micro-Highlight" alphaMode="ADD" parentKey="Flash" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="-18"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				MicroButton_OnEnter(self);
+			</OnEnter>
+			<OnEnable>
+				self:SetAlpha(1);
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.5);
+			</OnDisable>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true" virtual="true">
+		<Size x="220" y="100"/>
+		<!--KeyValues>
+			Optional
+			<KeyValue key="label" value="DISPLAY_STRING" type="global"/>
+			<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_X" type="global"/>
+		</KeyValues-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+					<Size x="188" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						local tutIdx = self:GetParent().tutorialIndex;
+						if ( tutIdx ) then
+						SetCVarBitfield("closedInfoFrames", tutIdx, true);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="MicroButtonAlert_OnLoad"/>
+			<OnShow function="MicroButtonAlert_OnShow"/>
+			<OnHide function="MicroButtonAlert_OnHide"/>
+		</Scripts>
+	</Frame>
+	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="552" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="MicroButtonPortrait">
+					<Size>
+						<AbsDimension x="18" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-28"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.2" right="0.8" top="0.0666" bottom="0.9"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="CharacterMicroButton_OnLoad"/>
+			<OnMouseDown>
+				if ( self.down ) then
+				self.down = nil;
+				ToggleCharacter("PaperDollFrame");
+				return;
+				end
+				CharacterMicroButton_SetPushed();
+				self.down = 1;
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self.down ) then
+				self.down = nil;
+				if ( self:IsMouseOver() ) then
+				ToggleCharacter("PaperDollFrame");
+				end
+				UpdateMicroButtons();
+				return;
+				end
+				if ( self:GetButtonState() == "NORMAL" ) then
+				CharacterMicroButton_SetPushed();
+				self.down = 1;
+				else
+				CharacterMicroButton_SetNormal();
+				self.down = 1;
+				end
+			</OnMouseUp>
+			<OnEvent function="CharacterMicroButton_OnEvent"/>
+		</Scripts>
+	</Button>
+	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Spellbook");
+				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
+				self.newbieText = NEWBIE_TOOLTIP_SPELLBOOK;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
+			</OnEvent>
+			<OnClick>
+				ToggleSpellBook(BOOKTYPE_SPELL);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Talents");
+				self.tooltipText = MicroButtonTooltipText(TALENTS, "TOGGLETALENTS");
+				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
+
+				self.minLevel = SHOW_TALENT_LEVEL;
+				self:RegisterEvent("PLAYER_LEVEL_UP");
+				self:RegisterEvent("UPDATE_BINDINGS");
+			</OnLoad>
+			<OnClick>
+				ToggleTalentFrame();
+			</OnClick>
+			<OnEvent function="TalentMicroButton_OnEvent"/>
+		</Scripts>
+	</Button>
+	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Quest");
+				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
+				self.newbieText = NEWBIE_TOOLTIP_QUESTLOG;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
+			</OnEvent>
+			<OnClick>
+				ToggleQuestLog();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<!--<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="hud-microbutton-communities-icon-notification">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-23"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>-->
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Socials");
+				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+				self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
+				self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
+				self:RegisterEvent("INITIAL_CLUBS_LOADED");
+				self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
+				self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
+				self:RegisterEvent("BN_DISCONNECTED");
+				self:RegisterEvent("BN_CONNECTED");
+			</OnLoad>
+			<OnEvent function="SocialsMicroButton_OnEvent"/>
+			<OnClick>
+				ToggleFriendsFrame();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "LFG");
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+			</OnEvent>
+			<OnClick>
+				ToggleLFGParentFrame();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">
+					<Size>
+						<AbsDimension x="28" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM">
+							<Offset x="0" y="7"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "MainMenu");
+				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+				self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
+
+				self.hover = nil;
+				self.updateInterval = 0;
+			</OnLoad>
+			<OnUpdate>
+				if (self.updateInterval > 0) then
+				self.updateInterval = self.updateInterval - elapsed;
+				else
+				self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+				local status = GetFileStreamingStatus();
+				if(status==0) then
+				status = (GetBackgroundLoadingStatus()~=0) and 1 or 0;
+				end
+				if(status == 0) then
+				MainMenuBarDownload:Hide();
+				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up");
+				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down");
+				self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled");
+				else
+				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
+				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
+				self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
+				if (status == 1) then
+				MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green");
+				elseif (status == 2) then
+				MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow");
+				elseif (status == 3) then
+				MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
+				end
+
+				MainMenuBarDownload:Show();
+				end
+				if (self.hover) then
+				MicroButton_OnEnter(self);
+				end
+				end
+			</OnUpdate>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
+			</OnEvent>
+			<OnMouseDown>
+				if ( self.down ) then
+				self.down = nil; -- I'm pretty sure none of this should ever get run.
+				if ( not GameMenuFrame:IsShown() ) then
+				if ( VideoOptionsFrame:IsShown() ) then
+				VideoOptionsFrameCancel:Click();
+				elseif ( AudioOptionsFrame:IsShown() ) then
+				AudioOptionsFrameCancel:Click();
+				elseif ( InterfaceOptionsFrame:IsShown() ) then
+				InterfaceOptionsFrameCancel:Click();
+				end
+				CloseMenus();
+				CloseAllWindows()
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+				ShowUIPanel(GameMenuFrame);
+				else
+				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+				HideUIPanel(GameMenuFrame);
+				MainMenuMicroButton_SetNormal();
+				end
+				return;
+				end
+				MainMenuMicroButton_SetPushed();
+				self.down = 1;
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self.down ) then
+				self.down = nil;
+				if ( self:IsMouseOver() ) then
+				if ( not GameMenuFrame:IsShown() ) then
+				if ( VideoOptionsFrame:IsShown() ) then
+				VideoOptionsFrameCancel:Click();
+				elseif ( AudioOptionsFrame:IsShown() ) then
+				AudioOptionsFrameCancel:Click();
+				elseif ( InterfaceOptionsFrame:IsShown() ) then
+				InterfaceOptionsFrameCancel:Click();
+				end
+				CloseMenus();
+				CloseAllWindows()
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+				ShowUIPanel(GameMenuFrame);
+				else
+				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+				HideUIPanel(GameMenuFrame);
+				MainMenuMicroButton_SetNormal();
+				end
+				end
+				UpdateMicroButtons();
+				return;
+				end
+				if ( self:GetButtonState() == "NORMAL" ) then
+				MainMenuMicroButton_SetPushed();
+				self.down = 1;
+				else
+				MainMenuMicroButton_SetNormal();
+				self.down = 1;
+				end
+			</OnMouseUp>
+			<OnEnter>
+				self.hover = 1;
+				self.updateInterval = 0;
+			</OnEnter>
+			<OnLeave>
+				self.hover = nil;
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Help");
+				self.tooltipText = MicroButtonTooltipText(HELP_BUTTON, "TOGGLEHELP");
+				self.newbieText = NEWBIE_TOOLTIP_HELP;
+			</OnLoad>
+			<OnClick>
+				ToggleHelpFrame()
+			</OnClick>
+		</Scripts>
+	</Button>
+</Ui>

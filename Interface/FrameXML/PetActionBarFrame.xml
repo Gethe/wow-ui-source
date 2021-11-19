@@ -1,0 +1,210 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PetActionBarFrame.lua"/>
+	<CheckButton name="PetActionButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" frameStrata="MEDIUM" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>	
+				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="34" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentShine" inherits="AutoCastShineTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Size x="28" y="28"/>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
+				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".35" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				PetActionButton_OnLoad(self);
+				self.cooldown:SetSwipeColor(0, 0, 0);
+			</OnLoad>
+			<OnEvent>
+				PetActionButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<PreClick>
+				self:SetChecked(false);
+			</PreClick>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					PetActionButton_OnModifiedClick(self, button);
+				else
+					PetActionButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnDragStart>
+				PetActionButton_OnDragStart(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				PetActionButton_OnReceiveDrag(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				PetActionButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				PetActionButton_OnLeave(self, motion);
+			</OnLeave>
+			<OnUpdate>
+				PetActionButton_OnUpdate(self, elapsed);
+			</OnUpdate>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
+			<Size x="54" y="54"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="-1"/>
+			</Anchors>
+		</NormalTexture>
+	</CheckButton>
+	<Frame name="PetActionBarFrame" parent="MainMenuBar" enableMouse="true" frameStrata="LOW" hidden="true">
+		<Size>
+			<AbsDimension x="509" y="43"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="40" y="112"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="SlidingActionBarTexture0" file="Interface\PetActionBar\UI-PetBar">
+					<Size>
+						<AbsDimension x="256" y="44"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.015625" bottom="0.359375"/>
+				</Texture>
+				<Texture name="SlidingActionBarTexture1" file="Interface\PetActionBar\UI-PetBar">
+					<Size>
+						<AbsDimension x="184" y="44"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="SlidingActionBarTexture0" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.71875" top="0.375" bottom="0.71875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="PetActionButton1" inherits="PetActionButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="36" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton2" inherits="PetActionButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton3" inherits="PetActionButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton4" inherits="PetActionButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton5" inherits="PetActionButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton6" inherits="PetActionButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton7" inherits="PetActionButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton8" inherits="PetActionButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton9" inherits="PetActionButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PetActionButton10" inherits="PetActionButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetActionButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PetActionBar_OnLoad"/>
+			<OnEvent function="PetActionBar_OnEvent"/>
+			<OnUpdate function="PetActionBarFrame_OnUpdate"/>
+			<OnShow function="PetActionBar_OnShow"/>
+			<OnHide function="PetActionBar_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

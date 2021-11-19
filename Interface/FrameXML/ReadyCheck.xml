@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ReadyCheck.lua"/>
+	<Frame name="ReadyCheckStatusTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTexture" file="Interface\RaidFrame\ReadyCheck-Waiting" />
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
+		<Size x="323" y="100"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="-10"/>
+		</Anchors>
+		<Frames>
+			<Frame name="ReadyCheckListenerFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ReadyCheckPortrait">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="7" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\RaidFrame\UI-ReadyCheckFrame">
+							<Size x="323" y="97"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.630859375" top="0" bottom="0.7578125"/>
+						</Texture>
+						<FontString name="ReadyCheckFrameText" inherits="GameFontNormal" justifyV="MIDDLE">
+							<Size x="240" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOP" x="20" y="-35"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="READY">
+						<Size x="119" y="24"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOP" x="13" y="-55"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								ConfirmReadyCheck(1);
+								ReadyCheckFrame:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
+						<Size x="119" y="24"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOP" x="17" y="-55"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								ConfirmReadyCheck();
+								ReadyCheckFrame:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						PlaySound(SOUNDKIT.READY_CHECK);
+						FlashClientIcon();
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ReadyCheckFrame_OnLoad"/>
+			<OnEvent function="ReadyCheckFrame_OnEvent"/>
+			<OnHide function="ReadyCheckFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

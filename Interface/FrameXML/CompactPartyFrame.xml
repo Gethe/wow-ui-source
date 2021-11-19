@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CompactPartyFrame.lua"/>
+	<Frame name="CompactPartyFrameTemplate" inherits="CompactRaidGroupTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				CompactPartyFrame_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				--Overriding the RaidGroup OnEvent.
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

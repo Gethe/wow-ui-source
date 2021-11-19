@@ -1,0 +1,163 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BuffFrame.lua"/>
+	<Button name="AuraButtonTemplate" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon"/>
+				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDuration" inherits="GameFontNormalSmall" hidden="true" parentKey="duration">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+				GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
+				GameTooltip:SetUnitAura(PlayerFrame.unit, self:GetID(), self.filter);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				BuffButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				BuffButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size>
+						<AbsDimension x="33" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>	
+				<FontString parentKey="symbol" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="2" y="-2"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.duration:SetPoint("TOP", self, "BOTTOM", 0, -1);
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Button name="TempEnchantButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				TempEnchantButton_OnLoad(self);
+			</OnLoad>
+			<OnUpdate>
+				TempEnchantButton_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				TempEnchantButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				TempEnchantButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Frame name="BuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Size>
+			<AbsDimension x="50" y="50"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-205" y="-13"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="BuffFrame_OnLoad"/>
+			<OnEvent function="BuffFrame_OnEvent"/>
+			<OnUpdate function="BuffFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="TOPRIGHT" />
+		</Anchors>
+		<Frames>
+			<Button name="TempEnchant1" inherits="TempEnchantButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TempEnchant2" inherits="TempEnchantButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="TempEnchant1" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TempEnchant3" inherits="TempEnchantButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="TempEnchant2" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>	
+</Ui>

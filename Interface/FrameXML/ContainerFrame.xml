@@ -1,0 +1,583 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ContainerFrame.lua"/>
+	
+	<Frame name="ContainerFrameHelpBoxTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" virtual="true">
+        <!--
+        <KeyValues>
+            <KeyValue key="tutorialText" value="ARTIFACT_TUTORIAL_SLOT_RELIC" type="global"/>
+            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH" type="global"/>
+        </KeyValues>
+        -->
+        <Size x="220" y="100"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+                    <Size x="188" y="0"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-24"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="6" y="6"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick inherit="append">
+						SetCVarBitfield("closedInfoFrames", self:GetParent().tutorialIndex, true);
+					</OnClick>
+                </Scripts>
+            </Button>
+            <Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                self.Text:SetText(self.tutorialText);
+                self.Text:SetSpacing(4);
+                SetClampedTextureRotation(self.Arrow.Arrow, 270);
+                SetClampedTextureRotation(self.Arrow.Glow, 270);
+
+                self.Arrow.Glow:ClearAllPoints();
+                self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
+            </OnLoad>
+            <OnShow>
+                self:SetHeight(self.Text:GetHeight() + 42);
+            </OnShow>
+        </Scripts>
+	</Frame>
+
+    <Frame name="ArtifactRelicHelpBox" inherits="ContainerFrameHelpBoxTemplate">
+        <KeyValues>
+            <KeyValue key="tutorialText" value="ARTIFACT_TUTORIAL_SLOT_RELIC" type="global"/>
+            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH" type="global"/>
+        </KeyValues>
+    </Frame>
+
+    <Frame name="AzeriteItemInBagHelpBox" inherits="ContainerFrameHelpBoxTemplate">
+        <KeyValues>
+            <KeyValue key="tutorialText" value="AZERITE_TUTORIAL_ITEM_IN_SLOT" type="global"/>
+            <KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT" type="global"/>
+        </KeyValues>
+    </Frame>
+	
+	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="newitemglowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0.2"/>
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.5" order="2" fromAlpha="0.2" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="flashAnim" setToFinalAlpha="true">
+				<Alpha childKey="flash" smoothing="OUT" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="$parentIconQuestTexture">
+					<Size x="37" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BagStaticBottom" atlas="bags-static" alpha="0.2" alphaMode="ADD" hidden="true">
+					<Size x="172" y="37"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BagStaticTop" atlas="bags-static" alpha="0.2" alphaMode="ADD" hidden="true">
+					<Size x="172" y="37"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BagStaticBottom" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="flash" hidden="false" alpha="0" alphaMode="ADD" atlas="bags-glow-flash" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NewItemTexture" alpha="0" alphaMode="ADD" atlas="bags-glow-green" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BattlepayItemTexture" file="Interface\Store\store-item-highlight">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ExtendedSlot" file="Interface\Buttons\UI-Quickslot2" alpha="0.5" alphaMode="ADD" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self:SetVertexColor(0.603, 0.875, 1);
+						</OnLoad>
+					</Scripts>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="ExtendedOverlay" alpha="1" alphaMode="MOD" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.603" g="0.875" b="1"/>
+				</Texture>
+				<Texture parentKey="ExtendedOverlay2" alpha="0.2" alphaMode="ADD" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.603" g="0.875" b="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				local modifiedClick = IsModifiedClick();
+				-- If we can loot the item and autoloot toggle is active, then do a normal click
+				if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
+					local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+					if ( lootable ) then
+						modifiedClick = false;
+					end
+				end
+				if ( modifiedClick ) then
+					ContainerFrameItemButton_OnModifiedClick(self, button);
+				else
+					ContainerFrameItemButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnLoad>
+				ContainerFrameItemButton_OnLoad(self);
+			</OnLoad>
+			<OnEnter>
+				ContainerFrameItemButton_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				ContainerFrameItemButton_OnLeave(self);
+			</OnLeave>
+			<OnHide>
+				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
+					StackSplitFrame:Hide();
+				end
+			</OnHide>
+			<OnDragStart>
+				ContainerFrameItemButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				ContainerFrameItemButton_OnDrag(self);
+			</OnReceiveDrag>
+		</Scripts>
+	</Button>
+	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+		<Size x="256" y="256"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="$parentPortrait" parentKey="Portrait">
+                    <Size x="40" y="40"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="7" y="-5"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size x="256" y="512"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size x="256" y="512"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.3515625" bottom="0.8515625"/>
+				</Texture>
+				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.353515625" bottom="0.8515625"/>
+				</Texture>
+				<Texture name="$parentBackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
+					<Size x="256" y="10"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.330078125" bottom="0.349609375"/>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight">
+					<Size x="112" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="47" y="-10"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentBackground1Slot" file="Interface\ContainerFrame\UI-Bag-1Slot" hidden="true">
+					<Size x="99" y="74"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.7734375" top="0" bottom="0.578125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-2" y="-274"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "PLAYER");
+						MoneyFrame_SetMaxDisplayWidth(self, 168);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem4" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem5" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem6" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem7" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem8" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem9" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem10" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem11" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem12" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem13" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem14" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem15" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem16" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem17" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem18" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem19" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem20" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem21" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem22" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem23" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem24" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem25" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem26" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem27" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem28" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem29" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem30" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem31" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem32" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem33" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem34" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
+			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
+
+			<Button name="$parentPortraitButton" parentKey="PortraitButton">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
+					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
+				</Scripts>
+			</Button>
+			<!--<Button parentKey="FilterIcon" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="bags-icon-consumables" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent().PortraitButton:GetFrameLevel()+1);
+					</OnShow>
+					<OnEnter>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnEnter")(target);
+					</OnEnter>
+					<OnLeave>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnLeave")(target);
+					</OnLeave>
+					<OnClick>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnClick")(target);
+					</OnClick>
+				</Scripts>
+			</Button>-->
+			<Button name="$parentAddSlotsButton" hidden="true">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-210"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" file="Interface\Common\RingBorder" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="bags-icon-addslots">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<HighlightTexture atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:SetText(BACKPACK_AUTHENTICATOR_INCREASE_SIZE, 1, 1, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick>
+						StaticPopup_Show("BACKPACK_INCREASE_SIZE");
+						ContainerFrame_SetBackpackForceExtended(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!--<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-20"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetSpacing(4);
+						SetClampedTextureRotation(self.Arrow, 270);
+						SetClampedTextureRotation(self.ArrowGlow, 270);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight() + 42);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+					</OnShow>
+				</Scripts>
+			</Frame>-->
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleBag(self:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button parentKey="ClickableTitleFrame">
+				<Size x="118" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" x="8" y="-8"/>
+				</Anchors>
+				<!--<Scripts>
+					<OnEnter>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnEnter")(target);
+					</OnEnter>
+					<OnLeave>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnLeave")(target);
+					</OnLeave>
+					<OnClick>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnClick")(target);
+					</OnClick>
+				</Scripts>-->
+			</Button>
+		</Frames>	
+		<Scripts>
+			<OnEvent>
+				ContainerFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnLoad>
+				ContainerFrame_OnLoad(self);
+			</OnLoad>
+			<OnHide>
+				ContainerFrame_OnHide(self);
+			</OnHide>
+			<OnShow>
+				ContainerFrame_OnShow(self);
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="ContainerFrame1" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame2" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame3" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame6" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame7" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame8" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame9" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+
+	<!--<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
+		<Size x="96" y="18"/>
+	</EditBox>-->
+
+	<!--<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
+		<Size x="28" y="26"/>
+		<NormalTexture atlas="bags-button-autosort-up"/>
+		<PushedTexture atlas="bags-button-autosort-down"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="24" y="23"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick>
+				PlaySound(SOUNDKIT.UI_BAG_SORTING_01);
+				SortBags();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self);
+				GameTooltip:SetText(BAG_CLEANUP_BAGS);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>-->
+
+	<Frame name="BagHelpBox" parent="UIParent" inherits="GlowBoxTemplate" frameStrata="HIGH" hidden="true">
+		<Size x="220" y="200"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+					<Size x="188" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (self:GetParent().bitField) then
+							SetCVarBitfield("closedInfoFrames", self:GetParent().bitField, true);
+						end
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetSpacing(4);
+				SetClampedTextureRotation(self.Arrow.Arrow, 270);
+				SetClampedTextureRotation(self.Arrow.Glow, 270);
+				self.Arrow.Glow:ClearAllPoints();
+				self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
+			</OnLoad>
+			<OnShow>
+				self:SetHeight(self.Text:GetHeight()+30);
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

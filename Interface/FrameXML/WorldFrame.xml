@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- This special frame is used to render the world.
+		 There can be only one of these frames!!
+	     The world is rendered in the background of the frame.
+		 Children of the world frame are visible even when the UI is turned off.
+
+		 You can move/resize this frame by doing something like the following:
+		 /script WorldFrame:ClearAllPoints(); WorldFrame:SetPoint("TOPLEFT", 32, 0); WorldFrame:SetPoint("BOTTOMRIGHT", -32, 32);
+		 which is wide-screen aware, or...
+		 /script WorldFrame:ClearAllPoints(); WorldFrame:SetWidth(960); WorldFrame:SetHeight(736); WorldFrame:SetPoint("CENTER", 0, 32);
+		 which assumes 4x3 aspect ratio...
+
+		 If you want to have the WorldFrame size/position saved, you can do:
+		 /script WorldFrame:SetUserPlaced(true);
+
+		 If you want to reset the WorldFrame's size and position, you can do:
+		 /script WorldFrame:SetUserPlaced(false);
+		 and then log out or reload the UI
+	-->
+	<Script file="WorldFrame.lua"/>
+	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="64"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FramerateText" hidden="true" inherits="SystemFont_Shadow_Med1">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="FramerateLabel" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ActionStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ActionStatusText" inherits="GameFontNormalLarge">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="ActionStatus_OnLoad"/>
+					<OnEvent function="ActionStatus_OnEvent"/>
+					<OnUpdate function="ActionStatus_OnUpdate"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="WorldFrame_OnLoad"/>
+			<OnUpdate function="WorldFrame_OnUpdate"/>
+		</Scripts>
+	</WorldFrame>
+</Ui>

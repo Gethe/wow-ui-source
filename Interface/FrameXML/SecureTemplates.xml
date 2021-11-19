@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <!-- A base template for secure frames -->
+    <Frame name="SecureFrameTemplate" protected="true" virtual="true"/>
+    
+    <Script file="SecureTemplates.lua"/>
+    <Script file="SecureStateDriver.lua"/>
+    <Script file="SecureHoverDriver.lua"/>
+
+    <!-- A button template for click-cast style action buttons -->
+    <Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+        <Scripts>
+            <OnClick function="SecureActionButton_OnClick"/>
+        </Scripts>
+    </Button>
+
+	<!-- A template that can perform secure actions outside of combat -->
+	<Button name="InsecureActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick> if not InCombatLockdown() then SecureActionButton_OnClick(self, button, down); end</OnClick>
+		</Scripts>
+	</Button>
+
+    <!-- A variant of SecureActionButtonTemplate used for unit buttons -->
+    <Button name="SecureUnitButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+        <Scripts>
+            <OnClick function="SecureUnitButton_OnClick"/>
+        </Scripts>
+    </Button>
+</Ui>

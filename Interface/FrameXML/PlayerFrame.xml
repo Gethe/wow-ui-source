@@ -1,0 +1,377 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PlayerFrame.lua"/>
+	<!--IMPORTANT
+		If you change anything in this file, be sure to change the equivalent data in PlayerFrame.lua, function PlayerFrame_ToPlayerArt
+		IMPORTANT-->
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
+		<Size x="232" y="100"/>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+		<HitRectInsets>
+			<AbsInset left="6" right="0" top="4" bottom="9"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="PlayerFrameBackground">
+					<Size x="119" y="41"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="106" y="-22"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="PlayerPortrait">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="42" y="-12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
+								</Texture>
+								<Texture name="PlayerFrameVehicleTexture" file="Interface\Vehicles\UI-Vehicle-Frame" hidden="true">
+									<Size x="240" y="120"/>
+									<Anchors>
+										<Anchor point="CENTER" x="20" y="0"/>
+									</Anchors>
+								</Texture>
+								<FontString name="PlayerName" inherits="GameFontNormalSmall">
+									<Size x="100" y="12"/>
+									<Anchors>
+										<Anchor point="CENTER" x="50" y="19"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
+									<!--WARNING:: This is re-anchored in code.-->
+									<Anchors>
+										<Anchor point="CENTER" x="-63" y="-16"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" x="50" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="110" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" x="50" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="110" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="-8"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="PlayerStatusTexture" file="Interface\CharacterFrame\UI-Player-Status" alphaMode="ADD" hidden="true">
+									<Size x="190" y="66"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="35" y="-8"/>
+									</Anchors>
+									<TexCoords left="0" right="0.74609375" top="0" bottom="0.53125"/>
+								</Texture>
+								<Texture name="PlayerAttackBackground" file="Interface\TargetingFrame\UI-TargetingFrame-AttackBackground" hidden="true">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="37" y="-50"/>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerPVPIcon" hidden="true">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="18" y="-20"/>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerPrestigePortrait" hidden="true">
+									<Size x="50" y="52"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-13"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture name="PlayerPrestigeBadge" hidden="true">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="PlayerPrestigePortrait" relativePoint="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="73" y="-42"/>
+									</Anchors>
+								</FontString>
+								<Texture name="PlayerLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="44" y="-10"/>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="80" y="-10"/>
+									</Anchors>
+								</Texture>
+								<Texture name="PlayerGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
+									<Size x="19" y="19"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="40" y="-12"/>
+									</Anchors>
+									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
+								</Texture>
+								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
+									<Size x="31" y="33"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="37" y="-49"/>
+									</Anchors>
+									<TexCoords left="0" right="0.5" top="0" bottom="0.421875"/>
+								</Texture>
+								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="1" y="1"/>
+									</Anchors>
+									<TexCoords left="0.5" right="1.0" top="0" bottom="0.484375"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="PlayerFrameReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+						<Size x="40" y="40"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="PlayerPortrait" relativePoint="CENTER" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="RaiseFrameLevelByTwo"/>
+						</Scripts>
+					</Frame>
+					<Frame name="PlayerPVPIconHitArea" enableMouse="true" hidden="true">
+						<Size x="39" y="37"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerPVPIcon"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame name="PlayerStatusGlow" hidden="true">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="PlayerRestGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+									<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+								</Texture>
+								<Texture name="PlayerAttackGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="1" y="1"/>
+									</Anchors>
+									<Color r="1.0" g="0" b="0"/>
+									<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(self:GetFrameLevel() + 3);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="PlayerPlayTime" enableMouse="true" hidden="true">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-4" y="-17"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="PlayerPlayTimeIcon" file="Interface\CharacterFrame\UI-Player-PlayTimeTired" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Button parentKey="MultiGroupFrame" hidden="true">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="52" y="-1"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="0">
+								<Texture parentKey="HomePartyIcon" file="Interface\FriendsFrame\UI-Toast-FriendOnlineIcon">
+									<Size x="26" y="26"/>
+									<Anchors>
+										<Anchor point="CENTER" x="4" y="4"/>
+									</Anchors>
+									<Color r="0" g="0" b="1"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="InstancePartyIcon" file="Interface\FriendsFrame\UI-Toast-FriendOnlineIcon">
+									<Size x="26" y="26"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<Color r="1" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad function="PlayerFrameMultiGroupFrame_OnLoad"/>
+							<OnEvent function="PlayerFrameMultiGroupFrame_OnEvent"/>
+							<OnEnter function="PlayerFrameMultiGroupframe_OnEnter"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								self:GetParent():GetParent():Click(button);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true">
+				<Size x="119" y="12"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="106" y="-41"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PLAYER";
+
+						self:SetMouseClickEnabled(false);
+					</OnLoad>
+					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true">
+				<Size x="119" y="12"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="106" y="-52"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PLAYER";
+
+						self:SetMouseClickEnabled(false);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOP" x="-10" y="-50"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="PlayerFrameDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame name="PlayerFrameGroupIndicator" hidden="true">
+				<Size x="10" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="97" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="PlayerFrameGroupIndicatorLeft" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
+							<Size x="24" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.1875" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="PlayerFrameGroupIndicatorRight" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
+							<Size x="24" y="16"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.53125" right="0.71875" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="PlayerFrameGroupIndicatorMiddle" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="PlayerFrameGroupIndicatorLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="PlayerFrameGroupIndicatorRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.1875" right="0.53125" top="0" bottom="1"/>
+						</Texture>
+						<FontString name="PlayerFrameGroupIndicatorText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="LEFT" x="20" y="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						PlayerFrameGroupIndicatorLeft:SetAlpha(0.3);
+						PlayerFrameGroupIndicatorRight:SetAlpha(0.3);
+						PlayerFrameGroupIndicatorMiddle:SetAlpha(0.3);
+						PlayerFrameGroupIndicatorText:SetAlpha(0.7);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PlayerFrame_OnLoad"/>
+			<OnEvent function="PlayerFrame_OnEvent"/>
+			<OnUpdate function="PlayerFrame_OnUpdate"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
+			<OnReceiveDrag function="PlayerFrame_OnReceiveDrag"/>
+			<OnDragStart function="PlayerFrame_OnDragStart"/>
+			<OnDragStop function="PlayerFrame_OnDragStop"/>
+		</Scripts>
+	</Button>
+</Ui>

@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CompactRaidGroup.lua"/>
+	<Frame name="CompactRaidGroupTemplate" frameStrata="LOW" virtual="true">
+		<Size x="72" y="199"/>
+		<Frames>
+			<Button name="$parentTitle" parentKey="title">
+				<Size x="50" y="14"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontNormalSmall"/>
+			</Button>
+			<Button name="$parentMember1" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="-14"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember2" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember1" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember3" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember2" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember4" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember3" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember5" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember4" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="$parentBorderFrame" parentKey="borderFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMember1" relativePoint="TOPLEFT" x="-3" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMember5" relativePoint="BOTTOMRIGHT" x="8" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentBorderTopLeft" file="Interface\RaidFrame\RaidBorder-UpperLeft">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderTopRight" file="Interface\RaidFrame\RaidBorder-UpperRight">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBottomLeft" file="Interface\RaidFrame\RaidBorder-BottomLeft">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBottomRight" file="Interface\RaidFrame\RaidBorder-BottomRight">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderTop" file="Interface\RaidFrame\RaidBorder-UpperMiddle" horizTile="true">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT" x="0" y="1"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBottom" file="Interface\RaidFrame\RaidBorder-BottomMiddle" horizTile="true">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderLeft" file="Interface\RaidFrame\RaidBorder-Left" vertTile="true">
+							<Size x="16" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="TOPLEFT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderRight" file="Interface\RaidFrame\RaidBorder-Right" vertTile="true">
+							<Size x="16" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="TOPRIGHT" x="2" y="0"/>
+							</Anchors>
+						</Texture>
+						<!--Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" x="7" y="-6"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" x="-7" y="7"/>
+							</Anchors>
+						</Texture-->
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CompactRaidGroup_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				CompactRaidGroup_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>
