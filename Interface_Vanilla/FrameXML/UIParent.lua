@@ -4635,9 +4635,11 @@ function SetLookingForGroupUIAvailable(available)
 		WorldMapMicroButton:Hide()
 		LFGMicroButton:Show();
 		MiniMapWorldMapButton:Show();
+		MiniMapTrackingFrame:SetPoint("TOPLEFT", -24, -24);
 	else
 		WorldMapMicroButton:Show()
 		LFGMicroButton:Hide();
 		MiniMapWorldMapButton:Hide();
+		MiniMapTrackingFrame:SetPoint("TOPLEFT", -15, 0);
 	end
 end
