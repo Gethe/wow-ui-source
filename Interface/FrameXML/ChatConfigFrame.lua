@@ -152,25 +152,32 @@ CHAT_CONFIG_CHAT_LEFT = {
 		onEnterCallback = EnableChatButtonGlow;
 		onLeaveCallback = DisableChatButtonGlow;
 	},
-	[17] = {
-		text = VOICE_CHAT_TRANSCRIPTION,
-		type = "VOICE_TEXT",
-		checked = function () return IsListeningForMessageType("VOICE_TEXT"); end;
-		func = function (self, checked) 
-			ToggleChatMessageGroup(checked, "VOICE_TEXT");
-			local chatFrame = FCF_GetCurrentChatFrame();
-			if ( checked ) then
-				chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
-				ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
-			else
-				chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
-			end
-		end;
-		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
-	},
 };
+
+do
+	if C_VoiceChat.IsTranscriptionAllowed() then
+		local transcriptionConfig =
+		{
+			text = VOICE_CHAT_TRANSCRIPTION,
+			type = "VOICE_TEXT",
+			checked = function () return IsListeningForMessageType("VOICE_TEXT"); end;
+			func = function (self, checked) 
+				ToggleChatMessageGroup(checked, "VOICE_TEXT");
+				local chatFrame = FCF_GetCurrentChatFrame();
+				if ( checked ) then
+					chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+					ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
+				else
+					chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				end
+			end;
+			disabled = ShouldDisplayDisabled;
+			onEnterCallback = EnableChatButtonGlow;
+			onLeaveCallback = DisableChatButtonGlow;
+		};
+		table.insert(CHAT_CONFIG_CHAT_LEFT, transcriptionConfig);
+	end
+end
 
 CHAT_CONFIG_CHAT_CREATURE_LEFT = {
 	[1] = {

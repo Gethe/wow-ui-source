@@ -271,12 +271,7 @@ end
 function TransmogUtil.ParseOutfitSlashCommand(msg)
 	-- check version #
 	if string.sub(msg, 1, 3) == "v1 " then
-		-- read off the values
-		local readlist = { };
-		for value in  string.gmatch(string.sub(msg, 4), "%-?%d+") do
-			table.insert(readlist, tonumber(value));
-		end
-
+		local readlist = C_Transmog.ExtractTransmogIDList(string.sub(msg, 4));
 		if #readlist ~= NUM_OUTFIT_SLASH_COMMAND_VALUES then
 			DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_LINK_INVALID, RED_FONT_COLOR:GetRGB());
 			return;
@@ -297,14 +292,22 @@ function TransmogUtil.ParseOutfitSlashCommand(msg)
 			-- secondaries
 			if slotID == INVSLOT_SHOULDER or slotID == INVSLOT_MAINHAND then
 				info.secondaryAppearanceID = GetNextReadValue();
+				-- category check on shoulder secondary
+				if slotID == INVSLOT_SHOULDER and info.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID then
+					local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(info.secondaryAppearanceID);
+					if categoryID ~= Enum.TransmogCollectionType.Shoulder then
+						info.secondaryAppearanceID = Constants.Transmog.NoTransmogID;
+					end
+				end
 			end
 			-- illusions
 			if slotID == INVSLOT_MAINHAND or slotID == INVSLOT_OFFHAND then
-				info.illusionID = GetNextReadValue();
+				info.illusionID = math.max(GetNextReadValue(), Constants.Transmog.NoTransmogID);
 			end
 		end
 		return itemTransmogInfoList;
 	end
+	DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_LINK_INVALID, RED_FONT_COLOR:GetRGB());
 	return nil;
 end
 

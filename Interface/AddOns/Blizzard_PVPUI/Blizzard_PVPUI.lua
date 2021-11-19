@@ -2200,6 +2200,18 @@ function PVPQuestRewardMixin:Init(questID)
 		return; 
 	end 
 
+	local isCompleted;
+	if (C_QuestLog.IsOnQuest(self.questID)) then 
+		isCompleted =  C_QuestLog.IsComplete(self.questID)
+	else 
+		isCompleted = C_QuestLog.IsQuestFlaggedCompleted(self.questID);
+	end
+	
+	self.Icon:SetDesaturated(isCompleted); 
+	if self.CheckMark then
+		self.CheckMark:SetShown(isCompleted);
+	end
+
 	self.questInCache = true; 
 	local rewards = { };
 	rewards.currencyRewards = { }; 
@@ -2256,7 +2268,12 @@ end
 function PVPQuestRewardMixin:OnEnter()
 	self.shouldShowObjectivesAsStatusBar = true; 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_AddQuest(self); 	
+	if ( not C_QuestLog.IsOnQuest(self.questID) and C_QuestLog.IsQuestFlaggedCompleted(self.questID)) then
+		GameTooltip_AddColoredLine(GameTooltip, GOAL_COMPLETED, GREEN_FONT_COLOR);
+		GameTooltip:Show();
+	else 
+		GameTooltip_AddQuest(self); 
+	end		
 end
 
 function PVPQuestRewardMixin:OnLeave()
