@@ -111,19 +111,44 @@ function PVPMatchResultsMixin:Init()
 	end
 	self.isInitialized = true;
 
-	local winner = C_PvP.GetActiveMatchWinner();
+	-- Custom victory stat id being used for Solo Shuffle brawl.
 	local factionIndex = GetBattlefieldArenaFaction();
-	local enemyFactionIndex = (factionIndex+1)%2;
-	local GetOutcomeText = function()
-		if winner == factionIndex then
-			return PVP_MATCH_VICTORY;
-		elseif winner == enemyFactionIndex then
-			return PVP_MATCH_DEFEAT;
-		else
+	local victoryStatID = C_PvP.GetCustomVictoryStatID();
+	local hasCustomVictoryStatID = victoryStatID > 0;
+	if hasCustomVictoryStatID then
+		local highestScoreInfo = nil;
+		local highestStatValue = 0;
+		for scoreIndex = 1, Constants.PvpInfoConsts.MaxPlayersPerInstance do
+			local scoreInfo = C_PvP.GetScoreInfo(scoreIndex);
+			if not scoreInfo then
+				break;
+			end
+
+			for statIndex, stat in ipairs(scoreInfo.stats) do
+				local pvpStatValue = stat.pvpStatValue;
+				if stat.pvpStatID == victoryStatID and pvpStatValue > highestStatValue then
+					highestScoreInfo = scoreInfo;
+					highestStatValue = pvpStatValue;
+				end
+			end
+		end
+
+		if highestScoreInfo then
+			self.header:SetText(PVP_SCOREBOARD_PLAYER_WINS:format(highestScoreInfo.name):upper());
+		end
+	else
+		local function GetOutcomeText(winner, factionIndex)
+			local enemyFactionIndex = (factionIndex + 1) % 2;
+			if winner == factionIndex then
+				return PVP_MATCH_VICTORY;
+			elseif winner == enemyFactionIndex then
+				return PVP_MATCH_DEFEAT;		
+			end
 			return PVP_MATCH_DRAW;
 		end
+
+		self.header:SetText(GetOutcomeText(C_PvP.GetActiveMatchWinner(), factionIndex));
 	end
-	self.header:SetText(GetOutcomeText());
 
 	-- Using reference text size before adding a margin sufficiently sized
 	-- to allow space for the remaining time.
@@ -167,10 +192,15 @@ function PVPMatchResultsMixin:Init()
 
 	PVPMatchUtil.UpdateMatchmakingText(self.matchmakingText);
 
+	-- For Solo Shuffle brawl.
+	if hasCustomVictoryStatID then
+		factionIndex = 0;
+	end
 	self:SetupArtwork(factionIndex, isFactionalMatch);
 
 	ConstructPVPMatchTable(self.tableBuilder, not isFactionalMatch);
 end
+
 function PVPMatchResultsMixin:Shutdown()
 	FrameUtil.UnregisterFrameForEvents(self, ACTIVE_EVENTS);
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
@@ -182,6 +212,7 @@ function PVPMatchResultsMixin:Shutdown()
 	self.earningsContainer:Hide();
 	HideUIPanel(self);
 end
+
 function PVPMatchResultsMixin:OnEvent(event, ...)
 	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() ~= Enum.PvPMatchState.Inactive) then
 		FrameUtil.RegisterFrameForEvents(self, ACTIVE_EVENTS);
@@ -214,6 +245,7 @@ function PVPMatchResultsMixin:OnEvent(event, ...)
 		self.requeueButton:Disable();
 	end
 end
+
 function PVPMatchResultsMixin:BeginShow()
 	-- Get the conquest information if necessary. This will normally be cached
 	-- at the beginning of the match, but this is to deal with any rare cases
@@ -237,6 +269,7 @@ function PVPMatchResultsMixin:BeginShow()
 	self:Init();
 	ShowUIPanel(self);
 end
+
 function PVPMatchResultsMixin:DisplayRewards()
 	if self.hasDisplayedRewards or not self.hasRewardTimerElapsed then
 		return;
@@ -358,6 +391,7 @@ function PVPMatchResultsMixin:HaveConquestData()
 	local conquestQuestID = select(3, PVPGetConquestLevelInfo());
 	return HaveQuestRewardData(conquestQuestID);
 end
+
 function PVPMatchResultsMixin:OnUpdate()
 	if self.UpdateLeaveButton then
 		self:UpdateLeaveButton();
@@ -365,6 +399,7 @@ function PVPMatchResultsMixin:OnUpdate()
 
 	PVPMatchUtil.UpdateTable(self.tableBuilder, self.scrollFrame);
 end
+
 local scoreWidgetSetID = 249;
 local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
 	local widgetsHeight = 0;
@@ -389,14 +424,17 @@ local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
 	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
 	widgetContainer:SetWidth(maxWidgetWidth);
 end
+
 function PVPMatchResultsMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	self.Score:RegisterForWidgetSet(scoreWidgetSetID, ScoreWidgetLayout);
 end
+
 function PVPMatchResultsMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	self.Score:UnregisterForWidgetSet(scoreWidgetSetID);
 end
+
 function PVPMatchResultsMixin:AddItemReward(item)
 	local frame = self.itemPool:Acquire();
 
@@ -407,6 +445,7 @@ function PVPMatchResultsMixin:AddItemReward(item)
 	frame:Init(item.link, item.quantity, unusedSpecID, isCurrency, item.isUpgraded, isIconBorderShown, isIconBorderDropShadowShown);
 	frame:SetScale(.7931);
 end
+
 function PVPMatchResultsMixin:InitHonorFrame(currency)
 	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged));
 	self.honorText:SetText(PVP_HONOR_CHANGE:format(deltaString));
@@ -414,6 +453,7 @@ function PVPMatchResultsMixin:InitHonorFrame(currency)
 	self.legacyHonorButton:Hide();
 	self.honorFrame:Show();
 end
+
 function PVPMatchResultsMixin:InitConquestFrame(currency)
 	local deltaString = FormatValueWithSign(math.floor(currency.quantityChanged / 100));
 	self.conquestText:SetText(PVP_CONQUEST_CHANGE:format(deltaString));
@@ -421,40 +461,33 @@ function PVPMatchResultsMixin:InitConquestFrame(currency)
 	self.legacyConquestButton:Hide();
 	self.conquestFrame:Show();
 end
+
 function PVPMatchResultsMixin:InitRatingFrame()
 	local localPlayerScoreInfo = C_PvP.GetScoreInfoByPlayerGuid(GetPlayerGuid());
 	if localPlayerScoreInfo then
-	local ratingChange = localPlayerScoreInfo.ratingChange;
-	local rating = localPlayerScoreInfo.rating;
-	self.ratingButton:Init(rating, ratingChange);
+		local ratingChange = localPlayerScoreInfo.ratingChange;
+		local rating = localPlayerScoreInfo.rating;
+		self.ratingButton:Init(rating, ratingChange);
 
-	local personalRatedInfo = C_PvP.GetPVPActiveMatchPersonalRatedInfo();
-	if personalRatedInfo then
-		local tierInfo = C_PvP.GetPvpTierInfo(personalRatedInfo.tier);
-		self.ratingButton:Setup(tierInfo, ranking);
-	end
+		local personalRatedInfo = C_PvP.GetPVPActiveMatchPersonalRatedInfo();
+		if personalRatedInfo then
+			local tierInfo = C_PvP.GetPvpTierInfo(personalRatedInfo.tier);
+			self.ratingButton:Setup(tierInfo, ranking);
+		end
 
-	if ratingChange and ratingChange ~= 0 then
-		local deltaString = FormatValueWithSign(ratingChange);
-		self.ratingText:SetText(PVP_RATING_CHANGE:format(deltaString));
-	else
-		self.ratingText:SetText(PVP_RATING_UNCHANGED);
-	end
-	
-	self.ratingFrame:Show();
+		if ratingChange and ratingChange ~= 0 then
+			local deltaString = FormatValueWithSign(ratingChange);
+			self.ratingText:SetText(PVP_RATING_CHANGE:format(deltaString));
+		else
+			self.ratingText:SetText(PVP_RATING_UNCHANGED);
+		end
+		
+		self.ratingFrame:Show();
 	end
 end
-function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
-	local useAlternateColor = not isFactionalMatch;
-	local buttons = HybridScrollFrame_GetButtons(self.scrollFrame);
-	for k, button in pairs(buttons) do
-		button:Init(useAlternateColor);
-	end
 
-	local r, g, b = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor):GetRGB();
-	for k, frame in pairs(self.tintFrames) do
-		frame:SetVertexColor(r, g, b);
-	end
+function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
+	PVPMatchUtil.SetupTableButtonColors(factionIndex, isFactionalMatch, self.scrollFrame);
 
 	local themeDecoration = self.overlay.decorator;
 	local theme;
@@ -467,9 +500,22 @@ function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
 	end
 
 	themeDecoration:SetShown(isFactionalMatch);
+	
+	local color;
+	if C_PvP.GetCustomVictoryStatID() > 0 then
+		color = PVPMatchStyle.PurpleColor;
+	else
+		color = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor);
+	end
+
+	local r, g, b = color:GetRGB();
+	for k, frame in pairs(self.tintFrames) do
+		frame:SetVertexColor(r, g, b);
+	end
 
 	NineSliceUtil.ApplyLayoutByName(self, theme.nineSliceLayout);
 end
+
 function PVPMatchResultsMixin:OnLeaveButtonClicked(button)
 	if IsInLFDBattlefield() then
 		ConfirmOrLeaveLFGParty();
@@ -479,12 +525,14 @@ function PVPMatchResultsMixin:OnLeaveButtonClicked(button)
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 end
+
 function PVPMatchResultsMixin:OnRequeueButtonClicked(button)
 	button:Disable();
     RequeueSkirmish();
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
+
 function PVPMatchResultsMixin:OnTabGroupClicked(tab)
 	PanelTemplates_SetTab(self, tab:GetID());
 	SetBattlefieldScoreFaction(tab.factionEnum);
@@ -506,6 +554,7 @@ function PVPMatchResultsRatingMixin:Init(rating, ratingChange)
 	local enemyFactionIndex = (factionIndex+1)%2;
 	self.enemyMMR = BATTLEGROUND_ENEMY_AVERAGE_RATING:format(teamInfos[enemyFactionIndex+1].ratingMMR);
 end
+
 function PVPMatchResultsRatingMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, PVP_RATING_HEADER);
@@ -524,6 +573,7 @@ function PVPMatchResultsRatingMixin:OnEnter()
 	
 	GameTooltip:Show();
 end
+
 function PVPMatchResultsRatingMixin:OnLeave()
 	GameTooltip:Hide();
 end

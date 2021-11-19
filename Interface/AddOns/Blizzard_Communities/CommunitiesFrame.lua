@@ -30,6 +30,7 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"REQUIRED_GUILD_RENAME_RESULT",
 	"CLUB_FINDER_RECRUITMENT_POST_RETURNED",
 	"CLUB_FINDER_ENABLED_OR_DISABLED",
+	"CLUB_STREAM_SUBSCRIBED",
 };
 
 local COMMUNITIES_STATIC_POPUPS = {
@@ -305,6 +306,11 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		self:UnregisterEvent("ADDON_LOADED");
 
 		InitSeenApplicants();
+	elseif event == "CLUB_STREAM_SUBSCRIBED" then
+		local clubId, streamId = ...;
+		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
+			self.Chat:RequestInitialMessages(clubId, streamId);
+		end
 	end
 end
 
@@ -1042,14 +1048,23 @@ function CommunitiesFrameMixin:CheckForTutorials()
 			end
 		else
 			if self:TryShowClubFinderRecruitmentTutorialForLeader(isGuild) then
+				-- The "ClubFinderLink" HelpTip overlaps with the "ClubFinderRecruitment" HelpTip we are now showing.
+				-- We hide but do not acknowledge that HelpTip so that it still pops up again when the Guild tab is opened.
+				if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
+					HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
+				end
 				return;
 			end
 		end
 	end
 
-
 	if self.InviteButton:IsShown() and isGuild and clubId and C_ClubFinder.RequestPostingInformationFromClubId(clubId)then
 		if self:TryShowClubFinderLinkTutorialForLeader() then
+			-- The "ClubFinderRecruitment" HelpTip overlaps with the "ClubFinderLink" HelpTip we are now showing.
+			-- We hide but do not acknowledge that HelpTip so that it still pops up again when a Community tab is opened.
+			if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_POSTING) then
+				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
+			end
 			return;
 		end
 	end

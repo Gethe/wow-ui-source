@@ -1,36 +1,9 @@
-local shownModeButtonInfo = 
+local textureKitEffectIDs =
 {
-	text = HIDE,
-	normalAtlas = "UI-Frame-jailerstower-HideButton",
-	highlightAtlas = "UI-Frame-jailerstower-HideButtonHighlight",
-	xOffset = 3,
-	showRerollButton = true;
+	jailerstower = 98,
 };
 
-local hiddenModeButtonInfo = 
-{
-	text = JAILERS_TOWER_PENDING_POWER_SELECTION,
-	normalAtlas = "UI-Frame-jailerstower-PendingButton";
-	highlightAtlas = "UI-Frame-jailerstower-PendingButtonHighlight";
-	xOffset = 8,
-	effectID = 98,
-};
-
-PlayerChoiceToggleButtonMixin = { };
-
-function PlayerChoiceToggleButtonMixin:ShouldShow()
-	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse();
-end
-
-function PlayerChoiceToggleButtonMixin:TryShow()
-	if not self:ShouldShow() then
-		self:Hide();
-		return;
-	end
-
-	self:UpdateButtonState();
-	self:Show();
-end
+PlayerChoiceToggleButtonMixin = {};
 
 function PlayerChoiceToggleButtonMixin:StartEffect(effectID)
 	if not self.effectController then
@@ -61,27 +34,46 @@ function PlayerChoiceToggleButtonMixin:OnHide()
 	self:CancelEffect();
 end
 
-function PlayerChoiceToggleButtonMixin:UpdateButtonState()
-	local buttonInfo = PlayerChoiceFrame:IsShown() and shownModeButtonInfo or hiddenModeButtonInfo;
-
-	self:SetNormalAtlas(buttonInfo.normalAtlas);
-	self:SetHighlightAtlas(buttonInfo.highlightAtlas);
-	self.Text:SetText(buttonInfo.text);
-	self.Text:SetPoint("CENTER", self, "CENTER", buttonInfo.xOffset, -3);
-	self:UpdateEffect(buttonInfo.effectID);
-
-	local numRerolls = C_PlayerChoice.GetNumRerolls();
-	if buttonInfo.showRerollButton and (numRerolls > 0) then
-		self.RerollButton:SetNumRerolls(numRerolls);
-		self.RerollButton:Show();
-	else
-		self.RerollButton:Hide();
+function PlayerChoiceToggleButtonMixin:ShouldShow()
+	local toggleShown = PlayerChoiceToggle_ShouldShow();
+	if not toggleShown then
+		return false;
 	end
 
-	local normalAtlasInfo = C_Texture.GetAtlasInfo(buttonInfo.normalAtlas);
+	local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
+	local textureKit = choiceInfo and choiceInfo.uiTextureKit;
+	return textureKit == self.textureKit;
+end
+
+function PlayerChoiceToggleButtonMixin:UpdateButtonState()
+	if not self:ShouldShow() then
+		self:Hide();
+		return;
+	end
+	
+	local choiceFrameShown = PlayerChoiceFrame:IsShown();
+	local buttonInfo = choiceFrameShown and self.shownModeButtonInfo or self.hiddenModeButtonInfo;
+	local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
+	local textureKit = choiceInfo.uiTextureKit;
+
+	local normalAtlas = GetFinalNameFromTextureKit(buttonInfo.normalAtlas, textureKit);
+	local normalAtlasInfo = C_Texture.GetAtlasInfo(normalAtlas);
 	if normalAtlasInfo then
+		self:SetNormalAtlas(normalAtlas);
 		self:SetSize(normalAtlasInfo.width, normalAtlasInfo.height);
 	end
+
+	if buttonInfo.highlightAtlas then
+		local highlightAtlas = GetFinalNameFromTextureKit(buttonInfo.highlightAtlas, textureKit);
+		if C_Texture.GetAtlasInfo(highlightAtlas) then
+			self:SetHighlightAtlas(highlightAtlas);
+		end
+	end
+
+	self.Text:SetText(choiceFrameShown and HIDE or choiceInfo.pendingChoiceText);
+	self.Text:SetPoint("CENTER", self, "CENTER", buttonInfo.xOffset or 0, buttonInfo.yOffset or 0);
+	local effectID = (not choiceFrameShown) and textureKitEffectIDs[textureKit] or nil;
+	self:UpdateEffect(effectID);
 end
 
 function PlayerChoiceToggleButtonMixin:OnClick()
@@ -92,8 +84,79 @@ function PlayerChoiceToggleButtonMixin:OnClick()
 		PlaySound(SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_SHOW_POWERS);
 		PlayerChoiceFrame:TryShow();
 	end
+
 	self.FadeIn:Restart();
 end
+
+
+TorghastPlayerChoiceToggleButtonMixin = {};
+
+function TorghastPlayerChoiceToggleButtonMixin:UpdateButtonState()
+	PlayerChoiceToggleButtonMixin.UpdateButtonState(self);
+
+	local choiceFrameShown = PlayerChoiceFrame:IsShown();
+	local buttonInfo = choiceFrameShown and self.shownModeButtonInfo or self.hiddenModeButtonInfo;
+	local numRerolls = C_PlayerChoice.GetNumRerolls();
+	if buttonInfo.showRerollButton and (numRerolls > 0) then
+		self.RerollButton:SetNumRerolls(numRerolls);
+		self.RerollButton:Show();
+	else
+		self.RerollButton:Hide();
+	end
+end
+
+function TorghastPlayerChoiceToggleButtonMixin:OnLoad()
+	self.shownModeButtonInfo = 
+	{
+		normalAtlas = "UI-Frame-%s-HideButton",
+		highlightAtlas = "UI-Frame-%s-HideButtonHighlight",
+		xOffset = 3,
+		yOffset = -3,
+		showRerollButton = true,
+	};
+
+	self.hiddenModeButtonInfo = 
+	{
+		normalAtlas = "UI-Frame-%s-PendingButton",
+		highlightAtlas = "UI-Frame-%s-PendingButtonHighlight",
+		xOffset = 8,
+		yOffset = -3,
+	};
+end
+
+
+CypherPlayerChoiceToggleButtonMixin = {};
+
+function CypherPlayerChoiceToggleButtonMixin:OnLoad()
+	self.shownModeButtonInfo = 
+	{
+		normalAtlas = "UI-Frame-%s-HideButton",
+	};
+
+	self.hiddenModeButtonInfo = 
+	{
+		normalAtlas = "UI-Frame-%s-PendingButton",
+	};
+end
+
+function CypherPlayerChoiceToggleButtonMixin:UpdateButtonState()
+	PlayerChoiceToggleButtonMixin.UpdateButtonState(self);
+
+	local isPending = not PlayerChoiceFrame:IsShown();
+
+	for _, piece in ipairs(self.pendingPieces) do
+		piece:SetShown(isPending);
+	end
+
+	for _, animation in ipairs(self.pendingAnimations) do
+		if isPending then
+			animation:Restart();
+		else
+			animation:Stop();
+		end
+	end
+end
+
 
 PlayerChoiceRerollButtonMixin = {};
 
@@ -138,5 +201,48 @@ function PlayerChoiceRerollButtonMixin:SetNumRerolls(numRerolls)
 
 	if self:IsMouseOver() then
 		self:OnEnter();
+	end
+end
+
+
+-- Filled when needed for the first time, since the toggle buttons don't exist when this is loaded
+local toggleButtons = nil;
+local function FillToggleButtonsIfNeeded()
+	if toggleButtons == nil then
+		toggleButtons =
+		{
+			TorghastPlayerChoiceToggleButton,
+			CypherPlayerChoiceToggleButton,
+		};
+	end
+end
+
+function PlayerChoiceToggle_ShouldShow()
+	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() and C_PlayerChoice.GetRemainingTime() ~= 0;
+end
+
+function PlayerChoiceToggle_TryShow()
+	FillToggleButtonsIfNeeded();
+
+	for _, button in pairs(toggleButtons) do
+		if button:ShouldShow() then
+			button:UpdateButtonState();
+			button:Show();
+		else
+			button:Hide();
+		end
+	end
+end
+
+function PlayerChoiceToggle_GetActiveToggle()
+	FillToggleButtonsIfNeeded();
+
+	local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
+	local textureKit = choiceInfo and choiceInfo.uiTextureKit;
+
+	for _, button in pairs(toggleButtons) do
+		if button.textureKit == textureKit then
+			return button;
+		end
 	end
 end

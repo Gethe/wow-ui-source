@@ -1014,6 +1014,44 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_SHOW",
 		},
 		{
+			Name = "AuctionHouseShowCommodityWonNotification",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION",
+			Payload =
+			{
+				{ Name = "commodityName", Type = "string", Nilable = false },
+				{ Name = "commodityQuantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseShowError",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_ERROR",
+			Payload =
+			{
+				{ Name = "error", Type = "AuctionHouseError", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseShowFormattedNotification",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION",
+			Payload =
+			{
+				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseShowNotification",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_NOTIFICATION",
+			Payload =
+			{
+				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
+			},
+		},
+		{
 			Name = "AuctionHouseThrottledMessageDropped",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED",

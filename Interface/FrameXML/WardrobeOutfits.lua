@@ -21,7 +21,7 @@ function WardrobeOutfitDropDownMixin:OnShow()
 	self:SelectOutfit(self:GetLastOutfitID(), true);
 end
 
-function WardrobeOutfitDropDownMixin:OnHide()
+function WardrobeOutfitDropDownMixin:WardrobeOutfitDropDown_OnHide()
 	self:UnregisterEvent("TRANSMOG_OUTFITS_CHANGED");
 	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
 	WardrobeOutfitFrame:ClosePopups(self);

@@ -25,6 +25,15 @@ local PlayerChoice =
 			},
 		},
 		{
+			Name = "GetRemainingTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "remainingTime", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "IsWaitingForPlayerChoiceResponse",
 			Type = "Function",
 
@@ -90,6 +99,7 @@ local PlayerChoice =
 				{ Name = "objectGUID", Type = "string", Nilable = false },
 				{ Name = "choiceID", Type = "number", Nilable = false },
 				{ Name = "questionText", Type = "string", Nilable = false },
+				{ Name = "pendingChoiceText", Type = "string", Nilable = false },
 				{ Name = "uiTextureKit", Type = "string", Nilable = false },
 				{ Name = "hideWarboardHeader", Type = "bool", Nilable = false },
 				{ Name = "keepOpenAfterChoice", Type = "bool", Nilable = false },

@@ -39,6 +39,16 @@ local customTextureKitInfo = {
 		frameYOffset = 95,
 	},
 
+	cypherchoice = {
+		optionFrameTemplate = "PlayerChoiceCypherOptionTemplate",
+		optionsTopPadding = 120,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		timerXOffset = 0,
+		timerYOffset = -235,
+	},
+
 	Oribos = {
 		optionFrameTemplate = "PlayerChoiceCovenantChoiceOptionTemplate",
 		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
@@ -73,6 +83,11 @@ local defaultTextureKitInfo = {
 	optionsSpacing = 20,
 	frameYOffset = 0,
 };
+
+function PlayerChoiceGetTextureKitInfo(textureKit)
+	local kitInfo = customTextureKitInfo[textureKit] or {};
+	return setmetatable(kitInfo, {__index = defaultTextureKitInfo});
+end
 
 function PlayerChoiceFrameMixin:GetTextureKitInfo()
 	local kitInfo = customTextureKitInfo[self.uiTextureKit] or {};
@@ -145,10 +160,14 @@ function PlayerChoiceFrameMixin:OnShow()
 		activeMawBuffContainer:UpdateListState(true);
 	end
 
-	PlayerChoiceToggleButton:ClearAllPoints();
-	PlayerChoiceToggleButton:SetPoint("TOP", self, "BOTTOM", 0, 0);
+	local toggleButton = PlayerChoiceToggle_GetActiveToggle();
+	if toggleButton then
+		toggleButton:ClearAllPoints();
+		toggleButton:SetPoint("TOP", self, "BOTTOM", 0, 0);
+	end
+	PlayerChoiceToggle_TryShow();
 
-	PlayerChoiceToggleButton:TryShow();
+	PlayerChoiceTimeRemaining:TryShow();
 end
 
 function PlayerChoiceFrameMixin:OnHide()
@@ -167,8 +186,9 @@ function PlayerChoiceFrameMixin:OnHide()
 		activeMawBuffContainer:UpdateListState(false);
 	end
 
-	if PlayerChoiceToggleButton:IsShown() then
-		PlayerChoiceToggleButton:UpdateButtonState();
+	local toggleButton = PlayerChoiceToggle_GetActiveToggle();
+	if toggleButton and toggleButton:IsShown() then
+		toggleButton:UpdateButtonState();
 	end
 end
 

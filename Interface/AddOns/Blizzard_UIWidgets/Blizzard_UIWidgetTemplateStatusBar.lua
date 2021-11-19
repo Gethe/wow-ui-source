@@ -68,25 +68,13 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	local borderXOffset = self.isJailersTowerBar and 13 or 8;
 	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar,  -borderXOffset, 0);
 	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, borderXOffset , 0);
+	self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
 
 	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 	self.Bar:SetWidth(barWidth);
 
-	local minVal, maxVal, barVal = widgetInfo.barMin, widgetInfo.barMax, widgetInfo.barValue;
-	if minVal > 0 and minVal == maxVal and barVal == maxVal then
-		-- If all 3 values are the same and greater than 0, show the bar as full
-		minVal, maxVal, barVal = 0, 1, 1;
-	end
-
-	self.Bar:Setup(widgetContainer, minVal, maxVal, barVal, widgetInfo.barValueTextType, widgetInfo.tooltip, widgetInfo.overrideBarText, widgetInfo.overrideBarTextShownType);
+	self.Bar:Setup(widgetContainer, widgetInfo);
 	self.Bar:SetTooltipLocation(widgetInfo.tooltipLoc);
-
-	local showSpark = widgetInfo.barValue > widgetInfo.barMin and widgetInfo.barValue < widgetInfo.barMax;
-	self.Bar.Spark:SetShown(showSpark);
-	if showSpark then
-		self.Bar.Spark:ClearAllPoints();
-		self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
-	end
 
 	self.Label:SetText(widgetInfo.text);
 
@@ -118,7 +106,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 			local useAtlasSize = true;
 			partitionTexture:SetAtlas(paritionAtlas, useAtlasSize);
 
-			local partitionPercent = ClampedPercentageBetween(partitionValue, minVal, maxVal);
+			local partitionPercent = ClampedPercentageBetween(partitionValue, widgetInfo.barMin, widgetInfo.barMax);
 			local xOffset = barWidth * partitionPercent;
 
 			partitionTexture:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "LEFT", xOffset, 0);

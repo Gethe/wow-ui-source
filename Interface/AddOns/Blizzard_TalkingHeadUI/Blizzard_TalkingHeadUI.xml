@@ -34,7 +34,10 @@
 			<Frame parentKey="TextFrame" setAllPoints="true" useParentLevel="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlightLarge" alpha="0.01" justifyH="LEFT" justifyV="TOP" mixin="ShrinkUntilTruncateFontStringMixin">
+						<FontString parentKey="Text" inherits="GameFontHighlightLarge" alpha="0.01" justifyH="LEFT" justifyV="TOP" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+							</KeyValues>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.NameFrame.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 								<Anchor point="BOTTOMRIGHT" x="-42" y="12"/>

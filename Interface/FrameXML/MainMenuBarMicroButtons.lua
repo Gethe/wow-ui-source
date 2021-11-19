@@ -365,6 +365,8 @@ function GuildMicroButtonMixin:OnLoad()
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CLUB_FINDER_COMMUNITY_OFFLINE_JOIN");
+	self:RegisterEvent("CHAT_DISABLED_CHANGED");
+	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
 	self:UpdateTabard(true);
 	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		self:Disable();

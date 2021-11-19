@@ -78,7 +78,10 @@
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
-				<FontString parentKey="EnemyHealthValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+				<FontString parentKey="EnemyHealthValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
 					<Size x="50" y="0"/>
 					<Shadow x="1" y="-1"/>
 					<Anchors>
@@ -86,7 +89,10 @@
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
-				<FontString parentKey="EnemyPowerValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+				<FontString parentKey="EnemyPowerValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
 					<Size x="50" y="0"/>
 					<Shadow x="1" y="-1"/>
 					<Anchors>
@@ -365,7 +371,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="AllyHealthValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+						<FontString parentKey="AllyHealthValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
 							<Size x="50" y="0"/>
 							<Shadow x="1" y="-1"/>
 							<Anchors>
@@ -373,7 +382,10 @@
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
-						<FontString parentKey="AllyPowerValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+						<FontString parentKey="AllyPowerValue" inherits="GameFontHighlight" justifyH="LEFT" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
 							<Size x="50" y="0"/>
 							<Shadow x="1" y="-1"/>
 							<Anchors>

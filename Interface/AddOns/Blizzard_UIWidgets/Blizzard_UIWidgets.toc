@@ -52,6 +52,8 @@ Blizzard_UIWidgetTemplateTextColumnRow.lua
 Blizzard_UIWidgetTemplateTextColumnRow.xml
 Blizzard_UIWidgetTemplateSpacer.lua
 Blizzard_UIWidgetTemplateSpacer.xml
+Blizzard_UIWidgetTemplateUnitPowerBar.lua
+Blizzard_UIWidgetTemplateUnitPowerBar.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

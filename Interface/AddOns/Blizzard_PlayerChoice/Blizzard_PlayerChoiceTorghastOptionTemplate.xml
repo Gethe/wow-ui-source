@@ -1,9 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<Frame name="PlayerChoiceTorghastOptionTemplate" inherits="PlayerChoiceBaseOptionTemplate, VerticalLayoutFrame" mixin="PlayerChoiceTorghastOptionTemplateMixin" virtual="true">
+	<Frame name="PlayerChoiceTorghastOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceTorghastOptionTemplateMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="240" type="number"/>
+			<KeyValue key="selectedEffectID" value="97" type="number"/>
+			<KeyValue key="minOptionHeight" value="388" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -15,18 +16,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture parentKey="SwirlBG" inherits="PlayerChoiceBaseCenteredFrame">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CircleBorder"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="TypeIcon" inherits="PlayerChoiceBaseCenteredFrame">
 					<Size x="40" y="42"/>
 					<KeyValues>
 						<KeyValue key="layoutIndex" value="1" type="number"/>
 						<KeyValue key="topPadding" value="3" type="number"/>
-					</KeyValues>
-				</Texture>
-				<Texture parentKey="SwirlBG" inherits="PlayerChoiceBaseCenteredFrame">
-					<KeyValues>
-						<KeyValue key="layoutIndex" value="3" type="number"/>
-						<KeyValue key="topPadding" value="-30" type="number"/>
-						<KeyValue key="bottomPadding" value="-41" type="number"/>
 					</KeyValues>
 				</Texture>
 			</Layer>
@@ -37,19 +36,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Artwork">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SwirlBG"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="CircleBorder" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SwirlBG"/>
-					</Anchors>
-				</Texture>
 				<MaskTexture parentKey="TypeIconCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TypeIcon" x="5" y="-6"/>
@@ -57,15 +44,6 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="TypeIcon"/>
-					</MaskedTextures>
-				</MaskTexture>
-				<MaskTexture parentKey="ArtworkCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Artwork" x="5" y="-6"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Artwork" x="-5" y="6"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Artwork"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -100,26 +78,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="Header" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="2" type="number"/>
-					<KeyValue key="topPadding" value="6" type="number"/>
-				</KeyValues>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="QuestFontHighlightHuge" justifyV="MIDDLE" maxLines="2">
-							<Size x="195" y="30"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 		<Animations>
-			<AnimationGroup parentKey="SwirlAndGlowAnimations" looping="REPEAT">
+			<AnimationGroup parentKey="SwirlAndGlowAnimations" looping="REPEAT" parentArray="PassiveAnimations">
 				<Rotation childKey="SwirlBG" duration="30" order="1" degrees="360"/>
 				<Rotation childKey="GlowBG" duration="30" order="1" degrees="-360"/>
 				<Alpha childKey="SwirlBG" smoothing="OUT" duration="2" order="1" fromAlpha="0.40" toAlpha="0.6"/>
@@ -149,25 +109,6 @@
 				</Scale>
 				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="FadeoutSelected" setToFinalAlpha="true">
-				<Alpha startDelay="1.25" duration=".25" fromAlpha="1" toAlpha="0"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():Hide();
-						PlayerChoiceFrame:OnSelectionMade();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="FadeoutUnselected" setToFinalAlpha="true">
-				<Alpha duration=".25" fromAlpha="1" toAlpha="0"/>
-				<OnFinished>
-					self:GetParent():Hide();
-				</OnFinished>
-			</AnimationGroup>
 		</Animations>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 </Ui>

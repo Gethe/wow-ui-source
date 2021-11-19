@@ -214,6 +214,9 @@
 				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
+						<KeyValues>
+							<KeyValue key="minLineHeight" value="8" type="number"/>
+						</KeyValues>
 						<Size x="280" y="14"/>
 						<Anchors>
 							<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
@@ -1493,7 +1496,7 @@
 								<Color r="1.0" g="0.1" b="0.1"/>
 							</FontString>
 							<FontString parentKey="FollowGuildErrorMessage" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
-								<Size x="300"/>
+								<Size x="300" y="36"/>
 								<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
 								</Anchors>

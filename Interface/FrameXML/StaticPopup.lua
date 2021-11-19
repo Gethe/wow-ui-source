@@ -4253,7 +4253,6 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 	timeout = 0,
 	hideOnEscape = false,
 	exclusive = 1,
-	wide = true,
 };
 
 StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
@@ -4267,7 +4266,6 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	wide = true,
 };
 
 function StaticPopup_FindVisible(which, data)
@@ -4311,12 +4309,7 @@ function StaticPopup_Resize(dialog, which)
 	if ( info.verticalButtonLayout ) then
 		width = width + 30;
 	else
-		if ( dialog.numButtons == 4 ) then
-			width = 574;
-		elseif ( dialog.numButtons == 3 ) then
-			width = 440;
-		elseif (info.showAlert or info.showAlertGear or info.closeButton or info.wide) then
-			-- Widen
+		if (info.showAlert or info.showAlertGear or info.closeButton or info.wide) then
 			width = 420;
 		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
 			width = width + (info.editBoxWidth - 260);
@@ -4324,6 +4317,21 @@ function StaticPopup_Resize(dialog, which)
 			width = 375;
 		end
 	end
+
+	-- Ensure that the dialog can contain the buttons, regardless of the configuration.
+	local button2 = _G[dialog:GetName().."Button2"];
+	local button3 = _G[dialog:GetName().."Button3"];
+	local button4 = _G[dialog:GetName().."Button4"];
+	local buttons = {button1, button2, button3, button4};
+	local outerMargin = 60;
+	local buttonMinWidth = outerMargin;
+	for index, button in ipairs(buttons) do
+		if button:IsShown() then
+			buttonMinWidth = buttonMinWidth + button:GetWidth();
+		end
+	end
+	width = max(width, buttonMinWidth);
+
 	if ( dialog.insertedFrame ) then
 		width = max(width, dialog.insertedFrame:GetWidth());
 	end
@@ -4698,73 +4706,76 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	local button3 = _G[dialog:GetName().."Button3"];
 	local button4 = _G[dialog:GetName().."Button4"];
 
-	do	--If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we'll have to create a new table each time.
-		assert(#tempButtonLocs == 0);	--If this fails, we're recursing. (See the table.wipe at the end of the block)
-
-		tinsert(tempButtonLocs, button1);
-		tinsert(tempButtonLocs, button2);
-		tinsert(tempButtonLocs, button3);
-		tinsert(tempButtonLocs, button4);
-
-		for i=#tempButtonLocs, 1, -1 do
-			--Do this stuff before we move it. (This is why we go back-to-front)
-			tempButtonLocs[i]:SetText(info["button"..i]);
-			tempButtonLocs[i]:Hide();
-			tempButtonLocs[i]:ClearAllPoints();
-			tempButtonLocs[i].PulseAnim:Stop();
-			--Now we possibly remove it.
-			if ( not (info["button"..i] and ( not info["DisplayButton"..i] or info["DisplayButton"..i](dialog))) ) then
-				tremove(tempButtonLocs, i);
-			end
+	local buttons = {button1, button2, button3, button4};
+	for index, button in ipairs_reverse(buttons) do
+		button:SetText(info["button"..index]);
+		button:Hide();
+		button:SetWidth(1);
+		button:ClearAllPoints();
+		button.PulseAnim:Stop();
+	
+		if not (info["button"..index] and ( not info["DisplayButton"..index] or info["DisplayButton"..index](dialog))) then
+			table.remove(buttons, index);
 		end
-
-		local numButtons = #tempButtonLocs;
-		--Save off the number of buttons.
-		dialog.numButtons = numButtons;
-
-		if numButtons > 0 then
-			tempButtonLocs[1]:ClearAllPoints();
-			if ( info.verticalButtonLayout ) then
-				tempButtonLocs[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
-			else
-				if ( numButtons == 4 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, bottomSpace);
-				elseif ( numButtons == 3 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, bottomSpace);
-				elseif ( numButtons == 2 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, bottomSpace);
-				elseif ( numButtons == 1 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, bottomSpace);
-				end
-			end
-		end
-
-		for i=1, numButtons do
-			if ( i > 1 ) then
-				tempButtonLocs[i]:ClearAllPoints();
-				if info.verticalButtonLayout then
-					tempButtonLocs[i]:SetPoint("TOP", tempButtonLocs[i-1], "BOTTOM", 0, -6);
-				else
-					tempButtonLocs[i]:SetPoint("LEFT", tempButtonLocs[i-1], "RIGHT", 13, 0);
-				end
-			end
-
-			local width = tempButtonLocs[i]:GetTextWidth();
-			if ( width > 110 ) then
-				tempButtonLocs[i]:SetWidth(width + 20);
-			else
-				tempButtonLocs[i]:SetWidth(120);
-			end
-			if (info["button"..i.."Pulse"]) then
-				tempButtonLocs[i].PulseAnim:Play();
-			end
-			tempButtonLocs[i]:Enable();
-			tempButtonLocs[i]:Show();
-		end
-
-		table.wipe(tempButtonLocs);
 	end
 
+	dialog.numButtons = #buttons;
+
+	local buttonTextMargin = 20;
+	local minButtonWidth = 120;
+	local maxButtonWidth = minButtonWidth;
+	for index, button in ipairs(buttons) do
+		local buttonWidth = button:GetTextWidth() + buttonTextMargin;
+		maxButtonWidth = math.max(maxButtonWidth, buttonWidth);
+	end
+
+	local function InitButton(button, index)
+		if info[string.format("button%dPulse", index)] then
+			button.PulseAnim:Play();
+		end
+		button:Enable();
+		button:Show();
+	end
+
+	-- Button layout logic depends on the width of the dialog, so this needs to be resized to account
+	-- for any configuration options first. It will be resized again after the buttons have been arranged.
+	StaticPopup_Resize(dialog, which);
+
+	local buttonPadding = 10;
+	local minButtonWidth = 120;
+	local totalButtonPadding = (#buttons - 1) * buttonPadding;
+	local totalButtonWidth = #buttons * maxButtonWidth;
+	local totalWidth;
+	local uncondensedTotalWidth = totalButtonWidth + totalButtonPadding;
+	if uncondensedTotalWidth < dialog:GetWidth() then
+		for index, button in ipairs(buttons) do
+			button:SetWidth(maxButtonWidth);
+			InitButton(button, index);
+		end
+		totalWidth = uncondensedTotalWidth; 
+	else
+		totalWidth = totalButtonPadding;
+		for index, button in ipairs(buttons) do
+			local buttonWidth = math.max(minButtonWidth, button:GetTextWidth()) + buttonTextMargin;
+			button:SetWidth(buttonWidth);
+			totalWidth = totalWidth + buttonWidth; 
+			InitButton(button, index);
+		end
+	end
+
+	if info.verticalButtonLayout then
+		buttons[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
+		for index = 2, #buttons do
+			buttons[index]:SetPoint("TOP", buttons[index-1], "BOTTOM", 0, -6);
+		end
+	else
+		local offset = totalWidth / 2;
+		buttons[1]:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", -offset, bottomSpace);
+		for index = 2, #buttons do
+			buttons[index]:SetPoint("BOTTOMLEFT", buttons[index-1], "BOTTOMRIGHT", buttonPadding, 0);
+		end
+	end
+	
 	if info.extraButton then
 		local extraButton = dialog.extraButton;
 		extraButton:Show();

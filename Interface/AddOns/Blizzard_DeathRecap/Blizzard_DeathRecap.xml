@@ -12,14 +12,20 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Amount" inherits="GameFontNormalRight" setAllPoints="true" justifyH="RIGHT" justifyV="CENTER" mixin="ShrinkUntilTruncateFontStringMixin">		
+						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="CENTER" mixin="AutoScalingFontStringMixin">		
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="9" type="number"/>
+							</KeyValues>
 							<Size x="80" y="32"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 							<Color r="0.75" g="0.05" b="0.05" a="1"/>
 						</FontString>
-						<FontString parentKey="AmountLarge" inherits="SystemFont_Shadow_Large2" setAllPoints="true" justifyH="RIGHT" justifyV="CENTER" hidden="true" mixin="ShrinkUntilTruncateFontStringMixin">
+						<FontString parentKey="AmountLarge" inherits="GameFontNormalLarge2" setAllPoints="true" justifyH="RIGHT" justifyV="CENTER" hidden="true" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+							</KeyValues>
 							<Size x="80" y="32"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="0" y="0"/>
@@ -29,10 +35,6 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self.Amount:SetFontObjectsToTry(GameFontNormal, GameFontNormalSmall, GameFontNormalTiny);
-						self.AmountLarge:SetFontObjectsToTry(GameFontNormalLarge2, GameFontNormalLarge, GameFontNormalMed3, GameFontNormal);
-					</OnLoad>
 					<OnEnter function="DeathRecapFrame_Amount_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>	
 				</Scripts>

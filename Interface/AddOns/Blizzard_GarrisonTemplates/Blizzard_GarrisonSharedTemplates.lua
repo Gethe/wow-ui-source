@@ -134,6 +134,8 @@ function GarrisonFollowerList:OnShow()
 	end
 	if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 		self:ShowThreatCountersFrame();
+	else 
+		self:HideThreatCountersFrame(); 
 	end
 
 	self:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
@@ -148,6 +150,10 @@ end
 function GarrisonFollowerList:ShowThreatCountersFrame()
 	GarrisonThreatCountersFrame:Show();
 end
+
+function GarrisonFollowerList:HideThreatCountersFrame()
+	GarrisonThreatCountersFrame:Hide();
+end		
 
 function GarrisonFollowerList:StopAnimations()
 	if (self.followerTab) then
@@ -204,6 +210,8 @@ function GarrisonFollowerList:OnEvent(event, ...)
 			if (self.followerTab and self.followerTab.followerID and self.followerTab:IsVisible()) then
 				if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 					self:ShowThreatCountersFrame();
+				else 
+					self:HideThreatCountersFrame(); 
 				end
 			end
 		end

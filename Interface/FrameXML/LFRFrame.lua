@@ -626,7 +626,7 @@ function LFRBrowseButton_OnEnter(self)
 	if ( encountersComplete > 0 or isIneligible ) then
 		GameTooltip:AddLine("\n"..BOSSES);
 		for i=1, encountersTotal do
-			local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(self.index, i);
+			local bossName, _, isKilled, isIneligible = SearchLFGGetEncounterResults(self.index, i);
 			if ( isKilled ) then
 				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			elseif ( isIneligible ) then
@@ -648,7 +648,7 @@ function InstanceLock_OnEnter(self)
 	if ( self.encountersComplete > 0 ) then
 		GameTooltip:SetText(BOSSES);
 		for i=1, self.encountersTotal do
-			local bossName, texture, isKilled = GetInstanceLockTimeRemainingEncounter(i);
+			local bossName, _, isKilled = GetInstanceLockTimeRemainingEncounter(i);
 			if ( isKilled ) then
 				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			else

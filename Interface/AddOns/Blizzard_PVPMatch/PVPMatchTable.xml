@@ -71,6 +71,12 @@
 			<OnLeave method="OnLeave"/>
     </Scripts>
   </Button>
+	<Button name="PVPSoloShuffleCellNameTemplate" mixin="PVPSoloShuffleCellNameMixin" inherits="PVPStringTemplate" parentKey="cell" registerForClicks="LeftButtonUp,RightButtonUp" enableMouse="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
 	<Frame name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true">
     <Scripts>
       <OnEnter method="OnEnter"/>

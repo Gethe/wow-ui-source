@@ -34,50 +34,49 @@ function PVPMatchUtil.GetCellColor(factionIndex, useAlternateColor)
 	return PVPMatchUtil.CellColors[index];
 end
 
-function PVPMatchUtil.GetOptionalCategories()
-	local categories = {};
-	categories.honorableKills = C_PvP.CanDisplayHonorableKills();
-	categories.deaths = C_PvP.CanDisplayDeaths();
+function PVPMatchUtil.SetupTableButtonColors(factionIndex, isFactionalMatch, scrollFrame)
+	local buttons = HybridScrollFrame_GetButtons(scrollFrame);
 	
-	if C_PvP.DoesMatchOutcomeAffectRating() then
-		if PVPMatchUtil.IsActiveMatchComplete() then
-			-- Skirmish is considered rated for matchmaking reasons.
-			categories.ratingChange = not IsArenaSkirmish();
-			categories.ratingPost = true;
-		else
-			categories.ratingPre = true;
+	if C_PvP.GetCustomVictoryStatID() == 0 then
+		local useAlternateColor = not isFactionalMatch;
+		for k, button in pairs(buttons) do
+			button:SetUseAlternateColor(useAlternateColor);
+		end
+	else
+		for k, button in pairs(buttons) do
+			button:SetBackgroundColor(PVPMatchStyle.PurpleColor);
 		end
 	end
-	
-	return categories;
 end
 
-PVPMatchStyle = {
-	PanelColors = {
-			CreateColor(1.0, 0.0, 0.0),		-- Horde
-			CreateColor(0.557, 0.0, 1.0),	-- Horde Alternate
-			CreateColor(0.0, .376, 1.0),	-- Alliance
-			CreateColor(1.0, 0.824, 0.0),	-- Alliance Alternate
+PVPMatchStyle = {};
+PVPMatchStyle.PurpleColor = CreateColor(0.557, 0.0, 1.0);
+
+PVPMatchStyle.PanelColors = {
+	CreateColor(1.0, 0.0, 0.0),		-- Horde
+	PVPMatchStyle.PurpleColor,		-- Horde Alternate
+	CreateColor(0.0, .376, 1.0),	-- Alliance
+	CreateColor(1.0, 0.824, 0.0),	-- Alliance Alternate
+};
+
+PVPMatchStyle.Theme = {
+	Horde = {
+		decoratorOffsetY = -37,
+		decoratorTexture = "scoreboard-horde-header",
+		nineSliceLayout = "BFAMissionHorde",
 	},
-	Theme = {
-		Horde = {
-			decoratorOffsetY = -37,
-			decoratorTexture = "scoreboard-horde-header",
-			nineSliceLayout = "BFAMissionHorde",
-		},
-		Alliance = {
-			decoratorOffsetY = -28,
-			decoratorTexture = "scoreboard-alliance-header",
-			nineSliceLayout = "BFAMissionAlliance",
-		},
-		Neutral = {
-			nineSliceLayout = "GenericMetal",
-		},
+	Alliance = {
+		decoratorOffsetY = -28,
+		decoratorTexture = "scoreboard-alliance-header",
+		nineSliceLayout = "BFAMissionAlliance",
 	},
-}
+	Neutral = {
+		nineSliceLayout = "GenericMetal",
+	},
+};
 
 function PVPMatchUtil.UpdateMatchmakingText(fontString)
-	if C_PvP.IsRatedBattleground() or C_PvP.IsRatedArena() and not IsArenaSkirmish() then
+	if (C_PvP.GetCustomVictoryStatID() == 0 and (C_PvP.IsRatedBattleground() or C_PvP.IsRatedArena() and (not IsArenaSkirmish()))) then
 		local teamInfos = { 
 			C_PvP.GetTeamInfo(0),
 			C_PvP.GetTeamInfo(1), 

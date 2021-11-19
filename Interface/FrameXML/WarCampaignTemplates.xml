@@ -94,7 +94,10 @@
 						<Anchor point="TOP" y="25"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
 					<Size x="175" y="15"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Background" relativePoint="LEFT" x="42" y="6"/>
@@ -140,9 +143,6 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
 	</Frame>
 
 	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin" virtual="true">

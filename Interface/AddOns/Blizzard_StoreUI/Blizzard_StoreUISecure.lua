@@ -9,6 +9,7 @@ local function Import(name)
 end
 
 Import("IsOnGlueScreen");
+Import("print");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
@@ -2163,7 +2164,13 @@ function StoreFrame_OnLoad(self)
 			end
 		);
 	end
-	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	
+	if IsOnGlueScreen() then
+		self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
+	else
+		self:SetPoint("TOP", nil, "TOP", 0, -116); --Intentionally not anchored to UIParent.
+	end
+
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 
 	self.productCardPoolCollection = CreateFixedSizeFramePoolCollection();
@@ -3198,7 +3205,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.NewGuildMaster.EmptyText:SetText(VAS_NEW_GUILD_MASTER_EMPTY_TEXT);
 	self.CharacterSelectionFrame.OldGuildNewName.Label:SetText(VAS_OLD_GUILD_NEW_NAME_LABEL);
 	self.CharacterSelectionFrame.OldGuildNewName.EmptyText:SetText(VAS_OLD_GUILD_NEW_NAME_EMPTY_TEXT);
-	self.CharacterSelectionFrame.RenameGuildCheckbox.Label:SetText(BLIZZARD_STORE_VAS_RENAME_GUILD);
+	self.CharacterSelectionFrame.RenameGuildCheckbox.Label:SetText("This is a lot of text for the Rename Guild checkbox, so much text that it won't fit");
 	self.CharacterSelectionFrame.RenameGuildEditbox.EmptyText:SetText(VAS_NEW_GUILD_NAME_LABEL);
 	self.CharacterSelectionFrame.TransferRealmEditbox.Label:SetText(VAS_DESTINATION_REALM_LABEL);
 	self.CharacterSelectionFrame.TransferRealmEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_REALM_NAME);
@@ -3207,11 +3214,13 @@ function StoreVASValidationFrame_OnLoad(self)
 
 	self.CharacterSelectionFrame.FollowGuildCheckbox.Label:SetMaxLines(2);
 
-	SecureMixin(self.CharacterSelectionFrame.SelectedCharacterDescription, ShrinkUntilTruncateFontStringMixin);
-	self.CharacterSelectionFrame.SelectedCharacterDescription:SetFontObjectsToTry("GameFontHighlightSmall2", "GameFontWhiteTiny", "GameFontWhiteTiny2");
+	SecureMixin(self.CharacterSelectionFrame.SelectedCharacterDescription, AutoScalingFontStringMixin);
+	self.CharacterSelectionFrame.SelectedCharacterDescription:SetFontObject("GameFontHighlightSmall2");
+	self.CharacterSelectionFrame.SelectedCharacterDescription:SetMinLineHeight(8);
 
-	SecureMixin(self.CharacterSelectionFrame.FollowGuildErrorMessage, ShrinkUntilTruncateFontStringMixin);
-	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
+	SecureMixin(self.CharacterSelectionFrame.FollowGuildErrorMessage, AutoScalingFontStringMixin);
+	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetFontObject("GameFontBlack");
+	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetMinLineHeight(8);
 
 	local labelsToShrink = {
 		"FollowGuildCheckbox",
@@ -3221,8 +3230,9 @@ function StoreVASValidationFrame_OnLoad(self)
 	};
 
 	for i, checkbox in ipairs(labelsToShrink) do
-		SecureMixin(self.CharacterSelectionFrame[checkbox].Label, ShrinkUntilTruncateFontStringMixin);
-		self.CharacterSelectionFrame[checkbox].Label:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
+		local label = self.CharacterSelectionFrame[checkbox].Label;
+		SecureMixin(label, AutoScalingFontStringMixin);
+		label:ScaleTextToFit();
 	end
 
 	if (IsOnGlueScreen()) then
@@ -4205,7 +4215,6 @@ local function UpdateFactionTransferCheckBoxForFaction(self, faction)
 		local diffDollars = math.floor(diffPrice);
 		local diffCents = (diffPrice - diffDollars) * 100;
 		self.CharacterSelectionFrame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, currencyFormatLong(diffDollars, diffCents)));
-		self.CharacterSelectionFrame.TransferFactionCheckbox.Label:ApplyFontObjects();
 		self.CharacterSelectionFrame.TransferFactionCheckbox:SetChecked(false);
 		self.CharacterSelectionFrame.TransferFactionCheckbox:Show();
 	else
@@ -4345,7 +4354,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.RenameGuildCheckbox:ClearAllPoints();
 		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -8);
 		frame.RenameGuildCheckbox:Show();
-		frame.RenameGuildCheckbox.Label:ApplyFontObjects();
 		frame.RenameGuildCheckbox:SetChecked(false);
 		frame.RenameGuildEditbox:ClearAllPoints();
 		frame.RenameGuildEditbox:SetPoint("TOPRIGHT", frame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -12);
@@ -4365,7 +4373,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.RenameGuildCheckbox:ClearAllPoints();
 		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -88);
 		frame.RenameGuildCheckbox:Show();
-		frame.RenameGuildCheckbox.Label:ApplyFontObjects();
 		frame.RenameGuildCheckbox:SetChecked(false);
 		frame.RenameGuildEditbox:ClearAllPoints();
 		frame.RenameGuildEditbox:SetPoint("TOPRIGHT", frame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -92);
@@ -4382,7 +4389,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount and (StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1))) then
 			frame.TransferAccountCheckbox:Show();
-			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
 			frame.TransferFactionCheckbox:ClearAllPoints();
 			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferAccountCheckbox, "BOTTOMLEFT", 0, -4);
 		else

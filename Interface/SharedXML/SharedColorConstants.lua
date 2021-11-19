@@ -95,7 +95,8 @@ MATERIAL_TEXT_COLOR_TABLE = {
 	["Marble"] = {0, 0, 0},
 	["Silver"] = {0.12, 0.12, 0.12},
 	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
+	["ParchmentLarge"] = {.141, 0, 0},
+	["Progenitor"] = {1, 1, 1},
 };
 
 MATERIAL_TITLETEXT_COLOR_TABLE = {
@@ -105,7 +106,8 @@ MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["Marble"] = {0.93, 0.82, 0},
 	["Silver"] = {0.93, 0.82, 0},
 	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
+	["ParchmentLarge"] = {.208, 0, 0},
+	["Progenitor"] = {1, 1, 1},
 };
 
 FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);

@@ -21,6 +21,7 @@ AreaPoiInfoDocumentation.lua
 AuctionHouseDocumentation.lua
 BankDocumentation.lua
 BattlePetDocumentation.lua
+BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
 CalendarDocumentation.lua
@@ -124,11 +125,11 @@ AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BarberShopDocumentation.lua
 BattleNetDocumentation.lua
-BehavioralMessagingDocumentation.lua
 CVarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua
 ClassColorDocumentation.lua
+ClickBindingsDocumentation.lua
 ClubDocumentation.lua
 ClubFinderDocumentation.lua
 CommentatorFrameDocumentation.lua
@@ -207,6 +208,7 @@ PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 ProfessionConstantsDocumentation.lua
+PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
@@ -219,6 +221,7 @@ UIWidgetManagerSharedDocumentation.lua
 UnitSharedDocumentation.lua
 VectorSharedDocumentation.lua
 VehicleConstantsDocumentation.lua
+ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua

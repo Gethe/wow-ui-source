@@ -161,6 +161,7 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
+	pin.useSpecialReachableIcon = taxiNodeData.useSpecialIcon and taxiNodeData.textureKit and not IsVindicaarTextureKit(taxiNodeData.textureKit);
 	pin:SetFlightPathStyle(taxiNodeData.textureKit, taxiNodeData.state);
 	
 	pin:UpdatePinSize(taxiNodeData.state);
@@ -237,7 +238,11 @@ end
 
 function FlightMap_FlightPointPinMixin:OnMouseLeave()
 	if self.taxiNodeData.state == Enum.FlightPathState.Reachable then
-		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		if self.useSpecialReachableIcon then
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Special"));
+		else
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		end
 		self.owner:RemoveRouteToPin(self);
 	end
 	GameTooltip_Hide();
@@ -294,12 +299,16 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKit, taxiNodeTy
 	if taxiNodeType == Enum.FlightPathState.Current then
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Green"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
-	elseif taxiNodeType == Enum.FlightPathState.Reachable then
-		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
-		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	elseif taxiNodeType == Enum.FlightPathState.Unreachable then
 		self.Icon:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
+	elseif taxiNodeType == Enum.FlightPathState.Reachable then
+		if self.useSpecialReachableIcon then
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Special"));
+		else
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		end
+		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	end
 end
 

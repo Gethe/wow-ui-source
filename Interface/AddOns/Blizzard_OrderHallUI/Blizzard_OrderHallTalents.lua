@@ -37,11 +37,11 @@ local TalentTreeLayoutOptions = { };
 
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
 	buttonInfo = {
-		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 59, spacingY = 19 },
+		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 62, spacingY = 19 },
 	},	
 	spacingTop = 86,
 	spacingBottom = 33,
-	spacingHorizontal = 0,
+	spacingHorizontal = 144,
 	minimumWidth = 336,
 	canHaveBackButton = true,
 	singleCost = false,
@@ -51,7 +51,7 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
 
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 	buttonInfo = {
-		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 21, spacingY = 37 },
+		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 21, spacingY = 37 },
 		[Enum.GarrTalentType.Major] = { size = 46, spacingX = 21, spacingY = 37 },
 	},
 	spacingTop = 110,
@@ -64,12 +64,14 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 	researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
 };
 
-local TORGHAST_TALENT_TREE_ID = 461;
 
-local Torghast_TalentTreeLayoutOptions = 
+local CustomTalentTreeLayoutOptions = {};
+
+local TORGHAST_TALENT_TREE_ID = 461;
+CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] = 
 {
 	buttonInfo = {
-		[Enum.GarrTalentType.Standard] = { size = 39, spacingX = 21, spacingY = 29 },
+		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 21, spacingY = 29 },
 		[Enum.GarrTalentType.Major] = { size = 46, spacingX = 21, spacingY = 29 },
 	},
 	spacingTop = 97,
@@ -89,6 +91,128 @@ local Torghast_TalentTreeLayoutOptions =
 	spendHelpTipFlag = LE_FRAME_TUTORIAL_TORGHAST_SPEND_TOWER_KNOWLEDGE,
 };
 
+do
+	local CYPHER_TALENT_TREE_ID = 474;
+
+	local spacingTop = 105;
+	local buttonSize = 40;
+	local spacingX = 100;
+	local spacingY = 12;
+	local spacingHorizontal = 144;
+
+	local stringXStart = (spacingHorizontal / 2) + (buttonSize / 2);
+	local stringYTop = -(spacingTop - 20);
+	local numTopTalents = 4;
+	local stringYBottom = stringYTop - (numTopTalents + 1) * (spacingY + buttonSize);
+
+	CustomTalentTreeLayoutOptions[CYPHER_TALENT_TREE_ID] = 
+	{
+		buttonInfo = 
+		{
+			[Enum.GarrTalentType.Standard] = { size = buttonSize, spacingX = spacingX, spacingY = spacingY },
+		},
+		spacingTop = spacingTop,
+		spacingBottom = 36,
+		spacingHorizontal = spacingHorizontal,
+		minimumWidth = 336,
+		canHaveBackButton = false,
+		singleCost = false,
+		ignorePrereqLayout = true,
+		researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
+		researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
+		highlightPrereqTalents = true,
+		fontStrings =
+		{
+			{
+				text = CYPHER,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart,
+				yOfs = stringYTop,
+			},
+			{
+				text = METRIAL,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 1,
+				yOfs = stringYTop,
+			},
+			{
+				text = ALTONIAN,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 2,
+				yOfs = stringYTop,
+			},
+			{
+				text = AEALIC,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 3,
+				yOfs = stringYTop,
+			},
+			{
+				text = TREBELIM,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 4,
+				yOfs = stringYTop,
+			},
+			{
+				text = SOPRANIAN,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 2,
+				yOfs = stringYBottom,
+			},
+			{
+				text = DEALIC,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 3,
+				yOfs = stringYBottom,
+			},
+			{
+				text = BASSALIM,
+				layer = "OVERLAY",
+				template = "GameFontHighlight",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 4,
+				yOfs = stringYBottom,
+			},
+		}
+	};
+end
+
+do
+	local POCOPOC_CUSTOMIZATION_TREE_ID = 476;
+
+	CustomTalentTreeLayoutOptions[POCOPOC_CUSTOMIZATION_TREE_ID] =
+	{
+		canHaveBackButton = false,
+		noCurrencyUsed = true,
+		suppressTooltipEmptyLine = true,
+		useSelectTooltip = true,
+	};
+
+	setmetatable(CustomTalentTreeLayoutOptions[POCOPOC_CUSTOMIZATION_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers]});
+end
+
 local function FramePool_HideAndClearAnchorsWithResetCallback(pool, frame)
 	FramePool_HideAndClearAnchors(pool, frame);
 	frame:OnFramePoolReset();
@@ -97,8 +221,8 @@ end
 local function GetTalentTreeLayoutOptions(garrTalentTreeID)
 
 	-- Torghast Talent Tree Specific Layout Options
-	if (garrTalentTreeID == TORGHAST_TALENT_TREE_ID) then
-		return Torghast_TalentTreeLayoutOptions;
+	if (CustomTalentTreeLayoutOptions[garrTalentTreeID]) then
+		return CustomTalentTreeLayoutOptions[garrTalentTreeID];
 	end
 
 	local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
@@ -241,8 +365,10 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.buttonPool = CreateFramePool("BUTTON", self, "GarrisonTalentButtonTemplate", FramePool_HideAndClearAnchorsWithResetCallback);
 	self.prerequisiteArrowPool = CreateFramePool("FRAME", self, "GarrisonTalentPrerequisiteArrowTemplate");	
 	self.talentRankPool = CreateFramePool("FRAME", self, "TalentRankDisplayTemplate");
-	self.choiceTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentChoiceTemplate");
+	self.choiceTrackTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentTrackTemplate");
+	self.choiceTexturePool = CreateTexturePool(self, "OVERLAY", 1, "GarrisonTalentChoiceTemplate");
 	self.arrowTexturePool = CreateTexturePool(self, "BACKGROUND", 2, "GarrisonTalentArrowTemplate");
+	self.fontStringPools = CreateFontStringPoolCollection();
 	self.buttonAnimationPool = CreateFramePool("FRAME", self, "GarrisonTalentButtonAnimationTemplate", FramePool_HideAndClearAnchorsWithResetCallback);
 	self.researchingTalentID = 0;
 end
@@ -336,9 +462,11 @@ end
 function OrderHallTalentFrameMixin:ReleaseAllBasePools()
 	self.buttonPool:ReleaseAll();
 	self.talentRankPool:ReleaseAll();
+	self.choiceTrackTexturePool:ReleaseAll();
 	self.choiceTexturePool:ReleaseAll();
 	self.arrowTexturePool:ReleaseAll();
 	self.prerequisiteArrowPool:ReleaseAll();
+	self.fontStringPools:ReleaseAll();
 end
 
 function OrderHallTalentFrameMixin:ReleaseAllPools()
@@ -403,14 +531,14 @@ function OrderHallTalentFrameMixin:RefreshCurrency()
 	self.Currency:MarkDirty();
 end
 
-local function SortTree(talentA, talentB)
+local function SortTree(talentA, talentB, ignorePrereqs)
 	if talentA.tier ~= talentB.tier then
 		return talentA.tier < talentB.tier;
 	end
 	-- want to process dependencies last on a tier
 	local hasPrereqA = (talentA.prerequisiteTalentID ~= nil);
 	local hasPrereqB = (talentB.prerequisiteTalentID ~= nil);
-	if hasPrereqA ~= hasPrereqB then
+	if hasPrereqA ~= hasPrereqB and not ignorePrereqs then
 		return not hasPrereqA;
 	end	
 	if talentA.uiOrder ~= talentB.uiOrder then
@@ -420,8 +548,8 @@ local function SortTree(talentA, talentB)
 end
 
 function OrderHallTalentFrameMixin:RefreshAllData()
-	if (self.refreshing) then
-		if (not self.triedRefreshing) then
+	if self.refreshing then
+		if not self.triedRefreshing then
 			self.triedRefreshing = true;
 			self:SetScript("OnUpdate", self.OnUpdate);
 		end
@@ -436,10 +564,10 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	self:RefreshCurrency();
 	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
-	if (garrTalentTreeID == nil or garrTalentTreeID == 0) then
+	if garrTalentTreeID == nil or garrTalentTreeID == 0 then
 		local playerClass = select(3, UnitClass("player"));
 		local treeIDs = C_Garrison.GetTalentTreeIDsByClassID(self.garrisonType, playerClass);
-		if (treeIDs and #treeIDs > 0) then
+		if treeIDs and #treeIDs > 0 then
 			garrTalentTreeID = treeIDs[1];
 		end
 	end
@@ -451,10 +579,10 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		return;
 	end
 
-	table.sort(talents, SortTree);
-
 	local talentTreeType = C_Garrison.GetGarrisonTalentTreeType(garrTalentTreeID);
 	local layoutOptions = GetTalentTreeLayoutOptions(garrTalentTreeID);
+
+	table.sort(talents, function(talentA, talentB) return SortTree(talentA, talentB, layoutOptions.ignorePrereqLayout) end);
 
 	local showSingleCost = false;
 	if layoutOptions.singleCost then
@@ -466,19 +594,18 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	end
 	self.SingleCost:SetShown(showSingleCost);
 
-	self:SetUseThemedTextures(isThemed);
-
 	local isClassAgnostic = treeInfo.isClassAgnostic;
 	local isThemed = treeInfo.isThemed;
+	self:SetUseThemedTextures(isThemed);
 	local title = treeInfo.title;
-	if (isThemed) then
+	if isThemed then
 		self.TitleText:Hide();
 		self.BackButton:Hide();
-	elseif (isClassAgnostic and not isThemed and layoutOptions.canHaveBackButton) then
+	elseif isClassAgnostic and not isThemed and layoutOptions.canHaveBackButton then
 		self.TitleText:SetText(UnitName("npc"));
 		self.TitleText:Show();
 		self.BackButton:Show();
-	elseif (title ~= "") then
+	elseif title ~= "" then
 		self.TitleText:SetText(title);
 		self.TitleText:Show();
 		self.BackButton:Hide();
@@ -489,10 +616,10 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	end
 
 	local textureKit = treeInfo.textureKit;
-	if (textureKit) then
+	if textureKit then
 		self.Background:SetAtlas(textureKit.."-background");
 		local atlas = textureKit.."-logo";
-		if (C_Texture.GetAtlasInfo(atlas)) then
+		if C_Texture.GetAtlasInfo(atlas) then
 			self:SetPortraitAtlasRaw(atlas);
 		else
 			self:SetPortraitToUnit("npc");
@@ -501,7 +628,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		local _, className, classID = UnitClass("player");
 
 		self.Background:SetAtlas("orderhalltalents-background-"..className);
-		if (not isClassAgnostic) then
+		if not isClassAgnostic then
 			self:SetPortraitToAsset("INTERFACE\\ICONS\\crest_"..className);
 		else
 			self:SetPortraitToUnit("npc");
@@ -519,8 +646,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		if NPCFriendshipStatusBar:GetParent() == self then
 			NPCFriendshipStatusBar:Hide();
 		end
-		self.Currency:Show();
-		self.CurrencyHitTest:Show();
+
+		local showCurrency = not layoutOptions.noCurrencyUsed;
+		self.Currency:SetShown(showCurrency);
+		self.CurrencyHitTest:SetShown(showCurrency);
+
 	end
 
 	-- ticks: these are the roman numerals on the left side of each tier
@@ -532,7 +662,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
     local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
 	local researchingTalentID = self:GetResearchingTalentID();
-	local researchingTalentTier = 0;
 
 	local currentTier = nil;
 	local currentTierTotalTalentCount, currentTierBaseTalentCount, currentTierDependentTalentCount, currentTierResearchableTalentCount, currentTierTalentIndex, currentTierWidth, currentTierHeight;
@@ -553,7 +682,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				break;
 			end
 			currentTierTotalTalentCount = currentTierTotalTalentCount + 1;
-			if talent.prerequisiteTalentID then
+			if talent.prerequisiteTalentID and not layoutOptions.ignorePrereqLayout then
 				currentTierDependentTalentCount = currentTierDependentTalentCount + 1;
 			end
 			-- research stuff
@@ -565,7 +694,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				if not talent.selected then
 					talent.selected = true;
 				end
-				researchingTalentTier = talent.tier;
 			end
 		end
 		currentTierBaseTalentCount = currentTierTotalTalentCount - currentTierDependentTalentCount;
@@ -590,128 +718,147 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			currentTierWidth = currentTierWidth + buttonInfo.spacingX;	-- need a solve if a row has mixed talent types
 		end
 
-		local talentFrame = self.buttonPool:Acquire();
-		talentFrame:SetSize(buttonInfo.size, buttonInfo.size);
-		talentFrame.Icon:SetTexture(talent.icon);
+		if not talent.ignoreTalent then
+			local talentFrame = self.buttonPool:Acquire();
+			talentFrame:SetSize(buttonInfo.size, buttonInfo.size);
+			talentFrame.layoutOptions = layoutOptions;
+			talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect, layoutOptions.customUnavailableTalentErrorCallback);
 
-		talentFrame:SetTalent(talent, layoutOptions.talentSelectedEffect, layoutOptions.customUnavailableTalentErrorCallback);
-
-		if (talent.isBeingResearched and not talent.hasInstantResearch) then
-			talentFrame.Cooldown:SetCooldownUNIX(talent.startTime, talent.researchDuration);
-			talentFrame.Cooldown:Show();
-			talentFrame.AlphaIconOverlay:Show();
-			talentFrame.AlphaIconOverlay:SetAlpha(0.7);
-			talentFrame.CooldownTimerBackground:Show();
-			if (not talentFrame.timer) then
-				talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
+			if talent.isBeingResearched and not talent.hasInstantResearch then
+				talentFrame.Cooldown:SetCooldownUNIX(talent.startTime, talent.researchDuration);
+				talentFrame.Cooldown:Show();
+				talentFrame.AlphaIconOverlay:Show();
+				talentFrame.AlphaIconOverlay:SetAlpha(0.7);
+				talentFrame.CooldownTimerBackground:Show();
+				if not talentFrame.timer then
+					talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
+				end
 			end
-		end
-		local selectionAvailableInstantResearch = true;
-		if (researchingTalentID ~= 0 and researchingTalentTier == talent.tier and researchingTalentID ~= talent.id) then
-			selectionAvailableInstantResearch = false;
-		end
 
-		-- Clear "Research Talent" status if the talent is not isBeingResearched
-		if (talent.id == researchingTalentID and not talent.isBeingResearched) then
-			self:ClearResearchingTalentID();
-		end
+			-- Clear "Research Talent" status if the talent is not isBeingResearched
+			if talent.id == researchingTalentID and not talent.isBeingResearched then
+				self:ClearResearchingTalentID();
+			end
 
-		local isAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.Available;
-		local overrideDisplayAsAvailable = layoutOptions.showUnffordableAsAvailable and (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources);
-		local isZeroRank = talent.talentRank == 0;
+			local isAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.Available;
+			local overrideDisplayAsAvailable = layoutOptions.showUnffordableAsAvailable and (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources);
+			local isZeroRank = talent.talentRank == 0;
 
-		local borderAtlas = BORDER_ATLAS_NONE;
-		if (talent.isBeingResearched) then
-			borderAtlas = BORDER_ATLAS_SELECTED;
-		elseif (talentTreeType == Enum.GarrTalentTreeType.Tiers and talent.selected and selectionAvailableInstantResearch) then
-			borderAtlas = BORDER_ATLAS_SELECTED;
-		elseif (talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched) then
-			borderAtlas = BORDER_ATLAS_SELECTED;
-		else
-			-- We check for Enum.GarrisonTalentAvailability.UnavailableAlreadyHave to avoid a bug with
-			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
-			local canDisplayAsAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching or talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave;
-			local shouldDisplayAsAvailable = (canDisplayAsAvailable or overrideDisplayAsAvailable) and talent.hasInstantResearch;
-			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
-			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
-			if (isAvailable or shouldDisplayAsAvailable) then
-				if ( currentTierResearchableTalentCount < currentTierTotalTalentCount and talentTreeType == Enum.GarrTalentTreeType.Tiers ) then
+			local borderAtlas = BORDER_ATLAS_NONE;
+			if talent.isBeingResearched then
+				borderAtlas = BORDER_ATLAS_SELECTED;
+			elseif talentTreeType == Enum.GarrTalentTreeType.Tiers and talent.selected then
+				borderAtlas = BORDER_ATLAS_SELECTED;
+			elseif talentTreeType == Enum.GarrTalentTreeType.Classic and talent.researched then
+				borderAtlas = BORDER_ATLAS_SELECTED;
+			else
+				-- We check for Enum.GarrisonTalentAvailability.UnavailableAlreadyHave to avoid a bug with
+				-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
+				local canDisplayAsAvailable = talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching or talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAlreadyHave;
+				local shouldDisplayAsAvailable = (canDisplayAsAvailable or overrideDisplayAsAvailable) and talent.hasInstantResearch;
+				-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
+				-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
+				if isAvailable or shouldDisplayAsAvailable then
+					if currentTierResearchableTalentCount < currentTierTotalTalentCount and talentTreeType == Enum.GarrTalentTreeType.Tiers then
+						talentFrame.AlphaIconOverlay:Show();
+						talentFrame.AlphaIconOverlay:SetAlpha(0.2);
+					else
+						borderAtlas = BORDER_ATLAS_AVAILABLE;
+					end
+
+				-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
+				else
+					borderAtlas = BORDER_ATLAS_UNAVAILABLE;
+					talentFrame.Icon:SetDesaturated(isZeroRank);
+					talentFrame.wasDesaturated = isZeroRank;
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
-				else
-					borderAtlas = BORDER_ATLAS_AVAILABLE;
 				end
-
-			-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
-			else
-				borderAtlas = BORDER_ATLAS_UNAVAILABLE;
-				talentFrame.Icon:SetDesaturated(isZeroRank);
 			end
-		end
-		talentFrame:SetBorder(borderAtlas);
-		talentFrame.MajorGlow:SetShown(borderAtlas == BORDER_ATLAS_AVAILABLE and talent.type == Enum.GarrTalentType.Major);
+			talentFrame:SetBorder(borderAtlas);
+			talentFrame.MajorGlow:SetShown(borderAtlas == BORDER_ATLAS_AVAILABLE and talent.type == Enum.GarrTalentType.Major);
 
-		-- Show the current talent rank if the talent had multiple ranks
-		if talent.talentMaxRank > 1 then
-			local isDisabled = (isZeroRank and not isAvailable and not overrideDisplayAsAvailable);
-			local talentRankFrame = self.talentRankPool:Acquire();
-			talentRankFrame:SetPoint("BOTTOMRIGHT", talentFrame, 15, -12);
-			talentRankFrame:SetFrameLevel(10);
-			talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled, isAvailable or overrideDisplayAsAvailable);
-			talentRankFrame:Show();
-		end
+			-- Show the current talent rank if the talent had multiple ranks
+			if talent.talentMaxRank > 1 then
+				local isDisabled = isZeroRank and not isAvailable and not overrideDisplayAsAvailable;
+				local talentRankFrame = self.talentRankPool:Acquire();
+				talentRankFrame:SetPoint("BOTTOMRIGHT", talentFrame, 15, -12);
+				talentRankFrame:SetFrameLevel(10);
+				talentRankFrame:SetValues(talent.talentRank, talent.talentMaxRank, isDisabled, isAvailable or overrideDisplayAsAvailable);
+				talentRankFrame:Show();
+			end
 
-		if talent.prerequisiteTalentID then
-			local prereqTalentButton = self:FindTalentButton(talent.prerequisiteTalentID);
-			if prereqTalentButton then
-				if prereqTalentButton.talent.uiOrder < talent.uiOrder then
-					talentFrame:SetPoint("LEFT", prereqTalentButton, "RIGHT", buttonInfo.spacingX, 0);
-				else
-					talentFrame:SetPoint("RIGHT", prereqTalentButton, "LEFT", -buttonInfo.spacingX, 0);
+			if talent.prerequisiteTalentID and not layoutOptions.ignorePrereqLayout then
+				local prereqTalentButton = self:FindTalentButton(talent.prerequisiteTalentID);
+				if prereqTalentButton then
+					if prereqTalentButton.talent.uiOrder < talent.uiOrder then
+						talentFrame:SetPoint("LEFT", prereqTalentButton, "RIGHT", buttonInfo.spacingX, 0);
+					else
+						talentFrame:SetPoint("RIGHT", prereqTalentButton, "LEFT", -buttonInfo.spacingX, 0);
+					end
+					self:AddPrerequisiteArrow(talentFrame, prereqTalentButton);
 				end
-				self:AddPrerequisiteArrow(talentFrame, prereqTalentButton);
-			end
-		else
-			local middleTalentIndex = math.ceil(currentTierBaseTalentCount / 2);
-			-- there should only be a talent in the center spot if the count is odd
-			if mod(currentTierBaseTalentCount, 2) == 0 then
-				middleTalentIndex = middleTalentIndex + 0.5;
-			end
-			local offsetX = currentTierTalentIndex - middleTalentIndex;
-			offsetX = offsetX * (buttonInfo.size + buttonInfo.spacingX);
-			talentFrame:SetPoint("TOP", offsetX, -contentOffsetY);
-		end
-
-		talentFrame:Show();
-
-		-- arrows for rows with 2 talents of tiered trees
-		if talentTreeType == Enum.GarrTalentTreeType.Tiers and currentTierTalentIndex == 2 then
-			local choiceBackground = self.choiceTexturePool:Acquire();
-			if (currentTierResearchableTalentCount == 2) then
-				choiceBackground:SetAtlas("orderhalltalents-choice-background-on", true);
-				choiceBackground:SetDesaturated(false);
-				local pulsingArrows = self.arrowTexturePool:Acquire();
-				pulsingArrows:SetPoint("CENTER", choiceBackground);
-				pulsingArrows.Pulse:Play();
-				pulsingArrows:Show();
-			elseif (currentTierResearchableTalentCount == 1) then
-				choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
-				choiceBackground:SetDesaturated(false);
 			else
-				choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
-				choiceBackground:SetDesaturated(true);
+				local middleTalentIndex = math.ceil(currentTierBaseTalentCount / 2);
+				-- there should only be a talent in the center spot if the count is odd
+				if mod(currentTierBaseTalentCount, 2) == 0 then
+					middleTalentIndex = middleTalentIndex + 0.5;
+				end
+				local offsetX = currentTierTalentIndex - middleTalentIndex;
+				offsetX = offsetX * (buttonInfo.size + buttonInfo.spacingX);
+				talentFrame:SetPoint("TOP", offsetX, -contentOffsetY);
 			end
-			choiceBackground:SetPoint("TOP", 0, - contentOffsetY + CHOICE_BACKGROUND_OFFSET_Y);
-			choiceBackground:Show();
-		end
 
-        if (talent.id == completeTalent) then
-            if (talent.selected and not talent.hasInstantResearch) then
-				PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_CHECK);
-				talentFrame.TalentDoneAnim:Play();
+			talentFrame:Show();
+
+			-- Arrows for rows with talents of tiered trees
+			if talentTreeType == Enum.GarrTalentTreeType.Tiers and currentTierTotalTalentCount > 1 then
+				local choiceBackgound = self.choiceTexturePool:Acquire();
+				local xOfs;
+				if currentTierTalentIndex == 1 then
+					choiceBackgound:SetAtlas("orderhalltalents-choice-talent-side", true, nil, true);
+					xOfs = -3;
+				elseif currentTierTalentIndex == currentTierTotalTalentCount then
+					choiceBackgound:SetAtlas("orderhalltalents-choice-talent-side", true, nil, true);
+					xOfs = 2;
+					-- Talent on the right, need to horizontally flip the texture so the border faces the correct direction
+					choiceBackgound:SetTexCoord(1, 0, 0, 1);
+				else
+					choiceBackgound:SetAtlas("orderhalltalents-choice-talent-middle", true, nil, true);
+					xOfs = 0;
+				end 
+				choiceBackgound:SetPoint("CENTER", talentFrame, "CENTER", xOfs, 0);
+				choiceBackgound:Show();
+
+				if currentTierTalentIndex ~= currentTierTotalTalentCount then
+					local choiceTrack = self.choiceTrackTexturePool:Acquire();
+					if currentTierResearchableTalentCount == currentTierTotalTalentCount then
+						choiceTrack:SetAtlas("orderhalltalents-choice-track-on", true);
+						choiceTrack:SetDesaturated(false);
+						local pulsingArrows = self.arrowTexturePool:Acquire();
+						pulsingArrows:SetPoint("CENTER", choiceTrack);
+						pulsingArrows.Pulse:Play();
+						pulsingArrows:Show();
+					elseif currentTierResearchableTalentCount > 0 then
+						choiceTrack:SetAtlas("orderhalltalents-choice-track", true);
+						choiceTrack:SetDesaturated(false);
+					else
+						choiceTrack:SetAtlas("orderhalltalents-choice-track", true);
+						choiceTrack:SetDesaturated(true);
+					end
+					choiceTrack:SetPoint("LEFT", choiceBackgound, "RIGHT", -8, 0);
+					choiceTrack:Show();
+				end
 			end
-            C_Garrison.ClearCompleteTalent(self.garrisonType);
-        end
+
+			if talent.id == completeTalent then
+				if talent.selected and not talent.hasInstantResearch then
+					PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_CHECK);
+					talentFrame.TalentDoneAnim:Play();
+				end
+				C_Garrison.ClearCompleteTalent(self.garrisonType);
+			end
+		end
 	end
 	maxContentWidth = math.max(maxContentWidth, currentTierWidth or 0);
 
@@ -719,6 +866,16 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local frameWidth = math.max(layoutOptions.minimumWidth, maxContentWidth + layoutOptions.spacingHorizontal);
 	local frameHeight = contentOffsetY + currentTierHeight + layoutOptions.spacingBottom;	-- add currentTierHeight to account for the last tier
 	self:SetSize(frameWidth, frameHeight);
+
+	-- Set up custom font strings
+	if layoutOptions.fontStrings then
+		for _, stringDesc in ipairs(layoutOptions.fontStrings) do
+			local newString = self.fontStringPools:Acquire(stringDesc.template, self, stringDesc.layer, stringDesc.subLayer);
+			newString:SetText(stringDesc.text);
+			newString:SetPoint(stringDesc.point, self, stringDesc.relativePoint, stringDesc.xOfs, stringDesc.yOfs);
+			newString:Show();
+		end
+	end
 
 	self.refreshing = false;
 end
@@ -776,6 +933,24 @@ function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect, custo
 	self.talent = talent;
 	self.talentSelectedEffect = talentSelectedEffect;
 	self.customUnavailableTalentErrorCallback = customUnavailableTalentErrorCallback;
+	self.Icon:SetTexture(talent.icon);
+
+	local function HighlightTalentPrereqCallback(frame, talentID, prereqID, show)
+		if show then
+			if prereqID == talent.id then
+				self.Icon:SetDesaturated(false);
+				self:StartHighlightAnimation();
+			elseif talentID ~= talent.id then
+				self.Icon:SetDesaturated(true);
+				self.DeemphasizeIconOverlay:Show();
+			end
+		else
+			self.Icon:SetDesaturated(self.wasDesaturated or false);
+			self:StopHighlightAnimation();
+			self.DeemphasizeIconOverlay:Hide();
+		end
+	end
+	EventRegistry:RegisterCallback("GarrisonTalentButtonMixin.HighlightTalentPrereq", HighlightTalentPrereqCallback, self);
 
 	self:ReacquireAnimationFrame();
 end
@@ -822,12 +997,16 @@ function GarrisonTalentButtonMixin:OnEnter()
 	end
 
 	if talent.isBeingResearched and not talent.hasInstantResearch then
-		GameTooltip:AddLine(" ");
+		if not self.layoutOptions.suppressEmptyTooltipLine then
+			GameTooltip:AddLine(" ");
+		end
 		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.timeRemaining), 1, 1, 1);
 	elseif (talentTreeType == Enum.GarrTalentTreeType.Tiers and not talent.selected) or (talentTreeType == Enum.GarrTalentTreeType.Classic and not talent.researched) then
-		GameTooltip:AddLine(" ");
+		if not self.layoutOptions.suppressEmptyTooltipLine then
+			GameTooltip:AddLine(" ");
+		end
 
-		if (talent.researchDuration and talent.researchDuration > 0) then
+		if talent.researchDuration and talent.researchDuration > 0 then
 			GameTooltip:AddLine(RESEARCH_TIME_LABEL.." "..HIGHLIGHT_FONT_COLOR_CODE..SecondsToTime(talent.researchDuration)..FONT_COLOR_CODE_CLOSE);
 		end
 
@@ -837,16 +1016,16 @@ function GarrisonTalentButtonMixin:OnEnter()
 		end
 
 		if talent.talentAvailability == Enum.GarrisonTalentAvailability.Available or ((researchingTalentID and researchingTalentID ~= 0) and talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableAnotherIsResearching) then
-			GameTooltip:AddLine(ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
+			GameTooltip:AddLine(self.layoutOptions.useSelectTooltip and ORDER_HALL_TALENT_SELECT or ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
 			self.Highlight:Show();
 		else
-			if (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailablePlayerCondition and talent.playerConditionReason) then
-				GameTooltip:AddLine(talent.playerConditionReason, 1, 0, 0);
+			if (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailablePlayerCondition) and talent.playerConditionReason then
+				GameTooltip:AddLine(talent.playerConditionReason, 1, 0, 0, true);
 			elseif (talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent) then
 				local prereqTalentButton = self:GetParent():FindTalentButton(talent.prerequisiteTalentID);
 				local preReqTalent = prereqTalentButton and prereqTalentButton.talent;
 				if (preReqTalent) then
-					GameTooltip:AddLine(TOOLTIP_TALENT_PREREQ:format(preReqTalent.talentMaxRank, preReqTalent.name), 1, 0, 0);
+					GameTooltip:AddLine(TOOLTIP_TALENT_PREREQ:format(preReqTalent.talentMaxRank, preReqTalent.name), 1, 0, 0, true);
 				else
 					GameTooltip:AddLine(TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent], 1, 0, 0);
 				end
@@ -859,12 +1038,22 @@ function GarrisonTalentButtonMixin:OnEnter()
 	self.tooltip = GameTooltip;
 	GameTooltip:Show();
 	EventRegistry:TriggerEvent("GarrisonTalentButtonMixin.TalentTooltipShown", GameTooltip, talent, garrTalentTreeID);
+
+	if self.layoutOptions.highlightPrereqTalents and talent.talentAvailability == Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent then
+		local showHighlight = true;
+		EventRegistry:TriggerEvent("GarrisonTalentButtonMixin.HighlightTalentPrereq", talent.id, talent.prerequisiteTalentID, showHighlight);
+	end
 end
 
 function GarrisonTalentButtonMixin:OnLeave()
 	GameTooltip_Hide();
 	self.Highlight:Hide();
 	self.tooltip = nil;
+
+	if self.layoutOptions.highlightPrereqTalents then
+		local showHighlight = false;
+		EventRegistry:TriggerEvent("GarrisonTalentButtonMixin.HighlightTalentPrereq", nil, nil, showHighlight);
+	end
 end
 
 function GarrisonTalentButtonMixin:OnClick()
@@ -935,8 +1124,10 @@ function GarrisonTalentButtonMixin:OnFramePoolReset()
 	self.Cooldown:Hide();
 	self.Border:Show();
 	self.AlphaIconOverlay:Hide();
+	self.DeemphasizeIconOverlay:Hide();
 	self.CooldownTimerBackground:Hide();
 	self.Icon:SetDesaturated(false);
+	self.wasDesaturated = false;
 	self.talent = nil;
 	self.tooltip = nil;
 	if (self.timer) then
@@ -993,6 +1184,22 @@ function GarrisonTalentButtonMixin:StartSelectedAnimation()
 	end
 end
 
+function GarrisonTalentButtonMixin:StartHighlightAnimation()
+	self:AcquireAnimationFrame();
+
+	if not self.animationFrame:IsPlayingHighlightAnimation() then
+		self.animationFrame:StartHighlightAnimation(self.Icon);
+	end
+end
+
+function GarrisonTalentButtonMixin:StopHighlightAnimation()
+	self:AcquireAnimationFrame();
+
+	if self.animationFrame:IsPlayingHighlightAnimation() then
+		self.animationFrame:StopHighlightAnimation();
+	end
+end
+
 function GarrisonTalentButtonMixin:GetTalentFrame()
 	return self:GetParent();
 end
@@ -1027,6 +1234,7 @@ function GarrisonTalentButtonAnimationMixin:CancelEffects()
 		self.selectedEffectController:CancelEffect();
 		self.selectedEffectController = nil;
 	end
+	self:StopHighlightAnimation();
 end
 
 function GarrisonTalentButtonAnimationMixin:SetTalentID(talentID)
@@ -1040,4 +1248,36 @@ end
 function GarrisonTalentButtonAnimationMixin:OnFramePoolReset()
 	self.talentID = nil;
 	self:CancelEffects();
+end
+
+function GarrisonTalentButtonAnimationMixin:ClearFlashTimer()
+	if self.FlashTimer then
+		self.FlashTimer:Cancel();
+	end
+
+	self.FlashTimer = nil;
+end
+
+function GarrisonTalentButtonAnimationMixin:StartHighlightAnimation(icon)
+	self:ClearFlashTimer();
+	self.HighlightFlash.Icon:SetTexture(icon:GetTexture());
+	self.HighlightFlash.Icon:SetSize(icon:GetSize());
+	
+	local function playFlash()
+		self.HighlightFlash:Show();
+		self.HighlightFlash.Anim:Play();
+		self.FlashTimer = nil;
+	end
+
+	self.FlashTimer = C_Timer.NewTimer(0.3, playFlash);
+end
+
+function GarrisonTalentButtonAnimationMixin:StopHighlightAnimation()
+	self:ClearFlashTimer();
+	self.HighlightFlash.Anim:Stop();
+	self.HighlightFlash:Hide();
+end
+
+function GarrisonTalentButtonAnimationMixin:IsPlayingHighlightAnimation()
+	return self.FlashTimer ~= nil or self.HighlightFlash.Anim:IsPlaying();
 end

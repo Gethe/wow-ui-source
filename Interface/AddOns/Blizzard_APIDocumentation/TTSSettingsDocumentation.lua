@@ -189,6 +189,20 @@ local TTSSettings =
 				{ Name = "voiceName", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldOverrideMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "language", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "overrideMessage", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

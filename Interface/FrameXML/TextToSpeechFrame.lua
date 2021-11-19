@@ -853,9 +853,14 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 	end
 
 	if TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 = ...;
+		local arg1, arg2 = ...;
 		local message = arg1;
+		local languageID = select(10, ...);
 		local name = Ambiguate(arg2 or "", "none");
+
+		if ( C_TTSSettings.ShouldOverrideMessage(languageID) ) then
+			message = UNKNOWN_LANG_TTS_MESSAGE;
+		end
 
 		local type = strsub(event, 10);
 		if ( chatTypesWithToken[type] ) then

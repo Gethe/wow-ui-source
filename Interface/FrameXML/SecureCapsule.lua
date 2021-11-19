@@ -155,6 +155,7 @@ retain("UnitSex");
 retain("GetURLIndexAndLoadURL");
 retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
+retain("Round");
 
 --For auth challenge
 take("C_AuthChallenge");

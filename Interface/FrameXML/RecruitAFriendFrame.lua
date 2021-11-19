@@ -13,9 +13,6 @@ function RecruitAFriendFrameMixin:OnLoad()
 	self.RecruitList.NoRecruitsDesc:SetText(RAF_NO_RECRUITS_DESC);
 	self.recruitScrollFrame = self.RecruitList.ScrollFrame;
 
-	self.RewardClaiming.MonthCount.Text:SetFontObjectsToTry(FriendsFont_Large, FriendsFont_Normal, FriendsFont_Small);
-	self.RewardClaiming.NextRewardName.Text:SetFontObjectsToTry(FriendsFont_Normal, FriendsFont_Small);
-
 	local function UpdateRecruitList()
 		if self.rafInfo then
 			self:UpdateRecruitList(self.rafInfo.recruits);

@@ -686,3 +686,51 @@ end
 function AuctionHouseUtil.CreateVirtualRowData(virtualEntryText, isSelectedVirtualEntry)
 	return { isVirtualEntry = true, virtualEntryText = virtualEntryText, isSelectedVirtualEntry = isSelectedVirtualEntry, };
 end
+
+local AuctionHouseErrorToErrorText = {
+	[Enum.AuctionHouseError.NotEnoughMoney] = ERR_NOT_ENOUGH_MONEY,
+	[Enum.AuctionHouseError.HigherBid] = ERR_AUCTION_HIGHER_BID,
+	[Enum.AuctionHouseError.BidIncrement] = ERR_AUCTION_BID_INCREMENT,
+	[Enum.AuctionHouseError.BidOwn] = ERR_AUCTION_BID_OWN,
+	[Enum.AuctionHouseError.ItemNotFound] = ERR_ITEM_NOT_FOUND,
+	[Enum.AuctionHouseError.RestrictedAccountTrial] = ERR_RESTRICTED_ACCOUNT_TRIAL,
+	[Enum.AuctionHouseError.HasRestriction] = ERR_HAS_RESTRICTION,
+	[Enum.AuctionHouseError.IsBusy] = ERR_AUCTION_HOUSE_BUSY,
+	[Enum.AuctionHouseError.Unavailable] = ERR_AUCTION_HOUSE_UNAVAILABLE,
+	[Enum.AuctionHouseError.ItemHasQuote] = ERR_AUCTION_ITEM_HAS_QUOTE,
+	[Enum.AuctionHouseError.DatabaseError] = ERR_AUCTION_DATABASE_ERROR,
+	[Enum.AuctionHouseError.MinBid] = ERR_AUCTION_MIN_BID,
+	[Enum.AuctionHouseError.NotEnoughItems] = ERR_AUCTION_ENOUGH_ITEMS,
+	[Enum.AuctionHouseError.RepairItem] = ERR_AUCTION_REPAIR_ITEM,
+	[Enum.AuctionHouseError.UsedCharges] = ERR_AUCTION_USED_CHARGES,
+	[Enum.AuctionHouseError.QuestItem] = ERR_AUCTION_QUEST_ITEM,
+	[Enum.AuctionHouseError.BoundItem] = ERR_AUCTION_BOUND_ITEM,
+	[Enum.AuctionHouseError.ConjuredItem] = ERR_AUCTION_CONJURED_ITEM,
+	[Enum.AuctionHouseError.LimitedDurationItem] = ERR_AUCTION_LIMITED_DURATION_ITEM,
+	[Enum.AuctionHouseError.IsBag] = ERR_AUCTION_BAG,
+	[Enum.AuctionHouseError.EquippedBag] = ERR_AUCTION_EQUIPPED_BAG,
+	[Enum.AuctionHouseError.WrappedItem] = ERR_AUCTION_WRAPPED_ITEM,
+	[Enum.AuctionHouseError.LootItem] = ERR_AUCTION_LOOT_ITEM,
+};
+
+function AuctionHouseUtil.GetErrorText(auctionHouseError)
+	return AuctionHouseErrorToErrorText[auctionHouseError] or "";
+end
+
+function AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatArg)
+	if auctionHouseNotification == Enum.AuctionHouseNotification.BidPlaced then
+		return ERR_AUCTION_BID_PLACED;
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionRemoved then
+		return ERR_AUCTION_REMOVED;
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionWon then
+		return ERR_AUCTION_WON_S:format(formatArg);
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionOutbid then
+		return ERR_AUCTION_OUTBID_S:format(formatArg);
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionSold then
+		return ERR_AUCTION_SOLD_S:format(formatArg);
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionExpired then
+		return ERR_AUCTION_EXPIRED_S:format(formatArg);
+	end
+
+	return "";
+end

@@ -5,14 +5,20 @@ local ChatConstants =
 		{
 			Name = "ChatChannelRuleset",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "None", Type = "ChatChannelRuleset", EnumValue = 0 },
 				{ Name = "Mentor", Type = "ChatChannelRuleset", EnumValue = 1 },
 				{ Name = "Disabled", Type = "ChatChannelRuleset", EnumValue = 2 },
+				{ Name = "ChromieTimeCataclysm", Type = "ChatChannelRuleset", EnumValue = 3 },
+				{ Name = "ChromieTimeBuringCrusade", Type = "ChatChannelRuleset", EnumValue = 4 },
+				{ Name = "ChromieTimeWrath", Type = "ChatChannelRuleset", EnumValue = 5 },
+				{ Name = "ChromieTimeMists", Type = "ChatChannelRuleset", EnumValue = 6 },
+				{ Name = "ChromieTimeWoD", Type = "ChatChannelRuleset", EnumValue = 7 },
+				{ Name = "ChromieTimeLegion", Type = "ChatChannelRuleset", EnumValue = 8 },
 			},
 		},
 		{
@@ -28,6 +34,18 @@ local ChatConstants =
 				{ Name = "PrivateParty", Type = "ChatChannelType", EnumValue = 2 },
 				{ Name = "PublicParty", Type = "ChatChannelType", EnumValue = 3 },
 				{ Name = "Communities", Type = "ChatChannelType", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "LanguageFlag",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "IsExotic", Type = "LanguageFlag", EnumValue = 1 },
+				{ Name = "HiddenFromPlayer", Type = "LanguageFlag", EnumValue = 2 },
 			},
 		},
 		{

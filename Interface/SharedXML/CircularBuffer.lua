@@ -81,7 +81,8 @@ function CircularBufferMixin:RemoveIf(predicateFunction, transformFunction)
 
 	transformFunction = transformFunction or PassThrough;
 	local elements = {};
-	for i, entry in self:EnumerateIndexedEntries() do
+	-- We want the new elements array to have entries in order from oldest to newest so we use a reverse iterator.  After we are done with removals, the headIndex will point to the last (newest) element.
+	for i, entry in self:ReverseEnumerateIndexedEntries() do
 		if not safesecurecall(predicateFunction, safesecurecall(transformFunction, entry)) then
 			elements[#elements + 1] = entry;
 		end
@@ -125,13 +126,28 @@ do
 		if currentIndex < self:GetNumElements() then
 			currentIndex = currentIndex + 1;
 
-			local elementIndex = self:CalculateElementIndexFromGlobalIndex(currentIndex);
+			local elementIndex = self:CalculateElementIndex(currentIndex);
 			return currentIndex, self.elements[elementIndex];
 		end
 	end
 
+	-- Returns elements from front to back
 	function CircularBufferMixin:EnumerateIndexedEntries()
 		return IteratorHelper, self, 0;
+	end
+
+	local function ReverseIteratorHelper(self, currentIndex)
+		if currentIndex > 1 then
+			currentIndex = currentIndex - 1;
+
+			local elementIndex = self:CalculateElementIndex(currentIndex);
+			return currentIndex, self.elements[elementIndex];
+		end
+	end
+
+	-- Returns elements from back to front
+	function CircularBufferMixin:ReverseEnumerateIndexedEntries()
+		return ReverseIteratorHelper, self, self:GetNumElements()+1;
 	end
 end
 
@@ -141,16 +157,26 @@ function CircularBufferMixin:OnLoad(maxElements)
     self:Clear();
 end
 
+-- index 1 is front
 function CircularBufferMixin:CalculateElementIndex(index)
 	local globalIndex = self.headIndex - index + 1;
     return self:CalculateElementIndexFromGlobalIndex(globalIndex);
 end
 
 function CircularBufferMixin:CalculateElementIndexFromGlobalIndex(globalIndex)
+	if(globalIndex == 0) then
+		return self:GetMaxNumElements();
+	end
+
+	-- Note that it is fine for globalIndex to be negative, because in lua a modulo operation on a negative number gives you a positive number.
 	return (globalIndex - 1) % self:GetMaxNumElements() + 1; -- 0 based modulo then adjusted for 1 based indexing
 end
 
 function CircularBufferMixin:ReplaceElements(elements)
-	self.headIndex = #elements % self.maxElements;
+	if #elements == 0 then
+		self.headIndex = 0;
+	else
+		self.headIndex = (#elements - 1) % self.maxElements + 1;
+	end
 	self.elements = elements;
 end

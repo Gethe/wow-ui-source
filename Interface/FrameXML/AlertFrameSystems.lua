@@ -861,15 +861,20 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 	ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 end
 
+-- Trees that aren't associated with a landing page
+local suppressedTreeIDs =
+{
+	474, -- 9.2 Cypher Talents tree
+};
 function GarrisonAlertFrame_OnClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
 	self:Hide();
-	if (not GarrisonLandingPage) then
-		Garrison_LoadUI();
-	end
-	if (self.garrisonType) then
+	if (self.garrisonType and not tContains(suppressedTreeIDs, self.treeID)) then
+		if (not GarrisonLandingPage) then
+			Garrison_LoadUI();
+		end
 		ShowGarrisonLandingPage(self.garrisonType);
 	end
 end
@@ -881,6 +886,7 @@ function GarrisonTalentAlertFrame_SetUp(frame, garrisonType, talent)
 	local toastTitle = GarrisonFollowerOptions[garrisonFollowerType].strings.TALENT_COMPLETE_TOAST_TITLE;
 	frame.Title:SetText(toastTitle);
 	frame.garrisonType = garrisonType;
+	frame.treeID = talent.treeID;
 	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_TOAST);
 end
 

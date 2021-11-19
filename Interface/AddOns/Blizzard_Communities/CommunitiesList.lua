@@ -645,9 +645,13 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 end
 
 function CommunitiesListEntryMixin:UpdateUnreadNotification()
-	local isNewInvitation = self.isInvitation and not DISPLAYED_COMMUNITIES_INVITATIONS[self.clubId];
-	local hasUnread = not self.isTicket and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId);
-	self.UnreadNotificationIcon:SetShown(isNewInvitation or hasUnread);
+	if C_SocialRestrictions.IsChatDisabled() then
+		self.UnreadNotificationIcon:SetShown(false);
+	else
+		local isNewInvitation = self.isInvitation and not DISPLAYED_COMMUNITIES_INVITATIONS[self.clubId];
+		local hasUnread = not self.isTicket and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId);
+		self.UnreadNotificationIcon:SetShown(isNewInvitation or hasUnread);
+	end
 end
 
 function CommunitiesListEntryMixin:CheckForDisabledReason(clubType)

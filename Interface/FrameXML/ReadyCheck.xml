@@ -12,7 +12,7 @@
 	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
 		<Size x="323" y="100"/>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="-10"/>
+			<Anchor point="TOP" x="0" y="-135"/>
 		</Anchors>
 		<Frames>
 			<Frame name="ReadyCheckListenerFrame" setAllPoints="true" hidden="true">

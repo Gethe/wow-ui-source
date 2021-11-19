@@ -19,6 +19,9 @@
 				<Texture parentKey="AlphaIconOverlay">
 					<Color a="1" r="0.0" g="0.0" b="0.0"/>
 				</Texture>
+				<Texture parentKey="DeemphasizeIconOverlay" hidden="true">
+					<Color a="0.5" r="0.0" g="0.0" b="0.0"/>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
@@ -103,6 +106,39 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="HighlightFlash" setAllPoints="true" hidden="false">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" alphaMode="ADD">
+							<Size x="1" y="1"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Square" atlas="orderhalltalents-choice-prereq-highlight-glow" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Square2" atlas="orderhalltalents-choice-prereq-highlight-glow" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha order="1" childKey="Icon" duration="0.8" fromAlpha="0" toAlpha="0.6" />
+						<Alpha order="1" childKey="Icon" duration="0.8" fromAlpha="0.6" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Square" duration="0.8" fromAlpha="0" toAlpha="1" />
+						<Alpha order="1" childKey="Square" duration="0.8" fromAlpha="1" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Square2" duration="0.8" fromAlpha="1" toAlpha="0" />
+						<Scale order="1" childKey="Square" duration="0.8" fromScaleX="1.1" toScaleX="1.1" fromScaleY="1.1" toScaleY="1.1" smoothing="NONE" />
+						<Scale order="1" childKey="Square2" duration="0.8" fromScaleX="1.5" toScaleX="1.1" fromScaleY="1.5" toScaleY="1.1" smoothing="OUT" />
+					</AnimationGroup>
+				</Animations>
+			</Frame>
 		</Frames>
 	</Frame>
 
@@ -115,7 +151,8 @@
 		</Layers>
 	</Frame>
 
-	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-background" useAtlasSize="true"/>
+	<Texture name="GarrisonTalentTrackTemplate" virtual="true" atlas="orderhalltalents-choice-track" useAtlasSize="true"/>
+	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-talent-middle" useAtlasSize="true"/>
 	<Texture name="GarrisonTalentArrowTemplate" virtual="true" atlas="orderhalltalents-choice-arrow-large" useAtlasSize="true" alphaMode="ADD">
 		<Animations>
 			<AnimationGroup parentKey="Pulse" looping="BOUNCE">

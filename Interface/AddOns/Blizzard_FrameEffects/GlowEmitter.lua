@@ -31,9 +31,15 @@ function GlowEmitterFactory:Attach(frame, target)
 	
 	frame:ClearAllPoints();
 
-	local offset = 12;
-	frame:SetPoint("LEFT", target, -offset, 0);
-	frame:SetPoint("RIGHT", target, offset, 0);
+	local offsetX = self.offsetXOverride and self.offsetXOverride or 12;
+	local offsetY = self.offsetYOverride and self.offsetYOverride or 0;
+	frame:SetPoint("LEFT", target, -offsetX, offsetY);
+	frame:SetPoint("RIGHT", target, offsetX, offsetY);
+end
+
+function GlowEmitterFactory:SetOffset(offsetX, offsetY)
+	self.offsetXOverride = offsetX;
+	self.offsetYOverride = offsetY;
 end
 
 GlowEmitterFactory:OnLoad();

@@ -1,15 +1,26 @@
 PVPRowMixin = CreateFromMixins(TableBuilderRowMixin);
 
-function PVPRowMixin:Init(useAlternateColor)
+function PVPRowMixin:SetUseAlternateColor(useAlternateColor)
 	self.useAlternateColor = useAlternateColor;
 end
 
-function PVPRowMixin:Populate(rowData, dataIndex)
-	local faction = rowData.faction;
-	local color = PVPMatchUtil.GetRowColor(faction, self.useAlternateColor);
+function PVPRowMixin:SetBackgroundColor(backgroundColor)
+	self.backgroundColor = backgroundColor;
+end
+
+local function ApplyColorToBackgrounds(backgrounds, color)
 	local r, g, b = color:GetRGB();
-	for k, background in pairs(self.Backgrounds) do
+	for k, background in pairs(backgrounds) do
 		background:SetVertexColor(r, g, b);
+	end
+end
+
+function PVPRowMixin:Populate(rowData, dataIndex)
+	if self.backgroundColor then
+		ApplyColorToBackgrounds(self.Backgrounds, self.backgroundColor);
+	else
+		local color = PVPMatchUtil.GetRowColor(rowData.faction, self.useAlternateColor);
+		ApplyColorToBackgrounds(self.Backgrounds, color);
 	end
 end
 
@@ -211,6 +222,51 @@ function PVPCellNameMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+PVPSoloShuffleCellNameMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function PVPSoloShuffleCellNameMixin:Init()
+	self.text:SetJustifyH("LEFT");
+end
+
+local tinyHealerIcon = CreateAtlasMarkup("roleicon-tiny-healer");
+
+function PVPSoloShuffleCellNameMixin:Populate(rowData, dataIndex)
+	local name = rowData.name;
+	local text = self.text;
+
+	
+	local LFG_ROLE_FLAG_HEALER = 4;
+	if rowData.roleAssigned == LFG_ROLE_FLAG_HEALER then
+		text:SetText(name.." "..tinyHealerIcon);
+	else
+		text:SetText(name);
+	end
+
+	local color;
+	if IsPlayerGuid(rowData.guid) then
+		color = WHITE_FONT_COLOR;
+	else
+		color = PVPMatchStyle.PurpleColor;
+	end
+
+	text:SetVertexColor(color:GetRGB());
+end
+
+function PVPSoloShuffleCellNameMixin:OnEnter()
+	local tooltipOffset = 0 - self.text:GetWidth();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", tooltipOffset, 0);
+
+	local className = self.rowData.className or "";
+	local raceName = self.rowData.raceName or "";
+	GameTooltip_AddNormalLine(GameTooltip, self.rowData.name);
+	GameTooltip_AddColoredLine(GameTooltip, raceName.." "..className, WHITE_FONT_COLOR, true);
+	GameTooltip:Show();
+end
+
+function PVPSoloShuffleCellNameMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
 PVPCellStatMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPCellStatMixin:Init(dataProviderKey, useAlternateColor)
@@ -277,7 +333,6 @@ end
 function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local iconPadding = 2;
 	local textPadding = 15;
-	local categories = PVPMatchUtil.GetOptionalCategories();
 	
 	tableBuilder:Reset();
 	tableBuilder:SetDataProvider(C_PvP.GetScoreInfo);
@@ -297,39 +352,53 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", NAME, "LEFT", "name");
 	local fillCoefficient = 1.0;
 	local namePadding = 4;
-	column:ConstructCells("BUTTON", "PVPCellNameTemplate", useAlternateColor);
+	
+	local brawlInfo = C_PvP.GetActiveBrawlInfo();
+	local soloShuffleBrawlID = 130;
+	if brawlInfo and brawlInfo.brawlID == soloShuffleBrawlID then
+		column:ConstructCells("BUTTON", "PVPSoloShuffleCellNameTemplate");
+	else
+		column:ConstructCells("BUTTON", "PVPCellNameTemplate", useAlternateColor);
+	end
 	column:SetFillConstraints(fillCoefficient, namePadding);
 
-	column = tableBuilder:AddColumn();
-	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_KILLING_BLOWS, "CENTER", "kills", KILLING_BLOW_TOOLTIP);
-	column:ConstrainToHeader(textPadding);
-	column:ConstructCells("FRAME", "PVPCellStringTemplate", "killingBlows", useAlternateColor);
+	if C_PvP.CanDisplayKillingBlows() then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_KILLING_BLOWS, "CENTER", "kills", KILLING_BLOW_TOOLTIP);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("FRAME", "PVPCellStringTemplate", "killingBlows", useAlternateColor);
+	end
 	
-	if categories.honorableKills then
+	if C_PvP.CanDisplayHonorableKills() then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HONORABLE_KILLS, "CENTER", "hk", HONORABLE_KILLS_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "honorableKills", useAlternateColor);
 	end
 	 
-	if categories.deaths then
+	if  C_PvP.CanDisplayDeaths() then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", DEATHS, "CENTER", "deaths", DEATHS_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "deaths", useAlternateColor);
 	end
-	
+
 	local isAbbreviated = true;
 	local hasTooltip = true;
-	column = tableBuilder:AddColumn();
-	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_DAMAGE_DONE, "CENTER", "damage", DAMAGE_DONE_TOOLTIP);
-	column:ConstrainToHeader(textPadding);
-	column:ConstructCells("FRAME", "PVPCellStringTemplate", "damageDone", useAlternateColor, isAbbreviated, hasTooltip);
 
-	column = tableBuilder:AddColumn();
-	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HEALING_DONE, "CENTER", "healing", HEALING_DONE_TOOLTIP);
-	column:ConstrainToHeader(textPadding);
-	column:ConstructCells("FRAME", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
+	if C_PvP.CanDisplayDamage() then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_DAMAGE_DONE, "CENTER", "damage", DAMAGE_DONE_TOOLTIP);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("FRAME", "PVPCellStringTemplate", "damageDone", useAlternateColor, isAbbreviated, hasTooltip);
+	end
+
+	if C_PvP.CanDisplayHealing() then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HEALING_DONE, "CENTER", "healing", HEALING_DONE_TOOLTIP);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("FRAME", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
+	end
 
 	local statColumns = C_PvP.GetMatchPVPStatColumns();
 	table.sort(statColumns, function(lhs,rhs)
@@ -346,21 +415,34 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		end
 	end
 	
-	if categories.ratingPre then
+	local ratingPre = false;
+	local ratingPost = false;
+	local ratingChange = false;
+	if C_PvP.DoesMatchOutcomeAffectRating() then
+		if PVPMatchUtil.IsActiveMatchComplete() then
+			-- Skirmish is considered rated for matchmaking reasons.
+			ratingChange = not IsArenaSkirmish();
+			ratingPost = true;
+		else
+			ratingPre = true;
+		end
+	end
+
+	if ratingPre then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_RATING, "CENTER", "bgratingPre", BATTLEGROUND_RATING);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "rating", useAlternateColor);
 	end
 	
-	if categories.ratingPost then
+	if ratingPost then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_NEW_RATING, "CENTER", "bgratingPost", BATTLEGROUND_NEW_RATING);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPNewRatingTemplate", useAlternateColor);
 	end
 
-	if categories.ratingChange then
+	if ratingChange then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_RATING_CHANGE, "CENTER", "bgratingChange", RATING_CHANGE_TOOLTIP);
 		column:ConstrainToHeader(textPadding);

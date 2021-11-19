@@ -393,13 +393,14 @@ function HorizontalFullStoreCardMixin:SetStyle(entryInfo)
 	self.Description:ClearAllPoints();
 
 	if not self.ProductName.SetFontObjectsToTry then
-		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
+		SecureMixin(self.ProductName, AutoScalingFontStringMixin);
 	end
 	self.ProductName:SetWidth(535);
 	self.ProductName:SetMaxLines(1);
 	self.ProductName:SetPoint("CENTER", 0, -63);
 	self.ProductName:SetJustifyH("CENTER");
-	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
+	self.ProductName:SetFontObject("Game30Font");
+	self.ProductName:SetMinLineHeight(18);
 	self.ProductName:SetShadowOffset(1, -1);
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 
@@ -452,13 +453,14 @@ function HorizontalFullStoreCardWithNydusLinkMixin:SetStyle(entryInfo)
 	self.Description:ClearAllPoints();
 
 	if not self.ProductName.SetFontObjectsToTry then
-		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
+		SecureMixin(self.ProductName, AutoScalingFontStringMixin);
 	end
 	self.ProductName:SetWidth(535);
 	self.ProductName:SetMaxLines(1);
 	self.ProductName:SetPoint("CENTER", 0, -63);
 	self.ProductName:SetJustifyH("CENTER");
-	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
+	self.ProductName:SetFontObject("Game30Font");
+	self.ProductName:SetMinLineHeight(18);
 	self.ProductName:SetShadowOffset(1, -1);
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 
@@ -504,13 +506,14 @@ function VerticalFullStoreCardMixin:SetStyle(entryInfo)
 	self.Description:ClearAllPoints();
 
 	if not self.ProductName.SetFontObjectsToTry then
-		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
+		SecureMixin(self.ProductName, AutoScalingFontStringMixin);
 	end
 	self.ProductName:SetWidth(300);
 	self.ProductName:SetMaxLines(1);
 	self.ProductName:SetPoint("TOPLEFT", self, "TOP", -83, -70);
 	self.ProductName:SetJustifyH("LEFT");
-	self.ProductName:SetFontObjectsToTry("GameFontNormalWTF2", "Game30Font", "GameFontNormalHuge3");
+	self.ProductName:SetFontObject("GameFontNormalWTF2");
+	self.ProductName:SetMinLineHeight(25);
 
 	self.CurrentPrice:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -28);
 

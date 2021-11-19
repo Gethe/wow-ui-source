@@ -430,6 +430,7 @@ function ItemUpgradeButtonMixin:OnClick()
 		texture = upgradeInfo.iconID,
 		name = upgradeInfo.name,
 		color = {upgradeInfo.itemQualityColor:GetRGBA()},
+		link = C_ItemUpgrade.GetItemHyperlink(),
 		itemFrameOnEnter = StaticPopupItemOnEnter,
 	};
 

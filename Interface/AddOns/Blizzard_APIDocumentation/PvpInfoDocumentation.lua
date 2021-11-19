@@ -7,6 +7,15 @@ local PvpInfo =
 	Functions =
 	{
 		{
+			Name = "CanDisplayDamage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanDisplayDeaths",
 			Type = "Function",
 
@@ -16,7 +25,25 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "CanDisplayHealing",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanDisplayHonorableKills",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canDisplay", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanDisplayKillingBlows",
 			Type = "Function",
 
 			Returns =
@@ -211,6 +238,15 @@ local PvpInfo =
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 				{ Name = "hasWon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCustomVictoryStatID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "statID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -484,21 +520,12 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "GetSpecialEventDetails",
+			Name = "GetSpecialEventBrawlInfo",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "info", Type = "SpecialEventDetails", Nilable = true },
-			},
-		},
-		{
-			Name = "GetSpecialEventInfo",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
+				{ Name = "brawlInfo", Type = "PvpBrawlInfo", Nilable = true },
 			},
 		},
 		{
@@ -693,6 +720,11 @@ local PvpInfo =
 		{
 			Name = "JoinBrawl",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "isSpecialBrawl", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "RequestCrowdControlSpell",
@@ -1051,13 +1083,15 @@ local PvpInfo =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "brawlID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "canQueue", Type = "bool", Nilable = false },
-				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = false },
+				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = true },
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -1134,6 +1168,7 @@ local PvpInfo =
 				{ Name = "mmrChange", Type = "number", Nilable = false },
 				{ Name = "talentSpec", Type = "string", Nilable = false },
 				{ Name = "honorLevel", Type = "number", Nilable = false },
+				{ Name = "roleAssigned", Type = "number", Nilable = false },
 				{ Name = "stats", Type = "table", InnerType = "PVPStatInfo", Nilable = false },
 			},
 		},
@@ -1186,18 +1221,6 @@ local PvpInfo =
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SpecialEventDetails",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "shortDescription", Type = "string", Nilable = false },
-				{ Name = "longDescription", Type = "string", Nilable = false },
-				{ Name = "questID", Type = "number", Nilable = true },
-				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 	},

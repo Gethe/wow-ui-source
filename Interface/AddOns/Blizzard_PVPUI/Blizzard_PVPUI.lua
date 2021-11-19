@@ -633,6 +633,7 @@ function HonorFrame_UpdateQueueButtons()
 			canQueue = HonorFrame.BonusFrame.selectedButton.canQueue;
 			arenaID = HonorFrame.BonusFrame.selectedButton.arenaID;
 			isBrawl = HonorFrame.BonusFrame.selectedButton.isBrawl;
+			isSpecialBrawl = HonorFrame.BonusFrame.selectedButton.isSpecialBrawl;
 		end
 	end
 
@@ -654,9 +655,9 @@ function HonorFrame_UpdateQueueButtons()
 		end
 	end
 
-	if isBrawl and not canQueue then
+	if (isBrawl or isSpecialBrawl) and not canQueue then
 		if IsInGroup(LE_PARTY_CATEGORY_HOME) then
-			local brawlInfo = C_PvP.GetAvailableBrawlInfo();
+			local brawlInfo = isSpecialBrawl and C_PvP.GetSpecialEventBrawlInfo() or C_PvP.GetAvailableBrawlInfo();
 			if brawlInfo then
 				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(GetMaxLevelForPlayerExpansion());
 			end
@@ -664,6 +665,16 @@ function HonorFrame_UpdateQueueButtons()
 			disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
 		end
 	end
+
+	if isSpecialBrawl and canQueue then 
+		if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then 
+			local brawlInfo = C_PvP.GetSpecialEventBrawlInfo(); 
+			if(brawlInfo) then 
+				canQueue = false; 
+				disabledReason = SOLO_BRAWL_CANT_QUEUE; 
+			end		
+		end		
+	end		
 
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
@@ -709,6 +720,8 @@ function HonorFrame_Queue()
 			JoinSingleLFG(LE_LFG_CATEGORY_WORLDPVP, HonorFrame.BonusFrame.selectedButton.queueID);
 		elseif (HonorFrame.BonusFrame.selectedButton.isBrawl) then
 			C_PvP.JoinBrawl();
+		elseif (HonorFrame.BonusFrame.selectedButton.isSpecialBrawl) then 
+			C_PvP.JoinBrawl(true);
 		else
 			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID);
 		end
@@ -854,12 +867,10 @@ BONUS_BUTTON_TOOLTIPS = {
 			GameTooltip:SetPvpBrawl();
 		end,
 	},
-	SpecialEvent = {
+	SpecialEventBrawl = {
 		func = function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetText(PVP_SPECIAL_EVENT_BUTTON_TT_TITLE, 1, 1, 1);
-			GameTooltip:AddLine(PVP_SPECIAL_EVENT_BUTTON_TT_DESC, nil, nil, nil, true);
-			GameTooltip:Show();
+			GameTooltip:SetSpecialPvpBrawl();
 		end,
 	}
 }
@@ -931,6 +942,7 @@ function HonorFrameBonusFrame_Update()
 		HonorFrame.BonusFrame.Arena1Button,
 		HonorFrame.BonusFrame.RandomEpicBGButton,
 		HonorFrame.BonusFrame.BrawlButton,
+		HonorFrame.BonusFrame.BrawlButton2, 
 	};
 
 	-- random bg
@@ -1012,23 +1024,26 @@ function HonorFrameBonusFrame_Update()
 	end
 
 	do
-		-- special event
-		local info = C_PvP.GetSpecialEventInfo();
-		local details = C_PvP.GetSpecialEventDetails();
-		local button = HonorFrame.BonusFrame.SpecialEventButton;
-		local isEventAvailable = info and details and details.isActive;
-		if isEventAvailable then
-			button.canQueue = info.canQueue;
-			button.bgID = info.bgID;
-			button.Title:SetText(details.name);
-			button.Reward.questID = details.questID; 
-			button.Reward:Init(details.questID);
-			local textColor = button.canQueue and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
-			button.Title:SetTextColor(textColor:GetRGB());
-			button:SetEnabled(button.canQueue);
-			tinsert(buttons, button);
+		local button = buttons[5];
+		local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
+		button.isSpecialBrawl = true;
+		if (brawlInfo) then 
+			local expansionMaxLevel = GetMaxLevelForPlayerExpansion();
+			local meetsMaxLevel = PartyUtil.GetMinLevel() == expansionMaxLevel;
+			button.canQueue = brawlInfo and brawlInfo.canQueue and meetsMaxLevel;
+			HonorFrameBonusFrame_SetButtonState(button, button.canQueue, expansionMaxLevel);
+
+			if (brawlInfo and brawlInfo.canQueue) then
+				button.Title:SetText(brawlInfo.name);
+
+				PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetBrawlRewards(brawlInfo.brawlType));
+				button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
+			else
+				button.Title:SetText(BRAWL_CLOSED);
+				button.Reward:Hide();
+			end
 		end
-		button:SetShown(isEventAvailable);
+		button:SetShown(brawlInfo);
 	end
 
 	local buttonContainerHeight = HonorFrame.BonusFrame:GetHeight();
@@ -1340,10 +1355,16 @@ function ConquestFrame_UpdateJoinButton()
 			if ( neededSize == groupSize ) then
 				local validGroup = true;
 				local teamIndex = ConquestFrame.selectedButton.teamIndex;
+				-- Rated activities require a max level party/raid
+				local maxLevel = GetMaxLevelForLatestExpansion();
 				for i = 1, loopMax do
 					if ( not UnitIsConnected(token..i) ) then
 						validGroup = false;
-						button.tooltip = PVP_NO_QUEUE_DISCONNECTED_GROUP
+						button.tooltip = PVP_NO_QUEUE_DISCONNECTED_GROUP;
+						break;
+					elseif ( UnitLevel(token..i) < maxLevel ) then
+						validGroup = false;
+						button.tooltip = PVP_NO_QUEUE_GROUP;
 						break;
 					end
 				end

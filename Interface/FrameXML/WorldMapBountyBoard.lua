@@ -5,8 +5,6 @@ function WorldMapBountyBoardMixin:OnLoad()
 	self.bountyObjectivePool = CreateFramePool("FRAME", self, "WorldMapBountyBoardObjectiveTemplate");
 	self.bountyTabPool = CreateFramePool("BUTTON", self, "WorldMapBountyBoardTabTemplate");
 
-	self.BountyName:SetFontObjectsToTry(Game13Font_o1, Game12Font_o1, Game11Font_o1);
-
 	self.minimumTabsToDisplay = 3;
 	self.maps = {};
 	self.highestMapInfo = {};

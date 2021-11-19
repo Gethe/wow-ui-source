@@ -260,6 +260,7 @@ CombatPanelOptions = {
 	doNotFlashLowHealthWarning = { text = "FLASH_LOW_HEALTH_WARNING" },
 	lossOfControl = { text = "LOSS_OF_CONTROL" },
     enableFloatingCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
+	enableMouseoverCast = { text = "ENABLE_MOUSEOVER_CAST" },
 }
 
 -- [[ Self Cast key dropdown ]] --
@@ -442,6 +443,105 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
 	info.tooltipTitle = NONE_KEY;
 	info.tooltipText = OPTION_TOOLTIP_FOCUS_CAST_NONE_KEY;
 	UIDropDownMenu_AddButton(info);
+end
+
+-- [[ Mouseover Cast Controls ]]
+EnableMouseoverCastCheckboxMixin = {};
+
+function EnableMouseoverCastCheckboxMixin:OnLoad()
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "enableMouseoverCast";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+end
+
+MouseoverCastKeyDropDownMixin = {};
+
+function MouseoverCastKeyDropDownMixin:Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = NONE_KEY;
+	info.func = function(info) self:SetValue(info.value) end;
+	info.value = "NONE";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NONE_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_NONE_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = ALT_KEY;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_SHIFT_KEY;
+	UIDropDownMenu_AddButton(info);
+end
+
+function MouseoverCastKeyDropDownMixin:OnLoad()
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+	BlizzardOptionsPanel_SetupDependentControl(self:GetParent().EnableMouseoverCastCheckbox, self);
+	self.defaultValue = "NONE";
+	self.oldValue = GetModifiedClick("MOUSEOVERCAST");
+	self.value = self.oldValue or self.defaultValue;
+	self.tooltip = _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..self.value.."_KEY"];
+
+	UIDropDownMenu_SetWidth(self, 90);
+	UIDropDownMenu_Initialize(self, GenerateClosure(self.Initialize, self));
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+end
+
+function MouseoverCastKeyDropDownMixin:SetValue(value)
+	self.value = value;
+	UIDropDownMenu_SetSelectedValue(self, value);
+	SetModifiedClick("MOUSEOVERCAST", value);
+	SaveBindings(GetCurrentBindingSet());
+	self.tooltip = _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..value.."_KEY"];
+end
+
+function MouseoverCastKeyDropDownMixin:GetValue()
+	return UIDropDownMenu_GetSelectedValue(self);
+end
+
+function MouseoverCastKeyDropDownMixin:RefreshValue()
+	UIDropDownMenu_Initialize(self, GenerateClosure(self.Initialize, self));
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+end
+
+function MouseoverCastKeyDropDownMixin:OnEnter()
+	if ( not self.isDisabled ) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+	end
 end
 
 function InterfaceOptionsCombatPanel_OnLoad(self)
@@ -1345,7 +1445,7 @@ function InterfaceOptionsLargerNamePlate_OnShow(self)
 	if C_Commentator.IsSpectating() then
 		BlizzardOptionsPanel_CheckButton_Disable(self);
 	else
-		BlizzardOptionsPanel_CheckButton_Enable(self);
+		BlizzardOptionsPanel_CheckButton_Enable(self, true);
 	end
 end
 
@@ -1500,7 +1600,7 @@ end
 
 
 
--- Namplate Motion Dropdown ---
+-- Nameplate Motion Dropdown ---
 
 function InterfaceOptionsNameplateMotionDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then

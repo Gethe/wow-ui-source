@@ -133,6 +133,8 @@ function SpellBookFrame_OnLoad(self)
 
 	ButtonFrameTemplate_HideButtonBar(SpellBookFrame);
 	ButtonFrameTemplate_HideAttic(SpellBookFrame);
+
+	EventRegistry:RegisterCallback("ClickBindingFrame.UpdateFrames", SpellBookFrame_UpdateSpells, self);
 end
 
 function SpellBookFrame_OnEvent(self, event, ...)
@@ -197,6 +199,10 @@ function SpellBookFrame_OnShow(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterUnitEvent("PLAYER_GUILD_UPDATE", "player");
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
+
+	if InClickBindingMode() then
+		ClickBindingFrame:SetFocusedFrame(self);
+	end
 end
 
 function SpellBookFrame_Update()
@@ -469,6 +475,10 @@ function SpellBookFrame_OnHide(self)
 	self:UnregisterEvent("SPELLS_CHANGED");	
 	self:UnregisterEvent("PLAYER_GUILD_UPDATE");
 	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+
+	if InClickBindingMode() then
+		ClickBindingFrame:ClearFocusedFrame();
+	end
 end
 
 function SpellButton_OnLoad(self)
@@ -558,6 +568,13 @@ end
 function SpellButton_OnEnter(self)
 	local slot = SpellBook_GetSpellBookSlot(self);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	if ( InClickBindingMode() and not self.canClickBind ) then
+		GameTooltip:AddLine(CLICK_BINDING_NOT_AVAILABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip:Show();
+		return;
+	end
+
 	if ( GameTooltip:SetSpellBookItem(slot, SpellBookFrame.bookType) ) then
 		self.UpdateTooltip = SpellButton_OnEnter;
 	else
@@ -599,6 +616,15 @@ end
 function SpellButton_OnClick(self, button)
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
+		return;
+	end
+
+	if InClickBindingMode() then
+		if ClickBindingFrame:HasNewSlot() and self.canClickBind then
+			local slot = SpellBook_GetSpellBookSlot(self);
+			local _, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Spell, spellID);
+		end
 		return;
 	end
 
@@ -785,6 +811,7 @@ function SpellButton_UpdateButton(self)
 		autoCastableTexture:Hide();
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
+		self.canClickBind = false;
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self:SetChecked(false);
 		slotFrame:Hide();
@@ -803,6 +830,8 @@ function SpellButton_UpdateButton(self)
 		self.TextBackground:SetDesaturated(isOffSpec);
 		self.TextBackground2:SetDesaturated(isOffSpec);
 		self.EmptySlot:SetDesaturated(isOffSpec);
+		self.ClickBindingIconCover:Hide();
+		self.ClickBindingHighlight:Hide();
 		if self.SpellHighlightTexture then
 			self.SpellHighlightTexture:Hide();
 		end
@@ -1037,6 +1066,27 @@ function SpellButton_UpdateButton(self)
 		self:SetChecked(false);
 	else
 		SpellButton_UpdateSelection(self);
+	end
+
+	self.ClickBindingIconCover:Hide();
+	self.ClickBindingHighlight:Hide();
+	self.SpellName:SetShadowColor(0, 0, 0, 1);
+	self.canClickBind = false;
+	if (InClickBindingMode()) then
+		self.SpellHighlightTexture:Hide();
+		local spellBindable = spellID and C_ClickBindings.CanSpellBeClickBound(spellID) or false;
+		local canBind = spellBindable and (not isOffSpec) and (not isDisabled);
+		if (canBind) then
+			self.canClickBind = true;
+			if (ClickBindingFrame:HasEmptySlot()) then
+				self.ClickBindingHighlight:Show();
+			end
+		else
+			iconTexture:SetDesaturation(0.5);
+			self.ClickBindingIconCover:Show();
+			self.SpellName:SetTextColor(DISABLED_FONT_COLOR);
+			self.SpellName:SetShadowColor(0, 0, 0, 0);
+		end
 	end
 
 	if GameTooltip:GetOwner() == self then

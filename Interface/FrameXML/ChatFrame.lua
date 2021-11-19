@@ -5638,6 +5638,10 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 	end
 end
 
+function Chat_AddSystemMessage(messageText)
+	local info = ChatTypeInfo["SYSTEM"];
+	DEFAULT_CHAT_FRAME:AddMessage(messageText, info.r, info.g, info.b, info.id);
+end
 
 --------------------------------------------------------------------------------
 -- Social share link functions

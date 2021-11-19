@@ -76,7 +76,11 @@
 							</Anchors>
 						</Texture>
 
-						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true"/>
+						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</StatusBar>

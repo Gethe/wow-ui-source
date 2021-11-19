@@ -69,21 +69,30 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="FirstLine" mixin="ShrinkUntilTruncateFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
+						<FontString parentKey="FirstLine" inherits="Game58Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="40" type="number"/>
+							</KeyValues>
 							<Size x="410" y="60"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-142"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="ThirdLine" mixin="ShrinkUntilTruncateFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
+						<FontString parentKey="ThirdLine" inherits="Game69Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="40" type="number"/>
+							</KeyValues>
 							<Size x="480" y="70"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-256"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="SecondLine" mixin="ShrinkUntilTruncateFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
+						<FontString parentKey="SecondLine" inherits="Game52Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="40" type="number"/>
+							</KeyValues>
 							<Size x="360" y="54"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.FirstLine" relativePoint="BOTTOM" x="0" y="-1"/>
@@ -91,7 +100,10 @@
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="ButtonText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_BUTTON">
+						<FontString parentKey="ButtonText" inherits="SystemFont_Med3" mixin="AutoScalingFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_BUTTON">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="9" type="number"/>
+							</KeyValues>
 							<Size x="140" y="16"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="-154" y="68"/>
@@ -108,21 +120,30 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="TitleLine" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE">
+						<FontString parentKey="TitleLine" inherits="Game40Font_Shadow2" mixin="AutoScalingFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="32" type="number"/>
+							</KeyValues>
 							<Size x="355" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-82"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="TitleSubText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE_SUBTEXT">
+						<FontString parentKey="TitleSubText" inherits="Game17Font_Shadow" mixin="AutoScalingFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_TITLE_SUBTEXT">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="11" type="number"/>
+							</KeyValues>
 							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="-152" y="-122"/>
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="ButtonText" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_BUTTON">
+						<FontString parentKey="ButtonText" inherits="SystemFont_Med3" mixin="AutoScalingFontStringMixin" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_UPGRADE_BUTTON">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="9" type="number"/>
+							</KeyValues>
 							<Size x="140" y="16"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="-152" y="91"/>

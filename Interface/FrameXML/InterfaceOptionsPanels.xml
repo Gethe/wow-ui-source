@@ -288,9 +288,36 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
+      <CheckButton name="$parentEnableMouseoverCast" parentKey="EnableMouseoverCastCheckbox" inherits="InterfaceOptionsCheckButtonTemplate" mixin="EnableMouseoverCastCheckboxMixin">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="TOPRIGHT" x="310" y="0"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad method="OnLoad"/>
+        </Scripts>
+      </CheckButton>
+      <Frame name="$parentMouseoverCastKeyDropDown" parentKey="MouseoverCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" mixin="MouseoverCastKeyDropDownMixin">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.EnableMouseoverCastCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString parentKey="Label" inherits="GameFontHighlight" text="MOUSEOVER_CAST_KEY">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="16" y="3"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad method="OnLoad"/>
+          <OnEnter method="OnEnter"/>
+          <OnLeave function="GameTooltip_Hide"/>
+        </Scripts>
+      </Frame>
       <Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="TOPRIGHT" x="310" y="-20"/>
+          <Anchor point="TOPLEFT" relativeKey="$parent.MouseoverCastKeyDropDown" relativePoint="BOTTOMLEFT" x="-13" y="-30"/>
         </Anchors>
         <Layers>
           <Layer level="BACKGROUND">
@@ -323,11 +350,7 @@
       </Frame>
       <Frame name="$parentSelfCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentFocusCastKeyDropDown" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="0" y="-30"/>
-            </Offset>
-          </Anchor>
+          <Anchor point="TOPLEFT" relativeTo="$parentFocusCastKeyDropDown" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
         </Anchors>
         <Layers>
           <Layer level="BACKGROUND">
@@ -374,6 +397,19 @@
           </OnLoad>
         </Scripts>
       </CheckButton>
+      <Button parentKey="clickCastingButton" inherits="UIPanelButtonTemplate" text="CLICK_BIND_MODE">
+				<Size x="165" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAutoSelfCast" relativePoint="LEFT" x="0" y="-40"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						InterfaceOptionsFrameOkay_OnClick();
+						HideUIPanel(GameMenuFrame);
+						ToggleClickBindingFrame();
+					</OnClick>
+				</Scripts>
+			</Button>
       <!-- loss of control -->
       <CheckButton name="$parentLossOfControl" inherits="InterfaceOptionsCheckButtonTemplate">
         <Anchors>

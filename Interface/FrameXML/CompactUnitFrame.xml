@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CompactUnitFrame.lua"/>
-	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false">
+	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="AnyUp">
 		<Size>
 			<AbsDimension x="17" y="17"/>
 		</Size>
@@ -59,7 +59,6 @@
 					parent.debuffFrames = {};
 				end
 				tinsert(parent.debuffFrames, self);
-				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
@@ -91,7 +90,6 @@
 					parent.buffFrames = {};
 				end
 				tinsert(parent.buffFrames, self);
-				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then

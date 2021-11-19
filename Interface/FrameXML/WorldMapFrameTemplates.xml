@@ -87,7 +87,10 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="BountyName" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+				<FontString parentKey="BountyName" inherits="Game13Font_o1" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="11" type="number"/>
+					</KeyValues>
 					<Size x="170" />
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" y="17" />

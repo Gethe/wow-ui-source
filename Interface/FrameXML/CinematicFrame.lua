@@ -29,8 +29,6 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_YELL");
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-
-	CinematicFrame.Subtitle1:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlight", "GameFontHighlightSmall");
 end
 
 function CinematicFrame_OnShow(self)
