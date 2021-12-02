@@ -52,7 +52,7 @@ function GetClassAtlas(className)
 end
 
 function GetGenderAtlases(sexID)
-	local genderName = (sexID == Enum.Unitsex.Male) and "male" or "female";
+	local genderName = (sexID == Enum.UnitSex.Male) and "male" or "female";
 	local baseAtlas = ("charactercreate-gendericon-%s"):format(genderName);
 	local selectedAtlas = ("%s-selected"):format(baseAtlas);
 	return baseAtlas, selectedAtlas;

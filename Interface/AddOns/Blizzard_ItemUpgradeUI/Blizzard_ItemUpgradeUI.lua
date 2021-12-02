@@ -488,18 +488,18 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		ItemUpgradeFrame.Ring:SetVertexColor(itemQualityColor:GetRGB());
 	end
 
-	local itemLevelFormatString;
-	if isUpgrade then
-		itemLevelFormatString = isPvpItemLevel and ITEM_UPGRADE_PVP_ITEM_LEVEL_BONUS_STAT_FORMAT or ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT;
+	local itemLevelUpgraded = isUpgrade and (upgradeLevelInfo.itemLevelIncrement > 0);
+	if itemLevelUpgraded then
+		local itemLevelFormatString = isPvpItemLevel and ITEM_UPGRADE_PVP_ITEM_LEVEL_BONUS_STAT_FORMAT or ITEM_UPGRADE_ITEM_LEVEL_BONUS_STAT_FORMAT;
+		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel + upgradeLevelInfo.itemLevelIncrement, upgradeLevelInfo.itemLevelIncrement), false);
 	else
-		itemLevelFormatString = isPvpItemLevel and ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT or ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT;
+		local itemLevelFormatString = isPvpItemLevel and ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT or ITEM_UPGRADE_ITEM_LEVEL_STAT_FORMAT;
+		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel), false);
 	end
 
 	if isUpgrade then
-		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel + upgradeLevelInfo.itemLevelIncrement, upgradeLevelInfo.itemLevelIncrement), false);
 		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade + numUpgradeLevels, upgradeInfo.maxUpgrade), false);
 	else
-		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel), false);
 		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade), false);
 	end
 

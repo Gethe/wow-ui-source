@@ -88,6 +88,7 @@ function PetBattleFrame_OnLoad(self)
 
 	-- Other events:
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 end
 
 function PetBattleFrame_OnEvent(self, event, ...)
@@ -120,7 +121,7 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_Remove(self);
 		StaticPopup_Hide("PET_BATTLE_FORFEIT");
 		StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY");
-	elseif ( event == "UPDATE_BINDINGS" ) then
+	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	elseif ( event == "PET_BATTLE_XP_CHANGED" ) then
 		PetBattleFrame_UpdateXpBar(self);
@@ -168,7 +169,7 @@ function PetBattleFrame_PetSelectionFrameUpdateVisible(showFrame)
 	local selectionFrame = PetBattleFrame.BottomFrame.PetSelectionFrame;
 	local battleState = C_PetBattles.GetBattleState();
 	local selectedActionType = C_PetBattles.GetSelectedAction();
-	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType ==  Enum.BattlePetAction.None ) ) and ( battleState == Enum.PetBattleState.WaitingPreBattle ) or ( battleState == Enum.PetBattleState.WaitingForFrontPets );
+	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType ==  Enum.BattlePetAction.None ) ) and ( battleState == Enum.PetbattleState.WaitingPreBattle ) or ( battleState == Enum.PetbattleState.WaitingForFrontPets );
 	if ( selectionFrame:IsShown() and ( not mustSwap ) ) then
 		PetBattlePetSelectionFrame_Hide(selectionFrame);
 	elseif (showFrame) then
@@ -463,9 +464,9 @@ local TIMER_BAR_TEXCOORD_RIGHT = 0.89453125;
 local TIMER_BAR_TEXCOORD_TOP = 0.00195313;
 local TIMER_BAR_TEXCOORD_BOTTOM = 0.03515625;
 function PetBattleFrameTurnTimer_OnUpdate(self, elapsed)
-	if ( ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.WaitingPreBattle ) and
-		 ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.RoundInProgress ) and
-		 ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.WaitingForFrontPets ) ) then
+	if ( ( C_PetBattles.GetBattleState() ~= Enum.PetbattleState.WaitingPreBattle ) and
+		 ( C_PetBattles.GetBattleState() ~= Enum.PetbattleState.RoundInProgress ) and
+		 ( C_PetBattles.GetBattleState() ~= Enum.PetbattleState.WaitingForFrontPets ) ) then
 		self.Bar:SetAlpha(0);
 		self.TimerText:SetText("");
 	elseif ( self.turnExpires ) then

@@ -3,23 +3,6 @@ local PetBattleConstants =
 	Tables =
 	{
 		{
-			Name = "PetBattleState",
-			Type = "Enumeration",
-			NumValues = 7,
-			MinValue = 0,
-			MaxValue = 6,
-			Fields =
-			{
-				{ Name = "Created", Type = "PetBattleState", EnumValue = 0 },
-				{ Name = "WaitingPreBattle", Type = "PetBattleState", EnumValue = 1 },
-				{ Name = "RoundInProgress", Type = "PetBattleState", EnumValue = 2 },
-				{ Name = "WaitingForFrontPets", Type = "PetBattleState", EnumValue = 3 },
-				{ Name = "CreatedFailed", Type = "PetBattleState", EnumValue = 4 },
-				{ Name = "FinalRound", Type = "PetBattleState", EnumValue = 5 },
-				{ Name = "Finished", Type = "PetBattleState", EnumValue = 6 },
-			},
-		},
-		{
 			Name = "PetbattleAuraStateFlags",
 			Type = "Enumeration",
 			NumValues = 7,

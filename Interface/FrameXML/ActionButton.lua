@@ -203,6 +203,7 @@ function ActionBarButtonEventsFrameMixin:OnLoad()
 	self:RegisterEvent("ACTIONBAR_HIDEGRID");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_UPDATE");
@@ -774,7 +775,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		if ( not KeybindFrames_InQuickKeybindMode() ) then
 			self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 		end
-	elseif ( event == "UPDATE_BINDINGS" ) then
+	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		self:UpdateHotkeys(self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;

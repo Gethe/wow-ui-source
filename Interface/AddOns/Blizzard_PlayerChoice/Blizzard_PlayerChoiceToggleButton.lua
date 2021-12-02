@@ -131,11 +131,13 @@ function CypherPlayerChoiceToggleButtonMixin:OnLoad()
 	self.shownModeButtonInfo = 
 	{
 		normalAtlas = "UI-Frame-%s-HideButton",
+		highlightAtlas = "UI-Frame-%s-HideButtonHighlight",
 	};
 
 	self.hiddenModeButtonInfo = 
 	{
 		normalAtlas = "UI-Frame-%s-PendingButton",
+		highlightAtlas = "UI-Frame-%s-PendingButtonHighlight",
 	};
 end
 

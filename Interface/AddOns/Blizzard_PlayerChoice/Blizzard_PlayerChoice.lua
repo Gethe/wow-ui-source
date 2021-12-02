@@ -46,7 +46,7 @@ local customTextureKitInfo = {
 		showOptionsOnly = true,
 		frameYOffset = 95,
 		timerXOffset = 0,
-		timerYOffset = -235,
+		timerYOffset = -5,
 	},
 
 	Oribos = {

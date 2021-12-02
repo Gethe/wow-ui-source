@@ -426,7 +426,7 @@ function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, se
 	self.isAlteredForm = isAlteredForm;
 
 	local sexString;
-	if selectedSexID == Enum.Unitsex.Male then
+	if selectedSexID == Enum.UnitSex.Male then
 		sexString = "male";
 	else
 		sexString = "female";
@@ -512,7 +512,7 @@ function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
 
 	self:ClearTooltipLines();
 
-	if sexID == Enum.Unitsex.Male then
+	if sexID == Enum.UnitSex.Male then
 		self:AddTooltipLine(MALE, HIGHLIGHT_FONT_COLOR);
 	else
 		self:AddTooltipLine(FEMALE, HIGHLIGHT_FONT_COLOR);

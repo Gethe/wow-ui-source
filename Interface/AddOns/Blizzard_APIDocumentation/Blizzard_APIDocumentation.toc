@@ -197,6 +197,7 @@ CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
+ImGuiTypesSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemLocationSharedDocumentation.lua
@@ -218,6 +219,7 @@ TimeDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TransmogSharedDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
+UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 VectorSharedDocumentation.lua
 VehicleConstantsDocumentation.lua

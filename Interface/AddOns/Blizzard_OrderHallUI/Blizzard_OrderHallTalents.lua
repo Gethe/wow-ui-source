@@ -91,19 +91,19 @@ CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] =
 	spendHelpTipFlag = LE_FRAME_TUTORIAL_TORGHAST_SPEND_TOWER_KNOWLEDGE,
 };
 
+local CYPHER_TALENT_TREE_ID = 474;
 do
-	local CYPHER_TALENT_TREE_ID = 474;
-
-	local spacingTop = 105;
+	local spacingTop = 168;
 	local buttonSize = 40;
-	local spacingX = 100;
+	local spacingX = 130;
 	local spacingY = 12;
-	local spacingHorizontal = 144;
+	local spacingHorizontal = 190;
+	local titleSpacing = 62;
+	local subtitleSpacing = 20;
 
 	local stringXStart = (spacingHorizontal / 2) + (buttonSize / 2);
-	local stringYTop = -(spacingTop - 20);
-	local numTopTalents = 4;
-	local stringYBottom = stringYTop - (numTopTalents + 1) * (spacingY + buttonSize);
+	local stringTitleY = -(spacingTop - titleSpacing);
+	local stringSubtitleY = stringTitleY - subtitleSpacing;
 
 	CustomTalentTreeLayoutOptions[CYPHER_TALENT_TREE_ID] = 
 	{
@@ -112,7 +112,7 @@ do
 			[Enum.GarrTalentType.Standard] = { size = buttonSize, spacingX = spacingX, spacingY = spacingY },
 		},
 		spacingTop = spacingTop,
-		spacingBottom = 36,
+		spacingBottom = 68,
 		spacingHorizontal = spacingHorizontal,
 		minimumWidth = 336,
 		canHaveBackButton = false,
@@ -124,76 +124,76 @@ do
 		fontStrings =
 		{
 			{
-				text = CYPHER,
+				text = METRIAL,
 				layer = "OVERLAY",
-				template = "GameFontHighlight",
+				template = "GameFontHighlightMedium",
 				point = "CENTER",
 				relativePoint = "TOPLEFT",
 				xOfs = stringXStart,
-				yOfs = stringYTop,
+				yOfs = stringTitleY,
 			},
 			{
-				text = METRIAL,
+				text = METRIAL_TREE_DESCRIPTION,
 				layer = "OVERLAY",
-				template = "GameFontHighlight",
+				template = "GameFontNormalSmall2",
 				point = "CENTER",
 				relativePoint = "TOPLEFT",
-				xOfs = stringXStart + (buttonSize + spacingX) * 1,
-				yOfs = stringYTop,
-			},
-			{
-				text = ALTONIAN,
-				layer = "OVERLAY",
-				template = "GameFontHighlight",
-				point = "CENTER",
-				relativePoint = "TOPLEFT",
-				xOfs = stringXStart + (buttonSize + spacingX) * 2,
-				yOfs = stringYTop,
+				xOfs = stringXStart,
+				yOfs = stringSubtitleY,
 			},
 			{
 				text = AEALIC,
 				layer = "OVERLAY",
-				template = "GameFontHighlight",
+				template = "GameFontHighlightMedium",
 				point = "CENTER",
 				relativePoint = "TOPLEFT",
-				xOfs = stringXStart + (buttonSize + spacingX) * 3,
-				yOfs = stringYTop,
+				xOfs = stringXStart + (buttonSize + spacingX) * 1,
+				yOfs = stringTitleY,
 			},
 			{
-				text = TREBELIM,
+				text = AEALIC_TREE_DESCRIPTION,
 				layer = "OVERLAY",
-				template = "GameFontHighlight",
+				template = "GameFontNormalSmall2",
 				point = "CENTER",
 				relativePoint = "TOPLEFT",
-				xOfs = stringXStart + (buttonSize + spacingX) * 4,
-				yOfs = stringYTop,
-			},
-			{
-				text = SOPRANIAN,
-				layer = "OVERLAY",
-				template = "GameFontHighlight",
-				point = "CENTER",
-				relativePoint = "TOPLEFT",
-				xOfs = stringXStart + (buttonSize + spacingX) * 2,
-				yOfs = stringYBottom,
+				xOfs = stringXStart + (buttonSize + spacingX) * 1,
+				yOfs = stringSubtitleY,
 			},
 			{
 				text = DEALIC,
 				layer = "OVERLAY",
-				template = "GameFontHighlight",
+				template = "GameFontHighlightMedium",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 2,
+				yOfs = stringTitleY,
+			},
+			{
+				text = DEALIC_TREE_DESCRIPTION,
+				layer = "OVERLAY",
+				template = "GameFontNormalSmall2",
+				point = "CENTER",
+				relativePoint = "TOPLEFT",
+				xOfs = stringXStart + (buttonSize + spacingX) * 2,
+				yOfs = stringSubtitleY,
+			},
+			{
+				text = TREBALIM,
+				layer = "OVERLAY",
+				template = "GameFontHighlightMedium",
 				point = "CENTER",
 				relativePoint = "TOPLEFT",
 				xOfs = stringXStart + (buttonSize + spacingX) * 3,
-				yOfs = stringYBottom,
+				yOfs = stringTitleY,
 			},
 			{
-				text = BASSALIM,
+				text = TREBALIM_TREE_DESCRIPTION,
 				layer = "OVERLAY",
-				template = "GameFontHighlight",
+				template = "GameFontNormalSmall2",
 				point = "CENTER",
 				relativePoint = "TOPLEFT",
-				xOfs = stringXStart + (buttonSize + spacingX) * 4,
-				yOfs = stringYBottom,
+				xOfs = stringXStart + (buttonSize + spacingX) * 3,
+				yOfs = stringSubtitleY,
 			},
 		}
 	};
@@ -418,6 +418,8 @@ function OrderHallTalentFrameMixin:OnShow()
 
 			HelpTip:Show(self, helpTipInfo, self.Currency);
 		end
+
+		self.CypherEquipmentLevel:SetShown(garrTalentTreeID == CYPHER_TALENT_TREE_ID);
 	end
 end
 
@@ -761,7 +763,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				if isAvailable or shouldDisplayAsAvailable then
 					if currentTierResearchableTalentCount < currentTierTotalTalentCount and talentTreeType == Enum.GarrTalentTreeType.Tiers then
 						talentFrame.AlphaIconOverlay:Show();
-						talentFrame.AlphaIconOverlay:SetAlpha(0.2);
+						talentFrame.AlphaIconOverlay:SetAlpha(0);
 					else
 						borderAtlas = BORDER_ATLAS_AVAILABLE;
 					end
@@ -772,7 +774,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 					talentFrame.Icon:SetDesaturated(isZeroRank);
 					talentFrame.wasDesaturated = isZeroRank;
 					talentFrame.AlphaIconOverlay:Show();
-					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
+					talentFrame.AlphaIconOverlay:SetAlpha(0.55);
 				end
 			end
 			talentFrame:SetBorder(borderAtlas);
@@ -940,14 +942,10 @@ function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect, custo
 			if prereqID == talent.id then
 				self.Icon:SetDesaturated(false);
 				self:StartHighlightAnimation();
-			elseif talentID ~= talent.id then
-				self.Icon:SetDesaturated(true);
-				self.DeemphasizeIconOverlay:Show();
 			end
 		else
 			self.Icon:SetDesaturated(self.wasDesaturated or false);
 			self:StopHighlightAnimation();
-			self.DeemphasizeIconOverlay:Hide();
 		end
 	end
 	EventRegistry:RegisterCallback("GarrisonTalentButtonMixin.HighlightTalentPrereq", HighlightTalentPrereqCallback, self);
@@ -1124,7 +1122,6 @@ function GarrisonTalentButtonMixin:OnFramePoolReset()
 	self.Cooldown:Hide();
 	self.Border:Show();
 	self.AlphaIconOverlay:Hide();
-	self.DeemphasizeIconOverlay:Hide();
 	self.CooldownTimerBackground:Hide();
 	self.Icon:SetDesaturated(false);
 	self.wasDesaturated = false;
@@ -1280,4 +1277,44 @@ end
 
 function GarrisonTalentButtonAnimationMixin:IsPlayingHighlightAnimation()
 	return self.FlashTimer ~= nil or self.HighlightFlash.Anim:IsPlaying();
+end
+
+
+CypherEquipmentLevelMixin = {};
+
+local CypherEquipmentLevelEvents =
+{
+	"GARRISON_TALENT_COMPLETE",
+	"GARRISON_TALENT_UPDATE",
+};
+
+function CypherEquipmentLevelMixin:UpdateText()
+	local cypherLevel = C_Garrison.GetCurrentCypherEquipmentLevel();
+	local maxLevel = C_Garrison.GetMaxCypherEquipmentLevel();
+	self.Text:SetFormattedText(CYPHER_EQUIPMENT_LEVEL_FORMAT, cypherLevel, maxLevel);
+end
+
+function CypherEquipmentLevelMixin:OnShow()
+	self:UpdateText();
+	FrameUtil.RegisterFrameForEvents(self, CypherEquipmentLevelEvents)
+end
+
+function CypherEquipmentLevelMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, CypherEquipmentLevelEvents)
+end
+
+function CypherEquipmentLevelMixin:OnEvent(event, ...)
+	self:UpdateText();
+end
+
+function CypherEquipmentLevelMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddHighlightLine(GameTooltip, CYPHER_EQUIPMENT_LEVEL);
+	local toNextLevel = C_Garrison.GetCyphersToNextEquipmentLevel();
+	if toNextLevel ~= nil then
+		GameTooltip_AddNormalLine(GameTooltip, CYPHER_EQUIPMENT_LEVEL_TOOLTIP:format(toNextLevel), true);
+	else
+		GameTooltip_AddNormalLine(GameTooltip, CYPHER_EQUIPMENT_MAX_LEVEL_TOOLTIP, true);
+	end
+	GameTooltip:Show();
 end

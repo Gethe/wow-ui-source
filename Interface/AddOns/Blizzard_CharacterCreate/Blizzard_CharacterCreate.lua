@@ -856,7 +856,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self.layoutIndex = layoutIndex;
 
 	local sexString;
-	if selectedSexID == Enum.Unitsex.Male then
+	if selectedSexID == Enum.UnitSex.Male then
 		sexString = "male";
 	else
 		sexString = "female";
@@ -987,43 +987,43 @@ end
 
 local function GetDruidCatModelInfo(race, sex)
 	if race == "NightElf" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 29405, spellVisualKitID = 131927 };
 		else
 			return { displayID = 892, spellVisualKitID = 131927 };
 		end
 	elseif race == "Tauren" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 29410, spellVisualKitID = 134580 };
 		else
 			return { displayID = 29412, spellVisualKitID = 134580 };
 		end
 	elseif race == "Worgen" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 33664, spellVisualKitID = 134578 };
 		else
 			return { displayID = 33661, spellVisualKitID = 134578 };
 		end
 	elseif race == "Troll" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 33665, spellVisualKitID = 134582 };
 		else
 			return { displayID = 33666, spellVisualKitID = 134582 };
 		end
 	elseif race == "HighmountainTauren" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 80597, spellVisualKitID = 134581 };
 		else
 			return { displayID = 80598, spellVisualKitID = 134581 };
 		end
 	elseif race == "ZandalariTroll" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 85195, spellVisualKitID = 134583 };
 		else
 			return { displayID = 85194, spellVisualKitID = 134583 };
 		end
 	elseif race == "KulTiran" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 86100, spellVisualKitID = 134579 };
 		else
 			return { displayID = 86524, spellVisualKitID = 134579 };
@@ -1035,13 +1035,13 @@ local function GetDHMetaModelInfo(race, sex)
 	local metaFormScale = 0.7;
 
 	if race == "NightElf" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 63247, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		else
 			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		end
 	elseif race == "BloodElf" then
-		if sex == Enum.Unitsex.Female then
+		if sex == Enum.UnitSex.Female then
 			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		else
 			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
@@ -1447,7 +1447,7 @@ function CharacterCreateRaceAndClassMixin:UpdateSexButtons(releaseButtons)
 		self.buttonPool:ReleaseAllByTemplate("CharCustomizeSexButtonTemplate");
 	end
 
-	local sexes = {Enum.Unitsex.Male, Enum.Unitsex.Female};
+	local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 	for index, sexID in ipairs(sexes) do
 		local button = self.buttonPool:Acquire("CharCustomizeSexButtonTemplate");
 		button:SetSex(sexID, self.selectedSexID, index);

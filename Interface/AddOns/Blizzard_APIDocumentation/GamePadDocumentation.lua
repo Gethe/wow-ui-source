@@ -67,6 +67,10 @@ local GamePad =
 			},
 		},
 		{
+			Name = "ClearLedColor",
+			Type = "Function",
+		},
+		{
 			Name = "DeleteConfig",
 			Type = "Function",
 
@@ -154,6 +158,15 @@ local GamePad =
 			},
 		},
 		{
+			Name = "GetLedColor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 
@@ -169,6 +182,15 @@ local GamePad =
 			Arguments =
 			{
 				{ Name = "config", Type = "GamePadConfig", Nilable = false },
+			},
+		},
+		{
+			Name = "SetLedColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -203,6 +225,15 @@ local GamePad =
 
 	Events =
 	{
+		{
+			Name = "GamePadActiveChanged",
+			Type = "Event",
+			LiteralName = "GAME_PAD_ACTIVE_CHANGED",
+			Payload =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "GamePadConfigsChanged",
 			Type = "Event",

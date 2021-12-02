@@ -21,11 +21,13 @@ function PlayerChoiceTimeRemainingMixin:TryShow()
 
 	local remainingTime = C_PlayerChoice.GetRemainingTime();
 	if remainingTime ~= nil then
-		if kitInfo.timerXOffset and kitInfo.timerYOffset then
-			self:SetPoint("CENTER", kitInfo.timerXOffset, kitInfo.timerYOffset);
+		local toggleButton = PlayerChoiceToggle_GetActiveToggle();
+		if toggleButton and kitInfo.timerXOffset and kitInfo.timerYOffset then
+			self:ClearAllPoints();
+			self:SetPoint("TOP", toggleButton, "BOTTOM", kitInfo.timerXOffset, kitInfo.timerYOffset);
 		end
 		self:Show();
-		self:SetScript("OnUpdate", GenerateClosure(self.OnUpdate, self));
+		self:SetScript("OnUpdate", self.OnUpdate);
 	else
 		self:HideTimer();
 	end

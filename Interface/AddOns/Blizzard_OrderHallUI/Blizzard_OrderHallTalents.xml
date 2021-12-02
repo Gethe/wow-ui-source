@@ -19,9 +19,6 @@
 				<Texture parentKey="AlphaIconOverlay">
 					<Color a="1" r="0.0" g="0.0" b="0.0"/>
 				</Texture>
-				<Texture parentKey="DeemphasizeIconOverlay" hidden="true">
-					<Color a="0.5" r="0.0" g="0.0" b="0.0"/>
-				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
@@ -296,6 +293,24 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="CypherEquipmentLevel" hidden="true" mixin="CypherEquipmentLevelMixin">
+				<Size x="200" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="60" y="-31"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormal"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

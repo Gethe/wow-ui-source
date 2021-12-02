@@ -90,6 +90,7 @@ GlueContextMenu.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\FrameStack.lua
+..\SharedXML\AnimationTemplates.xml
 
 ##New stuff!!!
 GlueAddons.lua
