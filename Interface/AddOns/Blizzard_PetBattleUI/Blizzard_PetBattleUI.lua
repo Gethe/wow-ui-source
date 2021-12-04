@@ -88,6 +88,7 @@ function PetBattleFrame_OnLoad(self)
 
 	-- Other events:
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 end
 
 function PetBattleFrame_OnEvent(self, event, ...)
@@ -120,7 +121,7 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_Remove(self);
 		StaticPopup_Hide("PET_BATTLE_FORFEIT");
 		StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY");
-	elseif ( event == "UPDATE_BINDINGS" ) then
+	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	elseif ( event == "PET_BATTLE_XP_CHANGED" ) then
 		PetBattleFrame_UpdateXpBar(self);

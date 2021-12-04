@@ -50,6 +50,7 @@ function AudioOptionsVoicePanel_OnShow(self)
 	VideoOptionsPanel_OnShow(self);
 	AudioOptionsVoicePanel_InitializeCommunicationModeUI(self);
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_ERROR");
 	self:RegisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
 end
@@ -64,13 +65,14 @@ function AudioOptionsVoicePanel_OnHide(self)
 	self:UnregisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
 	self:UnregisterEvent("VOICE_CHAT_ERROR");
 	self:UnregisterEvent("UPDATE_BINDINGS");
+	self:UnregisterEvent("GAME_PAD_ACTIVE_CHANGED");
 end
 
 function AudioOptionsVoicePanel_OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		OptionsFrame_AddCategory(VideoOptionsFrame, self);
 		self:UnregisterEvent(event);
-	elseif event == "UPDATE_BINDINGS" then
+	elseif event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" then
 		AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
 	elseif event == "VOICE_CHAT_ERROR" or event == "VOICE_CHAT_CONNECTION_SUCCESS" then
 		AudioOptionsVoicePanel_Refresh(self);

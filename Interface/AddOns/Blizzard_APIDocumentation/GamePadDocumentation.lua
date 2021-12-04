@@ -204,6 +204,15 @@ local GamePad =
 	Events =
 	{
 		{
+			Name = "GamePadActiveChanged",
+			Type = "Event",
+			LiteralName = "GAME_PAD_ACTIVE_CHANGED",
+			Payload =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GamePadConfigsChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_CONFIGS_CHANGED",

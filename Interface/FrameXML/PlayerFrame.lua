@@ -363,10 +363,10 @@ function PlayerFrame_IsAnimatedOut(self)
 end
 
 function PlayerFrame_UpdateArt(self)
-	if (self.inSeat) then
-		if (self.animFinished and self:IsUserPlaced() and self.inSequence) then
+	if ( self.inSeat ) then
+		if ( self:IsUserPlaced() ) then
 			PlayerFrame_SequenceFinished(PlayerFrame);
-		else
+		elseif ( self.animFinished and self.inSequence ) then
 			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
 		end
 		if ( UnitHasVehiclePlayerFrameUI("player") ) then
@@ -382,6 +382,7 @@ function PlayerFrame_UpdateArt(self)
 end
 
 function PlayerFrame_SequenceFinished(self)
+	self.isAnimatedOut = false;
 	self.inSequence = false;
 	PetFrame_Update(PetFrame);
 end

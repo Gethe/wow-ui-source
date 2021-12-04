@@ -339,6 +339,7 @@ function PetActionButton_OnLoad(self)
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	_G[self:GetName().."Cooldown"]:ClearAllPoints();
 	_G[self:GetName().."Cooldown"]:SetWidth(33);
 	_G[self:GetName().."Cooldown"]:SetHeight(33);
@@ -347,7 +348,7 @@ function PetActionButton_OnLoad(self)
 end
 
 function PetActionButton_OnEvent(self, event, ...)
-	if ( event == "UPDATE_BINDINGS" ) then
+	if ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		PetActionButton_SetHotkeys(self);
 		return;
 	end
