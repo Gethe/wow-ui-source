@@ -122,6 +122,8 @@ local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor
 		return GREEN_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Gold then
 		return CHALLENGE_MODE_TOAST_TITLE_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Black then
+		return BLACK_FONT_COLOR;
 	else
 		return overrideNormalFontColor or NORMAL_FONT_COLOR;
 	end
@@ -359,7 +361,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	local hasBorderTexture = self.Border:IsShown(); 
 
 	self.StackCount:ClearAllPoints();
-	if (hasAmountBorderTexture) then  
+	if hasAmountBorderTexture then  
 		self.StackCount:SetPoint("CENTER", self.AmountBorder);
 	else 
 		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
@@ -372,7 +374,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
-	if (not hasBorderTexture) then 
+	if not hasBorderTexture then 
 		self.Border:SetAtlas("UI-Frame-IconBorder", false); 
 	end 
 
@@ -411,7 +413,8 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.AmountBorder:Hide();
 	end
 
-	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff or spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
+	local showBorder = (spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
+	self.Border:SetShown(showBorder);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
 	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
@@ -441,6 +444,31 @@ function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
 	self:SetMouseClickEnabled(false);
 end
 
+UIWidgetBaseStatusBarPartitionTemplateMixin = {};
+
+local partitionTextureKitString = "%s-BorderTick";
+local partitionFullTextureKitString = "%s-BorderTick-Full";
+
+function UIWidgetBaseStatusBarPartitionTemplateMixin:Setup(partitionValue, textureKit)
+	self.value = partitionValue;
+	self.textureKit = textureKit;
+	self.emptyAtlasName = partitionTextureKitString:format(textureKit);
+	self.fullAtlasName = partitionFullTextureKitString:format(textureKit);
+	self.hasFullAtlas = (C_Texture.GetAtlasInfo(self.fullAtlasName) ~= nil);
+end
+
+function UIWidgetBaseStatusBarPartitionTemplateMixin:UpdateForBarValue(barValue)
+	local useAtlasSize = true;
+
+	if not self.hasFullAtlas or barValue < self.value then
+		self.Tex:SetAtlas(self.emptyAtlasName, useAtlasSize);
+	else
+		self.Tex:SetAtlas(self.fullAtlasName, useAtlasSize);
+	end
+
+	self:SetSize(self.Tex:GetWidth(), self.Tex:GetHeight());
+end
+
 UIWidgetBaseStatusBarTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
 function UIWidgetBaseStatusBarTemplateMixin:SanitizeAndSetStatusBarValues(barInfo)
@@ -462,8 +490,14 @@ function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo)
 
 	self:SanitizeAndSetStatusBarValues(barInfo);
 	self:SetMinMaxValues(self.barMin, self.barMax);
+	self:InitPartitions(barInfo.partitionValues, barInfo.frameTextureKit);
 
 	self.barValueTextType = barInfo.barValueTextType;
+	self.barTextEnabledState = barInfo.barTextEnabledState;
+	self.barTextFontType = barInfo.barTextFontType;
+	self.barTextSizeType = barInfo.barTextSizeType;
+	self.barTextHasStyleSettings = self.barTextEnabledState and self.barTextFontType and self.barTextSizeType;
+
 	self.overrideBarText = barInfo.overrideBarText;
 	self.overrideBarTextShownType = barInfo.overrideBarTextShownType;
 
@@ -496,6 +530,7 @@ end
 function UIWidgetBaseStatusBarTemplateMixin:DisplayBarValue()
 	self:SetValue(self.displayedValue);
 	self:SetBarText(math.ceil(self.displayedValue));
+	self:UpdatePartitions(self.displayedValue);
 
 	if self.Spark then
 		local showSpark = self.displayedValue > self.barMin and self.displayedValue < self.barMax;
@@ -543,23 +578,21 @@ function UIWidgetBaseStatusBarTemplateMixin:OnLeave()
 end
 
 function UIWidgetBaseStatusBarTemplateMixin:UpdateLabel()
-	if self.overrideBarText then
-		local showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.Always);
-		if not showOverrideBarText then
-			if self.mouseOver then
-				showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyOnMouseover);
-			else
-				showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyNotOnMouseover);
-			end
-		end
-
-		if showOverrideBarText then
-			self.Label:SetText(self.overrideBarText);
+	local showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.Always);
+	if not showOverrideBarText then
+		if self.mouseOver then
+			showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyOnMouseover);
 		else
-			self.Label:SetText(self.barText);
+			showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyNotOnMouseover);
 		end
+	end
+
+	local shownText = showOverrideBarText and self.overrideBarText or self.barText;
+
+	if self.barTextHasStyleSettings then
+		self.Label:Setup(shownText, self.barTextFontType, self.barTextSizeType, self.barTextEnabledState);
 	else
-		self.Label:SetText(self.barText);
+		self.Label:SetText(shownText);
 	end
 end
 
@@ -567,6 +600,54 @@ function UIWidgetBaseStatusBarTemplateMixin:SetMouse(disableMouse)
 	local useMouse = ((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse;
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:InitPartitions(partitionValues, textureKit)
+	if self.partitionPool then
+		self.partitionPool:ReleaseAll();
+	elseif partitionValues then
+		self.partitionPool = CreateFramePool("Frame", self, "UIWidgetBaseStatusBarPartitionTemplate");
+	end
+
+	if not partitionValues or (#partitionValues == 0) then
+		return;
+	end
+
+	local paritionAtlasName = partitionTextureKitString:format(textureKit);
+	local partitionAtlasInfo =  C_Texture.GetAtlasInfo(paritionAtlasName);
+
+	if not partitionAtlasInfo then
+		return;
+	end
+
+	local barWidth = self:GetWidth();
+
+	for _, partitionValue in ipairs(partitionValues) do
+		partitionValue = Clamp(partitionValue, self.barMin, self.barMax);
+
+		local partitionFrame = self.partitionPool:Acquire();
+		partitionFrame:Setup(partitionValue, textureKit);
+
+		local partitionPercent = ClampedPercentageBetween(partitionValue, self.barMin, self.barMax);
+		local xOffset = barWidth * partitionPercent;
+
+		partitionFrame:SetPoint("CENTER", self:GetStatusBarTexture(), "LEFT", xOffset, 0);
+		partitionFrame:Show();
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:UpdatePartitions(barValue)
+	if self.partitionPool then
+		for partitionFrame in self.partitionPool:EnumerateActive() do
+			partitionFrame:UpdateForBarValue(barValue);
+		end
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:OnReset()
+	if self.partitionPool then
+		self.partitionPool:ReleaseAll();
+	end
 end
 
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
@@ -962,6 +1043,7 @@ UIWidgetBaseTextMixin = CreateFromMixins(UIWidgetBaseEnabledFrameMixin);
 local normalFonts =
 {
 	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Med1",
+	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Med3",
 	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Large",
 	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Huge2",
 	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Huge4",
@@ -970,6 +1052,7 @@ local normalFonts =
 local shadowFonts =
 {
 	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1",
+	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Shadow_Med3",
 	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large",
 	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2",
 	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4",
@@ -978,6 +1061,7 @@ local shadowFonts =
 local outlineFonts =
 {
 	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1_Outline",
+	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Shadow_Med3_Outline",
 	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large_Outline",
 	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2_Outline",
 	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4_Outline",

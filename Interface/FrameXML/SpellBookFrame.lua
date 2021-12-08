@@ -1084,7 +1084,8 @@ function SpellButton_UpdateButton(self)
 		else
 			iconTexture:SetDesaturation(0.5);
 			self.ClickBindingIconCover:Show();
-			self.SpellName:SetTextColor(DISABLED_FONT_COLOR);
+			self.SpellName:SetTextColor(0.25, 0.12, 0);
+			self.SpellSubName:SetTextColor(0.25, 0.12, 0);
 			self.SpellName:SetShadowColor(0, 0, 0, 0);
 		end
 	end

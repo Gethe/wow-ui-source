@@ -104,6 +104,7 @@ function GlueParent_OnEvent(self, event, ...)
 		local buttonID = ...;
 		if not IsGlobalMouseEventHandled(buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+			SelectionPopouts:HandleGlobalMouseEvent(buttonID, event);
 		end
 	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
 		GlueParent_SetScreen("kioskmodesplash");

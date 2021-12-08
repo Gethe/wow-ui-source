@@ -33,13 +33,6 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</FontString>
-					</Layer>
 					<Layer level="BORDER">
 						<Texture parentKey="GlowLeft" alphaMode="ADD" useAtlasSize="true">
 							<Anchors>
@@ -81,6 +74,12 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="UIWidgetBaseTextMixin">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</StatusBar>

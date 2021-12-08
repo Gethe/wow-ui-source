@@ -141,6 +141,19 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="UIWidgetBaseStatusBarPartitionTemplate" mixin="UIWidgetBaseStatusBarPartitionTemplateMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Tex">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<StatusBar name="UIWidgetBaseStatusBarTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStatusBarTemplateMixin" virtual="true"/>
 	
 	<Frame name="UIWidgetBaseStateIconTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStateIconTemplateMixin" virtual="true">

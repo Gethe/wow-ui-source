@@ -482,7 +482,7 @@ end
 
 function CharCustomizeCategoryButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-	CharCustomizeFrame:SetSelectedCatgory(self.categoryData);
+	CharCustomizeFrame:SetSelectedCategory(self.categoryData);
 end
 
 CharCustomizeShapeshiftFormButtonMixin = CreateFromMixins(CharCustomizeCategoryButtonMixin);
@@ -631,19 +631,16 @@ CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWit
 
 function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
+	SelectionPopoutWithButtonsAndLabelMixin.OnLoad(self);
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
 	tooltip:SetOwner(self, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", self.SelectionPopoutButton, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
+	tooltip:SetPoint("BOTTOMRIGHT", self.Button, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:OnPopoutShown()
-	CharCustomizeFrame:HidePopouts(self);
-end
-
-function CharCustomizeOptionSelectionPopoutMixin:OnEntryClick(entryData)
-	CharCustomizeFrame:OnOptionPopoutEntryClick(self, entryData);
+function CharCustomizeOptionSelectionPopoutMixin:OnEntrySelected(entryData)
+	CharCustomizeFrame:OnOptionPopoutEntrySelected(self, entryData);
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
@@ -712,11 +709,231 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	end
 end
 
+CharCustomizeSelectionPopoutDetailsMixin = {};
+
+function CharCustomizeSelectionPopoutDetailsMixin:GetTooltipText()
+	if self.SelectionName:IsShown() and self.SelectionName:IsTruncated() then
+		return self.name;
+	end
+
+	return nil;
+end
+
+function CharCustomizeSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
+	local width = defaultWidth;
+
+	if self.ColorSwatch1:IsShown() or self.ColorSwatch2:IsShown() then
+		if multipleColumns then
+			width = self.SelectionNumber:GetWidth() + self.ColorSwatch2:GetWidth() + 18;
+		end
+	elseif self.SelectionName:IsShown() then
+		if multipleColumns then
+			width = 108;
+		end
+	else
+		if multipleColumns then
+			width = 42;
+		end
+	end
+
+	self:SetWidth(Round(width));
+end
+
+local function GetNormalSelectionTextFontColor(selectionData, isSelected)
+	if isSelected then
+		return NORMAL_FONT_COLOR;
+	else
+		return DISABLED_FONT_COLOR;
+	end
+end
+
+local eligibleChoiceColor = CreateColor(.808, 0.808, 0.808);
+local ineligibleChoiceColor = CreateColor(.337, 0.337, 0.337);
+
+local function GetFailedReqSelectionTextFontColor(selectionData, isSelected)
+	if isSelected then
+		return NORMAL_FONT_COLOR;
+	elseif selectionData.ineligibleChoice then
+		return ineligibleChoiceColor;
+	else
+		return eligibleChoiceColor;
+	end
+end
+
+function CharCustomizeSelectionPopoutDetailsMixin:GetFontColors(selectionData, isSelected, hasAFailedReq)
+	if self.selectable then
+		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
+		local fontColor = fontColorFunction(selectionData, isSelected);
+		local showAsNew = (selectionData.isNew and self.selectable);
+		if showAsNew then
+			return fontColor, HIGHLIGHT_FONT_COLOR;
+		else
+			return fontColor, fontColor;
+		end
+	else
+		return NORMAL_FONT_COLOR, NORMAL_FONT_COLOR;
+	end
+end
+
+function CharCustomizeSelectionPopoutDetailsMixin:UpdateFontColors(selectionData, isSelected, hasAFailedReq)
+	local nameColor, numberColor = self:GetFontColors(selectionData, isSelected, hasAFailedReq);
+	self.SelectionName:SetTextColor(nameColor:GetRGB());
+	self.SelectionNumber:SetTextColor(numberColor:GetRGB());
+end
+
+local function startsWithOne(index)
+	local indexString = tostring(index);
+	return indexString:sub(1, 1) == "1";
+end
+
+function CharCustomizeSelectionPopoutDetailsMixin:SetShowAsNew(showAsNew)
+	if showAsNew then
+		self.SelectionNumber:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
+
+		local halfStringWidth = self.SelectionNumber:GetStringWidth() / 2;
+		local extraOffset = startsWithOne(self.index) and 1 or 0;
+		self.NewGlow:SetPoint("CENTER", self.SelectionNumber, "LEFT", halfStringWidth + extraOffset, -2);
+		self.SelectionNumberBG:Show();
+		self.NewGlow:Show();
+	else
+		self.SelectionNumber:SetShadowColor(BLACK_FONT_COLOR:GetRGBA());
+		self.SelectionNumberBG:Hide();
+		self.NewGlow:Hide();
+	end
+end
+
+function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, hasColors)
+	self:UpdateFontColors(selectionData, isSelected, hasAFailedReq);
+
+	self.SelectionNumber:SetText(self.index);
+	self.SelectionNumberBG:SetText(self.index);
+
+	if hasColors then
+		self.SelectionName:Hide();
+		self.SelectionNumber:SetWidth(25);
+		self.SelectionNumberBG:SetWidth(25);
+	elseif selectionData.name ~= "" then
+		self.SelectionName:Show();
+		self.SelectionName:SetWidth(0);
+		self.SelectionName:SetText(selectionData.name);
+		self.SelectionNumber:SetWidth(25);
+		self.SelectionNumberBG:SetWidth(25);
+	else
+		self.SelectionName:Hide();
+		self.SelectionNumber:SetWidth(0);
+		self.SelectionNumberBG:SetWidth(0);
+	end
+
+	self.SelectionNumber:SetShown(not hideNumber);
+
+	local showAsNew = (self.selectable and not hideNumber and selectionData.isNew);
+	self:SetShowAsNew(showAsNew);
+end
+
+function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
+	self.name = selectionData.name;
+	self.index = index;
+
+	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
+	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
+	if color1 then
+		if color2 then
+			self.ColorSwatch2:Show();
+			self.ColorSwatch2Glow:Show();
+			self.ColorSwatch2:SetVertexColor(color2:GetRGB());
+			self.ColorSwatch1:SetAtlas("charactercreate-customize-palette-half");
+		else
+			self.ColorSwatch2:Hide();
+			self.ColorSwatch2Glow:Hide();
+			self.ColorSwatch1:SetAtlas("charactercreate-customize-palette");
+		end
+
+		self.ColorSwatch1:Show();
+		self.ColorSwatch1Glow:Show();
+		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
+	elseif selectionData.name ~= "" then
+		self.ColorSwatch1:Hide();
+		self.ColorSwatch1Glow:Hide();
+		self.ColorSwatch2:Hide();
+		self.ColorSwatch2Glow:Hide();
+	else
+		self.ColorSwatch1:Hide();
+		self.ColorSwatch1Glow:Hide();
+		self.ColorSwatch2:Hide();
+		self.ColorSwatch2Glow:Hide();
+	end
+
+	self.ColorSelected:SetShown(self.selectable and color1 and isSelected);
+
+	local hideNumber = (not self.selectable and (color1 or (selectionData.name ~= "")));
+	if hideNumber then
+		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
+		self.ColorSwatch1:SetPoint("LEFT", self, "LEFT", 0, 0);
+		self.ColorSwatch2:SetPoint("LEFT", self, "LEFT", 18, -2);
+	else
+		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
+		self.ColorSwatch1:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
+		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 18, -2);
+	end
+
+	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
+end
+
+CharCustomizeSelectionPopoutButtonMixin = CreateFromMixins(SelectionPopoutButtonMixin);
+
+function CharCustomizeSelectionPopoutButtonMixin:UpdateButtonDetails()
+	local currentSelectedData = self:GetCurrentSelectedData();
+	self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
+
+	local maxNameWidth = 126;
+	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
+		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
+	end
+
+	self.SelectionDetails:Layout();
+end
+
+CharCustomizeSelectionPopoutEntryMixin = CreateFromMixins(SelectionPopoutEntryMixin);
+
+function CharCustomizeSelectionPopoutEntryMixin:OnLoad()
+	SelectionPopoutEntryMixin.OnLoad(self);
+
+	self.SelectionDetails.SelectionName:SetPoint("RIGHT");
+end
+
+function CharCustomizeSelectionPopoutEntryMixin:ClearNewFlag()
+	self.selectionData.isNew = false;
+	self.parentButton:UpdatePopout();
+end
+
+function CharCustomizeSelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq)
+	self.isNew = selectionData.isNew;
+	SelectionPopoutEntryMixin.SetupEntry(self, selectionData, index, isSelected, multipleColumns, hasAFailedReq);	
+end
+
+function CharCustomizeSelectionPopoutEntryMixin:OnEnter()
+	SelectionPopoutEntryMixin.OnEnter(self);
+
+	if not self.isSelected then
+		self.HighlightBGTex:SetAlpha(0.15);
+
+		self.SelectionDetails.SelectionNumber:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+end
+
+function CharCustomizeSelectionPopoutEntryMixin:OnLeave()
+	SelectionPopoutEntryMixin.OnLeave(self);
+
+	if not self.isSelected then
+		self.HighlightBGTex:SetAlpha(0);
+		self.SelectionDetails:UpdateFontColors(self.selectionData, self.isSelected, self.popoutHasAFailedReq);
+	end
+end
+
 CharCustomizeMixin = {};
 
 function CharCustomizeMixin:OnLoad()
-	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
-	self:RegisterEvent("GLOBAL_MOUSE_UP");
 	self:RegisterEvent("CVAR_UPDATE");
 
 	self.pools = CreateFramePoolCollection();
@@ -735,18 +952,7 @@ function CharCustomizeMixin:OnLoad()
 end
 
 function CharCustomizeMixin:OnEvent(event, ...)
-	if event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP" then
-		local buttonID = ...;
-
-		local frame = GetMouseFocus();
-		if frame and frame.HandlesGlobalMouseEvent and frame:HandlesGlobalMouseEvent(buttonID, event) then
-			-- Do nothing...this frame handles this global mouse event
-			return;
-		end
-
-		-- Otherwise hide all popouts
-		self:HidePopouts();
-	elseif event == "CVAR_UPDATE" then
+	if event == "CVAR_UPDATE" then
 		local cvarName, cvarValue = ...;
 		if cvarName == "debugTargetInfo" then
 			showDebugTooltipInfo = (cvarValue == "1");
@@ -897,9 +1103,9 @@ function CharCustomizeMixin:SetCustomizations(categories)
 
 	if self:NeedsCategorySelected() then
 		table.sort(self.categories, SortCategories);
-		self:SetSelectedCatgory(self.categories[1], keepState);
+		self:SetSelectedCategory(self.categories[1], keepState);
 	else
-		self:SetSelectedCatgory(self.selectedCategoryData, keepState);
+		self:SetSelectedCategory(self.selectedCategoryData, keepState);
 	end
 end
 
@@ -949,7 +1155,7 @@ function CharCustomizeMixin:ReleaseClosedPopoutOptions()
 	local releasePopouts = {};
 
 	for selectionPopout in pairs(self.selectionPopoutPool.activeObjects) do
-		if selectionPopout.SelectionPopoutButton.Popout:IsShown() then
+		if selectionPopout.Button.Popout:IsShown() then
 			openPopout = selectionPopout;
 		else
 			table.insert(releasePopouts, selectionPopout);
@@ -1009,6 +1215,9 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 						else
 							optionFrame = optionPool:Acquire();
 						end
+						-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
+						-- in a future version of LayoutFrame.
+						optionFrame:SetPoint("TOPLEFT");
 
 						-- Just set layoutIndex on the option and add it to optionsToSetup for now.
 						-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
@@ -1073,7 +1282,7 @@ function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
 	self:UpdateZoomButtonStates();
 end
 
-function CharCustomizeMixin:SetSelectedCatgory(categoryData, keepState)
+function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
 	if categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
 		self:SetViewingShapeshiftForm(categoryData.spellShapeshiftFormID);
 	end
@@ -1124,7 +1333,7 @@ function CharCustomizeMixin:ResetPreviewIfDirty()
 	end
 end
 
-function CharCustomizeMixin:OnOptionPopoutEntryClick(option, entryData)
+function CharCustomizeMixin:OnOptionPopoutEntrySelected(option, entryData)
 	self.previewIsDirty = false;
 	self:SetCustomizationChoice(option.optionData.id, entryData.id);
 end

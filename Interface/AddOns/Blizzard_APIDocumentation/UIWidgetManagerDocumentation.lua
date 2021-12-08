@@ -520,14 +520,15 @@ local UIWidgetManager =
 		{
 			Name = "SpellDisplayIconDisplayType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
 				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
 				{ Name = "Circular", Type = "SpellDisplayIconDisplayType", EnumValue = 2 },
+				{ Name = "NoBorder", Type = "SpellDisplayIconDisplayType", EnumValue = 3 },
 			},
 		},
 		{
@@ -669,15 +670,16 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Small", Type = "UIWidgetTextSizeType", EnumValue = 0 },
 				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
 				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
 				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
+				{ Name = "Standard", Type = "UIWidgetTextSizeType", EnumValue = 4 },
 			},
 		},
 		{
@@ -726,9 +728,9 @@ local UIWidgetManager =
 		{
 			Name = "WidgetEnabledState",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Disabled", Type = "WidgetEnabledState", EnumValue = 0 },
@@ -737,6 +739,7 @@ local UIWidgetManager =
 				{ Name = "White", Type = "WidgetEnabledState", EnumValue = 3 },
 				{ Name = "Green", Type = "WidgetEnabledState", EnumValue = 4 },
 				{ Name = "Gold", Type = "WidgetEnabledState", EnumValue = 5 },
+				{ Name = "Black", Type = "WidgetEnabledState", EnumValue = 6 },
 			},
 		},
 		{
@@ -1265,6 +1268,9 @@ local UIWidgetManager =
 				{ Name = "partitionValues", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "fillMotionType", Type = "UIWidgetMotionType", Nilable = false },
+				{ Name = "barTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "barTextFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "barTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },

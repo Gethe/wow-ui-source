@@ -45,6 +45,8 @@ local customTextureKitInfo = {
 		optionsBottomPadding = 55,
 		showOptionsOnly = true,
 		frameYOffset = 95,
+		toggleXOffset = 0,
+		toggleYOffset = -20,
 		timerXOffset = 0,
 		timerYOffset = -5,
 	},
@@ -163,7 +165,7 @@ function PlayerChoiceFrameMixin:OnShow()
 	local toggleButton = PlayerChoiceToggle_GetActiveToggle();
 	if toggleButton then
 		toggleButton:ClearAllPoints();
-		toggleButton:SetPoint("TOP", self, "BOTTOM", 0, 0);
+		toggleButton:SetPoint("TOP", self, "BOTTOM", self.textureKitInfo.toggleXOffset or 0, self.textureKitInfo.toggleYOffset or 0);
 	end
 	PlayerChoiceToggle_TryShow();
 

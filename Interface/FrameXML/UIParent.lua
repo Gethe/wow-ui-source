@@ -2411,6 +2411,7 @@ function UIParent_OnEvent(self, event, ...)
 		local mouseFocus = GetMouseFocus();
 		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+			SelectionPopouts:HandleGlobalMouseEvent(buttonID, event);
 		end
 
 		-- Clear keyboard focus.

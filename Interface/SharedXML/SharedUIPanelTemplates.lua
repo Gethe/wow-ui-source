@@ -1406,68 +1406,35 @@ function SliderWithButtonsAndLabelMixin:Decrement()
 	self.Slider:SetValue(self.value - self.valueStep, userInput);
 end
 
-SelectionPopoutWithButtonsAndLabelMixin = {};
-
-function SelectionPopoutWithButtonsAndLabelMixin:SetupSelections(selections, selectedIndex, label)
-	self.SelectionPopoutButton:SetupSelections(selections, selectedIndex);
-	self.Label:SetText(label);
-	self:UpdateButtons();
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:OnEnter()
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:OnLeave()
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:Increment()
-	self.SelectionPopoutButton:Increment();
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:Decrement()
-	self.SelectionPopoutButton:Decrement();
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:OnPopoutShown()
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:HidePopout()
-	self.SelectionPopoutButton:HidePopout();
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:OnEntryClick(entryData)
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:GetTooltipText()
-	return self.SelectionPopoutButton:GetTooltipText();
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:OnEntryMouseEnter(entry)
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:OnEntryMouseLeave(entry)
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:GetMaxPopoutHeight()
-end
-
-function SelectionPopoutWithButtonsAndLabelMixin:UpdateButtons()
-	self.IncrementButton:SetEnabled(self.SelectionPopoutButton.selectedIndex < #self.SelectionPopoutButton.selections);
-	self.DecrementButton:SetEnabled(self.SelectionPopoutButton.selectedIndex > 1);
-end
-
-SelectionPopoutButtonMixin = {};
+SelectionPopoutButtonMixin = CreateFromMixins(CallbackRegistryMixin, EventButtonMixin);
+SelectionPopoutButtonMixin:GenerateCallbackEvents(
+	{
+		"OnValueChanged",
+	}
+);
 
 function SelectionPopoutButtonMixin:OnLoad()
-	self.parent = self:GetParent();
-	self.SelectionDetails:SetPoint("CENTER", self.ButtonText,"CENTER");
+	CallbackRegistryMixin.OnLoad(self);
 
-	self.buttonPool = CreateFramePool("BUTTON", self.Popout, "SelectionPopoutEntryTemplate");
+	self.parent = self:GetParent();
+
+	self.SelectionDetails:SetFrameLevel(self:GetFrameLevel());
+
+	self.Popout.logicalParent = self;
+
+	if IsOnGlueScreen() then
+		self.Popout:SetParent(GlueParent);
+		self.Popout:SetFrameStrata("FULLSCREEN_DIALOG");
+		self.Popout:SetToplevel(true);
+		self.Popout:SetScale(self:GetEffectiveScale());
+	end
+	
+	self.buttonPool = CreateFramePool("BUTTON", self.Popout, self.selectionEntryTemplates);
 	self.initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Popout, "TOPLEFT", 6, -12);
 end
 
-function SelectionPopoutButtonMixin:HandlesGlobalMouseEvent()
-	return true;
+function SelectionPopoutButtonMixin:HandlesGlobalMouseEvent(buttonID, event)
+	return event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton";
 end
 
 function SelectionPopoutButtonMixin:OnEnter()
@@ -1482,6 +1449,10 @@ function SelectionPopoutButtonMixin:OnLeave()
 	if not self.Popout:IsShown() then
 		self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox");
 	end
+end
+
+function SelectionPopoutButtonMixin:SetEnabled_(enabled)
+	self:SetEnabled(enabled);
 end
 
 function SelectionPopoutButtonMixin:OnPopoutShown()
@@ -1510,6 +1481,7 @@ function SelectionPopoutButtonMixin:ShowPopout()
 	if self.popoutNeedsUpdate then
 		self:UpdatePopout();
 	end
+	SelectionPopouts:CloseAll();
 
 	self.Popout:Show();
 	self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox-open");
@@ -1564,11 +1536,12 @@ end
 function SelectionPopoutButtonMixin:UpdatePopout()
 	self.buttonPool:ReleaseAll();
 
-	local numColumns, stride = getNumColumnsAndStride(#self.selections, self:GetMaxPopoutStride());
+	local selections = self:GetSelections();
+	local numColumns, stride = getNumColumnsAndStride(#selections, self:GetMaxPopoutStride());
 	local buttons = {};
 
 	local hasIneligibleChoice = false;
-	for _, selectionData in ipairs(self.selections) do
+	for _, selectionData in ipairs(selections) do
 		if selectionData.ineligibleChoice then
 			hasIneligibleChoice = true;
 			break;
@@ -1576,9 +1549,9 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 	end
 
 	local maxDetailsWidth = 0;
-	for index, selectionData in ipairs(self.selections) do
+	for index, selectionData in ipairs(selections) do
 		local button = self.buttonPool:Acquire();
-		local selectionInfo = self.selections[index];
+		local selectionInfo = selections[index];
 
 		local isSelected = (index == self.selectedIndex);
 		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice);
@@ -1603,18 +1576,16 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 	self.popoutNeedsUpdate = false;
 end
 
+function SelectionPopoutButtonMixin:GetSelections()
+	return self.selections;
+end
+
 function SelectionPopoutButtonMixin:GetCurrentSelectedData()
-	return self.selections[self.selectedIndex];
+	local selections = self:GetSelections();
+	return selections[self.selectedIndex];
 end
 
 function SelectionPopoutButtonMixin:UpdateButtonDetails()
-	local currentSelectedData = self:GetCurrentSelectedData();
-	self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
-	local maxNameWidth = 126;
-	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
-		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
-	end
-	self.SelectionDetails:Layout();
 end
 
 function SelectionPopoutButtonMixin:GetTooltipText()
@@ -1638,17 +1609,44 @@ function SelectionPopoutButtonMixin:OnMouseWheel(delta)
 	end
 end
 
-function SelectionPopoutButtonMixin:OnClick()
-	self:TogglePopout();
+function SelectionPopoutButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		self:TogglePopout();
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	end
+end
+
+function SelectionPopoutButtonMixin:FindIndex(predicate)
+	return FindInTableIf(self:GetSelections(), predicate);
+end
+
+function SelectionPopoutButtonMixin:IsDataMatch(data1, data2)
+	return data1 == data2;
+end
+
+function SelectionPopoutButtonMixin:OnEntryClicked(entryData)
+	local newIndex = self:FindIndex(function(element)
+		return self:IsDataMatch(element, entryData);
+	end);
+	self:SetSelectedIndex(newIndex);
+
+	self:HidePopout();
+
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
-function SelectionPopoutButtonMixin:OnEntryClick(entryData)
-	if self.parent.OnEntryClick then
-		self.parent:OnEntryClick(entryData);
-	end
+function SelectionPopoutButtonMixin:Update()
+	self:UpdateButtonDetails();
+	self:UpdatePopout();
+	self:GetParent():UpdateButtons();
+end
 
-	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+function SelectionPopoutButtonMixin:CallOnEntrySelected(entryData)
+	self:TriggerEvent(SelectionPopoutButtonMixin.Event.OnValueChanged, entryData);
+
+	if self.parent.OnEntrySelected then
+		self.parent:OnEntrySelected(entryData);
+	end
 end
 
 function SelectionPopoutButtonMixin:OnEntryMouseEnter(entry)
@@ -1663,205 +1661,154 @@ function SelectionPopoutButtonMixin:OnEntryMouseLeave(entry)
 	end
 end
 
-function SelectionPopoutButtonMixin:Increment()
-	local newIndex = math.min(self.selectedIndex + 1, #self.selections);
-	if newIndex ~= self.selectedIndex then
-		self.selectedIndex = newIndex;
-		self:OnEntryClick(self:GetCurrentSelectedData());
+function SelectionPopoutButtonMixin:GetAdjustedIndex(forward, selections)
+	if not self.selectedIndex then
+		return nil;
 	end
-end
 
-function SelectionPopoutButtonMixin:Decrement()
-	local newIndex = math.max(self.selectedIndex - 1, 1);
-	if newIndex ~= self.selectedIndex then
-		self.selectedIndex = newIndex;
-		self:OnEntryClick(self:GetCurrentSelectedData());
-	end
-end
-
-SelectionPopoutDetailsMixin = {};
-
-function SelectionPopoutDetailsMixin:GetTooltipText()
-	if self.SelectionName:IsShown() and self.SelectionName:IsTruncated() then
-		return self.name;
+	local offset = forward and 1 or -1;
+	local nextIndex = self.selectedIndex + offset;
+	local data = selections[nextIndex];
+	while data do
+		if data.disabled == nil then
+			return nextIndex;
+		else
+			nextIndex = nextIndex + offset;
+			data = selections[currentIndex];
+		end
 	end
 
 	return nil;
 end
 
-function SelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
-	local width = defaultWidth;
-
-	if self.ColorSwatch1:IsShown() or self.ColorSwatch2:IsShown() then
-		if multipleColumns then
-			width = self.SelectionNumber:GetWidth() + self.ColorSwatch2:GetWidth() + 18;
-		end
-	elseif self.SelectionName:IsShown() then
-		if multipleColumns then
-			width = 108;
-		end
-	else
-		if multipleColumns then
-			width = 42;
-		end
-	end
-
-	self:SetWidth(Round(width));
+function SelectionPopoutButtonMixin:Increment()
+	local forward = true;
+	local index = self:GetAdjustedIndex(forward, self:GetSelections());
+	self:SetSelectedIndex(index);
 end
 
-local function GetNormalSelectionTextFontColor(selectionData, isSelected)
-	if isSelected then
-		return NORMAL_FONT_COLOR;
-	else
-		return DISABLED_FONT_COLOR;
+function SelectionPopoutButtonMixin:Decrement()
+	local forward = false;
+	local index = self:GetAdjustedIndex(forward, self:GetSelections());
+	self:SetSelectedIndex(index);
+end
+
+function SelectionPopoutButtonMixin:SetSelectedIndex(newIndex)
+	if newIndex and newIndex ~= self.selectedIndex then
+		self.selectedIndex = newIndex;
+		self:Update();
+
+		self:CallOnEntrySelected(self:GetCurrentSelectedData());
 	end
 end
 
-local eligibleChoiceColor = CreateColor(.808, 0.808, 0.808);
-local ineligibleChoiceColor = CreateColor(.337, 0.337, 0.337);
+SelectionPopoutWithButtonsMixin = {};
 
-local function GetFailedReqSelectionTextFontColor(selectionData, isSelected)
-	if isSelected then
-		return NORMAL_FONT_COLOR;
-	elseif selectionData.ineligibleChoice then
-		return ineligibleChoiceColor;
+function SelectionPopoutWithButtonsMixin:OnLoad()
+	self.IncrementButton:SetPoint("LEFT", self.Button, "RIGHT", 4, 0);
+	self.IncrementButton:SetScript("OnClick", GenerateClosure(self.OnIncrementClicked, self));
+
+	self.DecrementButton:SetPoint("RIGHT", self.Button, "LEFT", -5, 0);
+	self.DecrementButton:SetScript("OnClick", GenerateClosure(self.OnDecrementClicked, self));
+end
+
+function SelectionPopoutWithButtonsMixin:SetEnabled_(enabled)
+	self.Button:SetEnabled_(enabled);
+	self:UpdateButtons();
+end
+
+function SelectionPopoutWithButtonsMixin:OnIncrementClicked(button, buttonName, down)
+	self.Button:Increment();
+end
+
+function SelectionPopoutWithButtonsMixin:OnDecrementClicked(button, buttonName, down)
+	self.Button:Decrement();
+end
+
+function SelectionPopoutWithButtonsMixin:SetupSelections(selections, selectedIndex, label)
+	self.Button:SetupSelections(selections, selectedIndex);
+	self:UpdateButtons();
+end
+
+function SelectionPopoutWithButtonsMixin:OnEnter()
+end
+
+function SelectionPopoutWithButtonsMixin:OnLeave()
+end
+
+function SelectionPopoutWithButtonsMixin:Increment()
+	self.Button:Increment();
+end
+
+function SelectionPopoutWithButtonsMixin:Decrement()
+	self.Button:Decrement();
+end
+
+function SelectionPopoutWithButtonsMixin:OnPopoutShown()
+end
+
+function SelectionPopoutWithButtonsMixin:HidePopout()
+	self.Button:HidePopout();
+end
+
+function SelectionPopoutWithButtonsMixin:OnEntrySelected(entryData)
+end
+
+function SelectionPopoutWithButtonsMixin:GetTooltipText()
+	return self.Button:GetTooltipText();
+end
+
+function SelectionPopoutWithButtonsMixin:OnEntryMouseEnter(entry)
+end
+
+function SelectionPopoutWithButtonsMixin:OnEntryMouseLeave(entry)
+end
+
+function SelectionPopoutWithButtonsMixin:GetMaxPopoutHeight()
+end
+
+function SelectionPopoutWithButtonsMixin:UpdateButtons()
+	local enabled = self.Button:IsEnabled();
+	if enabled then
+		local selections = self.Button:GetSelections()
+
+		local forward = true;
+		local index = self.Button:GetAdjustedIndex(forward, selections);
+		self.IncrementButton:SetEnabled(index ~= nil);
+
+		forward = false;
+		local index = self.Button:GetAdjustedIndex(forward, selections);
+		self.DecrementButton:SetEnabled(index ~= nil);
 	else
-		return eligibleChoiceColor;
+		self.IncrementButton:SetEnabled(false);
+		self.DecrementButton:SetEnabled(false);
 	end
 end
 
-function SelectionPopoutDetailsMixin:GetFontColors(selectionData, isSelected, hasAFailedReq)
-	if self.selectable then
-		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
-		local fontColor = fontColorFunction(selectionData, isSelected);
-		local showAsNew = (selectionData.isNew and self.selectable);
-		if showAsNew then
-			return fontColor, HIGHLIGHT_FONT_COLOR;
-		else
-			return fontColor, fontColor;
-		end
-	else
-		return NORMAL_FONT_COLOR, NORMAL_FONT_COLOR;
-	end
-end
+SelectionPopoutWithButtonsAndLabelMixin = CreateFromMixins(SelectionPopoutWithButtonsMixin);
 
-function SelectionPopoutDetailsMixin:UpdateFontColors(selectionData, isSelected, hasAFailedReq)
-	local nameColor, numberColor = self:GetFontColors(selectionData, isSelected, hasAFailedReq);
-	self.SelectionName:SetTextColor(nameColor:GetRGB());
-	self.SelectionNumber:SetTextColor(numberColor:GetRGB());
-end
+function SelectionPopoutWithButtonsAndLabelMixin:SetupSelections(selections, selectedIndex, label)
+	SelectionPopoutWithButtonsMixin.SetupSelections(self, selections, selectedIndex);
 
-local function startsWithOne(index)
-	local indexString = tostring(index);
-	return indexString:sub(1, 1) == "1";
-end
-
-function SelectionPopoutDetailsMixin:SetShowAsNew(showAsNew)
-	if showAsNew then
-		self.SelectionNumber:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
-
-		local halfStringWidth = self.SelectionNumber:GetStringWidth() / 2;
-		local extraOffset = startsWithOne(self.index) and 1 or 0;
-		self.NewGlow:SetPoint("CENTER", self.SelectionNumber, "LEFT", halfStringWidth + extraOffset, -2);
-		self.SelectionNumberBG:Show();
-		self.NewGlow:Show();
-	else
-		self.SelectionNumber:SetShadowColor(BLACK_FONT_COLOR:GetRGBA());
-		self.SelectionNumberBG:Hide();
-		self.NewGlow:Hide();
-	end
-end
-
-function SelectionPopoutDetailsMixin:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, hasColors)
-	self:UpdateFontColors(selectionData, isSelected, hasAFailedReq);
-
-	self.SelectionNumber:SetText(self.index);
-	self.SelectionNumberBG:SetText(self.index);
-
-	if hasColors then
-		self.SelectionName:Hide();
-		self.SelectionNumber:SetWidth(25);
-		self.SelectionNumberBG:SetWidth(25);
-	elseif selectionData.name ~= "" then
-		self.SelectionName:Show();
-		self.SelectionName:SetWidth(0);
-		self.SelectionName:SetText(selectionData.name);
-		self.SelectionNumber:SetWidth(25);
-		self.SelectionNumberBG:SetWidth(25);
-	else
-		self.SelectionName:Hide();
-		self.SelectionNumber:SetWidth(0);
-		self.SelectionNumberBG:SetWidth(0);
-	end
-
-	self.SelectionNumber:SetShown(not hideNumber);
-
-	local showAsNew = (self.selectable and not hideNumber and selectionData.isNew);
-	self:SetShowAsNew(showAsNew);
-end
-
-function SelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
-	self.name = selectionData.name;
-	self.index = index;
-
-	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
-	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
-	if color1 then
-		if color2 then
-			self.ColorSwatch2:Show();
-			self.ColorSwatch2Glow:Show();
-			self.ColorSwatch2:SetVertexColor(color2:GetRGB());
-			self.ColorSwatch1:SetAtlas("charactercreate-customize-palette-half");
-		else
-			self.ColorSwatch2:Hide();
-			self.ColorSwatch2Glow:Hide();
-			self.ColorSwatch1:SetAtlas("charactercreate-customize-palette");
-		end
-
-		self.ColorSwatch1:Show();
-		self.ColorSwatch1Glow:Show();
-		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
-	elseif selectionData.name ~= "" then
-		self.ColorSwatch1:Hide();
-		self.ColorSwatch1Glow:Hide();
-		self.ColorSwatch2:Hide();
-		self.ColorSwatch2Glow:Hide();
-	else
-		self.ColorSwatch1:Hide();
-		self.ColorSwatch1Glow:Hide();
-		self.ColorSwatch2:Hide();
-		self.ColorSwatch2Glow:Hide();
-	end
-
-	self.ColorSelected:SetShown(self.selectable and color1 and isSelected);
-
-	local hideNumber = (not self.selectable and (color1 or (selectionData.name ~= "")));
-	if hideNumber then
-		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
-		self.ColorSwatch1:SetPoint("LEFT", self, "LEFT", 0, 0);
-		self.ColorSwatch2:SetPoint("LEFT", self, "LEFT", 18, -2);
-	else
-		self.SelectionName:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
-		self.ColorSwatch1:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 0, 0);
-		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 18, -2);
-	end
-
-	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
+	self.Label:SetText(label);
 end
 
 SelectionPopoutMixin = {};
 
 function SelectionPopoutMixin:OnShow()
 	self:Layout();
-	self:GetParent():OnPopoutShown();
+	self.logicalParent:OnPopoutShown();
+	SelectionPopouts:Add(self);
+end
+
+function SelectionPopoutMixin:OnHide()
+	SelectionPopouts:Remove(self);
 end
 
 SelectionPopoutEntryMixin = {};
 
 function SelectionPopoutEntryMixin:OnLoad()
-	self.SelectionDetails:SetPoint("TOPLEFT", self.ButtonText,"TOPLEFT", 14, 0);
-	self.SelectionDetails.SelectionName:SetPoint("RIGHT", self.SelectionDetails, "RIGHT");
-	self.parentButton = self:GetParent():GetParent();
+	self.parentButton = self:GetParent().logicalParent;
 end
 
 function SelectionPopoutEntryMixin:HandlesGlobalMouseEvent(buttonID, event)
@@ -1872,10 +1819,9 @@ function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, 
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
 	self.popoutHasAFailedReq = hasAFailedReq;
-	self.isNew = selectionData.isNew;
 
 	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq);
-	self.SelectionDetails:AdjustWidth(multipleColumns, 116);
+	self.SelectionDetails:AdjustWidth(multipleColumns, self.defaultWidth);
 end
 
 function SelectionPopoutEntryMixin:GetTooltipText()
@@ -1883,27 +1829,59 @@ function SelectionPopoutEntryMixin:GetTooltipText()
 end
 
 function SelectionPopoutEntryMixin:OnEnter()
-	if not self.isSelected then
-		self.HighlightBGTex:SetAlpha(0.15);
-		self.SelectionDetails.SelectionNumber:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		self.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	end
-
 	self.parentButton:OnEntryMouseEnter(self);
 end
 
 function SelectionPopoutEntryMixin:OnLeave()
-	if not self.isSelected then
-		self.HighlightBGTex:SetAlpha(0);
-		self.SelectionDetails:UpdateFontColors(self.selectionData, self.isSelected, self.popoutHasAFailedReq);
-	end
-
 	self.parentButton:OnEntryMouseLeave(self);
 end
 
 function SelectionPopoutEntryMixin:OnClick()
-	self.parentButton:OnEntryClick(self.selectionData);
+	self.parentButton:OnEntryClicked(self.selectionData);
 end
+
+SelectionPopouts = {};
+
+function SelectionPopouts:OnLoad()
+	self.popouts = {};
+end
+
+function SelectionPopouts:ContainsMouse()
+	for index, popout in ipairs(self.popouts) do
+		if popout:IsShown() and popout:IsMouseOver() then
+			return true;
+		end
+	end
+	return false;
+end
+
+function SelectionPopouts:CloseAll()
+	local shallow = true;
+	local popoutsCopy = CopyTable(self.popouts, shallow);
+	wipe(self.popouts);
+
+	for index, popout in ipairs(popoutsCopy) do
+		popout.logicalParent:HidePopout();
+	end
+end
+
+function SelectionPopouts:HandleGlobalMouseEvent(buttonID, event)
+	if event == "GLOBAL_MOUSE_DOWN" and (buttonID == "LeftButton" or buttonID == "RightButton") then
+		if not self:ContainsMouse() then
+			self:CloseAll();
+		end
+	end
+end
+
+function SelectionPopouts:Add(popout)
+	table.insert(self.popouts, popout);
+end
+
+function SelectionPopouts:Remove(popout)
+	tDeleteItem(self.popouts, popout);
+end
+
+SelectionPopouts:OnLoad();
 
 DefaultScaleFrameMixin = {};
 

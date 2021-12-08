@@ -437,18 +437,12 @@
 	</Button>
 
 	<CheckButton name="UIRadioButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
+		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="5" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1326,9 +1320,7 @@
 		</ThumbTexture>
 	</Slider>
 	<Slider name="MinimalScrollBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="22" y="0"/>
-		</Size>
+		<Size x="22" y="0"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTrack" parentKey="trackBG">
@@ -1681,9 +1673,7 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture atlas="common-search-clearbutton" useAtlasSize="false" alpha="0.5" parentKey="texture">
-							<Size>
-								<AbsDimension x="10" y="10"/>
-							</Size>
+							<Size x="10" y="10"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="3" y="-3"/>
 							</Anchors>
@@ -1720,64 +1710,46 @@
 	</EditBox>
 
 	<Button name="TabButtonTemplate" virtual="true">
-		<Size>
-            <AbsDimension x="115" y="32"/>
-        </Size>
+		<Size x="115" y="32"/>
         <Layers>
         	<Layer level="BACKGROUND">
         		<Texture name="$parentLeftDisabled" parentKey="LeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
-        			<Size>
-        				<AbsDimension x="16" y="32"/>
-        			</Size>
+        			<Size x="16" y="32"/>
         			<Anchors>
-        				<Anchor point="BOTTOMLEFT">
-        					<Offset>
-        						<AbsDimension x="0" y="-3"/>
-        					</Offset>
-        				</Anchor>
+        				<Anchor point="BOTTOMLEFT" x="0" y="-3"/>
         			</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentMiddleDisabled" parentKey="MiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
-        			<Size>
-        				<AbsDimension x="32" y="32"/>
-        			</Size>
+        			<Size x="32" y="32"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeKey="$parent.LeftDisabled" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRightDisabled" parentKey="RightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
-        			<Size>
-        				<AbsDimension x="16" y="32"/>
-        			</Size>
+        			<Size x="16" y="32"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentLeft" parentKey="Left" file="Interface\HelpFrame\HelpFrameTab-Inactive">
-        			<Size>
-        				<AbsDimension x="16" y="32"/>
-        			</Size>
+        			<Size x="16" y="32"/>
         			<Anchors>
         				<Anchor point="BOTTOMLEFT"/>
         			</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
-        			<Size>
-        				<AbsDimension x="32" y="32"/>
-        			</Size>
+        			<Size x="32" y="32"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRight" parentKey="Right" file="Interface\HelpFrame\HelpFrameTab-Inactive">
-        			<Size>
-        				<AbsDimension x="16" y="32"/>
-        			</Size>
+        			<Size x="16" y="32"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
         			</Anchors>
@@ -1791,30 +1763,18 @@
 			</OnLoad>
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="Text">
-			<Size>
-				<AbsDimension x="0" y="13"/>
-			</Size>
+			<Size x="0" y="13"/>
 			<Anchors>
-				<Anchor point="BOTTOM">
-					<Offset>
-						<AbsDimension x="0" y="5"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="BOTTOM" x="0" y="5"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
-			<Size>
-				<AbsDimension x="5" y="32"/>
-			</Size>
+			<Size x="5" y="32"/>
 			<Anchors>
-				<Anchor point="BOTTOM">
-					<Offset>
-						<AbsDimension x="2" y="-8"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="BOTTOM" x="2" y="-8"/>
 			</Anchors>
 		</HighlightTexture>
     </Button>
@@ -2401,92 +2361,12 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="SelectionPopoutDetails" mixin="SelectionPopoutDetailsMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="selectable" value="true" type="boolean"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<FontString parentKey="SelectionNumberBG" font="GameFontNormal_NoShadow" justifyH="LEFT">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Size x="25" y="20"/>
-					<Color color="NEW_FEATURE_SHADOW_COLOR"/>
-					<Anchors>
-						<Anchor point="LEFT" x="0.5" y="-0.5"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="SelectionNumber" font="GameFontNormal" justifyH="LEFT">
-					<Size x="25" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-					<Shadow>
-						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
-					</Shadow>
-				</FontString>
-				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT"  maxLines="1" hidden="true">
-					<Size x="25" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="ColorSwatch1" atlas="charactercreate-customize-palette" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ColorSwatch2" atlas="charactercreate-customize-palette" useAtlasSize="false" hidden="true">
-					<Size x="36" y="8"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT" x="18" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="NewGlow" atlas="charactercreate-customize-dropdown-newtagglow" useAtlasSize="true" hidden="true">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SelectionNumber" relativePoint="LEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="ColorSwatch1Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch1" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ColorSwatch2Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="false" alphaMode="ADD" hidden="true">
-					<Size x="36" y="8"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch2" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="3">
-				<Texture parentKey="ColorSelected" atlas="charactercreate-customize-palette-selected" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.ColorSwatch1" relativePoint="LEFT" x="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
 	<Button name="SelectionPopoutEntryTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutEntryMixin" virtual="true">
 		<Size x="1" y="1"/>
-		<ButtonText parentKey="ButtonText" setAllPoints="true"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="14" type="number"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails">
-				<Size x="144" y="20"/>
-			</Frame>
 			<Frame parentKey="HighlightBGTex" alpha="0" setAllPoints="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -2528,7 +2408,6 @@
 			<KeyValue key="widthPadding" value="6" type="number"/>
 			<KeyValue key="heightPadding" value="32" type="number"/>
 		</KeyValues>
-
 		<Frames>
 			<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
 				<KeyValues>
@@ -2536,31 +2415,19 @@
 				</KeyValues>
 			</Frame>
 		</Frames>
-
 		<Scripts>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnMouseWheel function="nop"/>
 		</Scripts>
 	</Frame>
-	
-	<Button name="SelectionPopoutButtonTemplate" mixin="SelectionPopoutButtonMixin" virtual="true">
+
+	<EventButton name="SelectionPopoutButtonTemplate" mixin="SelectionPopoutButtonMixin" virtual="true">
 		<Size x="150" y="38"/>
 		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-dropdownbox"/>
 		<HighlightTexture parentKey="HighlightTexture" atlas="charactercreate-customize-dropdownbox-open" alphaMode="ADD" alpha="0"/>
 		<PushedTextOffset x="2" y="-2"/>
-		<ButtonText parentKey="ButtonText">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="10" y="-10"/>
-				<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
-			</Anchors>
-		</ButtonText>
 		<Frames>
-			<Frame parentKey="SelectionDetails" inherits="SelectionPopoutDetails, ResizeLayoutFrame" useParentLevel="true">
-				<Size x="1" y="1"/>
-				<KeyValues>
-					<KeyValue key="selectable" value="false" type="boolean"/>
-				</KeyValues>
-			</Frame>
 			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>
@@ -2570,23 +2437,35 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
-			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseWheel method="OnMouseWheel"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-	</Button>
+	</EventButton>
 
-	<Button name="AlphaHighlightButtonTemplate" mixin="AlphaHighlightButtonMixin" virtual="true">
+	<Frame name="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsMixin" virtual="true">
+		<Size x="223" y="38"/>
+		<Frames>
+			<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-nextbutton"/>
+				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-nextbutton-down"/>
+				<DisabledTexture atlas="charactercreate-customize-nextbutton-disabled"/>
+			</Button>
+			<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="32" y="32"/>
+				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-backbutton"/>
+				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-backbutton-down"/>
+				<DisabledTexture atlas="charactercreate-customize-backbutton-disabled"/>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-	</Button>
+	</Frame>
 
-	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
-		<Size x="223" y="38"/>
+	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" inherits="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" font="GameFontHighlightMed2">
@@ -2596,44 +2475,19 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button parentKey="SelectionPopoutButton" inherits="SelectionPopoutButtonTemplate">
-				<Size x="150" y="38"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SelectionPopoutButton" relativePoint="RIGHT" x="4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Increment();
-					</OnClick>
-				</Scripts>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-nextbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-nextbutton-down"/>
-				<DisabledTexture atlas="charactercreate-customize-nextbutton-disabled"/>
-			</Button>
-			<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SelectionPopoutButton" relativePoint="LEFT" x="-5"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Decrement();
-					</OnClick>
-				</Scripts>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-backbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-backbutton-down"/>
-				<DisabledTexture atlas="charactercreate-customize-backbutton-disabled"/>
-			</Button>
-		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
-	
+
+	<Button name="AlphaHighlightButtonTemplate" mixin="AlphaHighlightButtonMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
 	<!--The DefaultScaleFrame template is used to allow a frame to appear to be "unscaled"
 		That means that all the textures/fonts used should appear as the same size they do in Photoshop when authored.
 		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.

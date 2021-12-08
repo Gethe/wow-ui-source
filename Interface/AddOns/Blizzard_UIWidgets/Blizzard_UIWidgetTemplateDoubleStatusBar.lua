@@ -104,3 +104,9 @@ function UIWidgetTemplateDoubleStatusBarMixin:PlayBarGlow(playRightBarGlow)
 		self.LeftBar.Flash:Play();
 	end
 end
+
+function UIWidgetTemplateDoubleStatusBarMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
+	self.LeftBar:OnReset();
+	self.RightBar:OnReset();
+end
