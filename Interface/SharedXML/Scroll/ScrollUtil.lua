@@ -146,6 +146,10 @@ function ManagedScrollBarVisibilityBehaviorMixin:EvaluateVisibility(force)
 		local scrollBox = self:GetScrollBox();
 		scrollBox:ClearAllPoints();
 
+		-- Issue here to resolve:
+		-- This will invalidate the ScrollBox and scroll target rects, preventing layout calculations from 
+		-- being correct in grid view. The incorrect calculations are overwritten by doing a full update
+		-- in the size changed handler (see OnScrollTargetSizeChanged in ScrollBox.lua).
 		local clearAllPoints = false;
 		for index, anchor in ipairs(anchors) do
 			anchor:SetPoint(scrollBox, clearAllPoints);
@@ -294,13 +298,22 @@ function ScrollUtil.AddSelectionBehavior(scrollBox, selectionPolicy)
 	return behavior;
 end
 
--- Frame must be a EventButton to support the OnSizeChanged callback.
+-- Frame must support the OnSizeChanged callback (EventButton).
 function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 	local onSizeChanged = function(o, width, height)
-		scrollBox:QueueUpdate();
+		--[[
+			Few issues here to resolve:
+			1) This is called if the size changed during layout or acquire.
+			2) We're invalidating every calculated element extent instead of the element that changed.
+			3) We cannot update immediately because of a rentrant frame flag invalidation issue.
+		]] 
+		scrollBox:FullUpdate(ScrollBoxConstants.UpdateQueued);
 	end;
+
 	local onSubscribe = function(frame, elementData)
-		frame:RegisterCallback(BaseScrollBoxEvents.OnSizeChanged, onSizeChanged, scrollBox);
+		if CallbackRegistryMixin.DoesFrameHaveEvent(frame, EventFrameMixin.Event.OnSizeChanged) then
+			frame:RegisterCallback(EventFrameMixin.Event.OnSizeChanged, onSizeChanged, scrollBox);
+		end
 	end
 
 	local onAcquired = function(o, frame, elementData)
@@ -309,7 +322,9 @@ function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, onAcquired, onAcquired);
 
 	local onReleased = function(o, frame, elementData)
-		frame:UnregisterCallback(BaseScrollBoxEvents.OnSizeChanged, scrollBox);
+		if CallbackRegistryMixin.DoesFrameHaveEvent(frame, EventFrameMixin.Event.OnSizeChanged) then
+			frame:UnregisterCallback(BaseScrollBoxEvents.OnSizeChanged, scrollBox);
+		end
 	end;
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, onReleased, onReleased);
 
@@ -326,41 +341,4 @@ function ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, elementDataTra
 		tableBuilder:RemoveRow(frame, elementDataTranslator(elementData));
 	end;
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, onReleased, onReleased);
-end
-
-ScrollBoxFactoryInitializerMixin = {};
-
-function ScrollBoxFactoryInitializerMixin:Init(frameType, frameTemplate, extent)
-	self.frameType = frameType;
-	self.frameTemplate = frameTemplate;
-	self.extent = extent;
-end
-
-function ScrollBoxFactoryInitializerMixin:GetTemplate()
-	assert(self.frameType and self.frameTemplate);
-	return self.frameType, self.frameTemplate;
-end
-
-function ScrollBoxFactoryInitializerMixin:InitFrame(frame)
-	frame:Init(self);
-end
-
-function ScrollBoxFactoryInitializerMixin:Factory(factory, caller)
-	local frame = factory(self:GetTemplate());
-	if frame.Init then
-		frame:Init(self);
-	end
-	return frame;
-end
-
-function ScrollBoxFactoryInitializerMixin:Resetter(frame)
-	frame:Release(self);
-end
-
-function ScrollBoxFactoryInitializerMixin:GetExtent()
-	return self.extent;
-end
-
-function ScrollBoxFactoryInitializerMixin:IsA(frameTemplate)
-	return frameTemplate == self.frameTemplate;
 end

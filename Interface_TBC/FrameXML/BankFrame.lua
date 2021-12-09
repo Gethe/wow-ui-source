@@ -260,7 +260,7 @@ function BankFrame_OnEvent (self, event, ...)
 			if ( slot <= NUM_BANKGENERIC_SLOTS ) then
 				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Item"..slot]);
 			else
-				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
+				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Bag"..(slot-GetFirstBagBankSlotIndex())]);
 			end
 		end
 	elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
@@ -268,7 +268,7 @@ function BankFrame_OnEvent (self, event, ...)
 		if ( slot <= NUM_BANKGENERIC_SLOTS ) then
 			BankFrameItemButton_Update(BankSlotsFrame["Item"..slot]);
 		else
-			BankFrameItemButton_Update(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
+			BankFrameItemButton_Update(BankSlotsFrame["Bag"..(slot-GetFirstBagBankSlotIndex())]);
 		end
 	elseif ( event == "PLAYER_MONEY" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
 		UpdateBagSlotStatus();

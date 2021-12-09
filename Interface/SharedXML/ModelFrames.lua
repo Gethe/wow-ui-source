@@ -78,6 +78,10 @@ function Model_OnEvent(self, event, ...)
 	self:RefreshCamera();
 end
 
+function Model_OnHide(model)
+	model.mouseDown = false;
+end
+
 function Model_RotateLeft(model, rotationIncrement)
 	if ( not rotationIncrement ) then
 		rotationIncrement = 0.03;

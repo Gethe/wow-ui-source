@@ -2468,7 +2468,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.NewCharacterName:Hide();
 	self.CharacterSelectionFrame.TransferRealmCheckbox:Hide();
 	self.CharacterSelectionFrame.TransferRealmEditbox:Hide();
-	self.CharacterSelectionFrame.TransferRealmAutoCompleteBox:Hide();
+	self.CharacterSelectionFrame.TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 	self.CharacterSelectionFrame.TransferAccountCheckbox:Hide();
 	self.CharacterSelectionFrame.TransferAccountDropDown:Hide();
 	self.CharacterSelectionFrame.TransferFactionCheckbox:Hide();
@@ -3909,7 +3909,7 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 
 	frame.TransferRealmEditbox:SetText(self.info);
-	frame.TransferRealmAutoCompleteBox:Hide();
+	frame.TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
@@ -3946,7 +3946,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 	local maxWidth = 0;
 	local shownButtons = 0;
 	local buttonOffset = 0;
-	local box = self:GetParent().TransferRealmAutoCompleteBox;
+	local box = self:GetParent().TransferRealmEditbox.TransferRealmAutoCompleteBox;
 	if (VAS_AUTO_COMPLETE_OFFSET > 0) then
 		local button = box.Buttons[1];
 		button.Text:SetText(BLIZZARD_STORE_VAS_REALMS_PREVIOUS);
@@ -4085,7 +4085,7 @@ function StoreAutoCompleteSelectionEnterPressed()
 		local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 
 		frame.TransferRealmEditbox:SetText(info);
-		frame.TransferRealmAutoCompleteBox:Hide();
+		frame.TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 	end
 end
 
@@ -4102,7 +4102,7 @@ function TransferRealmCheckbox_OnClick(self)
 	if (not self:GetChecked()) then
 		SelectedDestinationRealm = nil;
 		self:GetParent().TransferRealmEditbox:SetText("");
-		self:GetParent().TransferRealmAutoCompleteBox:Hide();
+		self:GetParent().TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 		self:GetParent().TransferRealmCheckbox.Warning:SetText("");
 	end
 	self:GetParent().TransferRealmEditbox:SetShown(self:GetChecked());
@@ -4527,6 +4527,15 @@ end
 function ServicesLogoutPopupCancelButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ServicesLogoutPopup:Hide();
+end
+
+StoreTooltipBackdropMixin = {};
+
+function StoreTooltipBackdropMixin:StoreTooltipOnLoad()
+	NineSliceUtil.DisableSharpening(self);
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self:SetCenterColor(bgR, bgG, bgB, 1);
 end
 
 --------------------------------------

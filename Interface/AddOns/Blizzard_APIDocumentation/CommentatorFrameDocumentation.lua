@@ -1030,7 +1030,7 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "SetBlacklistedAuras",
+			Name = "SetBlocklistedAuras",
 			Type = "Function",
 
 			Arguments =
@@ -1039,7 +1039,7 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "SetBlacklistedCooldowns",
+			Name = "SetBlocklistedCooldowns",
 			Type = "Function",
 
 			Arguments =

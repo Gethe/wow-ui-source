@@ -3,17 +3,21 @@
 
 ## add snippets independent of modules here
 GlueCheck.lua
-Localization.xml
+..\..\Interface_TBC\FrameXML\Localization.xml
 Fonts.xml
-..\..\Interface_TBC\FrameXML\FontStyles.xml
+FontStyles.xml
 ..\SharedXML\Mixin.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
-..\..\Interface_TBC\SharedXML\TextureUtil.lua
-..\..\Interface_TBC\SharedXML\Util.lua
+..\SharedXML\TextureUtil.lua
+..\SharedXML\Color.lua
+..\..\Interface_TBC\SharedXML\ColorUtil.lua
+..\SharedXML\Util.lua
 ..\SharedXML\Constants.lua
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -27,6 +31,7 @@ Fonts.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\RegionUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
@@ -34,16 +39,15 @@ Fonts.xml
 ..\SharedXML\Vector2D.lua
 ..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
-..\..\Interface_TBC\SharedXML\LayoutFrame.xml
+..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\Dump.lua
-..\..\Interface_TBC\FrameXML\MixinUtil.lua
+MixinUtil.lua
 ..\SharedXML\LinkUtil.lua
 ..\SharedXML\ScriptAnimationUtil.lua
 
@@ -51,7 +55,7 @@ Fonts.xml
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 ..\SharedXML\Frame\EventEditBox.xml
-..\SharedXML\DataProvider.lua
+..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua
@@ -130,16 +134,16 @@ TextStatusBar.lua
 TextStatusBar.xml
 UIErrorsFrame.xml
 AutoComplete.xml
-..\..\Interface_TBC\FrameXML\StaticPopup.xml
+StaticPopup.xml
 Sound.lua
 OptionsFrameTemplates.xml
 OptionsPanelTemplates.xml
 UIOptions.xml
 VideoOptionsFrame.xml
 ..\SharedXML\VideoOptionsPanels.xml
-..\..\Interface_TBC\FrameXML\MacOptionsPanel.xml
+MacOptionsPanel.xml
 AudioOptionsFrame.xml
-..\..\Interface_TBC\FrameXML\AudioOptionsPanels.xml
+AudioOptionsPanels.xml
 InterfaceOptionsFrame.xml
 ..\..\Interface_TBC\FrameXML\InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
@@ -152,9 +156,10 @@ CoinPickupFrame.xml
 StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
-..\..\Interface_TBC\FrameXML\UnitFrame.xml
+UnitFrame.xml
 Cooldown.xml
-..\..\Interface_TBC\FrameXML\ActionBarController.xml
+ActionBarController.xml
+..\..\Interface_TBC\FrameXML\StanceBar.xml
 TutorialFrame.xml
 ..\..\Interface_TBC\FrameXML\Minimap.xml
 GameTime.xml
@@ -170,7 +175,7 @@ UnitPopupCustomControls.xml
 HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml
-..\..\Interface_TBC\FrameXML\BNet.xml
+BNet.xml
 ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
@@ -195,21 +200,21 @@ LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 ..\..\Interface_TBC\FrameXML\BankFrame.xml
-..\..\Interface_TBC\FrameXML\ItemRef.xml
+ItemRef.xml
 ..\..\Interface_TBC\FrameXML\FriendsFrame.xml
 RaidFrame.xml
 PetActionBarFrame.xml
 MainMenuBarBagButtons.xml
-..\..\Interface_TBC\FrameXML\UnitPositionFrameTemplates.xml
+UnitPositionFrameTemplates.xml
 RaidWarning.xml
 CinematicFrame.xml
 ComboFrame.xml
-..\..\Interface_TBC\FrameXML\TabardFrame.xml
-..\..\Interface_TBC\FrameXML\GuildRegistrarFrame.xml
+TabardFrame.xml
+GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
 ColorPickerFrame.xml
-..\..\Interface_TBC\FrameXML\GossipFrame.xml
+GossipFrame.xml
 MailFrame.xml
 PetStable.xml
 DurabilityFrame.xml
@@ -219,15 +224,15 @@ RatingMenuFrame.xml
 ..\..\Interface_TBC\FrameXML\TalentFrameBase.lua
 Blizzard_TalentUITemplates.xml
 EasyMenu.lua
-..\..\Interface_TBC\FrameXML\ChatConfigFrame.xml
+ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua
-..\..\Interface_TBC\FrameXML\CompactUnitFrame.xml
+CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
 StreamingFrame.xml
 LootHistory.xml
-..\..\Interface_TBC\FrameXML\StaticPopupSpecial.xml
+StaticPopupSpecial.xml
 PVPHelper.xml
 ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
@@ -235,7 +240,6 @@ ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
-..\..\Interface_TBC\FrameXML\LFGFrame.xml
 PVPFrame.xml
 
 

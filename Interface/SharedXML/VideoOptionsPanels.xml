@@ -176,9 +176,8 @@
 		</Scripts>
 		<Frames>
 			<!-- Display -->
-			<Frame name="Display_" inherits="BackdropTemplate">
+			<Frame name="Display_" inherits="TooltipBorderBackdropTemplate">
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 				</KeyValues>
 				<Anchors>
@@ -389,9 +388,8 @@
 			</Frame>
 
 			<!-- Graphics -->
-			<Frame name="Graphics_" inherits="BackdropTemplate">
+			<Frame name="Graphics_" inherits="TooltipBorderBackdropTemplate">
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 				</KeyValues>
 				<Anchors>
@@ -658,10 +656,9 @@
 
 
 			<!-- Raid Panel -->
-			<Frame name="RaidGraphics_" hidden="true" inherits="BackdropTemplate">
+			<Frame name="RaidGraphics_" hidden="true" inherits="TooltipBorderBackdropTemplate">
 				<KeyValues>
 					<KeyValue key="raid" value="true" type="boolean"/>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 				</KeyValues>
 				<Anchors>

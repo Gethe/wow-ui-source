@@ -1,0 +1,11 @@
+<Bindings>
+	<Binding name="TOGGLELFGPARENT" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame();
+	</Binding>
+	<Binding name="TOGGLELFGTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame(1);
+	</Binding>
+	<Binding name="TOGGLELFMTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame(2);
+	</Binding>
+</Bindings>

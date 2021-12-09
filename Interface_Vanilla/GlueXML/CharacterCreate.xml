@@ -857,7 +857,7 @@
 										_G[self:GetName().."NormalTexture"]:SetTexCoord(0, 0.5, 0, 1.0);
 									</OnLoad>
 									<OnClick>
-										SetCharacterGender(Enum.Unitsex.Male);
+										SetCharacterGender(Enum.UnitSex.Male);
 										PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 									</OnClick>
 									<OnEnter>
@@ -882,7 +882,7 @@
 										_G[self:GetName().."NormalTexture"]:SetTexCoord(0.5, 1.0, 0, 1.0);
 									</OnLoad>
 									<OnClick>
-										SetCharacterGender(Enum.Unitsex.Female);
+										SetCharacterGender(Enum.UnitSex.Female);
 										PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 									</OnClick>
 									<OnEnter>
@@ -1033,12 +1033,12 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<EditBox name="CharacterCreateNameEdit" inherits="BackdropTemplate" letters="12">
+					<EditBox name="CharacterCreateNameEdit" inherits="TooltipBackdropTemplate" letters="12">
 						<Size>
 							<AbsDimension x="156" y="40"/>
 						</Size>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 							<KeyValue key="backdropColor" value="GLUE_ALLIANCE_COLOR" type="global"/>
 							<KeyValue key="backdropBorderColor" value="GLUE_ALLIANCE_BORDER_COLOR" type="global"/>
 						</KeyValues>

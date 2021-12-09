@@ -115,9 +115,8 @@
 			</OnLeave>
 		</Scripts>
 	</Slider>
-	<Frame name="OptionsBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+	<Frame name="OptionsBoxTemplate" inherits="TooltipBorderBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
 			<KeyValue key="backdropColor" value="GRAY_FONT_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
 		</KeyValues>

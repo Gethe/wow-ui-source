@@ -2253,6 +2253,143 @@ TRAVEL PASS
               </Button>
             </Frames>
           </Frame>
+          <Frame name="GuildNameChangeFrame" parentKey="nameAlert" enableMouse="true" frameStrata="DIALOG" hidden="true">
+						<Size x="300" y="300"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="6" y="-60"/>
+							<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-2" y="2"/>
+										<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+									</Anchors>
+									<Color r="1" g=".9" b="0" a="1"/>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="1"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentError" inherits="GameFontHighlight" justifyH="CENTER" text="GUILD_NAME_ALERT_WARNING">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-86"/>
+									</Anchors>
+									<Color r="1" g="0" b="0" a="1"/>
+								</FontString>
+								<FontString name="$parentGMText" inherits="GameFontHighlightCenter" text="GUILD_NAME_ALERT_GM_HELP" parentKey="gmText">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentError" relativePoint="BOTTOM" x="0" y="-30"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentMemberText" inherits="GameFontHighlightCenter" text="GUILD_NAME_ALERT_MEMBER_HELP" parentKey="memberText" hidden="true">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentError" relativePoint="BOTTOM" x="0" y="-30"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentRename" inherits="GameFontNormalMed3" text="RENAME_GUILD_LABEL" parentKey="renameText">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="145"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<EditBox name="$parentEditBox" letters="24" inherits="InputBoxTemplate" autoFocus="false" parentKey="editBox">
+								<Size x="200" y="20"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentRename" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+									</OnLoad>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnEditFocusLost>
+									</OnEditFocusLost>
+									<OnEditFocusGained>
+										self:HighlightText();
+									</OnEditFocusGained>
+								</Scripts>
+							</EditBox>
+							<Button name="$parentButton" inherits="UIPanelButtonTemplate" text="ACCEPT" parentKey="button">
+								<Size x="80" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentEditBox" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if IsGuildLeader() then
+										SubmitRequiredGuildRename(self:GetParent().editBox:GetText());
+										else
+										GuildNameChangeAlertFrame.topAnchored = true;
+										GuildFrame_CheckName()
+										end
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnShow>
+								self:SetFrameLevel(GuildNameChangeAlertFrame:GetFrameLevel()-1);
+							</OnShow>
+						</Scripts>
+					</Frame>
+					<Button name="GuildNameChangeAlertFrame" inherits="GlowBoxTemplate" parentKey="nameAlert" enableMouse="true" frameStrata="DIALOG" hidden="true">
+						<Size x="256" y="36"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="GuildNameChangeFrame" relativePoint="TOP" x="0" y="-15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentText" inherits="GameFontHighlightLeft" justifyH="CENTER" text="GUILD_NAME_ALERT" parentKey="alert">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="CENTER" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentText" inherits="GameFontDisableSmall" justifyH="CENTER" text="CLICK_HERE_FOR_MORE_INFO" parentKey="clickText">
+									<Size x="180" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="CENTER" x="0" y="-1"/>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentAlertL" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="LEFT" x="8" y="-1"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentAlertR" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.topAnchored = true;
+							</OnLoad>
+							<OnClick>
+								self.topAnchored = false;
+								GuildFrame_CheckName()
+							</OnClick>
+						</Scripts>
+					</Button>
           <ScrollFrame name="GuildListScrollFrame" inherits="FauxScrollFrameTemplate">
             <Size>
               <AbsDimension x="296" y="237"/>
@@ -3088,7 +3225,7 @@ TRAVEL PASS
             <DisabledFont style="GameFontDisableSmall"/>
           </Button>
         </Frames>
-        </Frame>
+      </Frame>
       <Frame name="GuildMemberDetailFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" hidden="true">
         <KeyValues>
 					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
@@ -4055,10 +4192,6 @@ TRAVEL PASS
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
 			<OnShow function="AddFriendFrame_OnShow"/>
 			<OnHide>
 				AddFriendFrame.editFocus = nil;
@@ -4101,7 +4234,7 @@ TRAVEL PASS
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-74"/>
 				</Anchors>
-				</Frame>
+			</Frame>
 			<Button name="FriendsFriendsButton1" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsList" x="4" y="-8"/>
@@ -4215,8 +4348,6 @@ TRAVEL PASS
 				self:RegisterEvent("BN_REQUEST_FOF_SUCCEEDED");
 				self:RegisterEvent("BN_DISCONNECTED");
 				self.requested = { };
-				self.hideOnEscape = true;
-				self.exclusive = true;
 				UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
 			</OnLoad>
 			<OnShow>
@@ -4284,11 +4415,5 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

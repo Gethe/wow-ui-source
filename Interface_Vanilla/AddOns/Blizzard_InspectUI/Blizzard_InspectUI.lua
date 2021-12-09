@@ -3,12 +3,9 @@ INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectHonorFrame" };
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
 	if ( CanInspect(unit, true) ) then
-		INSPECTED_UNIT = unit;
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		InspectSwitchTabs(1);
-	else
-		INSPECTED_UNIT = nil;
 	end
 end
 
@@ -20,12 +17,10 @@ function InspectFrame_OnLoad(self)
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("INSPECT_READY");
 	self.unit = nil;
-	INSPECTED_UNIT = nil;
 
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
-	InspectNameText:SetFontObject("GameFontHighlight");
 end
 
 function InspectFrame_OnEvent(self, event, unit, ...)
@@ -43,12 +38,6 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
 		if ( (event == "PLAYER_TARGET_CHANGED" and self.unit == "target") or
 		     (event == "GROUP_ROSTER_UPDATE" and self.unit ~= "target") ) then
-			-- Just hide the InspectFrame when the unit changes.  This hides the bug that occurs when you click on targets too quickly and the server drops the inspect data when flooded with inspect requests.
-			--if ( CanInspect(self.unit) ) then
-			--	InspectFrame_UnitChanged(self);
-			--else
-			--	HideUIPanel(InspectFrame);
-			--end
 			HideUIPanel(InspectFrame);
 		end
 	elseif ( event == "UNIT_NAME_UPDATE" ) then

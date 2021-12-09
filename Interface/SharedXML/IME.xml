@@ -22,11 +22,8 @@
     </Layers>
   </Frame>
 
-  <Frame name="IMECandidatesFrame" inherits="BackdropTemplate" frameStrata="TOOLTIP" hidden="true" parent="UIParent" virtual="false">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
-		</KeyValues>
-		<Anchors>
+  <Frame name="IMECandidatesFrame" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="TooltipBorderBackdropTemplate">
+    <Anchors>
       <Anchor point="TOPLEFT"/>
     </Anchors>
     <Frames>

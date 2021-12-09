@@ -87,7 +87,6 @@ UnitPopupButtons = {
 	["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, nested = 1, defaultDifficultyID = 1 },
 	["DUNGEON_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, checkable = 1, difficultyID = 1 },
 	["DUNGEON_DIFFICULTY2"] = { text = PLAYER_DIFFICULTY2, checkable = 1, difficultyID = 2 },
-	["DUNGEON_DIFFICULTY3"] = { text = PLAYER_DIFFICULTY6, checkable = 1, difficultyID = 23 },
 
 	["RAID_DIFFICULTY"] = { text = RAID_DIFFICULTY, nested = 1, defaultDifficultyID = 14 },
 	["RAID_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, checkable = 1, difficultyID = 14 },
@@ -249,7 +248,7 @@ UnitPopupMenus = {
 	["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" },
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
 	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_BAD_GUILD_NAME", "REPORT_CHEATING" },
-	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" },
+	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2" },
 	["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" },
 	["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" },
 	["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"},
@@ -1128,7 +1127,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
 			if ( not inParty or ( inParty and GetLootMethod() == "freeforall" ) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				shown = false;
 			end
 		elseif ( value == "LOOT_PROMOTE" ) then
 			local isMaster = nil;
@@ -1431,7 +1430,7 @@ local function UnitPopup_IsEnabled(dropdownFrame, unitPopupButton)
 		return false;
 	end
 
-	if unitPopupButton.dist and not CheckInteractDistance(dropdownFrame.unit, unitPopupButton.dist) then
+	if (unitPopupButton.dist and unitPopupButton.dist > 0) and not CheckInteractDistance(dropdownFrame.unit, unitPopupButton.dist) then
 		return false;
 	end
 
@@ -1710,7 +1709,7 @@ function UnitPopup_OnClick (self)
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
-		HelpFrame_ShowReportCheatingDialog(playerLocation);
+		PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_CHEATING, fullname, playerLocation);
 	elseif ( button == "POP_OUT_CHAT" ) then
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
 	elseif ( button == "DUEL" ) then

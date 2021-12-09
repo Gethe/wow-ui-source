@@ -25,20 +25,13 @@ local function GetDisplayEvent(elementData)
 	return elementData.displayEvent or elementData.event;
 end
 
-local function CreateCounter(initialCount)
-	local count = initialCount or 0;
-	return function()
-		count = count + 1;
-		return count;
-	end
-end
-
-EventTraceSavedVars = 
+EventTraceSavedVars =
 {
+	LogEventsWhenHidden = false,
 	ShowArguments = true,
 	ShowTimestamp = true,
 	LogCREvents = true,
-	Filters = 
+	Filters =
 	{
 		User = {},
 	},
@@ -74,12 +67,14 @@ EventTracePanelMixin = {};
 function EventTracePanelMixin:OnLoad()
 	ButtonFrameTemplate_HidePortrait(self)
 
-	self.loggingEnabled = false;
+	self.isLoggingPaused = false;
 	self.loadTime = GetTime();
 	self.showingArguments = true;
 
 	self.logDataProvider = CreateDataProvider();
 	self.searchDataProvider = CreateDataProvider();
+	self.searchDataProvider:RegisterCallback(DataProviderMixin.Event.OnSizeChanged, self.OnSearchDataProviderChanged, self);
+
 	self.filterDataProvider = CreateDataProvider();
 	self.filterDataProvider:SetSortComparator(function(lhs, rhs)
 		return lhs.event < rhs.event;
@@ -91,7 +86,7 @@ function EventTracePanelMixin:OnLoad()
 	timer:SetScript("OnUpdate", function(o, elapsed)
 		self.frameCounter = self.frameCounter + 1;
 	end);
-	
+
 	self:InitializeSubtitleBar();
 	self:InitializeLog();
 	self:InitializeFilter();
@@ -106,18 +101,22 @@ function EventTracePanelMixin:OnLoad()
 	hooksecurefunc(EventRegistry, "TriggerEvent", function(registry, event, ...)
 		EventTrace:LogCallbackRegistryEvent(registry, event, ...);
 	end);
+
+	self:UpdatePlaybackButton();
 end
 
 function EventTracePanelMixin:OnShow()
-	local notify = true;
-	self:SetLoggingEnabled(true, notify);
-
 	self.Log.Events.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
+
+	if not self:IsLoggingEventsWhenHidden() then
+		self:LogMessage(EVENTTRACE_LOG_START);
+	end
 end
 
 function EventTracePanelMixin:OnHide()
-	local notify = true;
-	self:SetLoggingEnabled(false, notify);
+	if not self:IsLoggingEventsWhenHidden() then
+		self:LogMessage(EVENTTRACE_LOG_PAUSE_WHILE_HIDDEN);
+	end
 end
 
 function EventTracePanelMixin:SaveVariables()
@@ -130,6 +129,7 @@ function EventTracePanelMixin:SaveVariables()
 	EventTraceSavedVars.Size.Width = width;
 	EventTraceSavedVars.Size.Height = height;
 
+	EventTraceSavedVars.LogEventsWhenHidden = self:IsLoggingEventsWhenHidden();
 	EventTraceSavedVars.ShowArguments = self:IsShowingArguments();
 	EventTraceSavedVars.ShowTimestamp = self:IsShowingTimestamp();
 	EventTraceSavedVars.LogCREvents = self:IsLoggingCREvents();
@@ -142,9 +142,10 @@ function EventTracePanelMixin:LoadVariables()
 
 	self:SetSize(EventTraceSavedVars.Size.Width, EventTraceSavedVars.Size.Height);
 
-	self:SetShowingArguments(EventTraceSavedVars.ShowArguments or true);
-	self:SetShowingTimestamp(EventTraceSavedVars.ShowTimestamp or true);
-	self:SetLoggingCREvents(EventTraceSavedVars.LogCREvents or true);
+	self:SetLoggingEventsWhenHidden(EventTraceSavedVars.LogEventsWhenHidden);
+	self:SetShowingArguments(EventTraceSavedVars.ShowArguments);
+	self:SetShowingTimestamp(EventTraceSavedVars.ShowTimestamp);
+	self:SetLoggingCREvents(EventTraceSavedVars.LogCREvents);
 end
 
 function EventTracePanelMixin:InitializeSubtitleBar()
@@ -160,11 +161,7 @@ function EventTracePanelMixin:InitializeSubtitleBar()
 end
 
 function EventTracePanelMixin:UpdatePlaybackButton()
-	if self:IsLoggingEnabled() then
-		self.Log.Bar.PlaybackButton.Label:SetText(EVENTTRACE_BUTTON_PAUSE);
-	else
-		self.Log.Bar.PlaybackButton.Label:SetText(EVENTTRACE_BUTTON_PLAY);
-	end
+	self.Log.Bar.PlaybackButton.Label:SetText(self:IsLoggingPaused() and EVENTTRACE_BUTTON_PLAY or EVENTTRACE_BUTTON_PAUSE);
 end
 
 local function SetScrollBoxButtonAlternateState(scrollBox)
@@ -186,12 +183,19 @@ function EventTracePanelMixin:DisplaySearch()
 	self.Log.Events:Hide();
 end
 
+function EventTracePanelMixin:OnSearchDataProviderChanged(hasSortComparator)
+	local size = self.searchDataProvider:GetSize();
+	local text = (EVENTTRACE_RESULTS):format(size);
+	self.Log.Bar.Label:SetText(text);
+end
+
 function EventTracePanelMixin:TryAddToSearch(elementData, search)
 	local s = search:upper()
-	if string.find(tostring(elementData.id), s) or 
-		(elementData.event and string.find(elementData.event, s)) or 
+
+	if string.len(s) > 0 and (string.find(tostring(elementData.id), s) or
+		(elementData.event and string.find(elementData.event, s)) or
 		(elementData.arguments and string.find((elementData.arguments):upper(), s)) or
-		(elementData.message and string.find((elementData.message):upper(), s)) then
+		(elementData.message and string.find((elementData.message):upper(), s))) then
 		local shallow = true;
 		self.searchDataProvider:Insert(CopyTable(elementData, shallow));
 		return true;
@@ -207,7 +211,7 @@ function EventTracePanelMixin:InitializeLog()
 	end);
 
 	self.Log.Bar.PlaybackButton:SetScript("OnClick", function(button, buttonName)
-		self:ToggleLogging();
+		self:TogglePause();
 	end);
 
 	self.Log.Bar.DiscardAllButton.Label:SetText(EVENTTRACE_BUTTON_DISCARD_FILTER);
@@ -221,9 +225,10 @@ function EventTracePanelMixin:InitializeLog()
 		self.searchDataProvider:Flush();
 
 		local text = self.Log.Bar.SearchBox:GetText();
-		if text == "" then
+		local empty = string.len(text) == 0;
+		if empty then
 			self:DisplayEvents();
-		elseif text then
+		else
 			self:DisplaySearch();
 			local words = {};
 			for word in string.gmatch(text:upper(), "([^, ]+)") do
@@ -237,7 +242,6 @@ function EventTracePanelMixin:InitializeLog()
 					end
 				end
 			end
-			self.Log.Bar.Label:SetText((EVENTTRACE_RESULTS):format(self.searchDataProvider:GetSize()));
 
 			local pendingSearch = self.pendingSearch;
 			if pendingSearch then
@@ -246,7 +250,7 @@ function EventTracePanelMixin:InitializeLog()
 				local found = self.Log.Search.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 					return elementData.id == pendingSearch.id;
 				end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
-				
+
 				if found then
 					local button = self.Log.Search.ScrollBox:FindFrame(found);
 					if button then
@@ -257,8 +261,16 @@ function EventTracePanelMixin:InitializeLog()
 				self.Log.Search.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
 			end
 		end
+
+		local alpha = empty and 1.0 or .5;
+		self.Log.Bar.MarkButton:SetAlpha(alpha);
+		self.Log.Bar.MarkButton:SetEnabled(empty);
+		self.Log.Bar.PlaybackButton:SetAlpha(alpha);
+		self.Log.Bar.PlaybackButton:SetEnabled(empty);
+		self.Log.Bar.DiscardAllButton:SetAlpha(alpha);
+		self.Log.Bar.DiscardAllButton:SetEnabled(empty);
 	end);
-	
+
 	local function SetOnDataRangeChanged(scrollBox)
 		local function OnDataRangeChanged(sortPending)
 			SetScrollBoxButtonAlternateState(scrollBox);
@@ -275,7 +287,7 @@ function EventTracePanelMixin:InitializeLog()
 		end);
 		if found then
 			found.enabled = true;
-			
+
 			local button = scrollBox:FindFrame(elementData);
 			if button then
 				button:UpdateEnabledState();
@@ -286,7 +298,7 @@ function EventTracePanelMixin:InitializeLog()
 		self:RemoveEventFromDataProvider(self.logDataProvider, elementData.event);
 		self:RemoveEventFromDataProvider(self.searchDataProvider, elementData.event);
 	end
-	
+
 	do
 		local function LocateInSearch(elementData, text)
 			self.pendingSearch = elementData;
@@ -377,7 +389,7 @@ end
 
 function EventTracePanelMixin:InitializeFilter()
 	self.Filter.Bar.Label:SetText(EVENTTRACE_FILTER_HEADER);
-	
+
 	local function SetEventsEnabled(enabled)
 		for index, elementData in self.filterDataProvider:Enumerate() do
 			elementData.enabled = enabled;
@@ -441,6 +453,15 @@ function EventTracePanelMixin:InitializeOptions()
 		UIDropDownMenu_AddButton(info);
 
 		info = UIDropDownMenu_CreateInfo();
+		info.text = string.format(EVENTTRACE_LOG_WHEN_HIDDEN);
+		info.checked = self:IsLoggingEventsWhenHidden();
+		info.keepShownOnClick = 1;
+		info.func = function()
+			self:SetLoggingEventsWhenHidden(not self:IsLoggingEventsWhenHidden());
+		end
+		UIDropDownMenu_AddButton(info);
+
+		info = UIDropDownMenu_CreateInfo();
 		info.text = string.format(EVENTTRACE_SHOW_ARGUMENTS);
 		info.checked = self:IsShowingArguments();
 		info.keepShownOnClick = 1;
@@ -477,6 +498,16 @@ function EventTracePanelMixin:InitializeOptions()
 		UIMenuButtonStretchMixin.OnMouseDown(self.SubtitleBar.OptionsDropDown, button);
 		ToggleDropDownMenu(1, nil, dropDown, self.SubtitleBar.OptionsDropDown, 130, 20);
 	end);
+end
+
+
+
+function EventTracePanelMixin:IsLoggingEventsWhenHidden()
+	return self.logEventsWhenHidden;
+end
+
+function EventTracePanelMixin:SetLoggingEventsWhenHidden(logEventsWhenHidden)
+	self.logEventsWhenHidden = logEventsWhenHidden;
 end
 
 function EventTracePanelMixin:IsShowingArguments()
@@ -527,8 +558,36 @@ function EventTracePanelMixin:ViewFilter()
 	self.Filter:Show();
 end
 
+function EventTracePanelMixin:ProcessChatCommand(msg)
+	if msg then
+		local words = string.gmatch(msg, "([^ ]+)");
+		for word in words do
+			local Mark = "MARK";
+			if string.upper(word) == Mark then
+				local index = string.find(msg, word);
+				self:LogMessage(string.sub(msg, index + string.len(Mark)));
+				return true;
+			end
+
+			break;
+		end
+	end
+	return false;
+end
+
+function EventTracePanelMixin:IsLoggingPaused()
+	return self.isLoggingPaused;
+end
+
+function EventTracePanelMixin:SetLoggingPaused(paused)
+	self.isLoggingPaused = paused;
+
+	self:LogMessage(paused and EVENTTRACE_LOG_START or EVENTTRACE_LOG_PAUSE);
+	self:UpdatePlaybackButton();
+end
+
 function EventTracePanelMixin:CanLogEvent(event)
-	return self:IsLoggingEnabled() and self:IsShown() and not self:IsIgnoredEvent(event);
+	return (self:IsShown() or self:IsLoggingEventsWhenHidden()) and not (self:IsLoggingPaused() or self:IsIgnoredEvent(event));
 end
 
 function EventTracePanelMixin:LogMessage(message)
@@ -570,7 +629,7 @@ function EventTracePanelMixin:LogLine(elementData)
 	elementData.relativeTimestamp = relativeTimestamp;
 	elementData.frameCounter = self.frameCounter;
 	elementData.eventDelta = eventDelta;
-	
+
 	self.logDataProvider:Insert(elementData);
 	self:TrimDataProvider(self.logDataProvider);
 
@@ -601,34 +660,8 @@ function EventTracePanelMixin:OnEvent(event, ...)
 	self:LogEvent(event, ...);
 end
 
-function EventTracePanelMixin:ToggleLogging()
-	local notify = true;
-	self:SetLoggingEnabled(not self:IsLoggingEnabled(), notify);
-end
-
-function EventTracePanelMixin:StartLogging()
-	self:SetLoggingEnabled(true);
-end
-
-function EventTracePanelMixin:PauseLogging()
-	self:SetLoggingEnabled(false);
-end
-
-function EventTracePanelMixin:IsLoggingEnabled()
-	return self.loggingEnabled;
-end
-
-function EventTracePanelMixin:SetLoggingEnabled(enabled, notify)
-	if self.loggingEnabled == enabled then
-		return;
-	end
-	self.loggingEnabled = enabled;
-
-	if notify then
-		self:LogMessage(enabled and EVENTTRACE_LOG_START or EVENTTRACE_LOG_PAUSE);
-	end
-
-	self:UpdatePlaybackButton();
+function EventTracePanelMixin:TogglePause()
+	self:SetLoggingPaused(not self.isLoggingPaused);
 end
 
 local function CalculateEventDelta(oldTimestamp, oldFrameCounter, currentTimestamp, currentFrameCounter)
@@ -736,7 +769,7 @@ function EventTraceLogEventButtonMixin:OnEnter()
 	local elementData = self:GetElementData();
 	GameTooltip_AddHighlightLine(EventTraceTooltip, GetDisplayEvent(elementData), HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_TIMESTAMP, elementData.systemTimestamp, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
-	
+
 	AddTooltipArguments(SafeUnpack(elementData.args));
 
 	EventTraceTooltip:Show();
@@ -769,11 +802,11 @@ function EventTraceLogEventButtonMixin:Init(elementData, showArguments, showTime
 	local id = FormatLogID(elementData);
 	local message = elementData.displayMessage or elementData.event;
 	elementData.lineWithoutArguments = FormatLine(id, message);
-	
+
 	elementData.arguments = AddLineArguments(SafeUnpack(elementData.args));
 	elementData.formattedArguments = GREEN_FONT_COLOR:WrapTextInColorCode(elementData.arguments);
 	self:SetLeftText(elementData, showArguments);
-	
+
 	local clock = CreateClock(elementData.relativeTimestamp);
 	elementData.formattedTimestamp = string.format("%s %s", clock, elementData.eventDelta and elementData.eventDelta or "");
 	self:SetRightText(elementData, showTimestamp);
@@ -831,9 +864,9 @@ EventTraceFilterButtonMixin = {};
 
 function EventTraceFilterButtonMixin:Init(elementData, hideCb)
 	self.Label:SetText(GetDisplayEvent(elementData));
-	
+
 	self:UpdateEnabledState();
-	
+
 	self.HideButton:SetScript("OnMouseDown", function(button, buttonName)
 		hideCb(elementData);
 	end);
@@ -860,6 +893,10 @@ function EventTraceFilterButtonMixin:ToggleEnabledState()
 	self:UpdateEnabledState();
 end
 
-SlashCmdList["EVENTTRACE"] = function(msg)
-	EventTrace:SetShown(not EventTrace:IsShown());
+if SlashCmdList then
+	SlashCmdList["EVENTTRACE"] = function(msg)
+		if not EventTrace:ProcessChatCommand(msg) then
+			EventTrace:SetShown(not EventTrace:IsShown());
+		end
+	end
 end

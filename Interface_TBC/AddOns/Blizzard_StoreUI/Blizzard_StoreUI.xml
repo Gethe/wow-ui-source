@@ -5,6 +5,15 @@
 	<Script file="..\..\..\Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUIOutbound.lua" />
 	<Script file="Blizzard_StoreUISecure.lua" />
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+		<Frame name="StoreTooltipBackdrop" inherits="NineSlicePanelTemplate" mixin="StoreTooltipBackdropMixin" virtual="true">
+			<KeyValues>
+				<KeyValue key="layoutType" value="TooltipDefaultLayout" type="string"/>
+			</KeyValues>
+			<Scripts>
+				<OnLoad method="StoreTooltipOnLoad" inherit="append"/>
+			</Scripts>
+		</Frame>
+
 		<Button name="StoreButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>
@@ -2565,29 +2574,11 @@
 									</FontString>
 								</Layer>
 							</Layers>
-							<Scripts>
-								<OnCursorChanged function="VASCharacterSelectionTransferRealmEditBox_OnCursorChanged"/>
-								<OnTextChanged function="VASCharacterSelectionTransferRealmEditBox_OnTextChanged"/>
-								<OnShow>
-									self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
-								</OnShow>
-								<OnKeyDown inherit="append">
-									if (key == "DOWN") then
-										StoreAutoCompleteIncrementSelection();
-									elseif (key == "UP") then
-										StoreAutoCompleteDecrementSelection();
-									elseif (key == "ENTER") then
-										StoreAutoCompleteSelectionEnterPressed();
-									elseif (key == "ESCAPE") then
-										self:GetParent().TransferRealmAutoCompleteBox:Hide();
-									end
-								</OnKeyDown>
-							</Scripts>
-						</EditBox>
-						<Frame parentKey="TransferRealmAutoCompleteBox" inherits="TooltipBorderedFrameTemplate" hidden="true">
+							<Frames>
+						<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
 							<Size x="154" y="5"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOM" x="-4" y="14"/>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="0"/>
 							</Anchors>
 							<Layers>
 								<Layer level="BACKGROUND">
@@ -2601,7 +2592,14 @@
 								</Layer>
 							</Layers>
 							<Frames>
-								<Button name="AutoCompleteButton1" inherits="StoreAutoCompleteButtonTemplate">
+								<Frame parentKey="Border" inherits="StoreTooltipBackdrop">
+											<Scripts>
+											<OnShow>
+												self:SetFrameLevel(self:GetParent():GetFrameLevel()-1);
+											</OnShow>
+									</Scripts>
+										</Frame>/>
+										<Button name="AutoCompleteButton1" inherits="StoreAutoCompleteButtonTemplate">
 									<Anchors>
 										<Anchor point="TOP" x="6" y="-12"/>
 									</Anchors>
@@ -2616,7 +2614,27 @@
 								</OnShow>
 								<OnHide function="TransferRealmAutoCompleteBox_OnHide"/>
 							</Scripts>
-						</Frame>
+						</Frame>								
+							</Frames>
+							<Scripts>
+								<OnCursorChanged function="VASCharacterSelectionTransferRealmEditBox_OnCursorChanged"/>
+								<OnTextChanged function="VASCharacterSelectionTransferRealmEditBox_OnTextChanged"/>
+								<OnShow>
+									self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
+								</OnShow>
+								<OnKeyDown inherit="append">
+									if (key == "DOWN") then
+									StoreAutoCompleteIncrementSelection();
+									elseif (key == "UP") then
+									StoreAutoCompleteDecrementSelection();
+									elseif (key == "ENTER") then
+									StoreAutoCompleteSelectionEnterPressed();
+									elseif (key == "ESCAPE") then
+									self:GetParent().TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
+									end
+								</OnKeyDown>
+							</Scripts>
+						</EditBox>
 						<CheckButton parentKey="TransferAccountCheckbox" inherits="StoreCheckButtonTemplate">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
@@ -2738,7 +2756,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="StoreTooltipBackdrop" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">

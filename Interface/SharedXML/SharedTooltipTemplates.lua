@@ -1,16 +1,3 @@
-TOOLTIP_BACKDROP_STYLE_DEFAULT = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
-
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = TOOLTIP_DEFAULT_BACKGROUND_COLOR,
-};
-
 local function SetupTextFont(fontString, fontObject)
 	if fontString and fontObject then
 		fontString:SetFontObject(fontObject);
@@ -18,7 +5,10 @@ local function SetupTextFont(fontString, fontObject)
 end
 
 function SharedTooltip_OnLoad(self)
-	SharedTooltip_SetBackdropStyle(self, TOOLTIP_BACKDROP_STYLE_DEFAULT);
+	NineSliceUtil.DisableSharpening(self.NineSlice);
+	local style = nil;
+	local isEmbedded = false;
+	SharedTooltip_SetBackdropStyle(self, style, isEmbedded);
 	self:SetClampRectInsets(0, 0, 15, 0);
 
 	SetupTextFont(self.TextLeft1, self.textLeft1Font);
@@ -48,13 +38,21 @@ function SharedTooltip_ClearInsertedFrames(self)
 	self.insertedFrames = nil;
 end
 
-function SharedTooltip_SetBackdropStyle(self, style)
-	self:SetBackdrop(style);
-	self:SetBackdropBorderColor((style.backdropBorderColor or TOOLTIP_DEFAULT_COLOR):GetRGB());
-	self:SetBackdropColor((style.backdropColor or TOOLTIP_DEFAULT_BACKGROUND_COLOR):GetRGB());
+function SharedTooltip_SetBackdropStyle(self, style, embedded)
+	if embedded or self.IsEmbedded then
+		self.NineSlice:Hide();
+	else
+		local layoutName = style and style.layoutType or "TooltipDefaultLayout";
+		local layout = NineSliceUtil.GetLayout(layoutName);
+		NineSliceUtil.ApplyLayout(self.NineSlice, layout);
+		self.NineSlice:Show();
+	end
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self.NineSlice:SetCenterColor(bgR, bgG, bgB, 1);
 
 	if self.TopOverlay then
-		if style.overlayAtlasTop then
+		if style and style.overlayAtlasTop then
 			self.TopOverlay:SetAtlas(style.overlayAtlasTop, true);
 			self.TopOverlay:SetScale(style.overlayAtlasTopScale or 1.0);
 			self.TopOverlay:SetPoint("CENTER", self, "TOP", style.overlayAtlasTopXOffset or 0, style.overlayAtlasTopYOffset or 0);
@@ -65,7 +63,7 @@ function SharedTooltip_SetBackdropStyle(self, style)
 	end
 
 	if self.BottomOverlay then
-		if style.overlayAtlasBottom then
+		if style and style.overlayAtlasBottom then
 			self.BottomOverlay:SetAtlas(style.overlayAtlasBottom, true);
 			self.BottomOverlay:SetScale(style.overlayAtlasBottomScale or 1.0);
 			self.BottomOverlay:SetPoint("CENTER", self, "BOTTOM", style.overlayAtlasBottomXOffset or 0, style.overlayAtlasBottomYOffset or 0);
@@ -75,7 +73,7 @@ function SharedTooltip_SetBackdropStyle(self, style)
 		end
 	end
 
-	if style.padding then
+	if style and style.padding then
 		self:SetPadding(style.padding.right, style.padding.bottom, style.padding.left, style.padding.top);
 	end
 end
@@ -137,7 +135,7 @@ end
 function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 	verticalPadding = verticalPadding or 0;
 
-	local textSpacing = 2;
+	local textSpacing = tooltipFrame:GetCustomLineSpacing() or 2;
 	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
 	local neededHeight = frame:GetHeight() + verticalPadding ;
 	local numLinesNeeded = math.ceil(neededHeight / (textHeight + textSpacing));
@@ -150,11 +148,49 @@ function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 		tooltipFrame.insertedFrames = { };
 	end
 	local frameWidth = frame:GetWidth();
-	if ( tooltipFrame:GetMinimumWidth() < frameWidth ) then
+	if tooltipFrame:GetMinimumWidth() < frameWidth then
 		tooltipFrame:SetMinimumWidth(frameWidth);
 	end
 	frame:Show();
 	tinsert(tooltipFrame.insertedFrames, frame);
 	-- return space taken so inserted frame can resize if needed
 	return (numLinesNeeded * textHeight) + (numLinesNeeded - 1) * textSpacing;
+end
+
+
+TooltipBackdropTemplateMixin = {};
+
+function TooltipBackdropTemplateMixin:TooltipBackdropOnLoad()
+	NineSliceUtil.DisableSharpening(self.NineSlice);
+
+	local bgColor = self.backdropColor or TOOLTIP_DEFAULT_BACKGROUND_COLOR;
+	local bgAlpha = self.backdropColorAlpha or 1;
+	local bgR, bgG, bgB = bgColor:GetRGB();
+	self:SetBackdropColor(bgR, bgG, bgB, bgAlpha);
+
+	if self.backdropBorderColor then
+		local borderR, borderG, borderB = self.backdropBorderColor:GetRGB();
+		local borderAlpha = self.backdropBorderColorAlpha or 1;
+		self:SetBackdropBorderColor(borderR, borderG, borderB, borderAlpha);
+	end
+end
+
+function TooltipBackdropTemplateMixin:SetBackdropColor(r, g, b, a)
+	self.NineSlice:SetCenterColor(r, g, b, a);
+end
+
+function TooltipBackdropTemplateMixin:GetBackdropColor()
+	return self.NineSlice:GetCenterColor();
+end
+
+function TooltipBackdropTemplateMixin:SetBackdropBorderColor(r, g, b, a)
+	self.NineSlice:SetBorderColor(r, g, b, a);
+end
+
+function TooltipBackdropTemplateMixin:GetBackdropBorderColor()
+	return self.NineSlice:GetBorderColor();
+end
+
+function TooltipBackdropTemplateMixin:SetBorderBlendMode(blendMode)
+	self.NineSlice:SetBorderBlendMode(blendMode);
 end

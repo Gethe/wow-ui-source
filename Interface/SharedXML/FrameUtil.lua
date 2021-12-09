@@ -34,6 +34,12 @@ function FrameUtil.UnregisterFrameForEvents(frame, events)
 	end
 end
 
+function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
+	for i, event in ipairs(events) do 
+		frame:RegisterUnitEvent(event, ...);
+	end
+end
+
 function DoesAncestryInclude(ancestry, frame)
 	if ancestry then
 		local currentFrame = frame;
@@ -50,7 +56,9 @@ end
 function GetUnscaledFrameRect(frame, scale)
 	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetScaledRect();
 	if frameLeft == nil then
-		return 1, 1, 1, 1;
+		-- Defaulted returned for diagnosing invalid rects in layout frames.
+		local defaulted = true;
+		return 1, 1, 1, 1, defaulted;
 	end
 
 	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;

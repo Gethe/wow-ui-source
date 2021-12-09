@@ -240,6 +240,7 @@ GLUE_HORDE_BORDER_COLOR = CreateColor(0.5, 0.2, 0.2);
 HTML_START = "<html><body><p>";
 HTML_START_CENTERED = "<html><body><p align=\"center\">";
 HTML_END = "</p></body></html>";
+
 -- month names show up differently for full date displays in some languages
 CALENDAR_FULLDATE_MONTH_NAMES = {
 	FULLDATE_MONTH_JANUARY,
