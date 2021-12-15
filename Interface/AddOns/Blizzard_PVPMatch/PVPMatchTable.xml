@@ -71,12 +71,7 @@
 			<OnLeave method="OnLeave"/>
     </Scripts>
   </Button>
-	<Button name="PVPSoloShuffleCellNameTemplate" mixin="PVPSoloShuffleCellNameMixin" inherits="PVPStringTemplate" parentKey="cell" registerForClicks="LeftButtonUp,RightButtonUp" enableMouse="true" virtual="true">
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Button>
+	<Button name="PVPSoloShuffleCellNameTemplate" mixin="PVPSoloShuffleCellNameMixin" inherits="PVPCellNameTemplate" virtual="true"/>
 	<Frame name="PVPCellStringTemplate" mixin="PVPCellStringMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true">
     <Scripts>
       <OnEnter method="OnEnter"/>
@@ -84,6 +79,8 @@
     </Scripts>
   </Frame>
   <Frame name="PVPCellStatTemplate" mixin="PVPCellStatMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
+	<Button name="PVPSoloShuffleCellStatTemplate" mixin="PVPSoloShuffleCellStatMixin" inherits="PVPCellStatTemplate" virtual="true"/>
+	
   <Frame name="PVPNewRatingTemplate" mixin="PVPNewRatingMixin" inherits="PVPStringTemplate" parentKey="cell" enableMouse="true" virtual="true"/>
 	<Button name="PVPHeaderStringTemplate" mixin="PVPHeaderStringMixin" inherits="PVPStringTemplate" parentKey="header" enableMouse="true" virtual="true">
     <Scripts>

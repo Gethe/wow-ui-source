@@ -16,6 +16,11 @@ PVPMatchUtil = {
 PVPMatchUtil.MatchTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
 PVPMatchUtil.MatchTimeFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, true);
 
+function PVPMatchUtil.InSoloShuffleBrawl()
+	local brawlInfo = C_PvP.GetActiveBrawlInfo();
+	return brawlInfo and brawlInfo.brawlID == 130;
+end
+
 function PVPMatchUtil.IsActiveMatchComplete()
 	return C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Complete;
 end

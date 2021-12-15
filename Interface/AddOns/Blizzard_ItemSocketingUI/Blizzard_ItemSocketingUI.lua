@@ -15,6 +15,7 @@ local GEM_TYPE_INFO =	{	Yellow = {textureKit="yellow", r=0.97, g=0.82, b=0.29},
 							PunchcardYellow = {textureKit="punchcard-yellow", r=0.97, g=0.82, b=0.29},
 							PunchcardBlue = {textureKit="punchcard-blue", r=0.47, g=0.67, b=1},
 							Domination = {textureKit="domination", r=1, g=1, b=1},
+							Cypher = {textureKit="cypher", r=1, g=1, b=1},
 						};
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;

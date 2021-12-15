@@ -216,21 +216,27 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
 
-	GameTooltip:AddLine(self.taxiNodeData.name, nil, nil, nil, true);
+	GameTooltip_AddNormalLine(GameTooltip, self.taxiNodeData.name, true);
 
 	if self.taxiNodeData.state == Enum.FlightPathState.Current then
-		GameTooltip:AddLine(TAXINODEYOUAREHERE, 1.0, 1.0, 1.0, true);
+		GameTooltip_AddHighlightLine(GameTooltip, TAXINODEYOUAREHERE, true);
 	elseif self.taxiNodeData.state == Enum.FlightPathState.Reachable then
 		local cost = TaxiNodeCost(self.taxiNodeData.slotIndex);
 		if cost > 0 then
 			SetTooltipMoney(GameTooltip, cost);
+		elseif self.taxiNodeData.specialIconCostString then
+			if self.taxiNodeData.useSpecialIcon then
+				GameTooltip_AddHighlightLine(GameTooltip, self.taxiNodeData.specialIconCostString, true);
+			else
+				GameTooltip_AddErrorLine(GameTooltip, self.taxiNodeData.specialIconCostString, true);
+			end
 		end
 
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Yellow"));
 		
 		self.owner:HighlightRouteToPin(self);
 	elseif self.taxiNodeData.state == Enum.FlightPathState.Unreachable then
-		GameTooltip:AddLine(TAXI_PATH_UNREACHABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		GameTooltip_AddErrorLine(GameTooltip, TAXI_PATH_UNREACHABLE, true);
 	end
 
 	GameTooltip:Show();

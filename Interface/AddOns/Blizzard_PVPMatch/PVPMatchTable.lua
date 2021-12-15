@@ -222,49 +222,22 @@ function PVPCellNameMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-PVPSoloShuffleCellNameMixin = CreateFromMixins(TableBuilderCellMixin);
-
-function PVPSoloShuffleCellNameMixin:Init()
-	self.text:SetJustifyH("LEFT");
-end
+PVPSoloShuffleCellNameMixin = CreateFromMixins(PVPCellNameMixin);
 
 local tinyHealerIcon = CreateAtlasMarkup("roleicon-tiny-healer");
 
 function PVPSoloShuffleCellNameMixin:Populate(rowData, dataIndex)
-	local name = rowData.name;
-	local text = self.text;
+	PVPCellNameMixin.Populate(self, rowData, dataIndex);
 
-	
 	local LFG_ROLE_FLAG_HEALER = 4;
 	if rowData.roleAssigned == LFG_ROLE_FLAG_HEALER then
-		text:SetText(name.." "..tinyHealerIcon);
+		self.text:SetText(rowData.name.." "..tinyHealerIcon);
 	else
-		text:SetText(name);
+		self.text:SetText(rowData.name);
 	end
 
-	local color;
-	if IsPlayerGuid(rowData.guid) then
-		color = WHITE_FONT_COLOR;
-	else
-		color = PVPMatchStyle.PurpleColor;
-	end
-
-	text:SetVertexColor(color:GetRGB());
-end
-
-function PVPSoloShuffleCellNameMixin:OnEnter()
-	local tooltipOffset = 0 - self.text:GetWidth();
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", tooltipOffset, 0);
-
-	local className = self.rowData.className or "";
-	local raceName = self.rowData.raceName or "";
-	GameTooltip_AddNormalLine(GameTooltip, self.rowData.name);
-	GameTooltip_AddColoredLine(GameTooltip, raceName.." "..className, WHITE_FONT_COLOR, true);
-	GameTooltip:Show();
-end
-
-function PVPSoloShuffleCellNameMixin:OnLeave()
-	GameTooltip:Hide();
+	local color = IsPlayerGuid(rowData.guid) and WHITE_FONT_COLOR or PVPMatchStyle.PurpleColor;
+	self.text:SetVertexColor(color:GetRGB());
 end
 
 PVPCellStatMixin = CreateFromMixins(TableBuilderCellMixin);
@@ -313,6 +286,15 @@ function PVPCellStatMixin:Populate(rowData, dataIndex)
 	end
 end
 
+PVPSoloShuffleCellStatMixin = CreateFromMixins(PVPCellStatMixin);
+
+function PVPSoloShuffleCellStatMixin:Populate(rowData, dataIndex)
+	PVPCellStatMixin.Populate(self, rowData, dataIndex);
+
+	local color = IsPlayerGuid(rowData.guid) and WHITE_FONT_COLOR or PVPMatchStyle.PurpleColor;
+	self.text:SetVertexColor(color:GetRGB());
+end
+
 PVPNewRatingMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function PVPNewRatingMixin:Init(useAlternateColor)
@@ -353,9 +335,8 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local fillCoefficient = 1.0;
 	local namePadding = 4;
 	
-	local brawlInfo = C_PvP.GetActiveBrawlInfo();
-	local soloShuffleBrawlID = 130;
-	if brawlInfo and brawlInfo.brawlID == soloShuffleBrawlID then
+	local isSoloShuffleBrawl = PVPMatchUtil.InSoloShuffleBrawl();
+	if isSoloShuffleBrawl then
 		column:ConstructCells("BUTTON", "PVPSoloShuffleCellNameTemplate");
 	else
 		column:ConstructCells("BUTTON", "PVPCellNameTemplate", useAlternateColor);
@@ -405,13 +386,14 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		return lhs.orderIndex < rhs.orderIndex;
 	end);
 
+	local cellStatTemplate = isSoloShuffleBrawl and "PVPSoloShuffleCellStatTemplate" or "PVPCellStatTemplate";
 	for columnIndex, statColumn in ipairs(statColumns) do
 		if strlen(statColumn.name) > 0 then
 			column = tableBuilder:AddColumn();
 			local sortType = "stat"..columnIndex;
 			column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, statColumn.tooltip);
 			column:ConstrainToHeader(textPadding);
-			column:ConstructCells("FRAME", "PVPCellStatTemplate", statColumn.pvpStatID, useAlternateColor);
+			column:ConstructCells("FRAME", cellStatTemplate, statColumn.pvpStatID, useAlternateColor);
 		end
 	end
 	

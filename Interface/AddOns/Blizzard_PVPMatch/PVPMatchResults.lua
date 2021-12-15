@@ -116,26 +116,7 @@ function PVPMatchResultsMixin:Init()
 	local victoryStatID = C_PvP.GetCustomVictoryStatID();
 	local hasCustomVictoryStatID = victoryStatID > 0;
 	if hasCustomVictoryStatID then
-		local highestScoreInfo = nil;
-		local highestStatValue = 0;
-		for scoreIndex = 1, Constants.PvpInfoConsts.MaxPlayersPerInstance do
-			local scoreInfo = C_PvP.GetScoreInfo(scoreIndex);
-			if not scoreInfo then
-				break;
-			end
-
-			for statIndex, stat in ipairs(scoreInfo.stats) do
-				local pvpStatValue = stat.pvpStatValue;
-				if stat.pvpStatID == victoryStatID and pvpStatValue > highestStatValue then
-					highestScoreInfo = scoreInfo;
-					highestStatValue = pvpStatValue;
-				end
-			end
-		end
-
-		if highestScoreInfo then
-			self.header:SetText(PVP_SCOREBOARD_PLAYER_WINS:format(highestScoreInfo.name):upper());
-		end
+		self.header:SetText(PVP_SCOREBOARD_MATCH_COMPLETE);
 	else
 		local function GetOutcomeText(winner, factionIndex)
 			local enemyFactionIndex = (factionIndex + 1) % 2;
@@ -194,6 +175,8 @@ function PVPMatchResultsMixin:Init()
 
 	-- For Solo Shuffle brawl.
 	if hasCustomVictoryStatID then
+		SortBattlefieldScoreData("stat1");
+
 		factionIndex = 0;
 	end
 	self:SetupArtwork(factionIndex, isFactionalMatch);
@@ -303,7 +286,7 @@ function PVPMatchResultsMixin:DisplayRewards()
 	end
 	
 	-- Skirmish is considered rated, ignore it.
-	if C_PvP.IsRatedMap() and not IsArenaSkirmish() then
+	if C_PvP.IsRatedMap() and not IsArenaSkirmish() and not PVPMatchUtil.InSoloShuffleBrawl() then
 		self:InitRatingFrame();
 	end
 

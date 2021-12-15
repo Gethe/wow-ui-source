@@ -354,7 +354,7 @@ end
 function ConduitListSectionMixin:Init(elementData)
 	self.pool:ReleaseAll();
 
-	local conduitDatas = elementData.conduitDatas;
+	local conduitDatas = CopyTable(elementData.conduitDatas);
 	self.conduitType = elementData.conduitType;
 
 	local frames = {};
