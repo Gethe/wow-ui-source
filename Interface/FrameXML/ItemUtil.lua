@@ -106,7 +106,7 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then 
 			return RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Soulbinds then
-			local CONDUIT_UPGRADE_ITEMS = { 184359, 187148, 187216 };
+			local CONDUIT_UPGRADE_ITEMS = { 184359, 187148, 187216, 190184 };
 			if C_Item.IsItemConduit(itemLocation) or tContains(CONDUIT_UPGRADE_ITEMS, C_Item.GetItemID(itemLocation)) then
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
