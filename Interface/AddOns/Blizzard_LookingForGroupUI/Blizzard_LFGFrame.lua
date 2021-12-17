@@ -60,6 +60,13 @@ function LFGParentFrameTab2_OnClick()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
+function LFGParentFrame_LFMSearchActiveEntry()
+	PanelTemplates_SetTab(LFGParentFrame, 2);
+	LFGFrame:Hide();
+	LFMFrame:Show();
+	LFMFrame:SearchActiveEntry();
+end
+
 ----------------------------- LFM Functions -----------------------------
 LFMFrameMixin = {};
 
@@ -202,6 +209,37 @@ function LFMFrameMixin:RefreshResults(singleRefreshID)
 	self:UpdateScrollBar();
 end
 
+function LFMFrameMixin:SearchActiveEntry()
+	-- Note: Players can queue for activities in multiple categories, but the LFM UI only supports showing one category at a time.
+	-- Thus, we'll use the first category we find and only search for activities in that first category.
+
+	if (not self.TypeDropDown or not self.ActivityDropDown) then
+		return;
+	end
+
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	local firstTypeID = 0;
+	if (activeEntryInfo) then
+		LFMFrameActivityDropDown_ValueReset(self.ActivityDropDown);
+		for i=1, #activeEntryInfo.activityIDs do
+			local activityID = activeEntryInfo.activityIDs[i];
+			if (activityID ~= 0) then
+				local _, _, typeID = C_LFGList.GetActivityInfo(activityID);
+				if (firstTypeID == 0) then
+					firstTypeID = typeID;
+					UIDropDownMenu_Initialize(self.TypeDropDown, LFMFrameTypeDropDown_Initialize);
+					UIDropDownMenu_SetSelectedValue(self.TypeDropDown, typeID);
+				end
+				if (typeID == firstTypeID) then
+					LFMFrameActivityDropDown_ValueSetSelected(self.ActivityDropDown, activityID, true)
+				end
+			end
+		end
+	end
+
+	SendLFMQuery();
+end
+
 function LFMFrameMixin:ClearSelection()
 	self.selectedLFM = nil;
 	self.selectedName = nil;
@@ -327,7 +365,7 @@ function LFMButton_OnEnter(self)
 	GameTooltip:Show();
 end
 
--- Type Dropdown stuff
+-- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 function LFMFrameTypeDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	local categories = C_LFGList.GetAvailableCategories();
@@ -362,11 +400,13 @@ end
 
 function LFMTypeButton_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
+	LFMFrameActivityDropDown_ValueReset(self.owner.activityDropdown);
 	UIDropDownMenu_ClearAll(self.owner.activityDropdown);
 	UIDropDownMenu_Initialize(self.owner.activityDropdown, LFMFrameActivityDropDown_Initialize);
 end
+-- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
--- Entryname Dropdown stuff
+-- ////////////////////////////////////////////////// Activity Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 function LFMFrameActivityDropDown_Initialize(self)
 	local selectedType = 0;
 	if (self.typeDropdown) then
@@ -374,31 +414,113 @@ function LFMFrameActivityDropDown_Initialize(self)
 	end
 
 	if ( selectedType > 0 ) then
-		local info = UIDropDownMenu_CreateInfo();
 		UIDropDownMenu_EnableDropDown(self);
-		local currentSelectedValue = UIDropDownMenu_GetSelectedValue(self);
 		local activities = C_LFGList.GetAvailableActivities(selectedType);
+
+		if (#activities > 0) then
+			local metaButtonInfo = UIDropDownMenu_CreateInfo();
+			metaButtonInfo.keepShownOnClick = true;
+			metaButtonInfo.notCheckable = true;
+			metaButtonInfo.leftPadding = 5;
+
+			-- Check All button
+			metaButtonInfo.text = CHECK_ALL;
+			metaButtonInfo.func = function()
+				LFMFrameActivityDropDown_ValueAll(self);
+				UIDropDownMenu_Refresh(self, true);
+				LFMFrameActivityDropDown_UpdateHeaderText(self);
+				SendLFMQuery();
+			end;
+			UIDropDownMenu_AddButton(metaButtonInfo);
+
+			-- Uncheck All button
+			metaButtonInfo.text = UNCHECK_ALL;
+			metaButtonInfo.func = function()
+				LFMFrameActivityDropDown_ValueReset(self);
+				UIDropDownMenu_Refresh(self, true);
+				LFMFrameActivityDropDown_UpdateHeaderText(self);
+				SendLFMQuery();
+			end;
+			UIDropDownMenu_AddButton(metaButtonInfo);
+		end
+
+		-- Individual Activity Buttons
+		local buttonInfo = UIDropDownMenu_CreateInfo();
+		buttonInfo.func = LFMActivityButton_OnClick;
+		buttonInfo.owner = self;
+		buttonInfo.keepShownOnClick = true;
+		buttonInfo.classicChecks = true;
+
 		for i=1, #activities do
 			local name = C_LFGList.GetActivityInfo(activities[i]);
 
-			info.text = name;
-			info.value = activities[i];
-			info.func = LFMActivityButton_OnClick;
-			info.owner = self;
-			info.checked = currentSelectedValue == info.value;
-			info.classicChecks = true;
-			UIDropDownMenu_AddButton(info);
+			buttonInfo.text = name;
+			buttonInfo.value = activities[i];
+			buttonInfo.checked = function(self)
+				return LFMFrameActivityDropDown_ValueIsSelected(LFMFrameActivityDropDown, self.value);
+			end;
+			UIDropDownMenu_AddButton(buttonInfo);
 		end
 	else
+		LFMFrameActivityDropDown_ValueReset(self);
 		UIDropDownMenu_DisableDropDown(self);
 		UIDropDownMenu_ClearAll(self);
+	end
+
+	LFMFrameActivityDropDown_UpdateHeaderText(self);
+end
+
+function LFMFrameActivityDropDown_ValueAll(self)
+	local selectedType = 0;
+	if (self.typeDropdown) then
+		selectedType = UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0;
+	end
+
+	if ( selectedType > 0 ) then
+		local activities = C_LFGList.GetAvailableActivities(selectedType);
+		for i=1, #activities do
+			LFMFrameActivityDropDown_ValueSetSelected(self, activities[i], true);
+		end
+	end
+end
+
+function LFMFrameActivityDropDown_ValueReset(self)
+	wipe(self.selectedValues);
+end
+
+function LFMFrameActivityDropDown_ValueIsSelected(self, value)
+	return tContains(self.selectedValues, value);
+end
+
+function LFMFrameActivityDropDown_ValueSetSelected(self, value, selected)
+	if (selected) then
+		if (not tContains(self.selectedValues, value)) then
+			tinsert(self.selectedValues, value);
+		end
+	else
+		tDeleteItem(self.selectedValues, value);
+	end
+	LFMFrameActivityDropDown_UpdateHeaderText(self);
+end
+
+function LFMFrameActivityDropDown_ValueToggleSelected(self, value)
+	LFMFrameActivityDropDown_ValueSetSelected(self, value, not LFMFrameActivityDropDown_ValueIsSelected(self, value));
+end
+
+function LFMFrameActivityDropDown_UpdateHeaderText(self)
+	if #self.selectedValues == 1 then
+		local name = C_LFGList.GetActivityInfo(self.selectedValues[1]);
+		UIDropDownMenu_SetText(self, name);
+	else
+		UIDropDownMenu_SetText(self, string.format(LFM_ACTIVITY_HEADER, #self.selectedValues));
 	end
 end
 
 function LFMActivityButton_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
+	LFMFrameActivityDropDown_ValueToggleSelected(self.owner, self.value);
 	SendLFMQuery();
 end
+-- ////////////////////////////////////////////////// Activity Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 -- Refresh Button and Search
 function LFMFrameSearchButton_OnClick(self, button)
@@ -407,9 +529,9 @@ end
 
 function SendLFMQuery()
 	local categoryID = UIDropDownMenu_GetSelectedValue(LFMFrameTypeDropDown) or 0;
-	local activityID = UIDropDownMenu_GetSelectedValue(LFMFrameActivityDropDown) or 0;
-	if (categoryID > 0 and activityID > 0) then
-		C_LFGList.Search(categoryID, activityID);
+	local activityIDs = LFMFrameActivityDropDown.selectedValues;
+	if (categoryID > 0) then
+		C_LFGList.Search(categoryID, activityIDs);
 	end
 end
 
@@ -517,10 +639,12 @@ end
 function LFGFrameMixin:OnEvent(event, ...)
 	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
 		local createdNew = ...;
+		self:LoadActiveEntry();
 		if ( createdNew ) then
 			PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
+			-- Search LFM based on the active entry.
+			LFGParentFrame_LFMSearchActiveEntry();
 		end
-		self:LoadActiveEntry();
 	elseif ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
 		self:DefaultDropDownSetup();
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" ) then
@@ -561,6 +685,8 @@ function LFGFrameMixin:PermissionUpdate()
 		end
 		self.Comment:Disable();
 		self.Comment:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		self.Comment.Instructions:SetText("");
+		self.ClearAll:Disable();
 	else
 		for i=1, #self.TypeDropDown do
 			LFGFrameTypeDropDown_UpdateDisableState(self.TypeDropDown[i]);
@@ -570,6 +696,8 @@ function LFGFrameMixin:PermissionUpdate()
 		end
 		self.Comment:Enable();
 		self.Comment:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		self.Comment.Instructions:SetText(CLICK_TO_ENTER_COMMENT);
+		self.ClearAll:Enable();
 	end
 end
 
@@ -686,10 +814,10 @@ function LFGFrameMixin:LoadActiveEntry()
 			if (activityID ~= 0) then
 				local _, _, typeID = C_LFGList.GetActivityInfo(activityID);
 				UIDropDownMenu_Initialize(typeDropDown, LFGFrameTypeDropDown_Initialize);
-				UIDropDownMenu_SetSelectedValue(typeDropDown, typeID);
+				LFGFrameTypeDropDown_SetValue(typeDropDown, typeID);
 
 				UIDropDownMenu_Initialize(activityDropDown, LFGFrameActivityDropDown_Initialize);
-				UIDropDownMenu_SetSelectedValue(activityDropDown, activityID);
+				LFGFrameActivityDropDown_SetValue(activityDropDown, activityID);
 			else
 				UIDropDownMenu_ClearAll(typeDropDown);
 				UIDropDownMenu_ClearAll(activityDropDown);
@@ -749,42 +877,59 @@ end
 -- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 function LFGFrameTypeDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
+	local categories = C_LFGList.GetAvailableCategories();
 
 	-- None button
-	info.text = LFG_TYPE_NONE;
-	info.value = 0;
-	info.func = LFGTypeButton_OnClick;
-	info.owner = self;
-	info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
-	info.classicChecks = true;
-	UIDropDownMenu_AddButton(info);
-
-	local categories = C_LFGList.GetAvailableCategories();
-	for i=1, #categories do
-		local name = C_LFGList.GetCategoryInfo(categories[i]);
-
-		info.text = name;
-		info.value = categories[i];
-		info.func = LFGTypeButton_OnClick;
+	if (#categories == 0) then
+		-- None button
+		info.text = LFG_TYPE_NONE;
+		info.value = 0;
+		info.func = LFMTypeButton_OnClick;
 		info.owner = self;
 		info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
 		info.classicChecks = true;
 		UIDropDownMenu_AddButton(info);
+	else
+		for i=1, #categories do
+			local name = C_LFGList.GetCategoryInfo(categories[i]);
+
+			info.text = name;
+			info.value = categories[i];
+			info.func = LFGTypeButton_OnClick;
+			info.owner = self;
+			info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
+			info.classicChecks = true;
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end
 
 function LFGFrameTypeDropDown_UpdateDisableState(self)
 	if (LFGFrame.readOnly) then
 		UIDropDownMenu_DisableDropDown(self);
+		self:Disable();
+		self.Instructions:Hide();
 	else
 		UIDropDownMenu_EnableDropDown(self);
+		self:Enable();
+		if (not UIDropDownMenu_GetSelectedValue(self)) then
+			self.Instructions:Show();
+		else
+			self.Instructions:Hide();
+		end
 	end
 end
 
+function LFGFrameTypeDropDown_SetValue(self, value)
+	UIDropDownMenu_SetSelectedValue(self, value);
+	self.Instructions:Hide();
+end
+
 function LFGTypeButton_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
+	LFGFrameTypeDropDown_SetValue(self.owner, self.value);
 	UIDropDownMenu_ClearAll(self.owner.activityDropdown);
 	UIDropDownMenu_Initialize(self.owner.activityDropdown, LFGFrameActivityDropDown_Initialize);
+
 	LFGFrame:UpdateActivityIcon(self.owner:GetID());
 	LFGFrame:CheckActivitiesDirty();
 end
@@ -830,13 +975,24 @@ function LFGFrameActivityDropDown_UpdateDisableState(self)
 	local typeDropDownHasValue = self.typeDropdown and ((UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0) > 0);
 	if (LFGFrame.readOnly or not typeDropDownHasValue) then
 		UIDropDownMenu_DisableDropDown(self);
+		self.Instructions:Hide();
 	else
 		UIDropDownMenu_EnableDropDown(self);
+		if (not UIDropDownMenu_GetSelectedValue(self)) then
+			self.Instructions:Show();
+		else
+			self.Instructions:Hide();
+		end
 	end
 end
 
+function LFGFrameActivityDropDown_SetValue(self, value)
+	UIDropDownMenu_SetSelectedValue(self, value);
+	self.Instructions:Hide();
+end
+
 function LFGActivityButton_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
+	LFGFrameActivityDropDown_SetValue(self.owner, self.value);
 	LFGFrame:UpdateActivityIcon(self.owner:GetID());
 	LFGFrame:CheckActivitiesDirty();
 end
@@ -883,4 +1039,18 @@ end
 function LFGFramePostButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	LFGFrame:CreateOrUpdateListing();
+end
+
+-- QoL hackery: since the LFG Frame has a lot of wide dropdowns, we'll make the dropdowns behave like buttons.
+function LFGLFMDropDown_OnEnter(self)
+	self.Button:LockHighlight();
+end
+
+function LFGLFMDropDown_OnLeave(self)
+	self.Button:UnlockHighlight();
+end
+
+function LFGLFMDropDown_OnClick(self)
+	ToggleDropDownMenu(nil, nil, self);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
