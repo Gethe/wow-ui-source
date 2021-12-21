@@ -22,6 +22,7 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"BN_DISCONNECTED",
 	"CHANNEL_UI_UPDATE",
 	"UPDATE_CHAT_COLOR",
+	"CLUB_STREAM_SUBSCRIBED",
 };
 
 local COMMUNITIES_STATIC_POPUPS = {
@@ -165,6 +166,11 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		HideUIPanel(self);
 	elseif event == "CHANNEL_UI_UPDATE" or event == "UPDATE_CHAT_COLOR" then
 		self:UpdateStreamDropDown();
+	elseif event == "CLUB_STREAM_SUBSCRIBED" then
+		local clubId, streamId = ...;
+		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
+			self.Chat:RequestInitialMessages(clubId, streamId);
+		end
 	end
 end
 
