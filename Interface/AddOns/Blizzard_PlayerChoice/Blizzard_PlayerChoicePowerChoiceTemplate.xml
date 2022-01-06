@@ -34,24 +34,6 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="Header" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="2" type="number"/>
-					<KeyValue key="topPadding" value="6" type="number"/>
-				</KeyValues>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="QuestFontHighlightHuge" justifyV="MIDDLE" maxLines="2">
-							<Size x="195" y="30"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="FadeoutSelected" setToFinalAlpha="true">
 				<Alpha startDelay="1.25" duration=".25" fromAlpha="1" toAlpha="0"/>

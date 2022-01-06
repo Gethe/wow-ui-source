@@ -110,7 +110,7 @@ function PlayerChoicePowerChoiceTemplateMixin:GetTextureKitRegionTable()
 	local styleNum = mod(self.layoutIndex - 1, NUM_BG_STYLES) + 1;
 	useTextureRegions.Background = useTextureRegions.Background.."-Style"..styleNum;
 
-	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait"..rarityToCircleBorderPostfix[self.optionInfo.rarity];
+	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait"..(rarityToCircleBorderPostfix[self.optionInfo.rarity] or "-border");
 
 	return useTextureRegions;
 end
@@ -186,5 +186,5 @@ local rarityToString =
 };
 
 function PlayerChoicePowerChoiceTemplateMixin:GetRarityDescriptionString()
-	return rarityToString[self.optionInfo.rarity] or PLAYER_CHOICE_QUALITY_STRING_COMMON;
+	return rarityToString[self.optionInfo.rarity] or "";
 end

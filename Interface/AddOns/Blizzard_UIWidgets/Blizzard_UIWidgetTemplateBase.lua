@@ -448,6 +448,7 @@ UIWidgetBaseStatusBarPartitionTemplateMixin = {};
 
 local partitionTextureKitString = "%s-BorderTick";
 local partitionFullTextureKitString = "%s-BorderTick-Full";
+local partitionFlashTextureKitString = "%s-BorderTick-Flash";
 
 function UIWidgetBaseStatusBarPartitionTemplateMixin:Setup(partitionValue, textureKit)
 	self.value = partitionValue;
@@ -455,6 +456,11 @@ function UIWidgetBaseStatusBarPartitionTemplateMixin:Setup(partitionValue, textu
 	self.emptyAtlasName = partitionTextureKitString:format(textureKit);
 	self.fullAtlasName = partitionFullTextureKitString:format(textureKit);
 	self.hasFullAtlas = (C_Texture.GetAtlasInfo(self.fullAtlasName) ~= nil);
+
+	local flashAtlasName = partitionFlashTextureKitString:format(textureKit);
+	local useAtlasSize = true;
+	local setVisibility = true;
+	self.FlashOverlay:SetAtlas(flashAtlasName, useAtlasSize, setVisibility);
 end
 
 function UIWidgetBaseStatusBarPartitionTemplateMixin:UpdateForBarValue(barValue)
@@ -462,8 +468,21 @@ function UIWidgetBaseStatusBarPartitionTemplateMixin:UpdateForBarValue(barValue)
 
 	if not self.hasFullAtlas or barValue < self.value then
 		self.Tex:SetAtlas(self.emptyAtlasName, useAtlasSize);
+
+		if self.wasFull then
+			self.FlashAnim:Stop();
+			self.FlashOverlay:SetAlpha(0);
+		end
+
+		self.wasFull = false;
 	else
 		self.Tex:SetAtlas(self.fullAtlasName, useAtlasSize);
+
+		if self.wasFull == false then
+			self.FlashAnim:Play();
+		end
+
+		self.wasFull = true;
 	end
 
 	self:SetSize(self.Tex:GetWidth(), self.Tex:GetHeight());

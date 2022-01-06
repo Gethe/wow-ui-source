@@ -220,15 +220,15 @@ function TicketStatusFrame_OnEvent(self, event, ...)
 		if (hasTicket and ticketStatus ~= LE_TICKET_STATUS_OPEN) then
 			self.hasWebTicket = true;
 			if (ticketStatus == LE_TICKET_STATUS_NMI) then --need more info
-				self.TitleText:SetText(TICKET_STATUS_NMI);
+				TicketStatusTitleText:SetText(TICKET_STATUS_NMI);
 			elseif (ticketStatus == LE_TICKET_STATUS_SURVEY) then --survey is ready
-				self.TitleText:SetText(CHOSEN_FOR_GMSURVEY);
+				TicketStatusTitleText:SetText(CHOSEN_FOR_GMSURVEY);
 				self.haveWebSurvey = true;
 			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
-				self.TitleText:SetText(GM_RESPONSE_ALERT);
+				TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
 				self.haveResponse = true;
 			end
-			self:SetHeight(self.TitleText:GetHeight() + 20);
+			self:SetHeight(TicketStatusTitleText:GetHeight() + 20);
 
 			self.caseIndex = caseIndex;
 			self:Show();

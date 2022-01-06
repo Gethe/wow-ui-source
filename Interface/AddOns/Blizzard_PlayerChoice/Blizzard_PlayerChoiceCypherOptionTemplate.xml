@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<Frame name="PlayerChoiceCypherOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" virtual="true">
+	<Frame name="PlayerChoiceCypherOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceCypherOptionTemplateMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="selectedEffectID" value="138" type="number"/>
 			<KeyValue key="minOptionHeight" value="343" type="number"/>
@@ -95,31 +95,31 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Header" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="topPadding" value="18" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyV="MIDDLE" maxLines="3">
+							<Size x="165" y="50"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Animations>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<TextureCoordTranslation childKey="LineGlow" endDelay="3" duration="15" offsetU="0" offsetV="1" />
-			</AnimationGroup>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<Translation childKey="Pixels2" duration="8" order="1" offsetX="0" offsetY="250"/>
-			</AnimationGroup>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<Translation childKey="Pixels1" duration="13" order="1" offsetX="0" offsetY="250"/>
-			</AnimationGroup>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<Translation childKey="Wisps" duration="13" order="1" offsetX="0" offsetY="500"/>
-			</AnimationGroup>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<Translation childKey="Wisps2" duration="20" order="1" offsetX="0" offsetY="500"/>
-			</AnimationGroup>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<Translation childKey="Wisps2" duration="20" order="1" offsetX="0" offsetY="500"/>
-			</AnimationGroup>
 			<AnimationGroup looping="BOUNCE" SetToFinalAlpha="true" parentArray="PassiveAnimations">
 				<Alpha childKey="ArtworkGlow" duration="3" order="1" fromAlpha="0.6" toAlpha="0.9"/>
 			</AnimationGroup>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
-				<Translation smoothing="NONE" childKey="ArtworkPixels" duration="6" order="1" offsetX="0" offsetY="250"/>
-			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnLoad method="CypherChoiceOnLoad" inherit="append"/>
+		</Scripts>
 	</Frame>
 </Ui>

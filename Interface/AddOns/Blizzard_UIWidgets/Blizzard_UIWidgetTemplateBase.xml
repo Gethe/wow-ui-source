@@ -151,7 +151,20 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashOverlay" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim">
+				<Alpha childKey="FlashOverlay" fromAlpha="0" toAlpha="0.8" duration="1" order="1"/>
+				<Alpha childKey="FlashOverlay" fromAlpha="0.8" toAlpha="0" duration="1" order="2"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	
 	<StatusBar name="UIWidgetBaseStatusBarTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStatusBarTemplateMixin" virtual="true"/>

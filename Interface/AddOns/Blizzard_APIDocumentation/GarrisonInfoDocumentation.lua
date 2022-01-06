@@ -370,6 +370,8 @@ local GarrisonInfo =
 
 			Arguments =
 			{
+				{ Name = "garrTalentID", Type = "number", Nilable = false },
+				{ Name = "researchRank", Type = "number", Nilable = false },
 				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
 				{ Name = "talentPointIndex", Type = "number", Nilable = false },
 				{ Name = "isRespec", Type = "number", Nilable = false },

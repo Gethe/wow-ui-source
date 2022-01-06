@@ -3129,8 +3129,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		end
 		frame:Raise();
 	elseif ( not self:GetUIPanel("doublewide") ) then
-		if ( self:GetUIPanel("left") ) then
-			rightOffset = centerOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
+		local leftPanel = self:GetUIPanel("left");
+		if ( leftPanel ) then
+			rightOffset = GetUIPanelWidth(leftPanel) + (GetUIPanelAttribute(leftPanel,"xoffset") or 0);
 		else
 			rightOffset = leftOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") * 2
 		end
@@ -3625,7 +3626,7 @@ end
 function CanShowRightUIPanel(frame)
 	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
 	local rightSide = UIParent:GetAttribute("RIGHT_OFFSET") + width;
-	return rightSide < GetMaxUIPanelsWidth();
+	return rightSide <= GetMaxUIPanelsWidth();
 end
 
 function CanShowCenterUIPanel(frame)

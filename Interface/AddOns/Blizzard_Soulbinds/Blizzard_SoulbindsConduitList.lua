@@ -381,7 +381,11 @@ function ConduitListSectionMixin:Init(elementData)
 
 	self:SetCollapsed(elementData.collapsed);
 
-	local continuableContainer = ContinuableContainer:Create();
+	if self.currentContinuable then
+		self.currentContinuable:Cancel();
+	end
+	self.currentContinuable = ContinuableContainer:Create();
+
 	local matchesSpecSet = {};
 
 	for index, conduitData in ipairs(conduitDatas) do
@@ -399,10 +403,10 @@ function ConduitListSectionMixin:Init(elementData)
 		end
 
 		conduitData.item = Item:CreateFromItemID(conduitData.conduitItemID);
-		continuableContainer:AddContinuable(conduitData.item);
+		self.currentContinuable:AddContinuable(conduitData.item);
 	end
 	
-	continuableContainer:ContinueOnLoad(function()
+	self.currentContinuable:ContinueOnLoad(function()
 		local sorter = function(lhs, rhs)
 			if lhs.sortingCategory == rhs.sortingCategory then
 				if (not lhs.conduitSpecName or not rhs.conduitSpecName) or lhs.conduitSpecName == rhs.conduitSpecName then
@@ -422,7 +426,7 @@ function ConduitListSectionMixin:Init(elementData)
 		for index, conduitData in ipairs(conduitDatas) do
 			frames[index]:Init(conduitData);
 		end
-
+		
 		local newConduitData = elementData.newConduitData;
 		if newConduitData then
 			elementData.newConduitData = nil;
