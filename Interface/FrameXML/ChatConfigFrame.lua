@@ -1582,6 +1582,7 @@ local function UpdateDefaultButtons(combatLogSelected)
 		ChatConfigFrame.DefaultButton:Hide();
 		ChatConfigFrame.RedockButton:Hide();
 		CombatLogDefaultButton:Show();
+		ChatConfigFrame.ToggleChatButton:Hide();
 	else
 		ChatConfigFrame.DefaultButton:Show();
 		ChatConfigFrame.RedockButton:Show();
