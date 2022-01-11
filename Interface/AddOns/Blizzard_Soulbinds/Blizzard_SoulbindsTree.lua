@@ -380,11 +380,13 @@ function SoulbindTreeMixin:OnCursorChanged(isDefault, newCursorType, oldCursorTy
 end
 
 function SoulbindTreeMixin:GetSelectableCount()
-	return AccumulateIf(self.nodeFrames, 
-		function(nodeFrame)
-			return nodeFrame:IsSelectable();
+	local count = 0;
+	for _, nodeFrame in pairs(self.nodeFrames) do
+		if nodeFrame:IsSelectable() then
+			count = count + 1;
 		end
-	);
+	end
+	return count;
 end
 
 function SoulbindTreeMixin:StopThenApplySelectableAndUnsocketedAnims()

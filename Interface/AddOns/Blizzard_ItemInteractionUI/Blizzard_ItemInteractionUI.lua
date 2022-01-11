@@ -64,6 +64,11 @@ local FrameSpecificOverrides = {
 		itemSlotOffsetY = 15,
 		descriptionOffset = 72,
 	},
+
+	[Enum.UIItemInteractionType.ItemConversion] = {
+		itemSlotOffsetY = 15,
+		descriptionOffset = 72,
+	},
 };
 
 ------------- Frame and Unit Events -------------
@@ -108,33 +113,33 @@ end
 
 --------------- Base Frame Functions -----------------------
 function ItemInteractionMixin:OnEvent(event, ...)
-	if(event == "PLAYER_MONEY") or (event == "ITEM_INTERACTION_ITEM_SELECTION_UPDATED") then
+	if (event == "PLAYER_MONEY") or (event == "ITEM_INTERACTION_ITEM_SELECTION_UPDATED") then
 		self:UpdateMoney();
 		if (event == "ITEM_INTERACTION_ITEM_SELECTION_UPDATED") then
 			local itemLocation = ...;
-			if self:GetItemLocation() and self:GetItemLocation():IsEqualTo(itemLocation) then
+			if (self:GetItemLocation() and self:GetItemLocation():IsEqualTo(itemLocation)) then
 				self:SetInteractionItem(nil);
 			else
 				self:SetInteractionItem(itemLocation);
 			end
 		end
-	elseif event == "UNIT_SPELLCAST_START" then
+	elseif (event == "UNIT_SPELLCAST_START") then
 		local unitTag, lineID, spellID = ...;
 		local itemInteractionSpellId = C_ItemInteraction.GetItemInteractionSpellId(); 
-		if itemInteractionSpellId and spellID == itemInteractionSpellId then
+		if (itemInteractionSpellId and spellID == itemInteractionSpellId) then
 			self.castLineID = lineID;
 		end
-	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+	elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then
 		local unitTag, spellName, rank, lineID, spellID = ...;
-		if self.castLineID and self.castLineID == lineID then
+		if (self.castLineID and self.castLineID == lineID) then
 			self.castLineID = nil;
 		end
-	elseif event == "UNIT_SPELLCAST_STOP" then
+	elseif (event == "UNIT_SPELLCAST_STOP") then
 		local unitTag, lineID, spellID = ...;
-		if self.castLineID and self.castLineID == lineID then
+		if (self.castLineID and self.castLineID == lineID) then
 			C_ItemInteraction.ClearPendingItem();
 		end
-	elseif event == "ITEM_INTERACTION_CLOSE" then 
+	elseif (event == "ITEM_INTERACTION_CLOSE") then 
 		HideUIPanel(self);
 	end
 end
@@ -147,17 +152,24 @@ function ItemInteractionMixin:OnShow()
 	self:LoadInteractionFrameData(frameInfo);
 
 	PlaySound(self.openSoundKitID)
-	if(self.tutorialBitFlag) then 
-		if not GetCVarBitfield("closedInfoFrames", self.tutorialBitFlag) then
+	if (self.tutorialBitFlag) then 
+		if (not GetCVarBitfield("closedInfoFrames", self.tutorialBitFlag)) then
 			local helpTipInfo = {
 				text = self.tutorialText,
 				buttonStyle = HelpTip.ButtonStyle.Close,
 				cvarBitfield = "closedInfoFrames",
 				bitfieldFlag = self.tutorialBitFlag,
-				targetPoint = HelpTip.Point.RightEdgeCenter,
-				offsetX = 80,
 			};
-			HelpTip:Show(self, helpTipInfo, self.ItemSlot);
+			if (self.conversionMode) then
+				helpTipInfo.alignment = HelpTip.Alignment.Left;
+				helpTipInfo.targetPoint = HelpTip.Point.BottomEdgeCenter;
+				helpTipInfo.offsetY = -10;
+				HelpTip:Show(self, helpTipInfo, self.ItemConversionFrame.ItemConversionInputSlot);
+			else
+				helpTipInfo.targetPoint = HelpTip.Point.RightEdgeCenter;
+				helpTipInfo.offsetX = 80;
+				HelpTip:Show(self, helpTipInfo, self.ItemSlot);
+			end
 		end
 	end
 
@@ -196,19 +208,22 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	self.dropInSlotSoundKitId = frameData.dropInSlotSoundKitId or SOUNDKIT.PUT_DOWN_SMALL_CHAIN;
 	self.flags = frameData.flags;
 	self.buttonTooltip = frameData.buttonTooltip;
+	self.textureKit = frameData.textureKit;
 	local frameTextureKitRegions = {
 		[self.Background] = "%s-background",
 		[self.ItemSlot.GlowOverlay] = "%s-glow",
 	};
 
+	self.conversionMode = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConversionMode));
+	
 	local portraitFormat = "%s-portrait";
-	if (C_Texture.GetAtlasInfo(portraitFormat:format(frameData.textureKit)) ~= nil) then
+	if (C_Texture.GetAtlasInfo(portraitFormat:format(self.textureKit)) ~= nil) then
 		frameTextureKitRegions[self.portrait] = portraitFormat;
 	else
 		SetPortraitTexture(self.portrait, "npc");
 	end
 
-	SetupTextureKitOnFrames(frameData.textureKit, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrames(self.textureKit, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	local hasDescription = (frameData.description ~= nil);
 	self.Description:SetShown(hasDescription);
@@ -243,11 +258,33 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 	
 	self.tutorialBitFlag = GetItemInteractionFrameSpecificValueByKey("tutorialBitFlag");
 
-	self.ItemSlot:ClearAllPoints();
-	self.ItemSlot:SetPoint("CENTER", self.Background, "CENTER", 0, GetItemInteractionFrameSpecificValueByKey("itemSlotOffsetY"));
+	local itemSlotOffsetY = GetItemInteractionFrameSpecificValueByKey("itemSlotOffsetY");
 
-	self.ItemSlot.GlowOverlay:ClearAllPoints();
-	self.ItemSlot.GlowOverlay:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("glowOverLayOffsetY"));
+	if (self.conversionMode) then
+		self.ItemSlot:Hide();
+
+		self.ItemConversionFrame.ItemConversionInputSlot:ClearAllPoints();
+		self.ItemConversionFrame.ItemConversionInputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", -75, itemSlotOffsetY);
+
+		self.ItemConversionFrame.Arrow:ClearAllPoints();
+		self.ItemConversionFrame.Arrow:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 0, itemSlotOffsetY);
+
+		self.ItemConversionFrame.ItemConversionOutputSlot:ClearAllPoints();
+		self.ItemConversionFrame.ItemConversionOutputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 75, itemSlotOffsetY);
+		self.ItemConversionFrame.ItemConversionOutputSlot:SetNormalTexture(nil);
+
+		self.ItemConversionFrame:Show();
+	else
+		self.ItemConversionFrame:Hide();
+
+		self.ItemSlot:ClearAllPoints();
+		self.ItemSlot:SetPoint("CENTER", self.Background, "CENTER", 0, itemSlotOffsetY);
+
+		self.ItemSlot.GlowOverlay:ClearAllPoints();
+		self.ItemSlot.GlowOverlay:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("glowOverLayOffsetY"));
+
+		self.ItemSlot:Show();
+	end
 
 	self.Description:ClearAllPoints();
 	self.Description:SetPoint("BOTTOM", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
@@ -258,7 +295,7 @@ function ItemInteractionMixin:UpdateDescriptionColor()
 end
 
 function ItemInteractionMixin:GetDescriptionColor()
-	if (self.interactionType == Enum.UIItemInteractionType.RunecarverScrapping) then
+	if (self.interactionType == Enum.UIItemInteractionType.RunecarverScrapping or self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
 		return (self.itemLocation == nil) and DISABLED_FONT_COLOR or NORMAL_FONT_COLOR;
 	end
 
@@ -271,9 +308,9 @@ function ItemInteractionMixin:UpdateCostFrame()
 	local costsCurrency = self:CostsCurrency();
 	local buttonFrame = self.ButtonFrame;
 
-	if(costsCurrency) then 
+	if (costsCurrency) then 
 		self:UpdateCurrency(); 
-	elseif(costsMoney) then 
+	elseif (costsMoney) then 
 		self:UpdateMoney();
 	end
 	buttonFrame.Currency:SetShown(costsCurrency);
@@ -287,8 +324,8 @@ function ItemInteractionMixin:UpdateMoney()
 		return;
 	end
 
-	MoneyFrame_Update(self.ButtonFrame.MoneyFrame:GetName(),  self.cost, false);
-	if GetMoney() < (self.cost) then
+	MoneyFrame_Update(self.ButtonFrame.MoneyFrame:GetName(), self.cost, false);
+	if (GetMoney() < (self.cost)) then
 		SetMoneyFrameColor(self.ButtonFrame.MoneyFrame:GetName(), "red");
 	else
 		SetMoneyFrameColor(self.ButtonFrame.MoneyFrame:GetName(), "white");
@@ -303,7 +340,7 @@ function ItemInteractionMixin:UpdateCurrency()
 	self.ButtonFrame.Currency.currencyID = self.currencyTypeId;
 	self.ButtonFrame.Currency.icon:SetTexture(currencyTexture);
 	self.ButtonFrame.Currency.count:SetText(self.cost);
-	if ( self.cost > amount ) then
+	if (self.cost > amount) then
 		self.ButtonFrame.Currency.count:SetTextColor(RED_FONT_COLOR:GetRGB());
 	else
 		self.ButtonFrame.Currency.count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -356,7 +393,7 @@ function ItemInteractionMixin:InteractWithItem()
 		local textArg1 = nil;
 		local textArg2 = nil;
 
-		if FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConfirmationHasDelay) then
+		if (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConfirmationHasDelay)) then
 			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED", textArg1, textArg2, data);
 		else
 			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION", textArg1, textArg2, data);
@@ -367,8 +404,8 @@ function ItemInteractionMixin:InteractWithItem()
 end
 
 -- Enables or disables the button to interact with the item based off of your currency amount and if you have an item in the slot.
-function ItemInteractionMixin:UpdateActionButtonState()
-	if(self:CostsCurrency()) then 
+function ItemInteractionMixin:UpdateActionButtonState()	
+	if (self:CostsCurrency()) then
 		local amount = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId).quantity;
 		self.ButtonFrame.ActionButton:SetEnabled(self.itemLocation ~= nil and amount >= self.cost);
 	elseif (self:CostsGold()) then
@@ -379,7 +416,7 @@ function ItemInteractionMixin:UpdateActionButtonState()
 end
 
 function ItemInteractionMixin:SetInteractionItem(itemLocation)
-	if self.itemDataLoadedCancelFunc then
+	if (self.itemDataLoadedCancelFunc) then
 		self.itemDataLoadedCancelFunc();
 		self.itemDataLoadedCancelFunc = nil;
 	end
@@ -389,7 +426,7 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	self.itemLocation = itemLocation;
 
 	if (itemLocation) then
-		if self.tutorialBitFlag and not GetCVarBitfield("closedInfoFrames", self.tutorialBitFlag) then
+		if (self.tutorialBitFlag and not GetCVarBitfield("closedInfoFrames", self.tutorialBitFlag)) then
 			HelpTip:Hide(self, self.tutorialText);
 			SetCVarBitfield("closedInfoFrames", self.tutorialBitFlag, true);
 		end
@@ -404,8 +441,15 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	self:UpdateDescriptionColor();
 
 	PlaySound(self.dropInSlotSoundKitId);
-	self.ItemSlot:RefreshIcon();
-	self.ItemSlot:RefreshTooltip();
+	if (self.conversionMode) then
+		self.ItemConversionFrame.ItemConversionInputSlot:RefreshIcon();
+		self.ItemConversionFrame.ItemConversionInputSlot:RefreshTooltip();
+		self.ItemConversionFrame.Arrow:Update(itemLocation and itemLocation:IsValid());
+		self.ItemConversionFrame.ItemConversionOutputSlot:RefreshIcon();
+	else
+		self.ItemSlot:RefreshIcon();
+		self.ItemSlot:RefreshTooltip();
+	end
 	self:UpdateActionButtonState();
 
 	StaticPopup_Hide("ITEM_INTERACTION_CONFIRMATION");
@@ -421,8 +465,10 @@ end
 function ItemInteractionItemSlotMixin:RefreshIcon()
 	self.Icon:Hide();
 	self.GlowOverlay:Hide();
-	if self:GetParent():GetItemLocation() then
-		local item = Item:CreateFromItemLocation(self:GetParent():GetItemLocation());
+	local itemInteractionFrame = self:GetParent()
+	local itemLocation = itemInteractionFrame:GetItemLocation();
+	if (itemLocation) then
+		local item = Item:CreateFromItemLocation(itemLocation);
 		self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
 			self.Icon:SetTexture(item:GetItemIcon());
 			self.Icon:Show();
@@ -432,16 +478,16 @@ function ItemInteractionItemSlotMixin:RefreshIcon()
 end
 
 function ItemInteractionItemSlotMixin:RefreshTooltip()
-	if GetMouseFocus() == self then
-		self:OnMouseEnter();
+	if (GetMouseFocus() == self) then
+		self:OnEnter();
 	else
-		self:OnMouseLeave();
+		self:OnLeave();
 	end
 end
 
 function ItemInteractionItemSlotMixin:OnClick(button)
-	if button == "RightButton" then
-		C_ItemInteraction.ClearPendingItem(); 
+	if (button == "RightButton") then
+		C_ItemInteraction.ClearPendingItem();
 	else
 		C_ItemInteraction.SetPendingItem(C_Cursor.GetCursorItem());
 	end
@@ -455,11 +501,12 @@ function ItemInteractionItemSlotMixin:OnReceiveDrag()
 	C_ItemInteraction.SetPendingItem(C_Cursor.GetCursorItem());
 end
 
-function ItemInteractionItemSlotMixin:OnMouseEnter()
-	local itemLocation = self:GetParent():GetItemLocation(); 
-	if itemLocation then
+function ItemInteractionItemSlotMixin:OnEnter()
+	local itemInteractionFrame = self:GetParent();
+	local itemLocation = itemInteractionFrame:GetItemLocation(); 
+	if (itemLocation) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		if (self:GetParent():GetInteractionType() == Enum.UIItemInteractionType.CleanseCorruption) then
+		if (itemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.CleanseCorruption) then
 			C_ItemInteraction.SetCorruptionReforgerItemTooltip();
 		else 
 			ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
@@ -470,28 +517,29 @@ function ItemInteractionItemSlotMixin:OnMouseEnter()
 	end
 end
 
-function ItemInteractionItemSlotMixin:OnMouseLeave()
+function ItemInteractionItemSlotMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
 ------------------ Item Action Button Functions ----------------------------
 ItemInteractionActionButtonMixin = {};
 
-function ItemInteractionActionButtonMixin:OnMouseEnter()
-	local interactFrame = self:GetParent():GetParent(); 
-	if (interactFrame:CostsGold()) then
-		if (not self:IsEnabled() and GetMoney() < interactFrame:GetCost()) then
+function ItemInteractionActionButtonMixin:OnEnter()
+	local itemInteractionFrame = self:GetParent():GetParent();
+
+	if (itemInteractionFrame:CostsGold()) then
+		if (not self:IsEnabled() and GetMoney() < itemInteractionFrame:GetCost()) then
 			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 			GameTooltip_AddColoredLine(GameTooltip, NOT_ENOUGH_GOLD, RED_FONT_COLOR);
 			GameTooltip:Show();
 		else
 			GameTooltip_Hide();
 		end
-	elseif(interactFrame:CostsCurrency()) then 
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(interactFrame.currencyTypeId);
+	elseif (itemInteractionFrame:CostsCurrency()) then 
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(itemInteractionFrame.currencyTypeId);
 		local name = currencyInfo.name;
 		local amount = currencyInfo.quantity;
-		if (not self:IsEnabled() and amount < interactFrame:GetCost()) then
+		if (not self:IsEnabled() and amount < itemInteractionFrame:GetCost()) then
 			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 			GameTooltip_AddColoredLine(GameTooltip, NOT_ENOUGH_CURRENCY:format(name), RED_FONT_COLOR);
 			GameTooltip:Show(); 
@@ -499,7 +547,7 @@ function ItemInteractionActionButtonMixin:OnMouseEnter()
 			GameTooltip_Hide();
 		end
 	else
-		local buttonTooltip = interactFrame:GetButtonTooltip();
+		local buttonTooltip = itemInteractionFrame:GetButtonTooltip();
 		if (self:IsEnabled() and (buttonTooltip ~= nil)) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
@@ -514,10 +562,129 @@ function ItemInteractionActionButtonMixin:OnMouseEnter()
 	end
 end
 
-function ItemInteractionActionButtonMixin:OnMouseLeave()
+function ItemInteractionActionButtonMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
 function ItemInteractionActionButtonMixin:OnClick()
 	self:GetParent():GetParent():InteractWithItem();
-end 
+end
+
+------------------ Item Conversion Input Slot Functions ------------------
+ItemInteractionItemConversionInputSlotMixin = {};
+
+function ItemInteractionItemConversionInputSlotMixin:OnLoad()
+	self:RegisterForClicks("RightButtonDown", "LeftButtonDown");
+	self:RegisterForDrag("LeftButton");
+end
+
+function ItemInteractionItemConversionInputSlotMixin:RefreshIcon()
+	local itemInteractionFrame = self:GetParent():GetParent();
+	local itemLocation = itemInteractionFrame:GetItemLocation();
+	if (itemLocation) then
+		local item = Item:CreateFromItemLocation(itemLocation);
+		self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
+			SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-leftitem-border-full", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+			self:SetNormalTexture(nil);
+			self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+			self.EmptySlotGlow:Hide();
+			self.PulseEmptySlotGlow:Stop();
+			SetItemButtonTexture(self, item:GetItemIcon());
+		end);
+	else
+		SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-leftitem-border-empty", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+		SetItemButtonTexture(self, nil);
+		self:SetNormalAtlas("itemupgrade_greenplusicon");
+		self:SetPushedAtlas("itemupgrade_greenplusicon_pressed");
+		self.EmptySlotGlow:Show();
+		self.PulseEmptySlotGlow:Restart();
+	end
+end
+
+function ItemInteractionItemConversionInputSlotMixin:RefreshTooltip()
+	if (GetMouseFocus() == self) then
+		self:OnEnter();
+	else
+		self:OnLeave();
+	end
+end
+
+function ItemInteractionItemConversionInputSlotMixin:OnClick(button)
+	if (button == "RightButton") then
+		C_ItemInteraction.ClearPendingItem();
+	else
+		C_ItemInteraction.SetPendingItem(C_Cursor.GetCursorItem());
+	end
+end
+
+function ItemInteractionItemConversionInputSlotMixin:OnDragStart()
+	C_ItemInteraction.ClearPendingItem();
+end
+
+function ItemInteractionItemConversionInputSlotMixin:OnReceiveDrag()
+	C_ItemInteraction.SetPendingItem(C_Cursor.GetCursorItem());
+end
+
+function ItemInteractionItemConversionInputSlotMixin:OnEnter()
+	local itemInteractionFrame = self:GetParent():GetParent();
+	local itemLocation = itemInteractionFrame:GetItemLocation();
+	if (itemLocation) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); 
+		ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
+		GameTooltip:Show();
+	else
+		GameTooltip_Hide();
+	end
+end
+
+function ItemInteractionItemConversionInputSlotMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+------------------ Item Conversion Output Slot Functions ------------------
+ItemInteractionItemConversionOutputSlotMixin = {};
+
+function ItemInteractionItemConversionOutputSlotMixin:RefreshIcon()
+	local itemInteractionFrame = self:GetParent():GetParent();
+	local itemLocation = itemInteractionFrame:GetItemLocation();
+
+	-- TODO: Display the output item's icon instead of copying the original icon 
+	if (itemLocation) then
+		local item = Item:CreateFromItemLocation(itemLocation);
+		self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
+			SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-rightitem-border-full", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+			SetItemButtonTexture(self, item:GetItemIcon());
+		end);
+	else
+		SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-rightitem-border-empty", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+		SetItemButtonTexture(self, nil);
+	end
+end
+
+function ItemInteractionItemConversionOutputSlotMixin:OnEnter()
+	local itemInteractionFrame = self:GetParent():GetParent();
+	local itemLocation = itemInteractionFrame:GetItemLocation(); 
+	if (itemLocation) then
+		if (itemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			C_ItemInteraction.SetItemConversionOutputTooltip();
+			GameTooltip:Show();
+		else 
+			GameTooltip_Hide();
+		end
+	else
+		GameTooltip_Hide();
+	end
+end
+
+function ItemInteractionItemConversionOutputSlotMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+------------------ Conversion Mode Arrow Functions ------------------
+ItemInteractionItemConversionArrowMixin = {};
+
+function ItemInteractionItemConversionArrowMixin:Update(validItem)
+	local itemInteractionFrame = self:GetParent():GetParent();
+	SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.arrow, validItem and "%s-arrow-full" or "%s-arrow-empty", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+end

@@ -3,6 +3,21 @@ local ProfessionConstants =
 	Tables =
 	{
 		{
+			Name = "SkinningState",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "SkinningState", EnumValue = 0 },
+				{ Name = "Reserved", Type = "SkinningState", EnumValue = 1 },
+				{ Name = "Skinning", Type = "SkinningState", EnumValue = 2 },
+				{ Name = "Looting", Type = "SkinningState", EnumValue = 3 },
+				{ Name = "Skinned", Type = "SkinningState", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "ProfessionIDs",
 			Type = "Constants",
 			Values =

@@ -27,7 +27,7 @@
 				<Texture file="Interface\UnitPowerBarAlt\SpellPush-Frame" parentKey="style">
 					<Size x="256" y="128"/>
 					<Anchors>
-						<Anchor point="CENTER" x="-2" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -941,11 +941,11 @@ function GarrisonTalentButtonMixin:SetTalent(talent, talentSelectedEffect, custo
 		if show then
 			if prereqID == talent.id then
 				self.Icon:SetDesaturated(false);
-				self:StartHighlightAnimation();
+				self:StartHighlightAnimation(talent.id);
 			end
 		else
 			self.Icon:SetDesaturated(self.wasDesaturated or false);
-			self:StopHighlightAnimation();
+			self:StopHighlightAnimation(talent.id);
 		end
 	end
 	EventRegistry:RegisterCallback("GarrisonTalentButtonMixin.HighlightTalentPrereq", HighlightTalentPrereqCallback, self);
@@ -1144,12 +1144,12 @@ function GarrisonTalentButtonMixin:Refresh()
 	end
 end
 
-function GarrisonTalentButtonMixin:AcquireAnimationFrame()
+function GarrisonTalentButtonMixin:AcquireAnimationFrame(talentID)
 	-- Animation frames are separate from talent buttons so that the animation state is preserved
 	-- even if the talent button gets released back to the pool and reacquired (i.e. during a refresh).
 
 	local talentFrame = self:GetTalentFrame();
-	local animationFrame = talentFrame:AcquireAnimationFrame(self.talent.id);
+	local animationFrame = talentFrame:AcquireAnimationFrame(self.talent and self.talent.id or talentID);
 	animationFrame:Attach(self);
 	self.animationFrame = animationFrame;
 end
@@ -1181,16 +1181,16 @@ function GarrisonTalentButtonMixin:StartSelectedAnimation()
 	end
 end
 
-function GarrisonTalentButtonMixin:StartHighlightAnimation()
-	self:AcquireAnimationFrame();
+function GarrisonTalentButtonMixin:StartHighlightAnimation(talentID)
+	self:AcquireAnimationFrame(talentID);
 
 	if not self.animationFrame:IsPlayingHighlightAnimation() then
 		self.animationFrame:StartHighlightAnimation(self.Icon);
 	end
 end
 
-function GarrisonTalentButtonMixin:StopHighlightAnimation()
-	self:AcquireAnimationFrame();
+function GarrisonTalentButtonMixin:StopHighlightAnimation(talentID)
+	self:AcquireAnimationFrame(talentID);
 
 	if self.animationFrame:IsPlayingHighlightAnimation() then
 		self.animationFrame:StopHighlightAnimation();

@@ -2164,13 +2164,7 @@ function StoreFrame_OnLoad(self)
 			end
 		);
 	end
-	
-	if IsOnGlueScreen() then
-		self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
-	else
-		self:SetPoint("TOP", nil, "TOP", 0, -116); --Intentionally not anchored to UIParent.
-	end
-
+	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 
 	self.productCardPoolCollection = CreateFixedSizeFramePoolCollection();

@@ -372,6 +372,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemConvertibleAndValidForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemConvertibleAndValidForPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemCorrupted",
 			Type = "Function",
 

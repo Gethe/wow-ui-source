@@ -1063,6 +1063,12 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 		self.PetModel:SetDisplayInfo(C_PetBattles.GetDisplayID(petOwner, petIndex));
 		self.PetModel:SetRotation(-BATTLE_PET_DISPLAY_ROTATION);
 		self.PetModel:SetDoBlend(false);
+
+		-- Hacky fix for WOW9-98266 because this pet won't play nicely.
+		if C_PetBattles.GetPetSpeciesID(petOwner, petIndex) == 3175 then
+			self.PetModel:SetPosition(-0.5, -2, 0);
+		end
+
 		if ( C_PetBattles.GetHealth(petOwner, petIndex) == 0 ) then
 			self.PetModel:SetAnimation(6, 0); --Display the dead animation
 			--self.PetModel:SetAnimation(0, 0);

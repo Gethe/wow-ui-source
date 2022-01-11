@@ -1,4 +1,4 @@
-local DUNGEON_SCORE_LINK_INDEX_START = 9; 
+local DUNGEON_SCORE_LINK_INDEX_START = 11; 
 local DUNGEON_SCORE_LINK_ITERATE = 3; 
 local PVP_LINK_ITERATE = 3; 
 local PVP_LINK_ITERATE_BRACKET = 4; 
@@ -609,6 +609,8 @@ function DisplayDungeonScoreLink(link)
 	local className, classFileName = GetClassInfo(playerClass);
 	local classColor = C_ClassColor.GetClassColor(classFileName);
 	local runsThisSeason = tonumber(splits[8]);
+	local bestSeasonScore = tonumber(splits[9]);
+	local bestSeasonNumber = tonumber(splits[10]);
 
 	--Bad Link..
 	if(not playerName or not playerClass or not playerItemLevel or not playerLevel) then 
@@ -621,15 +623,17 @@ function DisplayDungeonScoreLink(link)
 	end 
 
 	GameTooltip_SetTitle(ItemRefTooltip, classColor:WrapTextInColorCode(playerName));
-	GameTooltip_AddColoredLine(ItemRefTooltip, DUNGEON_SCORE_LINK_LEVEL_CLASS_FORMAT_STRING:format(playerLevel, className), HIGHLIGHT_FONT_COLOR)
+	GameTooltip_AddColoredLine(ItemRefTooltip, DUNGEON_SCORE_LINK_LEVEL_CLASS_FORMAT_STRING:format(playerLevel, className), HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_ITEM_LEVEL:format(playerItemLevel));
 
-	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
-	if (not color) then 
-		color = HIGHLIGHT_FONT_COLOR; 
-	end
+	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore) or HIGHLIGHT_FONT_COLOR;
 	GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_RATING:format(color:WrapTextInColorCode(dungeonScore)));
 	GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_RUNS_SEASON:format(runsThisSeason));
+
+	if(bestSeasonScore ~= 0) then 
+		local bestSeasonColor = C_ChallengeMode.GetDungeonScoreRarityColor(bestSeasonScore) or HIGHLIGHT_FONT_COLOR; 
+		GameTooltip_AddNormalLine(ItemRefTooltip, DUNGEON_SCORE_LINK_PREVIOUS_HIGH:format(bestSeasonColor:WrapTextInColorCode(bestSeasonScore), bestSeasonNumber)); 
+	end		
 	GameTooltip_AddBlankLineToTooltip(ItemRefTooltip);
 
 	local sortTable = { };
@@ -663,7 +667,8 @@ function GetDungeonScoreLink(dungeonScore, playerName)
 	local _, _, class = UnitClass("player");
 	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	local runHistory = C_MythicPlus.GetRunHistory(true, true);
-	local dungeonScoreTable = {C_ChallengeMode.GetOverallDungeonScore(), UnitGUID("player"), playerName, class, math.ceil(avgItemLevel), UnitLevel("player"), runHistory and #runHistory or 0, unpack(DungeonScoreLinkAddDungeonsToTable())};
+	local bestSeasonScore, bestSeasonNumber = C_MythicPlus.GetSeasonBestMythicRatingFromThisExpansion(); 
+	local dungeonScoreTable = { C_ChallengeMode.GetOverallDungeonScore(), UnitGUID("player"), playerName, class, math.ceil(avgItemLevel), UnitLevel("player"), runHistory and #runHistory or 0, bestSeasonScore, bestSeasonNumber, unpack(DungeonScoreLinkAddDungeonsToTable())};
 	return NORMAL_FONT_COLOR:WrapTextInColorCode(FormatLink("dungeonScore", DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
 end		
 

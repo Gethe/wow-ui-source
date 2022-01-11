@@ -1,5 +1,5 @@
 
-local ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
+local ZoneAbilityFrameAtlasFallback = "revendreth-zone-ability";
 
 -- Include sound information based on texture kit for now.
 local TextureKitToSoundEffects = {

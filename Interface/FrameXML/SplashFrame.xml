@@ -25,7 +25,7 @@
 	<Frame name="SplashFrame" parent="UIParent" toplevel="true" mixin="SplashFrameMixin" frameStrata="DIALOG" enableMouse="true" hidden="true" >
 		<Size x="882" y="584"/>
 		<Anchors>
-			<Anchor point="TOP" y="-116"/>
+			<Anchor point="CENTER" y="60"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">

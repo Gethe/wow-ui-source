@@ -134,7 +134,7 @@ end
 
 function TreeListDataProviderMixin:GetSize()
 	local count = 0;
-	local enumerator = self:Enumerate();
+	local enumerator = self:EnumerateUncollapsed();
 	while enumerator() do
 		count = count + 1;
 	end
