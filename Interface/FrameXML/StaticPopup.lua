@@ -4297,6 +4297,7 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 	timeout = 0,
 	hideOnEscape = 0,
 	exclusive = 1,
+	wide = true,
 };
 
 StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
