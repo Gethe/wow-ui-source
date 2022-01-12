@@ -8,7 +8,11 @@
 				self.text:SetWidth(290);
 			</OnLoad>
 			<OnClick>
-				TradeSkillSkillButton_OnClick(self,button);
+				if ( IsModifiedClick() ) then
+					HandleModifiedItemClick(GetTradeSkillRecipeLink(self:GetID()));
+				else
+					TradeSkillSkillButton_OnClick(self,button);
+				end
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -32,13 +36,7 @@
 				ResetCursor();
 			</OnLeave>
 			<OnClick>
-				if ( IsControlKeyDown() ) then
-					DressUpItemLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
-				elseif ( IsShiftKeyDown() ) then
-					if ( ChatEdit_GetActiveWindow() ) then
-						ChatEdit_InsertLink(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
-					end
-				end
+				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -581,13 +579,7 @@
 										end;
 									</OnLoad>
 									<OnClick>
-										if ( IsControlKeyDown() ) then
-											DressUpItemLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
-										elseif ( IsShiftKeyDown() ) then
-											if ( ChatEdit_GetActiveWindow() ) then
-												ChatEdit_InsertLink(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
-											end
-										end
+										HandleModifiedItemClick(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 									</OnClick>
 									<OnEnter>
 										if ( TradeSkillFrame.selectedSkill ~= 0 ) then

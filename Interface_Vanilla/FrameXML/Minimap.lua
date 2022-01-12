@@ -496,7 +496,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				-- Have been accepted show enter battleground dialog
 				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, SecondsToTime(GetBattlefieldPortExpiration(i)));
 				if ( not tooltipOnly ) then
-					PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 					MiniMapBattlefieldFrame:Show();
 				end
 				showRightClickText = 1;

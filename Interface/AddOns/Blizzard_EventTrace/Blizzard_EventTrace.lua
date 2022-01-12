@@ -25,13 +25,13 @@ local function GetDisplayEvent(elementData)
 	return elementData.displayEvent or elementData.event;
 end
 
-EventTraceSavedVars = 
+EventTraceSavedVars =
 {
 	LogEventsWhenHidden = false,
 	ShowArguments = true,
 	ShowTimestamp = true,
 	LogCREvents = true,
-	Filters = 
+	Filters =
 	{
 		User = {},
 	},
@@ -74,7 +74,7 @@ function EventTracePanelMixin:OnLoad()
 	self.logDataProvider = CreateDataProvider();
 	self.searchDataProvider = CreateDataProvider();
 	self.searchDataProvider:RegisterCallback(DataProviderMixin.Event.OnSizeChanged, self.OnSearchDataProviderChanged, self);
-	
+
 	self.filterDataProvider = CreateDataProvider();
 	self.filterDataProvider:SetSortComparator(function(lhs, rhs)
 		return lhs.event < rhs.event;
@@ -86,7 +86,7 @@ function EventTracePanelMixin:OnLoad()
 	timer:SetScript("OnUpdate", function(o, elapsed)
 		self.frameCounter = self.frameCounter + 1;
 	end);
-	
+
 	self:InitializeSubtitleBar();
 	self:InitializeLog();
 	self:InitializeFilter();
@@ -107,7 +107,7 @@ end
 
 function EventTracePanelMixin:OnShow()
 	self.Log.Events.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
-	
+
 	if not self:IsLoggingEventsWhenHidden() then
 		self:LogMessage(EVENTTRACE_LOG_START);
 	end
@@ -191,9 +191,9 @@ end
 
 function EventTracePanelMixin:TryAddToSearch(elementData, search)
 	local s = search:upper()
-	
-	if string.len(s) > 0 and (string.find(tostring(elementData.id), s) or 
-		(elementData.event and string.find(elementData.event, s)) or 
+
+	if string.len(s) > 0 and (string.find(tostring(elementData.id), s) or
+		(elementData.event and string.find(elementData.event, s)) or
 		(elementData.arguments and string.find((elementData.arguments):upper(), s)) or
 		(elementData.message and string.find((elementData.message):upper(), s))) then
 		local shallow = true;
@@ -250,7 +250,7 @@ function EventTracePanelMixin:InitializeLog()
 				local found = self.Log.Search.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 					return elementData.id == pendingSearch.id;
 				end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
-				
+
 				if found then
 					local button = self.Log.Search.ScrollBox:FindFrame(found);
 					if button then
@@ -270,7 +270,7 @@ function EventTracePanelMixin:InitializeLog()
 		self.Log.Bar.DiscardAllButton:SetAlpha(alpha);
 		self.Log.Bar.DiscardAllButton:SetEnabled(empty);
 	end);
-	
+
 	local function SetOnDataRangeChanged(scrollBox)
 		local function OnDataRangeChanged(sortPending)
 			SetScrollBoxButtonAlternateState(scrollBox);
@@ -287,7 +287,7 @@ function EventTracePanelMixin:InitializeLog()
 		end);
 		if found then
 			found.enabled = true;
-			
+
 			local button = scrollBox:FindFrame(elementData);
 			if button then
 				button:UpdateEnabledState();
@@ -298,7 +298,7 @@ function EventTracePanelMixin:InitializeLog()
 		self:RemoveEventFromDataProvider(self.logDataProvider, elementData.event);
 		self:RemoveEventFromDataProvider(self.searchDataProvider, elementData.event);
 	end
-	
+
 	do
 		local function LocateInSearch(elementData, text)
 			self.pendingSearch = elementData;
@@ -389,7 +389,7 @@ end
 
 function EventTracePanelMixin:InitializeFilter()
 	self.Filter.Bar.Label:SetText(EVENTTRACE_FILTER_HEADER);
-	
+
 	local function SetEventsEnabled(enabled)
 		for index, elementData in self.filterDataProvider:Enumerate() do
 			elementData.enabled = enabled;
@@ -629,7 +629,7 @@ function EventTracePanelMixin:LogLine(elementData)
 	elementData.relativeTimestamp = relativeTimestamp;
 	elementData.frameCounter = self.frameCounter;
 	elementData.eventDelta = eventDelta;
-	
+
 	self.logDataProvider:Insert(elementData);
 	self:TrimDataProvider(self.logDataProvider);
 
@@ -769,7 +769,7 @@ function EventTraceLogEventButtonMixin:OnEnter()
 	local elementData = self:GetElementData();
 	GameTooltip_AddHighlightLine(EventTraceTooltip, GetDisplayEvent(elementData), HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_TIMESTAMP, elementData.systemTimestamp, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
-	
+
 	AddTooltipArguments(SafeUnpack(elementData.args));
 
 	EventTraceTooltip:Show();
@@ -802,11 +802,11 @@ function EventTraceLogEventButtonMixin:Init(elementData, showArguments, showTime
 	local id = FormatLogID(elementData);
 	local message = elementData.displayMessage or elementData.event;
 	elementData.lineWithoutArguments = FormatLine(id, message);
-	
+
 	elementData.arguments = AddLineArguments(SafeUnpack(elementData.args));
 	elementData.formattedArguments = GREEN_FONT_COLOR:WrapTextInColorCode(elementData.arguments);
 	self:SetLeftText(elementData, showArguments);
-	
+
 	local clock = CreateClock(elementData.relativeTimestamp);
 	elementData.formattedTimestamp = string.format("%s %s", clock, elementData.eventDelta and elementData.eventDelta or "");
 	self:SetRightText(elementData, showTimestamp);
@@ -864,9 +864,9 @@ EventTraceFilterButtonMixin = {};
 
 function EventTraceFilterButtonMixin:Init(elementData, hideCb)
 	self.Label:SetText(GetDisplayEvent(elementData));
-	
+
 	self:UpdateEnabledState();
-	
+
 	self.HideButton:SetScript("OnMouseDown", function(button, buttonName)
 		hideCb(elementData);
 	end);
@@ -893,8 +893,10 @@ function EventTraceFilterButtonMixin:ToggleEnabledState()
 	self:UpdateEnabledState();
 end
 
-SlashCmdList["EVENTTRACE"] = function(msg)
-	if not EventTrace:ProcessChatCommand(msg) then
-		EventTrace:SetShown(not EventTrace:IsShown());
+if SlashCmdList then
+	SlashCmdList["EVENTTRACE"] = function(msg)
+		if not EventTrace:ProcessChatCommand(msg) then
+			EventTrace:SetShown(not EventTrace:IsShown());
+		end
 	end
 end

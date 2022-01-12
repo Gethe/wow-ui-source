@@ -8,4 +8,5 @@ Blizzard_PTRFeedback.lua
 Blizzard_PTRFeedback_Tooltips.lua
 Blizzard_PTRFeedback_Frames.lua
 Blizzard_PTRFeedback_Events.lua
-..\..\..\Interface_Vanilla\AddOns\Blizzard_PTRFeedback\Blizzard_Reports.lua
+..\..\..\Interface_Vanilla\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Constants.lua
+Blizzard_Reports.lua

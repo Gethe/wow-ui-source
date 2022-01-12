@@ -6,7 +6,9 @@ GlueCheck.lua
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\EnumUtil.lua
-..\..\Interface_Vanilla\SharedXML\Util.lua
+..\SharedXML\Color.lua
+..\..\Interface_Vanilla\SharedXML\ColorUtil.lua
+..\SharedXML\Util.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\FunctionUtil.lua
@@ -31,9 +33,9 @@ GlueFonts.xml
 GlueFontStyles.xml
 ..\..\Interface_Vanilla\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
-..\..\Interface_Vanilla\SharedXML\TextureUtil.lua
+..\SharedXML\TextureUtil.lua
 ..\SharedXML\Backdrop.xml
-..\..\Interface_Vanilla\SharedXML\LayoutFrame.xml
+..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
@@ -60,7 +62,7 @@ GlueContextMenu.xml
 
 ##New stuff!!!
 GlueAddons.lua
-..\..\Interface_Vanilla\GlueXML\GlueParent.xml
+GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
 ..\SharedXML\ModelFrames.xml
@@ -69,12 +71,12 @@ GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
-..\..\Interface_Vanilla\GlueXML\AccountLogin.xml
+AccountLogin.xml
 ..\..\Interface_Vanilla\GlueXML\RealmList.xml
 CharacterServicesPatchwerk.xml
 ..\..\Interface_Vanilla\GlueXML\CharacterSelect.xml
 AccountReactivate.xml
-..\..\Interface_Vanilla\GlueXML\KioskModeSplash.xml
+KioskModeSplash.xml
 CharacterServices.xml
 ..\..\Interface_Vanilla\GlueXML\CharacterCreate.xml
 PromotionFrame.xml

@@ -289,3 +289,41 @@ end
 function AnchorUtil.MirrorRegionsAlongHorizontalAxis(mirrorDescriptions)
 	MirrorRegionsAlongAxis(mirrorDescriptions, HORIZONTAL_MIRROR_POINTS, SetPointHorizontal, SetTexCoordHorizontal);
 end
+
+function AnchorUtil.DebugAnchorGraph(frame, indent, visited, output)
+	local indentString = "      ";
+	indent = indent or indentString;
+	output = output or {};
+	visited = visited or {};
+
+	if visited[frame] then
+		return output;
+	end
+
+	visited[frame] = true;
+
+	local function FormatFrame(frame)
+		local color = frame:IsRectValid() and GREEN_FONT_COLOR or RED_FONT_COLOR;
+		return color:WrapTextInColorCode(frame:GetDebugName() .. (" size <%.2f, %.2f>"):format(frame:GetSize(true)))
+	end
+
+	table.insert(output, indent .. FormatFrame(frame));
+
+	for i = 1, frame:GetNumPoints() do
+		local point, relativeTo, relativePoint, x, y = frame:GetPoint(i);
+		local anchorString = ("Anchor%d %s to %s at %s offset <%.2f, %.2f>"):format(i, point, relativeTo and relativeTo:GetDebugName() or "?", relativePoint, x, y);
+		table.insert(output, indent .. LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(anchorString));
+		if relativeTo then
+			AnchorUtil.DebugAnchorGraph(relativeTo, indent .. indentString, visited, output);
+		end
+	end
+
+	return output;
+end
+
+function AnchorUtil.PrintAnchorGraph(frame)
+	-- Printing to multiple places in case the chat frame isn't visible.
+	local str = table.concat(AnchorUtil.DebugAnchorGraph(frame), "\n");
+	ConsolePrint(str);
+	print(str);
+end

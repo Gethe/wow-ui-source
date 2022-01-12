@@ -292,6 +292,8 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
 	self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
 	self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
+	self:RegisterEvent("GUILD_RENAME_REQUIRED");
+	self:RegisterEvent("REQUIRED_GUILD_RENAME_RESULT");
 	self.playerStatusFrame = 1;
 	self.selectedFriend = 1;
 	self.selectedIgnore = 1;
@@ -299,6 +301,7 @@ function FriendsFrame_OnLoad(self)
 	self.guildStatus = 0;
 	GuildFrame.notesToggle = 1;
 	GuildFrame.selectedGuildMember = 0;
+	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	SetGuildRosterSelection(0);
 	CURRENT_GUILD_MOTD = GetGuildRosterMOTD();
 	GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
@@ -392,6 +395,8 @@ function FriendsFrame_Update()
 		end
 		FriendsFrame_ShowSubFrame("GuildFrame");
 		GuildStatus_Update();
+		GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
+		GuildFrame_CheckName();
 	elseif ( selectedTab == FRIEND_TAB_RAID ) then
 		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
 		FriendsFrameInset:SetPoint("TOPLEFT", 4, -60);
@@ -987,6 +992,17 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "CLUB_INVITATION_ADDED_FOR_SELF" or event == "CLUB_INVITATION_REMOVED_FOR_SELF" ) then
 		BlizzardGroups_UpdateShowTab();
 		BlizzardGroups_UpdateNotifications();
+	elseif ( event == "GUILD_RENAME_REQUIRED" ) then
+		GuildFrame.hasForcedNameChange = ...;
+		GuildFrame_CheckName();
+	elseif ( event == "REQUIRED_GUILD_RENAME_RESULT" ) then
+		local success = ...
+		if ( success ) then
+			GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
+			GuildFrame_CheckName();
+		else
+			UIErrorsFrame:AddMessage(ERR_GUILD_NAME_INVALID, 1.0, 0.1, 0.1, 1.0);
+		end
 	end
 end
 
@@ -3316,4 +3332,55 @@ function FriendsFrame_ToggleToCommunities(selectedTab)
 	ToggleFriendsFrame(selectedTab);
 	ToggleCommunitiesFrame();
 	FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = false;
+end
+
+function GuildFrame_CheckName()
+	if ( GuildFrame.hasForcedNameChange ) then
+		local clickableHelp = false
+		GuildNameChangeAlertFrame:Show();
+
+		if ( IsGuildLeader() ) then
+			GuildNameChangeFrame.gmText:Show();
+			GuildNameChangeFrame.memberText:Hide();
+			GuildNameChangeFrame.button:SetText(ACCEPT);
+			GuildNameChangeFrame.button:SetPoint("TOP", GuildNameChangeFrame.editBox, "BOTTOM", 0, -10);
+			GuildNameChangeFrame.renameText:Show();
+			GuildNameChangeFrame.editBox:Show();
+		else
+			clickableHelp = GuildNameChangeAlertFrame.topAnchored;
+			GuildNameChangeFrame.gmText:Hide();
+			GuildNameChangeFrame.memberText:Show();
+			GuildNameChangeFrame.button:SetText(OKAY);
+			GuildNameChangeFrame.button:SetPoint("TOP", GuildNameChangeFrame.memberText, "BOTTOM", 0, -30);
+			GuildNameChangeFrame.renameText:Hide();
+			GuildNameChangeFrame.editBox:Hide();
+		end
+
+
+		if ( clickableHelp ) then
+			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlight);
+			GuildNameChangeAlertFrame.alert:ClearAllPoints();
+			GuildNameChangeAlertFrame.alert:SetPoint("BOTTOM", GuildNameChangeAlertFrame, "CENTER", 0, 0);
+			GuildNameChangeAlertFrame.alert:SetWidth(190);
+			GuildNameChangeAlertFrame:ClearAllPoints();
+			GuildNameChangeAlertFrame:SetPoint("CENTER", 0, 30);
+			GuildNameChangeAlertFrame:SetSize(256, 60);
+			GuildNameChangeAlertFrame:Enable();
+			GuildNameChangeAlertFrame.clickText:Show();
+			GuildNameChangeFrame:Hide();
+		else
+			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlightMedium);
+			GuildNameChangeAlertFrame.alert:ClearAllPoints();
+			GuildNameChangeAlertFrame.alert:SetPoint("CENTER", GuildNameChangeAlertFrame, "CENTER", 0, 0);
+			GuildNameChangeAlertFrame.alert:SetWidth(220);
+			GuildNameChangeAlertFrame:SetPoint("TOP", 0, -82);
+			GuildNameChangeAlertFrame:SetSize(300, 40);
+			GuildNameChangeAlertFrame:Disable();
+			GuildNameChangeAlertFrame.clickText:Hide();
+			GuildNameChangeFrame:Show();
+		end
+	else
+		GuildNameChangeAlertFrame:Hide();
+		GuildNameChangeFrame:Hide();
+	end
 end
