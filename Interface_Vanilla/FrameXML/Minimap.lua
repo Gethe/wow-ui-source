@@ -386,7 +386,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 	local status, mapName, instanceID, asGroup;
 	local numQueued = 0;
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		status, mapName, instanceID,_,_,_,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
 		if ( status == "queued" or status == "confirm" ) then
 			numQueued = numQueued+1;
 			-- Add a spacer if there were dropdown items before this

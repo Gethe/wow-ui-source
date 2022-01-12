@@ -431,6 +431,8 @@ end
 
 local COMMUNITIES_LIST_ENTRY_EVENTS = {
 	"STREAM_VIEW_MARKER_UPDATED",
+	"CHAT_DISABLED_CHANGE_FAILED",
+	"CHAT_DISABLED_CHANGED",
 }
 
 CommunitiesListEntryMixin = {};
@@ -569,6 +571,8 @@ function CommunitiesListEntryMixin:OnEvent(event, ...)
 		if clubId == self.clubId then
 			self:UpdateUnreadNotification();
 		end
+	elseif event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" then
+		self:UpdateUnreadNotification();
 	end
 end
 

@@ -25,6 +25,8 @@ function LoadMicroButtonTextures(self, name)
 	self:SetPushedTexture(prefix..name.."-Down");
 	self:SetDisabledTexture(prefix..name.."-Disabled");
 	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+	self:RegisterEvent("CHAT_DISABLED_CHANGED");
+	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
 end
 
 function MicroButtonTooltipText(text, action)
@@ -222,6 +224,8 @@ function SocialsMicroButton_OnEvent(self, event, ...)
 		UpdateMicroButtons();
 	elseif ( event == "STREAM_VIEW_MARKER_UPDATED" or event == "CLUB_INVITATION_ADDED_FOR_SELF" or event == "CLUB_INVITATION_REMOVED_FOR_SELF" ) then
 		SocialsMicroButton_UpdateNotificationIcon(SocialsMicroButton);
+	elseif ( event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" ) then
+		SocialsMicroButton_UpdateNotificationIcon(SocialsMicroButton);
 	end
 end
 
@@ -244,7 +248,7 @@ end
 function SocialsMicroButton_UpdateNotificationIcon(self)
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
 		--self.NotificationOverlay:SetShown(HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
-		if (HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()) then
+		if ( not C_SocialRestrictions.IsChatDisabled() and (HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages())) then
 			if ((not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not FriendsFrame:IsShown()) then
 				self:LockHighlight();
 			end
