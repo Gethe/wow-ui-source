@@ -106,10 +106,18 @@ function HANDLE:IsShown()   return GetHandleFrame(self):IsShown()   end
 function HANDLE:IsVisible() return GetHandleFrame(self):IsVisible() end
 function HANDLE:GetWidth()  return GetHandleFrame(self):GetWidth()  end
 function HANDLE:GetHeight() return GetHandleFrame(self):GetHeight() end
-function HANDLE:GetRect()   return GetHandleFrame(self):GetRect() end
 function HANDLE:GetScale()  return GetHandleFrame(self):GetScale()  end
 function HANDLE:GetEffectiveScale()
     return GetHandleFrame(self):GetEffectiveScale()
+end
+
+function HANDLE:GetRect()
+	local frame = GetHandleFrame(self);
+	if LOCAL_CHECK_Frame.IsAnchoringRestricted(frame) then
+		return nil;
+	end
+
+	return LOCAL_CHECK_Frame.GetRect(frame);
 end
 
 -- Cannot expose GetAlpha since alpha is not protected
@@ -339,7 +347,12 @@ function HANDLE:GetNumPoints()
 end
 
 function HANDLE:GetPoint(i)
-    local point, frame, relative, dx, dy = GetHandleFrame(self):GetPoint(i);
+	local frame = GetHandleFrame(self);
+	if LOCAL_CHECK_Frame.IsAnchoringRestricted(frame) then
+		return nil;
+	end
+
+    local point, frame, relative, dx, dy = LOCAL_CHECK_Frame.GetPoint(frame, i);
     local handle;
     if (frame) then
         handle = FrameHandleMapper(not InCombatLockdown(), frame);

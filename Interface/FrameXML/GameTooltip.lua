@@ -122,8 +122,8 @@ end
 function GameTooltip_AddBlankLinesToTooltip(tooltip, numLines)
 	if numLines ~= nil then
 		for i = 1, numLines do
-		tooltip:AddLine(" ");
-	end
+			tooltip:AddLine(" ");
+		end
 	end
 end
 
@@ -277,10 +277,9 @@ function GameTooltip_SetBottomText(self, text, lineColor)
 end
 
 function GameTooltip_OnLoad(self)
+	SharedTooltip_OnLoad(self);
 	self.needsReset = true;
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
-	GameTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
-	self:SetClampRectInsets(0, 0, 15, 0);
 end
 
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
@@ -384,70 +383,10 @@ function GameTooltip_ClearInsertedFrames(self)
 	self.insertedFrames = nil;
 end
 
-GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-	tile = true,
-	tileEdge = true,
-	tileSize = 16,
-	edgeSize = 16,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
-
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = TOOLTIP_DEFAULT_BACKGROUND_COLOR,
-};
-
-GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED = {
-	-- Nothing
-};
-
-TOOLTIP_AZERITE_BACKGROUND_COLOR = CreateColor(1, 1, 1);
-GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background-Azerite",
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border-Azerite",
-	tile = true,
-	tileEdge = false,
-	tileSize = 16,
-	edgeSize = 19,
-	insets = { left = 4, right = 4, top = 4, bottom = 4 },
-
-	backdropBorderColor = TOOLTIP_DEFAULT_COLOR,
-	backdropColor = TOOLTIP_AZERITE_BACKGROUND_COLOR,
-
-	overlayAtlasTop = "AzeriteTooltip-Topper";
-	overlayAtlasTopScale = .75,
-	overlayAtlasBottom = "AzeriteTooltip-Bottom";
-};
-
-function GameTooltip_SetBackdropStyle(self, style)
-	self:SetBackdrop(style);
-	self:SetBackdropBorderColor((style.backdropBorderColor or TOOLTIP_DEFAULT_COLOR):GetRGB());
-	self:SetBackdropColor((style.backdropColor or TOOLTIP_DEFAULT_BACKGROUND_COLOR):GetRGB());
-
-	if self.TopOverlay then
-		if style.overlayAtlasTop then
-			self.TopOverlay:SetAtlas(style.overlayAtlasTop, true);
-			self.TopOverlay:SetScale(style.overlayAtlasTopScale or 1.0);
-			self.TopOverlay:Show();
-		else
-			self.TopOverlay:Hide();
-	end
-	end
-
-	if self.BottomOverlay then
-		if style.overlayAtlasBottom then
-			self.BottomOverlay:SetAtlas(style.overlayAtlasBottom, true);
-			self.BottomOverlay:SetScale(style.overlayAtlasBottomScale or 1.0);
-			self.BottomOverlay:Show();
-		else
-			self.BottomOverlay:Hide();
-		end
-	end
-end
-
 function GameTooltip_OnHide(self)
 	self.needsReset = true;
-	GameTooltip_SetBackdropStyle(self, self.IsEmbedded and GAME_TOOLTIP_BACKDROP_STYLE_EMBEDDED or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
+	local style = nil;
+	SharedTooltip_SetBackdropStyle(self, style, self.IsEmbedded);
 	self.default = nil;
 	self.overrideComparisonAnchorFrame = nil;
 	self.overrideComparisonAnchorSide = nil;
@@ -537,7 +476,8 @@ function GameTooltip_OnTooltipSetUnit(self)
 end
 
 function GameTooltip_UpdateStyle(self)
-	GameTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT);
+	local backdropStyle = nil;
+	SharedTooltip_SetBackdropStyle(self, backdropStyle);
 end
 
 function GameTooltip_OnTooltipSetItem(self)

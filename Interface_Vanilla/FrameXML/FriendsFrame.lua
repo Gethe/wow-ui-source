@@ -71,7 +71,8 @@ local INVITE_RESTRICTION_INFO = 5;
 local INVITE_RESTRICTION_WOW_PROJECT_ID = 6;
 local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
-local INVITE_RESTRICTION_NONE = 8;
+local INVITE_RESTRICTION_WOW_PROJECT_BCC = 9;
+local INVITE_RESTRICTION_NONE = 10;
 
 local FriendListEntries = { };
 local playerRealmID;
@@ -288,9 +289,12 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
 	self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
 	self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
+	self:RegisterEvent("GUILD_RENAME_REQUIRED");
+	self:RegisterEvent("REQUIRED_GUILD_RENAME_RESULT");
 	self.playerStatusFrame = 1;
 	self.selectedFriend = 1;
 	self.selectedIgnore = 1;
+	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	-- friends list
 	local scrollFrame = FriendsFrameFriendsScrollFrame;
 	scrollFrame.update = FriendsFrame_UpdateFriends;
@@ -380,6 +384,8 @@ function FriendsFrame_Update()
 		end
 		FriendsFrame_ShowSubFrame("GuildFrame");
 		GuildStatus_Update();
+		GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
+		GuildFrame_CheckName();
 	elseif ( selectedTab == FRIEND_TAB_RAID ) then
 		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
 		FriendsFrameInset:SetPoint("TOPLEFT", 4, -60);
@@ -855,7 +861,11 @@ end
 
 function WhoFrameColumn_SetWidth(frame, width)
 	frame:SetWidth(width);
-	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
+	local name = frame:GetName().."Middle";
+	local middleFrame = _G[name];
+	if middleFrame then
+		middleFrame:SetWidth(width - 9);
+	end
 end
 
 function WhoFrameDropDown_Initialize()
@@ -888,13 +898,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 				if ( button.summonButton:IsShown() ) then
 					FriendsFrame_SummonButton_Update(button.summonButton);
 				end
-			end
-		end
-	elseif ( event == "PARTY_REFER_A_FRIEND_UPDATED" ) then
-		if ( self:IsShown() ) then
-			local buttons = FriendsFrameFriendsScrollFrame.buttons;
-			for _, button in pairs(buttons) do
-				FriendsFrame_SummonButton_Update(button.summonButton);
 			end
 		end
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
@@ -966,6 +969,17 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "CLUB_INVITATION_ADDED_FOR_SELF" or event == "CLUB_INVITATION_REMOVED_FOR_SELF" ) then
 		BlizzardGroups_UpdateShowTab();
 		BlizzardGroups_UpdateNotifications();
+	elseif ( event == "GUILD_RENAME_REQUIRED" ) then
+		GuildFrame.hasForcedNameChange = ...;
+		GuildFrame_CheckName();
+	elseif ( event == "REQUIRED_GUILD_RENAME_RESULT" ) then
+		local success = ...
+		if ( success ) then
+			GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
+			GuildFrame_CheckName();
+		else
+			UIErrorsFrame:AddMessage(ERR_GUILD_NAME_INVALID, 1.0, 0.1, 0.1, 1.0);
+		end
 	end
 end
 
@@ -1311,7 +1325,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 	if (client ~= BNET_CLIENT_WOW) or (wowProjectID ~= WOW_PROJECT_ID) then
 		-- If they are not in wow or in a different version of wow, always show rich presence only
 		return true;
-	elseif (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
+	elseif ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
 		-- If we are both in wow classic and our factions or realms don't match, show rich presence only
 		return true;
 	else
@@ -2290,6 +2304,8 @@ function FriendsFrame_GetInviteRestriction(index)
 			if ( wowProjectID ~= WOW_PROJECT_ID ) then
 				if (wowProjectID == WOW_PROJECT_CLASSIC) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
+				elseif(wowProjectID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_BCC, restriction);
 				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
@@ -2299,7 +2315,8 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif ( realmID ~= playerRealmID ) then
+				-- The Classics don't allow grouping across realms
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			else
 				-- there is at lease 1 game account that can be invited
@@ -2329,6 +2346,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_MAINLINE_OVERRIDE;
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CLASSIC ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_BCC ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_BCC_OVERRIDE
 	else
 		return "";
 	end
@@ -2403,7 +2422,8 @@ function TravelPassDropDown_Initialize(self)
 				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
 			elseif ( realmID == 0 ) then
 				restriction = INVITE_RESTRICTION_INFO;
-			elseif (wowProjectID == WOW_PROJECT_CLASSIC) and (realmID ~= playerRealmID) then
+			elseif ( realmID ~= playerRealmID ) then
+				-- The Classics don't allow grouping across realms
 				restriction = INVITE_RESTRICTION_REALM;
 			end
 			if ( restriction == INVITE_RESTRICTION_NONE ) then
@@ -2708,8 +2728,8 @@ function GuildStatus_Update()
 		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
 		PersonalNoteText:SetText(note);
 		-- Update officer note
-		if ( CanViewOfficerNote() ) then
-			if ( CanEditOfficerNote() ) then
+		if ( C_GuildInfo.CanViewOfficerNote() ) then
+			if ( C_GuildInfo.CanEditOfficerNote() ) then
 				if ( (not officernote) or (officernote == "") ) then
 					officernote = GUILD_OFFICERNOTE_EDITLABEL;
 				end
@@ -2717,7 +2737,7 @@ function GuildStatus_Update()
 			else
 				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
 			end
-			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+			GuildMemberOfficerNoteBackground:EnableMouse(C_GuildInfo.CanEditOfficerNote());
 			OfficerNoteText:SetText(officernote);
 
 			-- Resize detail frame
@@ -2991,4 +3011,54 @@ function FriendsFrame_ToggleToCommunities(selectedTab)
 	ToggleFriendsFrame(selectedTab);
 	ToggleCommunitiesFrame();
 	FRIENDS_COMMUNITY_SWAP_IN_PROGRESS = false;
+end
+function GuildFrame_CheckName()
+	if ( GuildFrame.hasForcedNameChange ) then
+		local clickableHelp = false
+		GuildNameChangeAlertFrame:Show();
+
+		if ( IsGuildLeader() ) then
+			GuildNameChangeFrame.gmText:Show();
+			GuildNameChangeFrame.memberText:Hide();
+			GuildNameChangeFrame.button:SetText(ACCEPT);
+			GuildNameChangeFrame.button:SetPoint("TOP", GuildNameChangeFrame.editBox, "BOTTOM", 0, -10);
+			GuildNameChangeFrame.renameText:Show();
+			GuildNameChangeFrame.editBox:Show();
+		else
+			clickableHelp = GuildNameChangeAlertFrame.topAnchored;
+			GuildNameChangeFrame.gmText:Hide();
+			GuildNameChangeFrame.memberText:Show();
+			GuildNameChangeFrame.button:SetText(OKAY);
+			GuildNameChangeFrame.button:SetPoint("TOP", GuildNameChangeFrame.memberText, "BOTTOM", 0, -30);
+			GuildNameChangeFrame.renameText:Hide();
+			GuildNameChangeFrame.editBox:Hide();
+		end
+
+
+		if ( clickableHelp ) then
+			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlight);
+			GuildNameChangeAlertFrame.alert:ClearAllPoints();
+			GuildNameChangeAlertFrame.alert:SetPoint("BOTTOM", GuildNameChangeAlertFrame, "CENTER", 0, 0);
+			GuildNameChangeAlertFrame.alert:SetWidth(190);
+			GuildNameChangeAlertFrame:ClearAllPoints();
+			GuildNameChangeAlertFrame:SetPoint("CENTER", 0, 30);
+			GuildNameChangeAlertFrame:SetSize(256, 60);
+			GuildNameChangeAlertFrame:Enable();
+			GuildNameChangeAlertFrame.clickText:Show();
+			GuildNameChangeFrame:Hide();
+		else
+			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlightMedium);
+			GuildNameChangeAlertFrame.alert:ClearAllPoints();
+			GuildNameChangeAlertFrame.alert:SetPoint("CENTER", GuildNameChangeAlertFrame, "CENTER", 0, 0);
+			GuildNameChangeAlertFrame.alert:SetWidth(220);
+			GuildNameChangeAlertFrame:SetPoint("TOP", 0, -82);
+			GuildNameChangeAlertFrame:SetSize(300, 40);
+			GuildNameChangeAlertFrame:Disable();
+			GuildNameChangeAlertFrame.clickText:Hide();
+			GuildNameChangeFrame:Show();
+		end
+	else
+		GuildNameChangeAlertFrame:Hide();
+		GuildNameChangeFrame:Hide();
+	end
 end

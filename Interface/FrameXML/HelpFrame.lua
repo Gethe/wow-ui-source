@@ -120,6 +120,14 @@ function HelpFrame_IsGMTicketQueueActive()
 	return ticketQueueActive;
 end
 
+function HelpFrame_ShowReportCheatingDialog(playerLocation)
+	local frame = ReportCheatingDialog;
+	frame.CommentFrame.EditBox:SetText("");
+	frame.CommentFrame.EditBox.InformationText:Show();
+	frame.reportToken = C_ReportSystem.InitiateReportPlayer(PLAYER_REPORT_TYPE_CHEATING, playerLocation);
+	StaticPopupSpecial_Show(frame);
+end
+
 --
 -- HelpOpenWebTicketButton
 --
@@ -209,20 +217,19 @@ function TicketStatusFrame_OnEvent(self, event, ...)
 	if (event == "UPDATE_WEB_TICKET") then
 		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
 		self.haveWebSurvey = false;
-		TicketStatusTime:SetText("");
-		TicketStatusTime:Hide();
 		if (hasTicket and ticketStatus ~= LE_TICKET_STATUS_OPEN) then
 			self.hasWebTicket = true;
 			if (ticketStatus == LE_TICKET_STATUS_NMI) then --need more info
 				TicketStatusTitleText:SetText(TICKET_STATUS_NMI);
 			elseif (ticketStatus == LE_TICKET_STATUS_SURVEY) then --survey is ready
 				TicketStatusTitleText:SetText(CHOSEN_FOR_GMSURVEY);
-				self:SetHeight(TicketStatusTitleText:GetHeight() + 20);
 				self.haveWebSurvey = true;
 			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
 				TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
 				self.haveResponse = true;
 			end
+			self:SetHeight(TicketStatusTitleText:GetHeight() + 20);
+
 			self.caseIndex = caseIndex;
 			self:Show();
 		else

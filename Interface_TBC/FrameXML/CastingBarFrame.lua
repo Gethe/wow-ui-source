@@ -275,7 +275,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
-		local name, text, texture, startTime, endTime, isTradeSkill--[[, notInterruptible]], spellID = UnitChannelInfo(unit);
+		local name, text, texture, startTime, endTime, isTradeSkill, _, spellID = UnitChannelInfo(unit);
 		local notInterruptible = false;
 
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then

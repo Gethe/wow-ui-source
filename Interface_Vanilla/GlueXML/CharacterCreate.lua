@@ -5,10 +5,18 @@ NUM_CHAR_CUSTOMIZATIONS = 5;
 MIN_CHAR_NAME_LENGTH = 2;
 CHARACTER_CREATE_ROTATION_START_X = nil;
 CHARACTER_CREATE_INITIAL_FACING = nil;
+
 FACTION_BACKDROP_COLOR_TABLE = {
-	["Alliance"] = {0.5, 0.5, 0.5, 0.09, 0.09, 0.19},
-	["Horde"] = {0.5, 0.2, 0.2, 0.19, 0.05, 0.05},
+	Alliance = {
+		color = GLUE_ALLIANCE_COLOR,
+		borderColor = GLUE_ALLIANCE_BORDER_COLOR,
+	},
+	Horde = {
+		color = GLUE_HORDE_COLOR,
+		borderColor = GLUE_HORDE_BORDER_COLOR,
+	},
 };
+
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
 	"CharacterCreateCharacterClass",
@@ -74,8 +82,8 @@ function CharacterCreate_OnLoad(self)
 
 	-- Color edit box backdrop
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE["Alliance"];
-	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
+	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor.borderColor:GetRGB());
+	CharacterCreateNameEdit:SetBackdropColor(backdropColor.color:GetRGB());
 end
 
 function CharacterCreate_OnShow(self)
@@ -101,7 +109,7 @@ function CharacterCreate_OnShow(self)
 		CharacterCreateRandomName:Show();
 	end
 
-	SetClassicLogo(CharacterCreateLogo);
+	SetGameLogo(CharacterCreateLogo);
 
 	if( IsKioskGlueEnabled() ) then
 		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
@@ -204,7 +212,7 @@ function CharacterCreateEnumerateRaces()
 	local coords;
 	local button;
 	local gender;
-	if ( C_CharacterCreation.GetSelectedSex() == Enum.Unitsex.Male ) then
+	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
 		gender = "FEMALE";
@@ -289,7 +297,7 @@ function SetCharacterRace(id)
 	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
 	CharacterCreateRaceLabel:SetText(race);
 	fileString = strupper(fileString);
-	if ( C_CharacterCreation.GetSelectedSex() == Enum.Unitsex.Male ) then
+	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
 		gender = "FEMALE";
@@ -334,7 +342,7 @@ function SetCharacterRace(id)
 	for index, value in ipairs(FRAMES_TO_BACKDROP_COLOR) do
 		frame = _G[value];
 		--frame:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
-		frame:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
+		frame:SetBackdropColor(backdropColor.color:GetRGB());
 	end
 
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel());
@@ -451,7 +459,7 @@ end
 function SetCharacterGender(sex)
 	local gender;
 	C_CharacterCreation.SetSelectedSex(sex);
-	if ( sex == Enum.Unitsex.Male ) then
+	if ( sex == Enum.UnitSex.Male ) then
 		gender = "MALE";
 		CharacterCreateGenderButtonMaleHighlightText:SetText(MALE);
 		CharacterCreateGenderButtonMale:SetChecked(1);

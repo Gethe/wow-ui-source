@@ -160,22 +160,22 @@ function BankSlotsFrame_OnLoad(self)
 	self:SetID(BANK_CONTAINER);
 
 	--Create bank item buttons, button background textures, and rivets between buttons
-	for i = 2, 24 do
+	for i = 2, NUM_BANKGENERIC_SLOTS do
 		local button = CreateFrame("Button", "BankFrameItem"..i, self, "BankItemButtonGenericTemplate");
 		button:SetID(i);
 		self["Item"..i] = button;
-		if ((i%6) == 1) then
-			button:SetPoint("TOPLEFT", self["Item"..(i-6)], "BOTTOMLEFT", 0, -7);
+		if ((i%NUM_BANKBAGSLOTS) == 1) then
+			button:SetPoint("TOPLEFT", self["Item"..(i-NUM_BANKBAGSLOTS)], "BOTTOMLEFT", 0, -7);
 		else
 			button:SetPoint("TOPLEFT", self["Item"..(i-1)], "TOPRIGHT", 12, 0);
 		end
 	end
-	for i = 1, 24 do
+	for i = 1, NUM_BANKGENERIC_SLOTS do
 		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
 		texture:SetPoint("TOPLEFT", self["Item"..i], "TOPLEFT", -6, 5);
 		texture:SetPoint("BOTTOMRIGHT", self["Item"..i], "BOTTOMRIGHT", 6, -7);
 	end
-	for i = 1, 6 do
+	for i = 1, NUM_BANKBAGSLOTS do
 		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
 		texture:SetPoint("TOPLEFT", self["Bag"..i], "TOPLEFT", -6, 5);
 		texture:SetPoint("BOTTOMRIGHT", self["Bag"..i], "BOTTOMRIGHT", 6, -7);
@@ -192,7 +192,7 @@ end
 function BankFrame_OnLoad (self)
 	self:RegisterEvent("BANKFRAME_OPENED");
 	self:RegisterEvent("BANKFRAME_CLOSED");
-	self.size = 24;
+	self.size = NUM_BANKGENERIC_SLOTS;
 	self:SetID(BANK_CONTAINER);
 	
 	PanelTemplates_SetNumTabs(self, #BANK_PANELS);
@@ -260,7 +260,7 @@ function BankFrame_OnEvent (self, event, ...)
 			if ( slot <= NUM_BANKGENERIC_SLOTS ) then
 				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Item"..slot]);
 			else
-				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
+				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Bag"..(slot-GetFirstBagBankSlotIndex())]);
 			end
 		end
 	elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
@@ -268,7 +268,7 @@ function BankFrame_OnEvent (self, event, ...)
 		if ( slot <= NUM_BANKGENERIC_SLOTS ) then
 			BankFrameItemButton_Update(BankSlotsFrame["Item"..slot]);
 		else
-			BankFrameItemButton_Update(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
+			BankFrameItemButton_Update(BankSlotsFrame["Bag"..(slot-GetFirstBagBankSlotIndex())]);
 		end
 	elseif ( event == "PLAYER_MONEY" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
 		UpdateBagSlotStatus();

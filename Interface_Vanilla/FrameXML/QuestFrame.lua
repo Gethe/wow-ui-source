@@ -133,7 +133,6 @@ function QuestRewardCompleteButton_OnClick()
 		QuestChooseRewardError();
 	else
 		GetQuestReward(QuestInfoFrame.itemChoice);
-		PlaySound(SOUNDKIT.IG_QUEST_LIST_COMPLETE);
 	end
 end
 

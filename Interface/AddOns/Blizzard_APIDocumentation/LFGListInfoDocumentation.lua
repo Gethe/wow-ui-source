@@ -95,13 +95,22 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "IsLookingForGroupEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Search",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "categoryID", Type = "number", Nilable = false },
-				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "preferredFilters", Type = "number", Nilable = false, Default = 0 },
 			},

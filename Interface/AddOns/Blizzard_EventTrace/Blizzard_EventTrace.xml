@@ -78,7 +78,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	
+
 	<Button name="EventTraceLogEventButtonTemplate" inherits="EventTraceScrollBoxButtonTemplate" mixin="EventTraceLogEventButtonMixin" virtual="true">
 		<Size y="20"/>
 		<Layers>
@@ -136,7 +136,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EventTraceFilterButtonTemplate" inherits="EventTraceScrollBoxButtonTemplate" mixin="EventTraceFilterButtonMixin" virtual="true">
 		<Size x="100" y="20"/>
 		<Layers>
@@ -167,7 +167,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="EventTrace" mixin="EventTracePanelMixin" inherits="ButtonFrameTemplate" parent="UIParent" movable="true" resizable="true" enableMouse="true" clampedToScreen="true">
+	<Frame name="EventTrace" mixin="EventTracePanelMixin" inherits="ButtonFrameTemplate" parent="UIParent" toplevel="true" movable="true" resizable="true" enableMouse="true" clampedToScreen="true" frameStrata="TOOLTIP">
 		<Size x="600" y="400"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -204,7 +204,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.ViewLog" relativePoint="TOPRIGHT" x="3"/>
 						</Anchors>
 					</Button>
-					
+
 					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
 						<Size x="100" y="100"/>
 					</Frame>
@@ -369,7 +369,7 @@
 							</Button>
 						</Frames>
 					</Frame>
-					
+
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Bar" relativePoint="BOTTOMLEFT" y="-2"/>

@@ -93,7 +93,6 @@
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
 				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
 					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
 					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
 				</KeyValues>
@@ -278,7 +277,6 @@
 				</Anchors>
 				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16" type="global"/>
 					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
 					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
 				</KeyValues>

@@ -19,8 +19,8 @@ function DataProviderMixin:Init(tbl)
 	end
 end
 
-function DataProviderMixin:Enumerate()
-	return ipairs(self.collection);
+function DataProviderMixin:Enumerate(indexBegin, indexEnd)
+	return CreateTableEnumerator(self.collection, indexBegin, indexEnd);
 end
 
 function DataProviderMixin:GetSize()
@@ -140,7 +140,6 @@ function DataProviderMixin:FindIndex(elementData)
 			return index, elementDataIter;
 		end
 	end
-	return nil, nil;
 end
 
 function DataProviderMixin:FindByPredicate(predicate)
@@ -149,7 +148,6 @@ function DataProviderMixin:FindByPredicate(predicate)
 			return index, elementData;
 		end
 	end
-	return nil, nil;
 end
 
 function DataProviderMixin:FindElementDataByPredicate(predicate)
@@ -189,20 +187,6 @@ local function RegisterListener(dataProvider, event, handler, listener)
 	end
 end
 
-function DataProviderMixin:AddListener(listener)
-	RegisterListener(self, DataProviderMixin.Event.OnSizeChanged, listener.OnDataProviderSizeChanged, listener);
-	RegisterListener(self, DataProviderMixin.Event.OnInsert, listener.OnDataProviderInsert, listener);
-	RegisterListener(self, DataProviderMixin.Event.OnRemove, listener.OnDataProviderRemove, listener);
-	RegisterListener(self, DataProviderMixin.Event.OnSort, listener.OnDataProviderSort, listener);
-end
-
-function DataProviderMixin:RemoveListener(listener)
-	self:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, listener);
-	self:UnregisterCallback(DataProviderMixin.Event.OnInsert, listener);
-	self:UnregisterCallback(DataProviderMixin.Event.OnRemove, listener);
-	self:UnregisterCallback(DataProviderMixin.Event.OnSort, listener);
-end
-
 function CreateDataProvider(tbl)
 	local dataProvider = CreateFromMixins(DataProviderMixin);
 	dataProvider:Init(tbl);
@@ -227,72 +211,4 @@ function CreateDataProviderWithAssignedKey(tbl, key)
 		dataProvider:Insert({[key]=value});
 	end
 	return dataProvider;
-end
-
--- DataProviderIndexRangeMixin is only intended for use with ScrollBox in scenarios where
--- extremely large index ranges would need to be stored (i.e. 20,000 equipment set icons).
--- Some functions exist only for parity with the DataProvider API expected by various parts
--- of ScrollBox code.
-DataProviderIndexRangeMixin = CreateFromMixins(CallbackRegistryMixin);
-
-DataProviderIndexRangeMixin:GenerateCallbackEvents(
-	{
-		"OnSizeChanged",
-	}
-);
-
-function DataProviderIndexRangeMixin:Init(size)
-	CallbackRegistryMixin.OnLoad(self);
-
-	self:SetSize(size);
-end
-
-function DataProviderIndexRangeMixin:GetSize()
-	return self.size;
-end
-
-function DataProviderIndexRangeMixin:SetSize(size)
-	self.size = math.max(0, size);
-
-	local pendingSort = false;
-	self:TriggerEvent(DataProviderIndexRangeMixin.Event.OnSizeChanged, pendingSort);
-end
-
-function DataProviderIndexRangeMixin:Flush()
-	self:SetSize(0);
-end
-
-function DataProviderIndexRangeMixin:Find(index)
-	return index <= self:GetSize() and index or nil;
-end
-
-function DataProviderIndexRangeMixin:FindByPredicate(predicate)
-	for index = 1, self:GetSize() do
-		if predicate(index) then
-			return index;
-		end
-	end
-	return nil;
-end
-
-function DataProviderIndexRangeMixin:ContainsByPredicate(predicate)
-	return self:FindByPredicate(predicate) ~= nil;
-end
-
-local function IndexRangeRegisterListener(dataProvider, event, handler, listener)
-	if handler then
-		dataProvider:RegisterCallback(event, handler, listener);
-	end
-end
-
-function DataProviderIndexRangeMixin:AddListener(listener)
-	IndexRangeRegisterListener(self, DataProviderIndexRangeMixin.Event.OnSizeChanged, listener.OnDataProviderSizeChanged, listener);
-end
-
-function DataProviderIndexRangeMixin:RemoveListener(listener)
-	self:UnregisterCallback(DataProviderIndexRangeMixin.Event.OnSizeChanged, listener);
-end
-
-function CreateDataProviderIndexRange(size)
-	return CreateAndInitFromMixin(DataProviderIndexRangeMixin, size or 0);
 end

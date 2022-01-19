@@ -207,9 +207,8 @@
 					<Anchor point="TOPLEFT" x="22" y="-40"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="bindingsContainer" inherits="BackdropTemplate">
+			<Frame parentKey="bindingsContainer" inherits="TooltipBorderBackdropTemplate">
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_0_16_5555" type="global"/>
 					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
 				</KeyValues>
 				<Anchors>

@@ -232,7 +232,7 @@ function CharacterCreateEnumerateRaces()
 	local coords;
 	local button;
 	local gender;
-	if ( C_CharacterCreation.GetSelectedSex() == Enum.Unitsex.Male ) then
+	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
 		gender = "FEMALE";
@@ -333,7 +333,7 @@ function SetCharacterRace(id)
 	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
 	CharacterCreateRaceLabel:SetText(race);
 	fileString = strupper(fileString);
-	if ( C_CharacterCreation.GetSelectedSex() == Enum.Unitsex.Male ) then
+	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
 		gender = "FEMALE";
@@ -487,7 +487,7 @@ end
 function SetCharacterGender(sex)
 	local gender;
 	C_CharacterCreation.SetSelectedSex(sex);
-	if ( sex == Enum.Unitsex.Male ) then
+	if ( sex == Enum.UnitSex.Male ) then
 		gender = "MALE";
 		CharacterCreateGenderButtonMaleHighlightText:SetText(MALE);
 		CharacterCreateGenderButtonMale:SetChecked(1);

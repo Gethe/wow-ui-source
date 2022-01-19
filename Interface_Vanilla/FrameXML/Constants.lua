@@ -21,45 +21,6 @@ MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_CLASSIC] = 60;
 
 NPE_TUTORIAL_COMPLETE_LEVEL = 10;
 
---
--- Colors
---
-NORMAL_FONT_COLOR_CODE		= "|cffffd200";
-HIGHLIGHT_FONT_COLOR_CODE	= "|cffffffff";
-RED_FONT_COLOR_CODE			= "|cffff2020";
-GREEN_FONT_COLOR_CODE		= "|cff20ff20";
-GRAY_FONT_COLOR_CODE		= "|cff808080";
-YELLOW_FONT_COLOR_CODE		= "|cffffff00";
-LIGHTYELLOW_FONT_COLOR_CODE	= "|cffffff9a";
-ORANGE_FONT_COLOR_CODE		= "|cffff7f3f";
-ACHIEVEMENT_COLOR_CODE		= "|cffffff00";
-BATTLENET_FONT_COLOR_CODE	= "|cff82c5ff";
-DISABLED_FONT_COLOR_CODE	= "|cff7f7f7f";
-FONT_COLOR_CODE_CLOSE		= "|r";
-
-NORMAL_FONT_COLOR			= CreateColor(1.0, 0.82, 0.0);
-HIGHLIGHT_FONT_COLOR		= CreateColor(1.0, 1.0, 1.0);
-RED_FONT_COLOR				= CreateColor(1.0, 0.1, 0.1);
-DIM_RED_FONT_COLOR			= CreateColor(0.8, 0.1, 0.1);
-DULL_RED_FONT_COLOR			= CreateColor(0.75, 0.15, 0.15);
-GREEN_FONT_COLOR			= CreateColor(0.1, 1.0, 0.1);
-GRAY_FONT_COLOR				= CreateColor(0.5, 0.5, 0.5);
-YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);
-LIGHTYELLOW_FONT_COLOR		= CreateColor(1.0, 1.0, 0.6);
-ORANGE_FONT_COLOR			= CreateColor(1.0, 0.5, 0.25);
-PASSIVE_SPELL_FONT_COLOR	= CreateColor(0.77, 0.64, 0.0);
-BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
-TRANSMOGRIFY_FONT_COLOR		= CreateColor(1, 0.5, 1);
-DISABLED_FONT_COLOR			= CreateColor(0.498, 0.498, 0.498);
-LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
-LIGHTGRAY_FONT_COLOR		= CreateColor(0.6, 0.6, 0.6);
-PAPER_FRAME_EXPANDED_COLOR	= CreateColor(0.929, 0.788, 0.620);
-PAPER_FRAME_COLLAPSED_COLOR = CreateColor(0.827, 0.659, 0.463);
-ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
-WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
-DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
-DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
-BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
 
 AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
 AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -771,6 +732,7 @@ PLAYER_REPORT_TYPE_BAD_GUILD_NAME = "badguildname";
 PLAYER_REPORT_TYPE_CHEATING = "cheater";
 PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME = "badbattlepetname";
 PLAYER_REPORT_TYPE_BAD_PET_NAME = "badpetname";
+PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME = "badarenateamname";
 
 --Loot
 BONUS_ROLL_REQUIRED_CURRENCY = 697;
@@ -779,10 +741,10 @@ BONUS_ROLL_REQUIRED_CURRENCY = 697;
 QUEST_TYPE_DUNGEON = 81;
 QUEST_TYPE_SCENARIO = 98;
 
-MAX_QUESTS = 25;
+MAX_QUESTS = 20;
 MAX_OBJECTIVES = 20;
-MAX_QUESTLOG_QUESTS = 25;
-MAX_WATCHABLE_QUESTS = 25;
+MAX_QUESTLOG_QUESTS = 20;
+MAX_WATCHABLE_QUESTS = 5;
 
 WORLD_QUESTS_TIME_CRITICAL_MINUTES = 15;
 WORLD_QUESTS_TIME_LOW_MINUTES = 75;
@@ -932,14 +894,148 @@ RELIC_TALENT_LINK_STYLE_POTENTIAL = 2;
 RELIC_TALENT_LINK_STYLE_ACTIVE = 3;
 RELIC_TALENT_LINK_STYLE_UPCOMING = 4;
 RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
--- TODO: Need to be able to expose this from client...
-Enum.ChatChannelType = {
-	None = 0,
-	Custom = 1,
-	Private_Party = 2,
-	Public_Party = 3,
-	Communities = 4,
-};
 
 -- SPECTATOR MODE
 MAX_SPECTATED_PER_TEAM = 15;
+
+-- "Generic" GamePad button labels
+KEY_PADDUP				= "GamePad Up";
+KEY_PADDRIGHT			= "GamePad Right";
+KEY_PADDDOWN			= "GamePad Down";
+KEY_PADDLEFT			= "GamePad Left";
+KEY_PAD1				= "GamePad 1";
+KEY_PAD2				= "GamePad 2";
+KEY_PAD3				= "GamePad 3";
+KEY_PAD4				= "GamePad 4";
+KEY_PAD5				= "GamePad 5";
+KEY_PAD6				= "GamePad 6";
+KEY_PADLSTICK			= "GamePad L Stick In";
+KEY_PADRSTICK			= "GamePad R Stick In";
+KEY_PADLSHOULDER		= "GamePad L Shoulder";
+KEY_PADRSHOULDER		= "GamePad R Shoulder";
+KEY_PADLTRIGGER			= "GamePad L Trigger";
+KEY_PADRTRIGGER			= "GamePad R Trigger";
+KEY_PADLSTICKUP			= "GamePad L Stick Up";
+KEY_PADLSTICKRIGHT		= "GamePad L Stick Right";
+KEY_PADLSTICKDOWN		= "GamePad L Stick Down";
+KEY_PADLSTICKLEFT		= "GamePad L Stick Left";
+KEY_PADRSTICKUP			= "GamePad R Stick Up";
+KEY_PADRSTICKRIGHT		= "GamePad R Stick Right";
+KEY_PADRSTICKDOWN		= "GamePad R Stick Down";
+KEY_PADRSTICKLEFT		= "GamePad R Stick Left";
+KEY_PADPADDLE1			= "GamePad Paddle 1";
+KEY_PADPADDLE2			= "GamePad Paddle 2";
+KEY_PADPADDLE3			= "GamePad Paddle 3";
+KEY_PADPADDLE4			= "GamePad Paddle 4";
+KEY_PADFORWARD			= "GamePad Forward";
+KEY_PADBACK				= "GamePad Back";
+KEY_PADSYSTEM			= "GamePad System";
+KEY_PADSOCIAL			= "GamePad Social";
+-- "Letters" label style specializations
+KEY_PAD1_LTR			= "GamePad A";
+KEY_PAD2_LTR			= "GamePad B";
+KEY_PAD3_LTR			= "GamePad X";
+KEY_PAD4_LTR			= "GamePad Y";
+KEY_PADLSHOULDER_LTR	= "GamePad L Bumper";
+KEY_PADRSHOULDER_LTR	= "GamePad R Bumper";
+KEY_PADFORWARD_LTR		= "GamePad Start";
+KEY_PADBACK_LTR			= "GamePad Back";
+-- "Reverse" label style specializations
+KEY_PAD1_REV			= "GamePad B";
+KEY_PAD2_REV			= "GamePad A";
+KEY_PAD3_REV			= "GamePad Y";
+KEY_PAD4_REV			= "GamePad X";
+KEY_PADLSHOULDER_REV	= "GamePad L";
+KEY_PADRSHOULDER_REV	= "GamePad R";
+KEY_PADLTRIGGER_REV		= "GamePad ZL";
+KEY_PADRTRIGGER_REV		= "GamePad ZR";
+KEY_PADFORWARD_REV		= "GamePad +";
+KEY_PADBACK_REV			= "GamePad -";
+-- "Shapes" label style specializations
+KEY_PAD1_SHP			= "GamePad X";
+KEY_PAD2_SHP			= "GamePad O";
+KEY_PAD3_SHP			= "GamePad Square";
+KEY_PAD4_SHP			= "GamePad Triangle";
+KEY_PAD5_SHP			= "GamePad Mute";
+KEY_PADLSTICK_SHP		= "GamePad L3";
+KEY_PADRSTICK_SHP		= "GamePad R3";
+KEY_PADLSHOULDER_SHP	= "GamePad L1";
+KEY_PADRSHOULDER_SHP	= "GamePad R1";
+KEY_PADLTRIGGER_SHP		= "GamePad L2";
+KEY_PADRTRIGGER_SHP		= "GamePad R2";
+KEY_PADFORWARD_SHP		= "GamePad Options";
+KEY_PADBACK_SHP			= "GamePad TouchPad";
+KEY_PADSOCIAL_SHP		= "GamePad Share";
+
+-- "Generic" GamePad abbreviated button labels
+KEY_ABBR_PADDUP				= "u";
+KEY_ABBR_PADDRIGHT			= "r";
+KEY_ABBR_PADDDOWN			= "d";
+KEY_ABBR_PADDLEFT			= "l";
+KEY_ABBR_PAD1				= "1";
+KEY_ABBR_PAD2				= "2";
+KEY_ABBR_PAD3				= "3";
+KEY_ABBR_PAD4				= "4";
+KEY_ABBR_PAD5				= "5";
+KEY_ABBR_PAD6				= "6";
+KEY_ABBR_PADLSTICK			= "Li";
+KEY_ABBR_PADRSTICK			= "Ri";
+KEY_ABBR_PADLSHOULDER		= "Ls";
+KEY_ABBR_PADRSHOULDER		= "Rs";
+KEY_ABBR_PADLTRIGGER		= "Lt";
+KEY_ABBR_PADRTRIGGER		= "Rt";
+KEY_ABBR_PADLSTICKUP		= "Lu";
+KEY_ABBR_PADLSTICKRIGHT		= "Lr";
+KEY_ABBR_PADLSTICKDOWN		= "Ld";
+KEY_ABBR_PADLSTICKLEFT		= "Ll";
+KEY_ABBR_PADRSTICKUP		= "Ru";
+KEY_ABBR_PADRSTICKRIGHT		= "Rr";
+KEY_ABBR_PADRSTICKDOWN		= "Rd";
+KEY_ABBR_PADRSTICKLEFT		= "Rl";
+KEY_ABBR_PADPADDLE1			= "p1";
+KEY_ABBR_PADPADDLE2			= "p2";
+KEY_ABBR_PADPADDLE3			= "p3";
+KEY_ABBR_PADPADDLE4			= "p4";
+KEY_ABBR_PADFORWARD			= "Fw";
+KEY_ABBR_PADBACK			= "Bk";
+KEY_ABBR_PADSYSTEM			= "Sy";
+KEY_ABBR_PADSOCIAL			= "So";
+-- "Letters" abbreviated label style specializations
+KEY_ABBR_PAD1_LTR			= "A";
+KEY_ABBR_PAD2_LTR			= "B";
+KEY_ABBR_PAD3_LTR			= "X";
+KEY_ABBR_PAD4_LTR			= "Y";
+KEY_ABBR_PADLSHOULDER_LTR	= "LB";
+KEY_ABBR_PADRSHOULDER_LTR	= "RB";
+KEY_ABBR_PADFORWARD_LTR		= "St";
+KEY_ABBR_PADBACK_LTR		= "Bk";
+-- "Reverse" abbreviated label style specializations
+KEY_ABBR_PAD1_REV			= "B";
+KEY_ABBR_PAD2_REV			= "A";
+KEY_ABBR_PAD3_REV			= "Y";
+KEY_ABBR_PAD4_REV			= "X";
+KEY_ABBR_PADLSHOULDER_REV	= "L";
+KEY_ABBR_PADRSHOULDER_REV	= "R";
+KEY_ABBR_PADLTRIGGER_REV	= "ZL";
+KEY_ABBR_PADRTRIGGER_REV	= "ZR";
+KEY_ABBR_PADFORWARD_REV		= "+";
+KEY_ABBR_PADBACK_REV		= "-";
+-- "Shapes" abbreviated label style specializations
+KEY_ABBR_PAD1_SHP			= "X";
+KEY_ABBR_PAD2_SHP			= "O";
+KEY_ABBR_PAD3_SHP			= "S";
+KEY_ABBR_PAD4_SHP			= "T";
+KEY_ABBR_PADLSTICK_SHP		= "L3";
+KEY_ABBR_PADRSTICK_SHP		= "R3";
+KEY_ABBR_PADLSHOULDER_SHP	= "L1";
+KEY_ABBR_PADRSHOULDER_SHP	= "R1";
+KEY_ABBR_PADLTRIGGER_SHP	= "L2";
+KEY_ABBR_PADRTRIGGER_SHP	= "R2";
+KEY_ABBR_PADFORWARD_SHP		= "Op";
+KEY_ABBR_PADBACK_SHP		= "Tp";
+KEY_ABBR_PADSOCIAL_SHP		= "Sh";
+
+WOW_PROJECT_MAINLINE = 1;
+WOW_PROJECT_CLASSIC = 2;
+WOW_PROJECT_BURNING_CRUSADE_CLASSIC = 5;
+WOW_PROJECT_ID = WOW_PROJECT_CLASSIC;

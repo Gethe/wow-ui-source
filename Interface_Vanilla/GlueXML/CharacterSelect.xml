@@ -374,7 +374,7 @@
 	<Frame name="ChoiceConfirmationTemplate" inherits="DefaultScaleFrame, BackdropTemplate" frameStrata="DIALOG" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
-		<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 		</KeyValues>
 		<Size x="700" y="525"/>
 		<Layers>
@@ -1116,10 +1116,10 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterSelectCharacterFrame" inherits="BackdropTemplate">
+					<Frame name="CharacterSelectCharacterFrame" inherits="TooltipBackdropTemplate">
 						<Size x="260" y="642"/>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 							<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 							<KeyValue key="backdropColorAlpha" value=".85" type="number"/>
 							<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
@@ -1194,6 +1194,9 @@
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
 									<OnClick>
+										if (RealmCallout:IsShown()) then
+											SetCVar("seenSoMNotification", 1);
+										end
 										CharacterSelect_ChangeRealm();
 									</OnClick>
 									<OnUpdate>
@@ -1201,6 +1204,22 @@
 									</OnUpdate>
 								</Scripts>
 							</Button>
+							<Frame parentKey="RealmCallout" name="RealmCallout" clampedToScreen="true" hidden="true" inherits="GlowBoxTemplate" >
+								<Size x="240" y="50" />
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="CharSelectChangeRealmButton" relativePoint="LEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" setAllPoints="true" inherits="GameFontNormalLarge" justifyH="CEBTER">
+											<Size x="220" />
+											<Anchors>
+												<Anchor point="CENTER" />
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 							<Button name="CharSelectCharacterButton1" inherits="CharSelectCharacterButtonTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-65"/>
@@ -1745,7 +1764,7 @@
 													</Anchors>
 													<Color r="1" g="1" b="1"/>
 												</FontString>
-											<FontString parentKey="CharacterDetails" inherits="GlueFontNormalHuge" text="Thrall Level 1 Orc Warrior">
+												<FontString parentKey="CharacterDetails" inherits="GlueFontNormalHuge" text="Thrall Level 1 Orc Warrior">
 													<Size x="360" y="0"/>
 													<Anchors>
 														<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-23"/>
@@ -1821,9 +1840,9 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="BackdropTemplate">
+					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="TooltipBackdropTemplate">
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 						</KeyValues>
 						<Size x="220" y="150"/>
 						<Anchors>
@@ -1867,9 +1886,9 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame name="PlayersOnServer" hidden="true" inherits="BackdropTemplate">
+					<Frame name="PlayersOnServer" hidden="true" inherits="TooltipBackdropTemplate">
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 						</KeyValues>
 						<Size x="220" y="88"/>
 						<Anchors>
@@ -2033,9 +2052,9 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true" inherits="BackdropTemplate">
+			<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+					<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 				</KeyValues>
 				<Size x="255" y="60"/>
 				<Anchors>
@@ -2051,7 +2070,7 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				</Frame>
+			</Frame>
 			<Frame name ="TBCInfoPane" inherits="DefaultScaleFrame" frameStrata="DIALOG" hidden ="true">
 				<KeyValues>
 					<KeyValue key="maxScale" value="INFO_PANE_MAX_SCALE" type="global"/>
@@ -2381,7 +2400,7 @@
 	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="CharacterRenameBackground" inherits="BackdropTemplate">
-				<KeyValues>
+			<KeyValues>
 				<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 			</KeyValues>
 				<Size x="512" y="256"/>

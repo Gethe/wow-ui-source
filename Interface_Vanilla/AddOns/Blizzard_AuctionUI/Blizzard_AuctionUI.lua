@@ -299,6 +299,7 @@ end
 
 function BrowseDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, BrowseDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 end
 
 function BrowseDropDown_Initialize()
@@ -327,12 +328,6 @@ function AuctionFrameBrowse_Reset(self)
 	BrowseMaxLevel:SetText("");
 	IsUsableCheckButton:SetChecked(false);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
-	BrowseNoResultsText:Show();
-	BrowseQualitySort:Show();
-	BrowseLevelSort:Show();
-	BrowseDurationSort:Show();
-	BrowseHighBidderSort:Show();
-	BrowseCurrentBidSort:Show();
 
 	-- reset the filters
 	OPEN_FILTER_LIST = {};

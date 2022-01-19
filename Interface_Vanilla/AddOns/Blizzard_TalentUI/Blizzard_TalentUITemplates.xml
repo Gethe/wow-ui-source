@@ -7,12 +7,12 @@
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 			</OnLoad>
 			<OnEvent>
-				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(TalentFrame) ~= self:GetID()) then
+				if (UnitLevel("player") == 9 and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID()) then
 					SetButtonPulse(self, 60, 0.75);
 				end
 			</OnEvent>
 			<OnClick>
-				TalentFrameTab_OnClick(self);
+				PlayerTalentFrameTab_OnClick(self);
 			</OnClick>
 			<OnEnter>
 				
@@ -86,15 +86,15 @@
 				self:RegisterEvent("CHARACTER_POINTS_CHANGED");
 			</OnLoad>
 			<OnEvent>
-				TalentFrameTalent_OnEvent(self);
+				PlayerTalentFrameTalent_OnEvent(self);
 			</OnEvent>
 			<OnEnter>
-				TalentFrameTalent_OnEnter(self);
+				PlayerTalentFrameTalent_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				TalentFrameTalent_OnLeave(self);
+				PlayerTalentFrameTalent_OnLeave(self);
 			</OnLeave>
-			<OnClick function="TalentFrameTalent_OnClick"/>
+			<OnClick function="PlayerTalentFrameTalent_OnClick"/>
 		</Scripts>
 	</Button>
 </Ui>

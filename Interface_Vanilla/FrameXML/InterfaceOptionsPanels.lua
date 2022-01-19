@@ -149,7 +149,7 @@ function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, 
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("AUTOLOOTTOGGLE", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_AUTO_LOOT_"..value.."_KEY"];
 			end
 		self.GetValue =
@@ -260,9 +260,10 @@ CombatPanelOptions = {
 	floatingCombatTextComboPoints = { text = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
 	floatingCombatTextEnergyGains = { text = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
 	floatingCombatTextHonorGains = { text = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
-	floatingCombatTextCombatDamage = { text = "SHOW_DAMAGE_TEXT_TEXT" },
+	floatingCombatTextCombatDamage = { text = "SHOW_DAMAGE_TEXT", tooltip = OPTION_TOOLTIP_SHOW_DAMAGE },
 	floatingCombatTextCombatLogPeriodicSpells = { text = "LOG_PERIODIC_EFFECTS_TEXT" },
 	floatingCombatTextPetMeleeDamage = { text = "SHOW_PET_MELEE_DAMAGE_TEXT" },
+	floatingCombatTextCombatHealing = { text = "SHOW_COMBAT_HEALING_TEXT" },
 }
 
 -- [[ Self Cast key dropdown ]] --
@@ -282,7 +283,7 @@ function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ..
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("SELFCAST", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
@@ -453,7 +454,7 @@ end
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("FOCUSCAST", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_FOCUS_CAST_"..value.."_KEY"];
 			end;
 		self.GetValue =
@@ -1192,7 +1193,7 @@ function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, e
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
 				SetModifiedClick("PICKUPACTION", value);
-				AttemptToSaveBindings(GetCurrentBindingSet());
+				SaveBindings(GetCurrentBindingSet());
 				self.tooltip = _G["OPTION_TOOLTIP_PICKUP_ACTION_"..value.."_KEY"];
 			end
 		self.GetValue =

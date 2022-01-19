@@ -246,7 +246,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentTargetOfTarget" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentEnableCombatDamage" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -257,118 +257,73 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "showTargetOfTarget";
-						self.uvar = "SHOW_TARGET_OF_TARGET";
+						self.cvar = "floatingCombatTextCombatDamage";
+						self.uvar = "SHOW_DAMAGE";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentFlashLowHealthWarning" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentEnablePeriodicDamage" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOP" relativeTo="$parentEnableCombatDamage" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="10" y="4"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "doNotFlashLowHealthWarning";
+						self.cvar = "floatingCombatTextCombatLogPeriodicSpells";
+						self.uvar = "LOG_PERIODIC_EFFECTS";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableCombatDamageText, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<!--<Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<CheckButton name="$parentEnablePetDamage" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="TOPRIGHT" x="310" y="-20"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontHighlight" text="FOCUS_CAST_KEY_TEXT">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnEvent function="InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>-->
-			<Frame name="$parentSelfCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<!--<Anchor point="TOPLEFT" relativeTo="$parentFocusCastKeyDropDown" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOP" relativeTo="$parentEnablePeriodicDamage" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="-30"/>
-						</Offset>
-					</Anchor>-->
-					<Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="TOPRIGHT" x="310" y="-20"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_SELF_CAST_KEY_TEXT">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnEvent function="InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<CheckButton name="$parentAutoSelfCast" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSelfCastKeyDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
+							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "autoSelfCast";
+						self.cvar = "floatingCombatTextPetMeleeDamage";
+						self.uvar = "SHOW_PET_MELEE_DAMAGE";
+						self.setFunc = function (value)
+						BlizzardOptionsPanel_SetCVarSafe("floatingCombatTextPetSpellDamage", value)
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableCombatDamageText, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEnableCombatHealing" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnablePetDamage" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-16" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "floatingCombatTextCombatHealing";
+						self.uvar = "SHOW_COMBAT_HEALING";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
             <CheckButton name="$parentEnableFloatingCombatText" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentFlashLowHealthWarning" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableCombatHealing" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -732,61 +687,85 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentEnableCombatDamageText" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentTargetOfTarget" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentCombatTextHonorGains" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-6" y="-2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableCombatDamage" relativePoint="TOPRIGHT" x="260" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "floatingCombatTextCombatDamage";
-						self.uvar = "SHOW_DAMAGE_TEXT";
+						self.cvar = "showTargetOfTarget";
+						self.uvar = "SHOW_TARGET_OF_TARGET";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentEnablePeriodicDamage" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Size x="20" y="20"/>
+			<CheckButton name="$parentFlashLowHealthWarning" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentEnableCombatDamageText" relativePoint="BOTTOM">
+					<Anchor point="TOPLEFT" relativeTo="$parentTargetOfTarget" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="10" y="4"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "floatingCombatTextCombatLogPeriodicSpells";
-						self.uvar = "LOG_PERIODIC_EFFECTS";
+						self.cvar = "doNotFlashLowHealthWarning";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableCombatDamageText, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentEnablePetDamage" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Size x="20" y="20"/>
+			<Frame name="$parentSelfCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentEnablePeriodicDamage" relativePoint="BOTTOM">
+					<Anchor point="TOPLEFT" relativeTo="$parentFlashLowHealthWarning" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="0"/>
+							<AbsDimension x="0" y="-28"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="AUTO_SELF_CAST_KEY_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "floatingCombatTextPetMeleeDamage";
-						self.uvar = "SHOW_PET_MELEE_DAMAGE";
-						self.setFunc = function (value)
-							BlizzardOptionsPanel_SetCVarSafe("floatingCombatTextPetSpellDamage", value)
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentAutoSelfCast" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfCastKeyDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoSelfCast";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableCombatDamageText, self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -2216,7 +2195,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraDistanceMaxZoomFactor";
 						_G[self:GetName().."Low"]:SetText(LOW);
@@ -2245,7 +2224,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "cameraYawSmoothSpeed";
 						_G[self:GetName().."Low"]:SetText(SLOW);
@@ -2405,7 +2384,7 @@
           </Anchor>
         </Anchors>
         <Scripts>
-          <OnLoad>
+          <OnLoad inherit="prepend">
             self.type = CONTROLTYPE_SLIDER;
             self.cvar = "cameraYawMoveSpeed";
             _G[self:GetName().."Low"]:SetText(SLOW);
@@ -2451,7 +2430,7 @@
           </Anchor>
         </Anchors>
         <Scripts>
-          <OnLoad>
+          <OnLoad inherit="prepend">
             self.type = CONTROLTYPE_SLIDER;
             self.cvar = "mouseSpeed";
             self.SetDisplayValue = self.SetValue;
@@ -2844,7 +2823,7 @@
           <Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
         </Anchors>
         <Scripts>
-          <OnLoad>
+          <OnLoad inherit="prepend">
             local name = self:GetName();
             self.type = CONTROLTYPE_SLIDER;
             self.cvar = "colorblindWeaknessFactor";

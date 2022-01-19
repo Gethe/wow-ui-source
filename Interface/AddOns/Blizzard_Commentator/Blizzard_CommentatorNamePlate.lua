@@ -31,19 +31,21 @@ function CommentatorNamePlateMixin:OnLoad()
 	self:GetHealthBar():SetStatusBarAtlas("_Bar-mid");
 	self:GetHealthBar():SetHeight(BarHeight);
 	
-	self:GetCastBar():SetScript("OnShow", nil);
-	self:GetCastBar().Border:SetAlpha(0);
-	self:GetCastBar().border = CreateFrame("FRAME", nil, self:GetCastBar(), "CommentatorNamePlateFullBorderTemplate");
-	self:GetCastBar():SetStatusBarAtlas("_Bar-mid");
+	if (self:GetCastBar()) then
+		self:GetCastBar():SetScript("OnShow", nil);
+		self:GetCastBar().Border:SetAlpha(0);
+		self:GetCastBar().border = CreateFrame("FRAME", nil, self:GetCastBar(), "CommentatorNamePlateFullBorderTemplate");
+		self:GetCastBar():SetStatusBarAtlas("_Bar-mid");
 	
-	self:GetCastBar().Flash:ClearAllPoints();
-	self:GetCastBar().Flash:SetAllPoints();
-	self:GetCastBar().Flash:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
-	self:GetCastBar().Flash:SetBlendMode("ADD");
+		self:GetCastBar().Flash:ClearAllPoints();
+		self:GetCastBar().Flash:SetAllPoints();
+		self:GetCastBar().Flash:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
+		self:GetCastBar().Flash:SetBlendMode("ADD");
 
-	local fontName, fontSize, fontFlags = self.CastBar.Text:GetFont();
-	self:GetCastBar():SetHeight(BarHeight);
-	self:GetCastBar().Text:SetFont(fontName, 12, fontFlags);
+		local fontName, fontSize, fontFlags = self.CastBar.Text:GetFont();
+		self:GetCastBar():SetHeight(BarHeight);
+		self:GetCastBar().Text:SetFont(fontName, 12, fontFlags);
+	end
 
 	self.name:SetFontObject(SystemFont_LargeNamePlateFixed);
 
@@ -130,20 +132,22 @@ function CommentatorNamePlateMixin:SetPointsByPixelUtil()
 	self.healthBar:SetFrameLevel(self:GetFrameLevel() - 1);
 	self.healthBar.border:UpdateSizes();
 
-	PixelUtil.SetWidth(self:GetCastBar(), 170, BarHeight);
-	PixelUtil.SetPoint(self:GetCastBar(), "TOP", self.healthBar, "BOTTOM", 0, -6);
+	if (self:GetCastBar()) then
+		PixelUtil.SetWidth(self:GetCastBar(), 170, BarHeight);
+		PixelUtil.SetPoint(self:GetCastBar(), "TOP", self.healthBar, "BOTTOM", 0, -6);
 	
-	self:GetCastBar().Text:ClearAllPoints();
-	local iconSize = BarHeight + 2;
-	local textOffset = iconSize / 2;
-	PixelUtil.SetPoint(self:GetCastBar().Text, "CENTER", self:GetCastBar(), "CENTER", textOffset, 0);
+		self:GetCastBar().Text:ClearAllPoints();
+		local iconSize = BarHeight + 2;
+		local textOffset = iconSize / 2;
+		PixelUtil.SetPoint(self:GetCastBar().Text, "CENTER", self:GetCastBar(), "CENTER", textOffset, 0);
 	
-	self:GetCastBar().Icon:ClearAllPoints();
-	self:GetCastBar().Icon:SetDrawLayer("OVERLAY", 7);
-	PixelUtil.SetSize(self:GetCastBar().Icon, iconSize, iconSize);
-	PixelUtil.SetPoint(self:GetCastBar().Icon, "TOPLEFT", self:GetCastBar(), "TOPLEFT", -1, 1);
+		self:GetCastBar().Icon:ClearAllPoints();
+		self:GetCastBar().Icon:SetDrawLayer("OVERLAY", 7);
+		PixelUtil.SetSize(self:GetCastBar().Icon, iconSize, iconSize);
+		PixelUtil.SetPoint(self:GetCastBar().Icon, "TOPLEFT", self:GetCastBar(), "TOPLEFT", -1, 1);
 
-	self:GetCastBar().border:UpdateSizes();
+		self:GetCastBar().border:UpdateSizes();
+	end
 
 	self.name:ClearAllPoints();
 	PixelUtil.SetPoint(self.name, "BOTTOM", self.healthBar, "TOP", 0, 4);
@@ -190,7 +194,9 @@ end
 function CommentatorNamePlateMixin:SetBorderColors()
 	local color = C_Commentator.GetTeamColorByUnit(self.unit);
 	self:GetHealthBar().border:SetVertexColor(color.r, color.g, color.b, color.a);
-	self:GetCastBar().border:SetVertexColor(color.r, color.g, color.b, color.a);
+	if (self:GetCastBar()) then
+		self:GetCastBar().border:SetVertexColor(color.r, color.g, color.b, color.a);
+	end
 end
 
 function CommentatorNamePlateMixin:OnUpdateHealthBorderOverride()

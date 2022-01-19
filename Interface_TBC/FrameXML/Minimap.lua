@@ -303,6 +303,7 @@ end
 function MiniMapTrackingDropDown_Initialize(self, level)
 	local name, texture, active, category, nested, numTracking;
 	local count = GetNumTrackingTypes();
+	local info;
 	local _, class = UnitClass("player");
 
 	if (level == 1) then
@@ -315,6 +316,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		end
 			
 		if (numTracking > 1) then
+			info = UIDropDownMenu_CreateInfo();
 			info.text = TRACKING;
 			info.func =  nil;
 			info.notCheckable = true;

@@ -20,23 +20,7 @@ if tbl then
 	Import("pairs");
 	Import("ipairs");
 	Import("next");
-	Import("select");
 	Import("CreateFrame");
-	
-	function Mixin(object, ...)
-		for i = 1, select("#", ...) do
-			local mixin = select(i, ...);
-			for k, v in pairs(mixin) do
-				object[k] = v;
-			end
-		end
-
-		return object;
-	end
-
-	function CreateFromMixins(...)
-		return Mixin({}, ...)
-	end
 end
 ----------------
 
@@ -105,6 +89,10 @@ function ObjectPoolMixin:GetNextActive(current)
 	return (next(self.activeObjects, current));
 end
 
+function ObjectPoolMixin:GetNextInactive(current)
+	return (next(self.inactiveObjects, current));
+end
+
 function ObjectPoolMixin:IsActive(object)
 	return (self.activeObjects[object] ~= nil);
 end
@@ -129,8 +117,16 @@ local function FramePoolFactory(framePool)
 	return CreateFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
 end
 
-function FramePoolMixin:OnLoad(frameType, parent, frameTemplate, resetterFunc)
-	ObjectPoolMixin.OnLoad(self, FramePoolFactory, resetterFunc);
+local function ForbiddenFramePoolFactory(framePool)
+	return CreateForbiddenFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
+end
+
+function FramePoolMixin:OnLoad(frameType, parent, frameTemplate, resetterFunc, forbidden)
+	if forbidden then
+		ObjectPoolMixin.OnLoad(self, ForbiddenFramePoolFactory, resetterFunc);
+	else
+		ObjectPoolMixin.OnLoad(self, FramePoolFactory, resetterFunc);
+	end
 	self.frameType = frameType;
 	self.parent = parent;
 	self.frameTemplate = frameTemplate;
@@ -149,9 +145,9 @@ function FramePool_HideAndClearAnchors(framePool, frame)
 	frame:ClearAllPoints();
 end
 
-function CreateFramePool(frameType, parent, frameTemplate, resetterFunc)
+function CreateFramePool(frameType, parent, frameTemplate, resetterFunc, forbidden)
 	local framePool = CreateFromMixins(FramePoolMixin);
-	framePool:OnLoad(frameType, parent, frameTemplate, resetterFunc or FramePool_HideAndClearAnchors);
+	framePool:OnLoad(frameType, parent, frameTemplate, resetterFunc or FramePool_HideAndClearAnchors, forbidden);
 	return framePool;
 end
 
@@ -176,6 +172,29 @@ function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFun
 	local texturePool = CreateFromMixins(TexturePoolMixin);
 	texturePool:OnLoad(parent, layer, subLayer, textureTemplate, resetterFunc or TexturePool_HideAndClearAnchors);
 	return texturePool;
+end
+
+MaskPoolMixin = CreateFromMixins(ObjectPoolMixin);
+
+local function MaskPoolFactory(maskPool)
+	return maskPool.parent:CreateMaskTexture(nil, maskPool.layer, maskPool.maskTemplate, maskPool.subLayer);
+end
+
+function MaskPoolMixin:OnLoad(parent, layer, subLayer, maskTemplate, resetterFunc)
+	ObjectPoolMixin.OnLoad(self, MaskPoolFactory, resetterFunc);
+	self.parent = parent;
+	self.layer = layer;
+	self.subLayer = subLayer;
+	self.maskTemplate = maskTemplate;
+end
+
+MaskPool_Hide = FramePool_Hide;
+MaskPool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
+
+function CreateMaskPool(parent, layer, subLayer, maskTemplate, resetterFunc)
+	local maskPool = CreateFromMixins(MaskPoolMixin);
+	maskPool:OnLoad(parent, layer, subLayer, maskTemplate, resetterFunc or MaskPool_HideAndClearAnchors);
+	return maskPool;
 end
 
 FontStringPoolMixin = CreateFromMixins(ObjectPoolMixin);
@@ -357,4 +376,88 @@ function FramePoolCollectionMixin:EnumerateInactive()
 
 		return currentObject;
 	end, nil;
+end
+
+
+FixedSizeFramePoolCollectionMixin = CreateFromMixins(FramePoolCollectionMixin);
+
+function CreateFixedSizeFramePoolCollection()
+	local poolCollection = CreateFromMixins(FixedSizeFramePoolCollectionMixin);
+	poolCollection:OnLoad();
+	return poolCollection;
+end
+
+function FixedSizeFramePoolCollectionMixin:OnLoad()
+	FramePoolCollectionMixin.OnLoad(self);
+	self.sizes = {};
+end
+
+function FixedSizeFramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden, maxPoolSize, preallocate)
+	local pool = FramePoolCollectionMixin.CreatePool(self, frameType, parent, template, resetterFunc, forbidden);
+
+	if preallocate then
+		for i = 1, maxPoolSize do
+			pool:Acquire();
+		end
+		pool:ReleaseAll();
+	end
+
+	self.sizes[template] = maxPoolSize;
+
+	return pool;
+end
+
+function FixedSizeFramePoolCollectionMixin:Acquire(template)	
+	local pool = self:GetPool(template);
+	assert(pool);
+
+	if pool:GetNumActive() < self.sizes[template] then
+		return pool:Acquire();
+	end
+	return nil;
+end
+
+
+FontStringPoolCollectionMixin = CreateFromMixins(FramePoolCollectionMixin);
+
+function CreateFontStringPoolCollection()
+	local poolCollection = CreateFromMixins(FontStringPoolCollectionMixin);
+	poolCollection:OnLoad();
+	return poolCollection;
+end
+
+function FontStringPoolCollectionMixin:GetOrCreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	local pool = self:GetPool(fontStringTemplate);
+	if not pool then
+		pool = self:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	end
+	return pool;
+end
+
+function FontStringPoolCollectionMixin:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	assert(self:GetPool(fontStringTemplate) == nil);
+	local pool = CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	self.pools[fontStringTemplate] = pool;
+	return pool;
+end
+
+function FontStringPoolCollectionMixin:CreatePoolIfNeeded(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	if not self:GetPool(fontStringTemplate) then
+		self:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	end
+end
+
+function FontStringPoolCollectionMixin:Acquire(fontStringTemplate, parent, layer, subLayer, resetterFunc)
+	local pool = self:GetOrCreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	local newString = pool:Acquire();
+
+	if parent then
+		newString:SetParent(parent);
+	end
+
+	if layer then
+		newString:SetDrawLayer(layer, subLayer);
+	end
+
+	return newString;
 end

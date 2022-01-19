@@ -1,4 +1,0 @@
-## Title: Blizzard Talent UI
-## LoadOnDemand: 1
-Blizzard_TalentUI.xml
-Localization.lua

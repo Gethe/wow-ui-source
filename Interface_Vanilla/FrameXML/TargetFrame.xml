@@ -166,7 +166,7 @@
 			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" parentKey="texture"  file="Interface\TargetingFrame\UI-TargetingFrame">
+						<Texture name="$parentTexture" parentKey="texture" file="Interface\TargetingFrame\UI-TargetingFrame">
 							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
 						</Texture>
 						<FontString name="$parentName" inherits="GameFontNormalSmall">

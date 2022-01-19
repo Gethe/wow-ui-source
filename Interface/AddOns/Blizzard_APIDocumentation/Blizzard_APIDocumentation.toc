@@ -21,6 +21,7 @@ AreaPoiInfoDocumentation.lua
 AuctionHouseDocumentation.lua
 BankDocumentation.lua
 BattlePetDocumentation.lua
+BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
 CalendarDocumentation.lua
@@ -86,7 +87,6 @@ SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
 SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
-SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpellDocumentation.lua
@@ -124,6 +124,8 @@ DateAndTimeDocumentation.lua
 FriendListDocumentation.lua
 MapDocumentation.lua
 ScriptedAnimationsDocumentation.lua
+SeasonsDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SystemDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
@@ -141,6 +143,7 @@ CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
+ImGuiTypesSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemLocationSharedDocumentation.lua
@@ -152,6 +155,7 @@ PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 ProfessionConstantsDocumentation.lua
+PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
@@ -161,10 +165,12 @@ TimeDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TransmogSharedDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
+UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 VectorSharedDocumentation.lua
 VehicleConstantsDocumentation.lua
 CurrencyConstants_ClassicDocumentation.lua
 ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
+SeasonsConstantsDocumentation.lua
 # End documentation files here

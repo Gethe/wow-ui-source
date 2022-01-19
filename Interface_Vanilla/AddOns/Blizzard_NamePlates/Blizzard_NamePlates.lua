@@ -18,6 +18,11 @@ function NamePlateDriverMixin:OnLoad()
 
 	self:SetBaseNamePlateSize(128, 32);
 
+	self.pools = CreateFramePoolCollection();
+	-- Forbidden dictated by namePlateFrameBase.
+	self.pools:CreatePool("BUTTON", self, "ForbiddenNamePlateUnitFrameTemplate");
+	self.pools:CreatePool("BUTTON", self, "NamePlateUnitFrameTemplate");
+
 	self.namePlateSetupFunctions =
 	{
 		["friendly"] = DefaultCompactNamePlateFriendlyFrameSetup,
@@ -68,21 +73,41 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 end
 
 function NamePlateDriverMixin:OnNamePlateCreated(namePlateFrameBase)
-	Mixin(namePlateFrameBase, NamePlateBaseMixin);
+	self:OnNamePlateCreatedInternal(namePlateFrameBase, "NamePlateUnitFrameTemplate");
+end
 
-	CreateFrame("BUTTON", "$parentUnitFrame", namePlateFrameBase, "NamePlateUnitFrameTemplate");
-	namePlateFrameBase.UnitFrame:EnableMouse(false);
+function NamePlateDriverMixin:OnNamePlateCreatedInternal(namePlateFrameBase, template)
+	Mixin(namePlateFrameBase, NamePlateBaseMixin);
+	namePlateFrameBase.template = template;
+end
+
+function NamePlateDriverMixin:AcquireUnitFrame(namePlateFrameBase)
+	local pool = nil;
+	if Commentator and C_Commentator.IsSpectating() then
+		pool = self.pools:GetOrCreatePool("BUTTON", self, Commentator:GetNameplateTemplate());
+	else
+		pool = self.pools:GetPool(namePlateFrameBase.template);
+	end
+
+	local unitFrame = pool:Acquire();
+	namePlateFrameBase.UnitFrame = unitFrame;
+
+	unitFrame:SetParent(namePlateFrameBase);
+	unitFrame:SetPoint("TOPLEFT", namePlateFrameBase, "TOPLEFT");
+	unitFrame:EnableMouse(false);
+
+	namePlateFrameBase:SetScript("OnSizeChanged", namePlateFrameBase.OnSizeChanged);
+	namePlateFrameBase:OnSizeChanged();
 end
 
 function NamePlateDriverMixin:OnForbiddenNamePlateCreated(namePlateFrameBase)
-	Mixin(namePlateFrameBase, NamePlateBaseMixin);
-
-	CreateFrame("BUTTON", "$parentUnitFrame", namePlateFrameBase, "ForbiddenNamePlateUnitFrameTemplate");
-	namePlateFrameBase.UnitFrame:EnableMouse(false);
+	self:OnNamePlateCreatedInternal(namePlateFrameBase, "ForbiddenNamePlateUnitFrameTemplate");
 end
 
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
+	self:AcquireUnitFrame(namePlateFrameBase);
+
 	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
 
 	namePlateFrameBase:OnAdded(namePlateUnitToken, self);
@@ -102,9 +127,10 @@ end
 function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken)
 	local namePlateType = self:GetNamePlateTypeFromUnit(namePlateUnitToken);
 	local setupFn = self.namePlateSetupFunctions[namePlateType];
-
+	
+	local unitFrame = namePlateFrameBase.UnitFrame;
 	if setupFn then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, setupFn);
+		CompactUnitFrame_SetUpFrame(unitFrame, setupFn);
 	end
 
 	namePlateFrameBase:OnOptionsUpdated();
@@ -129,6 +155,9 @@ function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
 
 	namePlateFrameBase:OnRemoved();
+
+	self.pools:Release(namePlateFrameBase.UnitFrame);
+	namePlateFrameBase.UnitFrame = nil;
 end
 
 function NamePlateDriverMixin:OnTargetChanged()
@@ -270,18 +299,6 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
 
 	self:ApplyOffsets();
-	
-	if C_Commentator.IsSpectating() then
-		if self.UnitFrame.CommentatorDisplayInfo then
-			self.UnitFrame.CommentatorDisplayInfo:Show();
-		else
-			CreateFrame("FRAME", nil, self.UnitFrame, "NamePlateCommentatorDisplayInfoTemplate");
-		end
-	else
-		if self.CommentatorDisplayInfo then
-			self.CommentatorDisplayInfo:Hide();
-		end
-	end
 end
 
 function NamePlateBaseMixin:OnRemoved()
@@ -299,6 +316,18 @@ end
 
 function NamePlateBaseMixin:ApplyOffsets()
 	-- Nothing to do in Classic.
+end
+
+function NamePlateBaseMixin:OnSizeChanged()
+	if C_Commentator.IsSpectating() then
+		if self.namePlateUnitToken and self:IsVisible() then
+			-- Occurs after the anchor update function has been called, so any dependant points
+			-- will have their points set.
+			if self.SizeChangedOverride then
+				self:SizeChangedOverride();
+			end
+		end
+	end
 end
 
 NAMEPLATE_MINIMUM_INSET_HEIGHT_THRESHOLD = 10;
@@ -343,5 +372,9 @@ end
 NamePlateBorderTemplateMixin = {};
 
 function NamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
+	-- Nothing to do in Classic.
+end
+
+function NamePlateBorderTemplateMixin:UpdateSizes()
 	-- Nothing to do in Classic.
 end

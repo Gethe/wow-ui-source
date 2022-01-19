@@ -23,10 +23,16 @@ function WorldMapMixin:OnLoad()
 	self:AddStandardDataProviders();
 
 	self:SetMapID(C_Map.GetFallbackWorldMapID());
+
+	self:RegisterEvent("VARIABLES_LOADED");
 end
 
 function WorldMapMixin:OnEvent(event, ...)
 	MapCanvasMixin.OnEvent(self, event, ...);
+
+	if event == "VARIABLES_LOADED" then
+		WorldMapZoneMinimapDropDown_Update();
+	end
 end
 
 function WorldMapMixin:AddStandardDataProviders()
@@ -140,6 +146,8 @@ function WorldMapMixin:OnShow()
 	self:ResetZoom();
 
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+
+	WorldMapZoneMinimapDropDown_Update();
 end
 
 function WorldMapMixin:OnHide()
@@ -281,6 +289,72 @@ function WorldMapZoneDropDown_Initialize(self)
 	end
 end
 
+function WorldMapZoneMinimapDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, WorldMapZoneMinimapDropDown_Initialize);
+	UIDropDownMenu_SetWidth(self, 130);
+end
+
+function WorldMapZoneMinimapDropDown_Initialize()
+	for index = 1, 3 do
+		local info = UIDropDownMenu_CreateInfo();
+		info.value = tostring(index - 1);
+		info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
+		info.func = WorldMapZoneMinimapDropDown_OnClick;
+		info.classicChecks = true;
+		-- info.checked skipped because the checked property is assigned
+		-- in the dropdown by selection comparison
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function WorldMapZoneMinimapDropDown_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+	local bindingKeyStr = GetBindingKey("TOGGLEBATTLEFIELDMINIMAP");
+	local text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP_NO_SHORTCUT;
+	if(bindingKeyStr) then
+		text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP:format(bindingKeyStr);
+	end
+	GameTooltip:SetText(text, nil, nil, nil, nil, 1);
+	GameTooltip:Show();
+end
+
+function WorldMapZoneMinimapDropDown_OnLeave(self)
+	GameTooltip:Hide();
+end
+
+function WorldMapZoneMinimapDropDown_GetText(value)
+	if ( value == "0" ) then
+		return BATTLEFIELD_MINIMAP_SHOW_NEVER;
+	elseif ( value == "1" ) then
+		return BATTLEFIELD_MINIMAP_SHOW_BATTLEGROUNDS;
+	elseif ( value == "2" ) then
+		return BATTLEFIELD_MINIMAP_SHOW_ALWAYS;
+	end
+	return nil;
+end
+
+function WorldMapZoneMinimapDropDown_Update()
+	local value = GetCVar("showBattlefieldMinimap");
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, value);
+	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_GetText(value));
+end
+
+function WorldMapZoneMinimapDropDown_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, self.value);
+	SetCVar("showBattlefieldMinimap", self.value);
+
+	if ( DoesInstanceTypeMatchBattlefieldMapSettings()) then
+		if ( not BattlefieldMapFrame ) then
+			BattlefieldMap_LoadUI();
+		end
+		BattlefieldMapFrame:Show();
+	else
+		if ( BattlefieldMapFrame ) then
+			BattlefieldMapFrame:Hide();
+		end
+	end
+end
+
 function WorldMapZoneDropDown_Update(self)
 	UIDropDownMenu_ClearAll(self);
 
@@ -298,4 +372,16 @@ function WorldMapZoneDropDown_Update(self)
 			self.Text:SetText(mapInfo.name);
 		end
 	end
+end
+
+function DoesInstanceTypeMatchBattlefieldMapSettings()
+	local instanceType = GetBattlefieldMapInstanceType();
+	local value = GetCVar("showBattlefieldMinimap");
+
+	if instanceType == "pvp" then
+		return value == "1" or value == "2";
+	elseif instanceType == "none" then
+		return value == "2";
+	end
+	return false;
 end

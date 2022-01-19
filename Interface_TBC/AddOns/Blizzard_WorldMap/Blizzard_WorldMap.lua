@@ -330,7 +330,11 @@ end
 
 function WorldMapZoneMinimapDropDown_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-	local text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP:format(GetBindingKey("TOGGLEBATTLEFIELDMINIMAP"));
+	local bindingKeyStr = GetBindingKey("TOGGLEBATTLEFIELDMINIMAP");
+	local text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP_NO_SHORTCUT;
+	if(bindingKeyStr) then
+		text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP:format(bindingKeyStr);
+	end
 	GameTooltip:SetText(text, nil, nil, nil, nil, 1);
 	GameTooltip:Show();
 end

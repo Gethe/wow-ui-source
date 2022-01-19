@@ -6,11 +6,14 @@ GlueCheck.lua
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\EnumUtil.lua
-..\..\Interface_TBC\SharedXML\Util.lua
+..\SharedXML\Color.lua
+..\..\Interface_TBC\SharedXML\ColorUtil.lua
+..\SharedXML\Util.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
@@ -28,11 +31,12 @@ GlueCheck.lua
 ..\..\Interface_TBC\GlueXML\Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
-GlueLocalization.xml
+..\..\Interface_TBC\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
-..\..\Interface_TBC\SharedXML\TextureUtil.lua
+..\SharedXML\TextureUtil.lua
 ..\SharedXML\Backdrop.xml
-..\..\Interface_TBC\SharedXML\LayoutFrame.xml
+..\SharedXML\LayoutFrame.xml
+..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -53,13 +57,12 @@ GlueContextMenu.xml
 ..\SharedXML\ModelSceneActorMixin.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
-..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\GameTooltipTemplate.xml
 ..\SharedXML\FrameStack.lua
 
 ##New stuff!!!
 GlueAddons.lua
-..\..\Interface_TBC\GlueXML\GlueParent.xml
+GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
 ..\SharedXML\ModelFrames.xml
@@ -68,12 +71,12 @@ GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
-..\..\Interface_TBC\GlueXML\AccountLogin.xml
-RealmList.xml
+AccountLogin.xml
+..\..\Interface_TBC\GlueXML\RealmList.xml
 CharacterServicesPatchwerk.xml
 ..\..\Interface_TBC\GlueXML\CharacterSelect.xml
 AccountReactivate.xml
-..\..\Interface_TBC\GlueXML\KioskModeSplash.xml
+KioskModeSplash.xml
 CharacterServices.xml
 ..\..\Interface_TBC\GlueXML\CharacterCreate.xml
 PromotionFrame.xml

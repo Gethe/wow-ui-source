@@ -356,7 +356,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TBCIcon" useAtlasSize="true"/>
-				</Layer>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="TBCInfoPaneTemplate_OnLoad"/>
@@ -1116,10 +1116,10 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterSelectCharacterFrame" inherits="BackdropTemplate">
+					<Frame name="CharacterSelectCharacterFrame" inherits="TooltipBackdropTemplate">
 						<Size x="260" y="642"/>
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 							<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 							<KeyValue key="backdropColorAlpha" value=".85" type="number"/>
 							<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
@@ -1824,9 +1824,9 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="BackdropTemplate">
+					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="TooltipBackdropTemplate">
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 						</KeyValues>
 						<Size x="220" y="150"/>
 						<Anchors>
@@ -1870,9 +1870,9 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame name="PlayersOnServer" hidden="true" inherits="BackdropTemplate">
+					<Frame name="PlayersOnServer" hidden="true" inherits="TooltipBackdropTemplate">
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+							<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 						</KeyValues>
 						<Size x="220" y="88"/>
 						<Anchors>
@@ -2036,9 +2036,9 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true" inherits="BackdropTemplate">
+			<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_16_16" type="global"/>
+					<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 				</KeyValues>
 				<Size x="255" y="60"/>
 				<Anchors>

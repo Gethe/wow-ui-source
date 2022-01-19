@@ -113,28 +113,6 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="TradeSkillSkillBorderLeft" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
-					<Size>
-						<AbsDimension x="256" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="63" y="-50"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
-				</Texture>
-				<Texture file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
-					<Size>
-						<AbsDimension x="28" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="TradeSkillSkillBorderLeft" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.109375" top="0.25" bottom="0.5"/>
-				</Texture>
 				<Texture name="TradeSkillHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="256" y="16"/>
@@ -164,6 +142,38 @@
 			</Layer>
 		</Layers>
 		<Frames>
+
+			<CheckButton name="TradeSkillFrameAvailableFilterCheckButton" frameLevel="100" inherits="UICheckButtonTemplate" >
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TradeSkillFrameAvailableFilterCheckButtonText:SetText(CRAFT_IS_MAKEABLE);
+					</OnLoad>
+					<OnClick>
+						TradeSkillOnlyShowMakeable(self:GetChecked());
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="0" right="-75" top="0" bottom="0"/>
+				</HitRectInsets>
+			</CheckButton>
+			
 			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
 				<Size>
 					<AbsDimension x="268" y="15"/>
@@ -233,6 +243,8 @@
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="0.25" g="0.25" b="0.75" />
 			</StatusBar>
+
+			
 			<Frame name="TradeSkillExpandButtonFrame">
 				<Size>
 					<AbsDimension x="54" y="32"/>

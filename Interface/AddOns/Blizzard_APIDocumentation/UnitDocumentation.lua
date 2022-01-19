@@ -644,6 +644,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitHealPrediction",
+			Type = "Event",
+			LiteralName = "UNIT_HEAL_PREDICTION",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitHealth",
 			Type = "Event",
 			LiteralName = "UNIT_HEALTH",

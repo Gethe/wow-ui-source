@@ -142,6 +142,28 @@ function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
 
+function MiniMapLFGFrame_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	if (activeEntryInfo) then
+		local text = "";
+		for i=1, #activeEntryInfo.activityIDs do
+			local name = C_LFGList.GetActivityInfo(activeEntryInfo.activityIDs[i]);
+			if (name and name ~= "") then
+				text = text .. name .. "\n"
+			end
+		end
+
+		if (text ~= "") then
+			GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			GameTooltip:AddLine(text);
+			GameTooltip:Show();
+		else
+			GameTooltip:Hide();
+		end
+	end
+end
+
 function EyeTemplate_OnUpdate(self, elapsed)
 	local textureInfo = LFG_EYE_TEXTURES[self.queueType or "default"];
 	AnimateTexCoords(self.texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
@@ -364,7 +386,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 	local status, mapName, instanceID, asGroup;
 	local numQueued = 0;
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		status, mapName, instanceID,_,_,_,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
 		if ( status == "queued" or status == "confirm" ) then
 			numQueued = numQueued+1;
 			-- Add a spacer if there were dropdown items before this
@@ -418,7 +440,6 @@ function MiniMapBattlefieldDropDown_Initialize()
 end
 
 function BattlefieldFrame_UpdateStatus(tooltipOnly)
-	local status, mapName, instanceID;
 	local numberQueues = 0;
 	local waitTime, timeInQueue;
 	local tooltip;
@@ -440,7 +461,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	end
 
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID = GetBattlefieldStatus(i);
+		local status, mapName, instanceID = GetBattlefieldStatus(i);
 		if ( instanceID ~= 0 ) then
 			mapName = mapName.." "..instanceID;
 		end
@@ -515,5 +536,21 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 		if ( UnitFactionGroup("player") ) then
 			MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
 		end
+	end
+end
+
+-- ============================================ LookingForGroup ===============================================================================
+function MiniMapLFGDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, MiniMapLFGDropDown_Initialize, "MENU");
+end
+
+function MiniMapLFGDropDown_Initialize()
+	if (C_LFGList.HasActiveEntryInfo()) then
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = CLEAR_ALL;
+		info.func = wrapFunc(C_LFGList.RemoveListing);
+		info.disabled = not C_LFGList.HasActiveEntryInfo();
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
 	end
 end

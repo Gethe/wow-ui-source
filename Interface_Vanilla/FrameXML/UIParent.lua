@@ -68,7 +68,7 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 -- The offset and width values help the Classic frames blend in with modern frames that use ButtonFrameTemplate.
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	height = 424,	whileDead = 1 };
-UIPanelWindows["TalentFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["PlayerTalentFrame"] =			{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestLogFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
@@ -86,6 +86,7 @@ UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0,		xoffset
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -105,31 +106,40 @@ UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0,		xoff
 UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 
-local function GetUIPanelWindowInfo(frame, name)
-	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
-	    local info = UIPanelWindows[frame:GetName()];
-	    if ( not info ) then
-			return;
-	    end
+local function SetFrameAttributes(frame, attributes)
 		frame:SetAttribute("UIPanelLayout-defined", true);
-	    for name,value in pairs(info) do
+	for name, value in pairs(attributes) do
 			frame:SetAttribute("UIPanelLayout-"..name, value);
 		end
+end
+
+function RegisterUIPanel(frame, attributes)
+	local name = frame:GetName();
+	if not UIPanelWindows[name] then
+		UIPanelWindows[name] = attributes;
+		--SetFrameAttributes(frame, attributes);
+	end
+end
+
+local function GetUIPanelAttribute(frame, name)
+	if not frame:GetAttribute("UIPanelLayout-defined") then
+	    local attributes = UIPanelWindows[frame:GetName()];
+	    if not attributes then
+			return;
+	    end
+		SetFrameAttributes(frame, attributes);
 	end
 	return frame:GetAttribute("UIPanelLayout-"..name);
 end
 
 function SetUIPanelAttribute(frame, name, value)
-	local info = UIPanelWindows[frame:GetName()];
-	if ( not info ) then
+	local attributes = UIPanelWindows[frame:GetName()];
+	if not attributes then
 		return;
 	end
 
-	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
-		frame:SetAttribute("UIPanelLayout-defined", true);
-		for name,value in pairs(info) do
-			frame:SetAttribute("UIPanelLayout-"..name, value);
-		end
+	if not frame:GetAttribute("UIPanelLayout-defined") then
+		SetFrameAttributes(frame, attributes);
 	end
 
 	frame:SetAttribute("UIPanelLayout-"..name, value);
@@ -157,8 +167,6 @@ end
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
-	"ScrollOfResurrectionFrame",
-	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
 	"FloatingGarrisonShipyardFollowerTooltip"
@@ -274,6 +282,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SCRIPT_DEPRECATED");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
+	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -302,6 +311,9 @@ function UIParent_OnLoad(self)
 	-- Events for WoW Mouse
 	self:RegisterEvent("WOW_MOUSE_NOT_FOUND");
 
+	-- Events for talent wipes
+	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
+
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
@@ -311,6 +323,8 @@ function UIParent_OnLoad(self)
 
 	-- debug menu
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
+
+	self:RegisterEvent("BEHAVIORAL_NOTIFICATION");
 
 	-- Shop (for Asia promotion)
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
@@ -406,16 +420,12 @@ function SocialFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_SocialUI");
 end
 
-function TalentFrame_LoadUI()
+function PlayerTalentFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalentUI");
 end
 
 function TradeSkillFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TradeSkillUI");
-end
-
-function GMSurveyFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_GMSurveyUI");
 end
 
 function TimeManager_LoadUI()
@@ -439,10 +449,6 @@ end
 
 function Store_LoadUI()
 	UIParentLoadAddOn("Blizzard_StoreUI");
-end
-
-function FlightMap_LoadUI()
-	UIParentLoadAddOn("Blizzard_FlightMap");
 end
 
 function APIDocumentation_LoadUI()
@@ -492,27 +498,25 @@ function ToggleTalentFrame()
 		return;
 	end
 
-	TalentFrame_LoadUI();
-	if ( TalentFrame:IsShown() ) then
-		HideUIPanel(TalentFrame);
+	PlayerTalentFrame_LoadUI();
+	if ( PlayerTalentFrame:IsShown() ) then
+		HideUIPanel(PlayerTalentFrame);
 	else
-		ShowUIPanel(TalentFrame);
+		ShowUIPanel(PlayerTalentFrame);
 	end
 end
 
-function BattlefieldMapAllowed()
-	return UIWidgetManager.widgetPools:GetNumActive() > 0 or (MiniMapBattlefieldFrame and MiniMapBattlefieldFrame.status == "active");
+function GetBattlefieldMapInstanceType()
+	local _, instanceType = IsInInstance();
+	if instanceType == "pvp" or instanceType == "none" then
+		return instanceType;
+	end
+	return nil;
 end
 
 function ToggleBattlefieldMap()
 	BattlefieldMap_LoadUI();
-	if ( BattlefieldMapFrame ) then
-		if (BattlefieldMapAllowed()) then
-			BattlefieldMapFrame:Toggle();
-		else
-			BattlefieldMapFrame:Hide();
-		end
-	end
+	BattlefieldMapFrame:Toggle();
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
@@ -637,7 +641,7 @@ local function PlayBattlefieldBanner(self)
 		local bannerName, bannerDescription;
 
 		for i=1, GetMaxBattlefieldID() do
-			local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			local status, _, _, _, _, _, _, _, _, _, _, _, asGroup, shortDescription = GetBattlefieldStatus(i);
 			if ( status and status == "active" ) then
 				bannerName = mapName;
 				bannerDescription = shortDescription;
@@ -664,10 +668,6 @@ function UIParent_OnEvent(self, event, ...)
 		UIParent.variablesLoaded = true;
 
 		LocalizeFrames();
-
-		if ( not BattlefieldMapFrame and GetCVar("showBattlefieldMinimap") == "1" ) then
-			BattlefieldMap_LoadUI();
-		end
 
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");
 		if ( lastTalkedToGM ~= "" ) then
@@ -741,20 +741,13 @@ function UIParent_OnEvent(self, event, ...)
 		FlashClientIcon();
 		
 		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
+		local text = isXRealm and INVITATION_XREALM or INVITATION;
+		text = string.format(text, name);
 
-		-- if there's a role, it's an LFG invite
-		if ( tank or healer or damage ) then
-			StaticPopupSpecial_Show(LFGInvitePopup);
-			LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles);
-		else
-			local text = isXRealm and INVITATION_XREALM or INVITATION;
-			text = string.format(text, name);
-
-			if ( WillAcceptInviteRemoveQueues() ) then
-				text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
-			end
-			StaticPopup_Show("PARTY_INVITE", text);
+		if ( WillAcceptInviteRemoveQueues() ) then
+			text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
 		end
+		StaticPopup_Show("PARTY_INVITE", text);
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
 		StaticPopupSpecial_Hide(LFGInvitePopup);
@@ -842,6 +835,9 @@ function UIParent_OnEvent(self, event, ...)
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
+		if ( not BattlefieldMapFrame and DoesInstanceTypeMatchBattlefieldMapSettings() ) then
+			BattlefieldMap_LoadUI();
+		end
 
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
@@ -890,6 +886,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		self.battlefieldBannerShown = nil;
+
+		SetLookingForGroupUIAvailable(C_LFGList.IsLookingForGroupEnabled());
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -964,11 +962,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
-		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-			INTERFACE_ACTION_BLOCKED_SHOWN = true;
-		end
+		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
@@ -982,33 +976,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		CloseAllWindows_WithExceptions();
 
-		--[[
-		-- Disable all microbuttons except the main menu
-		SetDesaturation(MicroButtonPortrait, true);
-
-		Designers previously wanted these disabled when feared, they seem to have changed their minds
-		CharacterMicroButton:Disable();
-		SpellbookMicroButton:Disable();
-		TalentMicroButton:Disable();
-		QuestLogMicroButton:Disable();
-		GuildMicroButton:Disable();
-		WorldMapMicroButton:Disable();
-		]]
-
 		UIParent.isOutOfControl = 1;
 	elseif ( event == "PLAYER_CONTROL_GAINED" ) then
-		--[[
-		-- Enable all microbuttons
-		SetDesaturation(MicroButtonPortrait, false);
-
-		CharacterMicroButton:Enable();
-		SpellbookMicroButton:Enable();
-		TalentMicroButton:Enable();
-		QuestLogMicroButton:Enable();
-		GuildMicroButton:Enable();
-		WorldMapMicroButton:Enable();
-		]]
-
 		UIParent.isOutOfControl = nil;
 	elseif ( event == "START_LOOT_ROLL" ) then
 		GroupLootFrame_OpenNewFrame(arg1, arg2);
@@ -1120,6 +1089,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "GOSSIP_CONFIRM_CANCEL" or event == "GOSSIP_CLOSED" ) then
 		StaticPopup_Hide("GOSSIP_CONFIRM");
 		StaticPopup_Hide("GOSSIP_ENTER_CODE");
+	elseif ( event == "ALERT_REGIONAL_CHAT_DISABLED" ) then
+		StaticPopup_Show("REGIONAL_CHAT_DISABLED")
 
 	--Events for handling Auction UI
 	elseif ( event == "AUCTION_HOUSE_SHOW" ) then
@@ -1480,6 +1451,10 @@ function UIParent_OnEvent(self, event, ...)
 		OrderHall_LoadUI();
 		OrderHallTalentFrame:SetGarrisonType(...); 
 		ToggleOrderHallTalentUI();
+	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
+		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
+		LoadAddOn("Blizzard_BehavioralMessaging");
+		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
@@ -1519,9 +1494,6 @@ function UIParent_OnEvent(self, event, ...)
 		local uiMapSystem = ...;
 		if (uiMapSystem == Enum.UIMapSystem.Taxi) then
 			ShowUIPanel(TaxiFrame);
-		else
-				FlightMap_LoadUI();
-			ShowUIPanel(FlightMapFrame);
 		end
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
@@ -1597,36 +1569,58 @@ end
 
 function UIParent_UpdateTopFramePositions()
 	local topOffset = 0;
-	local buffsAreaTopOffset = 0;
+	local yOffset = 0;
+	local xOffset = -180;
 
-	if (OrderHallCommandBar and OrderHallCommandBar:IsShown()) then
+	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
 		topOffset = 12;
-		buffsAreaTopOffset = OrderHallCommandBar:GetHeight();
+		yOffset = OrderHallCommandBar:GetHeight();
 	end
 
-	if (PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame)) then
+	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
 		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
 	end
 
-	if (TargetFrame and not TargetFrame:IsUserPlaced()) then
+	if TargetFrame and not TargetFrame:IsUserPlaced() then
 		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
-	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local buffOffset = 0;
 	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown();
-	if (ticketStatusFrameShown) then
-		TicketStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -180, 0 - buffsAreaTopOffset);
-		buffsAreaTopOffset = buffsAreaTopOffset + TicketStatusFrame:GetHeight();
-	end
-	if (gmChatStatusFrameShown) then
-		GMChatStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -170, -5 - buffsAreaTopOffset);
-		buffsAreaTopOffset = buffsAreaTopOffset + GMChatStatusFrame:GetHeight() + 5;
-	end
-	if (not ticketStatusFrameShown and not gmChatStatusFrameShown) then
-		buffsAreaTopOffset = buffsAreaTopOffset + 13;
+	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local notificationAnchorTo = UIParent;
+	if gmChatStatusFrameShown then
+		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		
+		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
+		notificationAnchorTo = GMChatStatusFrame;
 	end
 
-	BuffFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -205, 0 - buffsAreaTopOffset);
+	if ticketStatusFrameShown then
+		if gmChatStatusFrameShown then
+			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
+		else
+			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		end
+		
+		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
+		notificationAnchorTo = TicketStatusFrame;
+	end
+
+	local reportNotificationShown = BehavioralMessagingTray and BehavioralMessagingTray:IsShown();
+	if reportNotificationShown then
+		BehavioralMessagingTray:ClearAllPoints();
+		if notificationAnchorTo ~= UIParent then
+			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
+		else
+			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
+	end
+
+		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
+	end
+	
+	local y = -(buffOffset + 13)
+	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end
 
 UIPARENT_ALTERNATE_FRAME_POSITIONS = {}
@@ -1795,12 +1789,12 @@ local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 		self:UIParentManageFramePositions();
 	elseif ( attribute == "panel-maximize" ) then
 		local frame = self:GetAttribute("panel-frame");
-		self:MoveUIPanel(GetUIPanelWindowInfo(frame, "area"), "fullscreen", UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
+		self:MoveUIPanel(GetUIPanelAttribute(frame, "area"), "fullscreen", UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
 		frame:ClearAllPoints();
-		frame:SetPoint(GetUIPanelWindowInfo(frame, "maximizePoint"));
+		frame:SetPoint(GetUIPanelAttribute(frame, "maximizePoint"));
 	elseif ( attribute == "panel-restore" ) then
 		local frame = self:GetAttribute("panel-frame");
-		self:MoveUIPanel("fullscreen", GetUIPanelWindowInfo(frame, "area"), UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
+		self:MoveUIPanel("fullscreen", GetUIPanelAttribute(frame, "area"), UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
 	end
 end
 
@@ -1809,14 +1803,14 @@ FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAt
 
 function FramePositionDelegate:ShowUIPanel(frame, force)
 	local frameArea, framePushable;
-	frameArea = GetUIPanelWindowInfo(frame, "area");
+	frameArea = GetUIPanelAttribute(frame, "area");
 	if ( not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full" ) then
 		self:ShowUIPanelFailed(frame);
 		return;
 	end
-	framePushable = GetUIPanelWindowInfo(frame, "pushable") or 0;
+	framePushable = GetUIPanelAttribute(frame, "pushable") or 0;
 
-	if ( UnitIsDead("player") and not GetUIPanelWindowInfo(frame, "whileDead") ) then
+	if ( UnitIsDead("player") and not GetUIPanelAttribute(frame, "whileDead") ) then
 		self:ShowUIPanelFailed(frame);
 		NotWhileDeadError();
 		return;
@@ -1838,26 +1832,19 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		end
 	end
 
-	-- check if the UI fits due to scaling issues
-	if ( GetUIPanelWindowInfo(frame, "checkFit") == 1 ) then
-		local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
-		local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
-		if ( horizRatio < 1 or vertRatio < 1 ) then
-			frame:SetScale(min(horizRatio, vertRatio));
-		else
-			frame:SetScale(1);
-		end
+	if ( GetUIPanelAttribute(frame, "checkFit") == 1 ) then
+		self:UpdateScaleForFit(frame);
 	end
 
 	-- If we have a "center" frame open, only listen to other "center" open requests
 	local centerFrame = self:GetUIPanel("center");
 	local centerArea, centerPushable;
 	if ( centerFrame ) then
-		if ( GetUIPanelWindowInfo(centerFrame, "allowOtherPanels") ) then
+		if ( GetUIPanelAttribute(centerFrame, "allowOtherPanels") ) then
 			HideUIPanel(centerFrame);
 			centerFrame = nil;
 		else
-			centerArea = GetUIPanelWindowInfo(centerFrame, "area");
+			centerArea = GetUIPanelAttribute(centerFrame, "area");
 			if ( centerArea and (centerArea == "center") and (frameArea ~= "center") and (frameArea ~= "full") ) then
 				if ( force ) then
 					self:SetUIPanel("center", nil, 1);
@@ -1866,7 +1853,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 					return;
 				end
 			end
-			centerPushable = GetUIPanelWindowInfo(centerFrame, "pushable") or 0;
+			centerPushable = GetUIPanelAttribute(centerFrame, "pushable") or 0;
 		end
 	end
 
@@ -1880,7 +1867,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	-- Native "center" frames just replace each other, and they take priority over pushed frames
 	if ( frameArea == "center" ) then
 		securecall("CloseWindows");
-		if ( not GetUIPanelWindowInfo(frame, "allowOtherPanels") ) then
+		if ( not GetUIPanelAttribute(frame, "allowOtherPanels") ) then
 			securecall("CloseAllBags");
 		end
 		self:SetUIPanel("center", frame, 1);
@@ -1891,7 +1878,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	if ( frameArea == "doublewide" ) then
 		local leftFrame = self:GetUIPanel("left");
 		if ( leftFrame ) then
-			local leftPushable = GetUIPanelWindowInfo(leftFrame, "pushable") or 0;
+			local leftPushable = GetUIPanelAttribute(leftFrame, "pushable") or 0;
 			if ( leftPushable > 0 and CanShowRightUIPanel(leftFrame) ) then
 				-- Push left to right
 				self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
@@ -1925,7 +1912,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		self:SetUIPanel("left", frame);
 		return;
 	end
-	local leftPushable = GetUIPanelWindowInfo(leftFrame, "pushable") or 0;
+	local leftPushable = GetUIPanelAttribute(leftFrame, "pushable") or 0;
 
 	-- Two open already
 	local rightFrame = self:GetUIPanel("right");
@@ -1993,7 +1980,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	end
 
 	-- Three are shown
-	local rightPushable = GetUIPanelWindowInfo(rightFrame, "pushable") or 0;
+	local rightPushable = GetUIPanelAttribute(rightFrame, "pushable") or 0;
 	if ( framePushable > rightPushable ) then
 		-- This one is highest priority, slide the other two over
 		if ( CanShowUIPanels(centerFrame, rightFrame, frame) ) then
@@ -2014,7 +2001,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 end
 
 function FramePositionDelegate:ShowUIPanelFailed(frame)
-	if GetUIPanelWindowInfo(frame, "showFailedFunc") then
+	if GetUIPanelAttribute(frame, "showFailedFunc") then
 		frame:ExecuteAttribute("UIPanelLayout-showFailedFunc");
 	end
 end
@@ -2127,7 +2114,7 @@ function FramePositionDelegate:HideUIPanel(frame, skipSetPoint)
 	elseif ( frame == self:GetUIPanel("left") ) then
 		-- If we're hiding the left frame, move the other frames left, unless the center is a native center frame
 		if ( centerFrame ) then
-			local area = GetUIPanelWindowInfo(centerFrame, "area");
+			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ) then
 				if ( area == "center" ) then
 					-- Slide left, skip the center
@@ -2170,10 +2157,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	local info;
 	local frame = self:GetUIPanel("left");
 	if ( frame ) then
-		local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
-		local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-		local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-		local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+		local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
+		local yOff = GetUIPanelAttribute(frame,"yoffset") or 0;
+		local bottomClampOverride = GetUIPanelAttribute(frame,"bottomClampOverride");
+		local minYOffset = GetUIPanelAttribute(frame,"minYOffset");
 		local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 		frame:ClearAllPoints();
 		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
@@ -2186,10 +2173,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
-			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
-			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
+			local yOff = GetUIPanelAttribute(frame,"yoffset") or 0;
+			local bottomClampOverride = GetUIPanelAttribute(frame,"bottomClampOverride");
+			local minYOffset = GetUIPanelAttribute(frame,"minYOffset");
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
@@ -2202,11 +2189,11 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	frame = self:GetUIPanel("center");
 	if ( frame ) then
 		if ( CanShowCenterUIPanel(frame) ) then
-			local area = GetUIPanelWindowInfo(frame, "area");
-			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
-			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+			local area = GetUIPanelAttribute(frame, "area");
+			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
+			local yOff = GetUIPanelAttribute(frame,"yoffset") or 0;
+			local bottomClampOverride = GetUIPanelAttribute(frame,"bottomClampOverride");
+			local minYOffset = GetUIPanelAttribute(frame,"minYOffset");
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
@@ -2240,10 +2227,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	frame = self:GetUIPanel("right");
 	if ( frame ) then
 		if ( CanShowRightUIPanel(frame) ) then
-			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
-			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
+			local yOff = GetUIPanelAttribute(frame,"yoffset") or 0;
+			local bottomClampOverride = GetUIPanelAttribute(frame,"bottomClampOverride");
+			local minYOffset = GetUIPanelAttribute(frame,"minYOffset");
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			xOff = xOff + xSpacing; -- add separating space
 			frame:ClearAllPoints();
@@ -2263,7 +2250,21 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		frame:Raise();
 	end
 
+	if ( currentFrame and GetUIPanelAttribute(currentFrame, "checkFit") == 1 ) then
+		self:UpdateScaleForFit(currentFrame);
+	end
+
 	self.updatingPanels = nil;
+end
+
+function FramePositionDelegate:UpdateScaleForFit(frame)
+	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
+	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+	else
+		frame:SetScale(1);
+	end
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()
@@ -2390,12 +2391,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 	else
-		if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
-			SlidingActionBarTexture0:Hide();
-			SlidingActionBarTexture1:Hide();
-		else
-			SlidingActionBarTexture0:Show();
-			SlidingActionBarTexture1:Show();
+		if (SlidingActionBarTexture0 and SlidingActionBarTexture1) then
+			if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
+				SlidingActionBarTexture0:Hide();
+				SlidingActionBarTexture1:Hide();
+			else
+				SlidingActionBarTexture0:Show();
+				SlidingActionBarTexture1:Show();
+			end
 		end
 		if ( StanceBarFrame ) then
 			if ( GetNumShapeshiftForms() > 2 ) then
@@ -2540,7 +2543,7 @@ function ShowUIPanel(frame, force)
 		return;
 	end
 
-	if ( not GetUIPanelWindowInfo(frame, "area") ) then
+	if ( not GetUIPanelAttribute(frame, "area") ) then
 		frame:Show();
 		return;
 	end
@@ -2560,7 +2563,7 @@ function HideUIPanel(frame, skipSetPoint)
 		return;
 	end
 
-	if ( not GetUIPanelWindowInfo(frame, "area") ) then
+	if ( not GetUIPanelAttribute(frame, "area") ) then
 		frame:Hide();
 		return;
 	end
@@ -2586,11 +2589,11 @@ function GetUIPanel(key)
 end
 
 function GetUIPanelWidth(frame)
-	return GetUIPanelWindowInfo(frame, "width") or frame:GetWidth() + (GetUIPanelWindowInfo(frame, "extraWidth") or 0);
+	return GetUIPanelAttribute(frame, "width") or frame:GetWidth() + (GetUIPanelAttribute(frame, "extraWidth") or 0);
 end
 
 function GetUIPanelHeight(frame)
-	return GetUIPanelWindowInfo(frame, "height") or frame:GetHeight() + (GetUIPanelWindowInfo(frame, "extraHeight") or 0);
+	return GetUIPanelAttribute(frame, "height") or frame:GetHeight() + (GetUIPanelAttribute(frame, "extraHeight") or 0);
 end
 
 --Allow a bit of overlap because there are built-in transparencies and buffers already
@@ -2639,9 +2642,9 @@ function CanShowUIPanels(leftFrame, centerFrame, rightFrame)
 	if ( leftFrame ) then
 		offset = offset + GetUIPanelWidth(leftFrame);
 		if ( centerFrame ) then
-			local area = GetUIPanelWindowInfo(centerFrame, "area");
+			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ~= "center" ) then
-				offset = offset + ( GetUIPanelWindowInfo(centerFrame, "width") or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") );
+				offset = offset + ( GetUIPanelAttribute(centerFrame, "width") or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") );
 			else
 				offset = offset + GetUIPanelWidth(centerFrame);
 			end
@@ -2675,8 +2678,8 @@ function CanOpenPanels()
 		return 1;
 	end
 
-	local area = GetUIPanelWindowInfo(centerFrame, "area");
-	local allowOtherPanels = GetUIPanelWindowInfo(centerFrame, "allowOtherPanels");
+	local area = GetUIPanelAttribute(centerFrame, "area");
+	local allowOtherPanels = GetUIPanelAttribute(centerFrame, "allowOtherPanels");
 	if ( area and (area == "center") and not allowOtherPanels ) then
 		return nil;
 	end
@@ -2728,7 +2731,7 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 
 	if ( not frameToIgnore or frameToIgnore ~= centerFrame ) then
 		if ( centerFrame ) then
-			local area = GetUIPanelWindowInfo(centerFrame, "area");
+			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ~= "center" or not ignoreCenter ) then
 				HideUIPanel(centerFrame, UIPANEL_SKIP_SET_POINT);
 			end
@@ -2751,8 +2754,8 @@ end
 function CloseAllWindows_WithExceptions()
 	-- When the player loses control we close all UIs, unless they're handled below
 	local centerFrame = GetUIPanel("center");
-	local ignoreCenter = (centerFrame and GetUIPanelWindowInfo(centerFrame, "ignoreControlLost")) or IsOptionFrameOpen();
-	
+	local ignoreCenter = (centerFrame and GetUIPanelAttribute(centerFrame, "ignoreControlLost")) or IsOptionFrameOpen();
+
 	CloseAllWindows(ignoreCenter);
 end
 
@@ -2946,8 +2949,8 @@ function UIFrameFade(frame, fadeInfo)
 	local index = 1;
 	-- secure so we don't spread taint to other frames in FADEFRAMES
 	if securecall(UIFrameFadeContains, frame) then
-			return;
-		end
+		return;
+	end
 	tinsert(FADEFRAMES, frame);
 	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);
 end
@@ -3373,7 +3376,7 @@ function ToggleGameMenu()
 		UIParent:Show();
 		SetUIVisibility(true);
 	elseif ( C_Commentator.IsSpectating() and IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") ) then
-		PvPCommentator:SetFrameLock(false);
+		Commentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
@@ -4455,7 +4458,7 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, instanceID,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
+		local status, _, _, _, _, _, _, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
 		if ( ( status == "queued" or status == "confirmed" ) and asGroup ) then
 			return true;
 		end
@@ -4620,5 +4623,25 @@ function DisplayInterfaceActionBlockedMessage()
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
+end
+
+-- Set the overall UI state to show or not show the LFG UI.
+function SetLookingForGroupUIAvailable(available)
+	local success = false;
+	if (available) then
+		success = UIParentLoadAddOn("Blizzard_LookingForGroupUI");
+	end
+
+	if (success) then
+		WorldMapMicroButton:Hide()
+		LFGMicroButton:Show();
+		MiniMapWorldMapButton:Show();
+		MiniMapTrackingFrame:SetPoint("TOPLEFT", -24, -24);
+	else
+		WorldMapMicroButton:Show()
+		LFGMicroButton:Hide();
+		MiniMapWorldMapButton:Hide();
+		MiniMapTrackingFrame:SetPoint("TOPLEFT", -15, 0);
 	end
 end

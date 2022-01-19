@@ -1,4 +1,3 @@
-PTR_IssueReporter.Data.Message_Key = "[*BC&^$BC]"
 local classicReportOffset = 1000
 
 function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
