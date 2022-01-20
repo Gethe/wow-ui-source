@@ -12,6 +12,7 @@ ItemButtonUtil.ItemContextEnum = {
 	MythicKeystone = 8,
 	UpgradableItem = 9,
 	RunecarverScrapping = 10,
+	ItemConversion = 11,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -48,6 +49,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.CleanseCorruption;
 	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.RunecarverScrapping then
 		return ItemButtonUtil.ItemContextEnum.RunecarverScrapping;
+	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion then
+		return ItemButtonUtil.ItemContextEnum.ItemConversion;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return RuneforgeFrame:GetItemContext();
 	elseif TargetSpellReplacesBonusTree() then
@@ -97,6 +100,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return C_Item.IsItemCorrupted(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.RunecarverScrapping then 
 			return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemConversion then
+			return C_Item.IsItemConvertibleAndValidForPlayer(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem then 
 			return C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ReplaceBonusTree then 

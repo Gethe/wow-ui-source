@@ -510,14 +510,22 @@ function MouseoverCastKeyDropDownMixin:OnLoad()
 	self.type = CONTROLTYPE_DROPDOWN;
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 	BlizzardOptionsPanel_SetupDependentControl(self:GetParent().EnableMouseoverCastCheckbox, self);
-	self.defaultValue = "NONE";
-	self.oldValue = GetModifiedClick("MOUSEOVERCAST");
-	self.value = self.oldValue or self.defaultValue;
-	self.tooltip = _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..self.value.."_KEY"];
-
 	UIDropDownMenu_SetWidth(self, 90);
 	UIDropDownMenu_Initialize(self, GenerateClosure(self.Initialize, self));
 	UIDropDownMenu_SetSelectedValue(self, self.value);
+	self.defaultValue = "NONE";
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function MouseoverCastKeyDropDownMixin:OnEvent(event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.oldValue = GetModifiedClick("MOUSEOVERCAST");
+		self.value = self.oldValue or self.defaultValue;
+		self.tooltip = _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..self.value.."_KEY"];
+
+		self:UnregisterEvent(event);
+	end
 end
 
 function MouseoverCastKeyDropDownMixin:SetValue(value)

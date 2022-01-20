@@ -2,5 +2,6 @@
 ## LoadOnDemand: 0
 ..\..\SharedXML\NineSliceLayouts.lua
 ..\..\SharedXML\NineSlice.lua
+..\..\SharedXML\SecureUIPanelTemplates.lua
 Blizzard_WowTokenUI.xml
 Blizzard_WowTokenUIInsecure.xml

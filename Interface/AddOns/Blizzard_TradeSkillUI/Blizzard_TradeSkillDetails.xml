@@ -234,14 +234,6 @@
 								<Anchors>
 									<Anchor point="CENTER" x="-5" />
 								</Anchors>
-								<Scripts>
-									<OnShow>
-										self.Anim:Play();
-									</OnShow>
-									<OnHide>
-										self.Anim:Stop();
-									</OnHide>
-								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>
@@ -328,7 +320,7 @@
 								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT">
 							<Size x="290" y="0"/>
 							<Anchors>

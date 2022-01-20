@@ -1,3 +1,13 @@
+TreeListDataProviderConstants =
+{
+	Collapsed = true,
+	Uncollapsed = false,
+	SetChildCollapse = true,
+	RetainChildCollapse = false,
+	SkipInvalidation = true,
+	DoInvalidation = false,
+};
+
 local TreeListNodeMixin = {};
 
 local function CreateTreeListNode(dataProvider, parent, data)
@@ -52,9 +62,28 @@ function TreeListNodeMixin:Invalidate()
 	self.dataProvider:Invalidate();
 end
 
-function TreeListNodeMixin:ToggleCollapsed()
-	self.collapsed = not self.collapsed;
-	self:Invalidate();
+function TreeListNodeMixin:SetChildrenCollapsed(collapsed, affectChildren, skipInvalidate)
+	for index, child in ipairs(self.nodes) do
+		child:SetCollapsed(collapsed, affectChildren, skipInvalidate);
+	end
+end
+
+function TreeListNodeMixin:SetCollapsed(collapsed, affectChildren, skipInvalidate)
+	self.collapsed = collapsed;
+	if affectChildren then
+		self:SetChildrenCollapsed(collapsed, TreeListDataProviderConstants.SetChildCollapse, TreeListDataProviderConstants.SkipInvalidation);
+	end
+	if not skipInvalidate then
+		self:Invalidate();
+	end
+end
+
+function TreeListNodeMixin:ToggleCollapsed(affectChildren, skipInvalidate)
+	self:SetCollapsed(not self:IsCollapsed(), affectChildren, skipInvalidate);
+end
+
+function TreeListNodeMixin:IsCollapsed()
+	return self.collapsed;
 end
 
 local function EnumerateTreeListNode(root, includeCollapsed)
@@ -220,6 +249,19 @@ function TreeListDataProviderMixin:Flush()
 
 	local sortPending = false;
 	self:TriggerEvent(TreeListDataProviderMixin.Event.OnSizeChanged, sortPending);
+end
+
+function TreeListDataProviderMixin:SetAllCollapsed(collapsed)
+	self.node:SetChildrenCollapsed(collapsed, TreeListDataProviderConstants.SetChildCollapse, TreeListDataProviderConstants.SkipInvalidation);
+	self:Invalidate();
+end
+
+function TreeListDataProviderMixin:CollapseAll()
+	self:SetAllCollapsed(TreeListDataProviderConstants.Collapsed);
+end
+
+function TreeListDataProviderMixin:UncollapseAll()
+	self:SetAllCollapsed(TreeListDataProviderConstants.Uncollapsed);
 end
 
 function CreateTreeListDataProvider()

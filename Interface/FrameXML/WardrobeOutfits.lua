@@ -513,11 +513,13 @@ function WardrobeOutfitCheckAppearancesMixin:OnLoad()
 end
 
 function WardrobeOutfitCheckAppearancesMixin:OnShow()
+	LoadingSpinnerMixin.OnShow(self);
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 end
 
 function WardrobeOutfitCheckAppearancesMixin:OnHide()
+	LoadingSpinnerMixin.OnHide(self);
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 	self.reevaluate = nil;

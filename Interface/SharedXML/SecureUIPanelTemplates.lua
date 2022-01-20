@@ -463,3 +463,13 @@ function SelectionFrameOkayButton_OnClick(self, ...)
 		okayFunction(self, ...);
 	end
 end
+
+LoadingSpinnerMixin = {};
+
+function LoadingSpinnerMixin:OnShow()
+	self.Anim:Play();
+end
+
+function LoadingSpinnerMixin:OnHide()
+	self.Anim:Stop();
+end

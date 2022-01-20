@@ -158,7 +158,7 @@ end
 function AccumulateOp(tbl, op)
 	local count = 0;
 	for k, v in pairs(tbl) do
-		count = op(count, v);
+		count = count + op(v);
 	end
 	return count;
 end

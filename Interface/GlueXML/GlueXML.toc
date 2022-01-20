@@ -46,6 +46,7 @@
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 ..\SharedXML\NewFeatureLabel.xml
+..\SharedXML\VASErrorLookup.lua
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
 
@@ -113,7 +114,11 @@ CharacterServicesPatchwerk.xml
 CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesTemplates.xml
+CharacterServicesCharacterSelector.xml
 CharacterServices.xml
+CharacterServicesAccountSelector.xml
+CharacterServicesPaidCharacterTransfer.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
 ..\SharedXML\OptionsFrameTemplates.xml

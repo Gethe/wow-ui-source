@@ -1305,9 +1305,9 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
-			<Frame parentKey="dividerFrame" hidden="true" setAllPoints="true">				
-				<Layers>					
+
+			<Frame parentKey="dividerFrame" hidden="true" setAllPoints="true">
+				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="$parentName" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
 							<Size x="0" y="12"/>
@@ -1347,7 +1347,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			
+
 		</Frames>
 		<Scripts>
 			<OnClick function = "EncounterItemTemplate_OnClick" />
@@ -1653,11 +1653,6 @@
 										<Anchors>
 											<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT"/>
 										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.Anim:Play();
-											</OnLoad>
-										</Scripts>
 									</Frame>
 								</Frames>
 							</Frame>

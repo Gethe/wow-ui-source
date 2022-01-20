@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
-	
+
 	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true">
 		<Size x="78" y="104"/>
 		<Layers>
@@ -45,7 +45,7 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-				</Texture>			
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -455,11 +455,6 @@
 										<Anchors>
 											<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="4"/>
 										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.Anim:Play();
-											</OnLoad>
-										</Scripts>
 									</Frame>
 								</Frames>
 							</Frame>
@@ -1318,7 +1313,7 @@
 			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="WardrobeTransmogButtonTemplate" motionScriptsWhileDisabled="true" mixin="TransmogSlotButtonMixin" frameLevel="10" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
@@ -1346,7 +1341,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.28906250" right="0.55468750" top="0.51171875" bottom="0.57812500"/>
-				</Texture>				
+				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="StatusBorder" atlas="transmog-frame-pink" useAtlasSize="true" hidden="true">
@@ -1375,7 +1370,7 @@
 						<Anchor point="TOP" x="0" y="9"/>
 					</Anchors>
 				</Texture>
-			</Layer>			
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="UndoButton" hidden="true">
@@ -1442,12 +1437,12 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-				</Layers>	
+				</Layers>
 				<Scripts>
 					<OnUpdate>
 						AnimateTexCoords(self.Ants, 256, 256, 48, 48, 22, elapsed, 0.01);
 					</OnUpdate>
-				</Scripts>		
+				</Scripts>
 			</Frame>
 			<Frame parentKey="AnimFrame" setAllPoints="true" hidden="true">
 				<Layers>
@@ -1684,7 +1679,7 @@
 								<Anchor point="LEFT" relativeKey="$parent.MoneyLeft" relativePoint="RIGHT"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="0.3125" bottom="0.6250"/>
-						</Texture>						
+						</Texture>
 						<Texture parentKey="MoneyRight" file="Interface\Common\MoneyFrame.png">
 							<Size x="8" y="20"/>
 							<Anchors>
@@ -1781,7 +1776,7 @@
 								</Scripts>
 							</Button>
 						</Frames>
-					</ModelScene>							
+					</ModelScene>
 					<Button parentKey="HeadButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
 						<KeyValues>
 							<KeyValue key="slot" value="HEADSLOT" type="string"/>

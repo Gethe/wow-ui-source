@@ -385,7 +385,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameStrata="HIGH" hidden="true" virtual="true">
+	<Button name="CharacterVASTemplate" mixin="CharacterVASMixin" parentArray="CharacterVAS" frameStrata="HIGH" frameBuffer="true" hidden="true" virtual="true">
 		<Size x="59" y="60"/>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="3">
@@ -432,7 +432,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$Parent.Ring" relativePoint="CENTER"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a=".75"/>
+					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -514,11 +514,13 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick function="CharacterServicesTokenBoost_OnClick"/>
-			<OnEnter function="CharacterServicesTokenBoost_OnEnter"/>
-			<OnLeave function="CharacterServicesTokenBoost_OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
+
+	<Button name="CharacterBoostTemplate" inherits="CharacterVASTemplate" mixin="CharacterBoostMixin" virtual="true"/>
 
 	<Button name="CharacterSelectRotateButtonTemplate" inherits="IconButtonTemplate" virtual="true">
 		<!--
@@ -569,7 +571,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -1326,6 +1328,14 @@
 							</OnMouseWheel>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="VASTokenContainer" inherits="HorizontalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="spacing" value="0" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-18" y="-4"/>
+						</Anchors>
+					</Frame>
 					<Frame name="CharSelectServicesCover" hidden="true">
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -1437,7 +1447,7 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="CharSelectServicesFlowFrame" frameStrata="DIALOG" enableMouse="true" hidden="true">
+					<Frame name="CharSelectServicesFlowFrame" mixin="CharSelectServicesFlowFrameMixin" frameStrata="DIALOG" enableMouse="true" hidden="true">
 						<Size x="421" y="724"/>
 						<Anchors>
 							<Anchor point="LEFT" x="8" y="16"/>
@@ -1469,6 +1479,23 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="ErrorMessageContainer" mixin="FlowErrorContainerMixin">
+								<Size x="310" y="70"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="95"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" setAllPoints="true">
+											<Color color="RED_FONT_COLOR"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+								</Scripts>
+							</Frame>
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-13" y="-14" />

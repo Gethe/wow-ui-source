@@ -76,6 +76,7 @@ local ITEM_INTERACTION_FRAME_EVENTS = {
 	"PLAYER_MONEY",
 	"ITEM_INTERACTION_CLOSE",
 	"ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
+	"GLOBAL_MOUSE_DOWN",
 };
 
 local ITEM_INTERACTION_UNIT_EVENTS = {
@@ -99,12 +100,18 @@ function ItemInteractionMixin:GetCost()
 	return self.cost;
 end 
 
+-- UiItemInteraction data only supports a single flat cost currency.
+-- We need to add support for extended currency costs or move Item Conversion out of the Item Interaction UI.
+function ItemInteractionMixin:HasExtendedCurrencyCost()
+	return self.interactionType == Enum.UIItemInteractionType.ItemConversion;
+end
+
 function ItemInteractionMixin:HasCost()
-	return (self.cost ~= nil) and (self.cost > 0);
+	return (self.cost ~= nil) and (self.cost > 0) or self:HasExtendedCurrencyCost();
 end
 
 function ItemInteractionMixin:CostsGold() 
-	return not self.currencyTypeId and self:HasCost();
+	return not self.currencyTypeId and not self:HasExtendedCurrencyCost() and self:HasCost();
 end
 
 function ItemInteractionMixin:CostsCurrency()
@@ -141,7 +148,18 @@ function ItemInteractionMixin:OnEvent(event, ...)
 		end
 	elseif (event == "ITEM_INTERACTION_CLOSE") then 
 		HideUIPanel(self);
-	end
+	elseif (event == "GLOBAL_MOUSE_DOWN") then
+		if (self.clickShowsFlyout) then
+			local buttonName = ...;
+			local isRightButton = buttonName == "RightButton";
+
+			local mouseFocus = GetMouseFocus();
+			local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+			if not flyoutSelected then
+				EquipmentFlyout_Hide();
+			end
+		end
+	end	
 end
 
 function ItemInteractionMixin:OnShow()
@@ -187,6 +205,7 @@ function ItemInteractionMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ITEM_INTERACTION_UNIT_EVENTS);
 
 	CloseAllBags(self);
+	EquipmentFlyout_Hide();
 	C_ItemInteraction.CloseUI();
 
 	-- Greys out the items in your bag that don't match. If you need  to add a new item interaction frame
@@ -215,6 +234,9 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	};
 
 	self.conversionMode = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConversionMode));
+	self.clickShowsFlyout = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ClickShowsFlyout));
+
+	self:SetupEquipmentFlyout(self.clickShowsFlyout);
 	
 	local portraitFormat = "%s-portrait";
 	if (C_Texture.GetAtlasInfo(portraitFormat:format(self.textureKit)) ~= nil) then
@@ -288,7 +310,7 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 
 	self.Description:ClearAllPoints();
 	self.Description:SetPoint("BOTTOM", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
-end 
+end
 
 function ItemInteractionMixin:UpdateDescriptionColor()
 	self.Description:SetTextColor(self:GetDescriptionColor():GetRGB());
@@ -352,9 +374,23 @@ function ItemInteractionMixin:GetButtonTooltip()
 	return self.buttonTooltip;
 end
 
+function ItemInteractionMixin:GetConfirmationDescription()
+	if (self:HasExtendedCurrencyCost()) then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
+		local file, fileWidth, fileHeight, width, height = currencyInfo.iconFileID, 64, 64, 16, 16;
+		local left, right, top, bottom = 0, 1, 0, 1;
+		local xOffset, yOffset = 0, 0;
+		local currencyTexture = CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset);
+		
+		return self.confirmationDescription:format(self.cost, currencyTexture);
+	end
+
+	return self.confirmationDescription;
+end
+
 function ItemInteractionMixin:GetConfirmationInfo()
 	if (self.confirmationDescription ~= nil) then
-		return self.confirmationDescription, self.confirmationText;
+		return self:GetConfirmationDescription(), self.confirmationText;
 	end
 
 	return nil, nil;
@@ -415,6 +451,19 @@ function ItemInteractionMixin:UpdateActionButtonState()
 	end 
 end
 
+function ItemInteractionMixin:SetItemConversionExtendedCurrencyCost(itemLocation)
+	local conversionCurrencyInfo = itemLocation and C_ItemInteraction.GetItemConversionCurrencyCost(itemLocation) or nil;
+	self.currencyTypeId = conversionCurrencyInfo and conversionCurrencyInfo.currencyID or nil;
+	self.cost = conversionCurrencyInfo and conversionCurrencyInfo.amount or nil;
+
+	if (self.currencyTypeId and self.cost) then
+		self:UpdateCurrency();
+		self.ButtonFrame.Currency:SetShown(true);
+	else
+		self.ButtonFrame.Currency:SetShown(false);
+	end
+end
+
 function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	if (self.itemDataLoadedCancelFunc) then
 		self.itemDataLoadedCancelFunc();
@@ -437,6 +486,10 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 			self.DescriptionCurrencies:Show();
 		end
 	end
+	
+	if (self:HasExtendedCurrencyCost()) then
+		self:SetItemConversionExtendedCurrencyCost(itemLocation);
+	end
 
 	self:UpdateDescriptionColor();
 
@@ -453,6 +506,85 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	self:UpdateActionButtonState();
 
 	StaticPopup_Hide("ITEM_INTERACTION_CONFIRMATION");
+end
+
+function ItemInteractionMixin:SetupEquipmentFlyout(setup)
+	local flyoutSettings = {
+			customFlyoutOnUpdate = nop,
+			hasPopouts = true,
+			parent = self:GetParent(),
+			anchorX = 20,
+			anchorY = -8,
+			useItemLocation = true,
+			hideFlyoutHighlight = true,
+			alwaysHideOnClick = true,
+	};
+
+	-- The equipment slot API requires the flyout settings to be on the item slot's parent.
+	self.flyoutSettings = setup and not self.conversionMode and flyoutSettings or nil;
+	self.ItemConversionFrame.flyoutSettings = setup and self.conversionMode and flyoutSettings or nil;
+end
+
+function ItemInteractionMixin:SetDynamicFlyoutSettings()
+	-- Add a new filter function here if you want your interaction to use the equipment flyout.
+	local filterFunction;
+	if (self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
+		filterFunction = C_Item.IsItemConvertibleAndValidForPlayer;
+	end
+
+	-- itemSlot is required by the API, but unused in this context.
+	local function GetItemInteractionItemsCallback(itemSlot, resultsTable)
+		self:GetValidItemInteractionItemsCallback(filterFunction, resultsTable);
+	end
+
+	local function SetValidItemInteractionItemCallback(button)
+		local location = button:GetItemLocation();
+		C_ItemInteraction.SetPendingItem(location);
+	end
+
+	local flyoutSettings = self.conversionMode and self.ItemConversionFrame.flyoutSettings or self.flyoutSettings;
+	flyoutSettings.getItemsFunc = GetItemInteractionItemsCallback;
+	flyoutSettings.onClickFunc = SetValidItemInteractionItemCallback;
+	flyoutSettings.filterFunction = filterFunction;
+end
+
+function ItemInteractionMixin:GetValidItemInteractionItemsCallback(filterFunction, resultsTable)
+	if (not filterFunction) then
+		return;
+	end
+	
+	local function ItemLocationCallback(itemLocation)
+		if (filterFunction(itemLocation)) then
+			resultsTable[itemLocation] = C_Item.GetItemLink(itemLocation);
+		end
+	end
+
+	ContainerFrameUtil_IteratePlayerInventoryAndEquipment(ItemLocationCallback);
+end
+
+function ItemInteractionMixin:ShowFlyout(itemSlot)
+	self:SetDynamicFlyoutSettings();
+	EquipmentFlyout_Show(itemSlot);
+end
+
+function ItemInteractionMixin:SetInputItemSlotTooltip(itemSlot, itemLocation)
+	if (itemLocation) then
+		GameTooltip:SetOwner(itemSlot, "ANCHOR_RIGHT");
+		if (self.interactionType == Enum.UIItemInteractionType.CleanseCorruption) then
+			C_ItemInteraction.SetCorruptionReforgerItemTooltip();
+		else 
+			ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
+		end
+		GameTooltip:Show();
+	elseif (self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
+			GameTooltip:SetOwner(itemSlot, "ANCHOR_RIGHT"); 			
+			-- We don't allow wrapping on the first line of the tooltip, so hack around that restriction.
+			GameTooltip_AddNormalLine(GameTooltip, "");
+			GameTooltip_AddNormalLine(GameTooltip, SL_SET_CONVERSION_INPUT_DESCRIPTION:format(PVPUtil.GetCurrentSeasonNumber()));
+			GameTooltip:Show();
+	else
+		GameTooltip:Hide();
+	end
 end
 
 ------------------ Item Slot Functions ----------------------------
@@ -488,8 +620,16 @@ end
 function ItemInteractionItemSlotMixin:OnClick(button)
 	if (button == "RightButton") then
 		C_ItemInteraction.ClearPendingItem();
-	else
-		C_ItemInteraction.SetPendingItem(C_Cursor.GetCursorItem());
+		return; 
+	end
+
+	local itemInteractionFrame = self:GetParent();
+	local cursorItem = C_Cursor.GetCursorItem();
+	if (cursorItem) then
+		C_ItemInteraction.SetPendingItem(cursorItem);
+		ClearCursor();
+	elseif (itemInteractionFrame.clickShowsFlyout) then
+		itemInteractionFrame:ShowFlyout(self);
 	end
 end
 
@@ -504,17 +644,7 @@ end
 function ItemInteractionItemSlotMixin:OnEnter()
 	local itemInteractionFrame = self:GetParent();
 	local itemLocation = itemInteractionFrame:GetItemLocation(); 
-	if (itemLocation) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		if (itemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.CleanseCorruption) then
-			C_ItemInteraction.SetCorruptionReforgerItemTooltip();
-		else 
-			ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
-		end
-		GameTooltip:Show();
-	else
-		GameTooltip_Hide();
-	end
+	itemInteractionFrame:SetInputItemSlotTooltip(self, itemLocation);
 end
 
 function ItemInteractionItemSlotMixin:OnLeave()
@@ -550,11 +680,9 @@ function ItemInteractionActionButtonMixin:OnEnter()
 		local buttonTooltip = itemInteractionFrame:GetButtonTooltip();
 		if (self:IsEnabled() and (buttonTooltip ~= nil)) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
 			-- We don't allow wrapping on the first line of the tooltip, so hack around that restriction.
 			GameTooltip_AddNormalLine(GameTooltip, "");
 			GameTooltip_AddNormalLine(GameTooltip, buttonTooltip);
-
 			GameTooltip:Show();
 		else
 			GameTooltip_Hide();
@@ -612,8 +740,17 @@ end
 function ItemInteractionItemConversionInputSlotMixin:OnClick(button)
 	if (button == "RightButton") then
 		C_ItemInteraction.ClearPendingItem();
-	else
-		C_ItemInteraction.SetPendingItem(C_Cursor.GetCursorItem());
+		return; 
+	end
+
+	local itemConversionFrame = self:GetParent();
+	local itemInteractionFrame = itemConversionFrame:GetParent();
+	local cursorItem = C_Cursor.GetCursorItem();
+	if (cursorItem) then
+		C_ItemInteraction.SetPendingItem(cursorItem);
+		ClearCursor();
+	elseif (itemInteractionFrame.clickShowsFlyout) then
+		itemInteractionFrame:ShowFlyout(self);
 	end
 end
 
@@ -628,13 +765,7 @@ end
 function ItemInteractionItemConversionInputSlotMixin:OnEnter()
 	local itemInteractionFrame = self:GetParent():GetParent();
 	local itemLocation = itemInteractionFrame:GetItemLocation();
-	if (itemLocation) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); 
-		ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
-		GameTooltip:Show();
-	else
-		GameTooltip_Hide();
-	end
+	itemInteractionFrame:SetInputItemSlotTooltip(self, itemLocation);
 end
 
 function ItemInteractionItemConversionInputSlotMixin:OnLeave()
@@ -648,16 +779,32 @@ function ItemInteractionItemConversionOutputSlotMixin:RefreshIcon()
 	local itemInteractionFrame = self:GetParent():GetParent();
 	local itemLocation = itemInteractionFrame:GetItemLocation();
 
-	-- TODO: Display the output item's icon instead of copying the original icon 
+	SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-rightitem-border-empty", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetItemButtonTexture(self, nil);
+
 	if (itemLocation) then
-		local item = Item:CreateFromItemLocation(itemLocation);
-		self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
-			SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-rightitem-border-full", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
-			SetItemButtonTexture(self, item:GetItemIcon());
-		end);
-	else
-		SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-rightitem-border-empty", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
-		SetItemButtonTexture(self, nil);
+		local icon = C_Item.GetItemConversionOutputIcon(itemLocation);
+		if (not icon) then
+			self:RegisterEvent("ITEM_CONVERSION_DATA_READY");
+			return;
+		end
+
+		self:UnregisterEvent("ITEM_CONVERSION_DATA_READY");
+		SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-rightitem-border-full", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetItemButtonTexture(self, icon);
+	end
+end
+
+function ItemInteractionItemConversionOutputSlotMixin:OnEvent(event, ...)
+	if (event == "ITEM_CONVERSION_DATA_READY") then
+		local itemGUID = ...;
+		local itemInteractionFrame = self:GetParent():GetParent();
+		local itemLocation = itemInteractionFrame:GetItemLocation();
+
+		-- Let's make sure this data is for the current input item before refreshing the icon
+		if (itemLocation and C_Item.GetItemGUID(itemLocation) == itemGUID) then
+			self:RefreshIcon();
+		end
 	end
 end
 

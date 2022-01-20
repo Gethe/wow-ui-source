@@ -2073,6 +2073,14 @@ function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
 	end
 end
 
+function DropDownControlMixin:GetOptionCount()
+	return self.options and #self.options or 0;
+end
+
+function DropDownControlMixin:HasOptions()
+	return self:GetOptionCount() > 0;
+end
+
 function DropDownControlMixin:SetCustomSetup(customSetupCallback, skipNormalSetup)
 	self.customSetupCallback = customSetupCallback;
 	self.skipNormalSetup = skipNormalSetup;

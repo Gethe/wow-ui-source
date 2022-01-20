@@ -155,8 +155,8 @@ function ScrollBoxListTreeListViewMixin:Layout()
 	local elementIndent = self:GetElementIndent();
 	local function AnchorFrame(index, frame, offset, scrollTarget)
 		local elementData = frame:GetElementData();
-		local depth = math.max(0, elementData:GetDepth());
-		return setPoint(frame, offset, depth * elementIndent, scrollTarget);
+		local indent = (elementData:GetDepth() - 1) * elementIndent;
+		return setPoint(frame, offset, indent, scrollTarget);
 	end
 	return self:LayoutInternal(AnchorFrame);
 end

@@ -1273,206 +1273,6 @@ local function currencyFormatLong(...)
 	return info.formatLong(...);
 end
 
---Error message data
-local errorData = {
-	[Enum.StoreError.InvalidPaymentMethod] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		link = 11,
-	},
-	[Enum.StoreError.PaymentFailed] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
-	},
-	[Enum.StoreError.WrongCurrency] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		link = 11,
-	},
-	[Enum.StoreError.BattlepayDisabled] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED,
-	},
-	[Enum.StoreError.InsufficientBalance] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE,
-		link = 11,
-	},
-	[Enum.StoreError.Other] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
-	},
-	[Enum.StoreError.AlreadyOwned] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_ALREADY_OWNED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_ALREADY_OWNED,
-	},
-	[Enum.StoreError.ParentalControlsNoPurchase] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS,
-	},
-	[Enum.StoreError.PurchaseDenied] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED,
-	},
-	[Enum.StoreError.ConsumableTokenOwned] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED,
-	},
-	[Enum.StoreError.TooManyTokens] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
-		msg = BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS,
-	},
-	[Enum.StoreError.ItemUnavailable] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
-		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
-	},
-	[Enum.StoreError.ClientRestricted] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CLIENT_RESTRICTED,
-		msg = BLIZZARD_STORE_ERROR_CLIENT_RESTRICTED,
-	},
-};
-
---VAS Error message data
-local vasErrorData = {
-	[Enum.VasError.CharacterHasVasPending] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING,
-		notUserFixable = true,
-	},
-	[Enum.VasError.InvalidDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.InvalidSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.LowerBoxLevel] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
-	},
-	[Enum.VasError.OperationAlreadyInProgress] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS,
-	},
-	[Enum.VasError.LockedForVas] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS,
-	},
-	[Enum.VasError.RealmNotEligible] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
-	},
-	[Enum.VasError.CannotMoveGuildMaster] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
-	},
-	[Enum.VasError.MaxCharactersOnServer] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
-	},
-	[Enum.VasError.DuplicateCharacterName] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
-	},
-	[Enum.VasError.HasMail] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
-	},
-	[Enum.VasError.MoveInProgress] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS,
-	},
-	[Enum.VasError.UnderMinLevelReq] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
-	},
-	[Enum.VasError.CharacterTransferTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.CharLocked] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
-		notUserFixable = true,
-	},
-	[Enum.VasError.TooMuchMoneyForLevel] = {
-		msg = function(character)
-			local str = "";
-			if (character.level >= 50) then
-				-- level 50+: one million gold
-				str = GetSecureMoneyString(1000000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 40) then
-				-- level 10-49: two hundred fifty thousand gold
-				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 10) then
-				-- level 10-49: ten thousand gold
-				str = GetSecureMoneyString(10000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			end
-			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
-		end
-	},
-	[Enum.VasError.HasAuctions] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
-	},
-	[Enum.VasError.LastSaveTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
-		notUserFixable = true,
-	},
-	[Enum.VasError.NameNotAvailable] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
-	},
-	[Enum.VasError.LastRenameTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
-	},
-	[Enum.VasError.AlreadyRenameFlagged] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED,
-	},
-	[Enum.VasError.CustomizeAlreadyRequested] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
-	},
-	[Enum.VasError.LastCustomizeTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON,
-	},
-	[Enum.VasError.FactionChangeTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
-		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
-	},
-	[Enum.VasError.GuildRankInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
-	},
-	[Enum.VasError.CharacterWithoutGuild] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
-	},
-	[Enum.VasError.GmSeniorityInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT,
-	},
-	[Enum.VasError.AuthenticatorInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT,
-	},
-	[Enum.VasError.IneligibleMapID] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
-	},
-	[Enum.VasError.BattlepayDeliveryPending] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
-	},
-	[Enum.VasError.HasWoWToken] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
-	},
-	[Enum.VasError.HasHeirloom] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
-	},
-	[Enum.VasError.LastSaveTooDistant] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-	[Enum.VasError.HasCagedBattlePet] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
-	},
-	[Enum.VasError.BoostedTooRecently] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
-		notUserFixable = true,
-	},
-	[Enum.VasError.NewLeaderInvalid] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
-	},
-	[Enum.VasError.NeedsLevelSquish] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-};
-
 local factionColors = {
 	[0] = "ffe50d12",
 	[1] = "ff4a54e8",
@@ -1679,7 +1479,7 @@ end
 local function GetProductGroups()
 	local productGroups = C_StoreSecure.GetProductGroups();
 	local filteredProductGroups = {};
-	
+
 	for _, groupId in ipairs(productGroups) do
 		local products = C_StoreSecure.GetProducts(groupId);
 		if #StoreFrame_FilterEntries(products) ~= 0 then
@@ -2566,10 +2366,10 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			local errors = data.errors;
 			local hasOther = false;
 			local hasNonUserFixable = false;
-			for i = 1, #errors do
-				if (not vasErrorData[errors[i]]) then
+			for index, errorID in ipairs(errors) do
+				if not VASErrorData_HasError(errorID) then
 					hasOther = true;
-				elseif (vasErrorData[errors[i]].notUserFixable) then
+				elseif not VASErrorData_IsUserFixableError(errorID) then
 					hasNonUserFixable = true;
 				end
 			end
@@ -2577,17 +2377,12 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			local desc;
 			if (hasOther) then
 				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-			elseif (hasNonUserFixable) then
-				desc = "";
-				for i = 1, #errors do
-					if (vasErrorData[errors[i]].notUserFixable) then
-						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
-					end
-				end
 			else
-				desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
-				for i = 1, #errors do
-					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+				desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+				for index, errorID in ipairs(errors) do
+					if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+						desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
+					end
 				end
 			end
 
@@ -2600,14 +2395,12 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 end
 
 function StoreFrame_OnError(self, errorID, needsAck, internalErr)
-	local info = errorData[errorID];
-	if ( not info ) then
-		info = errorData[Enum.StoreError.Other];
-	end
+	local title, msg, link = StoreErrorData_GetMessage(errorID);
+
 	if ( IsGMClient() and not HideGMOnly() ) then
-		StoreFrame_ShowError(self, info.title.." ("..internalErr..")", info.msg, info.link, needsAck);
+		StoreFrame_ShowError(self, title.." ("..internalErr..")", msg, link, needsAck);
 	else
-		StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
+		StoreFrame_ShowError(self, title, msg, link, needsAck);
 	end
 end
 
@@ -3199,7 +2992,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.NewGuildMaster.EmptyText:SetText(VAS_NEW_GUILD_MASTER_EMPTY_TEXT);
 	self.CharacterSelectionFrame.OldGuildNewName.Label:SetText(VAS_OLD_GUILD_NEW_NAME_LABEL);
 	self.CharacterSelectionFrame.OldGuildNewName.EmptyText:SetText(VAS_OLD_GUILD_NEW_NAME_EMPTY_TEXT);
-	self.CharacterSelectionFrame.RenameGuildCheckbox.Label:SetText("This is a lot of text for the Rename Guild checkbox, so much text that it won't fit");
+	self.CharacterSelectionFrame.RenameGuildCheckbox.Label:SetText(BLIZZARD_STORE_VAS_RENAME_GUILD);
 	self.CharacterSelectionFrame.RenameGuildEditbox.EmptyText:SetText(VAS_NEW_GUILD_NAME_LABEL);
 	self.CharacterSelectionFrame.TransferRealmEditbox.Label:SetText(VAS_DESTINATION_REALM_LABEL);
 	self.CharacterSelectionFrame.TransferRealmEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_REALM_NAME);
@@ -3452,14 +3245,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 end
 
 function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppend)
-	local errorData = vasErrorData[errorID];
-	local str;
-	if (type(errorData.msg) == "function") then
-		str = errorData.msg(character);
-	else
-		str = errorData.msg;
-	end
-
+	local str = VASErrorData_GetMessage(errorID, character);
 	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
 	return desc .. sep .. str;
 end
@@ -3605,10 +3391,10 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local hasOther = false;
 	local hasNonUserFixable = false;
-	for i = 1, #errors do
-		if (not vasErrorData[errors[i]]) then
+	for index, errorID in ipairs(errors) do
+		if not VASErrorData_HasError(errorID) then
 			hasOther = true;
-		elseif (vasErrorData[errors[i]].notUserFixable) then
+		elseif not VASErrorData_IsUserFixableError(errorID) then
 			hasNonUserFixable = true;
 		end
 	end
@@ -3616,19 +3402,15 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local desc;
 	if (hasOther) then
 		desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-	elseif (hasNonUserFixable) then
-		desc = "";
-		for i = 1, #errors do
-			if (vasErrorData[errors[i]].notUserFixable) then
-				desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
+	else
+		desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+		for index, errorID in ipairs(errors) do
+			if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+				desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
 			end
 		end
-	else
-		desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
-		for i = 1, #errors do
-			desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
-		end
 	end
+
 	frame.ChangeIconFrame:Hide();
 	if (VASServiceType == Enum.VasServiceType.GuildFactionChange) then
 		StoreVASValidationFrame_UpdateGuildFactionChangeValidationPosition();

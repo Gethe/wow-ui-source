@@ -13,7 +13,6 @@ local SEASON_STATE_DISABLED = 4;
 
 local BFA_START_SEASON = 26;
 local BFA_FINAL_SEASON = 29;
-local SL_START_SEASON = 30;
 
 local HORDE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Horde];
 local ALLIANCE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Alliance];
@@ -415,7 +414,7 @@ function PVPQueueFrame_UpdateTitle()
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
 		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(GetCurrentArenaSeason() - SL_START_SEASON + 1));
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(PVPUtil.GetCurrentSeasonNumber()));
 	end
 end
 
@@ -1970,7 +1969,7 @@ function NewPvpSeasonMixin:OnShow()
 			seasonDescription:Hide();
 		end
 	else
-		self.SeasonDescriptionHeader:SetText(SL_SEASON_NUMBER:format(currentSeason - SL_START_SEASON + 1));
+		self.SeasonDescriptionHeader:SetText(SL_SEASON_NUMBER:format(PVPUtil.GetCurrentSeasonNumber()));
 
 		local rewardTextAnchor = self.SeasonDescriptionHeader;
 		for i = 1, MAX_NUMBER_OF_PVP_SEASON_DESCRIPTIONS do

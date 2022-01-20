@@ -1,5 +1,7 @@
 PVPUtil = {};
 
+SL_START_SEASON = 30;
+
 function PVPUtil.GetTierName(tierEnum)
 	return _G["PVP_RANK_"..tierEnum.."_NAME"];
 end
@@ -20,4 +22,8 @@ function PVPUtil.IsInActiveBattlefield()
 	end
 
 	return false, nil;
+end
+
+function PVPUtil.GetCurrentSeasonNumber()
+	return GetCurrentArenaSeason() - SL_START_SEASON + 1;
 end

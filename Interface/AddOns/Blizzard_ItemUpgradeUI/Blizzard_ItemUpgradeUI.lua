@@ -629,14 +629,7 @@ function ItemUpgradeSlotMixin:GetItemUpgradeItemsCallBack(resultsTable)
 		end
 	end
 
-	ContainerFrameUtil_IteratePlayerInventory(ItemLocationCallback);
-
-	for i = EQUIPPED_FIRST, EQUIPPED_LAST do
-		local itemLocation = ItemLocation:CreateFromEquipmentSlot(i);
-		if C_Item.DoesItemExist(itemLocation) then
-			ItemLocationCallback(itemLocation);
-		end
-	end
+	ContainerFrameUtil_IteratePlayerInventoryAndEquipment(ItemLocationCallback);
 end
 
 function ItemUpgradeSlotMixin:OnEnter()

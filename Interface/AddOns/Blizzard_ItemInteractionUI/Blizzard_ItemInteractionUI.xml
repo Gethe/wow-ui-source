@@ -129,6 +129,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnEvent method="OnEvent"/>
 							<OnEnter method="OnEnter"/>
 							<OnLeave method="OnLeave"/>
 						</Scripts>

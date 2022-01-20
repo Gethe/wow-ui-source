@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="CharacterServicesFlowMixin.lua"/>
 	<Script file="CharacterServices.lua"/>
 
 	<Frame name="CharacterServicesBlockTemplate" virtual="true">
@@ -22,7 +23,6 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="StepActiveLabel" font="SystemFont_Large" justifyH="LEFT">
-					<Size x="260" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="9" y="3"/>
 					</Anchors>
@@ -148,26 +148,6 @@
 			<OnClick function="CharacterUpgradeSelectFactionRadioButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
-	<Frame name="CharacterServicesArrowTemplate" virtual="true">
-		<Size x="18" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Arrow" inherits="services-yellowarrow">
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-	<Frame name="CharacterServicesBonusIconTemplate" virtual="true">
-		<Size x="19" y="19"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" inherits="services-icon-bonus" setAllPoints="true"/>
-			</Layer>
-		</Layers>
-	</Frame>
 	<Frame name="CharacterServicesBonusResultTemplate" virtual="true">
 		<Size x="200" y="20"/>
 		<Layers>
@@ -215,85 +195,6 @@
 							<OnClick function="CharacterUpgradeClassTrial_OnClick"/>
 						</Scripts>
 					</Button>
-					<Frame parentKey="GlowBox">
-						<Size x="244" y="180"/>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="-1">
-								<Texture name="$parentGlowTopLeft" file="Interface\Common\HelpBox" parentKey="GlowTopLeft" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-6" y="6"/>
-									</Anchors>
-									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-								<Texture name="$parentGlowTopRight" file="Interface\Common\HelpBox" parentKey="GlowTopRight" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="TOPRIGHT" x="6" y="6"/>
-									</Anchors>
-									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-
-								<Texture name="$parentGlowBottomLeft" file="Interface\Common\HelpBox" parentKey="GlowBottomLeft" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="-6" y="-6"/>
-									</Anchors>
-									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-
-								<Texture name="$parentGlowBottomRight" file="Interface\Common\HelpBox" parentKey="GlowBottomRight" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
-									</Anchors>
-									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-
-								<Texture name="$parentGlowTop" file="Interface\Common\HelpBox"  parentKey="GlowTop" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
-										<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
-									</Anchors>
-									<TexCoords left="0.00781250" right="0.09375000" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-								<Texture name="$parentGlowBottom" file="Interface\Common\HelpBox" parentKey="GlowBottom" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
-									</Anchors>
-									<TexCoords left="0.00781250" right="0.09375000" top="0.09375000" bottom="0.00781250"/>
-								</Texture>
-								<Texture name="$parentGlowLeft" file="Interface\Common\HelpBox" parentKey="GlowLeft" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
-									</Anchors>
-									<TexCoords left="0.21093750" right="0.29687500" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-								<Texture name="$parentGlowRight" file="Interface\Common\HelpBox" parentKey="GlowRight" alphaMode="ADD">
-									<Size x="4" y="4"/>
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
-									</Anchors>
-									<TexCoords left="0.29687500" right="0.21093750" top="0.00781250" bottom="0.09375000"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								SetClampedTextureRotation(self.GlowTopRight, 90);
-								SetClampedTextureRotation(self.GlowBottomRight, 180);
-								SetClampedTextureRotation(self.GlowBottomLeft, 270);
-							</OnLoad>
-						</Scripts>
-					</Frame>
-					<Frame parentArray="Arrows" inherits="CharacterServicesArrowTemplate"/>
-					<Frame parentArray="BonusIcons" inherits="CharacterServicesBonusIconTemplate"/>
 					<Frame parentKey="BonusLabel">
 						<Size x="340" y="40"/>
 						<!-- Set in lua because flow frame is not available here yet -->

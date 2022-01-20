@@ -311,6 +311,7 @@
         </Layers>
         <Scripts>
           <OnLoad method="OnLoad"/>
+          <OnEvent method="OnEvent"/>
           <OnEnter method="OnEnter"/>
           <OnLeave function="GameTooltip_Hide"/>
         </Scripts>

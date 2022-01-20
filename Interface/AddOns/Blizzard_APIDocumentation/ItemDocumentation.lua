@@ -148,6 +148,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemConversionOutputIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "icon", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemGUID",
 			Type = "Function",
 
@@ -604,6 +618,15 @@ local Item =
 			{
 				{ Name = "previousHyperlink", Type = "string", Nilable = false },
 				{ Name = "newHyperlink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemConversionDataReady",
+			Type = "Event",
+			LiteralName = "ITEM_CONVERSION_DATA_READY",
+			Payload =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
 			},
 		},
 		{

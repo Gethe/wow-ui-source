@@ -253,6 +253,8 @@ function GlueParent_UpdateDialogs()
 				GlueDialog_Show("OKAY", localizedString);
 			end
 			currentlyShowingErrorID = errorID;
+
+			EventRegistry:TriggerEvent("GlueParent.OnLoginError");
 		end
 	elseif (  waitingForRealmList ) then
 		GlueDialog_Show("REALM_LIST_IN_PROGRESS");

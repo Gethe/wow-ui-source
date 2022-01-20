@@ -367,11 +367,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" x="3" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.Anim:Play();
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -858,11 +853,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" x="3" y="-1"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.Anim:Play();
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button parentKey="CancelButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="26" y="24"/>
@@ -1248,11 +1238,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.Anim:Play();
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Button parentKey="BackButton" inherits="LFGListMagicButtonTemplate" mixin="LFGListSearchBackButtonMixin" text="BACK">
 						<Size x="135" y="22"/>
@@ -1676,11 +1661,6 @@
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.Anim:Play();
-									</OnLoad>
-								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>
@@ -2124,7 +2104,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			
+
 			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size x="118" y="22"/>
 				<Anchors>
