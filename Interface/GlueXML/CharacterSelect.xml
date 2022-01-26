@@ -1145,7 +1145,7 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										self:SetWidth(self:GetTextWidth() + 50);
+										self:SetWidth(math.min(self:GetTextWidth() + 50, 190));
 									</OnLoad>
 									<OnClick>
 										CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);

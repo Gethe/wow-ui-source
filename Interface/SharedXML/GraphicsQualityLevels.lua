@@ -286,6 +286,37 @@ VideoData["Display_VerticalSyncDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
+VideoData["Display_NotchModeDropDown"]={
+    name = NOTCH_MODE;
+    description = OPTION_TOOLTIP_NOTCH_MODE,
+
+    data = {
+        [1] = {
+            text = NOTCH_MODE_OVERLAP,
+            cvars =    {
+                NotchedDisplayMode = 0,
+            },
+            tooltip = VIDEO_OPTIONS_NOTCH_MODE_OVERLAP,
+        },
+        [2] = {
+            text = NOTCH_MODE_SHIFT_UI,
+            cvars =    {
+                NotchedDisplayMode = 1,
+            },
+            tooltip = VIDEO_OPTIONS_NOTCH_MODE_SHIFT_UI,
+        },
+        [3] = {
+            text = NOTCH_MODE_WINDOW_BELOW,
+            cvars =    {
+                NotchedDisplayMode = 2,
+            },
+            tooltip = VIDEO_OPTIONS_NOTCH_MODE_WINDOW_BELOW,
+        },
+    },
+    windowUpdate = true,
+}
+
+-------------------------------------------------------------------------------------------------------
 local function GenerateMSAAData(data, advanced, ...)
 	local lastSampleCount;
 	for i = 1, select("#", ...), 3 do

@@ -182,7 +182,7 @@
 					</Slider>
 
 					<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" obeyStepOnDrag="true">
-						<Size x="180" y="17"/>
+						<Size x="140" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRenderScaleSlider" relativePoint="BOTTOMLEFT">
 								<Offset x="21" y="-21"/>
@@ -321,8 +321,30 @@
 								</FontString>
 							</Layer>
 						</Layers>
-					</Frame>
-
+					</Frame>   
+          <Frame name="$parentNotchModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10" hidden="true">
+              <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="$parentVerticalSyncDropDown" relativePoint="BOTTOMLEFT"/>
+              </Anchors>
+              <Layers>
+                  <Layer level="BACKGROUND">
+                      <FontString name="$parentLabel" inherits="OptionsFontSmall" text="NOTCH_MODE">
+                          <Anchors>
+                              <Anchor point="RIGHT" relativePoint="LEFT">
+                              </Anchor>
+                          </Anchors>
+                      </FontString>
+                  </Layer>
+              </Layers>
+              <Scripts>
+                  <OnLoad>
+                      if (C_UI.DoesAnyDisplayHaveNotch()) then
+                          self:Show();
+                          VideoOptionsDropDown_OnLoad(self);
+                      end
+                  </OnLoad>
+              </Scripts>
+          </Frame>
 					<!-- Outside the box -->
 					<CheckButton name="$parentRaidSettingsEnabledCheckBox" inherits="VideoOptionsSmallCheckButtonTemplate" motionScriptsWhileDisabled="true">
 						<Anchors>

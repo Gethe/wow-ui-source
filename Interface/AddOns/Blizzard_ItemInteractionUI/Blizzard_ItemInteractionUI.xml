@@ -105,16 +105,25 @@
 					</ItemButton>
 					<Frame parentKey="Arrow" mixin="ItemInteractionItemConversionArrowMixin">
 						<Size x="20" y="20"/>
-						<!-- Anchored dynamically -->
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ItemConversionInputSlot" relativePoint="RIGHT" x="20" y="0"/>
+						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture parentKey="arrow">
+								<Texture parentKey="arrow" atlas="ItemUpgrade_HelpTipArrow" useAtlasSize="true" alpha="0">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+								<Alpha childKey="arrow" smoothing="IN"  duration="0.5" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="arrow" startDelay="0.5" smoothing="OUT"  duration="0.5" fromAlpha="1" toAlpha="0"/>
+								<Translation childKey="arrow" endDelay="0.25" smoothing="NONE"  duration="1" offsetX="45" offsetY="0"/>
+							</AnimationGroup>
+						</Animations>
 					</Frame>
 					<ItemButton parentKey="ItemConversionOutputSlot" mixin="ItemInteractionItemConversionOutputSlotMixin">
 						<Size x="48" y="48"/>

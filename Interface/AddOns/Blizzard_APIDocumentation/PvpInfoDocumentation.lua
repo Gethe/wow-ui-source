@@ -691,6 +691,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsSoloShuffle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWarModeActive",
 			Type = "Function",
 

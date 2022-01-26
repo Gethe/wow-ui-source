@@ -15,8 +15,20 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="RarityGlow" alphaMode="BLEND">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Artwork"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ArtworkGlow" alpha="0.8" alphaMode="BLEND" atlas="UI-Frame-CypherChoice-Portrait-FX-GoldGlow" useAtlasSize="true">
+				<Texture parentKey="ArtworkGlow" alphaMode="BLEND" atlas="UI-Frame-CypherChoice-Portrait-FX-GoldGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Artwork"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArtworkSparkles" alphaMode="BLEND" atlas="UI-Frame-CypherChoice-Portrait-FX-Sparkles" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Artwork"/>
 					</Anchors>
@@ -51,12 +63,6 @@
 						<Anchor point="CENTER" relativeKey="$parent.Glow"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ArtworkPixels" alpha="0.6" alphaMode="ADD" atlas="UI-Frame-CypherChoice-FX-Pixels01">
-					<Size x="100" y="120"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Artwork" x="0" y="-130"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LineGlow" atlas="UI-Frame-CypherChoice-FX-LineGlow" alphaMode="ADD">
@@ -83,14 +89,6 @@
 						<MaskedTexture childKey="Pixels2"/>
 						<MaskedTexture childKey="Wisps"/>
 						<MaskedTexture childKey="Wisps2"/>
-					</MaskedTextures>
-				</MaskTexture>
-				<MaskTexture parentKey="ArtworkMask" alphaMode="BLEND" atlas="UI-Frame-CypherChoice-Portrait-FX-Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Artwork"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="ArtworkPixels"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>

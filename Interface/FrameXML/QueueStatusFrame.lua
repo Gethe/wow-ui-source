@@ -182,7 +182,7 @@ do
     local function QueueStatusEntryResetter(pool, frame)
 	    frame:Hide();
 	    frame:ClearAllPoints();
-    
+
 	    frame.EntrySeparator:Show();
 	    frame.active = nil;
 	    frame.orderIndex = nil;
@@ -405,7 +405,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 
 	QueueStatus_GetAllRelevantLFG(category, queuedList);
 
-	
+
 	local activeID = select(18, GetLFGQueueStats(category));
 	for queueID in pairs(queuedList) do
 		local mode, submode = GetLFGMode(category, queueID);
@@ -425,7 +425,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	if ( not activeID ) then
 		GMError(format("Thought we had an active queue, but we don't.: activeIdx - %d", activeID));
 	end
-	
+
 	local mode, submode = GetLFGMode(category, activeID);
 
 	local subTitle;
@@ -435,7 +435,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 		--We're queued for more than one thing
 		subTitle = table.remove(allNames, activeIndex);
 		extraText = string.format(ALSO_QUEUED_FOR, table.concat(allNames, PLAYER_LIST_DELIMITER));
-	elseif ( mode == "suspended" ) then 
+	elseif ( mode == "suspended" ) then
 		local suspendedPlayers = GetLFGSuspendedPlayers(category);
 		if ( #suspendedPlayers > 0 ) then
 			extraText = "";
@@ -458,7 +458,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 			tank, healer, dps = nil, nil, nil;
 			totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds = nil, nil, nil, nil, nil, nil;
 		end
-		
+
 		if ( category == LE_LFG_CATEGORY_WORLDPVP ) then
 			QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_IN_PROGRESS, subTitle, extraText);
 		else
@@ -625,7 +625,7 @@ end
 
 function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText)
 	local height = 14;
-	
+
 	entry.Title:SetText(title);
 	height = height + entry.Title:GetHeight();
 
@@ -854,7 +854,7 @@ end
 function QueueStatusDropDown_AddPVPRoleCheckButtons()
 	local info = UIDropDownMenu_CreateInfo();
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
-	
+
 	if ( inProgress and isBattleground ) then
 		local name = GetLFGRoleUpdateBattlegroundInfo();
 		info.text = name;
@@ -933,7 +933,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);
 		end
-		
+
 		if ( not inArena ) then
 			info.text = TOGGLE_BATTLEFIELD_MAP;
 			info.func = wrapFunc(ToggleBattlefieldMap);
@@ -956,7 +956,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		else
 			info.text = LEAVE_BATTLEGROUND;
 		end
-		
+
 		info.func = wrapFunc(ConfirmOrLeaveBattlefield);
 		info.arg1 = nil;
 		info.arg2 = nil;
@@ -1173,8 +1173,7 @@ function QueueStatus_InActiveBattlefield()
 		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
 		if ( status == "active" ) then
 			local canShowScoreboard = false;
-			local inArena = IsActiveBattlefieldArena();
-			if not inArena or GetBattlefieldWinner() or C_PvP.IsInBrawl() then
+			if not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() or C_PvP.IsSoloShuffle() then
 				canShowScoreboard = true;
 			end
 			return true, canShowScoreboard;
@@ -1197,7 +1196,7 @@ function TogglePVPScoreboardOrResults()
 				HideUIPanel(PVPMatchScoreboard);
 			else
 				local isActive = matchState == Enum.PvPMatchState.Active;
-				if isActive and not C_PvP.IsMatchConsideredArena() then
+				if isActive and (not C_PvP.IsMatchConsideredArena() or C_PvP.IsSoloShuffle()) then
 					PVPMatchScoreboard:BeginShow();
 				end
 			end

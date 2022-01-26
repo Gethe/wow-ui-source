@@ -45,7 +45,7 @@
 				</Texture>
 				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="5" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Text" inherits="GameTooltipText" justifyV="MIDDLE">

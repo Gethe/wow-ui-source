@@ -111,7 +111,7 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then 
 			return RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Soulbinds then
-			local CONDUIT_UPGRADE_ITEMS = { 184359, 187148, 187216, 190184 };
+			local CONDUIT_UPGRADE_ITEMS = { 184359, 187148, 187216, 190184, 190640, 190644 };
 			if C_Item.IsItemConduit(itemLocation) or tContains(CONDUIT_UPGRADE_ITEMS, C_Item.GetItemID(itemLocation)) then
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
@@ -153,16 +153,16 @@ end
 ItemUtil = {};
 function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
 	local itemName, itemRarity, itemTexture, _;
-	if (isCurrency) then
+	if isCurrency then
 		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink);
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfoFromLink(itemLink);
 		itemName = currencyInfo.name;
 		itemTexture = currencyInfo.iconFileID;
 		itemRarity = currencyInfo.quality;
 		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, itemName, itemTexture, itemRarity);
-		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
+		if lootSource == LOOT_SOURCE_GARRISON_CACHE then
 			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
-		elseif (quantity > 1) then
+		elseif quantity > 1 then
 			itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
 		end
 
@@ -185,6 +185,46 @@ function ItemUtil.GetOptionalReagentCount(itemID)
 	local includeUses = false;
 	local includeReagentBank = true;
 	return GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
+end
+
+function ItemUtil.IteratePlayerInventory(callback)
+	-- Only includes the backpack and primary 4 bag slots.
+	for bag = 0, NUM_BAG_FRAMES do
+		for slot = 1, ContainerFrame_GetContainerNumSlots(bag) do
+			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
+			if C_Item.DoesItemExist(bagItem) then
+				if callback(bagItem) then
+					return;
+				end
+			end
+		end
+	end
+end
+
+function ItemUtil.IteratePlayerInventoryAndEquipment(callback)
+	ItemUtil.IteratePlayerInventory(callback);
+
+	for i = EQUIPPED_FIRST, EQUIPPED_LAST do
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(i);
+		if C_Item.DoesItemExist(itemLocation) then
+			if callback(itemLocation) then
+				return;
+			end
+		end
+	end
+end
+
+function ItemUtil.DoesAnyItemSlotMatchItemContext()
+	local matchFound = false;
+	local function ItemSlotMatchItemContextCallback(itemLocation)
+		-- If we found a match in our inventory, we don't need to check equipment
+		matchFound = matchFound or ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation) == ItemButtonUtil.ItemContextMatchResult.Match;
+		return matchFound;
+	end
+
+	ItemUtil.IteratePlayerInventoryAndEquipment(ItemSlotMatchItemContextCallback);
+
+	return matchFound;
 end
 
 function ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID)

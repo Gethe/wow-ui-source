@@ -1749,30 +1749,6 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	UIDropDownMenu_AddButton(info);
 end
 
-function ContainerFrameUtil_IteratePlayerInventory(callback)
-	-- Only includes the backpack and primary 4 bag slots.
-	for bag = 0, NUM_BAG_FRAMES do
-		for slot = 1, MAX_CONTAINER_ITEMS do
-			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
-			if C_Item.DoesItemExist(bagItem) then
-				callback(bagItem);
-			end
-
-		end
-	end
-end
-
-function ContainerFrameUtil_IteratePlayerInventoryAndEquipment(callback)
-	ContainerFrameUtil_IteratePlayerInventory(callback);
-
-	for i = EQUIPPED_FIRST, EQUIPPED_LAST do
-		local itemLocation = ItemLocation:CreateFromEquipmentSlot(i);
-		if C_Item.DoesItemExist(itemLocation) then
-			callback(itemLocation);
-		end
-	end
-end
-
 function ContainerFrameUtil_GetItemButtonAndContainer(bag, slot)
 	local containerFrame = _G["ContainerFrame"..(bag + 1)];
 	return _G[containerFrame:GetName().."Item"..slot], containerFrame;

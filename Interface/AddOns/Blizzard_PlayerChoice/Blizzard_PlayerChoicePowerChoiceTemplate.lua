@@ -104,6 +104,7 @@ local rarityToCircleBorderPostfix =
 	[Enum.PlayerChoiceRarity.Epic] = "-QualityEpic-border",
 };
 
+-- May be overriden by inheriting frame
 function PlayerChoicePowerChoiceTemplateMixin:GetTextureKitRegionTable()
 	local useTextureRegions = CopyTable(textureKitRegions);
 
@@ -185,6 +186,7 @@ local rarityToString =
 	[Enum.PlayerChoiceRarity.Epic] = PLAYER_CHOICE_QUALITY_STRING_EPIC,
 };
 
+-- May be overriden by inheriting frame
 function PlayerChoicePowerChoiceTemplateMixin:GetRarityDescriptionString()
 	return rarityToString[self.optionInfo.rarity] or "";
 end

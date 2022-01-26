@@ -629,7 +629,7 @@ function ItemUpgradeSlotMixin:GetItemUpgradeItemsCallBack(resultsTable)
 		end
 	end
 
-	ContainerFrameUtil_IteratePlayerInventoryAndEquipment(ItemLocationCallback);
+	ItemUtil.IteratePlayerInventoryAndEquipment(ItemLocationCallback);
 end
 
 function ItemUpgradeSlotMixin:OnEnter()

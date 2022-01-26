@@ -195,7 +195,7 @@ function RuneforgeCraftingFrameMixin:GetRuneforgeFlyoutItemsCallback(filterFunct
 		end
 	end
 
-	ContainerFrameUtil_IteratePlayerInventoryAndEquipment(ItemLocationCallback);
+	ItemUtil.IteratePlayerInventoryAndEquipment(ItemLocationCallback);
 end
 
 function RuneforgeCraftingFrameMixin:GetRuneforgeFrame()

@@ -27,9 +27,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 51,
+			NumValues = 53,
 			MinValue = 0,
-			MaxValue = 50,
+			MaxValue = 52,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -82,7 +82,9 @@ local CurrencyConstants_Mainline =
 				{ Name = "Barbershop", Type = "CurrencySource", EnumValue = 47 },
 				{ Name = "ConvertItemsToCurrencyValue", Type = "CurrencySource", EnumValue = 48 },
 				{ Name = "PvPTeamContribution", Type = "CurrencySource", EnumValue = 49 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 50 },
+				{ Name = "Transmogrify", Type = "CurrencySource", EnumValue = 50 },
+				{ Name = "AuctionDeposit", Type = "CurrencySource", EnumValue = 51 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 52 },
 			},
 		},
 	},

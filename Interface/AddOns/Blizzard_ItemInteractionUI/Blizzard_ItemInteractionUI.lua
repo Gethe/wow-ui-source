@@ -288,9 +288,6 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 		self.ItemConversionFrame.ItemConversionInputSlot:ClearAllPoints();
 		self.ItemConversionFrame.ItemConversionInputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", -75, itemSlotOffsetY);
 
-		self.ItemConversionFrame.Arrow:ClearAllPoints();
-		self.ItemConversionFrame.Arrow:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 0, itemSlotOffsetY);
-
 		self.ItemConversionFrame.ItemConversionOutputSlot:ClearAllPoints();
 		self.ItemConversionFrame.ItemConversionOutputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 75, itemSlotOffsetY);
 		self.ItemConversionFrame.ItemConversionOutputSlot:SetNormalTexture(nil);
@@ -559,7 +556,7 @@ function ItemInteractionMixin:GetValidItemInteractionItemsCallback(filterFunctio
 		end
 	end
 
-	ContainerFrameUtil_IteratePlayerInventoryAndEquipment(ItemLocationCallback);
+	ItemUtil.IteratePlayerInventoryAndEquipment(ItemLocationCallback);
 end
 
 function ItemInteractionMixin:ShowFlyout(itemSlot)
@@ -581,6 +578,9 @@ function ItemInteractionMixin:SetInputItemSlotTooltip(itemSlot, itemLocation)
 			-- We don't allow wrapping on the first line of the tooltip, so hack around that restriction.
 			GameTooltip_AddNormalLine(GameTooltip, "");
 			GameTooltip_AddNormalLine(GameTooltip, SL_SET_CONVERSION_INPUT_DESCRIPTION:format(PVPUtil.GetCurrentSeasonNumber()));
+			if (not ItemUtil.DoesAnyItemSlotMatchItemContext()) then
+				GameTooltip_AddErrorLine(GameTooltip, ERR_ITEM_CONVERSION_NO_VALID_ITEMS);
+			end
 			GameTooltip:Show();
 	else
 		GameTooltip:Hide();
@@ -832,6 +832,11 @@ end
 ItemInteractionItemConversionArrowMixin = {};
 
 function ItemInteractionItemConversionArrowMixin:Update(validItem)
-	local itemInteractionFrame = self:GetParent():GetParent();
-	SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.arrow, validItem and "%s-arrow-full" or "%s-arrow-empty", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+	if (validItem) then
+		self.Anim:Restart();
+		self:Show();
+	else
+		self.Anim:Stop();
+		self:Hide();
+	end
 end

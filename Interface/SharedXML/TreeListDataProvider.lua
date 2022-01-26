@@ -48,9 +48,9 @@ function TreeListNodeMixin:Insert(data)
 	return node;
 end
 
-function TreeListNodeMixin:Remove(data)
-	for index, node in ipairs(self.nodes) do
-		if node:GetData() == data then
+function TreeListNodeMixin:Remove(node)
+	for index, node2 in ipairs(self.nodes) do
+		if node2 == data then
 			local removed = table.remove(self.nodes, index);
 			self:Invalidate();
 			return removed;
@@ -174,20 +174,20 @@ function TreeListDataProviderMixin:Insert(data)
 	return self.node:Insert(data);
 end
 
-function TreeListDataProviderMixin:Remove(data)
-	local index, node = self:FindIndex(data);
-	if node then
-		local parent = node.parent;
+function TreeListDataProviderMixin:Remove(node)
+	local index, node2 = self:FindIndex(node);
+	if node2 then
+		local parent = node2.parent;
 		assert(parent ~= nil);
 		if parent then
-			node.parent:Remove(data);
+			node2.parent:Remove(node);
 		end
 	end
 end
 
-function TreeListDataProviderMixin:FindIndex(data)
-	for index, node in self:Enumerate() do
-		if node:GetData() == data then
+function TreeListDataProviderMixin:FindIndex(node)
+	for index, node2 in self:Enumerate() do
+		if node2 == node then
 			return index, node;
 		end
 	end
@@ -197,14 +197,6 @@ function TreeListDataProviderMixin:Find(index)
 	for nodeIndex, node in self:Enumerate() do
 		if nodeIndex == index then
 			return node;
-		end
-	end
-end
-
-function TreeListDataProviderMixin:FindIndex(data)
-	for index, node in self:Enumerate() do
-		if node:GetData() == data then
-			return index, node;
 		end
 	end
 end

@@ -138,15 +138,32 @@ UIChildWindows = {
 	"GearManagerDialog",
 };
 
--- Hooked by DesignerBar.lua if that addon is loaded
-function GetOffsetForDebugMenu()
-	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
-	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
-	return debugMenuOffset + revealTimeTrackOffset;
+function GetNotchHeight()
+    local notchHeight = 0;
+    
+    if (C_UI.ShouldUIParentAvoidNotch()) then
+        notchHeight = select(4, C_UI.GetTopLeftNotchSafeRegion());
+        if (notchHeight) then
+            local _, physicalHeight = GetPhysicalScreenSize();
+            local normalizedHeight = notchHeight / physicalHeight;
+            local _, uiParentHeight = UIParent:GetSize();
+            notchHeight = normalizedHeight * uiParentHeight;
+        end
+    end
+
+	return notchHeight;
 end
 
-function UpdateUIParentRelativeToDebugMenu()
-	local topOffset = GetOffsetForDebugMenu();
+-- Hooked by DesignerBar.lua if that addon is loaded
+function GetUIParentOffset()
+    local notchHeight = GetNotchHeight();
+	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
+	return math.max(debugMenuOffset + revealTimeTrackOffset, notchHeight);
+end
+
+function UpdateUIParentPosition()
+	local topOffset = GetUIParentOffset();
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
 end
 
@@ -474,6 +491,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for the ScriptAnimationEffect System
 	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE")
+ 
+    -- Event(s) for Notched displays
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED")
 end
 
 function UIParent_OnShow(self)
@@ -1655,7 +1675,7 @@ function UIParent_OnEvent(self, event, ...)
 		-- display loot specialization setting
 		PrintLootSpecialization();
 
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
 
 		--Bonus roll/spell confirmation.
 		local spellConfirmations = GetSpellConfirmationPromptsInfo();
@@ -2337,9 +2357,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
 	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
+    elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
+        UpdateUIParentPosition();
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then

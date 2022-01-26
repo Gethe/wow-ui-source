@@ -1570,7 +1570,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					end
 				end
 				self.linkSection = nil;
-			else
+			elseif self.overviews and self.overviews[1] then
 				self.overviews[1].expanded = false;
 				EncounterJournal.overviewDefaultRole = role;
 				if ( hasRoleSection ) then
