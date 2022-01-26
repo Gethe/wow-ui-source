@@ -441,7 +441,7 @@ end
 
 do -- Reagent
 	local reagentCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_REAGENT);
-	reagentCategory:AddFilter(Enum.ItemMiscellaneousSubclass.Reagent);
+	reagentCategory:AddFilter(Enum.ItemClass.Reagent);
 end
 
 do -- Miscellaneous
