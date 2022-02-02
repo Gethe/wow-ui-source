@@ -316,6 +316,23 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemUniquenessByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnique", Type = "bool", Nilable = false },
+				{ Name = "limitCategoryName", Type = "string", Nilable = true },
+				{ Name = "limitCategoryCount", Type = "number", Nilable = true },
+				{ Name = "limitCategoryID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetStackCount",
 			Type = "Function",
 

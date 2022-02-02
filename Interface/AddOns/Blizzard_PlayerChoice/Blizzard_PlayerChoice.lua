@@ -175,7 +175,11 @@ end
 function PlayerChoiceFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, PLAYER_CHOICE_FRAME_EVENTS);
 
-	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+	if self.choiceInfo and self.choiceInfo.closeUISoundKitID then
+		PlaySound(self.choiceInfo.closeUISoundKitID);
+	else
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+	end
 
 	C_PlayerChoice.OnUIClosed();
 

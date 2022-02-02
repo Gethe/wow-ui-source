@@ -248,7 +248,7 @@ end
 
 function ZoneAbilityFrameSpellButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self);
-	GameTooltip:SetSpellByID(self:GetSpellID());
+	GameTooltip:SetSpellByID(self:GetOverrideSpellID());
 end
 
 function ZoneAbilityFrameSpellButtonMixin:OnLeave()
@@ -266,12 +266,14 @@ function ZoneAbilityFrameSpellButtonMixin:OnDragStart()
 end
 
 function ZoneAbilityFrameSpellButtonMixin:Refresh()
-	local spellID = self:GetSpellID();
-	spellID = FindSpellOverrideByID(spellID) or spellID;
+	local spellID = self:GetOverrideSpellID();
 
 	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID);
 	local start, duration, enable = GetSpellCooldown(spellID);
 	local usesCount = GetSpellCount(spellID);
+
+	local texture = select(3, GetSpellInfo(spellID));
+	self.Icon:SetTexture(texture);
 
 	local spellCount = nil;
 	if maxCharges and maxCharges > 1 then
@@ -298,14 +300,16 @@ end
 function ZoneAbilityFrameSpellButtonMixin:SetSpellID(spellID)
 	self.spellID = spellID;
 
-	local texture = select(3, GetSpellInfo(spellID));
-	self.Icon:SetTexture(texture);
-
 	self:Refresh();
 end
 
 function ZoneAbilityFrameSpellButtonMixin:GetSpellID()
 	return self.spellID;
+end
+
+function ZoneAbilityFrameSpellButtonMixin:GetOverrideSpellID()
+	local spellID = self:GetSpellID();
+	return FindSpellOverrideByID(spellID) or spellID;
 end
 
 function ZoneAbilityFrameSpellButtonMixin:SetContent(zoneAbilityInfo)

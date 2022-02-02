@@ -858,7 +858,10 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 	if (not GarrisonLandingPage) then
 		Garrison_LoadUI();
 	end
-	ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
+	local garrisonType = GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType;
+	if(garrisonType and C_Garrison.GetLandingPageGarrisonType() == garrisonType) then 
+		ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
+	end 
 end
 
 -- Trees that override behaviors associated with their tree type
@@ -881,7 +884,10 @@ function GarrisonAlertFrame_OnClick(self, button, down)
 		if (not GarrisonLandingPage) then
 			Garrison_LoadUI();
 		end
-		ShowGarrisonLandingPage(self.garrisonType);
+
+		if(self.garrisonType and C_Garrison.GetLandingPageGarrisonType() == self.garrisonType) then 
+			ShowGarrisonLandingPage(self.garrisonType);
+		end 
 	end
 end
 

@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PvpPopup.lua"/>
+	<Frame name="PvpRoleStatusTemplate" frameStrata="DIALOG" virtual="true">
+		<Size x="55" y="55"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="StatusIcon"  file="Interface\RaidFrame\ReadyCheck-Waiting">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="PvpRoleButtonWithCountTemplate" inherits="PvpRoleStatusTemplate" mixin="PvpRoleButtonWithCountMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Count" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="PVPReadyPopup" parent="UIParent" mixin="PVPReadyPopupMixin" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="223"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="150"/>
+		</Anchors>
+		<Frames>
+			<Frame name="ReadyStatus" enableMouse="true">
+				<Size x="306" y="130"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ReadyCheck" inherits="GameFontHighlight" justifyH="CENTER" text="READY_CHECK">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+					<Button parentKey="CloseButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopupSpecial_Hide(PVPReadyPopup);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>			
+		</Scripts>
+	</Frame>
+	
+</Ui>

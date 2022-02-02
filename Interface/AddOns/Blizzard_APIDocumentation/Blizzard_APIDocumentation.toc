@@ -205,6 +205,7 @@ ItemSharedDocumentation.lua
 LevelConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
+PVPMgrConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua

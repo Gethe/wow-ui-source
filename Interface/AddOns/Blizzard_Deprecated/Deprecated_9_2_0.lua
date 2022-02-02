@@ -23,3 +23,10 @@ end
 do
 	Enum.Unitsex = Enum.UnitSex;
 end
+
+do
+	function GetBattlefieldFlagPosition(flagIndex)
+		local uiMapId = C_Map.GetBestMapForUnit("player");
+		return C_PvP.GetBattlefieldFlagPosition(flagIndex, uiMapId);
+	end
+end

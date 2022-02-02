@@ -93,6 +93,20 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetAuctionInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "priceInfo", Type = "AuctionInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAuctionItemSubClasses",
 			Type = "Function",
 
@@ -1314,6 +1328,19 @@ local AuctionHouse =
 			{
 				{ Name = "sortOrder", Type = "AuctionHouseSortOrder", Nilable = false },
 				{ Name = "reverseSort", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = true },
+				{ Name = "minBid", Type = "number", Nilable = true },
+				{ Name = "bidAmount", Type = "number", Nilable = true },
+				{ Name = "buyoutAmount", Type = "number", Nilable = true },
+				{ Name = "bidder", Type = "string", Nilable = true },
 			},
 		},
 		{

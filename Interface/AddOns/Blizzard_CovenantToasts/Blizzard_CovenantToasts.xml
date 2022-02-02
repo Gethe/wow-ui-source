@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame name="CovenantCelebrationBannerTemplate" mixin="CovenantCelebrationBannerMixin" virtual="true">
+	<Frame name="CovenantCelebrationBannerTemplate" frameStrata="DIALOG" mixin="CovenantCelebrationBannerMixin" virtual="true">
 		<Size x="128" y="128"/>
 		<Layers>
 			<Layer level="ARTWORK">

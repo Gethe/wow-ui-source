@@ -1621,8 +1621,13 @@ local SEASON_REWARD_ACHIEVEMENTS = {
 };
 
 local function GetPVPSeasonAchievementID(seasonID)
-	local achievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
-	local achievementID = achievements and achievements[UnitFactionGroup("player")];
+	local achievementID = C_PvP.GetPVPSeasonRewardAchievementID();
+
+	if not achievementID then
+		local achievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
+		achievementID = achievements and achievements[UnitFactionGroup("player")];
+	end
+
 	if achievementID then
 		while true do
 			local completed = select(4, GetAchievementInfo(achievementID));

@@ -4348,6 +4348,12 @@ function StaticPopup_Resize(dialog, which)
 		dialog.SubText:SetWidth(290);
 	end
 
+	-- Slightly reducing width to prevent the text from feeling cramped
+	if ( info.normalSizedSubText and not info.wideText ) then
+		local currentWidth = dialog.SubText:GetWidth();
+		dialog.SubText:SetWidth(currentWidth - 20);
+	end
+
 	local height = 32 + text:GetHeight() + 2;
 	if ( info.extraButton ) then
 		height = height + 40 + extraButton:GetHeight();
@@ -4374,6 +4380,10 @@ function StaticPopup_Resize(dialog, which)
 	end
 	if ( dialog.SubText:IsShown() ) then
 		height = height + dialog.SubText:GetHeight() + 8;
+		-- Adding a bit more vertical space to prevent the text from feeling cramped 
+		if ( info.normalSizedSubText and info.compactItemFrame) then
+			height = height + 18;
+		end
 	end
 
 	if ( info.verticalButtonLayout ) then
@@ -4642,6 +4652,20 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		_G[dialog:GetName().."MoneyInputFrame"]:Hide();
 	end
 
+	dialog.ItemFrame:ClearAllPoints();
+	dialog.SubText:ClearAllPoints();
+	local itemFrameXOffset = -60;
+	local itemFrameYOffset = -6;
+	local subTextSpacingYOffset = info.normalSizedSubText and -18 or -6;
+	if ( info.itemFrameAboveSubtext and info.hasItemFrame and info.subText ) then
+		dialog.ItemFrame:SetPoint("TOP", dialog.text, "BOTTOM", itemFrameXOffset, itemFrameYOffset);
+		-- Other components (like the moneyFrame) can be anchored under subtext so we anchor to the item frame instead of the bottom of the window.
+		dialog.SubText:SetPoint("TOP", dialog.ItemFrame, "BOTTOM", -itemFrameXOffset, subTextSpacingYOffset);
+	else
+		dialog.ItemFrame:SetPoint("BOTTOM", itemFrameXOffset, bottomSpace + 29);
+		dialog.SubText:SetPoint("TOP", dialog.text, "BOTTOM", 0, subTextSpacingYOffset);
+	end
+
 	dialog.ItemFrame.itemID = nil;
 	-- Show or hide item button
 	if ( info.hasItemFrame ) then
@@ -4658,8 +4682,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 				end
 				dialog.ItemFrame:DisplayInfo(data.link, data.name, data.color, data.texture, data.count);
 			end
-
-			dialog.ItemFrame:SetPoint("BOTTOM", -60, bottomSpace + 29);
 		end
 	else
 		dialog.ItemFrame:Hide();
@@ -4673,6 +4695,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
 	dialog.insertedFrame = insertedFrame;
 	if ( info.subText ) then
+		dialog.SubText:SetFontObject(info.normalSizedSubText and "GameFontNormal" or "GameFontNormalSmall");
 		dialog.SubText:SetText(info.subText);
 		dialog.SubText:Show();
 	else
@@ -4824,15 +4847,11 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		else
 			button1:Disable();
 		end
-	else
-		dialog.startDelay = nil;
-		button1:Enable();
-	end
-
-	if info.acceptDelay then
+	elseif info.acceptDelay then
 		dialog.acceptDelay = info.acceptDelay;
 		button1:Disable();
 	else
+		dialog.startDelay = nil;
 		dialog.acceptDelay = nil;
 		button1:Enable();
 	end

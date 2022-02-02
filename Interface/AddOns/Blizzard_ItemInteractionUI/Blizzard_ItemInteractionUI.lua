@@ -43,7 +43,37 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED"] = {
 	compactItemFrame = true,
 	hideOnEscape = 1,
 	hasItemFrame = 1,
-	acceptDelay = 5;
+	acceptDelay = 5,
+};
+
+
+StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
+	text = "",
+	subText = "",
+	button1 = "",
+	button2 = CANCEL,
+
+	OnShow = function(self, data)
+		self.text:SetText(data.confirmationDescription);
+		if (data.subText) then
+			self.SubText:SetText(data.subText);
+		end
+	end,
+
+	OnAcceptDelayExpired = function(self, data)
+		self.button1:SetText(data.confirmationText);
+	end,
+
+	OnAccept = function()
+		C_ItemInteraction.PerformItemInteraction();
+	end,
+
+	itemFrameAboveSubtext = true,
+	normalSizedSubText = true,
+	compactItemFrame = true,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+	acceptDelay = 5,
 };
 
 local FrameSpecificDefaults = {
@@ -67,7 +97,7 @@ local FrameSpecificOverrides = {
 
 	[Enum.UIItemInteractionType.ItemConversion] = {
 		itemSlotOffsetY = 15,
-		descriptionOffset = 72,
+		descriptionOffset = 60,
 	},
 };
 
@@ -77,6 +107,7 @@ local ITEM_INTERACTION_FRAME_EVENTS = {
 	"ITEM_INTERACTION_CLOSE",
 	"ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
 	"GLOBAL_MOUSE_DOWN",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 local ITEM_INTERACTION_UNIT_EVENTS = {
@@ -100,7 +131,7 @@ function ItemInteractionMixin:GetCost()
 	return self.cost;
 end 
 
--- UiItemInteraction data only supports a single flat cost currency.
+-- UiItemInteraction data only supports a single, flat currency cost.
 -- We need to add support for extended currency costs or move Item Conversion out of the Item Interaction UI.
 function ItemInteractionMixin:HasExtendedCurrencyCost()
 	return self.interactionType == Enum.UIItemInteractionType.ItemConversion;
@@ -118,6 +149,10 @@ function ItemInteractionMixin:CostsCurrency()
 	return self.currencyTypeId and self:HasCost();
 end
 
+function ItemInteractionMixin:UsesCharges()
+	return self.chargeCurrencyTypeId and self.chargeCost > 0;
+end
+
 --------------- Base Frame Functions -----------------------
 function ItemInteractionMixin:OnEvent(event, ...)
 	if (event == "PLAYER_MONEY") or (event == "ITEM_INTERACTION_ITEM_SELECTION_UPDATED") then
@@ -129,6 +164,11 @@ function ItemInteractionMixin:OnEvent(event, ...)
 			else
 				self:SetInteractionItem(itemLocation);
 			end
+		end
+	elseif (event == "CURRENCY_DISPLAY_UPDATE") then
+		-- We need to display a recharge time right after we use our final charge.
+		if (self:UsesCharges()) then
+			self:UpdateCharges();
 		end
 	elseif (event == "UNIT_SPELLCAST_START") then
 		local unitTag, lineID, spellID = ...;
@@ -236,6 +276,8 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	self.conversionMode = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConversionMode));
 	self.clickShowsFlyout = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ClickShowsFlyout));
 
+	self:SetupChargeCurrency();
+
 	self:SetupEquipmentFlyout(self.clickShowsFlyout);
 	
 	local portraitFormat = "%s-portrait";
@@ -247,11 +289,8 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 
 	SetupTextureKitOnFrames(self.textureKit, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
-	local hasDescription = (frameData.description ~= nil);
-	self.Description:SetShown(hasDescription);
-	if (hasDescription) then 
-		self.Description:SetText(frameData.description);
-	end
+	self.descriptionText = frameData.description;
+	self:UpdateDescription(self.descriptionText); 
 
 	local shouldShowInset = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.DisplayWithInset));
 	self.Inset:SetShown(shouldShowInset);
@@ -309,13 +348,46 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 	self.Description:SetPoint("BOTTOM", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
 end
 
+-- The 9.2 "Item Conversion" interaction requires two currencies from the player: A flat cost of 1 "Charge" and an extended currency cost of X "Cosmic Flux" depending on the armor slot (gloves, legs, etc)	
+-- UiItemInteraction data currently only supports a single, flat currency cost.
+-- For now we're passing the "Charge" cost in through data and grabbing the extended currency cost of this interaction using C_ItemInteraction.GetItemConversionCurrencyCost().
+-- We need to either add support for a flat charge cost + an extended currency cost or move Item Conversion out of the Item Interaction UI.
+function ItemInteractionMixin:SetupChargeCurrency()
+	if (self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
+		self.chargeCurrencyTypeId = self.currencyTypeId;
+		self.currencyTypeId = nil;
+
+		self.chargeCost = self.cost;
+		self.cost = nil;
+	else
+		self.chargeCurrencyTypeId = nil;
+		self.chargeCost = nil;
+	end
+end
+
+function ItemInteractionMixin:UpdateDescription(description)
+	local hasDescription = (description ~= nil);
+	if (hasDescription) then
+		self.Description:SetText(description);
+	end
+
+	self.Description:SetShown(hasDescription);
+end
+
 function ItemInteractionMixin:UpdateDescriptionColor()
 	self.Description:SetTextColor(self:GetDescriptionColor():GetRGB());
 end
 
 function ItemInteractionMixin:GetDescriptionColor()
-	if (self.interactionType == Enum.UIItemInteractionType.RunecarverScrapping or self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
-		return (self.itemLocation == nil) and DISABLED_FONT_COLOR or NORMAL_FONT_COLOR;
+	local interactionItemSet = self.itemLocation;
+	local usesCharges = self:UsesCharges();
+	local chargeCurrencyInfo = usesCharges and C_CurrencyInfo.GetCurrencyInfo(self.chargeCurrencyTypeId);
+	local charges = chargeCurrencyInfo and chargeCurrencyInfo.quantity;
+
+	if (usesCharges and charges < self.chargeCost) then
+		return RED_FONT_COLOR;
+	elseif (not interactionItemSet and (self.interactionType ~= Enum.UIItemInteractionType.CleanseCorruption)) then
+		return DISABLED_FONT_COLOR;
 	end
 
 	return NORMAL_FONT_COLOR;
@@ -326,6 +398,10 @@ function ItemInteractionMixin:UpdateCostFrame()
 	local costsMoney = self:CostsGold();
 	local costsCurrency = self:CostsCurrency();
 	local buttonFrame = self.ButtonFrame;
+
+	if (self:UsesCharges()) then
+		self:UpdateCharges();
+	end
 
 	if (costsCurrency) then 
 		self:UpdateCurrency(); 
@@ -367,6 +443,23 @@ function ItemInteractionMixin:UpdateCurrency()
 	self:UpdateActionButtonState();
 end
 
+function ItemInteractionMixin:UpdateCharges()
+	local chargeCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.chargeCurrencyTypeId);
+	local charges = chargeCurrencyInfo.quantity;
+	local description = charges >= self.chargeCost and self.descriptionText or charges < self.chargeCost and self:GetRechargeMessage() or nil;
+	self:UpdateDescription(description);
+	self:UpdateDescriptionColor();
+	self:UpdateActionButtonState();
+end
+
+function ItemInteractionMixin:GetRechargeMessage()
+	local chargeInfo = C_ItemInteraction.GetChargeInfo();
+	local timeToNextCharge = chargeInfo.timeToNextCharge;
+	if (self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
+		return SL_SET_CONVERSION_RECHARGE_TIME:format(SecondsToTime(timeToNextCharge));
+	end
+end
+
 function ItemInteractionMixin:GetButtonTooltip()
 	return self.buttonTooltip;
 end
@@ -391,6 +484,20 @@ function ItemInteractionMixin:GetConfirmationInfo()
 	end
 
 	return nil, nil;
+end
+
+function ItemInteractionMixin:GetChargeConfirmationText()
+	local chargeInfo = C_ItemInteraction.GetChargeInfo();
+	local chargeCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.chargeCurrencyTypeId);
+	local timeToNextCharge = chargeInfo.timeToNextCharge;
+	local charges = chargeCurrencyInfo.quantity;
+	if (self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
+		if (charges == 1) then
+			return SL_SET_CONVERSION_ONE_CHARGE_REMAINING:format(SecondsToTime(timeToNextCharge));
+		elseif (charges > 1) then
+			return SL_SET_CONVERSION_MULTIPLE_CHARGES_REMAINING:format(charges - 1);
+		end
+	end
 end
 
 function ItemInteractionMixin:InteractWithItem()
@@ -427,7 +534,12 @@ function ItemInteractionMixin:InteractWithItem()
 		local textArg2 = nil;
 
 		if (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConfirmationHasDelay)) then
-			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED", textArg1, textArg2, data);
+			if (self:UsesCharges()) then
+				data.subText = self:GetChargeConfirmationText();
+				StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO", textArg1, textArg2, data);
+			else
+				StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED", textArg1, textArg2, data);
+			end
 		else
 			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION", textArg1, textArg2, data);
 		end
@@ -437,7 +549,17 @@ function ItemInteractionMixin:InteractWithItem()
 end
 
 -- Enables or disables the button to interact with the item based off of your currency amount and if you have an item in the slot.
-function ItemInteractionMixin:UpdateActionButtonState()	
+function ItemInteractionMixin:UpdateActionButtonState()
+	-- We check if we have enough charges before worrying about the gold or currency cost
+	if (self:UsesCharges()) then
+		local chargeCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.chargeCurrencyTypeId);
+		local charges = chargeCurrencyInfo.quantity;
+		if (charges < self.chargeCost) then
+			self.ButtonFrame.ActionButton:SetEnabled(false);
+			return;
+		end
+	end
+
 	if (self:CostsCurrency()) then
 		local amount = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId).quantity;
 		self.ButtonFrame.ActionButton:SetEnabled(self.itemLocation ~= nil and amount >= self.cost);

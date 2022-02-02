@@ -263,10 +263,12 @@ function AlertContainerMixin:OnLoad()
 	self.shouldQueueAlertsFlags = {
 		playerEnteredWorld = false,
 		variablesLoaded = false,
+		firstFrameRendered = false;
 	};
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("FIRST_FRAME_RENDERED");
 end
 
 function AlertContainerMixin:OnEvent(event, ...)
@@ -274,6 +276,8 @@ function AlertContainerMixin:OnEvent(event, ...)
 		self:SetPlayerEnteredWorld();
 	elseif event == "VARIABLES_LOADED" then
 		self:SetVariablesLoaded();
+	elseif event == "FIRST_FRAME_RENDERED" then
+		self:SetFirstFrameRendered();
 	end
 end
 
@@ -297,6 +301,12 @@ end
 function AlertContainerMixin:SetVariablesLoaded()
 	self:UnregisterEvent("VARIABLES_LOADED");
 	self:SetEnabledFlag("variablesLoaded", true);
+end
+
+function AlertContainerMixin:SetFirstFrameRendered()
+	self:UnregisterEvent("FIRST_FRAME_RENDERED");
+	-- The first frame immediately after a load can take a long time and miss alert frames, so we enable this flag the frame after
+	C_Timer.After(0, GenerateClosure(self.SetEnabledFlag, self, "firstFrameRendered", true));
 end
 
 function AlertContainerMixin:SetAlertsEnabled(enabled, reason)

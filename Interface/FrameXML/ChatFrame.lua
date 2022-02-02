@@ -2422,22 +2422,44 @@ SlashCmdList["WARGAME"] = function(msg)
 	StartWarGameByName(msg);
 end
 
+SlashCmdList["SOLOSHUFFLE_WARGAME"] = function(msg)
+	StartSoloShuffleWarGameByName(msg);
+end
+
 SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	local target1, target2, size, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)")
 	if (not target1 or not target2 or not size) then
 		return;
 	end
+	
+	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
+	if (area == "" or area == "nil" or area == "0") then area = nil end
 
+	StartSpectatorWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, size, area, ValueToBoolean(isTournamentMode));
+end
+
+SlashCmdList["SPECTATOR_SOLOSHUFFLE_WARGAME"] = function(msg)
+	local target1, target2, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)");
+	if (not target1 or not target2) then
+		return;
+	end
+
+	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
+	if (area == "" or area == "nil" or area == "0") then area = nil end
+
+	StartSpectatorSoloShuffleWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
+end
+
+function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)
 	local bnetIDGameAccount1 = BNet_GetBNetIDAccountFromCharacterName(target1) or BNet_GetBNetIDAccount(target1);
 	if not bnetIDGameAccount1 then
-		ConsolePrint("Failed to find StartSpectatorWarGame target1:", target1);
+		ConsolePrint("Failed to find StartSpectatorSoloShuffleWarGame target1:", target1);
 	end
 	local bnetIDGameAccount2 = BNet_GetBNetIDAccountFromCharacterName(target2) or BNet_GetBNetIDAccount(target2);
 	if not bnetIDGameAccount2 then
-		ConsolePrint("Failed to find StartSpectatorWarGame target2:", target2);
+		ConsolePrint("Failed to find StartSpectatorSoloShuffleWarGame target2:", target2);
 	end
-	if (area == "" or area == "nil" or area == "0") then area = nil end
-	StartSpectatorWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, size, area, ValueToBoolean(isTournamentMode));
+	return bnetIDGameAccount1, bnetIDGameAccount2;
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)

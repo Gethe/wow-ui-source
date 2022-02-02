@@ -52,6 +52,18 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT_NO_PENALTY"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+
+local PetBattlesOverrides = {}
+function PetBattlesOverrides.GetPositionOverride(petSpeciesID)
+	if petSpeciesID == 3175 then
+		return -0.5, -2, 0;
+	elseif petSpeciesID == 2003 then
+		return -0.8, 0.6, -0.4;
+	elseif petSpeciesID == 504 then
+		return -3.0, -0.0, -0.5;
+	end
+end
+
 --------------------------------------------
 -------------Pet Battle Frame---------------
 --------------------------------------------
@@ -1064,9 +1076,10 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 		self.PetModel:SetRotation(-BATTLE_PET_DISPLAY_ROTATION);
 		self.PetModel:SetDoBlend(false);
 
-		-- Hacky fix for WOW9-98266 because this pet won't play nicely.
-		if C_PetBattles.GetPetSpeciesID(petOwner, petIndex) == 3175 then
-			self.PetModel:SetPosition(-0.5, -2, 0);
+		local petSpeciesID = C_PetBattles.GetPetSpeciesID(petOwner, petIndex);
+		local x, y, z = PetBattlesOverrides.GetPositionOverride(petSpeciesID);
+		if x and y and z then
+			self.PetModel:SetPosition(x, y, z);
 		end
 
 		if ( C_PetBattles.GetHealth(petOwner, petIndex) == 0 ) then

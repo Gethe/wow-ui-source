@@ -734,3 +734,17 @@ function AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatAr
 
 	return "";
 end
+
+local UniqueShadowlandsCraftedLimitCategoryID = 481;
+function AuctionHouseUtil.IsAuctionIDUniqueShadowlandsCrafted(auctionID)
+	local auctionInfo = C_AuctionHouse.GetAuctionInfoByID(auctionID);
+	local itemLink = (auctionInfo ~= nil) and auctionInfo.itemLink or nil;
+	if itemLink == nil then
+		return false;
+	end
+
+	local categoryName, categoryCount, uniqueLimitCategory = select(2, C_Item.GetItemUniquenessByID(itemLink));
+	categoryName = ((categoryName ~= nil) and (categoryCount ~= nil)) and ITEM_LIMIT_CATEGORY_MULTIPLE:format(categoryName, categoryCount) or categoryName;
+	local isUniqueShadowlandsCrafted = uniqueLimitCategory == UniqueShadowlandsCraftedLimitCategoryID;
+	return isUniqueShadowlandsCrafted, categoryName;
+end

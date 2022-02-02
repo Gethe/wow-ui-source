@@ -62,12 +62,34 @@ function PCTCharacterSelectBlock:CheckEnable()
 	end
 end
 
+local function CheckAddVASErrorString(errorTable, errorString, requirementPassed)
+	if not requirementPassed then
+		table.insert(errorTable, errorString);
+	end
+end
+
+local function CheckAddVASErrorCode(errorTable, errorCode, requirementPassed)
+	CheckAddVASErrorString(errorTable, VASErrorData_GetMessage(errorCode), requirementPassed);
+end
+
+local function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
+	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local errors = {};
+
+	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
+	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
+	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
+	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, C_StoreSecure.IsVASEligibleCharacterGUID(playerguid));
+
+	local canTransfer = #errors == 0;
+	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
+end
+
 function PCTCharacterSelectBlock:ShowCharacterSelector()
 	local characterSelectorCallback = function(characterID, characterButton)
-		local playerguid = select(15, GetCharacterInfo(characterID));
-		local canTransferCharacter = C_StoreSecure.IsVASEligibleCharacterGUID(playerguid);
+		local canTransferCharacter, errors, playerguid, characterServiceRequiresLogin = DoesClientThinkTheCharacterIsEligibleForPCT(characterID);
 
-		if canTransferCharacter  then
+		if canTransferCharacter then
 			characterButton:SetScript("OnClick", function(characterButton, button)
 				if characterServiceRequiresLogin then
 					GlueDialog_Show("MUST_LOG_IN_FIRST");
@@ -79,6 +101,24 @@ function PCTCharacterSelectBlock:ShowCharacterSelector()
 				CharacterSelectButton_OnClick(characterButton);
 				characterButton.selection:Show();
 				CharacterServicesMaster_Update();
+			end);
+		else
+			characterButton:SetScript("OnEnter", function(self)
+				if #errors > 0 then
+					local tooltip = GetAppropriateTooltip();
+					tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
+					GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
+					for index, errorMsg in pairs(errors) do
+						GameTooltip_AddErrorLine(tooltip, errorMsg);
+					end
+
+					tooltip:Show();
+				end
+			end);
+
+			characterButton:SetScript("OnLeave", function(self)
+				local tooltip = GetAppropriateTooltip();
+				tooltip:Hide();
 			end);
 		end
 

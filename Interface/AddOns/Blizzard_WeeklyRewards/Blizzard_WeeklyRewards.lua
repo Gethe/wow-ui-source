@@ -302,7 +302,11 @@ end
 function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	local thresholdString;
 	if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
-		thresholdString = WEEKLY_REWARDS_THRESHOLD_RAID;
+		if activityInfo.raidString then
+			thresholdString = activityInfo.raidString;
+		else
+			thresholdString = WEEKLY_REWARDS_THRESHOLD_RAID;
+		end
 	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
 		thresholdString = WEEKLY_REWARDS_THRESHOLD_MYTHIC;
 	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then

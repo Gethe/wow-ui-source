@@ -1812,7 +1812,10 @@
 							<OnLoad method="OnLoad"/>
 							<OnEnter method="OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
-							<OnMouseDown method="OnMouseDown"/>
+							<OnMouseDown>
+								InputScrollFrame_OnMouseDown(self);
+								self:OnMouseDown(); 
+							</OnMouseDown>
 							<OnShow method="OnShow"/>
 						</Scripts>
 						<Frames>

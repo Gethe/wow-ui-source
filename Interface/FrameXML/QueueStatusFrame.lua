@@ -886,7 +886,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 	local status, mapName, teamSize, registeredMatch,_,_,_,_, asGroup = GetBattlefieldStatus(idx);
 
 	local name = mapName;
-	if ( status == "active" ) then
+	if ( name and status == "active" ) then
 		name = "|cff19ff19"..name.."|r";
 	end
 	info.text = name;
@@ -947,14 +947,21 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 			info.func = wrapFunc(ConfirmSurrenderArena);
 			info.arg1 = nil;
 			info.arg2 = nil;
-			if (not CanSurrenderArena()) then
+			if (not CanSurrenderArena() or C_PvP.IsSoloShuffle() ) then
 				info.disabled = true;
 			end
 			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 			info.disabled = false;
 			info.text = LEAVE_ARENA;
 		else
-			info.text = LEAVE_BATTLEGROUND;
+			if ( C_PvP.IsSoloShuffle() ) then
+				info.disabled = true;
+			end
+			if ( C_PvP.IsInBrawl() ) then
+				info.text = LEAVE_LFD_BATTLEFIELD;
+			else
+				info.text = LEAVE_BATTLEGROUND;
+			end
 		end
 
 		info.func = wrapFunc(ConfirmOrLeaveBattlefield);

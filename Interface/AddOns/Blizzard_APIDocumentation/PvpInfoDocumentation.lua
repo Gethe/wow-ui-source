@@ -194,6 +194,23 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetBattlefieldFlagPosition",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "flagIndex", Type = "number", Nilable = false },
+				{ Name = "uiMapId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiPosx", Type = "number", Nilable = true },
+				{ Name = "uiPosy", Type = "number", Nilable = true },
+				{ Name = "flagTexture", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
 
@@ -349,6 +366,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "info", Type = "PVPPersonalRatedInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPVPSeasonRewardAchievementID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -891,6 +917,29 @@ local PvpInfo =
 			LiteralName = "PVP_REWARDS_UPDATE",
 		},
 		{
+			Name = "PvpRolePopupHide",
+			Type = "Event",
+			LiteralName = "PVP_ROLE_POPUP_HIDE",
+			Payload =
+			{
+				{ Name = "roleQueueInfo", Type = "table", InnerType = "PvpRoleQueueInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpRolePopupJoinedMatch",
+			Type = "Event",
+			LiteralName = "PVP_ROLE_POPUP_JOINED_MATCH",
+		},
+		{
+			Name = "PvpRolePopupShow",
+			Type = "Event",
+			LiteralName = "PVP_ROLE_POPUP_SHOW",
+			Payload =
+			{
+				{ Name = "roleQueueInfo", Type = "table", InnerType = "PvpRoleQueueInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "PvpRoleUpdate",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_UPDATE",
@@ -1141,6 +1190,17 @@ local PvpInfo =
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "isUpgraded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpRoleQueueInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "role", Type = "string", Nilable = false },
+				{ Name = "totalRole", Type = "number", Nilable = false },
+				{ Name = "totalAccepted", Type = "number", Nilable = false },
+				{ Name = "totalDeclined", Type = "number", Nilable = false },
 			},
 		},
 		{
