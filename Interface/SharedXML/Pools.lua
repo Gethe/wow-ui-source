@@ -378,6 +378,7 @@ function FramePoolCollectionMixin:EnumerateInactive()
 	end, nil;
 end
 
+
 FixedSizeFramePoolCollectionMixin = CreateFromMixins(FramePoolCollectionMixin);
 
 function CreateFixedSizeFramePoolCollection()
@@ -414,4 +415,49 @@ function FixedSizeFramePoolCollectionMixin:Acquire(template)
 		return pool:Acquire();
 	end
 	return nil;
+end
+
+
+FontStringPoolCollectionMixin = CreateFromMixins(FramePoolCollectionMixin);
+
+function CreateFontStringPoolCollection()
+	local poolCollection = CreateFromMixins(FontStringPoolCollectionMixin);
+	poolCollection:OnLoad();
+	return poolCollection;
+end
+
+function FontStringPoolCollectionMixin:GetOrCreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	local pool = self:GetPool(fontStringTemplate);
+	if not pool then
+		pool = self:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	end
+	return pool;
+end
+
+function FontStringPoolCollectionMixin:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	assert(self:GetPool(fontStringTemplate) == nil);
+	local pool = CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	self.pools[fontStringTemplate] = pool;
+	return pool;
+end
+
+function FontStringPoolCollectionMixin:CreatePoolIfNeeded(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	if not self:GetPool(fontStringTemplate) then
+		self:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	end
+end
+
+function FontStringPoolCollectionMixin:Acquire(fontStringTemplate, parent, layer, subLayer, resetterFunc)
+	local pool = self:GetOrCreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	local newString = pool:Acquire();
+
+	if parent then
+		newString:SetParent(parent);
+	end
+
+	if layer then
+		newString:SetDrawLayer(layer, subLayer);
+	end
+
+	return newString;
 end

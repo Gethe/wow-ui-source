@@ -1,0 +1,14 @@
+## Title: Blizzard Chat Channels UI
+## LoadOnDemand: 0
+VoiceUtils.lua
+ChannelButton.xml
+RosterButton.xml
+CreateChannelPopup.xml
+ChannelList.xml
+ChannelRoster.xml
+VoiceChatPrompt.xml
+ChannelFrame.xml
+VoiceActivityNotification.xml
+VoiceActivityNotificationParty.xml
+VoiceActivityNotificationRoster.xml
+VoiceActivityManager.xml

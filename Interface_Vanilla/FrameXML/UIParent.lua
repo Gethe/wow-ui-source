@@ -2391,12 +2391,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 	else
-		if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
-			SlidingActionBarTexture0:Hide();
-			SlidingActionBarTexture1:Hide();
-		else
-			SlidingActionBarTexture0:Show();
-			SlidingActionBarTexture1:Show();
+		if (SlidingActionBarTexture0 and SlidingActionBarTexture1) then
+			if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
+				SlidingActionBarTexture0:Hide();
+				SlidingActionBarTexture1:Hide();
+			else
+				SlidingActionBarTexture0:Show();
+				SlidingActionBarTexture1:Show();
+			end
 		end
 		if ( StanceBarFrame ) then
 			if ( GetNumShapeshiftForms() > 2 ) then

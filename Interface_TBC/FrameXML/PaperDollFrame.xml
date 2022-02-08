@@ -300,6 +300,9 @@
 					<OnReceiveDrag>
 						AutoEquipCursorItem();
 					</OnReceiveDrag>
+					<OnHide>
+						Model_OnHide(self);
+					</OnHide>
 				</Scripts>
 			</PlayerModel>
 			<Frame name="CharacterAttributesFrame">

@@ -187,6 +187,9 @@
 					<OnMouseDown>
 						Model_OnMouseDown(self, button);
 					</OnMouseDown>
+					<OnHide>
+						Model_OnHide(self);
+					</OnHide>
 				</Scripts>
             </PlayerModel>
 			<Frame name="InspectPaperDollItemsFrame" setAllPoints="true">

@@ -1044,15 +1044,11 @@ local CastRandomManager;
 local CastRandomTable = {};
 
 local function CastRandomManager_OnEvent(self, event, ...)
-	local unit, name, rank = ...;
-
-	if ( not name ) then
-		-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
-		return;
-	end
+	local unit, castID, spellID = ...;
 
 	if ( unit == "player" ) then
-		name, rank = strlower(name), strlower(rank);
+		local name = strlower(GetSpellInfo(spellID));
+		local rank = strlower(GetSpellSubtext(spellID));
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do

@@ -925,6 +925,8 @@ function UIParent_OnEvent(self, event, ...)
 
 		self.battlefieldBannerShown = nil;
 
+		SetLookingForGroupUIAvailable(C_LFGList.IsLookingForGroupEnabled());
+
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
 		end
@@ -2427,12 +2429,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 	else
-		if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
-			SlidingActionBarTexture0:Hide();
-			SlidingActionBarTexture1:Hide();
-		else
-			SlidingActionBarTexture0:Show();
-			SlidingActionBarTexture1:Show();
+		if (SlidingActionBarTexture0 and SlidingActionBarTexture1) then
+			if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
+				SlidingActionBarTexture0:Hide();
+				SlidingActionBarTexture1:Hide();
+			else
+				SlidingActionBarTexture0:Show();
+				SlidingActionBarTexture1:Show();
+			end
 		end
 		if ( StanceBarFrame ) then
 			if ( GetNumShapeshiftForms() > 2 ) then
@@ -4659,5 +4663,22 @@ function DisplayInterfaceActionBlockedMessage()
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 		INTERFACE_ACTION_BLOCKED_SHOWN = true;
+	end
+end
+-- Set the overall UI state to show or not show the LFG UI.
+function SetLookingForGroupUIAvailable(available)
+	local success = false;
+	if (available) then
+		success = UIParentLoadAddOn("Blizzard_LookingForGroupUI");
+	end
+
+	if (success) then
+		WorldMapMicroButton:Hide()
+		LFGMicroButton:Show();
+		MiniMapWorldMapButton:Show();
+	else
+		WorldMapMicroButton:Show()
+		LFGMicroButton:Hide();
+		MiniMapWorldMapButton:Hide();
 	end
 end

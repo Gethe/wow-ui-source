@@ -990,15 +990,6 @@
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleChannelFrame();
 	</Binding>
-	<Binding name="TOGGLELFGPARENT" category="BINDING_HEADER_INTERFACE">
-		ToggleLFGParentFrame();
-	</Binding>
-	<Binding name="TOGGLELFGTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleLFGParentFrame(1);
-	</Binding>
-	<Binding name="TOGGLELFMTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleLFGParentFrame(2);
-	</Binding>
 
   <!-- Misc header="MISC" -->
 	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
