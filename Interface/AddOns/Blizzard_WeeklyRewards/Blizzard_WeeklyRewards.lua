@@ -146,6 +146,7 @@ function WeeklyRewardsMixin:Refresh(playSheenAnims)
 	self:UpdateTitle();
 	self:UpdateOverlay();
 	self:UpdatePreviousClaim();
+	self:CheckForTutorials();
 
 	local canClaimRewards = C_WeeklyRewards.CanClaimRewards();
 	self.SelectRewardButton:SetShown(canClaimRewards);
@@ -263,6 +264,67 @@ function WeeklyRewardsMixin:SelectReward()
 		self.confirmSelectionFrame = CreateFrame("FRAME", nil, self, "WeeklyRewardConfirmSelectionTemplate");
 	end
 	self.confirmSelectionFrame:ShowPopup(self.selectedActivity:GetDisplayedItemDBID(), self:GetSelectedActivityInfo());
+end
+
+function WeeklyRewardsMixin:CheckForTutorials()
+	-- Players already expect Class Set items from raids, but not Mythic Plus and PVP
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GREAT_VAULT_CLASS_SETS) then
+		self:TryDisplayingClassSetTutorial();
+	end
+end
+
+function WeeklyRewardsMixin:TryDisplayingClassSetTutorial()
+	local activities = C_WeeklyRewards.GetActivities();	
+	local continuableContainer = ContinuableContainer:Create();
+
+	-- Load relevant items first
+	for _, activity in ipairs(activities) do
+		if activity.type ~= Enum.WeeklyRewardChestThresholdType.Raid then
+			for _, reward in ipairs(activity.rewards) do
+				if reward.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(reward.id) then
+					local item = Item:CreateFromItemID(reward.id);
+					continuableContainer:AddContinuable(item);
+				end
+			end
+		end
+	end
+
+	continuableContainer:ContinueOnLoad(function()
+		local activity = self:FindFirstNonRaidActivityWithClassSetReward(activities);
+		if activity then
+			local endOfRow = self:GetActivityFrame(activity, NUM_COLUMNS);
+			self:ShowClassSetTutorial(endOfRow);
+		end
+	end);
+end
+
+function WeeklyRewardsMixin:FindFirstNonRaidActivityWithClassSetReward(activities)
+	for _, activity in ipairs(activities) do
+		if activity.type ~= Enum.WeeklyRewardChestThresholdType.Raid then
+			for _, reward in ipairs(activity.rewards) do
+				if reward.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(reward.id) then
+					-- We are working under the assumption that a set item which is class specific is a "Class Set"
+					local setID = select(16, GetItemInfo(reward.id));
+					if setID and C_Item.IsItemSpecificToPlayerClass(reward.id) then
+						return activity.type;
+					end
+				end
+			end
+		end
+	end
+end
+
+function WeeklyRewardsMixin:ShowClassSetTutorial(parent)
+	local helpTipInfo = {
+		text = GREAT_VAULT_CLASS_SET_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_GREAT_VAULT_CLASS_SETS,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		alignment = HelpTip.Alignment.Right,
+		offsetX = 10,
+	};
+	HelpTip:Show(parent, helpTipInfo);
 end
 
 WeeklyRewardOverlayMixin = {};

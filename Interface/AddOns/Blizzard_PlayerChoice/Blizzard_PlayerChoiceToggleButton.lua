@@ -78,10 +78,14 @@ end
 
 function PlayerChoiceToggleButtonMixin:OnClick()
 	if PlayerChoiceFrame:IsShown() then
-		PlaySound(SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_HIDE_POWERS);
+		if self.hidePowersSound then
+			PlaySound(self.hidePowersSound);
+		end
 		HideUIPanel(PlayerChoiceFrame);
 	else
-		PlaySound(SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_SHOW_POWERS);
+		if self.showPowersSound then
+			PlaySound(self.showPowersSound);
+		end
 		PlayerChoiceFrame:TryShow();
 	end
 

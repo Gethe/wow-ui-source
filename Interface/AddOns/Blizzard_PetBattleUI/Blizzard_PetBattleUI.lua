@@ -1080,6 +1080,8 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 		local x, y, z = PetBattlesOverrides.GetPositionOverride(petSpeciesID);
 		if x and y and z then
 			self.PetModel:SetPosition(x, y, z);
+		else
+			self.PetModel:SetPosition(0, 0, 0);
 		end
 
 		if ( C_PetBattles.GetHealth(petOwner, petIndex) == 0 ) then

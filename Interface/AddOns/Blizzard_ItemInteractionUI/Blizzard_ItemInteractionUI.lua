@@ -11,7 +11,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION"] = {
 	end,
 
 	OnAccept = function()
-		C_ItemInteraction.PerformItemInteraction();
+		ItemInteractionFrame:CompleteItemInteraction();
 	end,
 
 	wide = true,
@@ -35,7 +35,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED"] = {
 	end,
 
 	OnAccept = function()
-		C_ItemInteraction.PerformItemInteraction();
+		ItemInteractionFrame:CompleteItemInteraction();
 	end,
 
 	wide = true,
@@ -65,7 +65,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
 	end,
 
 	OnAccept = function()
-		C_ItemInteraction.PerformItemInteraction();
+		ItemInteractionFrame:CompleteItemInteraction();
 	end,
 
 	itemFrameAboveSubtext = true,
@@ -106,6 +106,7 @@ local ITEM_INTERACTION_FRAME_EVENTS = {
 	"PLAYER_MONEY",
 	"ITEM_INTERACTION_CLOSE",
 	"ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
+	"ITEM_INTERACTION_CHARGE_INFO_UPDATED",
 	"GLOBAL_MOUSE_DOWN",
 	"CURRENCY_DISPLAY_UPDATE",
 };
@@ -165,7 +166,7 @@ function ItemInteractionMixin:OnEvent(event, ...)
 				self:SetInteractionItem(itemLocation);
 			end
 		end
-	elseif (event == "CURRENCY_DISPLAY_UPDATE") then
+	elseif (event == "ITEM_INTERACTION_CHARGE_INFO_UPDATED" or event == "CURRENCY_DISPLAY_UPDATE") then
 		-- We need to display a recharge time right after we use our final charge.
 		if (self:UsesCharges()) then
 			self:UpdateCharges();
@@ -330,6 +331,8 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 		self.ItemConversionFrame.ItemConversionOutputSlot:ClearAllPoints();
 		self.ItemConversionFrame.ItemConversionOutputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 75, itemSlotOffsetY);
 		self.ItemConversionFrame.ItemConversionOutputSlot:SetNormalTexture(nil);
+
+		self.ItemConversionFrame:SetupConversionCelebration();
 
 		self.ItemConversionFrame:Show();
 	else
@@ -544,8 +547,15 @@ function ItemInteractionMixin:InteractWithItem()
 			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION", textArg1, textArg2, data);
 		end
 	else
-		C_ItemInteraction.PerformItemInteraction();
+		self:CompleteItemInteraction();
 	end
+end
+
+function ItemInteractionMixin:CompleteItemInteraction()
+	if (self.conversionMode) then
+		self.ItemConversionFrame:PlayConversionCelebration();
+	end
+	C_ItemInteraction.PerformItemInteraction();
 end
 
 -- Enables or disables the button to interact with the item based off of your currency amount and if you have an item in the slot.
@@ -820,6 +830,47 @@ function ItemInteractionActionButtonMixin:OnClick()
 	self:GetParent():GetParent():InteractWithItem();
 end
 
+------------------ Item Conversion Frame Functions ------------------
+
+ItemInteractionItemConversionFrameMixin = {};
+function ItemInteractionItemConversionFrameMixin:OnLoad()
+	-- We have duplicates here to increase the brightness of the "Conversion Celebration Flash"
+	self.flashingRegions = {
+		[self.Background_Flash] =  "%s-background",
+		[self.Background_Flash2] = "%s-background",
+		[self.ItemConversionInputSlot.InputSlot_Flash]  = "%s-leftitem-border-empty",
+		[self.ItemConversionInputSlot.InputSlot_Flash2] = "%s-leftitem-border-empty",
+		[self.ItemConversionOutputSlot.OutputSlot_Flash] =  "%s-rightitem-border-empty",
+		[self.ItemConversionOutputSlot.OutputSlot_Flash2] = "%s-rightitem-border-empty",
+	}
+end
+
+function ItemInteractionItemConversionFrameMixin:OnHide()
+	if (self.playingCelebration) then
+		self:StopConversionCelebration();
+	end
+end
+
+function ItemInteractionItemConversionFrameMixin:SetupConversionCelebration()
+	local itemInteractionFrame = self:GetParent();
+	local textureKit = itemInteractionFrame.textureKit;
+
+	SetupTextureKitOnFrames(textureKit, self.flashingRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+end
+
+function ItemInteractionItemConversionFrameMixin:PlayConversionCelebration()
+	self.AnimationHolder.ConversionFlash:Restart();
+	self.playingCelebration = true;
+end
+
+function ItemInteractionItemConversionFrameMixin:StopConversionCelebration()
+	for region, _ in pairs(self.flashingRegions) do
+		region:SetAlpha(0);
+	end
+	self.AnimationHolder.ConversionFlash:Stop();
+	self.playingCelebration = false;
+end
+
 ------------------ Item Conversion Input Slot Functions ------------------
 ItemInteractionItemConversionInputSlotMixin = {};
 
@@ -837,8 +888,8 @@ function ItemInteractionItemConversionInputSlotMixin:RefreshIcon()
 			SetupTextureKitOnFrame(itemInteractionFrame.textureKit, self.ButtonFrame, "%s-leftitem-border-full", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
 			self:SetNormalTexture(nil);
 			self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
-			self.EmptySlotGlow:Hide();
-			self.PulseEmptySlotGlow:Stop();
+			self.Glow.EmptySlotGlow:Hide();
+			self.Glow.PulseEmptySlotGlow:Stop();
 			SetItemButtonTexture(self, item:GetItemIcon());
 		end);
 	else
@@ -846,8 +897,8 @@ function ItemInteractionItemConversionInputSlotMixin:RefreshIcon()
 		SetItemButtonTexture(self, nil);
 		self:SetNormalAtlas("itemupgrade_greenplusicon");
 		self:SetPushedAtlas("itemupgrade_greenplusicon_pressed");
-		self.EmptySlotGlow:Show();
-		self.PulseEmptySlotGlow:Restart();
+		self.Glow.EmptySlotGlow:Show();
+		self.Glow.PulseEmptySlotGlow:Restart();
 	end
 end
 

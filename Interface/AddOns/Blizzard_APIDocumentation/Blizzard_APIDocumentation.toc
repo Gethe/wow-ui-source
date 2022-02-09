@@ -197,7 +197,6 @@ CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
-ImGuiTypesSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemLocationSharedDocumentation.lua

@@ -363,7 +363,8 @@ function CharacterSelect_UpdateState(fromLoginState)
         CharSelectRealmName:SetText(serverName.." "..serverType);
         CharSelectRealmName:Show();
     else
-        CharSelectRealmName:Hide();
+		CharSelectRealmName:Hide();
+		CharSelectCharacterName:SetText("");
     end
 
     if (fromLoginState == REALM_CHANGE_IS_AUTO) then

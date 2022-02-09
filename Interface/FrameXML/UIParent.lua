@@ -91,9 +91,10 @@ UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
-	frame:SetAttribute("UIPanelLayout-defined", true);
+	local suppressScriptHandler = true;
+	frame:SetAttribute("UIPanelLayout-defined", true, suppressScriptHandler);
 	for name, value in pairs(attributes) do
-		frame:SetAttribute("UIPanelLayout-"..name, value);
+		frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
 	end
 end
 
@@ -124,9 +125,10 @@ function SetUIPanelAttribute(frame, name, value)
 
 	if not frame:GetAttribute("UIPanelLayout-defined") then
 		SetFrameAttributes(frame, attributes);
-		end
+	end
 
-	frame:SetAttribute("UIPanelLayout-"..name, value);
+	local suppressScriptHandler = true;
+	frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
 end
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -140,7 +142,7 @@ UIChildWindows = {
 
 function GetNotchHeight()
     local notchHeight = 0;
-    
+
     if (C_UI.ShouldUIParentAvoidNotch()) then
         notchHeight = select(4, C_UI.GetTopLeftNotchSafeRegion());
         if (notchHeight) then
@@ -491,7 +493,7 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for the ScriptAnimationEffect System
 	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE")
- 
+
     -- Event(s) for Notched displays
     self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED")
 end
@@ -2453,7 +2455,7 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
-	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then 
+	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
 end
@@ -2516,7 +2518,7 @@ function UIParent_UpdateTopFramePositions()
 	local notificationAnchorTo = UIParent;
 	if gmChatStatusFrameShown then
 		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-		
+
 		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
 		notificationAnchorTo = GMChatStatusFrame;
 	end
@@ -2527,7 +2529,7 @@ function UIParent_UpdateTopFramePositions()
 		else
 			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		end
-		
+
 		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
 		notificationAnchorTo = TicketStatusFrame;
 	end
@@ -2543,7 +2545,7 @@ function UIParent_UpdateTopFramePositions()
 
 		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
 	end
-	
+
 	local y = -(buffOffset + 13)
 	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end

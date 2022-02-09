@@ -63,24 +63,32 @@
 					<OnLeave method="OnLeave"/> 
 				</Scripts>
 			</Button>
-			<Frame parentKey="ItemConversionFrame" hidden="true">
+			<Frame parentKey="ItemConversionFrame" mixin="ItemInteractionItemConversionFrameMixin" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Background_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<ItemButton parentKey="ItemConversionInputSlot" mixin="ItemInteractionItemConversionInputSlotMixin">
 						<Size x="48" y="48"/>
 						<!-- Anchored dynamically -->
 						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="EmptySlotGlow" atlas="cyphersetupgrade-leftitem-slotinnerglow" useAtlasSize="false" alphaMode="ADD">
-									<Size x="52" y="52"/>
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
 								<Texture parentKey="ButtonFrame">
 									<Anchors>
@@ -88,12 +96,39 @@
 									</Anchors>
 								</Texture>
 							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="InputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 						</Layers>
-						<Animations>
-							<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
-								<Alpha childkey="EmptySlotGlow" duration="1" fromalpha="0.4" toalpha="1"/>
-							</AnimationGroup>
-						</Animations>
+						<Frames>
+							<Frame parentKey="Glow">
+								<Size x="52" y="52"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="EmptySlotGlow" atlas="cyphersetupgrade-leftitem-slotinnerglow" useAtlasSize="false" alphaMode="ADD">
+											<Size x="52" y="52"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
+										<Alpha childkey="EmptySlotGlow" duration="1" fromalpha="0.4" toalpha="1"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnClick method="OnClick"/>
@@ -136,6 +171,18 @@
 									</Anchors>
 								</Texture>
 							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="OutputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="OutputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 						</Layers>
 						<Scripts>
 							<OnEvent method="OnEvent"/>
@@ -143,7 +190,25 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</ItemButton>
+					<Frame parentKey="AnimationHolder">
+						<Animations>
+							<AnimationGroup parentKey="ConversionFlash" setToFinalAlpha="true">
+								<Alpha childKey="$parent.Background_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="$parent.Background_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+
+								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>-->
+
+								<Alpha childKey="$parent.ItemConversionOutputSlot.OutputSlot_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="$parent.ItemConversionOutputSlot.OutputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="ButtonFrame">
 				<Size x="0" y="35"/>

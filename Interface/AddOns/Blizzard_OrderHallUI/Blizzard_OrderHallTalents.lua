@@ -118,7 +118,7 @@ do
 		canHaveBackButton = false,
 		singleCost = false,
 		ignorePrereqLayout = true,
-		researchSoundStandard = SOUNDKIT.UI_ORDERHALL_TITAN_MINOR_TALENT_SELECT,
+		researchSoundStandard = SOUNDKIT.UI_ORDERHALL_CYPHER_RESEARCH_COMPLETE,
 		researchSoundMajor = SOUNDKIT.UI_ORDERHALL_TITAN_MAJOR_TALENT_SELECT,
 		highlightPrereqTalents = true,
 		fontStrings =

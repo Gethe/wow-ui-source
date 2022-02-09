@@ -29,6 +29,8 @@
 
 	<Button name="TorghastPlayerChoiceToggleButton" inherits="PlayerChoiceToggleButtonTemplate" mixin="TorghastPlayerChoiceToggleButtonMixin">
 		<KeyValues>
+			<KeyValue key="hidePowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_HIDE_POWERS" type="global"/>
+			<KeyValue key="showPowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_SHOW_POWERS" type="global"/>
 			<KeyValue key="textureKit" value="jailerstower" type="string"/>
 		</KeyValues>
 		<Frames>
@@ -55,6 +57,8 @@
 
 	<Button name="CypherPlayerChoiceToggleButton" inherits="PlayerChoiceToggleButtonTemplate" mixin="CypherPlayerChoiceToggleButtonMixin">
 		<KeyValues>
+			<KeyValue key="hidePowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_CYPHER_HIDE_POWERS" type="global"/>
+			<KeyValue key="showPowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_CYPHER_SHOW_POWERS" type="global"/>
 			<KeyValue key="textureKit" value="cypherchoice" type="string"/>
 		</KeyValues>
 		<Layers>

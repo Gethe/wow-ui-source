@@ -2150,8 +2150,11 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString name="$parentEncounterTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
-									<Size x="227" y="12"/>
+								<FontString name="$parentEncounterTitle" inherits="GameFontNormalLarge" mixin="AutoScalingFontStringMixin" justifyH="LEFT" parentKey="encounterTitle">
+									<Size x="220" y="12"/>
+									<KeyValues>
+										<KeyValue key="minLineHeight" value="9" type="number"/>
+									</KeyValues>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-350" y="-36"/>
 									</Anchors>

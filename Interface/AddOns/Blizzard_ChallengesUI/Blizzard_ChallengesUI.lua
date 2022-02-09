@@ -914,7 +914,7 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		end
 	end		
 
-	if (data.isEligibleForScore) then
+	if (data.isEligibleForScore and data.oldDungeonScore and data.newDungeonScore) then
 		local gainedScore = data.newDungeonScore - data.oldDungeonScore;
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
 		if (not color) then 

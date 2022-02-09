@@ -326,9 +326,9 @@ function PCTDestinationSelectBlock:UpdateVisibleState()
 
 	self.frame.ControlsFrame.TransferRealmLabel:ClearAllPoints();
 	if hasGuildFollowOption then
-		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 0, -9);
+		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 6, -9);
 	else
-		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame, "TOPLEFT", 112, -42);
+		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame, "TOPLEFT", 112, -55);
 	end
 end
 

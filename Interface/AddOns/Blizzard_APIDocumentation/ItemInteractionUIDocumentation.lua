@@ -94,6 +94,11 @@ local ItemInteractionUI =
 	Events =
 	{
 		{
+			Name = "ItemInteractionChargeInfoUpdated",
+			Type = "Event",
+			LiteralName = "ITEM_INTERACTION_CHARGE_INFO_UPDATED",
+		},
+		{
 			Name = "ItemInteractionClose",
 			Type = "Event",
 			LiteralName = "ITEM_INTERACTION_CLOSE",

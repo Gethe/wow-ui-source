@@ -501,6 +501,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemSpecificToPlayerClass",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemSpecificToPlayerClass", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLocked",
 			Type = "Function",
 

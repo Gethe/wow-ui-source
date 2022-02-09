@@ -70,7 +70,9 @@ function PlayerChoicePowerChoiceTemplateMixin:FadeOut()
 		C_Timer.After(1.25, function() self:CancelEffects(); self:EnableMouse(false); end);
 		self:SetAlpha(1);
 		self.FadeoutSelected:Restart();
-		PlaySound(SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_FADEOUT_POWERS_NOT_PICKED);
+		if self.choiceSelectedSound then
+			PlaySound(self.choiceSelectedSound);
+		end
 	else
 		self:CancelEffects();
 		self:SetAlpha(1);

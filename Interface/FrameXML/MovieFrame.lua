@@ -3,6 +3,7 @@ MOVIE_CAPTION_FADE_TIME = 1.0;
 
 function MovieFrame_OnLoad(self)
 	self:RegisterEvent("PLAY_MOVIE");
+	self:RegisterEvent("STOP_MOVIE");
 end
 
 function MovieFrame_OnEvent(self, event, ...)
@@ -11,6 +12,8 @@ function MovieFrame_OnEvent(self, event, ...)
 		if ( movieID ) then
 			MovieFrame_PlayMovie(self, movieID);
 		end
+	elseif (event == "STOP_MOVIE") then
+		MovieFrame_StopMovie(self);
 	end
 end
 
@@ -23,6 +26,12 @@ function MovieFrame_PlayMovie(self, movieID)
 		self:Hide();
 		GameMovieFinished();
 	end
+end
+
+function MovieFrame_StopMovie(self)
+	self:StopMovie(movieID);
+	self:Hide();
+	GameMovieFinished();
 end
 
 function MovieFrame_OnShow(self)
