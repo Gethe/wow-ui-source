@@ -19,6 +19,7 @@ if tbl then
 	--Imports
 	Import("type");
 	Import("Enum");
+	Import("IsCharacterNPERestricted");
 
 	Import("BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED");
 	Import("BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT");
@@ -276,6 +277,15 @@ local vasErrorData = {
 	},
 	[Enum.VasError.HasHeirloom] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
+	},
+	[Enum.VasError.AccountRestricted] = {
+		msg = function(character)
+			if IsCharacterNPERestricted(character.guid) then
+				return BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE;
+			end
+
+			return BLIZZARD_STORE_VAS_ERROR_OTHER;
+		end,
 	},
 	[Enum.VasError.LastSaveTooDistant] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,

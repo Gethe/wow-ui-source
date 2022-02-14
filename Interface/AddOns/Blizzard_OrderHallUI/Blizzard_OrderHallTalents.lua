@@ -1118,8 +1118,8 @@ function GarrisonTalentButtonMixin:ActivateTalent()
 end
 
 function GarrisonTalentButtonMixin:OnFramePoolReset()
-	self.Cooldown:SetCooldownDuration(0);
-	self.Cooldown:Hide();
+	self.Cooldown:Clear();
+	self.CooldownFinishedTexture:Hide();
 	self.Border:Show();
 	self.AlphaIconOverlay:Hide();
 	self.CooldownTimerBackground:Hide();

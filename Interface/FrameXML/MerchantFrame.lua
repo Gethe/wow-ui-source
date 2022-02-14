@@ -512,7 +512,7 @@ function MerchantFrame_CloseStackSplitFrame()
 		local numButtons = max(MERCHANT_ITEMS_PER_PAGE, BUYBACK_ITEMS_PER_PAGE);
 		for i = 1, numButtons do
 			if ( StackSplitFrame.owner == _G["MerchantItem"..i.."ItemButton"] ) then
-				StackSplitFrameCancel_Click();
+				StackSplitCancelButton_OnClick();
 				return;
 			end
 		end

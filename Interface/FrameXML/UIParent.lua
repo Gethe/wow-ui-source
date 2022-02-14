@@ -3251,32 +3251,32 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "pet");
 			hasPetBar = 1;
 		end
+	end
 
-		if ( TutorialFrameAlertButton:IsShown() ) then
-			tinsert(yOffsetFrames, "tutorialAlert");
+	if ( TutorialFrameAlertButton:IsShown() ) then
+		tinsert(yOffsetFrames, "tutorialAlert");
+	end
+	if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
+		local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+		if ( not barInfo or not barInfo.anchorTop ) then
+			tinsert(yOffsetFrames, "playerPowerBarAlt");
 		end
-		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
-			local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
-			if ( not barInfo or not barInfo.anchorTop ) then
-				tinsert(yOffsetFrames, "playerPowerBarAlt");
-			end
-		end
-		if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
-			tinsert(yOffsetFrames, "powerBarWidgets");
-		end
-		if ( ExtraAbilityContainer and ExtraAbilityContainer:IsShown() ) then
-			tinsert(yOffsetFrames, "extraAbilityContainer");
-		end
-		if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
-			tinsert(yOffsetFrames, "talkingHeadFrame");
-		end
-		if ( ClassResourceOverlayParentFrame and ClassResourceOverlayParentFrame:IsShown() ) then
-			tinsert(yOffsetFrames, "classResourceOverlayFrame");
-			tinsert(yOffsetFrames, "classResourceOverlayOffset");
-		end
-		if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
-			tinsert(yOffsetFrames, "castingBar");
-		end
+	end
+	if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
+		tinsert(yOffsetFrames, "powerBarWidgets");
+	end
+	if ( ExtraAbilityContainer and ExtraAbilityContainer:IsShown() ) then
+		tinsert(yOffsetFrames, "extraAbilityContainer");
+	end
+	if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "talkingHeadFrame");
+	end
+	if ( ClassResourceOverlayParentFrame and ClassResourceOverlayParentFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "classResourceOverlayFrame");
+		tinsert(yOffsetFrames, "classResourceOverlayOffset");
+	end
+	if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
+		tinsert(yOffsetFrames, "castingBar");
 	end
 
 	if ( menuBarTop == 55 ) then

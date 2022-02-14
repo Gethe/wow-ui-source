@@ -1,5 +1,15 @@
 AccountSelectorMixin = {};
 
+-- Copied, aand refactored slightly to only have one return, from Store UI, should share, but there's a chance this will all live here someday.
+-- Possibly move this to a util function?
+local function StripWoWAccountLicenseInfo(gameAccount)
+	if (string.find(gameAccount, '#')) then
+		local text, matchCount = string.gsub(gameAccount,'%d+\#(%d)','WoW%1');
+		return text;
+	end
+	return gameAccount;
+end
+
 local function BuildDropdownOptions(self, gameAccounts, isLocalAccount)
 	local currentAccountGUID = GetCurrentWoWAccountGUID();
 	local options = {};
@@ -14,7 +24,7 @@ local function BuildDropdownOptions(self, gameAccounts, isLocalAccount)
 		local accountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(gameAccount, isLocalAccount);
 		self.gameAccountGUIDToNameMapping[accountGUID] = gameAccount;
 		if (accountGUID ~= currentAccountGUID) then
-			table.insert(options, self:CreateOption(accountGUID, gameAccount));
+			table.insert(options, self:CreateOption(accountGUID, StripWoWAccountLicenseInfo(gameAccount)));
 		end
 	end
 
@@ -27,10 +37,8 @@ end
 
 function AccountSelectorMixin:OnLoad()
 	local wowAccountSelectedCallback = function(value, isUserInput)
-		if isUserInput then
-			CharSelectServicesFlowFrame:ClearErrorMessage();
-			self:CallOnSelectedCallback();
-		end
+		CharSelectServicesFlowFrame:ClearErrorMessage();
+		self:CallOnSelectedCallback();
 	end
 
 	self.Dropdown:UpdateWidth(165);
@@ -46,7 +54,8 @@ end
 function AccountSelectorMixin:Initialize(results, wasFromRewind)
 	if not wasFromRewind then
 		self.DestinationBlizzardAccountEdit:SetText("");
-		self.Dropdown:ClearSelectedValue();
+		self.Dropdown:ClearOptions();
+		self.BNetWoWAccountDropdown:ClearOptions();
 		self:PopulateDropDown();
 	end
 end

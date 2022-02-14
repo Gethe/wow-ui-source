@@ -57,6 +57,12 @@
 						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="CooldownFinishedTexture" file="Interface\Garrison\orderhalltalents-timer-fill" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
 			</Layer>				
 		</Layers>
 		<Frames>
@@ -66,6 +72,11 @@
 					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
+				<Scripts>
+					<OnCoolDownDone>
+						self:GetParent().CooldownFinishedTexture:Show();
+					</OnCoolDownDone>
+				</Scripts>
 			</Cooldown>
 		</Frames>
         <Animations>

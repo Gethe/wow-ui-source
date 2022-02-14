@@ -148,6 +148,16 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetSeasonBestMythicRatingFromThisExpansion",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bestSeasonScore", Type = "number", Nilable = false },
+				{ Name = "bestSeason", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWeeklyBestForMap",
 			Type = "Function",
 

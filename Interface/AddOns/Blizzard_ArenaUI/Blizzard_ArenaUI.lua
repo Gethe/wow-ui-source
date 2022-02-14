@@ -67,7 +67,7 @@ function ArenaEnemyFrames_OnHide(self)
 end
 
 function ArenaEnemyFrames_CheckEffectiveEnableState(self, cvarUpdate)
-	if (C_PvP.IsInBrawl()) then
+	if (C_PvP.IsInBrawl() and not C_PvP.IsSoloShuffle()) then
 		ArenaEnemyFrames_Disable(self);
 	else
 		if ( GetCVarBool("showArenaEnemyFrames") or cvarUpdate ) then

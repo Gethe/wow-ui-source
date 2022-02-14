@@ -74,6 +74,15 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						
+						<MaskTexture parentKey="SparkMask" hidden="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Spark"/>
+							</MaskedTextures>
+						</MaskTexture>
 
 						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="UIWidgetBaseTextMixin">
 							<Anchors>

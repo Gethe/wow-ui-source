@@ -2564,7 +2564,9 @@ end
 function StoreFrameErrorFrame_OnShow(self)
 	StoreFrame_UpdateActivePanel(StoreFrame);
 	StoreFrame_UpdateCoverState();
-	self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+
+	local aboveDisabledCardOverlayLevel = 1500;
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + aboveDisabledCardOverlayLevel);
 end
 
 function StoreFrameErrorFrame_OnHide(self)

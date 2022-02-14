@@ -1428,7 +1428,7 @@ function SelectionPopoutButtonMixin:OnLoad()
 		self.Popout:SetToplevel(true);
 		self.Popout:SetScale(self:GetEffectiveScale());
 	end
-	
+
 	self.buttonPool = CreateFramePool("BUTTON", self.Popout, self.selectionEntryTemplates);
 	self.initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self.Popout, "TOPLEFT", 6, -12);
 end
@@ -2071,6 +2071,11 @@ function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
 	if defaultSelectedValue then
 		self:SetSelectedValue(defaultSelectedValue);
 	end
+end
+
+function DropDownControlMixin:ClearOptions()
+	self:ClearSelectedValue();
+	self:SetOptions();
 end
 
 function DropDownControlMixin:GetOptionCount()

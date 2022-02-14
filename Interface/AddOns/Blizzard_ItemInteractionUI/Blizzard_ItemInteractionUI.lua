@@ -328,6 +328,9 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 		self.ItemConversionFrame.ItemConversionInputSlot:ClearAllPoints();
 		self.ItemConversionFrame.ItemConversionInputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", -75, itemSlotOffsetY);
 
+		self.ItemConversionFrame.DimArrow:ClearAllPoints();
+		self.ItemConversionFrame.DimArrow:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 0, itemSlotOffsetY);
+
 		self.ItemConversionFrame.ItemConversionOutputSlot:ClearAllPoints();
 		self.ItemConversionFrame.ItemConversionOutputSlot:SetPoint("CENTER", self.ItemConversionFrame, "CENTER", 75, itemSlotOffsetY);
 		self.ItemConversionFrame.ItemConversionOutputSlot:SetNormalTexture(nil);
@@ -626,7 +629,7 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	if (self.conversionMode) then
 		self.ItemConversionFrame.ItemConversionInputSlot:RefreshIcon();
 		self.ItemConversionFrame.ItemConversionInputSlot:RefreshTooltip();
-		self.ItemConversionFrame.Arrow:Update(itemLocation and itemLocation:IsValid());
+		self.ItemConversionFrame:UpdateArrow(itemLocation and itemLocation:IsValid());
 		self.ItemConversionFrame.ItemConversionOutputSlot:RefreshIcon();
 	else
 		self.ItemSlot:RefreshIcon();
@@ -871,6 +874,18 @@ function ItemInteractionItemConversionFrameMixin:StopConversionCelebration()
 	self.playingCelebration = false;
 end
 
+function ItemInteractionItemConversionFrameMixin:UpdateArrow(validItem)
+	if (validItem) then
+		self.DimArrow:Hide();
+		self.AnimatedArrow.Anim:Restart();
+		self.AnimatedArrow:Show();
+	else
+		self.AnimatedArrow.Anim:Stop();
+		self.AnimatedArrow:Hide();
+		self.DimArrow:Show();
+	end
+end
+
 ------------------ Item Conversion Input Slot Functions ------------------
 ItemInteractionItemConversionInputSlotMixin = {};
 
@@ -999,17 +1014,4 @@ end
 
 function ItemInteractionItemConversionOutputSlotMixin:OnLeave()
 	GameTooltip_Hide();
-end
-
------------------- Conversion Mode Arrow Functions ------------------
-ItemInteractionItemConversionArrowMixin = {};
-
-function ItemInteractionItemConversionArrowMixin:Update(validItem)
-	if (validItem) then
-		self.Anim:Restart();
-		self:Show();
-	else
-		self.Anim:Stop();
-		self:Hide();
-	end
 end

@@ -111,14 +111,14 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="Glow">
-								<Size x="52" y="52"/>
+								<Size x="50" y="50"/>
 								<Anchors>
 									<Anchor point="CENTER"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<Texture parentKey="EmptySlotGlow" atlas="cyphersetupgrade-leftitem-slotinnerglow" useAtlasSize="false" alphaMode="ADD">
-											<Size x="52" y="52"/>
+											<Size x="50" y="50"/>
 										</Texture>
 									</Layer>
 								</Layers>
@@ -138,7 +138,7 @@
 							<OnLeave method="OnLeave"/> 
 						</Scripts>
 					</ItemButton>
-					<Frame parentKey="Arrow" mixin="ItemInteractionItemConversionArrowMixin">
+					<Frame parentKey="AnimatedArrow">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.ItemConversionInputSlot" relativePoint="RIGHT" x="20" y="0"/>
@@ -159,6 +159,19 @@
 								<Translation childKey="arrow" endDelay="0.25" smoothing="NONE"  duration="1" offsetX="45" offsetY="0"/>
 							</AnimationGroup>
 						</Animations>
+					</Frame>
+					<Frame parentKey="DimArrow">
+						<Size x="20" y="20"/>
+						<!-- Anchored dynamically -->
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="arrow" atlas="cyphersetupgrade-arrow-empty" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 					</Frame>
 					<ItemButton parentKey="ItemConversionOutputSlot" mixin="ItemInteractionItemConversionOutputSlotMixin">
 						<Size x="48" y="48"/>

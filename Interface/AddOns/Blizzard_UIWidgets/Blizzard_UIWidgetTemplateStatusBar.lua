@@ -17,6 +17,7 @@ local textureKitRegionFormatStrings = {
 	["BGRight"] = "%s-BGRight",
 	["BGCenter"] = "%s-BGCenter",
 	["Spark"] = "%s-Spark",
+	["SparkMask"] = "%s-spark-mask",
 	["BackgroundGlow"] = "%s-BackgroundGlow",
 	["GlowLeft"] = "%s-Glow-BorderLeft",
 	["GlowRight"] = "%s-Glow-BorderRight",
