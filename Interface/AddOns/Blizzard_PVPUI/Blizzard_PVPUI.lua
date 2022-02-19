@@ -1867,16 +1867,18 @@ end
 function PVPConquestBarMixin:OnShow()
 	self:RegisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
 	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:Update();
 end
 
 function PVPConquestBarMixin:OnHide()
 	self:UnregisterEvent("WEEKLY_REWARDS_ITEM_CHANGED");
 	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 end
 
 function PVPConquestBarMixin:OnEvent(event, ...)
-	if event == "WEEKLY_REWARDS_ITEM_CHANGED" or event == "WEEKLY_REWARDS_UPDATE" then
+	if event == "WEEKLY_REWARDS_ITEM_CHANGED" or event == "WEEKLY_REWARDS_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:Update();
 	end
 end

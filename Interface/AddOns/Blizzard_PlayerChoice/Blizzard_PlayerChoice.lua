@@ -233,27 +233,24 @@ local borderFrameTextureKitRegions = {
 };
 
 function PlayerChoiceFrameMixin:SetupFrame()
-	if self.textureKitInfo.showOptionsOnly then
-		self.NineSlice:Hide();
-		self.CloseButton:Hide();
-		self.Header:Hide();
-		self.Title:Hide();
-		self.Background:Hide();
-		self:EnableMouse(false);
-	else
+	local showExtraFrames = not self.textureKitInfo.showOptionsOnly;
+	self.NineSlice:SetShown(showExtraFrames);
+	self.CloseButton:SetShown(showExtraFrames);
+	self.Header:SetShown(showExtraFrames);
+	self.Title:SetShown(showExtraFrames);
+	self.Background:SetShown(showExtraFrames);
+	self:EnableMouse(showExtraFrames);
+
+	if showExtraFrames then
 		if self.textureKitInfo.uniqueCorners then
 			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, self.uiTextureKit);
 		else
 			NineSliceUtil.ApplyIdenticalCornersLayout(self.NineSlice, self.uiTextureKit);
 		end
 
-		self.NineSlice:Show();
-
 		UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", self.textureKitInfo.closeBorderX, self.textureKitInfo.closeBorderY, self.uiTextureKit);
 
 		self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", self.textureKitInfo.closeButtonX, self.textureKitInfo.closeButtonY);
-		self.CloseButton:Show();
-		self:EnableMouse(true);
 
 		if self.choiceInfo.hideWarboardHeader or not self.textureKitInfo.headerYoffset then
 			self.Header:Hide();

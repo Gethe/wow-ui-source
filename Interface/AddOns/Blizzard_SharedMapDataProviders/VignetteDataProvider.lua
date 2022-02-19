@@ -221,18 +221,14 @@ function VignettePinMixin:UpdateFogOfWar(vignetteInfo)
 end
 
 function VignettePinMixin:UpdatePosition(bestUniqueVignette)
-	if self:IsUnique() and not bestUniqueVignette then
-		self:Hide();
-		return;
-	end
-
+	local showPin = false;
 	local position = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
 	if position then
 		self:SetPosition(position:GetXY());
-		self:Show();
-	else
-		self:Hide();
+		showPin = not self:IsUnique() or bestUniqueVignette;
 	end
+	
+	self:SetShown(showPin);
 end
 
 function VignettePinMixin:UpdateSupertrackedHighlight()

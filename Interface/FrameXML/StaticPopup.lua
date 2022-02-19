@@ -4786,19 +4786,21 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		end
 	end
 
-	if info.verticalButtonLayout then
-		buttons[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
-		for index = 2, #buttons do
-			buttons[index]:SetPoint("TOP", buttons[index-1], "BOTTOM", 0, -6);
-		end
-	else
-		local offset = totalWidth / 2;
-		buttons[1]:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", -offset, bottomSpace);
-		for index = 2, #buttons do
-			buttons[index]:SetPoint("BOTTOMLEFT", buttons[index-1], "BOTTOMRIGHT", buttonPadding, 0);
+	if #buttons > 0 then
+		if info.verticalButtonLayout then
+			buttons[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
+			for index = 2, #buttons do
+				buttons[index]:SetPoint("TOP", buttons[index-1], "BOTTOM", 0, -6);
+			end
+		else
+			local offset = totalWidth / 2;
+			buttons[1]:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", -offset, bottomSpace);
+			for index = 2, #buttons do
+				buttons[index]:SetPoint("BOTTOMLEFT", buttons[index-1], "BOTTOMRIGHT", buttonPadding, 0);
+			end
 		end
 	end
-	
+
 	if info.extraButton then
 		local extraButton = dialog.extraButton;
 		extraButton:Show();
