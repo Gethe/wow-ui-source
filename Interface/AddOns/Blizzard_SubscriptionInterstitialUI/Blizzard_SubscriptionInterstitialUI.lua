@@ -11,7 +11,7 @@ function SubscriptionInterstitialSubscribeButtonBaseMixin:OnLoad()
 	local useAtlasSize = true;
 	self.Background:SetAtlas(self.backgroundAtlas, useAtlasSize);
 
-	self.ButtonText:SetFontObjectsToTry("SystemFont_Med3", "SystemFont_Med2", "SystemFont_Small2", "SystemFont_Small", "SystemFont_Tiny");
+	self.ButtonText:ScaleTextToFit();
 end
 
 function SubscriptionInterstitialSubscribeButtonBaseMixin:OnShow()
@@ -46,16 +46,15 @@ SubscriptionInterstitialSubscribeButtonMixin = {};
 function SubscriptionInterstitialSubscribeButtonMixin:OnLoad()
 	SubscriptionInterstitialSubscribeButtonBaseMixin.OnLoad(self);
 
-	self.FirstLine:SetFontObjectsToTry("Game58Font_Shadow2", "Game52Font_Shadow2", "Game46Font_Shadow2", "Game40Font_Shadow2");
-	self.SecondLine:SetFontObjectsToTry("Game52Font_Shadow2", "Game46Font_Shadow2", "Game40Font_Shadow2");
-	self.ThirdLine:SetFontObjectsToTry("Game69Font_Shadow2", "Game58Font_Shadow2", "Game52Font_Shadow2", "Game46Font_Shadow2", "Game40Font_Shadow2");
+	self.FirstLine:ScaleTextToFit();
+	self.SecondLine:ScaleTextToFit();
+	self.ThirdLine:ScaleTextToFit();
 
-	if self.SecondLine:GetStringHeight() > self.FirstLine:GetStringHeight() then
-		self.SecondLine:SetFontObject(self.FirstLine:GetFontObject());
-	end
-
-	if self.SecondLine:GetStringHeight() > self.ThirdLine:GetStringHeight() then
-		self.SecondLine:SetFontObject(self.FirstLine:GetFontObject());
+	local maxSecondLineHeight = math.min(self.FirstLine:GetStringHeight(), self.ThirdLine:GetStringHeight());
+	local currentSecondLineHeight = self.SecondLine:GetStringHeight();
+	if currentSecondLineHeight > maxSecondLineHeight then
+		local textScale = self.SecondLine:GetTextScale();
+		self.SecondLine:SetTextScale(textScale * maxSecondLineHeight / currentSecondLineHeight);
 	end
 end
 
@@ -65,8 +64,8 @@ SubscriptionInterstitialUpgradeButtonMixin = {};
 function SubscriptionInterstitialUpgradeButtonMixin:OnLoad()
 	SubscriptionInterstitialSubscribeButtonBaseMixin.OnLoad(self);
 
-	self.TitleLine:SetFontObjectsToTry("Game40Font_Shadow2", "Game36Font_Shadow2", "Game32Font_Shadow2");
-	self.TitleSubText:SetFontObjectsToTry("Game17Font_Shadow", "Game13FontShadow", "Game11Font_Shadow");
+	self.TitleLine:ScaleTextToFit();
+	self.TitleSubText:ScaleTextToFit();
 
 	self.bulletPointPool = CreateFramePool("FRAME", self, "SubscriptionInterstitialBulletPointTemplate");
 

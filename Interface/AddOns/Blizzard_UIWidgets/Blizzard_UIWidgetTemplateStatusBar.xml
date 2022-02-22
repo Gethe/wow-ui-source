@@ -33,13 +33,6 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</FontString>
-					</Layer>
 					<Layer level="BORDER">
 						<Texture parentKey="GlowLeft" alphaMode="ADD" useAtlasSize="true">
 							<Anchors>
@@ -76,7 +69,26 @@
 							</Anchors>
 						</Texture>
 
-						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true"/>
+						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						
+						<MaskTexture parentKey="SparkMask" hidden="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Spark"/>
+							</MaskedTextures>
+						</MaskTexture>
+
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="UIWidgetBaseTextMixin">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</StatusBar>

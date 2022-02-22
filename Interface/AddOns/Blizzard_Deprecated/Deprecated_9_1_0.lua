@@ -25,10 +25,10 @@ do
 	end
 	function WardrobeCollectionFrameModel_GetSourceTooltipInfo(source)
 		local name, nameColor = WardrobeCollectionFrame:GetAppearanceNameTextAndColor(source);
-		local sourceText, sourceColor = WardrobeCollectionFrame:GetAppearanceSourceTextAndColor(source);		
+		local sourceText, sourceColor = WardrobeCollectionFrame:GetAppearanceSourceTextAndColor(source);
 		return name, nameColor, sourceText, sourceColor;
 	end
-	
+
 	function WardrobeCollectionFrame_SetContainer(...)
 		WardrobeCollectionFrame:SetContainer(...);
 	end
@@ -46,7 +46,7 @@ do
 	end
 	function WardrobeCollectionFrame_ClearSearch(...)
 		WardrobeCollectionFrame:ClearSearch(...);
-	end	
+	end
 	function WardrobeCollectionFrame_GetDefaultSourceIndex(...)
 		return CollectionWardrobeUtil.GetDefaultSourceIndex(...);
 	end
@@ -58,20 +58,20 @@ do
 	end
 	function WardrobeUtils_GetValidIndexForNumSources(...)
 		return CollectionWardrobeUtil.GetValidIndexForNumSources(...);
-	end	
+	end
 	function WardrobeCollectionFrame_GetWeaponInfoForEnchant(...)
 		return WardrobeCollectionFrame.ItemsCollectionFrame:GetWeaponInfoForEnchant(...);
-	end	
+	end
 	function WardrobeUtils_IsCategoryRanged(...)
 		return TransmogUtil.IsCategoryRangedWeapon(...);
-	end	
+	end
 	function WardrobeUtils_IsCategoryLegionArtifact(...)
 		return TransmogUtil.IsCategoryLegionArtifact(...);
-	end	
+	end
 	function WardrobeFrame_IsAtTransmogrifier(...)
 		return C_Transmog.IsAtTransmogNPC();
 	end
-	-- transmogrify	
+	-- transmogrify
 	C_Transmog.GetCost = function()
 		local cost = C_Transmog.GetApplyCost();
 		if not cost then
@@ -104,7 +104,7 @@ do
 			lookupTable[appearanceInfo.appearanceID] = appearanceInfo.collected;
 		end
 		return lookupTable;
-	end	
+	end
 end
 
 -- Quest log API conversion
@@ -206,7 +206,7 @@ do
 	-- Use GetCurrentPlayerChoiceInfo going forward, that returns everything you need in one call
 	C_PlayerChoice.GetPlayerChoiceInfo = function()
 		local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
-		
+
 		if choiceInfo then
 			choiceInfo.numOptions = 0;
 
@@ -219,12 +219,12 @@ do
 	end
 
 	-- Note that with this change, GetPlayerChoiceOptionInfo returns SLIGHTLY different things back for options that are part of a groupID than it used to
-	-- Previously each of those grouped options would return their own descriptions, header, etc. 
+	-- Previously each of those grouped options would return their own descriptions, header, etc.
 	-- This data was mostly ignored for grouped options that were not the first in their group, because all we needed was a few pieces of data we used to set up the button
 	-- After this change, GetPlayerChoiceOptionInfo will return back the same description, header, etc, for all options within a group, but with different button data for each
 	C_PlayerChoice.GetPlayerChoiceOptionInfo = function(index)
 		local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
-		
+
 		if choiceInfo then
 			local processedButtons = 0;
 
@@ -263,7 +263,7 @@ do
 	-- Use GetCurrentPlayerChoiceInfo going forward, that returns everything you need in one call
 	C_PlayerChoice.GetPlayerChoiceRewardInfo = function(index)
 		local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
-		
+
 		if choiceInfo then
 			local optionInfo = choiceInfo.options[index];
 			if optionInfo and optionInfo.hasRewards then
@@ -305,13 +305,13 @@ do
 	LE_BATTLE_PET_ACTION_TRAP = Enum.BattlePetAction.Trap;
 	LE_BATTLE_PET_ACTION_SKIP = Enum.BattlePetAction.Skip;
 
-	LE_PET_BATTLE_STATE_CREATED = Enum.PetBattleState.Created;
-	LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE = Enum.PetBattleState.WaitingPreBattle;
-	LE_PET_BATTLE_STATE_ROUND_IN_PROGRESS = Enum.PetBattleState.RoundInProgress;
-	LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS = Enum.PetBattleState.WaitingForFrontPets;
-	LE_PET_BATTLE_STATE_CREATED_FAILED = Enum.PetBattleState.CreatedFailed;
-	LE_PET_BATTLE_STATE_FINAL_ROUND = Enum.PetBattleState.FinalRound;
-	LE_PET_BATTLE_STATE_FINISHED = Enum.PetBattleState.Finished;
+	LE_PET_BATTLE_STATE_CREATED = Enum.PetbattleState.Created;
+	LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE = Enum.PetbattleState.WaitingPreBattle;
+	LE_PET_BATTLE_STATE_ROUND_IN_PROGRESS = Enum.PetbattleState.RoundInProgress;
+	LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS = Enum.PetbattleState.WaitingForFrontPets;
+	LE_PET_BATTLE_STATE_CREATED_FAILED = Enum.PetbattleState.CreatedFailed;
+	LE_PET_BATTLE_STATE_FINAL_ROUND = Enum.PetbattleState.FinalRound;
+	LE_PET_BATTLE_STATE_FINISHED = Enum.PetbattleState.Finished;
 end
 
 -- Dressing room updates

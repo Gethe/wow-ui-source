@@ -46,7 +46,10 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="TOP" hidden="true" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="TOP" hidden="true" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.LowerBlackBar" x="100" y="-5"/>
 						<Anchor point="BOTTOMRIGHT" x="-100" y="5"/>

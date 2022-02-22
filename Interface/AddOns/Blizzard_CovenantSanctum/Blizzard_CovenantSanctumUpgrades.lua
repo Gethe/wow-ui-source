@@ -567,10 +567,6 @@ end
 --=============================================================================================
 CovenantSanctumUpgradeTalentMixin = { };
 
-function CovenantSanctumUpgradeTalentMixin:OnLoad()
-	self.Name:SetFontObjectsToTry("SystemFont_Shadow_Med2", "GameFontHighlight");
-end
-
 function CovenantSanctumUpgradeTalentMixin:Set(talentInfo, inIntroMode)
 	self.Name:SetText(talentInfo.name);
 	self.Icon:SetTexture(talentInfo.icon);

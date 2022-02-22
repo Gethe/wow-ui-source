@@ -484,13 +484,7 @@ local function CountActiveChannelMembers(channel)
 		end
 	end
 
-	-- TODO FIX: bug work-around, member active status not updated for local player when channel is initially activated.
-	-- If the channel is marked active, then the local player must be active in it:
-	if channel.isActive then
-		return count + 1;
-	else
-		return count;
-	end
+	return count;
 end
 
 function ChannelFrameMixin:ShowChannelAnnounce(channelID)

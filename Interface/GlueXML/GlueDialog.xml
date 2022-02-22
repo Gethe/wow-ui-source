@@ -71,14 +71,6 @@
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="14" />
 						</Anchors>
-						<Scripts>
-							<OnShow>
-								self.Anim:Play();
-							</OnShow>
-							<OnHide>
-								self.Anim:Stop();
-							</OnHide>
-						</Scripts>
 					</Frame>
 				</Frames>
 			</Frame>

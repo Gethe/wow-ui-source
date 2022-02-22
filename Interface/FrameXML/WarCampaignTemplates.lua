@@ -100,10 +100,6 @@ end
 
 CampaignHeaderDisplayMixin = {};
 
-function CampaignHeaderDisplayMixin:OnLoad()
-	self.Text:SetFontObjectsToTry(GameFontHighlightMedium, GameFontHighlight, GameFontHighlightSmall);
-end
-
 function CampaignHeaderDisplayMixin:UpdateComplete(isComplete)
 	self.Background:SetDesaturated(isComplete);
 end

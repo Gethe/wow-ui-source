@@ -10,7 +10,6 @@ Enum.GuideFrameState =
 GuideFrameMixin = {};
 
 function GuideFrameMixin:OnLoad()
-	self.Title:SetFontObjectsToTry("Fancy30Font", "Fancy27Font", "Fancy24Font", "Fancy24Font", "Fancy18Font", "Fancy16Font");
 	self:SetPortraitToAsset("Interface/Icons/UI_GreenFlag");
 end
 

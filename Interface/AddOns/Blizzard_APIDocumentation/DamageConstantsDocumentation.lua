@@ -5,7 +5,7 @@ local DamageConstants =
 		{
 			Name = "Damageclass",
 			Type = "Enumeration",
-			NumValues = 46,
+			NumValues = 47,
 			MinValue = 0,
 			MaxValue = 127,
 			Fields =
@@ -56,6 +56,7 @@ local DamageConstants =
 				{ Name = "MaskChromatic", Type = "Damageclass", EnumValue = 62 },
 				{ Name = "MaskMagical", Type = "Damageclass", EnumValue = 126 },
 				{ Name = "MaskChaos", Type = "Damageclass", EnumValue = 124 },
+				{ Name = "MaskCosmic", Type = "Damageclass", EnumValue = 106 },
 			},
 		},
 		{

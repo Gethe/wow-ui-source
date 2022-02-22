@@ -20,6 +20,7 @@ if tbl then
 	Import("error");
 	Import("getmetatable");
 	Import("ipairs");
+	Import("Round");
 	Import("LE_MODEL_BLEND_OPERATION_NONE");
 end
 --------------------------------------------------
@@ -70,6 +71,62 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 
 	getmetatable(self).__index.SetFormattedText(self, format, ...);
 	self:ApplyFontObjects();
+end
+
+--------------------------------------------------
+AutoScalingFontStringMixin = { }
+
+local DEFAULT_AUTO_SCALING_MIN_LINE_HEIGHT = 10;
+
+function AutoScalingFontStringMixin:SetText(text)
+	getmetatable(self).__index.SetText(self, text);
+	self:ScaleTextToFit();
+end
+
+function AutoScalingFontStringMixin:SetFormattedText(format, ...)
+	getmetatable(self).__index.SetFormattedText(self, format, ...);
+	self:ScaleTextToFit();
+end
+
+function AutoScalingFontStringMixin:SetMinLineHeight(minLineHeight)
+	self.minLineHeight = minLineHeight;
+	self:ScaleTextToFit();
+end
+
+function AutoScalingFontStringMixin:ScaleTextToFit()
+	if not self.baseLineHeight then
+		-- store the initial line height for calculating scaling
+		self.baseLineHeight = Round(self:GetLineHeight());
+	end
+	local baseLineHeight = self.baseLineHeight;
+	local tryHeight = baseLineHeight;
+	local minLineHeight = self.minLineHeight or DEFAULT_AUTO_SCALING_MIN_LINE_HEIGHT;
+	local stringWidth = self:GetUnboundedStringWidth() / self:GetTextScale();
+	if stringWidth > 0 then
+		local maxLines = self:GetMaxLines();
+		if maxLines == 0 then
+			maxLines = Round(self:GetHeight() / (baseLineHeight + self:GetSpacing()));
+		end
+		local targetScale = self:GetWidth() * maxLines / stringWidth;
+		if targetScale >= 1 then
+			tryHeight = baseLineHeight;
+		else
+			tryHeight = Round(targetScale * baseLineHeight);
+			if tryHeight < minLineHeight then
+				tryHeight = minLineHeight;
+			end
+		end
+	end
+
+	while tryHeight >= minLineHeight do
+		local scale = tryHeight / baseLineHeight;
+		self:SetTextScale(scale);
+		if self:IsTruncated() then
+			tryHeight = tryHeight - 1;
+		else
+			break;
+		end
+	end
 end
 
 --------------------------------------------------

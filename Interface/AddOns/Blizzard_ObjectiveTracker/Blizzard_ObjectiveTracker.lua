@@ -961,7 +961,6 @@ ObjectiveTrackerHeaderMixin = {};
 
 function ObjectiveTrackerHeaderMixin:OnLoad()
 	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
-	self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
 end
 
 function ObjectiveTrackerHeaderMixin:PlayAddAnimation()

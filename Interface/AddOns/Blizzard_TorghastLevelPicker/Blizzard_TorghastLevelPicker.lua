@@ -467,7 +467,8 @@ function TorghastLevelPickerRewardCircleMixin:RefreshTooltip()
 
 	if(self.completeState) then 
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddNormalLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_RECIEVED, true)
+		local completeString = C_GossipInfo.GetCompletedOptionDescriptionString() or ""; 
+		GameTooltip_AddNormalLine(EmbeddedItemTooltip, completeString, true)
 		EmbeddedItemTooltip:Show(); 
 		return; 
 	end 

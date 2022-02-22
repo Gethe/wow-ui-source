@@ -310,6 +310,7 @@ LFDFrame.xml
 LFRFrame.xml
 RaidFinder.xml
 LFGList.xml
+PvpPopup.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml

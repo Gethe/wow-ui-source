@@ -52,6 +52,18 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT_NO_PENALTY"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+
+local PetBattlesOverrides = {}
+function PetBattlesOverrides.GetPositionOverride(petSpeciesID)
+	if petSpeciesID == 3175 then
+		return -0.5, -2, 0;
+	elseif petSpeciesID == 2003 then
+		return -0.8, 0.6, -0.4;
+	elseif petSpeciesID == 504 then
+		return -3.0, -0.0, -0.5;
+	end
+end
+
 --------------------------------------------
 -------------Pet Battle Frame---------------
 --------------------------------------------
@@ -169,7 +181,7 @@ function PetBattleFrame_PetSelectionFrameUpdateVisible(showFrame)
 	local selectionFrame = PetBattleFrame.BottomFrame.PetSelectionFrame;
 	local battleState = C_PetBattles.GetBattleState();
 	local selectedActionType = C_PetBattles.GetSelectedAction();
-	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType ==  Enum.BattlePetAction.None ) ) and ( battleState == Enum.PetBattleState.WaitingPreBattle ) or ( battleState == Enum.PetBattleState.WaitingForFrontPets );
+	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType ==  Enum.BattlePetAction.None ) ) and ( battleState == Enum.PetbattleState.WaitingPreBattle ) or ( battleState == Enum.PetbattleState.WaitingForFrontPets );
 	if ( selectionFrame:IsShown() and ( not mustSwap ) ) then
 		PetBattlePetSelectionFrame_Hide(selectionFrame);
 	elseif (showFrame) then
@@ -464,9 +476,9 @@ local TIMER_BAR_TEXCOORD_RIGHT = 0.89453125;
 local TIMER_BAR_TEXCOORD_TOP = 0.00195313;
 local TIMER_BAR_TEXCOORD_BOTTOM = 0.03515625;
 function PetBattleFrameTurnTimer_OnUpdate(self, elapsed)
-	if ( ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.WaitingPreBattle ) and
-		 ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.RoundInProgress ) and
-		 ( C_PetBattles.GetBattleState() ~= Enum.PetBattleState.WaitingForFrontPets ) ) then
+	if ( ( C_PetBattles.GetBattleState() ~= Enum.PetbattleState.WaitingPreBattle ) and
+		 ( C_PetBattles.GetBattleState() ~= Enum.PetbattleState.RoundInProgress ) and
+		 ( C_PetBattles.GetBattleState() ~= Enum.PetbattleState.WaitingForFrontPets ) ) then
 		self.Bar:SetAlpha(0);
 		self.TimerText:SetText("");
 	elseif ( self.turnExpires ) then
@@ -1063,6 +1075,15 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 		self.PetModel:SetDisplayInfo(C_PetBattles.GetDisplayID(petOwner, petIndex));
 		self.PetModel:SetRotation(-BATTLE_PET_DISPLAY_ROTATION);
 		self.PetModel:SetDoBlend(false);
+
+		local petSpeciesID = C_PetBattles.GetPetSpeciesID(petOwner, petIndex);
+		local x, y, z = PetBattlesOverrides.GetPositionOverride(petSpeciesID);
+		if x and y and z then
+			self.PetModel:SetPosition(x, y, z);
+		else
+			self.PetModel:SetPosition(0, 0, 0);
+		end
+
 		if ( C_PetBattles.GetHealth(petOwner, petIndex) == 0 ) then
 			self.PetModel:SetAnimation(6, 0); --Display the dead animation
 			--self.PetModel:SetAnimation(0, 0);

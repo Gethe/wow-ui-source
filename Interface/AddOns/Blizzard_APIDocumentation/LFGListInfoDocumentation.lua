@@ -46,6 +46,22 @@ local LFGListInfo =
 			Type = "Function",
 		},
 		{
+			Name = "DoesEntryTitleMatchPrebuiltTitle",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "groupID", Type = "number", Nilable = false },
+				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "matches", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveEntryInfo",
 			Type = "Function",
 

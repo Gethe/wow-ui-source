@@ -13,7 +13,10 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="Fancy30Font" justifyH="CENTER" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="Title" inherits="Fancy30Font" justifyH="CENTER" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="16" type="number"/>
+					</KeyValues>
 					<Size x="246" y="40"/>
 					<Anchors>
 						<Anchor point="TOP" x="-13" y="-39"/>

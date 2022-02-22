@@ -259,9 +259,9 @@ local GarrisonConstants =
 		{
 			Name = "GarrTalentFeatureType",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Generic", Type = "GarrTalentFeatureType", EnumValue = 0 },
@@ -272,6 +272,7 @@ local GarrisonConstants =
 				{ Name = "SanctumUnique", Type = "GarrTalentFeatureType", EnumValue = 5 },
 				{ Name = "SoulBinds", Type = "GarrTalentFeatureType", EnumValue = 6 },
 				{ Name = "AnimaDiversionMap", Type = "GarrTalentFeatureType", EnumValue = 7 },
+				{ Name = "Cyphers", Type = "GarrTalentFeatureType", EnumValue = 8 },
 			},
 		},
 		{

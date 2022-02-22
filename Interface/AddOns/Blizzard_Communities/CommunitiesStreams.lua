@@ -33,6 +33,7 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 	local canEditStream = self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canDestroyStream;
 	local info = UIDropDownMenu_CreateInfo();
 	info.minWidth = 170;
+	info.iconXOffset = -3;
 	for i, stream in ipairs(streams) do
 		local streamId = stream.streamId;
 		info.text = CommunitiesStreamDropDownMenu_GetStreamName(clubId, stream);

@@ -70,7 +70,7 @@
 			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="RIGHT" x="-5" y="0"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.CreateFrame.CraftItemButton" relativePoint="BOTTOM"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CreateFrame.CraftItemButton" relativePoint="BOTTOM" y="-16"/>
 				</Anchors>
 			</Frame>
 		</Frames>

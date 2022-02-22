@@ -86,11 +86,22 @@ function CollectionsPagingMixin:GetCurrentPage()
 end
 
 function CollectionsPagingMixin:NextPage()
-	self:SetCurrentPage(self.currentPage + 1, true);
+	self:SetCurrentPage(self.currentPage + self:GetPageDelta(), true);
 end
 
 function CollectionsPagingMixin:PreviousPage()
-	self:SetCurrentPage(self.currentPage - 1, true);
+	self:SetCurrentPage(self.currentPage - self:GetPageDelta(), true);
+end
+
+function CollectionsPagingMixin:GetPageDelta()
+	local delta = 1;
+	if self.canUseShiftKey and IsShiftKeyDown() then
+		delta = 10;
+	end
+	if self.canUseControlKey and IsControlKeyDown() then
+		delta = 100;
+	end
+	return delta;
 end
 
 function CollectionsPagingMixin:OnMouseWheel(delta)

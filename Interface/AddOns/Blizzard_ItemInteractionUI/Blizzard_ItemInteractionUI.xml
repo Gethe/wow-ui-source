@@ -38,12 +38,12 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="ItemSlot" mixin="ItemInteractionItemSlotMixin">
-				<Size x="44" y="44" />
+				<Size x="44" y="44"/>
 				<!-- Anchored dynamically -->
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Icon" hidden="true">
-							<Size x="42" y="42" />
+							<Size x="42" y="42"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
@@ -55,14 +55,174 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad method="OnLoad" />
-					<OnClick method="OnClick" />
-					<OnDragStart method="OnDragStart" />
-					<OnReceiveDrag method="OnReceiveDrag" />
-					<OnEnter method="OnMouseEnter" />
-					<OnLeave method="OnMouseLeave" /> 
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnDragStart method="OnDragStart"/>
+					<OnReceiveDrag method="OnReceiveDrag"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/> 
 				</Scripts>
 			</Button>
+			<Frame parentKey="ItemConversionFrame" mixin="ItemInteractionItemConversionFrameMixin" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Background_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ItemButton parentKey="ItemConversionInputSlot" mixin="ItemInteractionItemConversionInputSlotMixin">
+						<Size x="48" y="48"/>
+						<!-- Anchored dynamically -->
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="ButtonFrame">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="InputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Glow">
+								<Size x="50" y="50"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="EmptySlotGlow" atlas="cyphersetupgrade-leftitem-slotinnerglow" useAtlasSize="false" alphaMode="ADD">
+											<Size x="50" y="50"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
+										<Alpha childkey="EmptySlotGlow" duration="1" fromalpha="0.4" toalpha="1"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+							<OnDragStart method="OnDragStart"/>
+							<OnReceiveDrag method="OnReceiveDrag"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/> 
+						</Scripts>
+					</ItemButton>
+					<Frame parentKey="AnimatedArrow">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ItemConversionInputSlot" relativePoint="RIGHT" x="20" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="arrow" atlas="ItemUpgrade_HelpTipArrow" useAtlasSize="true" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+								<Alpha childKey="arrow" smoothing="IN"  duration="0.5" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="arrow" startDelay="0.5" smoothing="OUT"  duration="0.5" fromAlpha="1" toAlpha="0"/>
+								<Translation childKey="arrow" endDelay="0.25" smoothing="NONE"  duration="1" offsetX="45" offsetY="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Frame parentKey="DimArrow">
+						<Size x="20" y="20"/>
+						<!-- Anchored dynamically -->
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="arrow" atlas="cyphersetupgrade-arrow-empty" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<ItemButton parentKey="ItemConversionOutputSlot" mixin="ItemInteractionItemConversionOutputSlotMixin">
+						<Size x="48" y="48"/>
+						<!-- Anchored dynamically -->
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="ButtonFrame">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="OutputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="OutputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</ItemButton>
+					<Frame parentKey="AnimationHolder">
+						<Animations>
+							<AnimationGroup parentKey="ConversionFlash" setToFinalAlpha="true">
+								<Alpha childKey="$parent.Background_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="$parent.Background_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+
+								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>-->
+
+								<Alpha childKey="$parent.ItemConversionOutputSlot.OutputSlot_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="$parent.ItemConversionOutputSlot.OutputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="ButtonFrame">
 				<Size x="0" y="35"/>
 				<Anchors>
@@ -77,8 +237,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick method="OnClick"/>
-							<OnEnter method="OnMouseEnter"/>
-							<OnLeave method="OnMouseLeave"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="true">

@@ -377,7 +377,10 @@
 				<Texture parentKey="Border"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="SystemFont_Shadow_Med2" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="2" justifyH="LEFT">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Med2" mixin="AutoScalingFontStringMixin" maxLines="2" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="12" type="number"/>
+					</KeyValues>
 					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="58" y="-6"/>
@@ -436,7 +439,6 @@
 			</Cooldown>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>

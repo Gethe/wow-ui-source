@@ -312,7 +312,10 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad function="CompactUnitFrame_OnLoad"/>
+			<OnLoad>
+				CompactUnitFrame_OnLoad(self);
+				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+			</OnLoad>
 		</Scripts>
 	</Button>
 

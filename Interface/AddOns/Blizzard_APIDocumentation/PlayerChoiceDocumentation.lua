@@ -25,6 +25,15 @@ local PlayerChoice =
 			},
 		},
 		{
+			Name = "GetRemainingTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "remainingTime", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "IsWaitingForPlayerChoiceResponse",
 			Type = "Function",
 
@@ -90,11 +99,13 @@ local PlayerChoice =
 				{ Name = "objectGUID", Type = "string", Nilable = false },
 				{ Name = "choiceID", Type = "number", Nilable = false },
 				{ Name = "questionText", Type = "string", Nilable = false },
+				{ Name = "pendingChoiceText", Type = "string", Nilable = false },
 				{ Name = "uiTextureKit", Type = "string", Nilable = false },
 				{ Name = "hideWarboardHeader", Type = "bool", Nilable = false },
 				{ Name = "keepOpenAfterChoice", Type = "bool", Nilable = false },
 				{ Name = "options", Type = "table", InnerType = "PlayerChoiceOptionInfo", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = true },
+				{ Name = "closeUISoundKitID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -124,12 +135,12 @@ local PlayerChoice =
 				{ Name = "disabledOption", Type = "bool", Nilable = false },
 				{ Name = "hasRewards", Type = "bool", Nilable = false },
 				{ Name = "rewardInfo", Type = "PlayerChoiceOptionRewardInfo", Nilable = false },
-				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = false },
 				{ Name = "uiTextureKit", Type = "string", Nilable = false },
 				{ Name = "maxStacks", Type = "number", Nilable = false },
 				{ Name = "buttons", Type = "table", InnerType = "PlayerChoiceOptionButtonInfo", Nilable = false },
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = true },
 				{ Name = "rarityColor", Type = "table", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "typeArtID", Type = "number", Nilable = true },
 				{ Name = "headerIconAtlasElement", Type = "string", Nilable = true },

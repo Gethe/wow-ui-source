@@ -120,6 +120,15 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetCurrentCypherEquipmentLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "equipmentLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentGarrTalentTreeFriendshipFactionID",
 			Type = "Function",
 
@@ -135,6 +144,15 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "currentGarrTalentTreeID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCyphersToNextEquipmentLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cyphersToNext", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -221,6 +239,15 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "garrTalentTreeType", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxCypherEquipmentLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxEquipmentLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -343,6 +370,8 @@ local GarrisonInfo =
 
 			Arguments =
 			{
+				{ Name = "garrTalentID", Type = "number", Nilable = false },
+				{ Name = "researchRank", Type = "number", Nilable = false },
 				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
 				{ Name = "talentPointIndex", Type = "number", Nilable = false },
 				{ Name = "isRespec", Type = "number", Nilable = false },

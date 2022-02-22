@@ -256,27 +256,30 @@ local ItemConstants =
 		{
 			Name = "UIItemInteractionFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "DisplayWithInset", Type = "UIItemInteractionFlags", EnumValue = 1 },
 				{ Name = "ConfirmationHasDelay", Type = "UIItemInteractionFlags", EnumValue = 2 },
+				{ Name = "ConversionMode", Type = "UIItemInteractionFlags", EnumValue = 4 },
+				{ Name = "ClickShowsFlyout", Type = "UIItemInteractionFlags", EnumValue = 8 },
 			},
 		},
 		{
 			Name = "UIItemInteractionType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "None", Type = "UIItemInteractionType", EnumValue = 0 },
 				{ Name = "CastSpell", Type = "UIItemInteractionType", EnumValue = 1 },
 				{ Name = "CleanseCorruption", Type = "UIItemInteractionType", EnumValue = 2 },
 				{ Name = "RunecarverScrapping", Type = "UIItemInteractionType", EnumValue = 3 },
+				{ Name = "ItemConversion", Type = "UIItemInteractionType", EnumValue = 4 },
 			},
 		},
 		{

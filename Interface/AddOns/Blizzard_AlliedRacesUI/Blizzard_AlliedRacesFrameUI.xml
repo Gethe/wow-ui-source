@@ -238,7 +238,10 @@
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="AlliedRacesRaceName" inherits="Fancy48Font" justifyH="CENTER" mixin="ShrinkUntilTruncateFontStringMixin">
+						<FontString parentKey="AlliedRacesRaceName" inherits="Fancy32Font" justifyH="CENTER" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="16" type="number"/>
+							</KeyValues>
 							<Size x="270" y="40"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeTo="AlliedRacesFrame" x="-52" y="-38"/>

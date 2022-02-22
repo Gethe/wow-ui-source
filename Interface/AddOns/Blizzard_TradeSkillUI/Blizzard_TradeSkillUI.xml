@@ -4,7 +4,7 @@
 
 	<Frame name="TradeSkillFrame" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="TradeSkillUIMixin" hidden="true">
 		<Size x="670" y="496"/>
-		
+
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TabardBackground" file="Interface\GuildFrame\GuildFrame">
@@ -47,21 +47,21 @@
 					<Anchor point="TOPRIGHT" x="-6" y="-80" />
 				</Anchors>
 			</Frame>
-			
+
 			<ScrollFrame parentKey="RecipeList" inherits="TradeSkillRecipeListTemplate" />
 			<ScrollFrame parentKey="DetailsFrame" inherits="TradeSkillDetailsFrameTemplate" />
-			
+
 			<StatusBar parentKey="RankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
 				<Size x="447" y="14"/>
 				<Anchors>
 					<Anchor point="TOP" y="-33"/>
 				</Anchors>
-				
+
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size x="9" y="20"/>
-							
+
 							<Anchors>
 								<Anchor point="LEFT" x="-3" y="0"/>
 							</Anchors>
@@ -69,7 +69,7 @@
 						</Texture>
 						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size x="9" y="20"/>
-							
+
 							<Anchors>
 								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
@@ -140,14 +140,6 @@
 							<Anchor point="CENTER" />
 							<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" />
 						</Anchors>
-						<Scripts>
-							<OnShow>
-								self.Anim:Play();
-							</OnShow>
-							<OnHide>
-								self.Anim:Stop();
-							</OnHide>
-						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -160,7 +152,7 @@
 					</OnUpdate>
 				</Scripts>
 			</Frame>
-			
+
 			<Button parentKey="LinkNameButton" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.TitleText"/>

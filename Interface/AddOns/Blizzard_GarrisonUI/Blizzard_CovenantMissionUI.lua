@@ -127,11 +127,6 @@ function CovenantMission:OnLoadMainFrame()
 
 	self:GetMissionPage().Board:Reset();
 
-	self:GetMissionPage().Stage.EnemyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Stage.EnemyHealthValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Board.AllyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Board.AllyHealthValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-
 	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
 		followerFrame:SetMainFrame(self);
 	end

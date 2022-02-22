@@ -68,13 +68,13 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
-UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -88,12 +88,13 @@ UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
-UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
-	frame:SetAttribute("UIPanelLayout-defined", true);
+	local suppressScriptHandler = true;
+	frame:SetAttribute("UIPanelLayout-defined", true, suppressScriptHandler);
 	for name, value in pairs(attributes) do
-		frame:SetAttribute("UIPanelLayout-"..name, value);
+		frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
 	end
 end
 
@@ -124,9 +125,10 @@ function SetUIPanelAttribute(frame, name, value)
 
 	if not frame:GetAttribute("UIPanelLayout-defined") then
 		SetFrameAttributes(frame, attributes);
-		end
+	end
 
-	frame:SetAttribute("UIPanelLayout-"..name, value);
+	local suppressScriptHandler = true;
+	frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
 end
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -138,15 +140,32 @@ UIChildWindows = {
 	"GearManagerDialog",
 };
 
--- Hooked by DesignerBar.lua if that addon is loaded
-function GetOffsetForDebugMenu()
-	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
-	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
-	return debugMenuOffset + revealTimeTrackOffset;
+function GetNotchHeight()
+    local notchHeight = 0;
+
+    if (C_UI.ShouldUIParentAvoidNotch()) then
+        notchHeight = select(4, C_UI.GetTopLeftNotchSafeRegion());
+        if (notchHeight) then
+            local _, physicalHeight = GetPhysicalScreenSize();
+            local normalizedHeight = notchHeight / physicalHeight;
+            local _, uiParentHeight = UIParent:GetSize();
+            notchHeight = normalizedHeight * uiParentHeight;
+        end
+    end
+
+	return notchHeight;
 end
 
-function UpdateUIParentRelativeToDebugMenu()
-	local topOffset = GetOffsetForDebugMenu();
+-- Hooked by DesignerBar.lua if that addon is loaded
+function GetUIParentOffset()
+    local notchHeight = GetNotchHeight();
+	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
+	return math.max(debugMenuOffset + revealTimeTrackOffset, notchHeight);
+end
+
+function UpdateUIParentPosition()
+	local topOffset = GetUIParentOffset();
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
 end
 
@@ -474,6 +493,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for the ScriptAnimationEffect System
 	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE")
+
+    -- Event(s) for Notched displays
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED")
 end
 
 function UIParent_OnShow(self)
@@ -570,6 +592,10 @@ end
 
 function KeyBindingFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_BindingUI");
+end
+
+function ClickBindingFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ClickBindingUI");
 end
 
 function MacroFrame_LoadUI()
@@ -877,6 +903,17 @@ function ToggleTalentFrame(suggestedTab)
 	if ( PlayerTalentFrame_Toggle ) then
 		PlayerTalentFrame_Toggle(suggestedTab);
 	end
+end
+
+function ToggleClickBindingFrame()
+	ClickBindingFrame_LoadUI();
+	if ( ClickBindingFrame_Toggle ) then
+		ClickBindingFrame_Toggle();
+	end
+end
+
+function InClickBindingMode()
+	return ClickBindingFrame and ClickBindingFrame:IsShown();
 end
 
 function ToggleBattlefieldMap()
@@ -1611,7 +1648,8 @@ function UIParent_OnEvent(self, event, ...)
 			if not PlayerChoiceFrame then
 				PlayerChoice_LoadUI();
 			end
-			PlayerChoiceToggleButton:TryShow();
+			PlayerChoiceToggle_TryShow();
+			PlayerChoiceTimeRemaining:TryShow();
 		end
 
 		if ( UnitIsGhost("player") ) then
@@ -1639,7 +1677,7 @@ function UIParent_OnEvent(self, event, ...)
 		-- display loot specialization setting
 		PrintLootSpecialization();
 
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
 
 		--Bonus roll/spell confirmation.
 		local spellConfirmations = GetSpellConfirmationPromptsInfo();
@@ -2190,7 +2228,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_CHOICE_UPDATE" ) then
 		PlayerChoice_LoadUI();
 		PlayerChoiceFrame:TryShow();
-		PlayerChoiceToggleButton:TryShow();
+		PlayerChoiceToggle_TryShow();
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
@@ -2321,9 +2359,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
 	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
+    elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
+        UpdateUIParentPosition();
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
@@ -2395,6 +2435,7 @@ function UIParent_OnEvent(self, event, ...)
 		local mouseFocus = GetMouseFocus();
 		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+			SelectionPopouts:HandleGlobalMouseEvent(buttonID, event);
 		end
 
 		-- Clear keyboard focus.
@@ -2414,7 +2455,7 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
-	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then 
+	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
 end
@@ -2477,7 +2518,7 @@ function UIParent_UpdateTopFramePositions()
 	local notificationAnchorTo = UIParent;
 	if gmChatStatusFrameShown then
 		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-		
+
 		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
 		notificationAnchorTo = GMChatStatusFrame;
 	end
@@ -2488,7 +2529,7 @@ function UIParent_UpdateTopFramePositions()
 		else
 			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		end
-		
+
 		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
 		notificationAnchorTo = TicketStatusFrame;
 	end
@@ -2504,7 +2545,7 @@ function UIParent_UpdateTopFramePositions()
 
 		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
 	end
-	
+
 	local y = -(buffOffset + 13)
 	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end
@@ -2527,7 +2568,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["UIWidgetPowerBarContainerFrame"] = {baseY = true, yOffset = 20, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraAbilityContainer = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
 	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraAbilityContainer = 1, };
 	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
-	["ExtraAbilityContainer"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, powerBarWidgets = 1};
+	["ExtraAbilityContainer"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
@@ -3107,8 +3148,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		end
 		frame:Raise();
 	elseif ( not self:GetUIPanel("doublewide") ) then
-		if ( self:GetUIPanel("left") ) then
-			rightOffset = centerOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
+		local leftPanel = self:GetUIPanel("left");
+		if ( leftPanel ) then
+			rightOffset = GetUIPanelWidth(leftPanel) + (GetUIPanelAttribute(leftPanel,"xoffset") or 0);
 		else
 			rightOffset = leftOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") * 2
 		end
@@ -3209,32 +3251,32 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "pet");
 			hasPetBar = 1;
 		end
+	end
 
-		if ( TutorialFrameAlertButton:IsShown() ) then
-			tinsert(yOffsetFrames, "tutorialAlert");
+	if ( TutorialFrameAlertButton:IsShown() ) then
+		tinsert(yOffsetFrames, "tutorialAlert");
+	end
+	if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
+		local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+		if ( not barInfo or not barInfo.anchorTop ) then
+			tinsert(yOffsetFrames, "playerPowerBarAlt");
 		end
-		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
-			local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
-			if ( not barInfo or not barInfo.anchorTop ) then
-				tinsert(yOffsetFrames, "playerPowerBarAlt");
-			end
-		end
-		if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
-			tinsert(yOffsetFrames, "powerBarWidgets");
-		end
-		if ( ExtraAbilityContainer and ExtraAbilityContainer:IsShown() ) then
-			tinsert(yOffsetFrames, "extraAbilityContainer");
-		end
-		if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
-			tinsert(yOffsetFrames, "talkingHeadFrame");
-		end
-		if ( ClassResourceOverlayParentFrame and ClassResourceOverlayParentFrame:IsShown() ) then
-			tinsert(yOffsetFrames, "classResourceOverlayFrame");
-			tinsert(yOffsetFrames, "classResourceOverlayOffset");
-		end
-		if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
-			tinsert(yOffsetFrames, "castingBar");
-		end
+	end
+	if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
+		tinsert(yOffsetFrames, "powerBarWidgets");
+	end
+	if ( ExtraAbilityContainer and ExtraAbilityContainer:IsShown() ) then
+		tinsert(yOffsetFrames, "extraAbilityContainer");
+	end
+	if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "talkingHeadFrame");
+	end
+	if ( ClassResourceOverlayParentFrame and ClassResourceOverlayParentFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "classResourceOverlayFrame");
+		tinsert(yOffsetFrames, "classResourceOverlayOffset");
+	end
+	if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
+		tinsert(yOffsetFrames, "castingBar");
 	end
 
 	if ( menuBarTop == 55 ) then
@@ -3542,6 +3584,14 @@ function HideUIPanel(frame, skipSetPoint)
 	FramePositionDelegate:SetAttribute("panel-hide", true);
 end
 
+function SetUIPanelShown(frame, shown, force)
+	if ( shown ) then
+		ShowUIPanel(frame, force);
+	else
+		HideUIPanel(frame, force);
+	end
+end
+
 function ShowOptionsPanel(optionsFrame, lastFrame, categoryToSelect)
 	-- NOTE: Toggle isn't currently necessary because showing an options panel hides everything else.
 	ShowUIPanel(optionsFrame);
@@ -3595,7 +3645,7 @@ end
 function CanShowRightUIPanel(frame)
 	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
 	local rightSide = UIParent:GetAttribute("RIGHT_OFFSET") + width;
-	return rightSide < GetMaxUIPanelsWidth();
+	return rightSide <= GetMaxUIPanelsWidth();
 end
 
 function CanShowCenterUIPanel(frame)

@@ -988,11 +988,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.Anim:Play();
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>

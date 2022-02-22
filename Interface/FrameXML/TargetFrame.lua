@@ -951,6 +951,7 @@ end
 function TargetFrame_CreateTargetofTarget(self, unit)
 	local thisName = self:GetName().."ToT";
 	local frame = CreateFrame("BUTTON", thisName, self, "TargetofTargetFrameTemplate");
+	frame:SetFrameLevel(_G[self:GetName().."TextureFrame"]:GetFrameLevel() + 5);
 	self.totFrame = frame;
 	UnitFrame_Initialize(frame, unit, _G[thisName.."TextureFrameName"], _G[thisName.."Portrait"],
 						 _G[thisName.."HealthBar"], _G[thisName.."TextureFrameHealthBarText"],

@@ -1182,13 +1182,14 @@
 											</OnClick>
 										</Scripts>
 									</Button>
-									<Button parentKey="SpecialEventButton" inherits="PVPCasualSpecialEventButtonTemplate">
+									<Button parentKey="BrawlButton2" inherits="PVPCasualStandardButtonTemplate">
+										<KeyValues>
+											<KeyValue key="isSpecialBrawl" value="true" type="boolean"/>
+											<KeyValue key="tooltipTableKey" value="SpecialEventBrawl" type="string"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.BrawlButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
-										<KeyValues>
-											<KeyValue key="tooltipTableKey" value="SpecialEvent" type="string"/>
-										</KeyValues>
 									</Button>
 									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 										<Anchors>

@@ -244,6 +244,9 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel ="-2">
+				<Texture parentKey="ClickBindingIconCover" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a="0.3"/>
+				</Texture>
 				<Texture name="$parentLevelLinkLockBg" hidden="true" setAllPoints="true">
 					<Color color="BLACK_FONT_COLOR" a=".3"/>
 				</Texture>
@@ -314,6 +317,11 @@
 				</Texture>
 				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
 					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ClickBindingHighlight" atlas="ClickCast-Highlight-Spellbook" useAtlasSize="true" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

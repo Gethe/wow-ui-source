@@ -1002,7 +1002,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			end
 			if (not stageBlock.appliedAlready) then
 				-- Ugly hack to get around :IsTruncated failing if used during load
-				C_Timer.After(1, function() stageBlock.Stage:ApplyFontObjects(); end);
+				C_Timer.After(1, function() stageBlock.Stage:ScaleTextToFit(); end);
 				stageBlock.appliedAlready = true;
 			end
 			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit);

@@ -1019,17 +1019,6 @@ local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
 		return "FAILED";
 	end
 
-	if info.isCalling then
-		local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
-		if secondsRemaining then
-			if secondsRemaining < 3600 then -- 1 hour
-				return "EXPIRING_SOON";
-			elseif secondsRemaining < 18000 then -- 5 hours
-				return "EXPIRING";
-			end
-		end
-	end
-
 	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
 	local questTagID = tagInfo and tagInfo.tagID;
 
@@ -1048,6 +1037,11 @@ local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
 
 	if info.frequency == Enum.QuestFrequency.Weekly then
 		return "WEEKLY";
+	end
+
+	local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+	if secondsRemaining then
+		return (secondsRemaining < SECONDS_PER_HOUR) and "EXPIRING_SOON" or "EXPIRING";
 	end
 
 	if questTagID then

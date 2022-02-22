@@ -13,6 +13,18 @@ StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function() KeyBindingFrame:CharacterSpecificPopupAccept() end,
+	OnCancel = function() KeyBindingFrame.toClickBindings = false end,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+};
+
+StaticPopupDialogs["CLICK_BINDINGS_SAVE_PENDING_BINDINGS_CHANGES"] = {
+	text = CLICK_CAST_CONFIRMATION,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function() KeyBindingFrame.okayButton:OnClick() end,
+	OnCancel = function() KeyBindingFrame:CancelBinding() end,
 	timeout = 0,
 	whileDead = 1,
 	showAlert = 1,
@@ -34,16 +46,6 @@ StaticPopupDialogs["CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function() KeyBindingFrame:ResetBindingsPopupAccept() end,
-	timeout = 0,
-	whileDead = 1,
-	showAlert = 1,
-};
-
-StaticPopupDialogs["CONFIRM_RESET_TO_PREVIOUS_KEYBINDINGS"] = {
-	text = CONFIRM_RESET_TO_PREVIOUS_KEYBINDINGS,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function() LoadBindings(GetCurrentBindingSet()) end,
 	timeout = 0,
 	whileDead = 1,
 	showAlert = 1,
@@ -185,7 +187,9 @@ function KeyBindingFrameMixin:OnShow()
 
 	-- Reset bindingsChanged
 	self.bindingsChanged = nil;
+
 	self.inQuickKeybind = false;
+	self.toClickBindings = false;
 
 	Disable_BagButtons();
 	UpdateMicroButtons();
@@ -293,8 +297,17 @@ function KeyBindingFrameMixin:Update()
 end
 
 function KeyBindingFrameMixin:OnHide()
+	StaticPopup_Hide("CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS");
+	StaticPopup_Hide("CLICK_BINDINGS_SAVE_PENDING_BINDINGS_CHANGES");
+	StaticPopup_Hide("CONFIRM_LOSE_BINDING_CHANGES_CHARACTER_SPECIFIC");
+	StaticPopup_Hide("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
+
 	if ( not self.inQuickKeybind ) then
-		ShowUIPanel(GameMenuFrame);
+		if ( self.toClickBindings ) then
+			ToggleClickBindingFrame();
+		else
+			ShowUIPanel(GameMenuFrame);
+		end
 		PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 		UpdateMicroButtons();
 	end
@@ -638,7 +651,7 @@ end
 
 KeybindingsOkayButtonMixin = {};
 
-function KeybindingsOkayButtonMixin:OnClick()
+function KeybindingsOkayButtonMixin:OnClick(button, down)
 	local parentFrame = self:GetParent();
 	local keyBindingMode;
 
@@ -676,6 +689,22 @@ KeybindingsDefaultsButtonMixin = {};
 
 function KeybindingsDefaultsButtonMixin:OnClick()
 	StaticPopup_Show("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
+end
+
+KeybindingsClickBindingsButtonMixin = {};
+
+function KeybindingsClickBindingsButtonMixin:OnClick()
+	local keybindingFrame = self:GetParent();
+	keybindingFrame.toClickBindings = true;
+
+	local wasCharacterSpecific = (GetCurrentBindingSet() == 2);
+	local profileChanged = (wasCharacterSpecific ~= keybindingFrame.characterSpecificButton:GetChecked());
+	if ( keybindingFrame.bindingsChanged or profileChanged ) then
+		StaticPopup_Show("CLICK_BINDINGS_SAVE_PENDING_BINDINGS_CHANGES");
+		return;
+	end
+
+	HideUIPanel(keybindingFrame);
 end
 
 KeyBindingFrameBindingTemplateMixin = {};
@@ -771,6 +800,9 @@ function QuickKeybindFrameMixin:OnShow()
 end
 
 function QuickKeybindFrameMixin:OnHide()
+	StaticPopup_Hide("CONFIRM_LOSE_BINDING_CHANGES_CHARACTER_SPECIFIC");
+	StaticPopup_Hide("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
+	
 	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeDisabled");
 
 	KeybindFrames_ClearOutputText();
@@ -832,10 +864,4 @@ function QuickKeybindFrameMixin:OnMouseWheel(delta)
 	end
 	-- Reselect hovered button
 	KeyBindingFrame:SetSelected(selected);
-end
-
-QuickKeybindResetAllButtonMixin = {};
-
-function QuickKeybindResetAllButtonMixin:OnClick()
-	StaticPopup_Show("CONFIRM_RESET_TO_PREVIOUS_KEYBINDINGS");
 end

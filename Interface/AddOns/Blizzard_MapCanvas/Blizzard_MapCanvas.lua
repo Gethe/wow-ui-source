@@ -322,9 +322,13 @@ function SquaredDistanceBetweenPoints(firstX, firstY, secondX, secondY)
 end
 
 function MapCanvasMixin:CalculatePinNudging(targetPin)
+	local normalizedX, normalizedY = targetPin:GetPosition();
+	if not normalizedX then
+		return;
+	end
+
 	targetPin:SetNudgeVector(nil, nil, nil, nil);
 	if not targetPin:IgnoresNudging() and targetPin:GetNudgeTargetFactor() > 0 then
-		local normalizedX, normalizedY = targetPin:GetPosition();
 
 		local hasBeenNudged = false;
 		local function MapCanvasNudgePin(sourcePin)

@@ -1771,6 +1771,10 @@ function GarrisonShipyardFollowerList:ShowThreatCountersFrame()
 	self.followerTab.ThreatCountersFrame:Show();
 end
 
+function GarrisonShipyardFollowerList:HideThreatCountersFrame()
+	self.followerTab.ThreatCountersFrame:Hide();
+end 
+
 function GarrisonShipyardFollowerList:UpdateValidSpellHighlight(followerID, followerInfo)
 	local followerTab = self.followerTab;
 	for i=1, #followerTab.EquipmentFrame.Equipment do

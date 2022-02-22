@@ -14,6 +14,8 @@
 ..\..\SharedXML\NineSlice.lua
 ..\..\SharedXML\SecureUtil.lua
 ..\..\SharedXML\PortraitFrame.lua
+..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\VASErrorLookup.lua
 Blizzard_SimpleCheckout.xml
 Blizzard_StoreButtonMixin.lua
 Blizzard_ProductCardTemplates.xml

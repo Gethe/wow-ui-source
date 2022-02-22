@@ -50,8 +50,9 @@ VerticalLargeStoreCardMixin = CreateFromMixins(StoreCardMixin);
 function VerticalLargeStoreCardMixin:OnLoad()
 	StoreCardMixin.OnLoad(self);
 
-	SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
-	self.ProductName:SetFontObjectsToTry("GameFontNormalMed2", "GameFontNormalMed3", "GameFontNormalLarge");
+	SecureMixin(self.ProductName, AutoScalingFontStringMixin);
+	self.ProductName:SetFontObject("GameFontNormalMed3");
+	self.ProductName:SetMinLineHeight(12);
 	self.ProductName:SetSpacing(0);
 end
 
@@ -404,8 +405,9 @@ HorizontalLargeStoreCardMixin = CreateFromMixins(VerticalLargeStoreCardMixin);
 function HorizontalLargeStoreCardMixin:OnLoad()
 	StoreCardMixin.OnLoad(self);
 
-	SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
-	self.ProductName:SetFontObjectsToTry("GameFontNormalMed2", "GameFontNormalMed3", "GameFontNormalLarge");
+	SecureMixin(self.ProductName, AutoScalingFontStringMixin);
+	self.ProductName:SetFontObject("GameFontNormalMed3");
+	self.ProductName:SetMinLineHeight(12);
 	self.ProductName:SetSpacing(0);
 end
 

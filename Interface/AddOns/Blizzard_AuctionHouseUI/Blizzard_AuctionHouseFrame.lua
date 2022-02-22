@@ -37,6 +37,25 @@ StaticPopupDialogs["BID_AUCTION"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["PURCHASE_AUCTION_UNIQUE"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnShow = function(self, data)
+		self.text:SetText(PURCHASE_UNIQUE_AUCTION_CONFIRMATION:format(data.categoryName));
+	end,
+	OnAccept = function(self, data)
+		data.callback();
+	end,
+
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	acceptDelay = 3,
+};
+
+
 StaticPopupDialogs["CANCEL_AUCTION"] = {
 	text = CANCEL_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
@@ -246,6 +265,11 @@ local AUCTION_HOUSE_FRAME_EVENTS = {
 	"BIDS_UPDATED",
 	"BID_ADDED",
 	"OWNED_AUCTIONS_UPDATED",
+	"AUCTION_HOUSE_AUCTION_CREATED",
+	"AUCTION_HOUSE_SHOW_ERROR",
+	"AUCTION_HOUSE_SHOW_NOTIFICATION",
+	"AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION",
+	"AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION",
 };
 
 local function AuctionHouseFrame_GenerateMaxWidthFunction(self, cacheName, maxPriceFunction, key)
@@ -353,6 +377,17 @@ function AuctionHouseFrameMixin:OnEvent(event, ...)
 	elseif event == "COMMODITY_SEARCH_RESULTS_ADDED" or event == "COMMODITY_SEARCH_RESULTS_UPDATED" then
 		-- Clear the cached values.
 		self.maxUnitPriceWidth = {};
+	elseif event == "AUCTION_HOUSE_AUCTION_CREATED" then
+		Chat_AddSystemMessage(ERR_AUCTION_STARTED);
+	elseif event == "AUCTION_HOUSE_SHOW_ERROR" then
+		local auctionHouseError = ...;
+		UIErrorsFrame:AddExternalErrorMessage(AuctionHouseUtil.GetErrorText(auctionHouseError));
+	elseif (event == "AUCTION_HOUSE_SHOW_NOTIFICATION") or (event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION") then
+		local auctionHouseNotification, formatArg = ...;
+		Chat_AddSystemMessage(AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatArg));
+	elseif event == "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION" then
+		local commodityName, commodityQuantity = ...;
+		Chat_AddSystemMessage(ERR_AUCTION_COMMODITY_WON_S:format(commodityName, commodityQuantity));
 	end
 end
 
@@ -759,13 +794,31 @@ function AuctionHouseFrameMixin:StartCommoditiesPurchase(itemID, quantity, unitP
 end
 
 function AuctionHouseFrameMixin:StartItemBid(auctionID, bid)
-	local data = { auctionID = auctionID, bid = bid };
-	StaticPopup_Show("BID_AUCTION", nil, nil, data);
+	local function StartItemBid()
+		local data = { auctionID = auctionID, bid = bid };
+		StaticPopup_Show("BID_AUCTION", nil, nil, data);
+	end
+
+	self:StartItemPurchase(auctionID, StartItemBid);
 end
 
 function AuctionHouseFrameMixin:StartItemBuyout(auctionID, buyout)
-	local data = { auctionID = auctionID, buyout = buyout };
-	StaticPopup_Show("BUYOUT_AUCTION", nil, nil, data);
+	local function StartItemBuyout()
+		local data = { auctionID = auctionID, buyout = buyout };
+		StaticPopup_Show("BUYOUT_AUCTION", nil, nil, data);
+	end
+
+	self:StartItemPurchase(auctionID, StartItemBuyout);
+end
+
+function AuctionHouseFrameMixin:StartItemPurchase(auctionID, callback)
+	local isUniqueShadowlandsCrafted, categoryName = AuctionHouseUtil.IsAuctionIDUniqueShadowlandsCrafted(auctionID);
+	if isUniqueShadowlandsCrafted then
+		local data = { categoryName = categoryName, callback = callback };
+		StaticPopup_Show("PURCHASE_AUCTION_UNIQUE", nil, nil, data);
+	else
+		callback();
+	end
 end
 
 function AuctionHouseFrameMixin:SetSearchText(text)

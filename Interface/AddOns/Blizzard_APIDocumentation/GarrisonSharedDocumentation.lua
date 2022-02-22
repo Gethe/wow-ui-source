@@ -54,6 +54,7 @@ local GarrisonShared =
 				{ Name = "prerequisiteTalentID", Type = "number", Nilable = true },
 				{ Name = "selected", Type = "bool", Nilable = false },
 				{ Name = "researched", Type = "bool", Nilable = false },
+				{ Name = "ignoreTalent", Type = "bool", Nilable = false },
 				{ Name = "researchDuration", Type = "number", Nilable = false },
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "timeRemaining", Type = "number", Nilable = false },
@@ -68,6 +69,7 @@ local GarrisonShared =
 				{ Name = "researchDescription", Type = "string", Nilable = true },
 				{ Name = "playerConditionReason", Type = "string", Nilable = true },
 				{ Name = "socketInfo", Type = "GarrisonTalentSocketInfo", Nilable = false },
+				{ Name = "treeID", Type = "number", Nilable = false },
 			},
 		},
 		{

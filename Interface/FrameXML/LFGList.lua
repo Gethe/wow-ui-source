@@ -768,7 +768,9 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	end 
 	LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo);
 	LFGListEntryCreation_UpdateValidState(self);
-	LFGListEntryCreation_SetTitleFromActivityInfo(self);
+	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle)) then 
+		LFGListEntryCreation_SetTitleFromActivityInfo(self);
+	end 
 end
 
 function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
@@ -1005,10 +1007,13 @@ end
 
 function LFGListEntryCreation_OnPlayStyleSelected(self, dropdown, playstyle)
 	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
+	local previousPlaystyle = self.selectedPlaystyle
 	self.selectedPlaystyle = playstyle;
 	UIDropDownMenu_SetSelectedValue(dropdown, playstyle); 
 	UIDropDownMenu_SetText(dropdown, C_LFGList.GetPlaystyleString(playstyle, activityInfo));
-	LFGListEntryCreation_SetTitleFromActivityInfo(self);
+	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle)) then 
+		LFGListEntryCreation_SetTitleFromActivityInfo(self);
+	end 
 end
 
 function LFGListEntryCreation_GetSanitizedName(self)
@@ -1121,7 +1126,7 @@ function LFGListEntryCreation_UpdateAuthenticatedState(self)
 	local isAuthenticated = C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedActivity); 
 	self.Description.EditBox:SetEnabled(isAuthenticated);
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo(); 
-	local isQuestListing = activeEntry and activeEntryInfo.questID or nil; 
+	local isQuestListing = activeEntryInfo and activeEntryInfo.questID or nil; 
 	self.Name:SetEnabled(isAuthenticated and not isQuestListing);
 	self.VoiceChat.EditBox:SetEnabled(isAuthenticated)
 end		
@@ -1132,7 +1137,7 @@ end
 
 function LFGListEntryCreation_SetTitleFromActivityInfo(self)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	if(not self.selectedActivity or not self.selectedGroup or not self.selectedCategory or activeEntryInfo) then 
+	if(not self.selectedActivity or not self.selectedGroup or not self.selectedCategory) then 
 		return; 
 	end
 	local activityID = activeEntryInfo and activeEntryInfo.activityID or (self.selectedActivity or 0);
@@ -3109,8 +3114,12 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 		local exp = LFGListUtil_GetCurrentExpansion();
 		extraName = _G["EXPANSION_NAME"..exp];
 	end
-
-	return string.format(LFG_LIST_CATEGORY_FORMAT, categoryName, colorStart, extraName, colorEnd);
+	
+	if(extraName ~= "") then 
+		return string.format(LFG_LIST_CATEGORY_FORMAT, categoryName, colorStart, extraName, colorEnd);
+	else 
+		return categoryName;
+	end
 end
 
 local roleRemainingKeyLookup = {
@@ -3574,12 +3583,12 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		tooltip:AddLine(" ");
 	end
 
-	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
+	if ( activityInfo.displayType == Enum.LfgListDisplayType.ClassEnumerate ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, searchResultInfo.numMembers));
 		for i=1, searchResultInfo.numMembers do
-			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+			local role, class, classLocalized, specLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
 			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-			tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
+			tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, specLocalized), classColor.r, classColor.g, classColor.b);
 		end
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
@@ -3777,6 +3786,7 @@ function LFGListCreationDescriptionMixin:OnLoad()
 	self.EditBox:SetSecurityDisablePaste();
 	self:AddToTabCategory("ENTRY_CREATION", self.EditBox);
 	self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
+	self.EditBox:EnableMouse(false);
 	InputScrollFrame_OnLoad(self);
 
 	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedActivity); 

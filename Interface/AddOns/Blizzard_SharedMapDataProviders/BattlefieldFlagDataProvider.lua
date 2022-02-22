@@ -40,7 +40,7 @@ function BattlefieldFlagMixin:OnAcquired(flagIndex)
 end
 
 function BattlefieldFlagMixin:Refresh()
-	local flagX, flagY, flagTexture = GetBattlefieldFlagPosition(self.flagIndex);
+	local flagX, flagY, flagTexture = C_PvP.GetBattlefieldFlagPosition(self.flagIndex, self:GetMap():GetMapID());
 	self.Texture:SetTexture(flagTexture);
 	self:SetPosition(flagX or 0, flagY or 0);
 	local shown = flagX ~= nil;

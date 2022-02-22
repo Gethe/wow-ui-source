@@ -39,6 +39,18 @@ local customTextureKitInfo = {
 		frameYOffset = 95,
 	},
 
+	cypherchoice = {
+		optionFrameTemplate = "PlayerChoiceCypherOptionTemplate",
+		optionsTopPadding = 120,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		toggleXOffset = 0,
+		toggleYOffset = -20,
+		timerXOffset = 0,
+		timerYOffset = -5,
+	},
+
 	Oribos = {
 		optionFrameTemplate = "PlayerChoiceCovenantChoiceOptionTemplate",
 		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
@@ -73,6 +85,11 @@ local defaultTextureKitInfo = {
 	optionsSpacing = 20,
 	frameYOffset = 0,
 };
+
+function PlayerChoiceGetTextureKitInfo(textureKit)
+	local kitInfo = customTextureKitInfo[textureKit] or {};
+	return setmetatable(kitInfo, {__index = defaultTextureKitInfo});
+end
 
 function PlayerChoiceFrameMixin:GetTextureKitInfo()
 	local kitInfo = customTextureKitInfo[self.uiTextureKit] or {};
@@ -145,16 +162,24 @@ function PlayerChoiceFrameMixin:OnShow()
 		activeMawBuffContainer:UpdateListState(true);
 	end
 
-	PlayerChoiceToggleButton:ClearAllPoints();
-	PlayerChoiceToggleButton:SetPoint("TOP", self, "BOTTOM", 0, 0);
+	local toggleButton = PlayerChoiceToggle_GetActiveToggle();
+	if toggleButton then
+		toggleButton:ClearAllPoints();
+		toggleButton:SetPoint("TOP", self, "BOTTOM", self.textureKitInfo.toggleXOffset or 0, self.textureKitInfo.toggleYOffset or 0);
+	end
+	PlayerChoiceToggle_TryShow();
 
-	PlayerChoiceToggleButton:TryShow();
+	PlayerChoiceTimeRemaining:TryShow();
 end
 
 function PlayerChoiceFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, PLAYER_CHOICE_FRAME_EVENTS);
 
-	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+	if self.choiceInfo and self.choiceInfo.closeUISoundKitID then
+		PlaySound(self.choiceInfo.closeUISoundKitID);
+	else
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+	end
 
 	C_PlayerChoice.OnUIClosed();
 
@@ -167,8 +192,9 @@ function PlayerChoiceFrameMixin:OnHide()
 		activeMawBuffContainer:UpdateListState(false);
 	end
 
-	if PlayerChoiceToggleButton:IsShown() then
-		PlayerChoiceToggleButton:UpdateButtonState();
+	local toggleButton = PlayerChoiceToggle_GetActiveToggle();
+	if toggleButton and toggleButton:IsShown() then
+		toggleButton:UpdateButtonState();
 	end
 end
 
@@ -207,27 +233,24 @@ local borderFrameTextureKitRegions = {
 };
 
 function PlayerChoiceFrameMixin:SetupFrame()
-	if self.textureKitInfo.showOptionsOnly then
-		self.NineSlice:Hide();
-		self.CloseButton:Hide();
-		self.Header:Hide();
-		self.Title:Hide();
-		self.Background:Hide();
-		self:EnableMouse(false);
-	else
+	local showExtraFrames = not self.textureKitInfo.showOptionsOnly;
+	self.NineSlice:SetShown(showExtraFrames);
+	self.CloseButton:SetShown(showExtraFrames);
+	self.Header:SetShown(showExtraFrames);
+	self.Title:SetShown(showExtraFrames);
+	self.Background:SetShown(showExtraFrames);
+	self:EnableMouse(showExtraFrames);
+
+	if showExtraFrames then
 		if self.textureKitInfo.uniqueCorners then
 			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, self.uiTextureKit);
 		else
 			NineSliceUtil.ApplyIdenticalCornersLayout(self.NineSlice, self.uiTextureKit);
 		end
 
-		self.NineSlice:Show();
-
 		UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", self.textureKitInfo.closeBorderX, self.textureKitInfo.closeBorderY, self.uiTextureKit);
 
 		self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", self.textureKitInfo.closeButtonX, self.textureKitInfo.closeButtonY);
-		self.CloseButton:Show();
-		self:EnableMouse(true);
 
 		if self.choiceInfo.hideWarboardHeader or not self.textureKitInfo.headerYoffset then
 			self.Header:Hide();

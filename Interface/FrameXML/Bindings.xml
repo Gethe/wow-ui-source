@@ -1361,6 +1361,7 @@
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
 	<ModifiedClick action="FOCUSCAST" default="NONE"/>
+	<ModifiedClick action="MOUSEOVERCAST" default="NONE"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>

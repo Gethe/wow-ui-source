@@ -365,6 +365,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetUnitPowerBarWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "UnitPowerBarWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetWidgetSetInfo",
 			Type = "Function",
 
@@ -506,14 +520,15 @@ local UIWidgetManager =
 		{
 			Name = "SpellDisplayIconDisplayType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Buff", Type = "SpellDisplayIconDisplayType", EnumValue = 0 },
 				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
 				{ Name = "Circular", Type = "SpellDisplayIconDisplayType", EnumValue = 2 },
+				{ Name = "NoBorder", Type = "SpellDisplayIconDisplayType", EnumValue = 3 },
 			},
 		},
 		{
@@ -592,6 +607,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetBlendModeType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Opaque", Type = "UIWidgetBlendModeType", EnumValue = 0 },
+				{ Name = "Additive", Type = "UIWidgetBlendModeType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetFlag",
 			Type = "Enumeration",
 			NumValues = 1,
@@ -629,17 +656,30 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetMotionType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Instant", Type = "UIWidgetMotionType", EnumValue = 0 },
+				{ Name = "Smooth", Type = "UIWidgetMotionType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Small", Type = "UIWidgetTextSizeType", EnumValue = 0 },
 				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
 				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
 				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
+				{ Name = "Standard", Type = "UIWidgetTextSizeType", EnumValue = 4 },
 			},
 		},
 		{
@@ -688,9 +728,9 @@ local UIWidgetManager =
 		{
 			Name = "WidgetEnabledState",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Disabled", Type = "WidgetEnabledState", EnumValue = 0 },
@@ -699,6 +739,7 @@ local UIWidgetManager =
 				{ Name = "White", Type = "WidgetEnabledState", EnumValue = 3 },
 				{ Name = "Green", Type = "WidgetEnabledState", EnumValue = 4 },
 				{ Name = "Gold", Type = "WidgetEnabledState", EnumValue = 5 },
+				{ Name = "Black", Type = "WidgetEnabledState", EnumValue = 6 },
 			},
 		},
 		{
@@ -724,6 +765,19 @@ local UIWidgetManager =
 				{ Name = "Left", Type = "WidgetTextHorizontalAlignmentType", EnumValue = 0 },
 				{ Name = "Center", Type = "WidgetTextHorizontalAlignmentType", EnumValue = 1 },
 				{ Name = "Right", Type = "WidgetTextHorizontalAlignmentType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "WidgetUnitPowerBarFlashMomentType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "FlashWhenMax", Type = "WidgetUnitPowerBarFlashMomentType", EnumValue = 0 },
+				{ Name = "FlashWhenMin", Type = "WidgetUnitPowerBarFlashMomentType", EnumValue = 1 },
+				{ Name = "NeverFlash", Type = "WidgetUnitPowerBarFlashMomentType", EnumValue = 2 },
 			},
 		},
 		{
@@ -973,6 +1027,7 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "leftBarTooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "rightBarTooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "fillMotionType", Type = "UIWidgetMotionType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },
@@ -1212,6 +1267,10 @@ local UIWidgetManager =
 				{ Name = "colorTint", Type = "StatusBarColorTintValue", Nilable = false },
 				{ Name = "partitionValues", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "fillMotionType", Type = "UIWidgetMotionType", Nilable = false },
+				{ Name = "barTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "barTextFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "barTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "frameTextureKit", Type = "string", Nilable = false },
@@ -1422,6 +1481,38 @@ local UIWidgetManager =
 				{ Name = "iconState", Type = "IconState", Nilable = false },
 				{ Name = "state1Tooltip", Type = "string", Nilable = false },
 				{ Name = "state2Tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerBarWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "barMin", Type = "number", Nilable = false },
+				{ Name = "barMax", Type = "number", Nilable = false },
+				{ Name = "barValue", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "barValueTextType", Type = "StatusBarValueTextType", Nilable = false },
+				{ Name = "overrideBarText", Type = "string", Nilable = false },
+				{ Name = "overrideBarTextShownType", Type = "StatusBarOverrideBarTextShownType", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "fillMotionType", Type = "UIWidgetMotionType", Nilable = false },
+				{ Name = "flashBlendModeType", Type = "UIWidgetBlendModeType", Nilable = false },
+				{ Name = "sparkBlendModeType", Type = "UIWidgetBlendModeType", Nilable = false },
+				{ Name = "flashMomentType", Type = "WidgetUnitPowerBarFlashMomentType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "frameTextureKit", Type = "string", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
 			},
 		},
 		{

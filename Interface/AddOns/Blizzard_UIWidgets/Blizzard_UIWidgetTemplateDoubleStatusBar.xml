@@ -36,6 +36,9 @@
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Spark" alphaMode="ADD">
 					<Size x="16" y="39"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">

@@ -92,11 +92,7 @@ function PVPMatchScoreboardMixin:OnUpdate()
 end
 
 function PVPMatchScoreboardMixin:SetupArtwork(factionIndex, isFactionalMatch)
-	local useAlternateColor = not isFactionalMatch;
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	for k, button in pairs(buttons) do
-		button:Init(useAlternateColor);
-	end
+	PVPMatchUtil.SetupTableButtonColors(factionIndex, isFactionalMatch, self.ScrollFrame);
 
 	local r, g, b = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor):GetRGB();
 	self.ScrollFrame.Background:SetVertexColor(r, g, b);

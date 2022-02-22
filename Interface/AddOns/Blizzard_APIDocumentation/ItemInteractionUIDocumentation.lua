@@ -15,6 +15,29 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
+			Name = "GetChargeInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "chargeInfo", Type = "ItemInteractionChargeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemConversionCurrencyCost",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conversionCost", Type = "ConversionCurrencyCost", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInteractionInfo",
 			Type = "Function",
 
@@ -49,6 +72,10 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
+			Name = "SetItemConversionOutputTooltip",
+			Type = "Function",
+		},
+		{
 			Name = "SetPendingItem",
 			Type = "Function",
 
@@ -66,6 +93,11 @@ local ItemInteractionUI =
 
 	Events =
 	{
+		{
+			Name = "ItemInteractionChargeInfoUpdated",
+			Type = "Event",
+			LiteralName = "ITEM_INTERACTION_CHARGE_INFO_UPDATED",
+		},
 		{
 			Name = "ItemInteractionClose",
 			Type = "Event",
@@ -89,6 +121,25 @@ local ItemInteractionUI =
 
 	Tables =
 	{
+		{
+			Name = "ConversionCurrencyCost",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemInteractionChargeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "newChargeAmount", Type = "number", Nilable = false },
+				{ Name = "rechargeRate", Type = "number", Nilable = false },
+				{ Name = "timeToNextCharge", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "ItemInteractionFrameInfo",
 			Type = "Structure",

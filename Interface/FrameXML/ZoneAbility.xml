@@ -6,9 +6,9 @@
 		<Size x="256" y="128"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Style" file="Interface\ExtraButton\GarrZoneAbility-BarracksAlliance">
+				<Texture parentKey="Style">
 					<Anchors>
-						<Anchor point="CENTER" x="-2" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>

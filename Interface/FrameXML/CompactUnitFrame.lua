@@ -267,7 +267,7 @@ function CompactUnitFrame_SetUpClicks(frame)
 	frame:SetAttribute("*type1", "target");
     frame:SetAttribute("*type2", "menu");
 	--NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
-	frame:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+	frame:RegisterForClicks("AnyUp");
 	CompactUnitFrame_SetMenuFunc(frame, CompactUnitFrameDropDown_Initialize);
 end
 

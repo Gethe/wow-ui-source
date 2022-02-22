@@ -116,19 +116,23 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 	end
 
 	local weaponSlotID = nil;
+	local ignoreChildItems = true;
 	if categoryID then
 		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
 		-- weapons that can go in either hand need the slot specified
 		weaponSlotID = (canMainHand and canOffHand) and transmogLocation.slotID or nil;
-		-- legion artifacts need the secondary configured and the weapon slot specified
-		local isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(categoryID);
-		if isLegionArtifact and transmogLocation.slotID == INVSLOT_MAINHAND then
-			weaponSlotID = transmogLocation.slotID;
+		-- configure the secondary for mainhands
+		if transmogLocation.slotID == INVSLOT_MAINHAND then
+			local isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(categoryID);
 			itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
+			-- we only want child items if the appearance is from Legion Artifact category
+			if isLegionArtifact then
+				ignoreChildItems = false;
+			end
 		end
 	end
 
-	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, weaponSlotID);
+	local result = playerActor:SetItemTransmogInfo(itemTransmogInfo, weaponSlotID, ignoreChildItems);
 	if result ~= Enum.ItemTryOnReason.Success then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end
@@ -335,7 +339,8 @@ function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails)
 	end
 
 	for slotID, itemTransmogInfo in ipairs(itemTransmogInfoList) do
-		playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID);
+		local ignoreChildItems = slotID ~= INVSLOT_MAINHAND;
+		playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID, ignoreChildItems);
 	end
 
 	if showOutfitDetails then
@@ -491,6 +496,15 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 		return;
 	end
 
+	-- for Legion Artifacts the offhand is virtual
+	local mainHandInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
+	if mainHandInfo.secondaryAppearanceID == Constants.Transmog.MainHandTransmogIsPairedWeapon then
+		local pairedTransmogID = C_TransmogCollection.GetPairedArtifactAppearance(mainHandInfo.appearanceID);
+		if pairedTransmogID then
+			itemTransmogInfoList[INVSLOT_OFFHAND].appearanceID = pairedTransmogID;
+		end
+	end
+	
 	for _, slotID in ipairs(TransmogSlotOrder) do
 		local transmogInfo = itemTransmogInfoList[slotID];
 		if transmogInfo then
@@ -788,7 +802,7 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 
 	local nameColor = NORMAL_FONT_COLOR;
 	local nameAlpha = 1;
-	local borderType = "white";
+	local borderType;
 	if slotState == OUTFIT_SLOT_STATE_ERROR then
 		nameColor = RED_FONT_COLOR;
 		borderType = "error";
@@ -798,11 +812,16 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 		nameAlpha = GRAY_FONT_ALPHA;
 	elseif isHiddenVisual then
 		borderType = "uncollected";
-	elseif self.item then
-		nameColor = self.item:GetItemQualityColor().color;
-		local quality = self.item:GetItemQuality();
-		local colorName = s_qualityToAtlasColorName[quality];
-		borderType = colorName;
+	else
+		-- this is something collected, show in default colors
+		if self.item then
+			nameColor = self.item:GetItemQualityColor().color;
+			local quality = self.item:GetItemQuality();
+			local colorName = s_qualityToAtlasColorName[quality];
+			borderType = colorName;
+		else
+			borderType = "illusion";
+		end
 	end
 
 	self.Name:SetText(name);

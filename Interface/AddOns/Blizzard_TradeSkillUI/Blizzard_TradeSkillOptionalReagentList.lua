@@ -217,7 +217,7 @@ function OptionalReagentListMixin:OnEvent(event, ...)
 		local itemID = ...;
 		for i, info in ipairs(self.listedOptions) do
 			if info.itemID == itemID then
-				info.bonusText = self:GetTradeSkillUI():GetOptionalReagentBonusTextText(itemID, self.optionalReagentIndex);
+				info.bonusText = self:GetTradeSkillUI():GetOptionalReagentBonusText(itemID, self.optionalReagentIndex);
 			end
 		end
 	end
