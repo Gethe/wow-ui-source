@@ -91,10 +91,9 @@ UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
-	local suppressScriptHandler = true;
-	frame:SetAttribute("UIPanelLayout-defined", true, suppressScriptHandler);
+	frame:SetAttributeNoHandler("UIPanelLayout-defined", true);
 	for name, value in pairs(attributes) do
-		frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
+		frame:SetAttributeNoHandler("UIPanelLayout-"..name, value);
 	end
 end
 
@@ -127,8 +126,7 @@ function SetUIPanelAttribute(frame, name, value)
 		SetFrameAttributes(frame, attributes);
 	end
 
-	local suppressScriptHandler = true;
-	frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
+	frame:SetAttributeNoHandler("UIPanelLayout-"..name, value);
 end
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
