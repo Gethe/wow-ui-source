@@ -15,30 +15,18 @@ function CompactUnitFrame_OnLoad(self)
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterEvent("UNIT_POWER_BAR_SHOW");
-	self:RegisterEvent("UNIT_POWER_BAR_HIDE");
-	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
-	self:RegisterEvent("UNIT_CONNECTION");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_FINISHED");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("INCOMING_RESURRECT_CHANGED");
-	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
-	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
-	self:RegisterEvent("UNIT_PHASE");
-	self:RegisterEvent("UNIT_CTR_OPTIONS");
-	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
 	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
@@ -250,12 +238,24 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_POWER_UPDATE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_POWER_BAR_SHOW", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_POWER_BAR_HIDE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_CONNECTION", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_PET", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_CLASSIFICATION_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_OTHER_PARTY_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_PHASE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_CTR_OPTIONS", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_FLAGS", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
