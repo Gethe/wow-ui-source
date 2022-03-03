@@ -216,7 +216,7 @@ function TransferRealmEditboxMixin:GetRealmName()
 end
 
 function TransferRealmEditboxMixin:GetRealmAddress()
-	return self:GetAutoCompleteUserDataForText(self:GetText());
+	return self:GetAutoCompleteUserDataForValue(self:GetText());
 end
 
 FollowGuildMixin = {};
