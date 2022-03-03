@@ -127,12 +127,6 @@ function GameTooltip_AddBlankLinesToTooltip(tooltip, numLines)
 	end
 end
 
-function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
-	local titleColor = overrideColor or HIGHLIGHT_FONT_COLOR;
-	local r, g, b, a = titleColor:GetRGBA();
-	tooltip:SetText(text, r, g, b, a, wrap);
-end
-
 function GameTooltip_AddNormalLine(tooltip, text, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap);
 end

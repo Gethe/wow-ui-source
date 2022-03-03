@@ -291,9 +291,9 @@ Import("LE_MODEL_BLEND_OPERATION_NONE");
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
 
--- Mirror of the same variables in GlueParent.lua and UIParent.lua
-local WOW_GAMES_CATEGORY_ID = 33;
-local WOW_GAME_TIME_CATEGORY_ID = 37;
+Import("WOW_GAMES_CATEGORY_ID");
+Import("WOW_GAME_TIME_CATEGORY_ID");
+Import("WOW_SUBSCRIPTION_CATEGORY_ID");
 local WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID = 159;
 
 --Data

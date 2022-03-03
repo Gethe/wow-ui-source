@@ -147,12 +147,18 @@ function MergeTable(destination, source)
 	end
 end
 
-function AccumulateIf(tbl, pred)
+function Accumulate(tbl)
 	local count = 0;
 	for k, v in pairs(tbl) do
-		if pred(v) then
-			count = count + 1;
-		end
+		count = count + v;
+	end
+	return count;
+end
+
+function AccumulateOp(tbl, op)
+	local count = 0;
+	for k, v in pairs(tbl) do
+		count = count + op(v);
 	end
 	return count;
 end
@@ -175,6 +181,10 @@ function FindInTableIf(tbl, pred)
 	end
 
 	return nil;
+end
+
+function TableHasAnyEntries(tbl)
+	return next(tbl) ~= nil;
 end
 
 function CopyValuesAsKeys(tbl)
@@ -221,4 +231,19 @@ end
 
 function GetRandomArrayEntry(array)
 	return array[math.random(1, #array)];
+end
+
+function GetKeysArray(tbl)
+	local keysArray = {};
+	for key in pairs(tbl) do
+		table.insert(keysArray, key);
+	end
+
+	return keysArray;
+end
+
+function SwapTableEntries(lhsTable, rhsTable, key)
+	local lhsValue = lhsTable[key];
+	lhsTable[key] = rhsTable[key];
+	rhsTable[key] = lhsValue;
 end

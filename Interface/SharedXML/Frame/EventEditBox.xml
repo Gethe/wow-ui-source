@@ -3,6 +3,10 @@
 	<Script file="EventEditBox.lua"/>
 
 	<EditBox name="EventEditBox" mixin="EventEditBoxMixin" enableMouse="true" intrinsic="true">
+		<KeyValues>
+			<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
+			<KeyValue key="defaultFontName" value="GameFontDisable" type="string"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad_Intrinsic"/>
 			<OnMouseDown method="OnMouseDown_Intrinsic"/>

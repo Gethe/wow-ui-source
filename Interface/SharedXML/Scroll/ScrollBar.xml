@@ -6,6 +6,8 @@
 		<KeyValues>
 			<KeyValue key="canInterpolateScroll" value="true" type="boolean"/>
 			<KeyValue key="useProportionalThumb" value="true" type="boolean"/>
+			<!--Will override useProportionalThumb if "fixedThumbExtent" is specified.-->
+			<!--<KeyValue key="fixedThumbExtent" value="30" type="number"/>-->
 			<KeyValue key="minThumbExtent" value="10" type="number"/>
 			<KeyValue key="thumbAnchor" value="TOPLEFT" type="string"/>
 			<KeyValue key="panRepeatTime" value=".1" type="number"/>

@@ -210,7 +210,7 @@ local PvpInfo =
 				{ Name = "None", Type = "BrawlType", EnumValue = 0 },
 				{ Name = "Battleground", Type = "BrawlType", EnumValue = 1 },
 				{ Name = "Arena", Type = "BrawlType", EnumValue = 2 },
-				{ Name = "Lfg", Type = "BrawlType", EnumValue = 3 },
+				{ Name = "LFG", Type = "BrawlType", EnumValue = 3 },
 			},
 		},
 		{

@@ -31,6 +31,11 @@ local System =
 			LiteralName = "ENABLE_TAXI_BENCHMARK",
 		},
 		{
+			Name = "FirstFrameRendered",
+			Type = "Event",
+			LiteralName = "FIRST_FRAME_RENDERED",
+		},
+		{
 			Name = "GenericError",
 			Type = "Event",
 			LiteralName = "GENERIC_ERROR",

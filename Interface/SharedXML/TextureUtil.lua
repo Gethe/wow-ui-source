@@ -121,14 +121,33 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 	);
 end
 
-function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY)
-	return ("|A:%s:%d:%d:%d:%d|a"):format(
-		  atlasName
-		, height or 0
-		, width or 0
-		, offsetX or 0
-		, offsetY or 0
-	);
+function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+	-- Setting any vertex color will override existing colors
+	if ( rVertexColor or gVertexColor or bVertexColor ) then
+		return ("|A:%s:%d:%d:%d:%d:%d:%d:%d|a"):format(
+			  atlasName
+			, height or 0
+			, width or 0
+			, offsetX or 0
+			, offsetY or 0
+			, rVertexColor or 0
+			, gVertexColor or 0
+			, bVertexColor
+		);
+	else
+		return ("|A:%s:%d:%d:%d:%d|a"):format(
+			  atlasName
+			, height or 0
+			, width or 0
+			, offsetX or 0
+			, offsetY or 0
+		);
+	end
+end
+
+function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
+	return CreateAtlasMarkup(atlasName, atlasInfo.width, atlasInfo.height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
 end
 
 -- NOTE: Many of the TextureKit functions below use the following parameters
@@ -236,11 +255,6 @@ function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 	for region, regionInfo in pairs(regionInfoList) do
 		SetupTextureKitOnFrame(textureKit, frame[region], regionInfo.formatString, regionInfo.setVisibility, regionInfo.useAtlasSize);
 	end
-end
-
-function SetupTextureKitsFromRegionInfoByID(textureKitID, frame, regionInfoList)
-	local textureKit = GetUITextureKitInfo(textureKitID);
-	SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList);
 end
 
 --Pass the texture and the textureKit, if the atlas exists in data then it will return the actual atlas name otherwise, return nil. 

@@ -15,6 +15,8 @@ EventEditBoxMixin:GenerateCallbackEvents(
 
 function EventEditBoxMixin:OnLoad_Intrinsic()
 	CallbackRegistryMixin.OnLoad(self);
+
+	self.defaultTextEnabled = true;
 end
 
 function EventEditBoxMixin:OnMouseDown_Intrinsic()
@@ -32,7 +34,7 @@ end
 
 function EventEditBoxMixin:OnTextChanged_Intrinsic(userChanged)
 	if userChanged then
-		self.defaulted = self.defaultText and self:GetText() == "";
+		self.defaulted = self:IsDefaultTextEnabled() and self:GetText() == "";
 	end
 
 	self:TriggerEvent("OnTextChanged", self, userChanged);
@@ -56,7 +58,7 @@ end
 function EventEditBoxMixin:OnEditFocusGained_Intrinsic()
 	if self:IsDefaultTextDisplayed() then
 		self:SetText("");
-		self:SetTextColor(self:GetTextColorRGB());
+		self:SetFontObject(self.fontName);
 		self:SetCursorPosition(0);
 	end
 
@@ -84,13 +86,13 @@ function EventEditBoxMixin:GetFontHeight()
 end
 
 function EventEditBoxMixin:ApplyText(text)
-	self.defaulted = self.defaultText and text == "";
+	self.defaulted = self:IsDefaultTextEnabled() and text == "";
 	if self.defaulted then
 		self:SetText(self.defaultText);
-		self:SetTextColor(GRAY_FONT_COLOR:GetRGB());
+		self:SetFontObject(self.defaultFontName);
 	else
 		self:SetText(text);
-		self:SetTextColor(self:GetTextColorRGB());
+		self:SetFontObject(self.fontName);
 	end
 	self:SetCursorPosition(0);
 end
@@ -101,13 +103,17 @@ function EventEditBoxMixin:ApplyDefaultText(defaultText)
 	self:TryApplyDefaultText();
 end
 
+function EventEditBoxMixin:SetDefaultTextEnabled(enabled)
+	self.defaultTextEnabled = enabled;
+end
+
+function EventEditBoxMixin:IsDefaultTextEnabled()
+	return self.defaultText and self.defaultTextEnabled;
+end
+
 function EventEditBoxMixin:TryApplyDefaultText()
-	if self.defaultText then
-		if self:GetText() == "" then
-			self:SetText(self.defaultText);
-			self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			self:SetCursorPosition(0);
-		end
+	if self:IsDefaultTextEnabled() and self:GetText() == "" then
+		self:ApplyText("");
 	end
 end
 
@@ -123,16 +129,4 @@ function EventEditBoxMixin:IsDefaultTextDisplayed()
 		return self:GetText() == self.defaultText;
 	end
 	return false;
-end
-
-function EventEditBoxMixin:ApplyTextColor(color)
-	self.textColor = color;
-
-	if not self:IsDefaultTextDisplayed() then
-		self:SetTextColor(self:GetTextColorRGB());
-	end
-end
-
-function EventEditBoxMixin:GetTextColorRGB()
-	return self.textColor:GetRGB();
 end

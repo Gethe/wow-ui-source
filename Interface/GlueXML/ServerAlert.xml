@@ -1,10 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ServerAlert.lua"/>
-	<Frame name="ServerAlertTemplate" inherits="BackdropTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-		</KeyValues>
+	<Frame name="ServerAlertTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="SERVER_ALERT_TITLE">
@@ -15,6 +12,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-46"/>
@@ -33,9 +31,7 @@
 				</Scripts>
 				<ScrollChild>
 					<SimpleHTML parentKey="Text" name="$parentText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
-						<Size>
-							<AbsDimension x="300" y="10"/>
-						</Size>
+						<Size x="300" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -52,7 +48,7 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend" function="ServerAlert_OnLoad"/>
+			<OnLoad function="ServerAlert_OnLoad"/>
 			<OnEvent function="ServerAlert_OnEvent"/>
 		</Scripts>
 	</Frame>
