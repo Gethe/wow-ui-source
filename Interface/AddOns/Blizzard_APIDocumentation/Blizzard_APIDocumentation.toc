@@ -29,6 +29,7 @@ ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
 ClassTrialDocumentation.lua
+ClientSceneDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua

@@ -167,6 +167,16 @@ function UpdateUIParentPosition()
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
 end
 
+function UpdateUIElementsForClientScene(sceneType)
+	if sceneType == Enum.ClientSceneType.MinigameSceneType then
+		PlayerFrame:Hide();
+		TargetFrame:Hide();
+	else
+		PlayerFrame:SetShown(true);
+		TargetFrame_Update(TargetFrame);
+	end
+end
+
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
@@ -490,10 +500,15 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
 
 	-- Event(s) for the ScriptAnimationEffect System
-	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE")
+	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
 
     -- Event(s) for Notched displays
-    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED")
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
+
+    -- Event(s) for Client Scenes
+    self:RegisterEvent("CLIENT_SCENE_OPENED");
+    self:RegisterEvent("CLIENT_SCENE_CLOSED");
+
 end
 
 function UIParent_OnShow(self)
@@ -2362,6 +2377,11 @@ function UIParent_OnEvent(self, event, ...)
 		UpdateUIParentPosition();
     elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
         UpdateUIParentPosition();
+	elseif (event == "CLIENT_SCENE_OPENED") then
+		local sceneType = ...;
+		UpdateUIElementsForClientScene(sceneType);
+	elseif (event == "CLIENT_SCENE_CLOSED") then
+		UpdateUIElementsForClientScene(nil);
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
