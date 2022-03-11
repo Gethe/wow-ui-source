@@ -150,7 +150,7 @@ end
 
 -- PVP Honor Data
 function InspectPVPHonor_Update(self)
-	local todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK, lifetimeRank = GetInspectHonorData();
+	local sessionHK, sessionDK, yesterdayHK, yesterdayHonor, thisweekHK, thisweekHonor, lastweekHK, lastweekHonor, lastweekStanding, lifetimeHK, lifetimeDK, lifetimeRank = GetInspectHonorData();
 	
 	-- Yesterday's values
 	InspectPVPHonorYesterdayKills:SetText(yesterdayHK);
@@ -165,5 +165,5 @@ function InspectPVPHonor_Update(self)
 	InspectPVPFrameArenaPoints:Hide();
 	
 	-- This session's values
-	InspectPVPHonorTodayKills:SetText(todayHK);
+	InspectPVPHonorTodayKills:SetText(sessionHK);
 end

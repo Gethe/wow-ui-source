@@ -6,6 +6,15 @@ local System =
 
 	Functions =
 	{
+		{
+			Name = "GetFrameStack",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "objects", Type = "table", InnerType = "table", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -42,6 +51,24 @@ local System =
 			Payload =
 			{
 				{ Name = "errorMessage", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GlobalMouseDown",
+			Type = "Event",
+			LiteralName = "GLOBAL_MOUSE_DOWN",
+			Payload =
+			{
+				{ Name = "button", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GlobalMouseUp",
+			Type = "Event",
+			LiteralName = "GLOBAL_MOUSE_UP",
+			Payload =
+			{
+				{ Name = "button", Type = "string", Nilable = false },
 			},
 		},
 		{

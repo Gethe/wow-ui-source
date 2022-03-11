@@ -75,6 +75,7 @@ MixinUtil.lua
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -234,6 +235,12 @@ BattlegroundChatFilters.xml
 ..\..\Interface_Vanilla\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 EasyMenu.lua
+TextToSpeechFrameConstants.lua
+TextToSpeechCommands.lua
+TextToSpeechFrame.xml
+TextToSpeech.xml
+VoiceChatTranscriptionFrame.xml
+VoiceChatTranscriptionButton.xml
 ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua
@@ -248,12 +255,7 @@ ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
-TextToSpeechFrameConstants.lua
-TextToSpeechCommands.lua
-TextToSpeechFrame.xml
-TextToSpeech.xml
-VoiceChatTranscriptionFrame.xml
-VoiceChatTranscriptionButton.xml
+
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

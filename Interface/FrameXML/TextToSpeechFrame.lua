@@ -322,7 +322,9 @@ function TextToSpeechFrame_OnEvent(self, event, ...)
 
 			-- Add short delay for message sound if enabled, otherwise play next immediately
 			if ( C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks) ) then
+				playbackActive = true;
 				C_Timer.After(1, function()
+					playbackActive = false;
 					TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
 				end);
 			else

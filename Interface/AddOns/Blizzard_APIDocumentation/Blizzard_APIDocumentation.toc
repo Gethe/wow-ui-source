@@ -135,6 +135,7 @@ ScriptedAnimationsDocumentation.lua
 SeasonsDocumentation.lua
 SocialRestrictionsDocumentation.lua
 SystemDocumentation.lua
+UnitAuraDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
@@ -175,6 +176,7 @@ TimeDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TransmogSharedDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
+UnitConstantsDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 VectorSharedDocumentation.lua

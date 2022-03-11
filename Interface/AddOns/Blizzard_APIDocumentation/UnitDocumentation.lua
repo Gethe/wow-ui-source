@@ -544,15 +544,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitAura",
-			Type = "Event",
-			LiteralName = "UNIT_AURA",
-			Payload =
-			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "UnitCheatToggleEvent",
 			Type = "Event",
 			LiteralName = "UNIT_CHEAT_TOGGLE_EVENT",

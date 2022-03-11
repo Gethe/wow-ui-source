@@ -64,6 +64,10 @@ function GlueDropDownMenu_Initialize(frame, initFunction, displayMode, level)
 
 end
 
+function GlueDropDownMenu_SetInitializeFunction(frame, initFunction)
+	frame.initialize = initFunction;
+end
+
 -- If dropdown is visible then see if its timer has expired, if so hide the frame
 function GlueDropDownMenu_OnUpdate(self, elapsed)
 	if ( not self.showTimer or not self.isCounting ) then

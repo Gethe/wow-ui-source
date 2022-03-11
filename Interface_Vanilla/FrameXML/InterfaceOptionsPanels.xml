@@ -2610,7 +2610,8 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
+			<!--Hiding the OverrideFadeOut checkbox until we have a reason to show the option to players-->
+			<!--<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
@@ -2621,7 +2622,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton> 
+			</CheckButton>--> 
 			<!--<CheckButton name="$parentQuestTextContrast" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
@@ -2709,7 +2710,7 @@
 			</Button>
 			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentOverrideFadeOut" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

@@ -123,6 +123,10 @@ function ScrollingEditBoxMixin:GetEditBox()
 	return self:GetScrollBox().EditBox;
 end
 
+function ScrollingEditBoxMixin:SetFocus()
+	self:GetEditBox():SetFocus();
+end
+
 function ScrollingEditBoxMixin:SetFontObject(fontName)
 	local editBox = self:GetEditBox();
 	editBox:SetFontObject(fontName);

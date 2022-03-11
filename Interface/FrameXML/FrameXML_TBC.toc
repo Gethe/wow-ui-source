@@ -75,6 +75,7 @@ MixinUtil.lua
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
