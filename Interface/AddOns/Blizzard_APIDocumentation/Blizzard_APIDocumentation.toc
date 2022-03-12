@@ -151,6 +151,7 @@ ItemInteractionUIDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
+LootJournalDocumentation.lua
 LoreTextDocumentation.lua
 MapDocumentation.lua
 MountJournalDocumentation.lua

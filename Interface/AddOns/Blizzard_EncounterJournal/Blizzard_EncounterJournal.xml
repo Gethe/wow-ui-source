@@ -1491,6 +1491,17 @@
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
+			<!-- this dropdown will get reparented between LootJournal and LootJournalItems -->
+			<Frame name="$parentLootJournalViewDropDown" parentKey="LootJournalViewDropDown" inherits="UIDropDownMenuTemplate">
+				<Size x="156" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="15" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="EncounterJournal_LootTabViewDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+
 			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
 				<Size x="210" y="20"/>
 				<Anchors>
@@ -1951,7 +1962,7 @@
 							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT_JOURNAL_POWERS" parentKey="LootJournalTab">
+					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT" parentKey="LootJournalTab">
 						<KeyValues>
 							<KeyValue key="id" value="4" type="number"/>
 						</KeyValues>

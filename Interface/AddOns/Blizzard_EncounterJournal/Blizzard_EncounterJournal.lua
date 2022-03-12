@@ -264,6 +264,38 @@ function EncounterJournal_OnLoad(self)
 	EJSuggestFrame_OpenFrame();
 end
 
+function EncounterJournal_GetLootJournalView()
+	return EncounterJournal.lootJournalView;
+end
+
+function EncounterJournal_SetLootJournalView(view)
+	local self = EncounterJournal;
+	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);	
+	self.LootJournalViewDropDown:SetParent(activeViewPanel);
+	self.LootJournalViewDropDown:SetPoint("TOPLEFT", 15, -9);
+	UIDropDownMenu_SetText(self.LootJournalViewDropDown, view);
+	
+	-- if no previous view then it's the init, no need to change which frame is shown
+	if self.lootJournalView then
+		activeViewPanel:Show();
+		inactiveViewPanel:Hide();
+	end
+
+	self.lootJournalView = view;
+end
+
+function EncounterJournal_GetLootJournalPanels(view)
+	local self = EncounterJournal;
+	if not view then
+		view = self.lootJournalView;
+	end
+	if view == LOOT_JOURNAL_POWERS then
+		return self.LootJournal, self.LootJournalItems;
+	else
+		return self.LootJournalItems, self.LootJournal;
+	end	
+end
+
 function EncounterJournal_EnableTierDropDown()
 	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
 	UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, tierName);
@@ -320,6 +352,10 @@ function EncounterJournal_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	EncounterJournal_LootUpdate();
+
+	if not self.lootJournalView then
+		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_POWERS);
+	end
 
 	local instanceSelect = EncounterJournal.instanceSelect;
 
@@ -2475,6 +2511,7 @@ end
 function EncounterJournal_OpenToPowerID(powerID)
 	ShowUIPanel(EncounterJournal);
 	EJ_ContentTab_Select(EncounterJournal.instanceSelect.LootJournalTab.id);
+	EncounterJournal_SetLootJournalView(LOOT_JOURNAL_POWERS);
 	EncounterJournal.LootJournal:OpenToPowerID(powerID);
 end
 
@@ -2607,7 +2644,7 @@ function EJ_ContentTab_Select(id)
 		EJ_HideSuggestPanel();
 		instanceSelect.scroll:Hide();
 		EncounterJournal_DisableTierDropDown(true);
-		EncounterJournal.LootJournal:Show();
+		EJ_ShowLootJournalPanel();
 	elseif ( id == instanceSelect.dungeonsTab.id or id == instanceSelect.raidsTab.id ) then
 		EJ_HideNonInstancePanels();
 		instanceSelect.scroll:Show();
@@ -2642,6 +2679,14 @@ function EJ_HideLootJournalPanel()
 	if ( EncounterJournal.LootJournal ) then
 		EncounterJournal.LootJournal:Hide();
 	end
+	if ( EncounterJournal.LootJournalItems ) then
+		EncounterJournal.LootJournalItems:Hide();
+	end
+end
+
+function EJ_ShowLootJournalPanel()
+	local activeLootPanel = EncounterJournal_GetLootJournalPanels();
+	activeLootPanel:Show();
 end
 
 function EJ_HideNonInstancePanels()
@@ -2848,6 +2893,29 @@ function EncounterJournal_InitLootSlotFilter(self, level)
 			UIDropDownMenu_AddButton(info);
 		end
 	end
+end
+
+function EncounterJournal_LootTabViewDropDown_OnLoad(self)
+	UIDropDownMenu_JustifyText(self, "LEFT");
+	UIDropDownMenu_Initialize(self, EncounterJournal_LootTabViewDropDown_Init);
+end
+
+function EncounterJournal_LootTabViewDropDown_Init(self)
+	local SetView = function(_, view) EncounterJournal_SetLootJournalView(view); end
+
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = LOOT_JOURNAL_POWERS;
+	info.func = SetView;
+	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_POWERS;
+	info.arg1 = LOOT_JOURNAL_POWERS;
+	UIDropDownMenu_AddButton(info, level);
+
+	info.text = LOOT_JOURNAL_ITEM_SETS;
+	info.func = SetView;
+	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_ITEM_SETS;
+	info.arg1 = LOOT_JOURNAL_ITEM_SETS;
+	UIDropDownMenu_AddButton(info, level);
 end
 
 ----------------------------------------
