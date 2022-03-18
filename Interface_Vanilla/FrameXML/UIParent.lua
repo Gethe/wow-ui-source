@@ -506,6 +506,10 @@ function ToggleTalentFrame()
 	end
 end
 
+function InClickBindingMode()
+	return ClickBindingFrame and ClickBindingFrame:IsShown();
+end
+
 function GetBattlefieldMapInstanceType()
 	local _, instanceType = IsInInstance();
 	if instanceType == "pvp" or instanceType == "none" then

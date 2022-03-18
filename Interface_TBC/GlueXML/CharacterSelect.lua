@@ -56,7 +56,7 @@ function GenerateBuildString(buildNumber)
 
 	-- Generate Build String from the Integer.
 	local versionParse = {tostring(buildNumber):match("(%d+)(%d%d)(%d%d)$")};
-	
+
 	if #versionParse > 0 then
 		for k, v in ipairs(versionParse) do
 			versionParse[k] = tonumber(v);
@@ -456,7 +456,7 @@ function CharacterSelect_OnUpdate(self, elapsed)
     if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
         StoreFrame_OnCharacterListUpdate();
     end
-	
+
 	GlueDialog_CheckQueuedDialogs();
 end
 
@@ -698,7 +698,7 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
     else
         GMError("Invalid lock type");
     end
-	
+
     padlock:SetParent(button);
     padlock:SetPoint("TOPRIGHT", button, "TOPLEFT", 5, 12);
 
@@ -1652,7 +1652,7 @@ function GetIndexFromCharID(charID)
 end
 
 function IsEraChoiceStateLocked(eraChoiceState)
-	if( not GetTBCTransitionUIEnabled() ) then 
+	if( not GetTBCTransitionUIEnabled() ) then
 		return false;
 	end
 
@@ -1674,13 +1674,13 @@ function AccountUpgradePanel_GetDisplayExpansionLevel()
 		currentExpansionLevel = currentExpansionLevel - 1;
 	end
 	local upgradeExpansionLevel = math.min(currentExpansionLevel + 1, GetMaximumExpansionLevel());
-	
+
 	local minExpansionLevel = GetMinimumExpansionLevel();
 
 	if currentExpansionLevel <= minExpansionLevel then
 		currentExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
-	
+
 	if upgradeExpansionLevel <= minExpansionLevel then
 		upgradeExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
@@ -1799,7 +1799,7 @@ function CharacterSelect_ScrollToCharacter(self, characterGUID)
 			return;
 		end
 	end
-	
+
 	CharacterSelect_ScrollList(self, maxScroll);
 end
 
@@ -1865,7 +1865,7 @@ function SetStoreUIShown(shown)
 			--We weren't showing, now we are. We should hide all other panels.
 			-- not sure if anything is needed here at the gluescreen
 		end
-		
+
 		StoreFrame_SetShown(shown);
 	end
 end
@@ -2013,7 +2013,7 @@ function KioskMode_CheckAutoRealm()
         SetKioskAutoRealmAddress(nil);
     end
 end
-    
+
 local KIOSK_MODE_WAITING_ON_TRIAL = false;
 function KioskMode_SetWaitingOnTrial(waiting)
     KIOSK_MODE_WAITING_ON_TRIAL = waiting;
@@ -2056,9 +2056,9 @@ function CharacterServicesMaster_UpdateServiceButton()
             frame.GlowPulse.PulseAnim:Stop();
         end
     end
-	
+
 	CharacterSelect.numActiveCharacterBoosts = 0;
-	
+
     UpgradePopupFrame:Hide();
     CharacterSelectUI.WarningText:Hide();
 
@@ -2066,7 +2066,7 @@ function CharacterServicesMaster_UpdateServiceButton()
         return;
     end
 
-    local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();	
+    local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();
     local hasPurchasedBoost = false;
     for id, data in pairs(upgradeInfo) do
 		hasPurchasedBoost = hasPurchasedBoost or data.hasPaid;
@@ -2119,7 +2119,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 		end
 	end
 		end
-		
+
 		if freeFrame then
 		DisplayBattlepayTokenFreeFrame(freeFrame);
 	end
@@ -2128,7 +2128,7 @@ end
 
 function DisplayBattlepayTokens(upgradeInfo, boostType)
 	if upgradeInfo and upgradeInfo.amount > 0 then
-	local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+		local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 		DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo);
 	end
 end
@@ -2136,7 +2136,7 @@ end
 function DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo)
 	if upgradeInfo.amount > 0 then
 		CharacterSelect.numActiveCharacterBoosts = CharacterSelect.numActiveCharacterBoosts + 1;
-		
+
 		local boostFrameIndex = CharacterSelect.numActiveCharacterBoosts;
 		local frame = CharacterSelect.CharacterBoosts[boostFrameIndex];
 		if not frame then
@@ -2326,7 +2326,7 @@ choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-curre
 choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-other";
 function ChoicePane_OnShow(self)
 	PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
-	
+
 	local selectedCharName = GetCharacterInfo(GetCharacterSelection());
 	ChoicePaneCurrentDesc:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CURRENT_DESCRIPTION, selectedCharName, selectedCharName, GetFormattedClonePrice()));
 
@@ -2450,7 +2450,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 	local popupData = freeFrameData.popupInfo;
 	if popupData then
 		local popupFrame = UpgradePopupFrame;
-		
+
 		popupFrame.data = freeFrameData;
 		popupFrame.Title:SetText(popupData.title);
 
@@ -2466,7 +2466,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 
 		popupFrame.Description:SetText(popupData.description);
 		popupFrame:SetupTextureKit(popupData.textureKitPrefix, textureKitRegionInfo);
-		
+
 		local baseHeight;
 		if freeFrame.data.isExpansionTrial then
 			popupFrame.GetStartedButton:SetText(EXPANSION_TRIAL_CREATE_TRIAL_CHARACTER);
@@ -2527,9 +2527,9 @@ end
 
 function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
 	CharacterUpgradeFlow:SetTrialBoostGuid(nil);
-	
+
 	if guid then
-		local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid)); 
+		local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid));
 		if isTrialBoost then
 			CharacterUpgradeFlow:SetTrialBoostGuid(guid);
 		else
@@ -2635,7 +2635,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 			else
 				CharacterUpgradeFlow:SetTarget(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), false);
 			end
-			
+
 			if CharacterUpgradeFlow.data then
 				CharSelectServicesFlowFrame:Show();
 				CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
@@ -2643,7 +2643,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 
 			CharacterUpgrade_ResetBoostData();
 		end
-        
+
         C_CharacterServices.SetAutomaticBoost(nil);
 		C_CharacterServices.SetAutomaticBoostCharacter(nil);
     elseif (C_CharacterServices.HasQueuedUpgrade()) then
@@ -2734,7 +2734,7 @@ function CharacterServicesMaster_Update()
     CharacterServicesMaster_UpdateFinishLabel(self);
 
 	if (block and block:IsFinished()) then
-		
+
         if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then
             CharacterServicesMaster_SetBlockFinishedState(block);
         end
@@ -3365,7 +3365,7 @@ function CharSelectEnterWorldButton_OnEnter(button)
 		else
 			text = LAUNCH_ETA_SOON;
 		end
-		
+
 		GlueTooltip:SetText(text);
 	else
 		GlueTooltip:Hide();

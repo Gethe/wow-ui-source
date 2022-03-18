@@ -1,11 +1,19 @@
 UIPanelWindows["ChannelFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
-ChannelFrameMixin = CreateFromMixins(EventRegistrationHelper);
+ChannelFrameMixin = CreateFromMixins();
 
 do
 	local dirtyFlags = {
 		UpdateChannelList = 1,
 		UpdateRoster = 2,
+	};
+
+	local dynamicEvents = {
+		"PARTY_LEADER_CHANGED",
+		"GROUP_ROSTER_UPDATE",
+		"CHANNEL_UI_UPDATE",
+		"CHANNEL_LEFT",
+		"CHAT_MSG_CHANNEL_NOTICE_USER",
 	};
 
 	function ChannelFrameMixin:OnLoad()
@@ -47,17 +55,14 @@ do
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
 
-		self:AddEvents("PARTY_LEADER_CHANGED", "GROUP_ROSTER_UPDATE", "CHANNEL_UI_UPDATE", "CHANNEL_LEFT", "CHAT_MSG_CHANNEL_NOTICE_USER");
-
 		local promptSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatPromptActivateChannel);
 		ChatAlertFrame:SetSubSystemAnchorPriority(promptSubSystem, 10);
 
 		local notificationSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatChannelActivatedNotification);
 		ChatAlertFrame:SetSubSystemAnchorPriority(notificationSubSystem, 11);
 	end
-end
 
-function ChannelFrameMixin:OnShow()
+	function ChannelFrameMixin:OnShow()
 	-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
 	if CommunitiesFrame and CommunitiesFrame:IsShown() then
 		HideUIPanel(CommunitiesFrame);
@@ -70,15 +75,17 @@ function ChannelFrameMixin:OnShow()
 		C_Club.SetClubPresenceSubscription(channel.clubId);
 	end
 
-	self:SetEventsRegistered(true);
+		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
 	self:MarkDirty("UpdateAll");
-end
+		self:MarkDirty("CheckShowTutorial");
+	end
 
-function ChannelFrameMixin:OnHide()
+	function ChannelFrameMixin:OnHide()
 	C_Club.ClearClubPresenceSubscription();
 
-	self:SetEventsRegistered(false);
+		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
 	StaticPopupSpecial_Hide(CreateChannelPopup);
+	end
 end
 
 function ChannelFrameMixin:OnEvent(event, ...)

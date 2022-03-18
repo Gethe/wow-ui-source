@@ -62,6 +62,9 @@ local function TryCreateZoomSpline(x, y, z, existingSpline)
 end
 
 function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, transitionType, modificationType) -- override
+	self.panningXOffset = 0;
+	self.panningYOffset = 0;
+
 	local transitionalCameraInfo = self:CalculateTransitionalValues(self.modelSceneCameraInfo, modelSceneCameraInfo, modificationType);
 
 	self.modelSceneCameraInfo = modelSceneCameraInfo;
@@ -82,6 +85,7 @@ function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, tr
 	if transitionType == CAMERA_TRANSITION_TYPE_IMMEDIATE then
 		self:SnapAllInterpolatedValues();
 	end
+	self:UpdateCameraOrientationAndPosition();
 
 	self:SaveInitialTransform(transitionalCameraInfo);
 end
@@ -363,6 +367,8 @@ ORBIT_CAMERA_MOUSE_MODE_ROLL_ROTATION = 3;
 ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL = 4;
 ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL = 5;
 ORBIT_CAMERA_MOUSE_MODE_ZOOM = 6;
+ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL = 7;
+ORBIT_CAMERA_MOUSE_PAN_VERTICAL = 8;
 
 function OrbitCameraMixin:SetLeftMouseButtonXMode(mouseMode, snap)
 	self.buttonModes.leftX = mouseMode;
@@ -432,7 +438,6 @@ function OrbitCameraMixin:HandleMouseMovement(mode, delta, snapToValue)
 		end
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_HORIZONTAL then
 		local rightX, rightY, rightZ = Vector3D_ScaleBy(delta, self:GetRightVector());
-
 		self:SetTarget(Vector3D_Add(rightX, rightY, rightZ, self:GetTarget()));
 
 		if snapToValue then
@@ -440,12 +445,15 @@ function OrbitCameraMixin:HandleMouseMovement(mode, delta, snapToValue)
 		end
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL then
 		local upX, upY, upZ = Vector3D_ScaleBy(delta, self:GetUpVector());
-
 		self:SetTarget(Vector3D_Add(upX, upY, upZ, self:GetTarget()));
 
 		if snapToValue then
 			self:SnapToTargetInterpolationTarget();
 		end
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL then
+		self.panningXOffset = self.panningXOffset + delta;
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_VERTICAL then
+		self.panningYOffset = self.panningYOffset + delta;
 	end
 end
 
@@ -500,6 +508,10 @@ function OrbitCameraMixin:GetDeltaModifierForCameraMode(mode)
 		return .05;
 	elseif mode == ORBIT_CAMERA_MOUSE_MODE_TARGET_VERTICAL then
 		return .05;
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_HORIZONTAL then
+		return 0.93;
+	elseif mode == ORBIT_CAMERA_MOUSE_PAN_VERTICAL then
+		return 0.93;
 	end
 	return 0.0;
 end
@@ -551,7 +563,32 @@ function OrbitCameraMixin:UpdateCameraOrientationAndPosition()
 	local axisAngleX, axisAngleY, axisAngleZ = Vector3D_CalculateNormalFromYawPitch(yaw, pitch);
 
 	local targetX, targetY, targetZ = self:GetInterpolatedTarget();
+
 	local zoomDistance = self:GetInterpolatedZoomDistance();
+
+	-- Panning start --
+	-- We want the model to move 1-to-1 with the mouse.
+	-- Panning formula: dx / hypotenuse * (zoomDistance - 1 / zoomDistance^3)
+	-- It was experimentally determined that adding the additional fudge factor 1/z^3 resulted in better tracking.
+
+	local width = self:GetOwningScene():GetWidth();
+	local height = self:GetOwningScene():GetHeight();
+	local scaleFactor = math.sqrt(width * width + height * height);
+	local zoomFactor = 1;
+	if zoomDistance > 1 then
+		zoomFactor = zoomDistance - (1 / (zoomDistance * zoomDistance * zoomDistance));
+		if zoomFactor < 1 then
+			zoomFactor = 1;
+		end
+	end
+
+	local rightX, rightY, rightZ = Vector3D_ScaleBy((self.panningXOffset / scaleFactor) * zoomFactor, self:GetRightVector());
+	local upX, upY, upZ = Vector3D_ScaleBy((self.panningYOffset / scaleFactor) * zoomFactor, self:GetUpVector());
+
+	-- Panning end --
+
+	targetX, targetY, targetZ = Vector3D_Add(targetX, targetY, targetZ, rightX, rightY, rightZ);
+	targetX, targetY, targetZ = Vector3D_Add(targetX, targetY, targetZ, upX, upY, upZ);
 
 	self:SetPosition(self:CalculatePositionByDistanceFromTarget(targetX, targetY, targetZ, zoomDistance, axisAngleX, axisAngleY, axisAngleZ));
 	self:GetOwningScene():SetCameraOrientationByYawPitchRoll(yaw, pitch, roll);
@@ -619,11 +656,18 @@ function OrbitCameraMixin:CalculateTransitionalValues(fromModelSceneCameraInfo, 
 		};
 	end
 
-
 	-- Nothing to transition from, just go directly to the values
 	return toModelSceneCameraInfo;
 end
 
 function OrbitCameraMixin:OnMouseWheel(delta) -- override
 	self:HandleMouseMovement(self.buttonModes.wheel, delta * self:GetDeltaModifierForCameraMode(self.buttonModes.wheel), not self.buttonModes.wheelInterpolate);
+end
+
+function OrbitCameraMixin:AdjustYaw(deltaX, deltaY, rotationScalar)
+	local xRotation = rotationScalar or self:GetDeltaModifierForCameraMode(self.buttonModes.leftX);
+	self:HandleMouseMovement(self.buttonModes.leftX, deltaX * xRotation, not self.buttonModes.leftXinterpolate);
+
+	local yRotatation  = rotationScalar or self:GetDeltaModifierForCameraMode(self.buttonModes.leftY);
+	self:HandleMouseMovement(self.buttonModes.leftY, -deltaY * yRotatation, not self.buttonModes.leftYinterpolate);
 end

@@ -23,6 +23,8 @@ local COUNT_INDEX = 3;
 local BOUNDING_INDEX = 4;
 local FRAME_INDEX = BOUNDING_INDEX + 4;
 
+local LOCAL_CHECK_Frame = CreateFrame("Frame");
+
 -- Create a new set, possibly re-using an existing array
 local function RectSet_Create(l, r, b, t, TTL, S)
     if (S) then
@@ -95,8 +97,8 @@ end
 
 -- Utility method to get a screen-normalized rect for a frame
 local function GetScreenFrameRect(frame)
-    local es = frame:GetEffectiveScale();
-    local l, b, w, h = frame:GetRect();
+    local es = LOCAL_CHECK_Frame.GetEffectiveScale(frame);
+    local l, b, w, h = LOCAL_CHECK_Frame.GetRect(frame);
     if (not (l and b)) then return 0, 0, 0, 0; end
     return l * es, (l + w) * es, b * es, (b + h) * es;
 end

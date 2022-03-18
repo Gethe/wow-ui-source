@@ -575,7 +575,6 @@ SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 MIN_CHARACTER_SEARCH = 3;
 
 -- faction
-PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance", Horde = 0, Alliance = 1 };
 PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor(0.29, 0.33, 0.91) }
 
 -- Panel default size
@@ -632,6 +631,9 @@ HONOR_CURRENCY = 392;
 JUSTICE_CURRENCY = 395;
 VALOR_CURRENCY = 396;
 SHOW_CONQUEST_LEVEL = 70;
+
+-- Honor Point texture file IDs. These files have some weird sizing, so they need some special handling.
+HONOR_POINT_TEXTURES = { 136998, 137000 };
 
 -- Looking for Guild Parameters
 LFGUILD_PARAM_QUESTS 	= 1;

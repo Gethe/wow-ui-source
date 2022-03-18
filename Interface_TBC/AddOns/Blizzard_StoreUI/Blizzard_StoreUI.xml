@@ -2505,11 +2505,6 @@
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="22" />
 							</Anchors>
-							<Scripts>
-								<OnLoad>
-									self.Anim:Play();
-								</OnLoad>
-							</Scripts>
 						</Frame>
 						<EditBox parentKey="NewCharacterName" letters="12" inherits="StoreEditBoxTemplate">
 							<Size x="170" y="22"/>

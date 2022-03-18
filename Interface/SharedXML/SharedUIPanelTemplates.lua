@@ -830,7 +830,7 @@ function MaximizeMinimizeButtonFrameMixin:Maximize()
 	if self.cvar then
 		SetCVar(self.cvar, 0);
 	end
-	
+
 	self.MaximizeButton:Hide();
 	self.MinimizeButton:Show();
 end
@@ -843,11 +843,11 @@ function MaximizeMinimizeButtonFrameMixin:Minimize()
 	if self.minimizedCallback then
 		self.minimizedCallback(self);
 	end
-	
+
 	if self.cvar then
 		SetCVar(self.cvar, 1);
 	end
-	
+
 	self.MaximizeButton:Show();
 	self.MinimizeButton:Hide();
 end
@@ -862,7 +862,7 @@ function PortraitFrameTemplateMixin:OnLoad()
 		self.TopRightCorner:SetAtlas("UI-Frame-TopCornerRight-2x");
 
 		self.TopBorder:SetAtlas("_UI-Frame-TittleTile2x");
-		
+
 		self.BotLeftCorner:SetAtlas("UI-Frame-BotCornerLeft-2x");
 		self.BotRightCorner:SetAtlas("UI-Frame-BotCornerRight-2x");
 
@@ -942,9 +942,9 @@ local FOO_COLUMN_INFO = {
 		title = FOO_COLUMN_xxx_TITLE,
 		width = 60,
 	},
-	
+
 	...
-	
+
 	[5] = {
 		title = FOO_COLUMN_xxxxx_TITLE,
 		width = 0,
@@ -954,7 +954,7 @@ local FOO_COLUMN_INFO = {
 
 function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
 	self.columnHeaders:ReleaseAll();
-	
+
 	local extraHeader = nil;
 	if extraColumnInfo then
 		extraHeader = self.columnHeaders:Acquire();
@@ -964,7 +964,7 @@ function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
 		extraHeader:SetID(#columnInfo + 1);
 		extraHeader:Show();
 	end
-	
+
 	local previousHeader = nil;
 	for i, info in ipairs(columnInfo) do
 		local header = self.columnHeaders:Acquire();
@@ -978,7 +978,7 @@ function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
 			end
 		else
 			header:SetPoint("BOTTOMLEFT", previousHeader, "BOTTOMRIGHT", -2, 0);
-			
+
 			if i == #columnInfo and info.width == 0 then
 				if extraHeader then
 					header:SetPoint("BOTTOMRIGHT", extraHeader, "BOTTOMLEFT", 2, 0);
@@ -987,7 +987,7 @@ function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
 				end
 			end
 		end
-		
+
 		header:Show();
 		previousHeader = header;
 	end
@@ -1245,6 +1245,14 @@ function DropDownControlMixin:SetOptions(options, defaultSelectedValue)
 	if defaultSelectedValue then
 		self:SetSelectedValue(defaultSelectedValue);
 	end
+end
+
+function DropDownControlMixin:GetOptionCount()
+	return self.options and #self.options or 0;
+end
+
+function DropDownControlMixin:HasOptions()
+	return self:GetOptionCount() > 0;
 end
 
 function DropDownControlMixin:SetCustomSetup(customSetupCallback, skipNormalSetup)

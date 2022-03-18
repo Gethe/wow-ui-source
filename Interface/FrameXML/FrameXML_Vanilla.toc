@@ -1,3 +1,5 @@
+..\SharedXML\SharedConstants.lua
+
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
@@ -6,8 +8,19 @@ GlueCheck.lua
 ..\..\Interface_Vanilla\FrameXML\Localization.xml
 Fonts.xml
 FontStyles.xml
+..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\FunctionUtil.lua
+..\SharedXML\Rectangle.lua
+..\SharedXML\Flags.lua
+..\SharedXML\LinkUtil.lua
+..\SharedXML\InterfaceUtil.lua
+..\SharedXML\AccountUtil.lua
+..\SharedXML\FormattingUtil.lua
+..\SharedXML\TabGroup.lua
+..\SharedXML\SmoothStatusBar.lua
+..\SharedXML\PredictedSetting.lua
+..\SharedXML\SecureUtil.lua
 ..\SharedXML\AnchorUtil.lua
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
@@ -15,7 +28,6 @@ FontStyles.xml
 ..\SharedXML\TextureUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_Vanilla\SharedXML\ColorUtil.lua
-..\SharedXML\Util.lua
 ..\SharedXML\Constants.lua
 ..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
@@ -62,7 +74,8 @@ MixinUtil.lua
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
-
+..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -222,6 +235,12 @@ BattlegroundChatFilters.xml
 ..\..\Interface_Vanilla\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 EasyMenu.lua
+TextToSpeechFrameConstants.lua
+TextToSpeechCommands.lua
+TextToSpeechFrame.xml
+TextToSpeech.xml
+VoiceChatTranscriptionFrame.xml
+VoiceChatTranscriptionButton.xml
 ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua
@@ -236,6 +255,7 @@ ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
+
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

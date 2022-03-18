@@ -272,7 +272,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true">
+			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="106" y="-41"/>
@@ -283,14 +283,12 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
-
-						self:SetMouseClickEnabled(false);
 					</OnLoad>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true">
+			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="106" y="-52"/>
@@ -301,8 +299,6 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
-
-						self:SetMouseClickEnabled(false);
 					</OnLoad>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>

@@ -98,6 +98,7 @@ local Club =
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "clubType", Type = "ClubType", Nilable = false, Documentation = { "Valid types are BattleNet or Character" } },
 				{ Name = "avatarId", Type = "number", Nilable = false },
+				{ Name = "isCrossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -191,6 +192,7 @@ local Club =
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "avatarId", Type = "number", Nilable = true },
 				{ Name = "broadcast", Type = "string", Nilable = true },
+				{ Name = "crossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -1230,9 +1232,9 @@ local Club =
 		{
 			Name = "ClubErrorType",
 			Type = "Enumeration",
-			NumValues = 40,
+			NumValues = 42,
 			MinValue = 0,
-			MaxValue = 39,
+			MaxValue = 41,
 			Fields =
 			{
 				{ Name = "ErrorCommunitiesNone", Type = "ClubErrorType", EnumValue = 0 },
@@ -1275,6 +1277,8 @@ local Club =
 				{ Name = "ErrorClubTicketCountAtMax", Type = "ClubErrorType", EnumValue = 37 },
 				{ Name = "ErrorClubTicketNoSuchTicket", Type = "ClubErrorType", EnumValue = 38 },
 				{ Name = "ErrorClubTicketHasConsumedAllowedRedeemCount", Type = "ClubErrorType", EnumValue = 39 },
+				{ Name = "ErrorClubDoesntAllowCrossFaction", Type = "ClubErrorType", EnumValue = 40 },
+				{ Name = "ErrorClubEditHasCrossFactionMembers", Type = "ClubErrorType", EnumValue = 41 },
 			},
 		},
 		{

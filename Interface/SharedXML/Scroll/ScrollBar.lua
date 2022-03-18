@@ -177,7 +177,10 @@ function ScrollBarMixin:Update()
 		
 		local thumb = self:GetThumb();
 		local thumbExtent;
-		if self.useProportionalThumb then
+		if self.fixedThumbExtent then
+			thumbExtent = self.fixedThumbExtent;
+			self:SetFrameExtent(thumb, thumbExtent);
+		elseif self.useProportionalThumb then
 			local minimumThumbExtent = self.minThumbExtent;
 			thumbExtent = Clamp(trackExtent * visibleExtentPercentage, minimumThumbExtent, trackExtent);
 			self:SetFrameExtent(thumb, thumbExtent);
@@ -199,7 +202,7 @@ function ScrollBarMixin:Update()
 		-- Small exponential representations of zero (ex. E-15) don't evaluate as > 0, 
 		-- and 1.0 can be represented by .99999XXXXXX.
 		self:GetBackStepper():SetEnabled(allowScroll and targetScrollPercentage > MathUtil.Epsilon);
-		self:GetForwardStepper():SetEnabled(allowScroll and targetScrollPercentage < 1);
+		self:GetForwardStepper():SetEnabled(allowScroll and targetScrollPercentage < (1 - MathUtil.Epsilon));
 
 		local offset = (trackExtent - thumbExtent) * scrollPercentage;
 		local x, y = 0, -offset;

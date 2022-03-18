@@ -72,8 +72,8 @@
 			<DisabledFont style="GameFontDisable"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
-      <Frame name="SecureTransferDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
-				<Size x="434" y="122" />
+        <Frame name="SecureTransferDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
+			<Size x="434" y="122" />
 			<Anchors>
 				<Anchor point="TOP" x="0" y="-135"/>
 			</Anchors>
@@ -132,7 +132,7 @@
 				</Button>
 			</Frames>
 			<Scripts>
-				<OnLoad inherit="prepend" function="SecureTransferDialog_OnLoad"/>
+				<OnLoad function="SecureTransferDialog_OnLoad"/>
 				<OnEvent function="SecureTransferDialog_OnEvent"/>
 				<OnShow function="SecureTransferDialog_OnShow"/>
 				<OnHide function="SecureTransferDialog_OnHide"/>

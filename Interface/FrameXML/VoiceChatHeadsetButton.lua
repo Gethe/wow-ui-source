@@ -67,7 +67,7 @@ end
 function VoiceChatHeadsetButtonMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
 		if self:VoiceChannelIDMatches(voiceChannelID) or self:VoiceChannelInfoMatches(channelType, clubId, streamId) then
-			self:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
+			self:GetParent():SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
 		end
 	end
 end
@@ -146,7 +146,7 @@ function VoiceChatHeadsetButtonMixin:SetVoiceChannel(voiceChannel)
 end
 
 function VoiceChatHeadsetButtonMixin:ClearVoiceChannel()
-	self:SetVoiceChannel(nil);
+	self:GetParent():SetVoiceChannel(nil);
 end
 
 function VoiceChatHeadsetButtonMixin:GetVoiceChannel()
@@ -165,7 +165,7 @@ function VoiceChatHeadsetButtonMixin:SetChannelType(channelType)
 	self.channelType = channelType;
 
 	if channelType ~= Enum.ChatChannelType.Communities then
-		self:SetVoiceChannel(C_VoiceChat.GetChannelForChannelType(channelType));
+		self:GetParent():SetVoiceChannel(C_VoiceChat.GetChannelForChannelType(channelType));
 		self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(channelType));
 	end
 end
@@ -187,7 +187,7 @@ function VoiceChatHeadsetButtonMixin:SetCommunityInfo(clubId, streamInfo)
 	self.streamId = streamInfo.streamId;
 	self:SetChannelName(streamInfo.name);
 	self:SetChannelType(Enum.ChatChannelType.Communities);
-	self:SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
+	self:GetParent():SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
 	self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(Enum.ChatChannelType.Communities, self.clubId, self.streamId));
 end
 
@@ -276,6 +276,11 @@ end
 
 function VoiceChatHeadsetMixin:SetChannelName(...)
 	self.Button:SetChannelName(...);
+end
+
+function VoiceChatHeadsetMixin:SetVoiceChannel(...)
+	self.Button:SetVoiceChannel(...);
+	self.Transcription:SetVoiceChannel(...);
 end
 
 function VoiceChatHeadsetMixin:SetOnClickCallback(fn)

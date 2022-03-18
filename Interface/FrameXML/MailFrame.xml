@@ -503,17 +503,30 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="SendMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
-						<Size x="296" y="257"/>
+					<Frame name="MailEditBox" inherits="ScrollingEditBoxTemplate">
+						<Size x="268" y="190"/>
+						<!--<Size x="296" y="257"/>-->
 						<Anchors>
-							<Anchor point="TOPLEFT" x="8" y="-83"/>
+							<Anchor point="TOPLEFT" x="28" y="-93"/>
 						</Anchors>
+						<KeyValues>
+							<KeyValue key="maxLetters" value="500" type="number"/>
+							<KeyValue key="fontName" value="MailTextFontNormal" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnMouseUp>
+								MailEditBox:GetEditBox():SetFocus();
+								if ( CursorHasItem() ) then
+								SendMailAttachmentButton_OnDropAny();
+								end
+							</OnMouseUp>
+						</Scripts>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="SendStationeryBackgroundLeft">
 									<Size x="252" y="256"/>
 									<Anchors>
-										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPLEFT" x="-20" y="11"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SendStationeryBackgroundRight">
@@ -523,65 +536,14 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name ="SendScrollBarBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="256"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="106"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-							</Layer>
 						</Layers>
-						<ScrollChild>
-							<Frame name="SendMailScrollChildFrame" enableMouse="true">
-								<Size x="300" y="255"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="0" y="0"/>
-								</Anchors>
-								<Frames>
-									<EditBox name="SendMailBodyEditBox" letters="500" multiLine="true" enableMouse="true" autoFocus="false">
-										<Size x="270" y="200"/>
-										<Anchors>
-											<Anchor point="TOPLEFT" x="20" y="-10"/>
-										</Anchors>
-										<Scripts>
-											<OnTextChanged>
-												ScrollingEdit_OnTextChanged(self, self:GetParent():GetParent());
-											</OnTextChanged>
-											<OnCursorChanged>
-												ScrollingEdit_OnCursorChanged(self, x, y-10, w, h);
-											</OnCursorChanged>
-											<OnUpdate>
-												ScrollingEdit_OnUpdate(self, elapsed, self:GetParent():GetParent());
-											</OnUpdate>
-											<OnTabPressed>
-												EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
-											</OnTabPressed>
-											<OnEscapePressed function="EditBox_ClearFocus"/>
-										</Scripts>
-										<FontString inherits="MailTextFontNormal"/>
-										<HighlightColor a="1.0" r="0.82" g="0.82" b="0.82"/>
-									</EditBox>
-								</Frames>
-								<Scripts>
-									<OnMouseUp>
-										SendMailBodyEditBox:SetFocus();
-										if ( CursorHasItem() ) then
-											SendMailAttachmentButton_OnDropAny();
-										end
-									</OnMouseUp> 
-								</Scripts>
-							</Frame>
-						</ScrollChild>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame name="MailEditBoxScrollBar" inherits="WowClassicScrollBar">
+						<Anchors>
+							<Anchor relativeTo="MailEditBox" point="TOPLEFT" relativePoint="TOPRIGHT" x="7" y="14"/>
+							<Anchor relativeTo="MailEditBox" point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="7" y="0"/>
+						</Anchors>
+					</EventFrame>
 					<EditBox name="SendMailNameEditBox" letters="77" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
 						<Size x="109" y="25"/>
 						<Anchors>
@@ -710,7 +672,7 @@
 								EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 							</OnTabPressed>
 							<OnEnterPressed>
-								SendMailBodyEditBox:SetFocus();
+								MailEditBox:SetFocus();
 							</OnEnterPressed>
 							<OnEscapePressed function="EditBox_ClearFocus"/>
 							<OnTextChanged function="SendMailFrame_CanSend"/>
@@ -841,6 +803,7 @@
 					<OnLoad>
 						SendMailErrorText:SetPoint("BOTTOMLEFT", "SendMailMoneyText", "TOPLEFT", 0, 2);
 						SendMailRadioButton_OnClick(self, 1);
+						SendMailEditBox_OnLoad();
 					</OnLoad>
 					<OnShow>
 						if ( ENABLE_COLORBLIND_MODE == "1" ) then
@@ -884,7 +847,7 @@
 			<OnHide>
 				CloseMail();
 				HideUIPanel(OpenMailFrame);
-				SendMailBodyEditBox:SetText("");
+				MailEditBox:SetText("");
 				SendMailNameEditBox:SetText("");
 				SendMailSubjectEditBox:SetText("");
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);

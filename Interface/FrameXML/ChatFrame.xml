@@ -73,6 +73,12 @@
 						<Anchor point="LEFT" relativeTo="$parentHeader" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentPrompt" inherits="ChatFontNormal" hidden="true" parentKey="prompt">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="15" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
