@@ -41,8 +41,9 @@ function GMChatFrame_OnLoad(self)
 	self.buttonFrame:SetAlpha(1);
 	self.buttonFrame.minimizeButton:Hide();
 
+	self.editBox:ClearAllPoints();
 	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);
-	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -8, -2);
+	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -43, -2);
 	self.editBox.isGM = true;
 	ChatEdit_DeactivateChat(self.editBox);
 end
@@ -187,6 +188,9 @@ function GMChatStatusFrame_OnLoad(self)
 
 	self:SetWidth(math.max(self.TitleText:GetWidth(), self.SubtitleText:GetWidth()) + 50);
 	self:SetHeight(self.TitleText:GetHeight() + self.SubtitleText:GetHeight() + 20);
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self.NineSlice:SetCenterColor(bgR, bgG, bgB, 1);
 end
 
 function GMChatStatusFrame_OnClick()

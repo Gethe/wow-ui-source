@@ -21,6 +21,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetChannelInfoFromIdentifier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIdentifier", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ChatChannelInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
 
@@ -36,6 +50,48 @@ local ChatInfo =
 				{ Name = "owner", Type = "bool", Nilable = false },
 				{ Name = "moderator", Type = "bool", Nilable = false },
 				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChannelShortcut",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChannelShortcutForChannelID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChatTypeName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "typeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
 			},
 		},
 		{

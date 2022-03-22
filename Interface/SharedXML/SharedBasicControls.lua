@@ -96,10 +96,6 @@ function BaseExpandableDialogMixin:SetupTextureKit(textureKit, textureKitRegionI
 	SetupTextureKitsFromRegionInfo(textureKit, self, textureKitRegionInfo);
 end
 
-function BaseExpandableDialogMixin:SetupTextureKitByID(textureKitID)
-	SetupTextureKitsFromRegionInfoByID(textureKitID, self, textureKitRegionInfo);
-end
-
 -- override as needed
 function BaseExpandableDialogMixin:OnCloseClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
@@ -108,6 +104,56 @@ end
 
 function BaseExpandableDialogMixin_OnCloseClick(self)
 	self:GetParent():OnCloseClick();
+end
+
+BaseNineSliceDialogMixin = {};
+
+local textureKitRegionInfo = {
+	["ParchmentTop"] = {formatString= "%s-Top", useAtlasSize=true},
+	["ParchmentMiddle"] = {formatString="%s-Middle", useAtlasSize = false},
+	["ParchmentBottom"] = {formatString="%s-Bottom", useAtlasSize = true},
+}
+
+function BaseNineSliceDialogMixin:OnLoad()
+	self.Underlay:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.Underlay:SetShown(self.showUnderlay);
+	NineSliceUtil.ApplyUniqueCornersLayout(self.Border, self.nineSliceTextureKit);
+	SetupTextureKitsFromRegionInfo(self.parchmentTextureKit, self.Contents, textureKitRegionInfo)
+
+	self:SetPoint("TOP", UIParent, "TOP", 0, self.topYOffset);
+
+	self.Contents.ParchmentTop:SetPoint("TOP", self, "TOP", self.parchmentXOffset, -self.parchmentYPaddingTop);
+	self.Contents.ParchmentBottom:SetPoint("BOTTOM", self, "BOTTOM", self.parchmentXOffset, self.parchmentYPaddingBottom);
+
+	if self.centerBackgroundTexture then
+		self.CenterBackground:SetPoint("TOPLEFT", self, "TOPLEFT", self.centerBackgroundXPadding, -self.centerBackgroundYPadding);
+		self.CenterBackground:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.centerBackgroundXPadding, self.centerBackgroundYPadding);
+		self.CenterBackground:SetAtlas(self.centerBackgroundTexture);
+		self.CenterBackground:Show();
+	else
+		self.CenterBackground:Hide();
+	end
+end
+
+function BaseNineSliceDialogMixin:Display(title, description, onCloseCvar)
+	self.Contents.Title:SetText(title:upper());
+	self.Contents.Description:SetText(description);
+	self.Contents.DescriptionDuplicate:SetText(description);
+	self:Show();
+	self.onCloseCvar = onCloseCvar;
+end
+
+-- override as needed
+function BaseNineSliceDialogMixin:OnCloseClick()
+	if self.onCloseCvar then
+		SetCVar(self.onCloseCvar, "1");
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	self:Hide();
+end
+
+function BaseNineSliceDialog_OnCloseClick(self)
+	self:GetParent():GetParent():OnCloseClick();
 end
 
  ScriptErrorsFrameMixin = {};
@@ -166,6 +212,11 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 	end
 
 	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg.."\n"..stack);
+
+	-- process any exception after displaying, this ensures frame text is updated
+	if (ProcessExceptionClient) then
+		ProcessExceptionClient();
+	end
 end
 
 function ScriptErrorsFrameMixin:OnWarning(msg, warnType, keepHidden)
@@ -244,6 +295,15 @@ function ScriptErrorsFrameMixin:Update()
 	self:UpdateButtons();
 end
 
+local function GetNavigationButtonEnabledStates(count, index)
+	-- Returns indicate whether navigation for "previous" and "next" should be enabled, respectively.
+	if count > 1 then
+		return index > 1, index < count;
+	end
+
+	return false, false;
+end
+
 function ScriptErrorsFrameMixin:UpdateButtons()
 	local index = self.index;
 	local numErrors = self:GetCount();
@@ -272,13 +332,12 @@ function ScriptErrorsFrameMixin:ShowNext()
 	self:ChangeDisplayedIndex(1);
 end
 
-local function ShouldHideErrorFrame(errorTypeCVar)
+local function IsErrorCVarEnabled(errorTypeCVar)
 	return InGlue() or GetCVarBool(errorTypeCVar);
 end
 
 local function DisplayMessageInternal(errorTypeCVar, warnType, msg, messageType)
-	local hideErrorFrame = not ShouldHideErrorFrame(errorTypeCVar);
-	GetBuildInfo();
+	local hideErrorFrame = not IsErrorCVarEnabled(errorTypeCVar);
 	ScriptErrorsFrame:DisplayMessage(msg, warnType, hideErrorFrame, messageType);
 
 	return msg;

@@ -39,7 +39,3 @@ VERY_LIGHT_GRAY_COLOR		= CreateColor(.9, .9, .9);
 YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);
 TOOLTIP_DEFAULT_COLOR		= CreateColor(1, 1, 1);
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = CreateColor(0.09, 0.09, 0.19);
-
-function GetClassAtlas(className)
-	return ("classicon-%s"):format(className);
-end

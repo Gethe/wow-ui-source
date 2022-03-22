@@ -115,6 +115,7 @@ ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, fl
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -263,6 +264,9 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
 };
+ChatTypeGroup["VOICE_TEXT"] = {
+	"CHAT_MSG_VOICE_TEXT",
+};
 
 --NEW_CHAT_TYPE - Add the chat type above.
 
@@ -306,16 +310,14 @@ function Chat_GetCommunitiesChannelName(clubId, streamId)
 	return ("Community:%s:%s"):format(tostring(clubId), tostring(streamId));
 end
 
-local function Chat_GetCommunitiesChannel(clubId, streamId)
+function Chat_GetCommunitiesChannel(clubId, streamId)
 	local communitiesChannelName = Chat_GetCommunitiesChannelName(clubId, streamId);
 	for i = 1, MAX_WOW_CHAT_CHANNELS do
 		local channelID, channelName = GetChannelName(i);
 		if channelName and channelName == communitiesChannelName then
-			return "CHANNEL"..i;
+			return "CHANNEL"..i, i;
 		end
 	end
-
-	return nil;
 end
 
 function Chat_GetCommunitiesChannelColor(clubId, streamId)
@@ -1767,15 +1769,31 @@ SecureCmdList["QUIT"] = function(msg)
 	Quit();
 end
 
+function AddSecureCmd(cmd, cmdString)
+	if not issecure() then
+		error("Cannot call AddSecureCmd from insecure code");
+	end
+
+	hash_SecureCmdList[strupper(cmdString)] = cmd;
+end
+
+function AddSecureCmdAliases(cmd, ...)
+	for i = 1, select("#", ...) do
+		local cmdString = select(i, ...);
+		AddSecureCmd(cmd, cmdString);
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
-	local cmdString = _G["SLASH_"..index..i];
-	while ( cmdString ) do
-		cmdString = strupper(cmdString);
-		hash_SecureCmdList[cmdString] = value;	-- add to hash
-		i = i + 1;
+	local cmdString = "";
+	while cmdString do
 		cmdString = _G["SLASH_"..index..i];
+		if cmdString then
+			AddSecureCmd(value, cmdString);
+			i = i + 1;
+		end
 	end
 end
 
@@ -2571,6 +2589,15 @@ SlashCmdList["VOICECHAT"] = function(msg)
 	end
 end
 
+SlashCmdList["TEXTTOSPEECH"] = function(msg)
+	if TextToSpeechCommands:EvaluateTextToSpeechCommand(msg) then
+		TextToSpeechFrame_Update(TextToSpeechFrame);
+	else
+		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
+		TextToSpeechCommands:ShowHelp(msg)
+	end
+end
+
 function RegisterNewSlashCommand(callback, command, commandAlias)
 	local name = string.upper(command);
 	_G["SLASH_"..name.."1"] = "/"..command;
@@ -2690,6 +2717,9 @@ function ChatFrame_RegisterForMessages(self, ...)
 			self.messageTypeList[index] = select(i, ...);
 			for index, value in pairs(messageGroup) do
 				self:RegisterEvent(value);
+				if ( value == "CHAT_MSG_VOICE_TEXT" ) then
+					self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				end
 			end
 			index = index + 1;
 		end
@@ -2919,6 +2949,10 @@ do
 end
 
 function ChatFrame_OnEvent(self, event, ...)
+	if ( self.customEventHandler and self.customEventHandler(self, event, ...) ) then
+		return;
+	end
+
 	if ( ChatFrame_ConfigEventHandler(self, event, ...) ) then
 		return;
 	end
@@ -3194,6 +3228,10 @@ do
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
+	if ( TextToSpeechFrame_MessageEventHandler ~= nil ) then
+		TextToSpeechFrame_MessageEventHandler(self, event, ...)
+	end
+
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 		if (arg16) then
@@ -3221,7 +3259,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 		local channelLength = strlen(arg4);
 		local infoType = type;
-		if ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
+
+		if type == "VOICE_TEXT" and not GetCVarBool("speechToText") then
+			return;
+
+		elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
 				local staticPopup = _G[StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or ""];
 				if ( staticPopup and strupper(staticPopup.data) == strupper(arg9) ) then
@@ -3309,9 +3351,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
 			-- arg5 contains the name of the player who looted
 			if (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
-				local itemID, creationContext = GetItemInfoFromHyperlink(arg1);
+				local itemID, strippedItemLink = GetItemInfoFromHyperlink(arg1);
 				if (itemID and C_Social.GetLastItem() == itemID) then
-					arg1 = arg1 .. " " .. Social_GetShareItemLink(itemID, creationContext, true);
+					arg1 = arg1 .. " " .. Social_GetShareItemLink(strippedItemLink, true);
 				end
 			end
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -3589,6 +3631,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		return true;
+	elseif ( event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" ) then
+		local _, isNowTranscribing = ...
+		if ( not self.isTranscribing and isNowTranscribing ) then
+			ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_STARTED);
+		end
+		self.isTranscribing = isNowTranscribing;
 	end
 end
 
@@ -4012,6 +4060,11 @@ function ChatFrame_DisplaySystemMessageInCurrent(messageTag)
 	SELECTED_CHAT_FRAME:AddMessage(messageTag, info.r, info.g, info.b, info.id);
 end
 
+function ChatFrame_DisplaySystemMessage(frame, messageTag)
+	local info = ChatTypeInfo["SYSTEM"];
+	frame:AddMessage(messageTag, info.r, info.g, info.b, info.id);
+end
+
 -- ChatEdit functions
 
 local ChatEdit_LastTell = {};
@@ -4108,7 +4161,7 @@ function ChatEdit_OnHide(self)
 		ChatEdit_DeactivateChat(self);
 	end
 
-	if ( LAST_ACTIVE_CHAT_EDIT_BOX == self and self:IsShown() ) then	--Our parent was hidden. Let's find a new default frame.
+	if ( LAST_ACTIVE_CHAT_EDIT_BOX == self and ( self.disableActivate or self:IsShown() ) ) then	--Our parent was hidden. Let's find a new default frame.
 		--We'll go with the active dock frame since people think of that as the primary chat.
 		ChatEdit_SetLastActiveWindow(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox);
 	end
@@ -4124,6 +4177,10 @@ function ChatEdit_OnEditFocusLost(self)
 end
 
 function ChatEdit_ActivateChat(editBox)
+	if ( editBox.disableActivate ) then
+		return;
+	end
+
 	ChatFrame_ClearChatFocusOverride();
 	if ( ACTIVE_CHAT_EDIT_BOX and ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		ChatEdit_DeactivateChat(ACTIVE_CHAT_EDIT_BOX);
@@ -4141,6 +4198,7 @@ function ChatEdit_ActivateChat(editBox)
 	editBox:Raise();
 
 	editBox.header:Show();
+	editBox.prompt:Hide();
 	--[[editBox.focusLeft:Show();
 	editBox.focusRight:Show();
 	editBox.focusMid:Show();]]
@@ -4155,11 +4213,12 @@ end
 
 local function ChatEdit_SetDeactivated(editBox)
 	editBox:SetFrameStrata("LOW");
-	if ( GetCVar("chatStyle") == "classic" and not editBox.isGM ) then
+	if ( editBox.disableActivate or GetCVar("chatStyle") == "classic" and not editBox.isGM ) then
 		editBox:Hide();
 	else
 		editBox:SetText("");
 		editBox.header:Hide();
+		editBox.prompt:Show();
 		if ( not editBox.isGM ) then
 			editBox:SetAlpha(0.35);
 		end
@@ -4195,6 +4254,10 @@ function ChatEdit_ChooseBoxForSend(preferredChatFrame)
 end
 
 function ChatEdit_SetLastActiveWindow(editBox)
+	if ( editBox ~= nil and editBox.disableActivate ) then
+		return;
+	end
+
 	local previousValue = LAST_ACTIVE_CHAT_EDIT_BOX;
 	if ( LAST_ACTIVE_CHAT_EDIT_BOX and not LAST_ACTIVE_CHAT_EDIT_BOX.isGM and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		if ( GetCVar("chatStyle") == "im" ) then
@@ -4380,7 +4443,13 @@ function ChatEdit_UpdateHeader(editBox)
 		return;
 	end
 
-	local info = ChatTypeInfo[type];
+	local info;
+	if ( type == "VOICE_TEXT" ) then
+		type, info = VoiceTranscription_GetChatTypeAndInfo();
+	else
+		info = ChatTypeInfo[type];
+	end
+
 	local header = _G[editBox:GetName().."Header"];
 	local headerSuffix = _G[editBox:GetName().."HeaderSuffix"];
 	if ( not header ) then
@@ -4439,6 +4508,8 @@ function ChatEdit_UpdateHeader(editBox)
 		end
 		ChatEdit_UpdateHeader(editBox);
 		return;
+	elseif ( type == "COMMUNITIES_CHANNEL" and info.channelName ) then
+		header:SetFormattedText(CHAT_CHANNEL_SEND_NO_ID, info.channelName);
 	else
 		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
@@ -5282,15 +5353,12 @@ end
 SHARE_ICON_COLOR = "ffffd200";
 SHARE_ICON_TEXT = "|TInterface\\ChatFrame\\UI-ChatIcon-Share:18:18|t";
 
-function Social_GetShareItemLink(itemID, creationContext, earned)
-	if (creationContext == nil) then
-		creationContext = "";
-	end
+function Social_GetShareItemLink(strippedItemLink, earned)
 	local earnedNum = 0;
 	if (earned) then
 		earnedNum = 1;
 	end
-	return format("|c%s|Hshareitem:%d:%d:%s|h%s|h|r", SHARE_ICON_COLOR, itemID, earnedNum, creationContext, SHARE_ICON_TEXT);
+	return format("|c%s|Hshareitem:%s:%d|h%s|h|r", SHARE_ICON_COLOR, strippedItemLink, earnedNum, SHARE_ICON_TEXT);
 end
 
 function Social_GetShareAchievementLink(achievementID, earned)

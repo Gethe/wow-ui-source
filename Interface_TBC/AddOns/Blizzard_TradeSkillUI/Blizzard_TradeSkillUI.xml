@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="..\..\..\Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI.lua"/>
+	<Script file="Blizzard_TradeSkillUI.lua"/>
 	<Button name="TradeSkillSkillButtonTemplate" inherits="ClassTrainerSkillButtonTemplate" hidden="false" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -173,6 +173,82 @@
 					<AbsInset left="0" right="-75" top="0" bottom="0"/>
 				</HitRectInsets>
 			</CheckButton>
+
+
+			<EditBox name="TradeSearchInputBox" autoFocus="false">
+				<Size>
+					<AbsDimension x="128" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-45" y="-50"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-5" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="0" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetText(SEARCH);
+					</OnShow>
+					<OnEnterPressed>
+						self:ClearFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						self:ClearFocus();
+					</OnEscapePressed>
+					<OnTextChanged>
+						TradeSkillFilter_OnTextChanged(self);
+					</OnTextChanged>
+					<OnEditFocusLost>
+						self:HighlightText(0, 0);
+						if ( self:GetText() == "" ) then
+						self:SetText(SEARCH);
+						end
+					</OnEditFocusLost>
+					<OnEditFocusGained>
+						self:HighlightText();
+						if ( self:GetText() == SEARCH ) then
+						self:SetText("");
+						end
+					</OnEditFocusGained>
+				</Scripts>
+				<FontString inherits="ChatFontSmall"/>
+			</EditBox>
+
 			
 			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
 				<Size>

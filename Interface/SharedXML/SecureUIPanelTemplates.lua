@@ -26,6 +26,14 @@ if tbl then
 end
 ----------------
 
+function EditBox_OnTabPressed(self)
+	if ( self.previousEditBox and IsShiftKeyDown() ) then
+		self.previousEditBox:SetFocus();
+	elseif ( self.nextEditBox ) then
+		self.nextEditBox:SetFocus();
+	end
+end
+
 function EditBox_ClearFocus(self)
 	self:ClearFocus();
 end
@@ -170,6 +178,11 @@ function ScrollFrame_OnVerticalScroll(self, offset)
 	local min, max = scrollbar:GetMinMaxValues();
 	(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):SetEnabled(offset ~= 0);
 	(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):SetEnabled((scrollbar:GetValue() - max) ~= 0);
+end
+
+function ScrollFrame_SetScrollOffset(self, scrollOffset)
+	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
+	scrollbar:SetValue(scrollOffset);
 end
 
 function ScrollingEdit_OnTextChanged(self, scrollFrame)
@@ -351,11 +364,7 @@ function InputScrollFrame_OnMouseDown(self)
 	self.EditBox:SetFocus();
 end
 
-function InputScrollFrame_OnTabPressed(self)
-	if ( self.nextEditBox ) then
-		self.nextEditBox:SetFocus();
-	end
-end
+InputScrollFrame_OnTabPressed = EditBox_OnTabPressed;
 
 function InputScrollFrame_OnTextChanged(self)
 	local scrollFrame = self:GetParent();
@@ -453,4 +462,14 @@ function SelectionFrameOkayButton_OnClick(self, ...)
 	if okayFunction then
 		okayFunction(self, ...);
 	end
+end
+
+LoadingSpinnerMixin = {};
+
+function LoadingSpinnerMixin:OnShow()
+	self.Anim:Play();
+end
+
+function LoadingSpinnerMixin:OnHide()
+	self.Anim:Stop();
 end

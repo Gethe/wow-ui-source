@@ -6,6 +6,15 @@ local System =
 
 	Functions =
 	{
+		{
+			Name = "GetFrameStack",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "objects", Type = "table", InnerType = "table", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -31,12 +40,35 @@ local System =
 			LiteralName = "ENABLE_TAXI_BENCHMARK",
 		},
 		{
+			Name = "FirstFrameRendered",
+			Type = "Event",
+			LiteralName = "FIRST_FRAME_RENDERED",
+		},
+		{
 			Name = "GenericError",
 			Type = "Event",
 			LiteralName = "GENERIC_ERROR",
 			Payload =
 			{
 				{ Name = "errorMessage", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GlobalMouseDown",
+			Type = "Event",
+			LiteralName = "GLOBAL_MOUSE_DOWN",
+			Payload =
+			{
+				{ Name = "button", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GlobalMouseUp",
+			Type = "Event",
+			LiteralName = "GLOBAL_MOUSE_UP",
+			Payload =
+			{
+				{ Name = "button", Type = "string", Nilable = false },
 			},
 		},
 		{

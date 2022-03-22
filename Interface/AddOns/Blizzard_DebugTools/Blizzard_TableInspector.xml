@@ -267,10 +267,7 @@
 					</OnDragStop>
 				</Scripts>
 			</Button>
-			<ScrollFrame parentKey="LinesScrollFrame" inherits="UIPanelScrollFrameTemplate, BackdropTemplate">
-				<KeyValues>
-					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
-				</KeyValues>
+			<ScrollFrame parentKey="LinesScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="430" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-70"/>

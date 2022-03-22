@@ -2563,20 +2563,6 @@
             <Anchor point="RIGHT" x="-32" y="0" />
           </Anchors>
         </FontString>
-
-        <FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-          <Anchors>
-            <Anchor point="TOPLEFT" x="18" y="-174" />
-          </Anchors>
-        </FontString>
-
-				<Texture parentKey="ColorblindFiltersSeparator">
-					<Size x="600" y="1"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-190"/>
-					</Anchors>
-					<Color r="0.25" g="0.25" b="0.25"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -2624,97 +2610,258 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
+			<!--Hiding the OverrideFadeOut checkbox until we have a reason to show the option to players-->
+			<!--<CheckButton name="$parentOverrideFadeOut" parentKey="OverrideFadeOut" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "colorblindMode";
-						self.uvar = "ENABLE_COLORBLIND_MODE";
+						self.cvar = "overrideScreenFlash"
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
+			</CheckButton>--> 
+			<!--<CheckButton name="$parentQuestTextContrast" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "questTextContrast";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>-->
+			<CheckButton name="$parentSpeechToText" parentKey="SpeechToTextCheckbox" hyperlinksEnabled="true" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSubText" parentKey="SubText" text="SPEECH_TO_TEXT_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="2" justifyH="LEFT" justifyV="TOP">
+							<Size x="275"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMovePad" relativePoint="TOPRIGHT" x="275"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelSpeechToTextCheckbox_OnLoad"/>
+					<OnHyperlinkClick function="GetURLIndexAndLoadURLWithSound" />
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentTextToSpeech" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSpeechToTextSubText" relativePoint="BOTTOMLEFT" x="-28" y="-4" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelTextToSpeechCheckbox_OnLoad"/>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentConfigureTextToSpeech" inherits="UIPanelButtonTemplate" text="CONFIGURE_TEXT_TO_SPEECH">
+				<Size x="225" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTextToSpeech" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnLoad"/>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnEvent"/>
+					<OnClick function="InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<CheckButton name="$parentRemoteTextToSpeech" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentConfigureTextToSpeech" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnLoad"/>
+					<OnShow function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnShow"/>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnEvent"/>
+				</Scripts>
 			</CheckButton>
 
-      <Frame parentKey="ColorblindFilterExamples">
-        <Size x="580" y="280" />
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-16" />
-        </Anchors>
-        <Layers>
-          <Layer level="ARTWORK">
-            <FontString parentKey="Instructions" text="COLORBLIND_OPTIONS_INSTRUCTIONS" inherits="GameFontHighlight" justifyH="LEFT">
-              <Size x="550" />
-              <Anchors>
-                <Anchor point="TOPLEFT" />
-              </Anchors>
-            </FontString>
+			<Frame name="$parentRemoteTextToSpeechVoiceDropdown" parentKey="RemoteTextToSpeechVoiceDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRemoteTextToSpeech" relativePoint="BOTTOMLEFT" x="-16" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Button name="$parentRemoteTextToSpeechVoicePlaySample" parentKey="RemoteTextToSpeechVoicePlaySample" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_PLAY_SAMPLE">
+				<Size x="175" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRemoteTextToSpeechVoiceDropdown" relativePoint="BOTTOMLEFT" x="16" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnLoad"/>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnEvent"/>
+					<OnClick function="InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMotionSicknessDropdown" parentKey="MotionSicknessDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MOTION_SICKNESS_DROPDOWN">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentShakeIntensityDropdown" parentKey="ShakeIntensityDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMotionSicknessDropdown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ADJUST_MOTION_SICKNESS_SHAKE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentCursorSizeDropdown" parentKey="CursorSizeDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShakeIntensityDropdown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="CURSOR_SIZE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="17" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			
+    </Frames>
+    <Scripts>
+      <OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
+    </Scripts>
+  </Frame>
 
-            <Texture parentKey="ColorWheel" atlas="colorblind-colorwheel" useAtlasSize="true">
-              <Anchors>
-                <Anchor point="BOTTOMRIGHT" x="-60" y="45" />
-              </Anchors>
-            </Texture>
+	<Frame name="InterfaceOptionsColorblindPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
 
-            <Texture parentKey="Hostile" atlas="colorblind-bar-red" useAtlasSize="true">
-              <Anchors>
-                <Anchor point="BOTTOMLEFT" x="5" y="155" />
-              </Anchors>
-            </Texture>
-            <FontString parentKey="HostileLabel" text="COLORBLIND_HOSTILE" inherits="OptionsFontSmall">
-              <Anchors>
-                <Anchor point="BOTTOMLEFT" relativeKey="$parent.Hostile" relativePoint="TOPLEFT" x="5" y="3" />
-              </Anchors>
-              <Color r="0.5" g="0.5" b="0.5"/>
-            </FontString>
+				<FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16.0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
 
-            <Texture parentKey="Neutral" atlas="colorblind-bar-yellow" useAtlasSize="true">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.Hostile" relativePoint="BOTTOMLEFT" y="-30" />
-              </Anchors>
-            </Texture>
-            <FontString parentKey="NeutralLabel" text="COLORBLIND_NEUTRAL" inherits="OptionsFontSmall">
-              <Anchors>
-                <Anchor point="BOTTOMLEFT" relativeKey="$parent.Neutral" relativePoint="TOPLEFT" x="5" y="3" />
-              </Anchors>
-              <Color r="0.5" g="0.5" b="0.5"/>
-            </FontString>
+			<Frame parentKey="ColorblindFilterExamples">
+				<Size x="580" y="280" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersTitle" relativePoint="BOTTOMLEFT" x="21" y="-25" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Instructions" text="COLORBLIND_OPTIONS_INSTRUCTIONS" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="550" />
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</FontString>
 
-            <Texture parentKey="Friendly" atlas="colorblind-bar-green" useAtlasSize="true">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.Neutral" relativePoint="BOTTOMLEFT" y="-30" />
-              </Anchors>
-            </Texture>
-            <FontString parentKey="FriendlyLabel" text="COLORBLIND_FRIENDLY" inherits="OptionsFontSmall">
-              <Anchors>
-                <Anchor point="BOTTOMLEFT" relativeKey="$parent.Friendly" relativePoint="TOPLEFT" x="5" y="3" />
-              </Anchors>
-              <Color r="0.5" g="0.5" b="0.5"/>
-            </FontString>
+						<Texture parentKey="ColorWheel" atlas="colorblind-colorwheel" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-60" y="45" />
+							</Anchors>
+						</Texture>
 
-            <Texture parentKey="ExampleIcon1" file="Interface\Icons\Achievement_Character_Nightelf_Female" inherits="ColorblindExampleIconTemplate">
-              <Anchors>
-                <Anchor point="BOTTOM" x="-110" y="125" />
-              </Anchors>
-            </Texture>
+						<Texture parentKey="Hostile" atlas="colorblind-bar-red" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="5" y="155" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="HostileLabel" text="COLORBLIND_HOSTILE" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Hostile" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
 
-            <Texture parentKey="ExampleIcon2" file="Interface\Icons\Achievement_Character_Dwarf_Male" inherits="ColorblindExampleIconTemplate">
-              <Anchors>
-                <Anchor point="LEFT" relativeKey="$parent.ExampleIcon1" relativePoint="RIGHT" x="10" />
-              </Anchors>
-            </Texture>
+						<Texture parentKey="Neutral" atlas="colorblind-bar-yellow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Hostile" relativePoint="BOTTOMLEFT" y="-30" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="NeutralLabel" text="COLORBLIND_NEUTRAL" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Neutral" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
 
-            <Texture parentKey="ExampleIcon3" file="Interface\Icons\Achievement_Character_Troll_Male" inherits="ColorblindExampleIconTemplate">
-              <Anchors>
-                <Anchor point="LEFT" relativeKey="$parent.ExampleIcon2" relativePoint="RIGHT" x="10" />
-              </Anchors>
-            </Texture>
+						<Texture parentKey="Friendly" atlas="colorblind-bar-green" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Neutral" relativePoint="BOTTOMLEFT" y="-30" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="FriendlyLabel" text="COLORBLIND_FRIENDLY" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Friendly" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+
+						<Texture parentKey="ExampleIcon1" file="Interface\Icons\Achievement_Character_Nightelf_Female" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="BOTTOM" x="-110" y="125" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon2" file="Interface\Icons\Achievement_Character_Dwarf_Male" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon1" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon3" file="Interface\Icons\Achievement_Character_Troll_Male" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon2" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
 
 						<Texture parentKey="ExampleIcon4" file="Interface\Icons\INV_Misc_Gem_Variety_02" inherits="ColorblindExampleIconTemplate">
 							<Anchors>
@@ -2722,11 +2869,11 @@
 							</Anchors>
 						</Texture>
 
-            <Texture parentKey="ExampleIcon5" file="Interface\Icons\Spell_Shadow_Metamorphosis" inherits="ColorblindExampleIconTemplate">
-              <Anchors>
-                <Anchor point="LEFT" relativeKey="$parent.ExampleIcon4" relativePoint="RIGHT" x="10" />
-              </Anchors>
-            </Texture>
+						<Texture parentKey="ExampleIcon5" file="Interface\Icons\Spell_Shadow_Metamorphosis" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon4" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
 
 						<Texture parentKey="ExampleIcon6" file="Interface\Icons\Spell_Holy_SealOfRighteousness" inherits="ColorblindExampleIconTemplate">
 							<Anchors>
@@ -2734,130 +2881,134 @@
 							</Anchors>
 						</Texture>
 
-            <FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
-              <Size x="112" y="10"/>
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
-              </Anchors>
-            </FontString>
+						<FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="112" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
+							</Anchors>
+						</FontString>
 
-            <FontString inherits="ColorblindItemQualityTemplate">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-              </Anchors>
-            </FontString>
-          </Layer>
-          <Layer level="BACKGROUND">
-            <Texture parentKey="ExampleIcon1Border">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon1" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon1" x="1" y="-1" />
-              </Anchors>
-              <Color r=".214" g=".214" b=".214" />
-            </Texture>
-            <Texture parentKey="ExampleIcon2Border">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon2" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon2" x="1" y="-1" />
-              </Anchors>
-              <Color r=".214" g=".214" b=".214" />
-            </Texture>
-            <Texture parentKey="ExampleIcon3Border">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon3" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon3" x="1" y="-1" />
-              </Anchors>
-              <Color r=".214" g=".214" b=".214" />
-            </Texture>
-            <Texture parentKey="ExampleIcon4Border">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon4" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon4" x="1" y="-1" />
-              </Anchors>
-              <Color r=".214" g=".214" b=".214" />
-            </Texture>
-            <Texture parentKey="ExampleIcon5Border">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon5" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon5" x="1" y="-1" />
-              </Anchors>
-              <Color r=".214" g=".214" b=".214" />
-            </Texture>
-            <Texture parentKey="ExampleIcon6Border">
-              <Anchors>
-                <Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon6" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon6" x="1" y="-1" />
-              </Anchors>
-              <Color r=".214" g=".214" b=".214" />
-            </Texture>
-          </Layer>
-        </Layers>
-      </Frame>
+						<FontString inherits="ColorblindItemQualityTemplate">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ExampleIcon1Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon1" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon1" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon2Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon2" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon2" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon3Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon3" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon3" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon4Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon4" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon4" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon5Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon5" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon5" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon6Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon6" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon6" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 
-      <Frame name="$parentColorFilterDropDown" parentKey="ColorblindFilterDropDown" inherits="UIDropDownMenuTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFilterExamples" x="83" y="-36" />
-        </Anchors>
-        <Layers>
-          <Layer level="BACKGROUND">
-            <FontString name="$parentLabel" inherits="OptionsFontSmall" text="COLORBLIND_FILTER">
-              <Anchors>
-                <Anchor point="RIGHT" relativePoint="LEFT"/>
-              </Anchors>
-            </FontString>
-          </Layer>
-        </Layers>
-        <Scripts>
-          <OnLoad>
-            self.type = CONTROLTYPE_DROPDOWN;
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-            self:RegisterEvent("PLAYER_ENTERING_WORLD");
-          </OnLoad>
-          <OnEvent function="InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent"/>
-        </Scripts>
-      </Frame>
+			<Frame name="$parentColorFilterDropDown" parentKey="ColorblindFilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFilterExamples" x="83" y="-36" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="COLORBLIND_FILTER">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsColorblindPanelColorFilterDropDown_OnEvent"/>
+				</Scripts>
+			</Frame>
 
-      <Slider name="$parentColorblindStrengthSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
-        <Size x="200" y="17"/>
-        <Anchors>
-          <Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
-        </Anchors>
-        <Scripts>
-          <OnLoad inherit="prepend">
-            local name = self:GetName();
-            self.type = CONTROLTYPE_SLIDER;
-            self.cvar = "colorblindWeaknessFactor";
+			<Slider name="$parentColorblindStrengthSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+				<Size x="200" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "colorblindWeaknessFactor";
 
-            _G[name.."High"]:Hide();
+						_G[name.."High"]:Hide();
 
-            self.Label = _G[name.."Low"];
-            self.Label:ClearAllPoints();
-            self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
 
-            BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-          </OnLoad>
-          <OnValueChanged>
-            BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-            self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor(value * 100));
-            self.value = value;
-          </OnValueChanged>
-          <OnShow>
-            self.oldValue = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-            self:SetValue(self.oldValue);
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					
+					<OnValueChanged>
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor(value * 100));
+						self.value = value;
+					</OnValueChanged>
 
-            if BlizzardOptionsPanel_GetCVarSafe("colorblindSimulator") == 0 then
-            self:Disable();
-            else
-            self:Enable();
-            end
-          </OnShow>
-        </Scripts>
-      </Slider>
-    </Frames>
-    <Scripts>
-      <OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
-    </Scripts>
-  </Frame>
+					<OnShow>
+						self.oldValue = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+						self:SetValue(self.oldValue);
+
+						if BlizzardOptionsPanel_GetCVarSafe("colorblindSimulator") == 0 then
+						self:Disable();
+						else
+						self:Enable();
+						end
+					</OnShow>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InterfaceOptionsColorblindPanel_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	
 
   <!-- Social Browser Frame -->
 

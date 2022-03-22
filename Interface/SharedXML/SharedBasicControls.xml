@@ -1,6 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<!-- This script turns on verbose messages in the FrameXML log -->
+	<Script>
+		--FrameXML_Debug(1);
+	</Script>
+
 	<Script file="SharedBasicControls.lua"/>
 
 	<!-- These are basic attributes for dialogs -->
@@ -16,13 +20,13 @@
 	<Texture name="DialogButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Frame name="DialogBoxFrame" inherits="BackdropTemplate" virtual="true" toplevel="true" frameStrata="DIALOG" hidden="true">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-		</KeyValues>
+	<Frame name="DialogBoxFrame" virtual="true" toplevel="true" frameStrata="DIALOG" hidden="true" inherits="BackdropTemplate">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Button name="$parentButton">
 				<Size x="128" y="32"/>
@@ -139,22 +143,41 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="BasicMessageDialog" inherits="DialogBoxFrame">
-		<Size>
-			<AbsDimension x="384" y="128"/>
-		</Size>
+	<Frame name="BasicMessageDialog" toplevel="true" frameStrata="DIALOG" hidden="true">
+		<Size x="384" y="128"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="TOP" nonspacewrap="true">
-					<Size>
-						<AbsDimension x="360" y="0"/>
-					</Size>
+					<Size x="360" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-16"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button name="$parentButton">
+				<Size x="128" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<ButtonText text="OKAY"/>
+				<NormalFont style="DialogButtonNormalText"/>
+				<HighlightFont style="DialogButtonHighlightText"/>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<Frame name="TitleDragAreaTemplate" virtual="true">
@@ -320,5 +343,123 @@
 				</Scripts>
 			</Button>
 		</Frames>
+	</Frame>
+
+	<Frame name="BaseNineSliceDialog" inherits="ResizeLayoutFrame, DefaultScaleFrame" virtual="true" frameStrata="HIGH" hidden="true" mixin="BaseNineSliceDialogMixin">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="586" type="number"/>
+			<KeyValue key="minimumHeight" value="442" type="number"/>
+			<KeyValue key="showUnderlay" value="true" type="boolean"/>
+			<KeyValue key="topYOffset" value="-65" type="number"/>
+			<KeyValue key="nineSliceTextureKit" value="GenericMetal2" type="string"/>
+			<KeyValue key="centerBackgroundTexture" value="Glues-AnnouncementPopup-Background" type="string"/>
+			<KeyValue key="centerBackgroundXPadding" value="20" type="number"/>
+			<KeyValue key="centerBackgroundYPadding" value="20" type="number"/>
+			<KeyValue key="parchmentTextureKit" value="Glues-AnnouncementPopup-Parchment" type="string"/>
+			<KeyValue key="parchmentYPaddingTop" value="19" type="number"/>
+			<KeyValue key="parchmentYPaddingBottom" value="27" type="number"/>
+			<KeyValue key="parchmentXOffset" value="-1" type="number"/>
+		</KeyValues>
+		<Layers>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Underlay">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Tex" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.7"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="nop"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Border" setAllPoints="true"/>
+			<Frame parentKey="Contents" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ParchmentTop">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ParchmentBottom">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="Game30Font">
+							<Size x="350"/>
+							<Color color="GLUE_DIALOG_FONT_COLOR" />
+							<Anchors>
+								<Anchor point="TOP" y="-76"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Line" atlas="Glues-AnnouncementPopup-Line" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-14"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Description" inherits="System15Font">
+							<Size x="350"/>
+							<Color color="GLUE_DIALOG_FONT_COLOR" />
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-60"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="DescriptionDuplicate" inherits="System15Font">
+							<Size x="350"/>
+							<Color color="GLUE_DIALOG_FONT_COLOR" a="0.25" />
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="ParchmentMiddle">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ParchmentTop" relativePoint="BOTTOMLEFT" y="63"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ParchmentBottom" relativePoint="TOPRIGHT" y="-85"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="SharedButtonLargeTemplate" text="CLOSE">
+						<Size x="180" y="49"/>
+						<NormalFont style="GameFontNormalLarge"/>
+						<HighlightFont style="GameFontHighlightLarge"/>
+						<DisabledFont style="GameFontDisableLarge"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="53"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="BaseNineSliceDialog_OnCloseClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CenterBackground" hidden="true" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+		</Scripts>
 	</Frame>
 </Ui>

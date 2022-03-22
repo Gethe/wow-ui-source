@@ -104,6 +104,29 @@ CHAT_CONFIG_CHAT_LEFT = {
 	},
 };
 
+do
+	if C_VoiceChat.IsTranscriptionAllowed() then
+		local transcriptionConfig =
+		{
+			text = VOICE_CHAT_TRANSCRIPTION,
+			type = "VOICE_TEXT",
+			checked = function () return IsListeningForMessageType("VOICE_TEXT"); end;
+			func = function (self, checked) 
+				ToggleChatMessageGroup(checked, "VOICE_TEXT");
+				local chatFrame = FCF_GetCurrentChatFrame();
+				if ( checked ) then
+					chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+					ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
+				else
+					chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+				end
+			end;
+			disabled = ShouldDisplayDisabled;
+		};
+		table.insert(CHAT_CONFIG_CHAT_LEFT, transcriptionConfig);
+	end
+end
+
 CHAT_CONFIG_CHAT_CREATURE_LEFT = {
 	[1] = {
 		text = SAY;
@@ -251,6 +274,7 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 
 CHAT_CONFIG_CHANNEL_LIST = {};
 CHAT_CONFIG_AVAILABLE_CHANNEL_LIST = {};
+CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST = {};
 
 -- Combat Options
 COMBAT_CONFIG_MESSAGESOURCES_BY = {
@@ -1562,6 +1586,9 @@ CHAT_CONFIG_CATEGORIES = {
 	[2] = "ChatConfigCombatSettings",
 	[3] = "ChatConfigChannelSettings",
 	[4] = "ChatConfigOtherSettings",
+	[5] = "ChatConfigTextToSpeechSettings",
+	[6] = "ChatConfigTextToSpeechMessageSettings",
+	[7] = "ChatConfigTextToSpeechChannelSettings",
 };
 
 function ChatConfigCategory_OnClick(self)
@@ -1577,18 +1604,18 @@ function ChatConfigCategory_OnClick(self)
 	end
 end
 
-local function UpdateDefaultButtons(combatLogSelected)
-	if ( combatLogSelected ) then
-		ChatConfigFrame.DefaultButton:Hide();
-		ChatConfigFrame.RedockButton:Hide();
-		CombatLogDefaultButton:Show();
-		ChatConfigFrame.ToggleChatButton:Hide();
-	else
-		ChatConfigFrame.DefaultButton:Show();
-		ChatConfigFrame.RedockButton:Show();
-		CombatLogDefaultButton:Hide();
+local function UpdateDefaultButtons(combatLogSelected, textToSpeechSelected)
+	TextToSpeechDefaultButton:SetShown(textToSpeechSelected);
+	TextToSpeechDefaultButton:SetWidth(TextToSpeechDefaultButton.Text:GetWidth() + 32);
+	TextToSpeechCharacterSpecificButton:SetPoint("LEFT", TextToSpeechDefaultButton, "RIGHT", 5, 0);
+	TextToSpeechCharacterSpecificButton:SetShown(textToSpeechSelected);
+	CombatLogDefaultButton:SetShown(combatLogSelected);
 
-		ChatConfigFrame.ToggleChatButton:SetShown(not C_SocialRestrictions.IsMuted());
+	local showChatButtons = not combatLogSelected and not textToSpeechSelected;
+	ChatConfigFrame.DefaultButton:SetShown(showChatButtons);
+	ChatConfigFrame.RedockButton:SetShown(showChatButtons);
+	ChatConfigFrame.ToggleChatButton:SetShown(showChatButtons and not C_SocialRestrictions.IsMuted());
+	if showChatButtons then
 		ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(C_SocialRestrictions.IsChatDisabled());
 	end
 end
@@ -1649,26 +1676,47 @@ function CreateChatChannelList(self, ...)
 	end
 end
 
-function CreateAvailableChatChannelList(self, ...)
-	local channelName;
+function CreateChatTextToSpeechChannelList(self, ...)
+	if ( not FCF_GetCurrentChatFrame() ) then
+		return;
+	end
+	local channelList = FCF_GetCurrentChatFrame().channelList;
+	local zoneChannelList = FCF_GetCurrentChatFrame().zoneChannelList;
+
 	local count = 1;
-	CHAT_CONFIG_AVAILABLE_CHANNEL_LIST = {};
-	for i=1, select("#", ...), 1 do
-		channelName = select(i, ...);
-		-- If not in the channel, add it to the list.
-		if (GetChannelName(channelName) == 0) then
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count] = {};
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].text = channelName;
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].channelName = channelName;
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].type = "CHANNEL_"..channelName;
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonText = CHAT_JOIN;
-			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonFunc = function (self)
-					SlashCmdList["JOIN"](CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[self:GetParent():GetID()].channelName); 
+	CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST = {};
+	for i=1, select("#", ...), 3 do
+		local channelID = select(i, ...);
+		local tag = "CHANNEL"..channelID;
+		local channel = select(i+1, ...);
+		local disabled = select(i+2, ...);
+		
+		local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(channel);
+		local checked = C_TTSSettings.GetChannelEnabled(channelInfo);
+
+		while count < channelID do
+			-- Leave empty entries for missing channels to allow for re-ordering.
+			CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count] = {};
+			CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelID = count;
+			CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].text = count..".";
+			CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].isBlank = true;
+			count = count + 1;
+		end
+
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count] = {};
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelID = channelID;
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelName = channel;
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].type = tag;
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].checked = checked;
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].disabled = disabled;
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].func = function (self, checked)
+								local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[self:GetID()].channelName);
+								TextToSpeechFrame_SetChannelEnabled(channelInfo, checked);
 				end;
 			count = count+1;
 		end
-	end
 end
 
 COMBAT_CONFIG_TABS = {
@@ -2029,7 +2077,10 @@ function ChatConfigFrame_PlayCheckboxSound (checked)
 end
 
 function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
-	if ( IsCombatLog(FCF_GetCurrentChatFrame()) ) then
+	local currentChatFrame = FCF_GetCurrentChatFrame();
+	local isTextToSpeech = CURRENT_CHAT_FRAME_ID == VOICE_WINDOW_ID;
+
+	if ( not isTextToSpeech and currentChatFrame ~= nil and IsCombatLog(currentChatFrame) ) then
 		ChatConfigCategoryFrameButton2:Show();
 		ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 		ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
@@ -2042,7 +2093,30 @@ function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
 			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
 		end
 	end
-	ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
+
+	ChatConfigCategoryFrameButton1:SetShown(not isTextToSpeech);
+	ChatConfigCategoryFrameButton3:SetShown(not isTextToSpeech);
+	ChatConfigCategoryFrameButton4:SetShown(not isTextToSpeech);
+
+	ChatConfigCategoryFrameButton5:SetShown(isTextToSpeech);
+	ChatConfigCategoryFrameButton6:SetShown(isTextToSpeech);
+	ChatConfigCategoryFrameButton7:SetShown(isTextToSpeech);
+
+	if ( isTextToSpeech ) then
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton5);
+	elseif ( currentChatFrame ~= nil and IsCombatLog(currentChatFrame) ) then
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
+	elseif ( 
+		not preserveCategorySelection 
+		or _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() 
+		or _G[CHAT_CONFIG_CATEGORIES[5]]:IsShown() 
+		or _G[CHAT_CONFIG_CATEGORIES[6]]:IsShown() 
+		or _G[CHAT_CONFIG_CATEGORIES[7]]:IsShown() 
+	) then
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
+	end
+
+	ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, currentChatFrame.name));
 	ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
 end
 
@@ -2071,7 +2145,6 @@ function ChatConfigChannelSettings_OnShow()
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 
-	CreateAvailableChatChannelList(ChatConfigChannelSettings, EnumerateServerChannels());
 	ChatConfig_CreateBoxes(ChatConfigChannelSettingsAvailable, CHAT_CONFIG_AVAILABLE_CHANNEL_LIST, "ChatConfigTextBoxTemplateWithButton", AVAILABLE_CHANNELS);
 
 	UpdateDefaultButtons(false);
@@ -2105,6 +2178,21 @@ function ChatConfigOtherSettings_OnShow()
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
 	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
 	UpdateDefaultButtons(false);
+end
+
+function ChatConfigTextToSpeechSettings_OnShow()
+	UpdateDefaultButtons(false, true);
+end
+
+function ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes()
+	CreateChatTextToSpeechChannelList(ChatConfigTextToSpeechChannelSettings, GetChannelList());
+	ChatConfig_CreateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft, CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST, "ChatConfigCheckBoxSmallTemplate", CHANNELS);
+	ChatConfig_UpdateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft);
+end
+
+function ChatConfigTextToSpeechChannelSettings_OnShow()
+	ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes();
+	UpdateDefaultButtons(false, true);
 end
 
 function ChatConfigFrameDefaultButton_OnClick()
@@ -2172,9 +2260,16 @@ function ChatWindowTabMixin:OnClick()
 end
 
 function ChatWindowTabMixin:SetChatWindowIndex(chatWindowIndex)
+
 	self:SetID(chatWindowIndex);
+	if chatWindowIndex ~= VOICE_WINDOW_ID then
 	local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
 	self.Text:SetText(chatTab.Text:GetText());
+	else
+		self.Text:SetText(TEXT_TO_SPEECH);
+	end
+
+	
 end
 
 function ChatWindowTabMixin:UpdateWidth()
@@ -2192,12 +2287,31 @@ function ChatConfigFrameTabManagerMixin:OnLoad()
 end
 
 function ChatConfigFrameTabManagerMixin:OnShow()
+	self:UpdateTabDisplay();
+end
+
+function ChatConfigFrameTabManagerMixin:UpdateTabDisplay()
 	self.tabPool:ReleaseAll();
 	
 	local lastTab = nil;
-	for i = 1, FCF_GetNumActiveChatFrames() do
+	local tabCount = FCF_GetNumActiveChatFrames();
+	
+	--This is needed to properly skip or include the TTS config tab
+	local showTTSConfigTab = GetCVarBool("textToSpeech") or GetCVarBool("remoteTextToSpeech")
+	if ( GetCVarBool("textToSpeech") and not GetCVarBool("remoteTextToSpeech") ) then
+		tabCount = tabCount + 1;
+	end
+
+	for i = 1, tabCount do
+
+		--Skip over the reserved TTS config tab if we aren't showing it. This assumes TTS tab is the last of the reserved tabs.
+		local offset = 0;
+		if(not showTTSConfigTab and i >= VOICE_WINDOW_ID) then
+			offset = 1;
+		end
+
 		local tab = self.tabPool:Acquire();
-		tab:SetChatWindowIndex(i);
+		tab:SetChatWindowIndex(i + offset);
 		if lastTab then
 			tab:SetPoint("LEFT", lastTab, "RIGHT");
 		else
@@ -2387,4 +2501,38 @@ function ChatConfigWideCheckBoxMixin:LeaveChannel()
 	end
 	
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+end
+
+TextToSpeechCharacterSpecificButtonMixin = {};
+
+function TextToSpeechCharacterSpecificButtonMixin:OnLoad()
+	local descriptionText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(CHARACTER_SPECIFIC_SETTINGS);
+	self.text:SetText(descriptionText);
+	self.text:SetFontObject(GameFontNormal);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnShow()
+	local checked = GetCVarBool("TTSUseCharacterSettings");
+	self:SetChecked(checked);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnClick(button, down)
+	local checked = self:GetChecked();
+	if (checked) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+	
+	SetCVar("TTSUseCharacterSettings", checked);
+	TextToSpeechFrame_Update(TextToSpeechFrame);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(CHARACTER_SPECIFIC_SETTINGS_TOOLTIP, nil, nil, nil, nil, true);
+end
+
+function TextToSpeechCharacterSpecificButtonMixin:OnHide()
+	GameTooltip_Hide();
 end

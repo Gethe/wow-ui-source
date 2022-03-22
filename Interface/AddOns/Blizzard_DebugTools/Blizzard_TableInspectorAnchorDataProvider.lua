@@ -9,7 +9,7 @@ function TableInspectorAnchorDataProviderMixin:Initialize(tableInspector, parent
 end
 
 function TableInspectorAnchorDataProviderMixin:RefreshData(focusedTable)
-	TableInspectorDataProviderMixin.RefreshData(focusedTable);
+	TableInspectorDataProviderMixin.RefreshData(self, focusedTable);
 	self:Clear();
 	if focusedTable.IsObjectType and focusedTable:IsObjectType("Region") then
 		self.lines[1] = self.title;
@@ -42,7 +42,7 @@ function TableInspectorAnchorDataProviderMixin:GetLines(filter)
 				results[#results + 1] = line;
 			end
 		end
-		
+
 		return results;
 	end
 end

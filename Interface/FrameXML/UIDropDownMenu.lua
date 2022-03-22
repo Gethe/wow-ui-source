@@ -1339,25 +1339,40 @@ function UIDropDownMenu_SetButtonClickable(level, id)
 end
 
 function UIDropDownMenu_DisableDropDown(dropDown)
-	local dropDownName = dropDown:GetName();
-	local label = GetChild(dropDown, dropDownName, "Label");
-	if ( label ) then
-		label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	end
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	GetChild(dropDown, dropDownName, "Button"):Disable();
-	dropDown.isDisabled = 1;
+	UIDropDownMenu_SetDropDownEnabled(dropDown, false);
 end
 
 function UIDropDownMenu_EnableDropDown(dropDown)
+	UIDropDownMenu_SetDropDownEnabled(dropDown, true);
+end
+
+function UIDropDownMenu_SetDropDownEnabled(dropDown, enabled)
 	local dropDownName = dropDown:GetName();
 	local label = GetChild(dropDown, dropDownName, "Label");
-	if ( label ) then
-		label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	if label then
+		label:SetVertexColor((enabled and NORMAL_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
 	end
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	GetChild(dropDown, dropDownName, "Button"):Enable();
-	dropDown.isDisabled = nil;
+
+	local icon = GetChild(dropDown, dropDownName, "Icon");
+	if icon then
+		icon:SetVertexColor((enabled and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local text = GetChild(dropDown, dropDownName, "Text");
+	if text then
+		text:SetVertexColor((enabled and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local button = GetChild(dropDown, dropDownName, "Button");
+	if button then
+		button:SetEnabled(enabled);
+	end
+
+	if enabled then
+		dropDown.isDisabled = nil;
+	else
+		dropDown.isDisabled = 1;
+	end
 end
 
 function UIDropDownMenu_IsEnabled(dropDown)

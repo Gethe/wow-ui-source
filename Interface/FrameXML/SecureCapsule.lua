@@ -2,6 +2,7 @@ local contents = {};
 local issecure = issecure;
 local type = type;
 local pairs = pairs;
+local select = select;
 
 --Create a local version of this function just so we don't have to worry about changes
 local function copyTable(tab)
@@ -107,11 +108,12 @@ retain("GetCursorPosition");
 retain("GetRealmName");
 retain("PlaySound");
 retain("SetPortraitToTexture");
+retain("SetPortraitTexture");
+retain("getmetatable");
 retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");
 retain("RAID_CLASS_COLORS");
 retain("CLASS_ICON_TCOORDS");
-retain("C_PetJournal");
 retain("C_Timer");
 retain("C_ModelInfo");
 retain("IsModifiedClick");
@@ -128,6 +130,8 @@ retain("PercentageBetween");
 retain("Saturate");
 retain("GetCursorDelta");
 retain("GetScaledCursorDelta");
+retain("CalculateDistanceSq");
+retain("GetTickTime");
 retain("Vector3D_Add");
 retain("Vector3D_Normalize");
 retain("Vector3D_ScaleBy");
@@ -139,7 +143,6 @@ retain("GetScreenWidth");
 retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
 retain("GetScreenDPIScale");
-retain("ConvertPixelsToUI");
 retain("IsTrialAccount");
 retain("IsVeteranTrialAccount");
 retain("C_StorePublic");
@@ -147,6 +150,12 @@ retain("C_Club");
 retain("UnitFactionGroup");
 retain("FrameUtil");
 retain("strlenutf8");
+retain("UnitRace");
+retain("UnitSex");
+retain("GetURLIndexAndLoadURL");
+retain("GetUnscaledFrameRect");
+retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
+retain("Round");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -168,6 +177,7 @@ retain("HTML_START");
 retain("HTML_START_CENTERED");
 retain("HTML_END");
 take("BLIZZARD_STORE_ON_SALE");
+take("BLIZZARD_STORE_PURCHASED");
 take("BLIZZARD_STORE_BUY");
 take("BLIZZARD_STORE_BUY_EUR");
 take("BLIZZARD_STORE_PLUS_TAX");
@@ -199,6 +209,9 @@ take("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
 take("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE");
 take("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR");
 take("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR");
+take("BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES");
+take("BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR");
+take("BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_KR");
 take("BLIZZARD_STORE_CONFIRMATION_OTHER");
 take("BLIZZARD_STORE_CONFIRMATION_OTHER_EUR");
 take("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
@@ -261,6 +274,8 @@ take("BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS");
 take("BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED");
 take("BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED");
 take("BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED");
+take("BLIZZARD_STORE_ERROR_TITLE_CLIENT_RESTRICTED");
+take("BLIZZARD_STORE_ERROR_CLIENT_RESTRICTED");
 take("BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED");
 take("BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE");
 take("BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS")
@@ -270,7 +285,6 @@ take("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
 take("BLIZZARD_STORE_SPLASH_BANNER_FEATURED");
 take("BLIZZARD_STORE_SPLASH_BANNER_NEW");
 take("BLIZZARD_STORE_WALLET_INFO");
-take("BLIZZARD_STORE_PROCESSING");
 take("BLIZZARD_STORE_PURCHASE_SENT");
 take("BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER");
 take("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
@@ -297,9 +311,27 @@ take("VAS_REALM_LABEL");
 take("VAS_CHARACTER_SELECTION_DESCRIPTION");
 take("VAS_SELECTED_CHARACTER_DESCRIPTION");
 take("VAS_NEW_CHARACTER_NAME_LABEL");
-take("VAS_DESTINATION_REALM_LABEL");
 take("VAS_NAME_CHANGE_TOOLTIP");
+take("VAS_TRANSFER_REALM_TOOLTIP");
+take("VAS_NEW_GUILD_NAME_LABEL");
+take("VAS_GUILD_NAME_CHANGE_TOOLTIP");
+take("VAS_GUILD_NAME_CHANGE_TRANSFER_TOOLTIP");
+take("VAS_GUILD_FACTION_NAME_CHANGE_CHECKBOX_TOOLTIP");
+take("VAS_NEW_GUILD_MASTER_FACTION_CHANGE_TOOLTIP");
+take("VAS_NEW_GUILD_MASTER_TRANSFER_TOOLTIP");
+take("VAS_OLD_GUILD_NEW_NAME_CHANGE_TOOLTIP");
+take("VAS_NEW_GUILD_MASTER_LABEL");
+take("VAS_NEW_GUILD_MASTER_EMPTY_TEXT");
+take("VAS_OLD_GUILD_NEW_NAME_LABEL");
+take("VAS_OLD_GUILD_NEW_NAME_EMPTY_TEXT");
+take("VAS_DESTINATION_REALM_LABEL");
 take("VAS_NAME_CHANGE_CONFIRMATION");
+take("VAS_GUILD_FACTION_CHANGE_CONFIRMATION");
+take("VAS_GUILD_FACTION_CHANGE_PLUS_NAME_CHANGE_CONFIRMATION");
+take("VAS_GUILD_TRANSFER_CONFIRMATION");
+take("VAS_GUILD_TRANSFER_PLUS_NAME_CHANGE_CONFIRMATION");
+take("VAS_GUILD_TRANSFER_PLUS_FACTION_CHANGE_CONFIRMATION");
+take("VAS_GUILD_TRANSFER_PLUS_NAME_AND_FACTION_CHANGE_CONFIRMATION");
 take("VAS_APPEARANCE_CHANGE_CONFIRMATION");
 take("VAS_FACTION_CHANGE_CONFIRMATION");
 take("VAS_RACE_CHANGE_CONFIRMATION");
@@ -326,13 +358,24 @@ take("BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN");
 take("BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM");
 take("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
 take("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
+take("BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING");
 take("BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT");
 take("BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT");
 take("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT");
 take("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT");
 take("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
 take("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
+take("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT");
 take("BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY");
+take("BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER");
+take("BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD");
+take("BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID");
+take("BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT");
+take("BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED");
+take("BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT");
+take("BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS");
+take("BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS");
+take("BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS");
 take("BLIZZARD_STORE_VAS_ERROR_OTHER");
 take("BLIZZARD_STORE_VAS_ERROR_LABEL");
 take("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE");
@@ -431,6 +474,7 @@ retain("FACTION_HORDE");
 retain("FACTION_ALLIANCE");
 retain("LIST_DELIMITER");
 retain("FEATURE_NOT_AVAILBLE_PANDAREN");
+retain("BLIZZARD_STORE_PROCESSING");
 
 take("BLIZZARD_CHALLENGE_SUBMIT");
 take("BLIZZARD_CHALLENGE_CANCEL");
@@ -483,6 +527,7 @@ retain("COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR");
 retain("COMMUNITIES_CREATE_DIALOG_NAME_ERROR");
 retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
 retain("COMMUNITY_TYPE_UNAVAILABLE");
+retain("CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL");
 
 retain("RED_FONT_COLOR");
 
@@ -500,12 +545,14 @@ takeenum("StoreError");
 takeenum("VasError");
 takeenum("BattlepayBoostProduct");
 takeenum("BattlepayDisplayFlag");
+takeenum("PurchaseEligibility");
 takeenum("BattlepayProductDecorator");
 takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
-takeenum("PurchaseEligibility");
+takeenum("BattlepayCardType");
+takeenum("BattlepayBannerType");
 retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
@@ -528,19 +575,22 @@ function SecureMixin(object, ...)
 	return object;
 end
 
+-- This is Private because we need a pristine copy to reference in CreateFromSecureMixins.
+local SecureMixinPrivate = SecureMixin;
+
 -- where ... are the mixins to mixin
 function CreateFromSecureMixins(...)
 	if ( not issecure() ) then
 		return;
 	end
 
-	return SecureMixin({}, ...)
+	return SecureMixinPrivate({}, ...)
 end
 
 take("SecureMixin");
 take("CreateFromSecureMixins");
 
-retain("GetFinalNameFromTextureKit");
+retain("GetFinalNameFromTextureKit")
 retain("C_Texture");
 
 retain("ShrinkUntilTruncateFontStringMixin");

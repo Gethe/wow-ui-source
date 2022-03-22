@@ -17,11 +17,7 @@ GLUE_SECONDARY_SCREENS = {
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
-
--- Mirror of the same variables in Blizzard_StoreUISecure.lua and UIParent.lua
-local WOW_GAMES_CATEGORY_ID = 33; 
-WOW_GAME_TIME_CATEGORY_ID = 37;
-WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID = 159;
+GENERIC_DISCONNECTED_ERROR_CODE = 319;
 
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();

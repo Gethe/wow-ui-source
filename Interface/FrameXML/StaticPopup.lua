@@ -214,6 +214,20 @@ StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["CONFIRM_RESET_TEXTTOSPEECH_SETTINGS"] = {
+	text = CONFIRM_TEXT_TO_SPEECH_RESET,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function ()
+		TextToSpeechFrame_SetToDefaults();
+	end,
+	OnCancel = function() end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
 StaticPopupDialogs["CONFIRM_REDOCK_CHAT"] = {
 	text = CONFIRM_REDOCK_CHAT,
 	button1 = ACCEPT,

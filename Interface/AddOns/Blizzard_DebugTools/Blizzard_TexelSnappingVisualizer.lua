@@ -93,6 +93,12 @@ function TexelSnappingVisualizerMixin:OnCreated()
 			forceOffTick:SetPoint("CENTER", texelSnappingSlider, "CENTER", texelSnappingSlider:GetWidth() * MIN_VALUE, 0);
 		end
 	end
+
+	do
+		local closeButton = CreateFrame("BUTTON", nil, self, "UIPanelCloseButton");
+		closeButton:SetPoint("TOPRIGHT", -5, -5);
+		closeButton:SetScript("OnClick", function() self:Hide() end);
+	end
 end
 
 local PIXEL_SNAPPING_OPTIONS = {
