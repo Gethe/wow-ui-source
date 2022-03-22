@@ -7,6 +7,21 @@ local GamePad =
 	Functions =
 	{
 		{
+			Name = "AddSDLMapping",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "platform", Type = "ClientPlatformType", Nilable = false },
+				{ Name = "mapping", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ApplyConfigs",
 			Type = "Function",
 		},

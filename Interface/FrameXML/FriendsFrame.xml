@@ -200,21 +200,17 @@
 						<Offset x="1" y="-1"/>
 					</Anchor>
 				</Anchors>
-				<NormalTexture name="$parentNormalTexture" file="Interface\FriendsFrame\TravelPass-Invite">
+				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="friendslist-invitebutton-default-normal">
 					<Size x="24" y="32"/>
-					<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>
 				</NormalTexture>
-				<PushedTexture name="$parentPushedTexture" file="Interface\FriendsFrame\TravelPass-Invite">
+				<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" atlas="friendslist-invitebutton-default-pressed">
 					<Size x="24" y="32"/>
-					<TexCoords left="0.42187500" right="0.79687500" top="0.27343750" bottom="0.52343750"/>
 				</PushedTexture>
-				<DisabledTexture name="$parentDisabledTexture" file="Interface\FriendsFrame\TravelPass-Invite">
+				<DisabledTexture name="$parentDisabledTexture" parentKey="DisabledTexture" atlas="friendslist-invitebutton-default-disabled">
 					<Size x="24" y="32"/>
-					<TexCoords left="0.01562500" right="0.39062500" top="0.00781250" bottom="0.25781250"/>
 				</DisabledTexture>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
+				<HighlightTexture name="$parentHighlightTexture"  parentKey="HighlightTexture" atlas="friendslist-invitebutton-highlight" alphaMode="ADD">
 					<Size x="24" y="32"/>
-					<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
 				</HighlightTexture>
 				<Scripts>
 					<OnEnter function="TravelPassButton_OnEnter"/>
@@ -231,9 +227,8 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
+				<HighlightTexture name="$parentHighlightTexture" atlas="friendslist-invitebutton-highlight" alphaMode="ADD">
 					<Size x="24" y="32"/>
-					<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
 				</HighlightTexture>
 				<Scripts>
 					<OnLoad>

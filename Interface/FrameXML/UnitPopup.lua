@@ -80,6 +80,12 @@ UnitPopupButtons = {
 	["REPORT_BATTLE_PET"] = { text = REPORT_PET_NAME, },
 	["REPORT_PET"] = { text = REPORT_PET_NAME, },
 
+	["REPORT_GROUP_MEMBER"] = {text = REPORT_GROUP_MEMBER, }, 
+	["REPORT_IN_WORLD_PLAYER"] = {text = REPORT_IN_WORLD_PLAYER, }, 
+	["REPORT_FRIEND"] = {text = REPORT_FRIEND, }, 
+	["REPORT_CLUB_MEMBER"] = {text = REPORT_CLUB_MEMBER, }, 
+	["REPORT_CHAT"] = {text = REPORT_CHAT, }, 
+
 	["COPY_CHARACTER_NAME"] = { text = COPY_CHARACTER_NAME },
 
 	["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, nested = 1, defaultDifficultyID = 1 },
@@ -1786,6 +1792,16 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
 		HelpFrame_ShowReportCheatingDialog(playerLocation);
+	elseif ( button == "REPORT_IN_WORLD_PLAYER") then 
+		ReportFrame:InitiateReportOfType(Enum.ReportType.InWorld, fullname);
+	elseif ( button == "REPORT_CHAT") then 
+		ReportFrame:InitiateReportOfType(Enum.ReportType.Chat, fullname);
+	elseif ( button == "REPORT_CLUB_MEMBER") then 
+		ReportFrame:InitiateReportOfType(Enum.ReportType.ClubMember, fullname);
+	elseif ( button == "REPORT_FRIEND") then 
+		ReportFrame:InitiateReportOfType(Enum.ReportType.Friend, fullname);
+	elseif ( button == "REPORT_GROUP_MEMBER") then 
+		ReportFrame:InitiateReportOfType(Enum.ReportType.GroupMember, fullname);
 	elseif ( button == "POP_OUT_CHAT" ) then
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
 	elseif ( button == "DUEL" ) then

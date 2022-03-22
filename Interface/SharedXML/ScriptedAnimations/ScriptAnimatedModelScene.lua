@@ -94,11 +94,11 @@ function ScriptAnimatedModelSceneMixin:ExecuteOrDelayUntilSceneSet(action)
 end
 
 function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
-	ModelSceneMixin.OnUpdate(self, elapsed, ...);
-
 	if #self.effectControllers == 0 then
 		return;
 	end
+
+	ModelSceneMixin.OnUpdate(self, elapsed, ...);
 
 	self.centerX, self.centerY = self:GetCenter();
 

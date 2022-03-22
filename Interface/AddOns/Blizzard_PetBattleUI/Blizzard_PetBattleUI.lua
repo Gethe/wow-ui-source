@@ -56,7 +56,7 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT_NO_PENALTY"] = {
 local PetBattlesOverrides = {}
 function PetBattlesOverrides.GetPositionOverride(petSpeciesID)
 	if petSpeciesID == 3175 then
-		return -0.5, -2, 0;
+		return -0.45, -2, 0;
 	elseif petSpeciesID == 2003 then
 		return -0.8, 0.6, -0.4;
 	elseif petSpeciesID == 504 then

@@ -6,6 +6,69 @@ local HeirloomInfo =
 
 	Functions =
 	{
+		{
+			Name = "AreAllCollectionFiltersChecked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAllCollectionFiltersChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreAllSourceFiltersChecked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAllSourceFiltersChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHeirloomSourceValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "source", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHeirloomSourceValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUsingDefaultFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllCollectionFilters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllSourceFilters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDefaultFilters",
+			Type = "Function",
+		},
 	},
 
 	Events =

@@ -348,6 +348,15 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "IsUsingDefaultFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidSourceFilter",
 			Type = "Function",
 
@@ -425,6 +434,10 @@ local MountJournal =
 				{ Name = "filterIndex", Type = "number", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SetDefaultFilters",
+			Type = "Function",
 		},
 		{
 			Name = "SetIsFavorite",

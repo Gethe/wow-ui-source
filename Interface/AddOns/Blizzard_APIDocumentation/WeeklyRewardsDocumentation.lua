@@ -147,6 +147,10 @@ local WeeklyRewards =
 				{ Name = "isInteracting", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "OnUIInteract",
+			Type = "Function",
+		},
 	},
 
 	Events =

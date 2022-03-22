@@ -294,6 +294,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "IsUsingDefaultBaseSetsFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultBaseSetsFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
 
@@ -302,6 +311,10 @@ local TransmogSets =
 				{ Name = "index", Type = "number", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SetDefaultBaseSetsFilters",
+			Type = "Function",
 		},
 		{
 			Name = "SetHasNewSources",

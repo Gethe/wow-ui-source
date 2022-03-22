@@ -43,7 +43,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "PvPScriptedAward", Type = "CurrencySource", EnumValue = 8 },
 				{ Name = "Loot", Type = "CurrencySource", EnumValue = 9 },
 				{ Name = "UpdatingVersion", Type = "CurrencySource", EnumValue = 10 },
-				{ Name = "LfgReward", Type = "CurrencySource", EnumValue = 11 },
+				{ Name = "LFGReward", Type = "CurrencySource", EnumValue = 11 },
 				{ Name = "Trade", Type = "CurrencySource", EnumValue = 12 },
 				{ Name = "Spell", Type = "CurrencySource", EnumValue = 13 },
 				{ Name = "ItemDeletion", Type = "CurrencySource", EnumValue = 14 },

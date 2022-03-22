@@ -23,7 +23,7 @@ function TextToSpeechButtonMixin:IsTextToSpeechEnabled()
 end
 
 function TextToSpeechButtonMixin:ShowHint()
-	if (self.cvarsLoaded and self:IsTextToSpeechEnabled()) then
+	if (self.cvarsLoaded and self:IsTextToSpeechEnabled() and HelpTip) then
 		if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TEXT_TO_SPEECH)) then
 			local helpTipInfo = {
 				text = TEXT_TO_SPEECH_TUTORIAL,
@@ -57,7 +57,9 @@ end
 
 function TextToSpeechButtonMixin:OnClick(button)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TEXT_TO_SPEECH, true);
-	HelpTip:Hide(self, TEXT_TO_SPEECH_TUTORIAL);
+	if(HelpTip) then 
+		HelpTip:Hide(self, TEXT_TO_SPEECH_TUTORIAL);
+	end
 	ToggleTextToSpeechFrame();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end

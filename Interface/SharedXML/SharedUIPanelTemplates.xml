@@ -476,6 +476,45 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
+	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="SliderBar" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size x="32" y="32"/>
+		</ThumbTexture>
+	</Slider>
+
+	<Slider name="UISliderTemplateWithLabels" inherits="UISliderTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLow" parentKey="Low" inherits="GameFontHighlightSmall" text="LOW">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-4" y="3"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHigh" parentKey="High" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="4" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Slider>
+	
 	<!--
 *******************************************************************************
     GlowBoxArrowTemplate
@@ -1112,6 +1151,40 @@
 			<TexCoords left="0" right="1.0" top="0.03" bottom="0.7175"/>
 		</HighlightTexture>
 	</Button>
+	<!-- Based on UIMenuButtonStretchTemplate.
+		Includes a Reset button (red cicle with yellow x) that appears on the top right of the dropdown button (hidden by default).
+		You can specify a "resetFunction" on the dropdown button as a keyValue and the Reset button will call it on click.
+		Ex. <KeyValues>
+				<KeyValue key="resetFunction" value="MountJournalFilterDropdown_ResetFilters" type="global"/>
+			</KeyValues> -->
+	<DropDownToggleButton name="UIResettableDropdownButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="UIResettableDropdownButtonMixin" virtual="true">
+		<Size x="93" y="22"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+					<Size x="10" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ResetButton" hidden="true">
+				<Size x="23" y="23"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-3" y="0"/>
+				</Anchors>
+				<NormalTexture atlas="auctionhouse-ui-filter-redx">
+					<Size x="23" y="23"/>
+				</NormalTexture>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</DropDownToggleButton>
+	
 	<Button name="UIGoldBorderButtonTemplate" virtual="true">
 		<Size x="105" y="22"/>
 		<Anchors>

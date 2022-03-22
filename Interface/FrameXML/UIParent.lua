@@ -66,6 +66,7 @@ UIPanelWindows["CommunitiesGuildLogFrame"] =	{ area = "left",			pushable = 1,	wh
 UIPanelWindows["CommunitiesGuildTextEditFrame"] = 			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["ReportFrame"] =		{ area = "center",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
@@ -91,10 +92,9 @@ UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
-	local suppressScriptHandler = true;
-	frame:SetAttribute("UIPanelLayout-defined", true, suppressScriptHandler);
+	frame:SetAttributeNoHandler("UIPanelLayout-defined", true);
 	for name, value in pairs(attributes) do
-		frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
+		frame:SetAttributeNoHandler("UIPanelLayout-"..name, value);
 	end
 end
 
@@ -127,8 +127,7 @@ function SetUIPanelAttribute(frame, name, value)
 		SetFrameAttributes(frame, attributes);
 	end
 
-	local suppressScriptHandler = true;
-	frame:SetAttribute("UIPanelLayout-"..name, value, suppressScriptHandler);
+	frame:SetAttributeNoHandler("UIPanelLayout-"..name, value);
 end
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -167,6 +166,16 @@ end
 function UpdateUIParentPosition()
 	local topOffset = GetUIParentOffset();
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
+end
+
+function UpdateUIElementsForClientScene(sceneType)
+	if sceneType == Enum.ClientSceneType.MinigameSceneType then
+		PlayerFrame:Hide();
+		TargetFrame:Hide();
+	else
+		PlayerFrame:SetShown(true);
+		TargetFrame_Update(TargetFrame);
+	end
 end
 
 UISpecialFrames = {
@@ -492,10 +501,15 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
 
 	-- Event(s) for the ScriptAnimationEffect System
-	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE")
+	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
 
     -- Event(s) for Notched displays
-    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED")
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
+
+    -- Event(s) for Client Scenes
+    self:RegisterEvent("CLIENT_SCENE_OPENED");
+    self:RegisterEvent("CLIENT_SCENE_CLOSED");
+
 end
 
 function UIParent_OnShow(self)
@@ -2364,6 +2378,11 @@ function UIParent_OnEvent(self, event, ...)
 		UpdateUIParentPosition();
     elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
         UpdateUIParentPosition();
+	elseif (event == "CLIENT_SCENE_OPENED") then
+		local sceneType = ...;
+		UpdateUIElementsForClientScene(sceneType);
+	elseif (event == "CLIENT_SCENE_CLOSED") then
+		UpdateUIElementsForClientScene(nil);
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
@@ -4673,19 +4692,23 @@ function HandlePendingInviteConfirmation_QuestSession(invite)
 end
 
 function CreatePendingInviteConfirmationText(invite)
-	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(invite);
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid, _, _, _, isCrossFaction, playerFactionGroup, localizedFaction = GetInviteConfirmationInfo(invite);
 
 	if confirmationType == LE_INVITE_CONFIRMATION_REQUEST then
-		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid);
+		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction);
 	elseif confirmationType == LE_INVITE_CONFIRMATION_SUGGEST then
-		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid);
+		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction);
 	else
 		return CreatePendingInviteConfirmationText_AppendWarnings("", invite, name, guid, rolesInvalid, willConvertToRaid);
 	end
 end
 
-function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid)
+function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction)
 	local coloredName, coloredSuggesterName = CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, willConvertToRaid);
+
+	if isCrossFaction then
+		coloredName = CROSS_FACTION_PLAYER_NAME:format(coloredName, localizedFaction);
+	end
 
 	local suggesterGuid, _, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(invite);
 
@@ -4751,10 +4774,14 @@ function CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, 
 	end
 end
 
-function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid)
+function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction)
 	local suggesterGuid, suggesterName, relationship, isQuickJoin = C_PartyInfo.GetInviteReferralInfo(invite);
 	suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 	name = GetSocialColoredName(name, guid);
+
+	if isCrossFaction then
+		name = CROSS_FACTION_PLAYER_NAME:format(name, localizedFaction);
+	end
 
 	-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
 	local text = INVITE_CONFIRMATION_SUGGEST:format(suggesterName, name);

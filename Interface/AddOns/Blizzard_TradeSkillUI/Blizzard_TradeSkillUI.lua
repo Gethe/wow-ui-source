@@ -250,132 +250,98 @@ function TradeSkillUIMixin:RefreshSkillRank()
 end
 
 function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
-	local info = UIDropDownMenu_CreateInfo();
-	if level == 1 then
-		--[[ Only show makeable recipes ]]--
-		info.text = CRAFT_IS_MAKEABLE;
-		info.func = function()
-			C_TradeSkillUI.SetOnlyShowMakeableRecipes(not C_TradeSkillUI.GetOnlyShowMakeableRecipes());
-		end
+	local filterSystem = {
+		filters = {
+			{ type = FilterComponent.Checkbox, text = CRAFT_IS_MAKEABLE, set = C_TradeSkillUI.SetOnlyShowMakeableRecipes, isSet = C_TradeSkillUI.GetOnlyShowMakeableRecipes, },
+			{ type = FilterComponent.Submenu, text = TRADESKILL_FILTER_SLOTS, value = 1, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.CustomFunction, customFunc = function(level) TradeSkillFrame:AddInInventorySlotFilters(level) end, },
+					},
+				},
+			},
+			{ type = FilterComponent.Submenu, text = TRADESKILL_FILTER_CATEGORY, value = 2, childrenInfo = { filters = self:BuildCategoryFilterList() }, };
+			{ type = FilterComponent.Submenu, text = SOURCES, value = 3, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.TextButton, 
+						  text = CHECK_ALL,
+						  set = function() 	
+										TradeSkillFrame_SetAllSourcesFiltered(false);
+										UIDropDownMenu_Refresh(self.FilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL); 
+									end, 
+						},
+						{ type = FilterComponent.TextButton,
+						  text = UNCHECK_ALL,
+						  set = function() 	
+										TradeSkillFrame_SetAllSourcesFiltered(true);
+										UIDropDownMenu_Refresh(self.FilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL); 
+									end, 
+						},
+						{ type = FilterComponent.DynamicFilterSet,
+						  buttonType = FilterComponent.Checkbox, 
+						  set = function(filter, value)
+									C_TradeSkillUI.SetRecipeSourceTypeFilter(filter, not value);
+								end;
+						  isSet = function(filter) return not C_TradeSkillUI.IsRecipeSourceTypeFiltered(filter); end,
+						  numFilters = C_PetJournal.GetNumPetSources,
+						  filterValidation = C_TradeSkillUI.IsAnyRecipeFromSource,
+						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						},
+					},
+				},
+			},
+		},
+	};
 
-		info.keepShownOnClick = true;
-		info.checked = C_TradeSkillUI.GetOnlyShowMakeableRecipes();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-
-		--[[ Only show recipes that provide skill ups ]]--
-		local tradeSkillID, name, rank, skillLineMaxRank = C_TradeSkillUI.GetTradeSkillLine();
-		local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting() and skillLineMaxRank == 0;
-
-		if not C_TradeSkillUI.IsTradeSkillGuild() and not isNPCCrafting then
-			info.text = TRADESKILL_FILTER_HAS_SKILL_UP;
-			info.func = function()
-				C_TradeSkillUI.SetOnlyShowSkillUpRecipes(not C_TradeSkillUI.GetOnlyShowSkillUpRecipes());
-			end
-			info.keepShownOnClick = true;
-			info.checked = C_TradeSkillUI.GetOnlyShowSkillUpRecipes();
-			info.isNotRadio = true;
-			UIDropDownMenu_AddButton(info, level);
-		end
-
-		info.checked = 	nil;
-		info.isNotRadio = nil;
-		info.func = nil;
-		info.notCheckable = true;
-		info.keepShownOnClick = true;
-		info.hasArrow = true;
-
-		--[[ Filter recipes by inventory slot ]]--
-		info.text = TRADESKILL_FILTER_SLOTS;
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level);
-
-		--[[ Filter recipes by parent category ]]--
-		info.text = TRADESKILL_FILTER_CATEGORY;
-		info.value = 2;
-		UIDropDownMenu_AddButton(info, level);
-
-		--[[ Filter recipes by source ]]--
-		info.text = SOURCES;
-		info.value = 3;
-		UIDropDownMenu_AddButton(info, level);
-
-	elseif level == 2 then
-		--[[ Inventory slots ]]--
-		if UIDROPDOWNMENU_MENU_VALUE == 1 then
-			local inventorySlots = { C_TradeSkillUI.GetAllFilterableInventorySlots() };
-			for i, inventorySlot in ipairs(inventorySlots) do
-				info.text = inventorySlot;
-				info.func = function() self:SetSlotFilter(i, nil, nil); end;
-				info.notCheckable = true;
-				info.hasArrow = false;
-				info.keepShownOnClick = true;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		elseif UIDROPDOWNMENU_MENU_VALUE == 2 then
-			--[[ Parent categories ]]--
-			local categories = { C_TradeSkillUI.GetCategories() };
-
-			for i, categoryID in ipairs(categories) do
-				local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
-				info.text = categoryData.name;
-				info.func = function() self:SetSlotFilter(nil, categoryID, nil); end
-				info.notCheckable = true;
-				info.hasArrow = select("#", C_TradeSkillUI.GetSubCategories(categoryID)) > 0;
-				info.keepShownOnClick = true;
-				info.value = categoryID;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		elseif UIDROPDOWNMENU_MENU_VALUE == 3 then
-			info.hasArrow = false;
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			info.keepShownOnClick = true;
-
-			info.text = CHECK_ALL;
-			info.func = function()
-							TradeSkillFrame_SetAllSourcesFiltered(false);
-							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
-						end;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = UNCHECK_ALL;
-			info.func = function()
-							TradeSkillFrame_SetAllSourcesFiltered(true);
-							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
-						end;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = false;
-
-			local numSources = C_PetJournal.GetNumPetSources();
-			for i = 1, numSources do
-				if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
-					info.text = _G["BATTLE_PET_SOURCE_"..i];
-					info.func = function(_, _, _, value)
-								C_TradeSkillUI.SetRecipeSourceTypeFilter(i, not value);
-							end;
-					info.checked = function() return not C_TradeSkillUI.IsRecipeSourceTypeFiltered(i); end;
-					UIDropDownMenu_AddButton(info, level);
-				end
-			end
-		end
-	elseif level == 3 then
-		--[[ Subcategories ]]--
-		local categoryID = UIDROPDOWNMENU_MENU_VALUE;
-		local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
-		local subCategories = { C_TradeSkillUI.GetSubCategories(categoryID) };
-
-		for i, subCategoryID in ipairs(subCategories) do
-			local subCategoryData = C_TradeSkillUI.GetCategoryInfo(subCategoryID);
-			info.text = subCategoryData.name;
-			info.func = function() self:SetSlotFilter(nil, categoryID, subCategoryID); end
-			info.notCheckable = true;
-			info.keepShownOnClick = true;
-			info.value = subCategoryID;
-			UIDropDownMenu_AddButton(info, level);
-		end
+	local skillLineMaxRank = C_TradeSkillUI.GetTradeSkillLine();
+	local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting() and skillLineMaxRank == 0;
+	if not C_TradeSkillUI.IsTradeSkillGuild() and not isNPCCrafting then
+		local onlyShowSkillUpRecipes = { type = FilterComponent.Checkbox, text = TRADESKILL_FILTER_HAS_SKILL_UP, set = C_TradeSkillUI.SetOnlyShowSkillUpRecipes, isSet = C_TradeSkillUI.GetOnlyShowSkillUpRecipes, };
+		table.insert(filterSystem.filters, 2, onlyShowSkillUpRecipes);
 	end
+
+	FilterDropDownSystem.Initialize(dropdown, filterSystem, level);
+end
+
+function TradeSkillUIMixin:AddInInventorySlotFilters(level)
+	local inventorySlots = { C_TradeSkillUI.GetAllFilterableInventorySlots() };
+	for i, inventorySlot in ipairs(inventorySlots) do
+		local onClick = function() TradeSkillFrame:SetSlotFilter(i, nil, nil); end;
+		FilterDropDownSystem.AddTextButton(inventorySlot, onClick, level);
+	end
+end
+
+function TradeSkillUIMixin:BuildCategoryFilterList()
+	local categoryFilterList = {};
+
+	local categories = { C_TradeSkillUI.GetCategories() };
+	for i, categoryID in ipairs(categories) do
+		local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
+
+		local newCategoryFilter;
+		local set = function() self:SetSlotFilter(nil, categoryID, nil); end;
+		local isSubMenu = (select("#", C_TradeSkillUI.GetSubCategories(categoryID)) > 0);
+		if isSubMenu then
+			newCategoryFilter = { type = FilterComponent.Submenu, text = categoryData.name, value = categoryID, set = set, childrenInfo = { filters = self:BuildSubCategoryFilterList(categoryID) }, };
+		else
+			newCategoryFilter = { type = FilterComponent.TextButton, text = categoryData.name, set = set, };
+		end
+		table.insert(categoryFilterList, newCategoryFilter);
+	end
+	return categoryFilterList;
+end
+
+function TradeSkillUIMixin:BuildSubCategoryFilterList(categoryID)
+	local subCategoryFilterList = {};
+
+	local subCategories = { C_TradeSkillUI.GetSubCategories(categoryID) };
+	for i, subCategoryID in ipairs(subCategories) do
+		local subCategoryData = C_TradeSkillUI.GetCategoryInfo(subCategoryID);
+
+		local set = function() self:SetSlotFilter(nil, categoryID, subCategoryID); end
+		local newSubCategoryFilter = { type = FilterComponent.TextButton, text = subCategoryData.name, set = set, };
+		table.insert(subCategoryFilterList, newSubCategoryFilter);
+	end
+	return subCategoryFilterList;
 end
 
 function TradeSkillUIMixin:OnLinkToButtonClicked()

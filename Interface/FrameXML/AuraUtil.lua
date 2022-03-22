@@ -59,3 +59,25 @@ do
 		until continuationToken == nil;
 	end
 end
+
+-- This is a new optimization to improve the performance of unit aura processing.
+-- isFullUpdate, updatedAuraInfos are now provided by the UNIT_AURA event.
+-- isRelevantFunc should be a callback that takes in the aura info and returns whether the aura is relevent to the system.
+-- See CompactUnitFrame_UpdateAurasInternal in CompactUnitFrame.lua for example usage.
+function AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, isRelevantFunc, ...)
+	if isFullUpdate == nil then
+		isFullUpdate = true;
+	end
+	-- Early out if the update cannot affect the frame
+	local skipUpdate = false;
+	if not isFullUpdate and updatedAuraInfos ~= nil and isRelevantFunc ~= nil then
+		skipUpdate = true;
+		for _, auraInfo in ipairs(updatedAuraInfos) do
+			if (not auraInfo.shouldNeverShow) and isRelevantFunc(auraInfo, ...) then
+				skipUpdate = false;
+				break;
+			end
+		end
+	end
+	return skipUpdate;
+end

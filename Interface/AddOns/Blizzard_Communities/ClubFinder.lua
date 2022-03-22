@@ -909,8 +909,17 @@ function ClubFinderFilterDropdownMixin:Initialize()
 end
 
 function ClubFinderFilterDropdownInitialize(self, level)
-	-- Add the focus label
+	-- Add Cross Faction
 	local info = UIDropDownMenu_CreateInfo();
+	if(not self:GetParent():GetParent().isGuildType) then 
+		info.text = CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION;
+		info.isNotRadio = true;
+		info.keepShownOnClick = true;
+		self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.FactionNeutral, CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION, true);
+		UIDropDownMenu_AddButton(info);	
+	end		
+
+	-- Add the focus label
 	info.text = CLUB_FINDER_FOCUS;
 	info.isTitle = true;
 	info.notCheckable = true;
@@ -1654,6 +1663,9 @@ function ClubFinderCommunitiesCardMixin:OnEnter()
 	GameTooltip_AddColoredLine(GameTooltip, info.name, GREEN_FONT_COLOR);
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_ACTIVE_MEMBERS:format(info.numActiveMembers));
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LEADER:format(info.guildLeader));
+	if(info.isCrossFaction) then 
+		GameTooltip_AddNormalLine(GameTooltip, CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION);
+	end		
 
 	if (self.RequestJoin:IsShown()) then
 		self.RequestJoin.Highlight:Show();
@@ -2473,6 +2485,8 @@ function ClubFinderGetPlayerSettingsByValue(value)
 		return playerSettings.sortMembers;
 	elseif (value == Enum.ClubFinderSettingFlags.SortNewest) then
 		return playerSettings.sortNewest;
+	elseif (value ==  Enum.ClubFinderSettingFlags.FactionNeutral) then
+		return playerSettings.crossFaction
 	end
 end
 

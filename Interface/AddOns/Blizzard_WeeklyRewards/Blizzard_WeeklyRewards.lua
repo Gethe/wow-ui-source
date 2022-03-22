@@ -49,6 +49,7 @@ end
 function WeeklyRewardsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW);
+	C_WeeklyRewards.OnUIInteract();
 	self:FullRefresh();
 end
 

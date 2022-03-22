@@ -822,6 +822,10 @@ local AuctionHouse =
 			Documentation = { "This function should be used in place of an 'allItem' QueryAuctionItems call to query the entire auction house." },
 		},
 		{
+			Name = "RequestFavorites",
+			Type = "Function",
+		},
+		{
 			Name = "RequestMoreBrowseResults",
 			Type = "Function",
 		},
@@ -864,7 +868,7 @@ local AuctionHouse =
 
 			Returns =
 			{
-				{ Name = "bidderName", Type = "string", Nilable = true },
+				{ Name = "bidderName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1318,7 +1322,7 @@ local AuctionHouse =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "subClassID", Type = "number", Nilable = true },
-				{ Name = "inventoryType", Type = "number", Nilable = true },
+				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
 			},
 		},
 		{

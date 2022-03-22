@@ -11,9 +11,6 @@ local SEASON_STATE_PRESEASON = 2;
 local SEASON_STATE_ACTIVE = 3;
 local SEASON_STATE_DISABLED = 4;
 
-local BFA_START_SEASON = 26;
-local BFA_FINAL_SEASON = 29;
-
 local HORDE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Horde];
 local ALLIANCE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Alliance];
 
@@ -674,7 +671,7 @@ function HonorFrame_UpdateQueueButtons()
 			end		
 		end		
 	end		
-
+	local isInCrossFactionGroup = C_PartyInfo.IsCrossFactionParty();
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
 		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
@@ -682,6 +679,9 @@ function HonorFrame_UpdateQueueButtons()
 			if (not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME)) then
 				HonorFrame.QueueButton:Disable();
                 disabledReason = ERR_NOT_LEADER; -- let this trump any other disabled reason
+			elseif(isInCrossFactionGroup) then 
+				HonorFrame.QueueButton:Disable();
+				disabledReason = CROSS_FACTION_PVP_ERROR; 
 			end
 		else
 			HonorFrame.QueueButton:SetText(BATTLEFIELD_JOIN);
@@ -1593,41 +1593,8 @@ function PVPUIHonorInsetMixin:DisplayCasualPanel()
 	self.RatedPanel:Hide();
 end
 
-local SEASON_REWARD_ACHIEVEMENTS = {
-	[BFA_FINAL_SEASON] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 13944,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 13943,
-	},
-	[SL_START_SEASON] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14611,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14612,
-	},
-	[SL_START_SEASON + 1] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14966,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14967,
-	},
-	[SL_START_SEASON + 2] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14564,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14558,
-	},
-	[SL_START_SEASON + 3] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14565,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14559,
-	},
-	[SL_START_SEASON + 4] = {
-		[HORDE_PLAYER_FACTION_GROUP_NAME] = 14566,
-		[ALLIANCE_PLAYER_FACTION_GROUP_NAME] = 14560,
-	},
-};
-
-local function GetPVPSeasonAchievementID(seasonID)
+local function GetPVPSeasonAchievementID()
 	local achievementID = C_PvP.GetPVPSeasonRewardAchievementID();
-
-	if not achievementID then
-		local achievements = SEASON_REWARD_ACHIEVEMENTS[seasonID];
-		achievementID = achievements and achievements[UnitFactionGroup("player")];
-	end
-
 	if achievementID then
 		while true do
 			local completed = select(4, GetAchievementInfo(achievementID));
@@ -2006,7 +1973,7 @@ function NewPvpSeasonMixin:OnShow()
 		self.SeasonRewardText:SetPoint("TOP", rewardTextAnchor, "BOTTOM", 0, -PVP_SEASON_DESCRIPTION_VERTICAL_SPACING);
 	end
 
-	local achievementID = GetPVPSeasonAchievementID(currentSeason);
+	local achievementID = GetPVPSeasonAchievementID();
 	local showSeasonReward = achievementID ~= nil;
 	if showSeasonReward then
 		self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
@@ -2126,16 +2093,10 @@ function PVPWeeklyRatedPanelMixin:Update()
 	local showSeasonReward = false;
 	local seasonState = ConquestFrame.seasonState;
 	if seasonState ~= SEASON_STATE_PRESEASON then
-		local seasonID = GetCurrentArenaSeason();
-		if seasonID == NO_ARENA_SEASON then
-			seasonID = GetPreviousArenaSeason();
-		end
-		if seasonID and seasonID >= BFA_FINAL_SEASON then
-			local achievementID = GetPVPSeasonAchievementID(seasonID);
-			if achievementID ~= nil then
-				showSeasonReward = true;
-				self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
-			end
+		local achievementID = GetPVPSeasonAchievementID();
+		if achievementID ~= nil then
+			showSeasonReward = true;
+			self.SeasonRewardFrame:Init(achievementID, PVP_SEASON_REWARD);
 		end
 	end
 	self.SeasonRewardFrame:SetShown(showSeasonReward);

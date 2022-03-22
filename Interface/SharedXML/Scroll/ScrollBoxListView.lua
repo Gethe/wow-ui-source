@@ -392,9 +392,9 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 		end
 	end
 
-	-- Optimization above for fixed element extents above not necessary here, because we
-	-- we only interested in avoiding large iteration ranges. Obtaining the end extents here
-	-- is at worse the number of elements that fit in the displayable area.
+	-- Optimization above for fixed element extents is not necessary here because we do
+	-- not need to iterate over the entire data range. The iteration is limited to the
+	-- number of elements that can fit in the displayable area.
 	local extentEnd = scrollBox:GetVisibleExtent() + scrollOffset;
 	dataIndexEnd = dataIndexBegin;
 	while (dataIndexEnd < size) and (extentBegin < extentEnd) do

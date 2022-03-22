@@ -1385,154 +1385,121 @@ function GetPetTypeTexture(petType)
 	end
 end
 
-
 function PetJournalFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, PetJournalFilterDropDown_Initialize, "MENU");
+	PetJournalResetFiltersButton_UpdateVisibility();
 end
 
+function PetJournalFilterDropDown_ResetFilters()
+	C_PetJournal.SetDefaultFilters();
+	PetJournalFilterButton.ResetButton:Hide();
+end
+
+function PetJournalResetFiltersButton_UpdateVisibility()
+	PetJournalFilterButton.ResetButton:SetShown(not C_PetJournal.IsUsingDefaultFilters());
+end
+
+function PetJournalFilterDropDown_SetCollectedFilter(value)
+	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED, value);
+end
+
+function PetJournalFilterDropDown_GetCollectedFilter()
+	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED);
+end
+
+function PetJournalFilterDropDown_SetNotCollectedFilter(value)
+	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED, value);
+end
+
+function PetJournalFilterDropDown_GetNotCollectedFilter()
+	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
+end
+
+function PetJournalFilterDropDown_SetAllPetTypes(value)
+	C_PetJournal.SetAllPetTypesChecked(value);
+	UIDropDownMenu_Refresh(PetJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+end 
+
+function PetJournalFilterDropDown_SetAllPetSources(value)
+	C_PetJournal.SetAllPetSourcesChecked(value);
+	UIDropDownMenu_Refresh(PetJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+end
 
 function PetJournalFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
+	local filterSystem = {
+		onUpdate = PetJournalResetFiltersButton_UpdateVisibility,	
+		filters = {
+			{ type = FilterComponent.Checkbox, text = COLLECTED, set= PetJournalFilterDropDown_SetCollectedFilter, isSet = PetJournalFilterDropDown_GetCollectedFilter, },
+			{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = PetJournalFilterDropDown_SetNotCollectedFilter, isSet = PetJournalFilterDropDown_GetNotCollectedFilter, },
+			{ type = FilterComponent.Submenu, text = PET_FAMILIES, value = 1, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.TextButton, 
+						  text = CHECK_ALL,
+						  set = function() PetJournalFilterDropDown_SetAllPetTypes(true); end, 
+						},
+						{ type = FilterComponent.TextButton,
+						  text = UNCHECK_ALL,
+						  set = function() PetJournalFilterDropDown_SetAllPetTypes(false); end, 
+						},
+						{ type = FilterComponent.DynamicFilterSet,
+						  buttonType = FilterComponent.Checkbox, 
+						  set = C_PetJournal.SetPetTypeFilter,
+						  isSet = C_PetJournal.IsPetTypeChecked,
+						  numFilters = C_PetJournal.GetNumPetTypes,
+						  globalPrepend = "BATTLE_PET_NAME_", 
+						},
+					},
+				},
+			},
+			{ type = FilterComponent.Submenu, text = SOURCES, value = 2, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.TextButton, 
+						  text = CHECK_ALL,
+						  set = function() PetJournalFilterDropDown_SetAllPetSources(true); end, 
+						},
+						{ type = FilterComponent.TextButton,
+						  text = UNCHECK_ALL,
+						  set = function() PetJournalFilterDropDown_SetAllPetSources(false); end,  
+						},
+						{ type = FilterComponent.DynamicFilterSet,
+						  buttonType = FilterComponent.Checkbox, 
+						  set = C_PetJournal.SetPetSourceChecked,
+						  isSet = C_PetJournal.IsPetSourceChecked,
+						  numFilters = C_PetJournal.GetNumPetSources,
+						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						},
+					},
+				},
+			},
+			{ type = FilterComponent.Submenu, text = RAID_FRAME_SORT_LABEL, value = 3, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.CustomFunction, customFunc = PetJournalFilterDropDown_AddInSortParameters, },
+					},
+				},
+			},
+		},
+	};
 
-	if level == 1 then
-
-		info.text = COLLECTED
-		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED, value);
-						end
-		info.checked = C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.disabled = nil;
-
-		info.text = NOT_COLLECTED;
-		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED, value);
-						end
-		info.checked = C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.checked = 	nil;
-		info.isNotRadio = nil;
-		info.func =  nil;
-		info.hasArrow = true;
-		info.notCheckable = true;
-
-		info.text = PET_FAMILIES;
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = SOURCES;
-		info.value = 2;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = RAID_FRAME_SORT_LABEL;
-		info.value = 3;
-		UIDropDownMenu_AddButton(info, level);
-
-	else --if level == 2 then
-		if UIDROPDOWNMENU_MENU_VALUE == 1 then
-			info.hasArrow = false;
-			info.isNotRadio = true;
-			info.notCheckable = true;
-
-			info.text = CHECK_ALL;
-			info.func = function()
-							C_PetJournal.SetAllPetTypesChecked(true);
-							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 1, 2);
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = UNCHECK_ALL;
-			info.func = function()
-							C_PetJournal.SetAllPetTypesChecked(false);
-							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 1, 2);
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = false;
-			local numTypes = C_PetJournal.GetNumPetTypes();
-			for i=1,numTypes do
-				info.text = _G["BATTLE_PET_NAME_"..i];
-				info.func = function(_, _, _, value)
-							C_PetJournal.SetPetTypeFilter(i, value);
-						end
-				info.checked = function() return C_PetJournal.IsPetTypeChecked(i) end;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		elseif UIDROPDOWNMENU_MENU_VALUE == 2 then
-			info.hasArrow = false;
-			info.isNotRadio = true;
-			info.notCheckable = true;
-
-			info.text = CHECK_ALL;
-			info.func = function()
-							C_PetJournal.SetAllPetSourcesChecked(true);
-							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 2, 2);
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = UNCHECK_ALL;
-			info.func = function()
-							C_PetJournal.SetAllPetSourcesChecked(false);
-							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 2, 2);
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = false;
-			local numSources = C_PetJournal.GetNumPetSources();
-			for i=1,numSources do
-				info.text = _G["BATTLE_PET_SOURCE_"..i];
-				info.func = function(_, _, _, value)
-							C_PetJournal.SetPetSourceChecked(i, value);
-						end
-				info.checked = function() return C_PetJournal.IsPetSourceChecked(i) end;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		elseif UIDROPDOWNMENU_MENU_VALUE == 3 then
-			info.hasArrow = false;
-			info.isNotRadio = nil;
-			info.notCheckable = nil;
-			info.keepShownOnClick = nil;
-
-			info.text = NAME;
-			info.func = function()
-							C_PetJournal.SetPetSortParameter(LE_SORT_BY_NAME);
-							PetJournal_UpdatePetList();
-						end
-			info.checked = function() return C_PetJournal.GetPetSortParameter() == LE_SORT_BY_NAME end;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = LEVEL;
-			info.func = function()
-							C_PetJournal.SetPetSortParameter(LE_SORT_BY_LEVEL);
-							PetJournal_UpdatePetList();
-						end
-			info.checked = function() return C_PetJournal.GetPetSortParameter() == LE_SORT_BY_LEVEL end;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = RARITY;
-			info.func = function()
-							C_PetJournal.SetPetSortParameter(LE_SORT_BY_RARITY);
-							PetJournal_UpdatePetList();
-						end
-			info.checked = function() return C_PetJournal.GetPetSortParameter() == LE_SORT_BY_RARITY end;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = TYPE;
-			info.func = function()
-							C_PetJournal.SetPetSortParameter(LE_SORT_BY_PETTYPE);
-							PetJournal_UpdatePetList();
-						end
-			info.checked = function() return C_PetJournal.GetPetSortParameter() == LE_SORT_BY_PETTYPE end;
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
+	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
+function PetJournalFilterDropDown_AddInSortParameters(level)
+	local sortParameters = {
+		{ text = NAME, parameter = LE_SORT_BY_NAME, },
+		{ text = LEVEL, parameter = LE_SORT_BY_LEVEL, },
+		{ text = RARITY, parameter = LE_SORT_BY_RARITY, },
+		{ text = TYPE, parameter = LE_SORT_BY_PETTYPE, },
+	};
+
+	for index, sortParameters in ipairs(sortParameters) do
+		local setSelected = function() 
+					C_PetJournal.SetPetSortParameter(sortParameters.parameter); 
+					PetJournal_UpdatePetList(); 
+				end
+		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameters.parameter end;
+		FilterDropDownSystem.AddRadioButton(sortParameters.text, setSelected, isSelected, level);
+	end
+end
 
 function PetOptionsMenu_Init(self, level)
 	local info = UIDropDownMenu_CreateInfo();

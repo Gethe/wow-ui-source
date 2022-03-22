@@ -36,25 +36,15 @@
 					<OnTextChanged function="ToyBox_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
+			<DropDownToggleButton name="$parentFilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
+				<KeyValues>
+					<KeyValue key="resetFunction" value="ToyBoxFilterDropDown_ResetFilters" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnMouseDown>
-						UIMenuButtonStretchMixin.OnMouseDown(self, button);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					<OnMouseDown inherit="prepend">
 						ToggleDropDownMenu(1, nil, ToyBoxFilterDropDown, "ToyBoxFilterButton", 74, 15);
 					</OnMouseDown>
 				</Scripts>

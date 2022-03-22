@@ -15,30 +15,18 @@ function CompactUnitFrame_OnLoad(self)
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterEvent("UNIT_POWER_BAR_SHOW");
-	self:RegisterEvent("UNIT_POWER_BAR_HIDE");
-	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
-	self:RegisterEvent("UNIT_CONNECTION");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_FINISHED");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("INCOMING_RESURRECT_CHANGED");
-	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
-	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
-	self:RegisterEvent("UNIT_PHASE");
-	self:RegisterEvent("UNIT_CTR_OPTIONS");
-	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
 	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
@@ -103,7 +91,9 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateHealth(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_AURA" ) then
-				CompactUnitFrame_UpdateAuras(self);
+				local isFullUpdate = arg2;
+				local updateAuraInfos = arg3;
+				CompactUnitFrame_UpdateAuras(self, isFullUpdate, updateAuraInfos);
 			elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 				CompactUnitFrame_UpdateAggroHighlight(self);
 				CompactUnitFrame_UpdateAggroFlash(self);
@@ -250,12 +240,24 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_POWER_UPDATE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_POWER_BAR_SHOW", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_POWER_BAR_HIDE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_CONNECTION", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_PET", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_CLASSIFICATION_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_OTHER_PARTY_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_PHASE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_CTR_OPTIONS", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_FLAGS", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
@@ -750,7 +752,7 @@ function CompactUnitFrame_UpdateStatusText(frame)
 	end
 
 	if ( not UnitIsConnected(frame.unit) ) then
-		frame.statusText:SetText(PLAYER_OFFLINE)
+		frame.statusText:SetText(PLAYER_OFFLINE);
 		frame.statusText:Show();
 	elseif ( UnitIsDeadOrGhost(frame.displayedUnit) ) then
 		frame.statusText:SetText(DEAD);
@@ -1168,8 +1170,49 @@ do
 	
 	local dispellableDebuffTypes = { Magic = true, Curse = true, Disease = true, Poison = true};
 
+	local function CompactUnitFrame_CouldDisplayAura(auraInfo, ...)
+		local displayOnlyDispellableDebuffs = ...;
+
+		if auraInfo.isNameplateOnly then
+			return false;
+		end
+
+		if auraInfo.isBossAura then
+			return true;
+		end
+
+		if auraInfo.isHarmful and CompactUnitFrame_Util_IsPriorityDebuff(auraInfo.spellId) then
+			return true;
+		end
+
+		if auraInfo.isHarmful and (not displayOnlyDispellableDebuffs) and CompactUnitFrame_Util_ShouldDisplayDebuff(auraInfo.sourceUnit, auraInfo.spellId) then
+			return true;
+		end
+
+		if auraInfo.isHelpful and CompactUnitFrame_UtilShouldDisplayBuff(auraInfo.sourceUnit, auraInfo.spellId, auraInfo.canApplyAura) then
+			return true;
+		end
+
+		local isHarmfulAndRaid = auraInfo.isHarmful and auraInfo.isRaid;
+		if isHarmfulAndRaid and (not auraInfo.isBossAura) and displayOnlyDispellableDebuffs and CompactUnitFrame_Util_ShouldDisplayDebuff(auraInfo.sourceUnit, auraInfo.spellId) and (not CompactUnitFrame_Util_IsPriorityDebuff(auraInfo.spellId)) then
+			return true;
+		end
+
+		if isHarmfulAndRaid and dispellableDebuffTypes[auraInfo.debuffType] ~= nil then
+			return true;
+		end
+
+		return false;
+	end
+
 	-- This interleaves updating buffFrames, debuffFrames and dispelDebuffFrames to reduce the number of calls to UnitAuraSlots/UnitAuraBySlot
-	local function CompactUnitFrame_UpdateAurasInternal(frame)
+	local function CompactUnitFrame_UpdateAurasInternal(frame, isFullUpdate, updatedAuraInfos)
+		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
+
+		if AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, CompactUnitFrame_CouldDisplayAura, displayOnlyDispellableDebuffs) then
+			return;
+		end
+
 		local doneWithBuffs = not frame.buffFrames or not frame.optionTable.displayBuffs or frame.maxBuffs == 0;
 		local doneWithDebuffs = not frame.debuffFrames or not frame.optionTable.displayDebuffs or frame.maxDebuffs == 0;
 		local doneWithDispelDebuffs = not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0;
@@ -1178,8 +1221,6 @@ do
 		local numUsedDebuffs = 0;
 		local numUsedDispelDebuffs = 0;
 
-		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
-
 		-- The following is the priority order for debuffs
 		local bossDebuffs, bossBuffs, priorityDebuffs, nonBossDebuffs, nonBossRaidDebuffs;
 		local index = 1;
@@ -1187,7 +1228,8 @@ do
 
 		if not doneWithDebuffs then
 			AuraUtil.ForEachAura(frame.displayedUnit, "HARMFUL", batchCount, function(...)
-				if CompactUnitFrame_Util_IsBossAura(...) then
+				local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
+				if isBossAura then
 					if not bossDebuffs then
 						bossDebuffs = {};
 					end
@@ -1197,12 +1239,12 @@ do
 						doneWithDebuffs = true;
 						return true;
 					end
-				elseif CompactUnitFrame_Util_IsPriorityDebuff(...) then
+				elseif CompactUnitFrame_Util_IsPriorityDebuff(spellId) then
 					if not priorityDebuffs then
 						priorityDebuffs = {};
 					end
 					tinsert(priorityDebuffs, {index, ...});
-				elseif not displayOnlyDispellableDebuffs and CompactUnitFrame_Util_ShouldDisplayDebuff(...) then
+				elseif not displayOnlyDispellableDebuffs and CompactUnitFrame_Util_ShouldDisplayDebuff(unitCaster, spellId) then
 					if not nonBossDebuffs then
 						nonBossDebuffs = {};
 					end
@@ -1218,7 +1260,8 @@ do
 			index = 1;
 			batchCount = math.max(frame.maxDebuffs, frame.maxBuffs);
 			AuraUtil.ForEachAura(frame.displayedUnit, "HELPFUL", batchCount, function(...)
-				if CompactUnitFrame_Util_IsBossAura(...) then
+				local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
+				if isBossAura then
 					-- Boss Auras are considered Debuffs for our purposes.
 					if not doneWithDebuffs then
 						if not bossBuffs then
@@ -1230,7 +1273,7 @@ do
 							doneWithDebuffs = true;
 						end
 					end
-				elseif CompactUnitFrame_UtilShouldDisplayBuff(...) then
+				elseif CompactUnitFrame_UtilShouldDisplayBuff(unitCaster, spellId, canApplyAura) then
 					if not doneWithBuffs then
 						numUsedBuffs = numUsedBuffs + 1;
 						local buffFrame = frame.buffFrames[numUsedBuffs];
@@ -1264,8 +1307,9 @@ do
 			batchCount = math.max(frame.maxDebuffs, frame.maxDispelDebuffs);
 			index = 1;
 			AuraUtil.ForEachAura(frame.displayedUnit, "HARMFUL|RAID", batchCount, function(...)
+				local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
 				if not doneWithDebuffs and displayOnlyDispellableDebuffs then
-					if CompactUnitFrame_Util_ShouldDisplayDebuff(...) and not CompactUnitFrame_Util_IsBossAura(...) and not CompactUnitFrame_Util_IsPriorityDebuff(...) then
+					if CompactUnitFrame_Util_ShouldDisplayDebuff(unitCaster, spellId) and not isBossAura and not CompactUnitFrame_Util_IsPriorityDebuff(spellId) then
 						if not nonBossRaidDebuffs then
 							nonBossRaidDebuffs = {};
 						end
@@ -1277,7 +1321,6 @@ do
 					end
 				end
 				if not doneWithDispelDebuffs then
-					local debuffType = select(4, ...);
 					if ( dispellableDebuffTypes[debuffType] and not frame["hasDispel"..debuffType] ) then
 						frame["hasDispel"..debuffType] = true;
 						numUsedDispelDebuffs = numUsedDispelDebuffs + 1;
@@ -1328,12 +1371,12 @@ do
 		CompactUnitFrame_HideAllDispelDebuffs(frame, numUsedDispelDebuffs + 1);
 	end
 
-	function CompactUnitFrame_UpdateAuras(frame)
+	function CompactUnitFrame_UpdateAuras(frame, isFullUpdate, updatedAuraInfos)
 		if CompactUnitFrame_UpdateAuras_BackwardsCompat then
 			CompactUnitFrame_UpdateAuras_BackwardsCompat(frame);
 		end
 
-		CompactUnitFrame_UpdateAurasInternal(frame);
+		CompactUnitFrame_UpdateAurasInternal(frame, isFullUpdate, updatedAuraInfos);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
 	end
 end
@@ -1364,18 +1407,6 @@ function CompactUnitFrame_UpdatePvPClassificationIndicator(frame)
 end
 
 --Utility Functions
-function CompactUnitFrame_UtilShouldDisplayBuff(...)
-	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = ...;
-
-	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT");
-
-	if ( hasCustom ) then
-		return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"));
-	else
-		return (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura and not SpellIsSelfBuff(spellId);
-	end
-end
-
 function CompactUnitFrame_HideAllBuffs(frame, startingIndex)
 	if frame.buffFrames then
 		for i=startingIndex or 1, #frame.buffFrames do
@@ -1424,35 +1455,98 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, index, ...)
 	buffFrame:Show();
 end
 
-function CompactUnitFrame_Util_ShouldDisplayDebuff(...)
-	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
-
-	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT");
-	if ( hasCustom ) then
-		return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") );	--Would only be "mine" in the case of something like forbearance.
-	else
-		return true;
-	end
-end
-
-function CompactUnitFrame_Util_IsBossAura(...)
-	return select(12, ...);
-end
-
 do
+	local hasValidPlayer = false;
+	EventRegistry:RegisterFrameEvent("PLAYER_ENTERING_WORLD");
+	EventRegistry:RegisterFrameEvent("PLAYER_LEAVING_WORLD");
+	EventRegistry:RegisterCallback("PLAYER_ENTERING_WORLD", function()
+		hasValidPlayer = true;
+	end, {});
+	EventRegistry:RegisterCallback("PLAYER_LEAVING_WORLD", function()
+		hasValidPlayer = false;
+	end, {});
+
+	local cachedVisualizationInfo = {};
+	
+	-- Visualization info is specific to the spec it was checked under
+	EventRegistry:RegisterFrameEvent("PLAYER_SPECIALIZATION_CHANGED");
+	EventRegistry:RegisterCallback("PLAYER_SPECIALIZATION_CHANGED", function()
+		cachedVisualizationInfo = {};
+	end, {});
+
+	local function GetCachedVisibilityInfo(spellId)
+		if cachedVisualizationInfo[spellId] == nil then
+			local newInfo = {SpellGetVisibilityInfo(spellId, UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT")}
+			if not hasValidPlayer then
+				-- Don't cache the info if the player is not valid since we didn't get a valid result
+				return unpack(newInfo);
+			end
+			cachedVisualizationInfo[spellId] = newInfo;
+		end
+
+		local info = cachedVisualizationInfo[spellId];
+		return unpack(info);
+	end
+
+	function CompactUnitFrame_Util_ShouldDisplayDebuff(unitCaster, spellId)
+		local hasCustom, alwaysShowMine, showForMySpec = GetCachedVisibilityInfo(spellId);
+		if ( hasCustom ) then
+			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") );	--Would only be "mine" in the case of something like forbearance.
+		else
+			return true;
+		end
+	end
+
+	local cachedSelfBuffChecks = {};
+	local function CheckIsSelfBuff(spellId)
+		if cachedSelfBuffChecks[spellId] == nil then
+			cachedSelfBuffChecks[spellId] = SpellIsSelfBuff(spellId);
+		end
+
+		return cachedSelfBuffChecks[spellId];
+	end
+
+	function CompactUnitFrame_UtilShouldDisplayBuff(unitCaster, spellId, canApplyAura)
+		local hasCustom, alwaysShowMine, showForMySpec = GetCachedVisibilityInfo(spellId);
+	
+		if ( hasCustom ) then
+			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"));
+		else
+			return (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura and not CheckIsSelfBuff(spellId);
+		end
+	end
+
+
+	local cachedPriorityChecks = {};
+	local function CheckIsPriorityAura(spellId)
+		if cachedPriorityChecks[spellId] == nil then
+			cachedPriorityChecks[spellId] = SpellIsPriorityAura(spellId);
+		end
+
+		return cachedPriorityChecks[spellId];
+	end
+
 	local _, classFilename = UnitClass("player");
 	if ( classFilename == "PALADIN" ) then
-		CompactUnitFrame_Util_IsPriorityDebuff = function(...)
-			local spellId = select(10, ...);
+		CompactUnitFrame_Util_IsPriorityDebuff = function(spellId)
 			local isForbearance = (spellId == 25771);
-			return isForbearance or SpellIsPriorityAura(spellId);
+			return isForbearance or CheckIsPriorityAura(spellId);
 		end
 	else
-		CompactUnitFrame_Util_IsPriorityDebuff = function(...)
-			local spellId = select(10, ...);
-			return SpellIsPriorityAura(spellId);
+		CompactUnitFrame_Util_IsPriorityDebuff = function(spellId)
+			return CheckIsPriorityAura(spellId);
 		end
 	end
+
+	local function DumpCaches()
+		cachedVisualizationInfo = {};
+		cachedSelfBuffChecks = {};
+		cachedPriorityChecks = {};
+	end
+	EventRegistry:RegisterFrameEvent("PLAYER_REGEN_ENABLED");
+	EventRegistry:RegisterFrameEvent("PLAYER_REGEN_DISABLED");
+	EventRegistry:RegisterCallback("PLAYER_REGEN_ENABLED", DumpCaches, {});
+	EventRegistry:RegisterCallback("PLAYER_REGEN_DISABLED", DumpCaches, {});
 end
 
 function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff, ...)

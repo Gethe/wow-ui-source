@@ -125,6 +125,7 @@ function QuestSessionDialogMixin:BaseOnShow()
 	if self:RequiresValidateDialog() then
 		self:RegisterEvent("PLAYER_REGEN_DISABLED");
 		self:RegisterEvent("PLAYER_REGEN_ENABLED");
+		self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
 		self:CheckValidateDialog();
 	end
@@ -134,12 +135,16 @@ function QuestSessionDialogMixin:BaseOnHide()
 	if self:RequiresValidateDialog() then
 		self:UnregisterEvent("PLAYER_REGEN_DISABLED");
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+		self:UnregisterEvent("GROUP_ROSTER_UPDATE");
 	end
 end
 
 function QuestSessionDialogMixin:CheckValidateDialog()
-	if self:RequiresValidateDialog() and not self:IsDialogValid() then
-		self:StartHideDialog(0.5, ERR_AFFECTING_COMBAT); -- TODO: Add new string
+	if self:RequiresValidateDialog() then
+		local failureReason, errMsg = self:GetDialogFailureReason();
+		if failureReason ~= nil then
+			self:StartHideDialog(0.5, errMsg);
+		end
 	end
 end
 
@@ -148,8 +153,16 @@ function QuestSessionDialogMixin:RequiresValidateDialog()
 	return self.requiresValidateDialog;
 end
 
-function QuestSessionDialogMixin:IsDialogValid()
-	return not UnitAffectingCombat("player");
+function QuestSessionDialogMixin:GetDialogFailureReason()
+	if UnitAffectingCombat("player") then
+		return "inCombat", ERR_AFFECTING_COMBAT;
+	end
+
+	if C_PartyInfo.IsCrossFactionParty() then
+		return "crossFaction";
+	end
+
+	return nil;
 end
 
 function QuestSessionDialogMixin:GetSessionCommand()
@@ -756,6 +769,7 @@ AddNotification(Enum.QuestSessionResult.InvalidPublicParty, ERR_QUEST_SESSION_RE
 AddNotification(Enum.QuestSessionResult.Unknown, ERR_QUEST_SESSION_RESULT_UNKNOWN);
 AddNotification(Enum.QuestSessionResult.InCombat, ERR_QUEST_SESSION_RESULT_IN_COMBAT);
 AddNotification(Enum.QuestSessionResult.MemberInCombat, ERR_QUEST_SESSION_RESULT_MEMBER_IN_COMBAT);
+AddNotification(Enum.QuestSessionResult.RestrictedCrossFaction, ERR_QUEST_SESSION_RESULT_RESTRICTED_CROSS_FACTION);
 
 QuestSessionManagerMixin = {};
 
@@ -971,8 +985,11 @@ function QuestSessionManagerMixin:GetSessionManagementFailureReason()
 		return "noCommand";
 	end
 
-	if command == Enum.QuestSessionCommand.Start and UnitAffectingCombat("player") then
-		return "inCombat";
+	if command == Enum.QuestSessionCommand.Start then
+		local failureReason = self.StartDialog:GetDialogFailureReason();
+		if failureReason ~= nil then 
+			return failureReason;
+		end
 	end
 
 	return nil;

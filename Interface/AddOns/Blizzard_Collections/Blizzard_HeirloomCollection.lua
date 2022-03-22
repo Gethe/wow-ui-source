@@ -96,6 +96,7 @@ do
 	end
 	function HeirloomsJournalCollectedFilterDropDown_OnLoad(self)
 		UIDropDownMenu_Initialize(self, OpenCollectedFilterDropDown, "MENU");
+		HeirloomsJournal:UpdateResetFiltersButtonVisibility();
 	end
 end
 
@@ -631,6 +632,16 @@ function HeirloomsMixin:OnPageChanged(userAction)
 	end
 end
 
+function HeirloomsMixin:SetCollectedHeirloomFilter(checked)
+	C_Heirloom.SetCollectedHeirloomFilter(checked);
+	self:FullRefreshIfVisible();
+end
+
+function HeirloomsMixin:SetUncollectedHeirloomFilter(checked)
+	C_Heirloom.SetUncollectedHeirloomFilter(checked);
+	self:FullRefreshIfVisible();
+end
+
 function HeirloomsMixin:SetSourceChecked(source, checked)
 	if self:IsSourceChecked(source) ~= checked then
 		C_Heirloom.SetHeirloomSourceFilter(source, checked);
@@ -644,80 +655,54 @@ function HeirloomsMixin:IsSourceChecked(source)
 end
 
 function HeirloomsMixin:SetAllSourcesChecked(checked)
-	local numSources = C_PetJournal.GetNumPetSources();
-	for i = 1, numSources do
-		C_Heirloom.SetHeirloomSourceFilter(i, checked);
-	end
+	C_HeirloomInfo.SetAllSourceFilters(checked);
+
+	self:FullRefreshIfVisible();
+	UIDropDownMenu_Refresh(self.filterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+end
+
+function HeirloomsMixin:ResetFilters()
+	C_HeirloomInfo.SetDefaultFilters();
+	self.FilterButton.ResetButton:Hide();
 
 	self:FullRefreshIfVisible();
 end
 
+function HeirloomsMixin:UpdateResetFiltersButtonVisibility()
+	self.FilterButton.ResetButton:SetShown(not C_HeirloomInfo.IsUsingDefaultFilters());
+end
+
 function HeirloomsMixin:OpenCollectedFilterDropDown(level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
+	local filterSystem = {
+		onUpdate = function() self:UpdateResetFiltersButtonVisibility() end,
+		filters = {
+			{ type = FilterComponent.Checkbox, text = COLLECTED, set = function(value) HeirloomsJournal:SetCollectedHeirloomFilter(value) end, isSet = C_Heirloom.GetCollectedHeirloomFilter },
+			{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = function(value) HeirloomsJournal:SetUncollectedHeirloomFilter(value) end, isSet = C_Heirloom.GetUncollectedHeirloomFilter },
+			{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = {
+				filters = {
+					{ type = FilterComponent.TextButton, 
+					  text = CHECK_ALL,
+					  set = function() self:SetAllSourcesChecked(true);	end, 
+					},
+					{ type = FilterComponent.TextButton,
+					  text = UNCHECK_ALL,
+					  set = function() self:SetAllSourcesChecked(false); end, 
+					},
+					{ type = FilterComponent.DynamicFilterSet,
+					  buttonType = FilterComponent.Checkbox, 
+					  set = function(filter, value)	self:SetSourceChecked(filter, value); end,
+					  isSet = function(source) return self:IsSourceChecked(source); end,
+					  numFilters = C_PetJournal.GetNumPetSources,
+					  filterValidation = C_HeirloomInfo.IsHeirloomSourceValid,
+					  globalPrepend = "BATTLE_PET_SOURCE_", 
+					},
+				},
+			},
+		},
+		}
+	};
 
-	if level == 1 then
-		info.text = COLLECTED;
-		info.func = function(_, _, _, value)
-						C_Heirloom.SetCollectedHeirloomFilter(value);
-						self:FullRefreshIfVisible();
-					end;
-		info.checked = C_Heirloom.GetCollectedHeirloomFilter();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = NOT_COLLECTED;
-		info.func = function(_, _, _, value)
-						C_Heirloom.SetUncollectedHeirloomFilter(value);
-						self:FullRefreshIfVisible();
-					end
-		info.checked = C_Heirloom.GetUncollectedHeirloomFilter();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.checked = nil;
-		info.isNotRadio = nil;
-		info.func = nil;
-		info.hasArrow = true;
-		info.notCheckable = true;
-
-		info.text = SOURCES;
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level);
-	elseif level == 2 then
-		info.hasArrow = false;
-		info.isNotRadio = true;
-		info.notCheckable = true;
-
-
-		info.text = CHECK_ALL;
-		info.func = function()
-						self:SetAllSourcesChecked(true);
-						UIDropDownMenu_Refresh(self.filterDropDown, 1, 2);
-					end;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = UNCHECK_ALL;
-		info.func = function()
-						self:SetAllSourcesChecked(false);
-						UIDropDownMenu_Refresh(self.filterDropDown, 1, 2);
-					end;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.notCheckable = false;
-
-		local numSources = C_PetJournal.GetNumPetSources();
-		for i = 1, numSources do
-			if C_Heirloom.IsHeirloomSourceValid(i) then
-				info.text = _G["BATTLE_PET_SOURCE_"..i];
-				info.func = function(_, _, _, value)
-							self:SetSourceChecked(i, value);
-						end;
-				info.checked = function() return self:IsSourceChecked(i); end;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		end
-	end
+	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
 function HeirloomsMixin:GetClassFilter()

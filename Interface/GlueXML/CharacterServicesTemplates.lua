@@ -131,17 +131,29 @@ function CharacterServicesEditBoxWithAutoCompleteMixin:ClearAutoCompleteList()
 	self.autoCompleteList = nil;
 end
 
-function CharacterServicesEditBoxWithAutoCompleteMixin:GetAutoCompleteUserDataForText(text)
+function CharacterServicesEditBoxWithAutoCompleteMixin:GetAutoCompleteUserDataForPredicate(predicate)
 	local list = self:GetAutoCompleteList();
 	if list then
 		for index, entry in ipairs(list) do
-			if entry.text == text then
+			if predicate(entry) then
 				return entry.userData;
 			end
 		end
 	end
 
 	return nil;
+end
+
+function CharacterServicesEditBoxWithAutoCompleteMixin:GetAutoCompleteUserDataForText(text)
+	return self:GetAutoCompleteUserDataForPredicate(function(entry)
+		return entry.text == text;
+	end);
+end
+
+function CharacterServicesEditBoxWithAutoCompleteMixin:GetAutoCompleteUserDataForValue(value)
+	return self:GetAutoCompleteUserDataForPredicate(function(entry)
+		return entry.value == value;
+	end);
 end
 
 function CharacterServicesEditBoxWithAutoCompleteMixin:GetAutoCompleteEntries(text, cursorPosition)

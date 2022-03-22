@@ -129,6 +129,15 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "IsUsingDefaultFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PetIsSummonable",
 			Type = "Function",
 
@@ -155,6 +164,10 @@ local PetJournalInfo =
 			{
 				{ Name = "usesRandomDisplay", Type = "bool", Nilable = true },
 			},
+		},
+		{
+			Name = "SetDefaultFilters",
+			Type = "Function",
 		},
 	},
 

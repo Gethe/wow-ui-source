@@ -151,6 +151,61 @@ local ReportSystem =
 
 	Tables =
 	{
+		{
+			Name = "ReportMajorCategory",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "InappropriateCommunication", Type = "ReportMajorCategory", EnumValue = 0 },
+				{ Name = "GameplaySabotage", Type = "ReportMajorCategory", EnumValue = 1 },
+				{ Name = "Cheating", Type = "ReportMajorCategory", EnumValue = 2 },
+				{ Name = "InappropriateName", Type = "ReportMajorCategory", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ReportMinorCategory",
+			Type = "Enumeration",
+			NumValues = 14,
+			MinValue = 0,
+			MaxValue = 13,
+			Fields =
+			{
+				{ Name = "TextChat", Type = "ReportMinorCategory", EnumValue = 0 },
+				{ Name = "Boosting", Type = "ReportMinorCategory", EnumValue = 1 },
+				{ Name = "Spam", Type = "ReportMinorCategory", EnumValue = 2 },
+				{ Name = "Afk", Type = "ReportMinorCategory", EnumValue = 3 },
+				{ Name = "IntentionallyFeeding", Type = "ReportMinorCategory", EnumValue = 4 },
+				{ Name = "BlockingProgress", Type = "ReportMinorCategory", EnumValue = 5 },
+				{ Name = "Hacking", Type = "ReportMinorCategory", EnumValue = 6 },
+				{ Name = "Botting", Type = "ReportMinorCategory", EnumValue = 7 },
+				{ Name = "Inaproppriate", Type = "ReportMinorCategory", EnumValue = 8 },
+				{ Name = "Advertisement", Type = "ReportMinorCategory", EnumValue = 9 },
+				{ Name = "BTag", Type = "ReportMinorCategory", EnumValue = 10 },
+				{ Name = "GroupName", Type = "ReportMinorCategory", EnumValue = 11 },
+				{ Name = "CustomGameName", Type = "ReportMinorCategory", EnumValue = 12 },
+				{ Name = "VoiceChat", Type = "ReportMinorCategory", EnumValue = 13 },
+			},
+		},
+		{
+			Name = "ReportType",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
+				{ Name = "InWorld", Type = "ReportType", EnumValue = 1 },
+				{ Name = "ClubFinder", Type = "ReportType", EnumValue = 2 },
+				{ Name = "GroupFinder", Type = "ReportType", EnumValue = 3 },
+				{ Name = "ClubMember", Type = "ReportType", EnumValue = 4 },
+				{ Name = "GroupMember", Type = "ReportType", EnumValue = 5 },
+				{ Name = "Friend", Type = "ReportType", EnumValue = 6 },
+			},
+		},
 	},
 };
 

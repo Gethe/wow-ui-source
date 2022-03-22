@@ -19,9 +19,9 @@ local QuestSessionConstants =
 		{
 			Name = "QuestSessionResult",
 			Type = "Enumeration",
-			NumValues = 34,
+			NumValues = 35,
 			MinValue = 0,
-			MaxValue = 33,
+			MaxValue = 34,
 			Fields =
 			{
 				{ Name = "Ok", Type = "QuestSessionResult", EnumValue = 0 },
@@ -58,6 +58,7 @@ local QuestSessionConstants =
 				{ Name = "Unknown", Type = "QuestSessionResult", EnumValue = 31 },
 				{ Name = "InCombat", Type = "QuestSessionResult", EnumValue = 32 },
 				{ Name = "MemberInCombat", Type = "QuestSessionResult", EnumValue = 33 },
+				{ Name = "RestrictedCrossFaction", Type = "QuestSessionResult", EnumValue = 34 },
 			},
 		},
 	},

@@ -238,6 +238,11 @@ function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfReg
 	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
+function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
+end
+
 -- Pass in a TextureKit name, a frame and a table containing parentKeys (on frame) as keys and a table as values
 -- The values table should contain formatString as a member (setVisibility and useAtlasSize can also be added if desired)
 -- For each frame key in frames, the TextureKit name will be inserted into formatString (at the first %s). The resulting atlas name will be set on frame

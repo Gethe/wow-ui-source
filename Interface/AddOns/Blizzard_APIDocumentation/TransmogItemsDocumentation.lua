@@ -22,6 +22,24 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "AreAllCollectionTypeFiltersChecked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAllCollectionTypeFiltersChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreAllSourceTypeFiltersChecked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAllSourceTypeFiltersChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanAppearanceHaveIllusion",
 			Type = "Function",
 
@@ -613,6 +631,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "IsUsingDefaultFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ModifyOutfit",
 			Type = "Function",
 
@@ -749,6 +776,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "SetAllCollectionTypeFilters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAllSourceTypeFilters",
 			Type = "Function",
 
@@ -765,6 +801,10 @@ local TransmogItems =
 			{
 				{ Name = "shown", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SetDefaultFilters",
+			Type = "Function",
 		},
 		{
 			Name = "SetIsAppearanceFavorite",

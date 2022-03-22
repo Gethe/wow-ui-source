@@ -53,7 +53,7 @@ local LFGListInfo =
 			{
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "groupID", Type = "number", Nilable = false },
-				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = true },
+				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
 			},
 
 			Returns =
@@ -223,7 +223,7 @@ local LFGListInfo =
 
 			Arguments =
 			{
-				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = false },
+				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = false },
 				{ Name = "activityInfo", Type = "GroupFinderActivityInfo", Nilable = false },
 			},
 
@@ -303,6 +303,7 @@ local LFGListInfo =
 				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "preferredFilters", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "languageFilter", Type = "WowLocale", Nilable = true },
+				{ Name = "searchCrossFactionListings", Type = "bool", Nilable = true, Default = false },
 			},
 		},
 		{
@@ -313,7 +314,7 @@ local LFGListInfo =
 			{
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "groupID", Type = "number", Nilable = false },
-				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = true },
+				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
 			},
 		},
 		{
@@ -475,32 +476,32 @@ local LFGListInfo =
 	Tables =
 	{
 		{
-			Name = "LfgEntryPlaystyle",
+			Name = "LFGEntryPlaystyle",
 			Type = "Enumeration",
 			NumValues = 4,
 			MinValue = 0,
 			MaxValue = 3,
 			Fields =
 			{
-				{ Name = "None", Type = "LfgEntryPlaystyle", EnumValue = 0 },
-				{ Name = "Standard", Type = "LfgEntryPlaystyle", EnumValue = 1 },
-				{ Name = "Casual", Type = "LfgEntryPlaystyle", EnumValue = 2 },
-				{ Name = "Hardcore", Type = "LfgEntryPlaystyle", EnumValue = 3 },
+				{ Name = "None", Type = "LFGEntryPlaystyle", EnumValue = 0 },
+				{ Name = "Standard", Type = "LFGEntryPlaystyle", EnumValue = 1 },
+				{ Name = "Casual", Type = "LFGEntryPlaystyle", EnumValue = 2 },
+				{ Name = "Hardcore", Type = "LFGEntryPlaystyle", EnumValue = 3 },
 			},
 		},
 		{
-			Name = "LfgListDisplayType",
+			Name = "LFGListDisplayType",
 			Type = "Enumeration",
 			NumValues = 5,
 			MinValue = 0,
 			MaxValue = 4,
 			Fields =
 			{
-				{ Name = "RoleCount", Type = "LfgListDisplayType", EnumValue = 0 },
-				{ Name = "RoleEnumerate", Type = "LfgListDisplayType", EnumValue = 1 },
-				{ Name = "ClassEnumerate", Type = "LfgListDisplayType", EnumValue = 2 },
-				{ Name = "HideAll", Type = "LfgListDisplayType", EnumValue = 3 },
-				{ Name = "PlayerCount", Type = "LfgListDisplayType", EnumValue = 4 },
+				{ Name = "RoleCount", Type = "LFGListDisplayType", EnumValue = 0 },
+				{ Name = "RoleEnumerate", Type = "LFGListDisplayType", EnumValue = 1 },
+				{ Name = "ClassEnumerate", Type = "LFGListDisplayType", EnumValue = 2 },
+				{ Name = "HideAll", Type = "LFGListDisplayType", EnumValue = 3 },
+				{ Name = "PlayerCount", Type = "LFGListDisplayType", EnumValue = 4 },
 			},
 		},
 		{
@@ -527,7 +528,7 @@ local LFGListInfo =
 				{ Name = "filters", Type = "number", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxNumPlayers", Type = "number", Nilable = false },
-				{ Name = "displayType", Type = "LfgListDisplayType", Nilable = false },
+				{ Name = "displayType", Type = "LFGListDisplayType", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "useHonorLevel", Type = "bool", Nilable = false },
 				{ Name = "showQuickJoinToast", Type = "bool", Nilable = false },
@@ -536,6 +537,7 @@ local LFGListInfo =
 				{ Name = "isCurrentRaidActivity", Type = "bool", Nilable = false },
 				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
 				{ Name = "isMythicActivity", Type = "bool", Nilable = false },
+				{ Name = "allowCrossFaction", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -563,6 +565,7 @@ local LFGListInfo =
 				{ Name = "autoChooseActivity", Type = "bool", Nilable = false },
 				{ Name = "preferCurrentArea", Type = "bool", Nilable = false },
 				{ Name = "showPlaystyleDropdown", Type = "bool", Nilable = false },
+				{ Name = "allowCrossFaction", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -582,7 +585,8 @@ local LFGListInfo =
 				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = true },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = true },
-				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = true },
+				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
+				{ Name = "isCrossFactionListing", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -612,7 +616,9 @@ local LFGListInfo =
 				{ Name = "leaderPvpRatingInfo", Type = "PvpRatingInfo", Nilable = true },
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = true },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = true },
-				{ Name = "playstyle", Type = "LfgEntryPlaystyle", Nilable = true },
+				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
+				{ Name = "crossFactionListing", Type = "bool", Nilable = true },
+				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
 			},
 		},
 		{

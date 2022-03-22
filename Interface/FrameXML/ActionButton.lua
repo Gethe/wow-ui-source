@@ -781,8 +781,8 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		self.rangeTimer = -1;
 	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
-		self:UpdateState();
-		self:UpdateFlash();
+		self.flashDirty = true;
+		self.stateDirty = true;
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
@@ -877,6 +877,16 @@ function ActionBarActionButtonMixin:SetTooltip()
 end
 
 function ActionBarActionButtonMixin:OnUpdate(elapsed)
+	if ( self.stateDirty ) then
+		self:UpdateState();
+		self.stateDirty = nil;
+	end
+
+	if ( self.flashDirty ) then
+		self:UpdateFlash();
+		self.flashDirty = nil;
+	end
+
 	if ( self:IsFlashing() ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;

@@ -280,7 +280,7 @@ local vasErrorData = {
 	},
 	[Enum.VasError.AccountRestricted] = {
 		msg = function(character)
-			if IsCharacterNPERestricted(character.guid) then
+			if character and character.guid and IsCharacterNPERestricted(character.guid) then
 				return BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE;
 			end
 
