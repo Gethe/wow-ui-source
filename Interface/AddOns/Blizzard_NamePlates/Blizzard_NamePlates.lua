@@ -182,18 +182,30 @@ function NamePlateDriverMixin:OnTargetChanged()
 	self:OnUnitAuraUpdate("target");
 end
 
-function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
+local function NameplateBuffContainerShowsBuff(name, caster, nameplateShowPersonal, nameplateShowAll)
+	if (not name) then
+		return false;
+	end
+	return nameplateShowAll or
+		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
+end
+
+function NamePlateDriverMixin:OnUnitAuraUpdate(unit, isFullUpdate, updatedAuraInfos)
 	local filter;
 	local showAll = false;
-	if UnitIsUnit("player", unit) then
+
+	local isPlayer = UnitIsUnit("player", unit);
+	local reaction = UnitReaction("player", unit);
+	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
+	local hostileUnit = reaction and reaction <= 4;
+	local showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
+	if isPlayer then
 		filter = "HELPFUL|INCLUDE_NAME_PLATE_ONLY";
 	else
-		local reaction = UnitReaction("player", unit);
-		if reaction and reaction <= 4 then
+		if hostileUnit then
 		-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
 			filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY";
 		else
-			local showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
 			if (showDebuffsOnFriendly) then
 				-- dispellable debuffs
 				filter = "HARMFUL|RAID";
@@ -206,6 +218,25 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
 	if (nameplate) then
+		-- Early out if the update cannot affect the nameplate
+		local function AuraCouldDisplayAsBuff(auraInfo)
+			if not NameplateBuffContainerShowsBuff(auraInfo.name, auraInfo.sourceUnit, auraInfo.nameplateShowPersonal, auraInfo.nameplateShowAll or showAll) then
+				return false;
+			elseif isPlayer then
+				return auraInfo.isHelpful;
+			elseif hostileUnit then
+				return auraInfo.isHarmful;
+			elseif showDebuffsOnFriendly then
+				return auraInfo.isHarmful and auraInfo.isRaid;
+			end
+
+			return false;
+		end
+
+		if filter ~= "NONE" and AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, AuraCouldDisplayAsBuff) then
+			return;
+		end
+
 		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter, showAll);
 	end
 end
@@ -557,12 +588,8 @@ function NameplateBuffContainerMixin:UpdateAnchor()
 	end
 end
 
-function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)
-	if (not name) then
-		return false;
-	end
-	return nameplateShowAll or
-		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
+function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll)
+	return NameplateBuffContainerShowsBuff(name, caster, nameplateShowPersonal, nameplateShowAll);
 end
 
 function NameplateBuffContainerMixin:SetActive(isActive)
@@ -597,7 +624,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 		AuraUtil.ForEachAura(unit, filter, BUFF_MAX_DISPLAY, function(...)
 			local name, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = ...;
 
-			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
+			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll)) then
 				if (not self.buffList[buffIndex]) then
 					self.buffList[buffIndex] = CreateFrame("Frame", nil, self, "NameplateBuffButtonTemplate");
 					self.buffList[buffIndex]:SetMouseClickEnabled(false);

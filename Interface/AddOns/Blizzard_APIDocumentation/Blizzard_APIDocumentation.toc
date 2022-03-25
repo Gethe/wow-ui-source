@@ -179,6 +179,7 @@ TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIFrameManagerDocumentation.lua
+UnitAuraDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
@@ -221,6 +222,7 @@ TimeDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TransmogSharedDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
+UnitConstantsDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 VectorSharedDocumentation.lua

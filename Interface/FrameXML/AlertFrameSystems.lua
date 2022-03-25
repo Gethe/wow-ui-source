@@ -676,7 +676,19 @@ function EntitlementDelivered_OnClick(self, button, down)
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	elseif (self.type == Enum.WoWEntitlementType.Toy) then
 		ToggleToyCollection(self.payloadID);
-	elseif (self.type == Enum.WoWEntitlementType.Appearance or self.type == Enum.WoWEntitlementType.AppearanceSet or self.type == Enum.WoWEntitlementType.Illusion) then
+	elseif (self.type == Enum.WoWEntitlementType.AppearanceSet) then
+		if(self.payloadID) then
+			TransmogUtil.OpenCollectionToSet(self.payloadID);
+		else
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
+	elseif (self.type == Enum.WoWEntitlementType.Appearance) then
+		if(self.payloadID) then
+			TransmogUtil.OpenCollectionToItem(self.payloadID);
+		else
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
+	elseif (self.type == Enum.WoWEntitlementType.Illusion) then
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	end
 end
