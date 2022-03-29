@@ -1,0 +1,256 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+<Script file="GlueButtons.lua"/>
+	<Button name="GlueButtonMasterTemplate" virtual="true" hidden="false">
+		<Scripts>
+			<OnLoad>
+				self.pulseCounter = 0;
+				self.pulseSign = 1;
+			</OnLoad>
+			<OnUpdate>
+				GlueButtonMaster_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnEnter>
+				_G[self:GetName().."Rays"]:Show();
+				self.startPulse = 1;
+			</OnEnter>
+			<OnLeave>
+				_G[self:GetName().."Rays"]:Hide();
+				self.startPulse = nil;
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Texture name="GluePanelButtonUpTexture" file="Interface\Glues\Common\Glue-Panel-Button-Up" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonDownTexture" file="Interface\Glues\Common\Glue-Panel-Button-Down" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonDisabledTexture" file="Interface\Glues\Common\Glue-Panel-Button-Disabled" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonHighlightTexture" file="Interface\Glues\Common\Glue-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+<!--
+	<Texture name="GluePanelButtonUpTextureBlue" file="Interface\Glues\Common\Glue-Panel-Button-Up-Blue" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonDownTextureBlue" file="Interface\Glues\Common\Glue-Panel-Button-Down-Blue" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonHighlightTextureBlue" file="Interface\Glues\Common\Glue-Panel-Button-Highlight-Blue" alphaMode="ADD" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+-->
+	<Texture name="GluePanelButtonUpTextureBlue" file="Interface\Glues\Common\Glue-Panel-Button-Up" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonDownTextureBlue" file="Interface\Glues\Common\Glue-Panel-Button-Down" virtual="true">
+		<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+	</Texture>
+	<Texture name="GluePanelButtonHighlightTextureBlue" file="Interface\Glues\Common\Glue-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+
+
+	<Button name="GlueButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="170" y="45"/>
+		</Size>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+		<NormalTexture inherits="GluePanelButtonUpTexture"/>
+		<PushedTexture inherits="GluePanelButtonDownTexture"/>
+		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
+	</Button>
+	<Button name="GlueButtonTemplateBlue" virtual="true">
+		<Size>
+			<AbsDimension x="170" y="45"/>
+		</Size>
+		<Scripts>
+			<OnShow>
+				if (WOW_GLUE_MODEL) then
+					self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+					self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+					self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+				end
+			</OnShow>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+		<NormalTexture inherits="GluePanelButtonUpTextureBlue"/>
+		<PushedTexture inherits="GluePanelButtonDownTextureBlue"/>
+		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="GluePanelButtonHighlightTextureBlue" alphaMode="ADD"/>
+	</Button>
+	<Button name="GlueButtonTemplateLarge" virtual="true">
+		<Size x="170" y="45"/>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="3"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalLarge"/>
+		<HighlightFont style="GlueFontHighlightLarge"/>
+		<DisabledFont style="GlueFontDisableLarge"/>
+		<NormalTexture inherits="GluePanelButtonUpTexture"/>
+		<PushedTexture inherits="GluePanelButtonDownTexture"/>
+		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
+	</Button>
+	<Button name="GlueButtonSmallTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="38"/>
+		</Size>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+		<NormalTexture inherits="GluePanelButtonUpTexture"/>
+		<PushedTexture inherits="GluePanelButtonDownTexture"/>
+		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
+	</Button>
+	<Button name="GlueButtonSmallTemplateBlue" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="38"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				if (WOW_GLUE_MODEL) then
+					self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+					self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+					self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+				end
+			</OnLoad>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+		<NormalTexture inherits="GluePanelButtonUpTextureBlue"/>
+		<PushedTexture inherits="GluePanelButtonDownTextureBlue"/>
+		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="GluePanelButtonHighlightTextureBlue" alphaMode="ADD"/>
+	</Button>
+	<Button name="GluePanelButtonTemplate" virtual="true">
+		<Size x="150" y="48"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\Glues\Common\Glue-Panel-Button-Up">
+					<Size x="23" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.08984375" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\Glues\Common\Glue-Panel-Button-Up">
+					<Size x="25" y="48"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.484375" right="0.578125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\Glues\Common\Glue-Panel-Button-Up">
+					<Size x="100" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.09375" right="0.48046875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				if ( not self:IsEnabled() ) then
+					self.Left:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+					self.Middle:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+					self.Right:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+				end
+			</OnLoad>
+			<OnMouseDown>
+				if ( self:IsEnabled() ) then
+					self.Left:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+					self.Middle:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+					self.Right:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self:IsEnabled() ) then
+					self.Left:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+				end
+			</OnMouseUp>
+			<OnShow>
+				if ( self:IsEnabled() ) then
+					-- we need to reset our textures just in case we were hidden before a mouse up fired
+					self.Left:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+				end
+			</OnShow>
+			<OnDisable>
+				self.Left:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+				self.Middle:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+				self.Right:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+			</OnDisable>
+			<OnEnable>
+				self.Left:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+				self.Middle:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+				self.Right:SetTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+			</OnEnable>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="3"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
+	</Button>
+</Ui>

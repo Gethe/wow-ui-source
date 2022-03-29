@@ -1,0 +1,39 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="KioskModeSplash.lua"/>
+
+	<Frame name="KioskModeSplash" mixin="KioskModeSplashMixin" toplevel="true" parent="GlueParent" setAllPoints="true" hidden="true">
+		<Frames>
+			<ModelFFX name="KioskBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.30">
+				<FogColor r="0.25" g="0.06" b="0.015"/>
+			</ModelFFX>
+			<Frame parentKey="UI" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GameLogo">
+							<Size x="256" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="8" y="-16"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="NewCharacterChoice" mixin="NewCharacterButtonMixin" id="1" inherits="GlueButtonTemplateBlue" text="CREATE_CHARACTER">
+						<Size x="200" y="45"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="11" y="275"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,109 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- if you change something here you probably want to change the frame version too -->
+
+	<Script file="VideoOptionsFrame.lua"/>
+
+	<Frame name="VideoOptionsFrame" frameLevel="7" inherits="OptionsFrameTemplate">
+		<Frames>
+			<Button name="$parentApply" inherits="GlueButtonSmallTemplateBlue" text="APPLY">
+				<Size>
+					<AbsDimension x="110" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-32" y="56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Disable();
+					</OnLoad>				
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						VideoOptionsFrameOkay_OnClick(self, button, down, true);
+						self:Disable();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancel" inherits="GlueButtonSmallTemplateBlue" text="CANCEL">
+				<Size>
+					<AbsDimension x="110" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="VideoOptionsFrameCancel_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkay" inherits="GlueButtonSmallTemplateBlue" text="OKAY">
+				<Size>
+					<AbsDimension x="110" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="VideoOptionsFrameOkay_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefault" inherits="GlueButtonSmallTemplateBlue" text="RECOMMENDED">
+				<Size>
+					<AbsDimension x="140" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="8"/>
+						</Offset>
+					</Anchor>
+			</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						VideoOptionsFrameDefault_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentClassic" inherits="GlueButtonSmallTemplateBlue" text="CLASSIC_DEFAULTS">
+				<Size>
+					<AbsDimension x="140" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefault" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						VideoOptionsFrameClassic_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentReset" inherits="GlueButtonSmallTemplateBlue" text="RESET_SETTINGS">
+				<Size x="220" y="38"/>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="8" y="8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						VideoOptionsFrameReset_OnClick_Reset(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="VideoOptionsFrame_OnLoad"/>
+			<OnHide function="VideoOptionsFrame_OnHide"/>
+			<OnChar function="nop"/>
+		</Scripts>
+	</Frame>
+</Ui>

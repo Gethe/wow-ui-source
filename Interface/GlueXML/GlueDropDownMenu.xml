@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GlueDropDownMenu.lua"/>
+	<Include file="GlueDropDownMenuTemplates.xml"/>
+	<Button name="DropDownList1" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="1">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus(2);
+			</OnHide>
+		</Scripts>
+	</Button>
+	<Button name="DropDownList2" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="2">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus(3);
+			</OnHide>
+		</Scripts>
+	</Button>
+	<Button name="DropDownList3" toplevel="true" frameStrata="FULLSCREEN_DIALOG" inherits="UIDropDownListTemplate" hidden="true" id="3">
+		<Size>
+			<AbsDimension x="180" y="10"/>
+		</Size>
+	</Button>
+</Ui>
