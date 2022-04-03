@@ -66,7 +66,6 @@ UIPanelWindows["CommunitiesGuildLogFrame"] =	{ area = "left",			pushable = 1,	wh
 UIPanelWindows["CommunitiesGuildTextEditFrame"] = 			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["ReportFrame"] =		{ area = "center",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };

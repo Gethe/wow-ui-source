@@ -1236,6 +1236,12 @@ function ClubFinderSearchEditBoxMixin:OnTextChanged()
 	self:GetParent().Search:UpdateEnabledState();
 end
 
+function ClubFinderReportPosting(clubFinderGUID, clubName, playerGUID)
+	local reportInfo = ReportInfo:CreateClubFinderReportInfo(Enum.ReportType.ClubFinderPosting, clubFinderGUID);
+	reportInfo:SetReportTarget(playerGUID);
+	ReportFrame:InitiateReport(reportInfo, clubName); 
+end
+
 function CardRightClickOptionsMenuInitialize(self, level)
 
 	if(self:GetParent():IsReported() or not self:GetParent().cardInfo) then 
@@ -1243,26 +1249,6 @@ function CardRightClickOptionsMenuInitialize(self, level)
 	end
 
 	local info = UIDropDownMenu_CreateInfo();
-
-	if UIDROPDOWNMENU_MENU_VALUE == 1 then
-		info.text = self:GetParent().cardInfo.isGuild and CLUB_FINDER_REPORT_GUILD_NAME or CLUB_FINDER_REPORT_COMMUNITY_NAME;
-		info.notCheckable = true;
-		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.ClubName, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = CLUB_FINDER_REPORT_NAME;
-		info.notCheckable = true;
-		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostersName, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-		UIDropDownMenu_AddButton(info, level);
-
-		local guildDescrip = self:GetParent().cardInfo.comment;
-		if(guildDescrip:gsub("%s", "") ~= "") then 
-			info.text = CLUB_FINDER_REPORT_DESCRIPTION;
-			info.notCheckable = true;
-			info.func = function() 	ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostingDescription, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
 
 	if (level == 1) then
 		info.text = self:GetParent():GetCardName();
@@ -1316,13 +1302,12 @@ function CardRightClickOptionsMenuInitialize(self, level)
 			UIDropDownMenu_AddButton(info, level);
 		end
 
-		info.text = CLUB_FINDER_REPORT_FOR;
+		info.text = CLUB_FINDER_REPORT_POSTING;
 		info.isTitle = false;
 		info.disabled = nil;
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE;
 		info.notCheckable = true;
-		info.hasArrow = true
-		info.func = nil;
+		info.func = function() ClubFinderReportPosting(self:GetParent():GetClubGUID(), self:GetParent().cardInfo.name, self:GetParent().cardInfo.lastPosterGUID); end
 		info.value = 1;
 		UIDropDownMenu_AddButton(info, level);
 	end

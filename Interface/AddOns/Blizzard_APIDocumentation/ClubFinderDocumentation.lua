@@ -357,18 +357,6 @@ local ClubFinder =
 			},
 		},
 		{
-			Name = "ReportPosting",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "reportType", Type = "ClubFinderPostingReportType", Nilable = false },
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
-				{ Name = "playerGUID", Type = "string", Nilable = false },
-				{ Name = "complaintNote", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "RequestApplicantList",
 			Type = "Function",
 

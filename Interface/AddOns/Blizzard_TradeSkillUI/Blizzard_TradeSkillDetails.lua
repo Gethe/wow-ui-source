@@ -306,6 +306,9 @@ end
 function TradeSkillDetailsMixin:SetSelectedRecipeLevel(recipeLevel, skipRefresh)
 	self.selectedRecipeLevel = recipeLevel;
 
+	self:ClearOptionalReagents();
+	self:GetParent():CloseOptionalReagentSelection();
+
 	if not skipRefresh then
 		self:RefreshDisplay();
 	end
@@ -542,7 +545,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			reagentButton:Hide();
 		end
 
-		local optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID);
+		local optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID, selectedRecipeLevel);
 		self.optionalReagentSlots = optionalReagentSlots;
 		local numOptionalReagentSlots = #optionalReagentSlots;
 		local hasOptionalReagentSlots = numOptionalReagentSlots > 0;
@@ -816,7 +819,7 @@ function TradeSkillDetailsMixin:OnOptionalReagentClicked(reagentButton, button)
 
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.UI_9_0_CRAFTING_CLICK_OPTIONAL_REAGENT_SLOT);
-		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, reagentButton.optionalReagentIndex);
+		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, self.selectedRecipeLevel, reagentButton.optionalReagentIndex);
 		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Slot);
 		self:Refresh();
 	elseif button == "RightButton" then

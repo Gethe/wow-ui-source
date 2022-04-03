@@ -113,6 +113,9 @@
 			</Frame>
 		</Frames>
 		<Animations>
+			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
+				<TextureCoordTranslation childKey="LineGlow" endDelay="3" duration="15" offsetU="0" offsetV="1" />
+			</AnimationGroup>
 			<AnimationGroup looping="BOUNCE" SetToFinalAlpha="true" parentArray="PassiveAnimations">
 				<Alpha childKey="ArtworkGlow" duration="3" order="1" fromAlpha="0.6" toAlpha="0.9"/>
 			</AnimationGroup>

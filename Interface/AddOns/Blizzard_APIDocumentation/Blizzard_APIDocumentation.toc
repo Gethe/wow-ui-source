@@ -218,6 +218,7 @@ PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+ReportSystemConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua

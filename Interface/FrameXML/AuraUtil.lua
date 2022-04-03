@@ -73,7 +73,7 @@ function AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, isRelevan
 	if not isFullUpdate and updatedAuraInfos ~= nil and isRelevantFunc ~= nil then
 		skipUpdate = true;
 		for _, auraInfo in ipairs(updatedAuraInfos) do
-			if (not auraInfo.shouldNeverShow) and isRelevantFunc(auraInfo, ...) then
+			if isRelevantFunc(auraInfo, ...) then
 				skipUpdate = false;
 				break;
 			end

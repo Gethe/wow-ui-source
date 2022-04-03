@@ -523,7 +523,6 @@ end
 function FriendsList_ClosePendingInviteDialogs()
 	CloseDropDownMenus();
 	StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
-	StaticPopupSpecial_Hide(PlayerReportFrame);
 end
 
 function FriendsList_GetScrollFrameTopButton(offset)

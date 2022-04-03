@@ -131,7 +131,7 @@
 					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self:SetResetFunction(function() self:GetParent():ResetFilters() end);
 					</OnLoad>
 					<OnMouseDown inherit="prepend">

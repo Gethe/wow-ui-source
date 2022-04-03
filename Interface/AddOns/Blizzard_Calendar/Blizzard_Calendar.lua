@@ -2237,7 +2237,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 					UIMenu_AddButton(self, "");
 				end
 				-- report spam
-				UIMenu_AddButton(self, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
+				UIMenu_AddButton(self, REPORT_CALENDAR, nil, CalendarDayContextMenu_ReportSpam);
 				needSpacer = true;
 			end
 		elseif ( canPaste ) then
@@ -2365,7 +2365,8 @@ function CalendarDayContextMenu_DeleteEvent()
 end
 
 function CalendarDayContextMenu_ReportSpam()
-	C_Calendar.ContextMenuEventComplain();
+	reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Calendar);
+	ReportFrame:InitiateReport(reportInfo);
 end
 
 function CalendarDayContextMenu_AcceptInvite()

@@ -788,9 +788,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 
 	LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo);
 	LFGListEntryCreation_UpdateValidState(self);
-	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle)) then 
-		LFGListEntryCreation_SetTitleFromActivityInfo(self);
-	end 
+	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
 
 function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
@@ -3258,6 +3256,12 @@ function LFGListUtil_AppendStatistic(label, value, title, lastTitle)
 	GameTooltip:AddLine(string.format(label, value));
 end
 
+function LFGList_ReportListing(searchResultID, leaderName)
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
+	reportInfo:SetGroupFinderSearchResultID(searchResultID);
+	ReportFrame:InitiateReport(reportInfo, leaderName); 
+end
+
 local LFG_LIST_SEARCH_ENTRY_MENU = {
 	{
 		text = nil,	--Group name goes here
@@ -3277,49 +3281,11 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 	},
 	{
 		text = LFG_LIST_REPORT_GROUP_FOR,
-		hasArrow = true,
 		notCheckable = true,
-		menuList = {
-			{
-				text = LFG_LIST_SPAM,
-				func = function(_, id)
-					CloseDropDownMenus();
-					C_LFGList.ReportSearchResult(id, "lfglistspam");
-					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
-				end,
-				arg1 = nil, --Search result ID goes here
-				notCheckable = true,
-			},
-			{
-				text = LFG_LIST_BAD_NAME,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "lfglistname");
-					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
-				end,
-				arg1 = nil, --Search result ID goes here
-				notCheckable = true,
-			},
-			{
-				text = LFG_LIST_BAD_DESCRIPTION,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "lfglistcomment");
-					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
-				end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if the description is just an empty string
-			},
-			{
-				text = LFG_LIST_BAD_LEADER_NAME,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "badplayername");
-					LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
-				end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if we don't have a name for the leader
-			},
-		},
+		func = function(_, id, name) 
+			LFGList_ReportListing(id, name); 
+			LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel); 
+		end;
 	},
 	{
 		text = CANCEL,
@@ -3336,13 +3302,15 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not searchResultInfo.leaderName;
 	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipTitle = (not applied) and WHISPER
 	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipText = (not applied) and LFG_LIST_MUST_SIGN_UP_TO_WHISPER;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[1].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[2].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].disabled = (searchResultInfo.comment == "");
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[4].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[4].disabled = not searchResultInfo.leaderName;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].arg1 = resultID;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].arg2 = searchResultInfo.leaderName;
 	return LFG_LIST_SEARCH_ENTRY_MENU;
+end
+
+function LFGList_ReportApplicant(applicantID, applicantName)
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderApplicant);
+	reportInfo:SetGroupFinderApplicantID(applicantID);
+	ReportFrame:InitiateReport(reportInfo, applicantName); 	
 end
 
 local LFG_LIST_APPLICANT_MEMBER_MENU = {
@@ -3359,24 +3327,9 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 		disabled = nil, --Disabled if we don't have a name yet
 	},
 	{
-		text = LFG_LIST_REPORT_FOR,
-		hasArrow = true,
+		text = LFG_LIST_REPORT_PLAYER,
 		notCheckable = true,
-		menuList = {
-			{
-				text = LFG_LIST_BAD_PLAYER_NAME,
-				notCheckable = true,
-				func = function(_, id, memberIdx) C_LFGList.ReportApplicant(id, "badplayername", memberIdx); end,
-				arg1 = nil, --Applicant ID goes here
-				arg2 = nil, --Applicant Member index goes here
-			},
-			{
-				text = LFG_LIST_BAD_DESCRIPTION,
-				notCheckable = true,
-				func = function(_, id) C_LFGList.ReportApplicant(id, "lfglistappcomment"); end,
-				arg1 = nil, --Applicant ID goes here
-			},
-		},
+		func = function(_, id, applicantName) LFGList_ReportApplicant(id, applicantName) end,
 	},
 	{
 		text = IGNORE_PLAYER,
@@ -3398,10 +3351,8 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	LFG_LIST_APPLICANT_MEMBER_MENU[1].text = name or " ";
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name;
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name or (applicantInfo.applicationStatus ~= "applied" and applicantInfo.applicationStatus ~= "invited");
-	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[1].arg1 = applicantID;
-	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[1].arg2 = memberIdx;
-	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[2].arg1 = applicantID;
-	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[2].disabled = (applicantInfo.comment == "");
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].arg1 = applicantID;
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].arg2 = name or "";
 	LFG_LIST_APPLICANT_MEMBER_MENU[4].arg1 = name;
 	LFG_LIST_APPLICANT_MEMBER_MENU[4].arg2 = applicantID;
 	LFG_LIST_APPLICANT_MEMBER_MENU[4].disabled = not name;

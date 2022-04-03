@@ -224,20 +224,14 @@ function ClubFinderApplicantEntryMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+function ClubFinderApplicantReport(clubFinderGUID, playerName, playerGUID)
+	local reportInfo = ReportInfo:CreateClubFinderReportInfo(Enum.ReportType.ClubFinderApplicant, clubFinderGUID);
+	reportInfo:SetReportTarget(playerGUID);
+	ReportFrame:InitiateReport(reportInfo, playerName); 
+end
+
 function ApplicantRightClickOptionsMenuInitialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
-
-	if UIDROPDOWNMENU_MENU_VALUE == 1 then
-		info.text = CLUB_FINDER_REPORT_NAME;
-		info.notCheckable = true;
-		info.func = function()  ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.ApplicantsName, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = CLUB_FINDER_REPORT_JOIN_NOTE;
-		info.notCheckable = true;
-		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.JoinNote, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
-		UIDropDownMenu_AddButton(info, level);
-	end
 	
 	if (level == 1) then 
 		info.text = self:GetParent():GetApplicantName();
@@ -263,12 +257,12 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 		info.func = function () ClubFinderMessageApplicant(self); end
 		UIDropDownMenu_AddButton(info, level);
 
-		info.text = CLUB_FINDER_REPORT_FOR; 
+		info.text = CLUB_FINDER_REPORT_APPLICANT; 
 		info.isTitle = false; 
 		info.disabled = nil;
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
 		info.notCheckable = true; 
-		info.hasArrow = true
+		info.func = function() ClubFinderApplicantReport(self:GetParent():GetClubGUID(), self:GetParent().Info.name, self:GetParent().Info.playerGUID); end
 		info.value = 1; 
 		UIDropDownMenu_AddButton(info, level);
 	end
