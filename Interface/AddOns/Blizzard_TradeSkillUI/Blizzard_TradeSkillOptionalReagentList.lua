@@ -253,19 +253,20 @@ function OptionalReagentListMixin:Reset()
 	self.selectedCallback = nil;
 end
 
-function OptionalReagentListMixin:OpenSelection(selectedRecipeID, optionalReagentIndex, selectedCallback)
+function OptionalReagentListMixin:OpenSelection(selectedRecipeID, selectedRecipeLevel, optionalReagentIndex, selectedCallback)
 	if not selectedRecipeID then
 		self:Reset();
 		return;
 	end
 
-	if self.selectedRecipeID == selectedRecipeID then
+	if (self.selectedRecipeID == selectedRecipeID) and (self.selectedRecipeLevel == selectedRecipeLevel) then
 		if self.optionalReagentIndex == optionalReagentIndex then
 			return;
 		end
 	else
 		self.selectedRecipeID = selectedRecipeID;
-		self.optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID);
+		self.selectedRecipeLevel = selectedRecipeLevel;
+		self.optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID, self.selectedRecipeLevel);
 		if optionalReagentIndex > #self.optionalReagentSlots then
 			self:Reset();
 			return;

@@ -473,13 +473,13 @@ function TradeSkillUIMixin:HasOptionalReagent(itemID)
 	return self.DetailsFrame:HasOptionalReagent(itemID);
 end
 
-function TradeSkillUIMixin:OpenOptionalReagentSelection(selectedRecipeID, optionalReagentIndex)
+function TradeSkillUIMixin:OpenOptionalReagentSelection(selectedRecipeID, selectedRecipeLevel, optionalReagentIndex)
 	local function ReagentSelectedCallback(option)
 		self.DetailsFrame:SetOptionalReagent(optionalReagentIndex, option);
 		self:CloseOptionalReagentSelection();
 	end
 
-	self.OptionalReagentList:OpenSelection(selectedRecipeID, optionalReagentIndex, ReagentSelectedCallback);
+	self.OptionalReagentList:OpenSelection(selectedRecipeID, selectedRecipeLevel, optionalReagentIndex, ReagentSelectedCallback);
 	self.OptionalReagentList:Show();
 end
 

@@ -50,6 +50,7 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
 			},
 
 			Returns =

@@ -1087,11 +1087,13 @@ end
 
 function QuestInfoRewardItemCodeTemplate_OnClick(self, button)
 	if ( IsModifiedClick() and self.objectType == "item") then
+		local link;
 		if ( QuestInfoFrame.questLog ) then
-			HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
+			link = GetQuestLogItemLink(self.type, self:GetID());
 		else
-			HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+			link = GetQuestItemLink(self.type, self:GetID());
 		end
+		HandleModifiedItemClick(link);
 	else
 		if ( QuestInfoFrame.chooseItems ) then
 			QuestInfoItem_OnClick(self);
