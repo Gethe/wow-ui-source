@@ -262,7 +262,7 @@ end
 
 function UnitPopupDuelButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if ( UnitCanAttack("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer(dropdownMenu)) then
+	if ( UnitCanAttack("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer()) then
 		return false;
 	end
 	return true; 
@@ -292,7 +292,7 @@ end
 
 function UnitPopupPetBattleDuelButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if ( not UnitCanPetBattle("player", dropdownMenu.unit) or UnitPopupSharedUtil.IsPlayer(dropdownMenu)) then
+	if ( not UnitCanPetBattle("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer()) then
 		return false;
 	end
 	return true; 
@@ -614,6 +614,7 @@ function UnitPopupGuildPromoteButtonMixin:OnClick()
 	dialog.data = fullname;
 end
 
+--Shown through Communities Guild Roster right click
 UnitPopupGuildLeaveButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupGuildLeaveButtonMixin:GetText()
 	return GUILD_LEAVE; 
@@ -630,6 +631,16 @@ end
 function UnitPopupGuildLeaveButtonMixin:OnClick()
 	local guildName = GetGuildInfo("player");
 	StaticPopup_Show("CONFIRM_GUILD_LEAVE", guildName);
+end
+
+--This is shown from the Communities List (List of guilds and communities)
+UnitPopupGuildGuildsLeaveButtonMixin = CreateFromMixins(UnitPopupGuildLeaveButtonMixin);
+function UnitPopupGuildGuildsLeaveButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	if dropdownMenu.clubInfo == nil or dropdownMenu.clubMemberInfo == nil or not dropdownMenu.clubMemberInfo.isSelf or IsGuildLeader() then
+		return false; 
+	end
+	return true; 
 end
 
 UnitPopupPartyLeaveButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -871,11 +882,18 @@ function UnitPopupReportGroupMemberButtonMixin:GetReportType()
 end
 
 function UnitPopupReportGroupMemberButtonMixin:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
 	local reportInfo = ReportInfo:CreateReportInfoFromType(self:GetReportType())
 	ReportFrame:InitiateReport(reportInfo, UnitPopupSharedUtil.GetFullPlayerName(), playerLocation);
 end
+
+function UnitPopupReportGroupMemberButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	if(UnitInBattleground(dropdownMenu.unit) or IsInActiveWorldPVP(dropdownMenu.unit)) then 
+		return false; 
+	end 
+	return UnitPopupReportButtonMixin.CanShow(self);
+end 
 
 UnitPopupReportInWorldButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
 function UnitPopupReportInWorldButtonMixin:GetText()
@@ -1542,9 +1560,24 @@ function UnitPopupSetRaidRemoveButtonMixin:GetText()
 	return REMOVE; 
 end 
 
---Override in UnitPopupButtons
 function UnitPopupSetRaidRemoveButtonMixin:CanShow()
-end	
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	local isLeader = UnitIsGroupLeader("player");
+	local isAssistant = UnitIsGroupAssistant("player");
+
+
+	if (UnitPopupSharedUtil.HasLFGRestrictions() or not UnitPopupSharedUtil.IsPlayer() ) then
+		return false; 
+	elseif ( ( not isLeader and not isAssistant ) or not dropdownMenu.name or (instanceType == "pvp") or (instanceType == "arena") ) then
+		return false; 
+	elseif ( not isLeader and (isAssistant and (UnitIsGroupAssistant(dropdownMenu.unit) or UnitIsGroupLeader(dropdownMenu.unit)))) then
+		return false; 
+	elseif ( isLeader and UnitIsUnit(dropdownMenu.unit, "player") ) then
+		return false; 
+	end
+
+	return true;
+end
 
 function UnitPopupSetRaidRemoveButtonMixin:OnClick()
 	UninviteUnit(UnitPopupSharedUtil.GetFullPlayerName(), nil, 1);
@@ -1552,7 +1585,7 @@ end
 
 UnitPopupPvpReportAfkButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupPvpReportAfkButtonMixin:GetText()
-	return PVP_REPORT_AFK; 
+	return REPORT_PLAYER; 
 end 
 
 --Override in UnitPopupButtons
@@ -1561,7 +1594,10 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow()
 end	
 
 function UnitPopupPvpReportAfkButtonMixin:OnClick()
-	ReportPlayerIsPVPAFK(UnitPopupSharedUtil.GetFullPlayerName());
+	local guid = UnitPopupSharedUtil.GetGUID();
+	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.PvP);
+	ReportFrame:InitiateReport(reportInfo, UnitPopupSharedUtil.GetFullPlayerName(), playerLocation);
 end
 
 UnitPopupRafSummonButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1880,7 +1916,7 @@ end
 
 function UnitPopupAddFriendButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( UnitPopupSharedUtil.HasBattleTag() or not UnitPopupSharedUtil.CanCooperate() or not UnitPopupSharedUtil.IsPlayer() or not UnitPopupSharedUtil.IsSameServerFromDropdownMenu() or C_FriendList.GetFriendInfo(UnitNameUnmodified(dropdownMenu.unit)) ) then
+	if ( UnitPopupSharedUtil.HasBattleTag() or not UnitPopupSharedUtil.CanCooperate() or not UnitPopupSharedUtil.IsPlayer() or not UnitPopupSharedUtil.IsSameServerFromSelf() or C_FriendList.GetFriendInfo(UnitNameUnmodified(dropdownMenu.unit)) ) then
 		return false
 	end
 	return true; 
@@ -1976,8 +2012,7 @@ function UnitPopupAddBtagFriendButtonMixin:OnClick()
 end
 
 function UnitPopupAddBtagFriendButtonMixin:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( not UnitPopupSharedUtil.CanAddBNetFriend(UnitPopupSharedUtil.GetIsLocalPlayer(), UnitPopupSharedUtil.HasBattleTag(), UnitPopupSharedUtil.IsPlayer()) or not BNFeaturesEnabledAndConnected()) then
+	if ( not UnitPopupSharedUtil:CanAddBNetFriend(UnitPopupSharedUtil.GetIsLocalPlayer(), UnitPopupSharedUtil.HasBattleTag(), UnitPopupSharedUtil.IsPlayer()) or not BNFeaturesEnabledAndConnected()) then
 		return false; 
 	end
 	return true; 
@@ -2491,7 +2526,7 @@ function UnitPopupCommunitiesBtagFriendButtonMixin:CanShow()
 	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer();
 	local isPlayer = UnitPopupSharedUtil.IsPlayer();
 	if not haveBattleTag
-		or not UnitPopupSharedUtil.CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPlayer)
+		or not UnitPopupSharedUtil:CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPlayer)
 		or dropdownMenu.clubInfo == nil
 		or dropdownMenu.clubMemberInfo == nil
 		or dropdownMenu.clubMemberInfo.isSelf then

@@ -1,245 +1,5 @@
 ReportFrameMixin = { };
 
-local ReportMajorCategoriesByReportType = { 
-	[Enum.ReportType.Chat] = {
-		Enum.ReportMajorCategory.InappropriateCommunication,
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.InWorld] = { 
-		Enum.ReportMajorCategory.InappropriateName, 
-		Enum.ReportMajorCategory.Cheating,
-		Enum.ReportMajorCategory.GameplaySabotage 
-	},
-	[Enum.ReportType.ClubFinderPosting] = { 
-		Enum.ReportMajorCategory.InappropriateCommunication,
-		Enum.ReportMajorCategory.InappropriateName
-	},
-	[Enum.ReportType.ClubFinderApplicant] = { 
-		Enum.ReportMajorCategory.InappropriateCommunication,
-		Enum.ReportMajorCategory.InappropriateName
-	},
-	[Enum.ReportType.GroupFinderPosting] = { 
-		Enum.ReportMajorCategory.InappropriateCommunication,
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.GroupFinderApplicant] = { 
-		Enum.ReportMajorCategory.InappropriateCommunication,
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.ClubMember] = { 
-		Enum.ReportMajorCategory.InappropriateCommunication,
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.GroupMember] = {
-		Enum.ReportMajorCategory.InappropriateName,
-		Enum.ReportMajorCategory.InappropriateCommunication,
-	},
-	[Enum.ReportType.Friend] = { 
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.Pet] = { 
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.BattlePet] = { 
-		Enum.ReportMajorCategory.InappropriateName 
-	},
-	[Enum.ReportType.Calendar] = { 
-		Enum.ReportMajorCategory.InappropriateName,
-		Enum.ReportMajorCategory.InappropriateCommunication
-	},
-	[Enum.ReportType.Mail] = { 
-		Enum.ReportMajorCategory.InappropriateName,
-		Enum.ReportMajorCategory.InappropriateCommunication
-	},
-	[Enum.ReportType.PvP] = { 
-		Enum.ReportMajorCategory.InappropriateName,
-	},
-}
-
-local ReportSubCategoriesByTypeAndMajorType = {
-	[Enum.ReportType.Chat] = {  
-		[Enum.ReportMajorCategory.InappropriateCommunication] = {
-			Enum.ReportMinorCategory.TextChat,
-			Enum.ReportMinorCategory.Spam,
-			Enum.ReportMinorCategory.Advertisement,
-			Enum.ReportMinorCategory.Boosting,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-			Enum.ReportMinorCategory.BTag,
-			Enum.ReportMinorCategory.GroupName,
-		},
-	},
-	[Enum.ReportType.InWorld] = {
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-			Enum.ReportMinorCategory.BTag,
-			Enum.ReportMinorCategory.GroupName,
-			Enum.ReportMinorCategory.GuildName, 
-		},
-		[Enum.ReportMajorCategory.Cheating] = 
-		{
-			Enum.ReportMinorCategory.Hacking,
-			Enum.ReportMinorCategory.Botting,
-		},
-		[Enum.ReportMajorCategory.GameplaySabotage] = 
-		{
-			Enum.ReportMinorCategory.Afk,
-			Enum.ReportMinorCategory.IntentionallyFeeding,
-			Enum.ReportMinorCategory.BlockingProgress, 
-		},
-	},
-	[Enum.ReportType.ClubFinderPosting] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.Advertisement,
-			Enum.ReportMinorCategory.Description,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-			Enum.ReportMinorCategory.Name,
-		},
-	},
-	[Enum.ReportType.ClubFinderApplicant] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.Advertisement,
-			Enum.ReportMinorCategory.Description,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-		},
-	},
-	[Enum.ReportType.GroupFinderPosting] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.Advertisement,
-			Enum.ReportMinorCategory.Description,
-			Enum.ReportMinorCategory.VoiceChat, 
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.GroupName,
-			Enum.ReportMinorCategory.CharacterName,
-		},
-	},
-	[Enum.ReportType.GroupFinderApplicant] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.Advertisement,
-			Enum.ReportMinorCategory.Description,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-			Enum.ReportMinorCategory.Name,
-		},
-	},
-	[Enum.ReportType.ClubMember] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.TextChat,
-			Enum.ReportMinorCategory.Boosting,
-			Enum.ReportMinorCategory.Spam, 
-			Enum.ReportMinorCategory.Advertisement,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-		},
-	},
-	[Enum.ReportType.GroupMember] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.TextChat,
-			Enum.ReportMinorCategory.Boosting,
-			Enum.ReportMinorCategory.Spam, 
-			Enum.ReportMinorCategory.Advertisement,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-		},
-	},
-	[Enum.ReportType.Friend] = {
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-			Enum.ReportMinorCategory.BTag,
-		},
-	},
-	[Enum.ReportType.Pet] = {
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.Name
-		},
-	},
-	[Enum.ReportType.BattlePet] = {
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.Name
-		},
-	},
-	[Enum.ReportType.Mail] = {
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.TextChat,
-			Enum.ReportMinorCategory.Spam,
-			Enum.ReportMinorCategory.Advertisement,
-		},
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-		},
-	},
-	[Enum.ReportType.Calendar] = {
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-		},
-		[Enum.ReportMajorCategory.InappropriateCommunication] = 
-		{
-			Enum.ReportMinorCategory.Advertisement,
-			Enum.ReportMinorCategory.Description,
-		},
-	},
-	[Enum.ReportType.PvP] = { 
-		[Enum.ReportMajorCategory.InappropriateName] = 
-		{
-			Enum.ReportMinorCategory.CharacterName,
-		},
-	},
-}
-
-local ReportMajorCategoryStrings = { 
-	[Enum.ReportMajorCategory.InappropriateCommunication] = REPORTING_MAJOR_CATEGORY_INAPPROPRIATE_COMMUNICATION,
-	[Enum.ReportMajorCategory.InappropriateName] = REPORTING_MAJOR_CATEGORY_INAPPROPRIATE_NAME,
-	[Enum.ReportMajorCategory.Cheating] = REPORTING_MAJOR_CATEGORY_CHEATING,
-	[Enum.ReportMajorCategory.GameplaySabotage] = REPORTING_MAJOR_CATEGORY_GAMEPLAY_SABOTAGE
-}
-
-local ReportMinorCategoryStrings = {
-	[Enum.ReportMinorCategory.TextChat] = REPORTING_MINOR_CATEGORY_TEXT_CHAT,
-	[Enum.ReportMinorCategory.Boosting] = REPORTING_MINOR_CATEGORY_BOOSTING,
-	[Enum.ReportMinorCategory.Spam] = REPORTING_MINOR_CATEGORY_SPAM,
-	[Enum.ReportMinorCategory.Afk] = REPORTING_MINOR_CATEGORY_AFK,
-	[Enum.ReportMinorCategory.IntentionallyFeeding] = REPORTING_MINOR_CATEGORY_FEEDING,
-	[Enum.ReportMinorCategory.BlockingProgress] = REPORTING_MINOR_CATEGORY_BLOCKING_PROG,
-	[Enum.ReportMinorCategory.Hacking] = REPORTING_MINOR_CATEGORY_HACKING,
-	[Enum.ReportMinorCategory.Botting] = REPORTING_MINOR_CATEGORY_BOTTING,
-	[Enum.ReportMinorCategory.Advertisement] = REPORTING_MINOR_CATEGORY_ADVERTISEMENT,
-	[Enum.ReportMinorCategory.BTag] = REPORTING_MINOR_CATEGORY_BTAG,
-	[Enum.ReportMinorCategory.GroupName] = REPORTING_MINOR_CATEGORY_GROUP_NAME,
-	[Enum.ReportMinorCategory.CharacterName] = REPORTING_MINOR_CATEGORY_CHARACTER_NAME,
-	[Enum.ReportMinorCategory.GuildName] = REPORTING_MINOR_CATEGORY_GUILD_NAME,
-	[Enum.ReportMinorCategory.Description] = REPORTING_MINOR_CATEGORY_DESCRIPTION,
-	[Enum.ReportMinorCategory.Name] = REPORTING_MINOR_CATEGORY_NAME,
-}
-
 function ReportFrameMixin:OnLoad()
 	NineSliceUtil.ApplyLayoutByName(self.Border, "Dialog");
 	self.minorCategoryFlags = CreateFromMixins(FlagsMixin);
@@ -261,9 +21,21 @@ end
 
 function ReportFrameMixin:OnEvent(event, ...)
 	if(event == "REPORT_PLAYER_RESULT") then 
-		self:Hide();
+		self:UpdateThankYouMessage(true);
 	end		
-end		
+end	
+
+function ReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
+	self.MinorCategoryButtonPool:ReleaseAll(); 
+	self.Comment:SetShown(not showThankYouMessage); 
+	self.MinorReportDescription:SetShown(not showThankYouMessage); 
+	self.ReportString:SetShown(not showThankYouMessage); 
+	self.ReportButton:SetShown(not showThankYouMessage); 
+	self.ReportingMajorCategoryDropdown:SetShown(not showThankYouMessage);
+	self.ThankYouText:SetShown(showThankYouMessage); 
+	self.Watermark:SetShown(showThankYouMessage); 
+	self:Layout(); 
+end
 
 function ReportFrameMixin:SetupDropdownByReportType(reportType)
 	self.ReportingMajorCategoryDropdown.reportType = reportType; 
@@ -280,6 +52,9 @@ function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation)
 	self.reportInfo = reportInfo; 
 	self:ReportByType(reportInfo.reportType);
 	self.reportPlayerLocation = playerLocation; 
+	self.playerName = playerName; 
+	self:UpdateThankYouMessage(false);
+
 	if(playerName) then 
 		self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
 	end 
@@ -298,7 +73,7 @@ function ReportFrameMixin:ReportByType(reportType)
 end
 
 function ReportFrameMixin:MajorTypeSelected(reportType, majorType)
-	local minorCategories = ReportSubCategoriesByTypeAndMajorType[reportType][majorType]; 
+	local minorCategories = C_ReportSystem.GetMinorCategoriesForReportTypeAndMajorCategory(reportType, majorType); 
 	self.selectedMajorType = majorType; 
 	if(not minorCategories) then 
 		return; 
@@ -332,6 +107,12 @@ function ReportFrameMixin:SendReport()
 	if(not self.reportInfo) then
 		return; 
 	end		
+
+	if(self.reportInfo.reportType == Enum.ReportType.PvP) then 
+		ReportPlayerIsPVPAFK(self.playerName);
+		return;
+	end
+
 	self.reportInfo:SetReportMajorCategory(self.selectedMajorType);
 	self.reportInfo:SetMinorCategoryFlags(self.minorCategoryFlags:GetFlags());
 	self.reportInfo:SetComment(self.Comment.EditBox:GetText());
@@ -348,14 +129,14 @@ function ReportingMajorCategoryDropdownInitialize(self)
 		return; 
 	end		
 	
-	local reportOptions = ReportMajorCategoriesByReportType[self.reportType];
+	local reportOptions = C_ReportSystem.GetMajorCategoriesForReportType(self.reportType);
 	if(not reportOptions) then 
 		return; 
 	end
 		
 	local info = UIDropDownMenu_CreateInfo();
 	for _, majorType in ipairs(reportOptions) do 
-		local reportText = ReportMajorCategoryStrings[majorType];
+		local reportText = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
 		if(reportText) then 
 			info.text = reportText; 
 			info.value = majorType; 
@@ -369,7 +150,7 @@ end
 
 function ReportingMajorCategoryDropdownMixin:ValueSelected(reportType, majorType)
 	self:GetParent():MajorTypeSelected(reportType, majorType);
-	UIDropDownMenu_SetText(self, ReportMajorCategoryStrings[majorType]);
+	UIDropDownMenu_SetText(self, _G[C_ReportSystem.GetMajorCategoryString(majorType)]);
 end	
 
 ReportingFrameMinorCategoryButtonMixin = { };
@@ -379,7 +160,7 @@ function ReportingFrameMinorCategoryButtonMixin:SetupButton(minorCategory)
 		return; 
 	end 
 	self.minorCategory = minorCategory; 
-	local categoryName = ReportMinorCategoryStrings[minorCategory];
+	local categoryName = _G[C_ReportSystem.GetMinorCategoryString(minorCategory)];
 	if(not categoryName) then 
 		return;
 	end 

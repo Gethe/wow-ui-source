@@ -177,7 +177,7 @@ function UnitPopupGuildGuilds:GetMenuButtons()
 		UnitPopupGuildSettingButtonMixin, 
 		UnitPopupGuildRecruitmentSettingButtonMixin, 
 		UnitPopupCommunityNotificationButtonMixin,
-		UnitPopupGuildLeaveButtonMixin,
+		UnitPopupGuildGuildsLeaveButtonMixin,
 	}
 end
 

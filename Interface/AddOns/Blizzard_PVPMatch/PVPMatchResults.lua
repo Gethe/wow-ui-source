@@ -488,6 +488,7 @@ function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
 	if C_PvP.GetCustomVictoryStatID() > 0 then
 		color = PVPMatchStyle.PurpleColor;
 	else
+		local useAlternateColor = not isFactionalMatch;
 		color = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor);
 	end
 

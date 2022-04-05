@@ -35,6 +35,63 @@ local ReportSystem =
 			},
 		},
 		{
+			Name = "GetMajorCategoriesForReportType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "reportType", Type = "ReportType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "majorCategories", Type = "table", InnerType = "ReportMajorCategory", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMajorCategoryString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "majorCategory", Type = "ReportMajorCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "majorCategoryString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMinorCategoriesForReportTypeAndMajorCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "reportType", Type = "ReportType", Nilable = false },
+				{ Name = "majorCategory", Type = "ReportMajorCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minorCategories", Type = "table", InnerType = "ReportMinorCategory", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMinorCategoryString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "minorCategory", Type = "ReportMinorCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minorCategoryString", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ReportServerLag",
 			Type = "Function",
 		},

@@ -167,24 +167,6 @@ function UnitPopupSetRoleHealerButton:IsEnabled()
 	return canBeHealer; 
 end
 
-UnitPopupGuildLeaveButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupGuildLeaveButtonMixin:GetText()
-	return GUILD_LEAVE;
-end 
-
-function UnitPopupGuildLeaveButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if dropdownMenu.clubInfo == nil or dropdownMenu.clubMemberInfo == nil or not dropdownMenu.clubMemberInfo.isSelf or IsGuildLeader() then
-		return false; 
-	end
-	return true; 
-end
-
-function UnitPopupGuildLeaveButtonMixin:OnClick()
-	local guildName = GetGuildInfo("player");
-	StaticPopup_Show("CONFIRM_GUILD_LEAVE", guildName);
-end
-
 UnitPopupGuildSettingButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupGuildSettingButtonMixin:GetText()
 	return GUILD_CONTROL_BUTTON_TEXT;
@@ -320,7 +302,7 @@ end
 
 function UnitPopupAddFriendButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( UnitPopupSharedUtil.HasBattleTag() or not UnitPopupSharedUtil.CanCooperate() or not UnitPopupSharedUtil.IsPlayer() or not UnitPopupSharedUtil.IsSameServerFromDropdownMenu() or C_FriendList.GetFriendInfo(UnitNameUnmodified(dropdownMenu.unit)) ) then
+	if ( UnitPopupSharedUtil.HasBattleTag() or not UnitPopupSharedUtil.CanCooperate() or not UnitPopupSharedUtil.IsPlayer() or not UnitPopupSharedUtil.IsSameServerFromSelf() or C_FriendList.GetFriendInfo(UnitNameUnmodified(dropdownMenu.unit)) ) then
 		return false
 	end
 	return true; 
@@ -417,25 +399,6 @@ function UnitPopupWhisperButtonMixin:CanShow()
 	return true; 
 end	
 
-function UnitPopupSetRaidRemoveButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local isLeader = UnitIsGroupLeader("player");
-	local isAssistant = UnitIsGroupAssistant("player");
-
-
-	if (HasLFGRestrictions() or not UnitPopupSharedUtil.IsPlayer() ) then
-		return false; 
-	elseif ( ( not isLeader and not isAssistant ) or not dropdownMenu.name or (instanceType == "pvp") or (instanceType == "arena") ) then
-		return false; 
-	elseif ( not isLeader and isAssistant and UnitIsGroupAssistant(dropdownMenu.unit) ) then
-		return false; 
-	elseif ( isLeader and UnitIsUnit(dropdownMenu.unit, "player") ) then
-		return false; 
-	end
-
-	return true;
-end
-
 function UnitPopupPvpReportAfkButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local inBattleground = UnitInBattleground("player");
@@ -446,8 +409,6 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow()
 		if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
 			return false; 
 		elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP(dropdownMenu.unit) ) then
-			return false; 
-		elseif ( (PlayerIsPVPInactive(dropdownMenu.unit)) ) then
 			return false; 
 		end
 	elseif ( dropdownMenu.name ) then

@@ -65,6 +65,12 @@
 						<Anchor point="TOPRIGHT" x="-6" y="7" relativeKey="$parent.BottomInset"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="ThankYouText" inherits="GameFontHighlightLarge" JustifyH="CENTER" text="ERR_REPORT_SUBMITTED_SUCCESSFULLY">
+					<Size x="400" y="25"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="TitleText" inherits="Game16Font" text="BEHAVIORAL_DETAILS_TITLE_BAR">
@@ -80,7 +86,7 @@
 						<Anchor point="TOP" relativeKey="$parent.TitleText" relativePoint="BOTTOM" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<Texture atlas="gmchat-watermark-blizzard" alpha=".2" useAtlasSize="true" hidden="true">
+				<Texture parentKey="Watermark" atlas="gmchat-watermark-blizzard" alpha=".2" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
