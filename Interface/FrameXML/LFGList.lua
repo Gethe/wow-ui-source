@@ -3022,7 +3022,7 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	end 
 
 	--Update the filters if needed
-	local categoryInfo = C_LFGList.GetLfgCategoryInfo(currentActivityInfo.groupFinderActivityGroupID);
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(currentActivityInfo.categoryID);
 
 	if ( categoryInfo and categoryInfo.separateRecommended ) then
 		if ( bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) == 0 ) then
@@ -3034,7 +3034,7 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 		filters = 0;
 	end
 
-	return currentActivityInfo.filters, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
+	return filters, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
 end
 
 function LFGListUtil_SetUpDropDown(context, dropdown, populateFunc, onClickFunc)
