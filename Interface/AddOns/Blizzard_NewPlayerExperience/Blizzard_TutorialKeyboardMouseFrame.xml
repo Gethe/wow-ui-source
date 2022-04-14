@@ -1,0 +1,44 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Blizzard_TutorialKeyboardMouseFrame.lua" />
+
+	<Frame name="NPE_TutorialKeyboardMouseFrame_Frame" mixin="NPE_TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="288" type="number"/>
+			<KeyValue key="heightPadding" value="130" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" y="104" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentkey="Keyboard" atlas="newplayertutorial-keyboard" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" text="NPEV2_INTRO_TO_MOUSE_AND_KEYBOARD" inherits="GameFontNormalHuge">
+					<Color color="TUTORIAL_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Keyboard" relativePoint="TOP" y="34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="KeyboardMouseConfirmButton" inherits="UIPanelButtonTemplate" text="OKAY" virtual="true">
+				<Size x="150" y="24"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Keyboard" relativePoint="BOTTOM" y="-40"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="KeyboardMouseConfirmButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+</Ui>
