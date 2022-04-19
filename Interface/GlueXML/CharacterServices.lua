@@ -66,8 +66,6 @@ local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, Hidd
 
 CharacterUpgradeFlow = Mixin(
 	{
-		Icon = "Interface\\Icons\\achievement_level_90",
-		Text = CHARACTER_UPGRADE_90_FLOW_LABEL,
 		FinishLabel = CHARACTER_UPGRADE_FINISH_LABEL,
 
 		Steps = {
@@ -172,18 +170,6 @@ function CharacterUpgradeFlow:Initialize(controller)
 	CharacterServicesFlowMixin.Initialize(self, controller);
 
 	self.hasVeteran = nil;
-
-	CharacterServicesCharacterSelector:CheckGlowboxEnabled(function(characterID)
-		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(characterID));
-		local canBoost = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
-		if canBoost then
-			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
-				self.hasVeteran = true;
-			end
-		end
-
-		return canBoost;
-	end);
 end
 
 function CharacterUpgradeFlow:Rewind(controller)
@@ -471,6 +457,17 @@ function CharacterUpgradeCharacterSelectBlock:OnRewind()
 	self:ClearResultInfo();
 end
 
+function CharacterUpgradeCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
+	local serviceInfo = { checkAutoSelect = true, checkTrialBoost = true };
+	local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, characterServiceRequiresLogin = select(5, GetCharacterInfo(characterID));
+	serviceInfo.playerguid = playerguid
+	serviceInfo.requiresLogin = characterServiceRequiresLogin
+	serviceInfo.isTrialBoost = isTrialBoost
+	serviceInfo.isEligible = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
+	serviceInfo.hasBonus = IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade);
+	return serviceInfo;
+end
+
 function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, 3 do
 		if (self.frame.BonusResults[i]) then
@@ -513,44 +510,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		end
 	end
 
-	local characterSelectorCallback = function(characterID, characterButton)
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, characterServiceRequiresLogin = select(5, GetCharacterInfo(characterID));
-		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
-		local hasBonus = IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade);
-
-		if canBoostCharacter then
-			characterButton:SetScript("OnClick", function(characterButton, button)
-				if characterServiceRequiresLogin then
-					GlueDialog_Show("MUST_LOG_IN_FIRST");
-					CharSelectServicesFlowFrame:Hide();
-					return;
-				end
-				self:SaveResultInfo(characterButton, playerguid);
-
-				-- The user entered a normal boost flow and selected a trial boost character, at this point
-				-- put the flow into the auto-select state.
-				local trialBoostFlowGuid = isTrialBoost and playerguid or nil;
-				CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
-
-				CharacterSelectButton_OnClick(characterButton);
-				characterButton.selection:Show();
-				CharacterServicesMaster_Update();
-			end);
-
-			-- Determine if this should auto-advance and cache off relevant information
-			-- NOTE: CharacterUpgradeCharacterSelectBlock always uses auto-advance, there's no "next"
-			-- button, so once a character is selected it has to advance automatically.
-			if CharacterUpgradeFlow:GetAutoSelectGuid() == playerguid then
-				self:SaveResultInfo(characterButton, playerguid);
-				characterButton.selection:Show();
-			end
-		end
-
-		return canBoostCharacter, hasBonus;
-	end
-
 	CharacterServicesCharacterSelector:Show();
-	CharacterServicesCharacterSelector:UpdateDisplay(characterSelectorCallback);
+	CharacterServicesCharacterSelector:UpdateDisplay(self);
 
 	self.frame.ControlsFrame.BonusLabel:SetHeight(self.frame.ControlsFrame.BonusLabel.BonusText:GetHeight());
 	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 10, 60);

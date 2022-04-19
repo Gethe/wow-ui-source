@@ -15,7 +15,8 @@ function ReportFrameMixin:OnHide()
 	self.Comment:ClearAllPoints(); 
 	self.reporPlayerLocation = nil;
 	self.reportInfo = nil; 
-	self.minorCategoryFlags:ClearAll(); 
+	self.minorCategoryFlags:ClearAll();
+	self.Comment.EditBox:SetText("");
 	self:Layout(); 
 end
 
@@ -44,7 +45,7 @@ function ReportFrameMixin:SetupDropdownByReportType(reportType)
 	self.ReportingMajorCategoryDropdown:Show(); 
 end
 
-function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation) 
+function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport) 
 	if(not reportInfo) then 
 		return;
 	end 
@@ -58,6 +59,8 @@ function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation)
 	if(playerName) then 
 		self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
 	end 
+	
+	self.isBnetReport = isBnetReport; 
 	self.ReportString:SetShown(playerName)
 	self:Show();
 
@@ -65,6 +68,7 @@ function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation)
 	self.selectedMajorType = nil; 
 	self.Comment:Hide(); 
 	self.MinorReportDescription:Hide();
+	self.ReportButton:UpdateButtonState(); 
 	self:Layout(); 
 end		
 
@@ -72,21 +76,32 @@ function ReportFrameMixin:ReportByType(reportType)
 	self:SetupDropdownByReportType(reportType);
 end
 
+function ReportFrameMixin:CanDisplayMinorCategory(minorCategory) 
+	if (minorCategory == Enum.ReportMinorCategory.BTag and not self.isBnetReport) then 
+		return false; 
+	end 
+	return true; 
+end
+
 function ReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	local minorCategories = C_ReportSystem.GetMinorCategoriesForReportTypeAndMajorCategory(reportType, majorType); 
 	self.selectedMajorType = majorType; 
+	self.minorCategoryFlags:ClearAll();
 	if(not minorCategories) then 
 		return; 
 	end 
 	self.lastCategory = nil; 
 	self.MinorCategoryButtonPool:ReleaseAll(); 
 	for index, minorCategory in ipairs(minorCategories) do 
-		self.lastCategory = self:AnchorMinorCategory(index, minorCategory);
+		if (self:CanDisplayMinorCategory(minorCategory)) then 
+			self.lastCategory = self:AnchorMinorCategory(index, minorCategory);
+		end
 	end 
 	self.MinorReportDescription:Show(); 
 	self.Comment:ClearAllPoints(); 
 	self.Comment:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -10);
 	self.Comment:Show(); 
+	self.ReportButton:UpdateButtonState(); 
 	self:Layout(); 
 end
 
@@ -101,7 +116,7 @@ function ReportFrameMixin:AnchorMinorCategory(index, minorCategory)
 
 	minorCategoryButton:SetupButton(minorCategory);
 	return minorCategoryButton;
-end 
+end
 
 function ReportFrameMixin:SendReport()
 	if(not self.reportInfo) then
@@ -165,6 +180,7 @@ function ReportingFrameMinorCategoryButtonMixin:SetupButton(minorCategory)
 		return;
 	end 
 
+	self:SetChecked(false);
 	self.Text:SetText(categoryName);
 	self:Show(); 
 end
@@ -174,12 +190,34 @@ function ReportingFrameMinorCategoryButtonMixin:OnClick()
 		return; 
 	end 
 	self:GetParent():SetMinorCategoryFlag(self.minorCategory, self:GetChecked());
+	local parent = self:GetParent(); 
+	parent.ReportButton:UpdateButtonState(); 
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 ReportButtonMixin = { }; 
-
 function ReportButtonMixin:OnClick()
 	self:GetParent():SendReport();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+end
+
+function ReportButtonMixin:UpdateButtonState()
+	local parent = self:GetParent(); 	
+	self:SetEnabled(parent.selectedMajorType and parent.minorCategoryFlags:IsAnySet());
+end 
+
+function ReportButtonMixin:OnEnter()
+	if(self:IsEnabled()) then 
+		return;
+	end 
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, REPORTING_MAKE_SELECTION); 
+	GameTooltip:Show(); 
+end
+
+function ReportButtonMixin:OnLeave()
+	GameTooltip:Hide();
 end
 	
 ReportInfo = { };

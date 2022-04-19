@@ -121,6 +121,7 @@ function GarrisonLandingPageMixin:OnShow()
 	end
 
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
+	self:RegisterEvent("COVENANT_CHOSEN");
 end
 
 function GarrisonLandingPageMixin:OnHide()
@@ -137,6 +138,7 @@ function GarrisonLandingPageMixin:OnHide()
 	self.abilityCountersForMechanicTypes = nil;
 
 	self:UnregisterEvent("GARRISON_HIDE_LANDING_PAGE");
+	self:UnregisterEvent("COVENANT_CHOSEN");
 end
 
 function GarrisonLandingPageMixin:GetFollowerList()
@@ -199,7 +201,7 @@ function GarrisonLandingPageMixin:SetupGardenweald()
 end
 
 function GarrisonLandingPageMixin:OnEvent(event)
-	if (event == "GARRISON_HIDE_LANDING_PAGE") then
+	if (event == "GARRISON_HIDE_LANDING_PAGE" or event == "COVENANT_CHOSEN") then
 		HideUIPanel(self);
 	end
 end

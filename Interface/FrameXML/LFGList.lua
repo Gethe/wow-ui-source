@@ -1064,7 +1064,7 @@ function LFGListEntryCreation_ListGroup(self)
 	local mythicPlusRating =  tonumber(self.MythicPlusRating.EditBox:GetText()) or 0;
 	local autoAccept = false;
 	local privateGroup = self.PrivateGroup.CheckButton:GetChecked();
-	local isCrossFaction = not self.CrossFactionGroup.CheckButton:GetChecked(); 
+	local isCrossFaction =  self.CrossFactionGroup:IsShown() and not self.CrossFactionGroup.CheckButton:GetChecked();
 	local selectedPlaystyle = self.PlayStyleDropdown:IsShown() and self.selectedPlaystyle or nil;
 
 	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, autoAccept, privateGroup, 0, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
@@ -2258,9 +2258,10 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 		self.SignUpButton.tooltip = LFG_LIST_SELECT_A_SEARCH_RESULT;
 	end
 
-	--Update the StartGroupButton
 	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
 	local isPartyLeader = UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
+	local canBrowseWhileQueued = C_LFGList.HasActiveEntryInfo() and isPartyLeader;
+	--Update the StartGroupButton
 	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not isPartyLeader ) then
 		startGroupButton:Disable();
 		startGroupButton.tooltip = LFG_LIST_NOT_LEADER;
@@ -2273,13 +2274,15 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 		elseif ( startError ~= nil ) then
 			startGroupButton:Disable();
 			startGroupButton.tooltip = errorText;
+		elseif (canBrowseWhileQueued) then 
+			startGroupButton:Disable(); 
+			startGroupButton.tooltip = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED; 
 		else
 			startGroupButton:Enable();
 			startGroupButton.tooltip = nil;
 		end
 	end
 
-	local canBrowseWhileQueued = C_LFGList.HasActiveEntryInfo() and isPartyLeader;
 	self.BackButton:SetShown(not canBrowseWhileQueued); 
 	self.BackToGroupButton:SetShown(canBrowseWhileQueued)
 end
@@ -2559,7 +2562,7 @@ function LFGListSearchEntry_Update(self)
 	if ( self.Name:GetWidth() > nameWidth ) then
 		self.Name:SetWidth(nameWidth);
 	end
-	self.ActivityName:SetWidth(nameWidth);
+	self.ActivityName:SetWidth(176);
 
 	local mouseFocus = GetMouseFocus();
 	if ( mouseFocus == self ) then
@@ -3066,7 +3069,7 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	end 
 
 	--Update the filters if needed
-	local categoryInfo = C_LFGList.GetLfgCategoryInfo(currentActivityInfo.groupFinderActivityGroupID);
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(currentActivityInfo.categoryID);
 
 	if ( categoryInfo and categoryInfo.separateRecommended ) then
 		if ( bit.band(filters, Enum.LFGListFilter.Recommended) == 0 ) then
@@ -3078,7 +3081,7 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 		filters = 0;
 	end
 
-	return currentActivityInfo.filters, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
+	return filters, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
 end
 
 function LFGListUtil_SetUpDropDown(context, dropdown, populateFunc, onClickFunc)

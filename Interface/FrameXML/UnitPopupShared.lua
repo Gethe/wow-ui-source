@@ -22,10 +22,11 @@ function UnitPopupManager:CheckAddSubsection(dropdownMenu, info, menuLevel, curr
 end
 
 function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
-	g_mostRecentPopupMenu = nil;
 	local server = nil;
 	dropdownMenu.which = which;
 	dropdownMenu.unit = unit;
+	self.mostRecentDropdownMenu = nil;
+
 	if ( unit ) then
 		name, server = UnitNameUnmodified(unit) or UnitName(unit);
 	elseif ( name ) then
@@ -41,7 +42,7 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 	dropdownMenu.accountInfo = nil;
 	dropdownMenu.accountInfo = UnitPopupSharedUtil.GetBNetAccountInfo();
 	dropdownMenu.isMobile = UnitPopupSharedUtil.GetIsMobile();
-
+	self.mostRecentDropdownMenu = dropdownMenu;
 	local menu = self:GetMenu(which);
 	local menuButtons = menu:GetButtons();
 	self.currentlyShowingMenu = menu; 
@@ -58,8 +59,6 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 	if ( count < 1 ) then
 		return;
 	end
-
-	g_mostRecentPopupMenu = dropdownMenu;
 
 	local info; 
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
@@ -199,7 +198,7 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 	info.customFrame = dropdownMenuButton:GetCustomFrame(); 
 	if info.customFrame then
 		local guid = UnitPopupSharedUtil.GetGUID();
-		local playerLocation = UnitPopupSharedUtil.TryCreatePlayerLocation(guid);
+		local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
 		local contextData = {
 			guid = guid,
 			playerLocation = playerLocation,
@@ -230,20 +229,27 @@ function UnitPopupManager:OnUpdate(elapsed)
 		return;
 	end
 
-	local count = 1; 
 	for level, dropdownFrame in pairs(OPEN_DROPDOWNMENUS) do
 		if(dropdownFrame) then
+			local count = 1;
 			local menu = self:GetMenu(dropdownFrame.which);
 			local menuButtons = menu:GetButtons();
-			for index, button in ipairs(menuButtons) do 
+			local nestedDropdownMenu = menuButtons[level];
+			local nestedDropdownMenus = nil; 
+			if(nestedDropdownMenu) then 
+				nestedDropdownMenus = nestedDropdownMenu:GetButtons();
+			end
+			local menus = nestedDropdownMenu or menuButtons
+			for index, button in ipairs(menus) do 
 				local shown = button:CanShow(); 
 				if(shown) then
-					local enable = UnitPopupSharedUtil.IsEnabled(button);
-					--AubriTODO.. clickable state??
-					if (enable) then
-						UIDropDownMenu_EnableButton(level, count);
-					else 
-						UIDropDownMenu_DisableButton(level, count);
+					local enable = UnitPopupSharedUtil:IsEnabled(button);
+					if( not button.isSubsection) then
+						if (enable and not button.isSubsection) then
+							UIDropDownMenu_EnableButton(level, count);
+						else 
+							UIDropDownMenu_DisableButton(level, count);
+						end
 					end
 					count = count + 1;
 				end 
@@ -251,6 +257,10 @@ function UnitPopupManager:OnUpdate(elapsed)
 		end
 	end 
 end 
+
+function UnitPopupManager:GetMostRecentDropdownMenu()
+	return self.mostRecentDropdownMenu;
+end
 
 function UnitPopupManager:GetMenu(which)
 	return UnitPopupMenus[which];
@@ -270,5 +280,5 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 end
 
 function UnitPopup_HasVisibleMenu()
-	return g_mostRecentPopupMenu == UIDROPDOWNMENU_OPEN_MENU;
+	return UnitPopupManager:GetMostRecentDropdownMenu() == UIDROPDOWNMENU_OPEN_MENU;
 end

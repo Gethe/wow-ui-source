@@ -191,7 +191,7 @@ end
 function CommunitiesChatMixin:BackfillMessages(maxCount)
 	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
 	local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
-	if not clubId or not streamId then
+	if not clubId or not streamId or not self.messageRangeOldest then
 		return;
 	end
 	

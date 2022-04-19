@@ -914,7 +914,8 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		end
 	end		
 
-	if (data.isEligibleForScore and data.oldDungeonScore and data.newDungeonScore) then
+	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1; 
+	if (data.isEligibleForScore and ((data.oldDungeonScore and data.newDungeonScore) or (isOnlyRunThisSeason))) then
 		local gainedScore = data.newDungeonScore - data.oldDungeonScore;
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
 		if (not color) then 
@@ -922,11 +923,12 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		end
 		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
 		
-		if(gainedScore > 0) then 
+		local showChatMessage = gainedScore or isOnlyRunThisSeason;
+		if(showChatMessage) then 
 			local chatString;
 			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then 
 				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore, data.keystoneUpgradeLevels);
-			else 
+			else
 				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore);
 			end
 			local info = ChatTypeInfo["SYSTEM"];

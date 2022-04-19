@@ -190,8 +190,8 @@ end
 function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 
 	local sortedDungeons = { };
-	local function InsertDungeonData(id, name, mapName, isAvailable)
-		local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable };
+	local function InsertDungeonData(id, name, mapName, isAvailable, mapID)
+		local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable, mapID = mapID };
 		local foundMap = false;
 		for i = 1, #sortedDungeons do
 			if ( sortedDungeons[i].mapName == mapName ) then
@@ -212,10 +212,11 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 		local id = dungeonInfo[1];
 		local name = dungeonInfo[2];
 		local mapName = dungeonInfo[20];
+		local mapID = dungeonInfo[23];
 		local isAvailable, isAvailableToPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
 		if( not hideIfNotJoinable or isAvailable ) then
 			if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
-				InsertDungeonData(id, name, mapName, isAvailable);
+				InsertDungeonData(id, name, mapName, isAvailable, mapID);
 			end
 		end
 	end
@@ -256,7 +257,16 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 					encounters = colorCode..bossName..FONT_COLOR_CODE_CLOSE;
 				end
 			end
-			info.tooltipText = encounters;
+			local modifiedInstanceTooltipText = "";
+			if(sortedDungeons[i].mapID) then 
+				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(sortedDungeons[i].mapID)
+				if (modifiedInstanceInfo) then 
+					info.icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
+					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
+				end
+				info.iconXOffset = -6;
+			end 
+			info.tooltipText = encounters .. modifiedInstanceTooltipText;
 			UIDropDownMenu_AddButton(info);
 		else
 			info.text = sortedDungeons[i].name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid

@@ -181,6 +181,7 @@ TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIFrameManagerDocumentation.lua
+UIModifiedInstanceDocumentation.lua
 UnitAuraDocumentation.lua
 WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
@@ -214,6 +215,7 @@ PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
 ProfessionConstantsDocumentation.lua
+PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua

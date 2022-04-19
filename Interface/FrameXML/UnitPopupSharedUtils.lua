@@ -53,8 +53,8 @@ end
 
 function UnitPopupSharedUtil:IsSameServerFromSelf()
 	local guid = UnitPopupSharedUtil.GetGUID();
-	local playerLocation = UnitPopupSharedUtil.TryCreatePlayerLocation(guid);
-	return UnitPopupSharedUtil.IsSameServer(playerLocation);
+	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
+	return UnitPopupSharedUtil:IsSameServer(playerLocation);
 end		
 
 function UnitPopupSharedUtil:HasBattleTag()
@@ -156,6 +156,9 @@ function UnitPopupSharedUtil:CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPl
 end
 
 function UnitPopupSharedUtil:IsEnabled(unitPopupButton)
+	if(not unitPopupButton) then
+		return false; 
+	end 
 	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 
 	if unitPopupButton.isUninteractable then

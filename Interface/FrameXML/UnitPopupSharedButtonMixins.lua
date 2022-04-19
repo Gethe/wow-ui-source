@@ -373,7 +373,11 @@ end
 
 function UnitPopupSuggestInviteButtonMixin:GetText()
 	return SUGGEST_INVITE; 
-end 
+end
+
+function UnitPopupSuggestInviteButtonMixin:CanShow()
+	return UnitPopupInviteButtonMixin.CanShow(self);
+end
 
 UnitPopupRequestInviteButtonMixin = CreateFromMixins(UnitPopupInviteButtonMixin);
 function UnitPopupRequestInviteButtonMixin:GetButtonName()
@@ -383,6 +387,10 @@ end
 function UnitPopupRequestInviteButtonMixin:GetText()
 	return REQUEST_INVITE; 
 end 
+
+function UnitPopupRequestInviteButtonMixin:CanShow()
+	return UnitPopupInviteButtonMixin.CanShow(self);
+end
 
 UnitPopupUninviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
@@ -432,7 +440,7 @@ end
 
 function UnitPopupSetNoteButtonMixin:OnClick()
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(); 
-	FriendsFrame.NotesID = fullname;
+	FriendsFrame.NotesID = fullName;
 	StaticPopup_Show("SET_FRIENDNOTE", fullName);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
@@ -564,7 +572,7 @@ function UnitPopupPromoteButtonMixin:GetText()
 end 
 
 function UnitPopupPromoteButtonMixin:CanShow()
-	if ( not IsInGroup() or not UnitIsGroupLeader("player") or not UnitPopupSharedUtil.IsPlayer(dropdownMenu) or UnitPopupSharedUtil.HasLFGRestrictions()) then
+	if ( not IsInGroup() or not UnitIsGroupLeader("player") or not UnitPopupSharedUtil.IsPlayer() or UnitPopupSharedUtil.HasLFGRestrictions()) then
 		return false;
 	end
 	return true;
@@ -580,7 +588,7 @@ end
 
 function UnitPopupPromoteButtonMixin:OnClick()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	PromoteToLeader(dropdownFrame.unit, 1);
+	PromoteToLeader(dropdownMenu.unit, 1);
 end
 
 UnitPopupPromoteGuideButtonMixin = CreateFromMixins(UnitPopupPromoteButtonMixin);
@@ -589,7 +597,7 @@ function UnitPopupPromoteGuideButtonMixin:GetText()
 end 
 
 function UnitPopupPromoteGuideButtonMixin:CanShow()
-	if ( not IsInGroup() or not UnitIsGroupLeader("player") or not UnitPopupSharedUtil.IsPlayer(dropdownMenu) or not UnitPopupSharedUtil.HasLFGRestrictions()) then
+	if ( not IsInGroup() or not UnitIsGroupLeader("player") or not UnitPopupSharedUtil.IsPlayer() or not UnitPopupSharedUtil.HasLFGRestrictions()) then
 		return false;
 	end
 	return true;
@@ -611,7 +619,7 @@ end
 function UnitPopupGuildPromoteButtonMixin:OnClick()
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(); 
 	local dialog = StaticPopup_Show("CONFIRM_GUILD_PROMOTE", fullName);
-	dialog.data = fullname;
+	dialog.data = fullName;
 end
 
 --Shown through Communities Guild Roster right click
@@ -882,9 +890,11 @@ function UnitPopupReportGroupMemberButtonMixin:GetReportType()
 end
 
 function UnitPopupReportGroupMemberButtonMixin:OnClick()
+	local guid = UnitPopupSharedUtil.GetGUID();
 	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
 	local reportInfo = ReportInfo:CreateReportInfoFromType(self:GetReportType())
-	ReportFrame:InitiateReport(reportInfo, UnitPopupSharedUtil.GetFullPlayerName(), playerLocation);
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	ReportFrame:InitiateReport(reportInfo, UnitPopupSharedUtil.GetFullPlayerName(), playerLocation, dropdownMenu.bnetIDAccount ~= nil);
 end
 
 function UnitPopupReportGroupMemberButtonMixin:CanShow()
@@ -1968,12 +1978,12 @@ end
 function UnitPopupAddCharacterFriendButtonMixin:IsEnabled()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local isSameServer = UnitPopupSharedUtil.IsSameServerFromSelf(); 
-	if ( UIDROPDOWNMENU_INIT_MENU.unit ~= nil ) then
-		if ( not UnitCanCooperate("player", UIDROPDOWNMENU_INIT_MENU.unit) ) then
+	if ( dropdownMenu.unit ~= nil ) then
+		if ( not UnitCanCooperate("player", dropdownMenu.unit) ) then
 			return false; 
 		else
 			-- disable if player is from another realm or already on friends list
-			if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or C_FriendList.GetFriendInfo(UnitNameUnmodified(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+			if ( not UnitIsSameServer(dropdownMenu.unit) or C_FriendList.GetFriendInfo(UnitNameUnmodified(dropdownMenu.unit)) ) then
 				return false; 
 			end
 		end
@@ -2001,8 +2011,8 @@ function UnitPopupAddBtagFriendButtonMixin:OnClick()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	if ( not battleTag ) then
 		StaticPopupSpecial_Show(CreateBattleTagFrame);
-	elseif ( clubInfo ~= nil and clubMemberInfo ~= nil ) then
-		C_Club.SendBattleTagFriendRequest(clubInfo.clubId, clubMemberInfo.memberId);
+	elseif ( dropdownMenu.clubInfo ~= nil and dropdownMenu.clubMemberInfo ~= nil ) then
+		C_Club.SendBattleTagFriendRequest(dropdownMenu.clubInfo.clubId, dropdownMenu.clubMemberInfo.memberId);
 	elseif dropdownMenu.accountInfo then
 		BNSendFriendInvite(dropdownMenu.accountInfo.battleTag);
 	else

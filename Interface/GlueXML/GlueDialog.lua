@@ -203,6 +203,20 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	end,
 }
 
+GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
+	text = CONFIRM_PAID_SERVICE,
+	button1 = DONE,
+	button2 = CANCEL,
+	OnAccept = function()
+		local data = GlueDialog.data;
+		local noIsValidateOnly = false;
+		C_CharacterServices.AssignPFCDistribution(data.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+	end,
+	OnCancel = function()
+		CharacterCreateFrame:UpdateForwardButton();
+	end,
+}
+
 GlueDialogTypes["REALM_LOCALE_WARNING"] = {
 	text = REALM_TYPE_LOCALE_WARNING,
 	button1 = OKAY,

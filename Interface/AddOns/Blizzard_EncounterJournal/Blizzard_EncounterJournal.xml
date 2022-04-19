@@ -444,8 +444,23 @@
 			</OnLeave>
 			<OnClick function="EncounterInstanceButtonTemplate_OnClick"/>
 		</Scripts>
+		<Frames>
+			<Button parentKey="ModifiedInstanceIcon" hidden="true" mixin="ModifiedInstanceIconMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="8" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
 	</Button>
-
 	<Button name="EncounterSearchSMTemplate" parentArray="searchPreview" virtual="true">
 		<Size x="275" y="27"/>
 		<Layers>

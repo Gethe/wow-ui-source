@@ -1580,7 +1580,7 @@ local Club =
 				{ Name = "guildRankOrder", Type = "number", Nilable = true },
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 			},
 		},
 		{

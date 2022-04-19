@@ -20,7 +20,7 @@
 	<Frame name="ReportFrame" mixin="ReportFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="400" type="number"/>
-			<KeyValue key="minimumHeight" value="250" type="number"/>
+			<KeyValue key="minimumHeight" value="190" type="number"/>
 			<KeyValue key="bottomPadding" value="30" type="number"/>
 		</KeyValues>
 		<Anchors>
@@ -66,7 +66,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="ThankYouText" inherits="GameFontHighlightLarge" JustifyH="CENTER" text="ERR_REPORT_SUBMITTED_SUCCESSFULLY">
-					<Size x="400" y="25"/>
+					<Size x="400" y="270"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -111,13 +111,15 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="ReportButton" inherits="UIPanelButtonTemplate" mixin="ReportButtonMixin" text="REPORTING_REPORT">
+			<Button parentKey="ReportButton" inherits="UIPanelButtonTemplate" mixin="ReportButtonMixin" motionScriptsWhileDisabled="true" text="REPORTING_REPORT">
 				<Size x="140" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="BOTTOM" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
 			<ScrollFrame parentKey="Comment" hidden="true" inherits="InputScrollFrameTemplate">
@@ -137,6 +139,12 @@
 						<Texture parentKey="Border" atlas="UI-Frame-Neutral-ExitButtonBorder" useAtlasSize="true"/>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Layers>

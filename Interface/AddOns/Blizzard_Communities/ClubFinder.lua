@@ -915,7 +915,7 @@ function ClubFinderFilterDropdownInitialize(self, level)
 		info.text = CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION;
 		info.isNotRadio = true;
 		info.keepShownOnClick = true;
-		self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.FactionNeutral, CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION, true);
+		self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.FactionNeutral, CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION);
 		UIDropDownMenu_AddButton(info);	
 	end		
 

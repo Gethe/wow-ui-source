@@ -23,3 +23,5 @@ do
 
 	Enum.BrawlType.Lfg = Enum.BrawlType.LFG;
 end
+
+-- The GetPlayerAuraBySpellID API no longer returns information about hidden auras

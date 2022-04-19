@@ -122,13 +122,29 @@ function UnitPopupSetRoleNoneButton:IsCheckable()
 	return true; 
 end
 
-UnitPopupSetRoleTankButton = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupSetRoleNoneButton:GetRole()
+	return "NONE";
+end
+
+function UnitPopupSetRoleNoneButton:OnClick()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	UnitSetRole(dropdownMenu.unit, self:GetRole());
+end 
+
+function UnitPopupSetRoleNoneButton:IsChecked()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	if ( UnitGroupRolesAssigned(dropdownMenu.unit) == self:GetRole()) then
+		return true
+	end
+end
+
+UnitPopupSetRoleTankButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
 function UnitPopupSetRoleTankButton:GetText()
 	return INLINE_TANK_ICON.." "..TANK; 
 end 
 
-function UnitPopupSetRoleTankButton:IsCheckable()
-	return true; 
+function UnitPopupSetRoleTankButton:GetRole()
+	return "TANK";
 end
 
 function UnitPopupSetRoleTankButton:IsEnabled()
@@ -137,13 +153,13 @@ function UnitPopupSetRoleTankButton:IsEnabled()
 	return canBeTank; 
 end
 
-UnitPopupSetRoleDpsButton = CreateFromMixins(UnitPopupButtonBaseMixin);
+UnitPopupSetRoleDpsButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
 function UnitPopupSetRoleDpsButton:GetText()
 	return INLINE_DAMAGER_ICON.." "..DAMAGER; 
 end 
 
-function UnitPopupSetRoleDpsButton:IsCheckable()
-	return true; 
+function UnitPopupSetRoleDpsButton:GetRole()
+	return "DAMAGER";
 end
 
 function UnitPopupSetRoleDpsButton:IsEnabled()
@@ -152,13 +168,13 @@ function UnitPopupSetRoleDpsButton:IsEnabled()
 	return canBeDamager; 
 end
 
-UnitPopupSetRoleHealerButton = CreateFromMixins(UnitPopupButtonBaseMixin);
+UnitPopupSetRoleHealerButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
 function UnitPopupSetRoleHealerButton:GetText()
 	return INLINE_HEALER_ICON.." "..HEALER; 
 end 
 
-function UnitPopupSetRoleHealerButton:IsCheckable()
-	return true; 
+function UnitPopupSetRoleHealerButton:GetRole()
+	return "HEALER";
 end
 
 function UnitPopupSetRoleHealerButton:IsEnabled()
@@ -243,9 +259,9 @@ function UnitPopupRaidDifficulty1ButtonMixin:IsChecked()
 	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
 	if ( isDynamicInstance ) then
 		if ( IsLegacyDifficulty(instanceDifficultyID) ) then
-			if ((instanceDifficultyID == DifficultyUtil.ID.Raid10Normal or instanceDifficultyID == DifficultyUtil.ID.Raid25Normal) and UnitPopupButtons[value].difficultyID == DifficultyUtil.ID.PrimaryRaidNormal) then
+			if ((instanceDifficultyID == DifficultyUtil.ID.Raid10Normal or instanceDifficultyID == DifficultyUtil.ID.Raid25Normal) and self:GetDifficultyID() == DifficultyUtil.ID.PrimaryRaidNormal) then
 				return true;
-			elseif ((instanceDifficultyID == DifficultyUtil.ID.Raid10Heroic or instanceDifficultyID == DifficultyUtil.ID.Raid25Heroic) and UnitPopupButtons[value].difficultyID == DifficultyUtil.ID.PrimaryRaidHeroic) then
+			elseif ((instanceDifficultyID == DifficultyUtil.ID.Raid10Heroic or instanceDifficultyID == DifficultyUtil.ID.Raid25Heroic) and self:GetDifficultyID() == DifficultyUtil.ID.PrimaryRaidHeroic) then
 				return true;
 			end
 		elseif ( instanceDifficultyID == self:GetDifficultyID() ) then
@@ -360,7 +376,7 @@ function UnitPopupBnetInviteButtonMixin:CanShow()
 		return false; 
 	else
 		local inviteType = GetDisplayedInviteType(dropdownMenu.accountInfo.gameAccountInfo.playerGuid);
-		if self:GetButtonName() ~= inviteType then
+		if self:GetButtonName() ~= "BN_"..inviteType then
 			return false; 
 		elseif not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() then
 			return false; 

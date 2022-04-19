@@ -1200,7 +1200,7 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	end
 
 	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType == Enum.ClubType.Character and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
-	self.FactionButton:SetShown(shouldShowFactionIcon);
+	self.FactionButton:SetShown(shouldShowFactionIcon and not self.isInvitation);
 
 	if clubInfo.clubType == Enum.ClubType.BattleNet then
 		self.Level:Hide();

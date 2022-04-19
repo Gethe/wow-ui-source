@@ -116,11 +116,13 @@ CharacterServicesPatchwerk.xml
 CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesShared.lua
 CharacterServicesTemplates.xml
 CharacterServicesCharacterSelector.xml
 CharacterServices.xml
 CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
+CharacterServicesPaidFactionChange.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
 ..\SharedXML\OptionsFrameTemplates.xml

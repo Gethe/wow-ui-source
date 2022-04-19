@@ -1044,13 +1044,17 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
-	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown()) then 
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() and isGuildOrCommunity) then 
 		if(self:TryShowCrossFactionCommunitiesTutorialForLeader()) then 
 			if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
 				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
 			end
 			return; 
-		end		
+		end
+	else
+		if(HelpTip:IsShowing(self, CROSS_FACTION_COMMUNITIES_HELPTIP)) then
+			HelpTip:Hide(self, CROSS_FACTION_COMMUNITIES_HELPTIP);
+		end
 	end		
 
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
@@ -1068,6 +1072,10 @@ function CommunitiesFrameMixin:CheckForTutorials()
 				end
 				return;
 			end
+		end
+	else 
+		if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_POSTING) then
+			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
 		end
 	end
 

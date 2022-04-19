@@ -33,43 +33,11 @@ local function IsAssignmentValid(storeError, vasPurchaseResult, characterGUID)
 	return false, table.concat(msgTable, "\n");
 end
 
-local PCTCharacterSelectBlock = {
-	FrameName = "PCTCharacterSelect",
-	Back = false,
-	Next = false,
-	Finish = false,
-	AutoAdvance = true,
-	ActiveLabel = PCT_FLOW_SLECT_CHARACTER_ACTIVE,
-	ResultsLabel = PCT_FLOW_SLECT_CHARACTER_RESULTS,
-};
-
-function PCTCharacterSelectBlock:Initialize(results, wasFromRewind)
-	self.results = nil;
-	-- TODO: Update the step text to say that it's waiting...
-
-	self:CheckEnable();
-end
-
-function PCTCharacterSelectBlock:CheckEnable()
-	-- This is called by the event handler for getting the valid characters for a VAS product.
-	local currentRealmAddress = select(5, GetServerName());
-	local isGuildVAS = false;
-	local characters = C_StoreSecure.GetCharactersForRealm(currentRealmAddress, isGuildVAS);
-
-	-- This is only valid if something doesn't end up changing which characters can be selected during this process (this is potentially subject to issues from rewinding the flow)
-	if #characters > 0 then
-		self:ShowCharacterSelector();
-	end
-end
-
-local function CheckAddVASErrorString(errorTable, errorString, requirementPassed)
-	if not requirementPassed then
-		table.insert(errorTable, errorString);
-	end
-end
-
-local function CheckAddVASErrorCode(errorTable, errorCode, requirementPassed)
-	CheckAddVASErrorString(errorTable, VASErrorData_GetMessage(errorCode), requirementPassed);
+local PCTCharacterSelectBlock = CreateFromMixins(VASCharacterSelectBlockBase);
+do
+	PCTCharacterSelectBlock.FrameName = "PCTCharacterSelect";
+	PCTCharacterSelectBlock.ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL;
+	PCTCharacterSelectBlock.ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL;
 end
 
 local function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
@@ -85,96 +53,14 @@ local function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
 	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
 end
 
-function PCTCharacterSelectBlock:ShowCharacterSelector()
-	local characterSelectorCallback = function(characterID, characterButton)
-		local canTransferCharacter, errors, playerguid, characterServiceRequiresLogin = DoesClientThinkTheCharacterIsEligibleForPCT(characterID);
-
-		if canTransferCharacter then
-			characterButton:SetScript("OnClick", function(characterButton, button)
-				if characterServiceRequiresLogin then
-					GlueDialog_Show("MUST_LOG_IN_FIRST");
-					CharSelectServicesFlowFrame:Hide();
-					return;
-				end
-
-				self:SaveResult(playerguid, characterButton:GetID());
-				CharacterSelectButton_OnClick(characterButton);
-				characterButton.selection:Show();
-				CharacterServicesMaster_Update();
-			end);
-		else
-			characterButton:SetScript("OnEnter", function(self)
-				if #errors > 0 then
-					local tooltip = GetAppropriateTooltip();
-					tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
-					GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
-					for index, errorMsg in pairs(errors) do
-						GameTooltip_AddErrorLine(tooltip, errorMsg);
-					end
-
-					tooltip:Show();
-				end
-			end);
-
-			characterButton:SetScript("OnLeave", function(self)
-				local tooltip = GetAppropriateTooltip();
-				tooltip:Hide();
-			end);
-		end
-
-		return canTransferCharacter, false;
-	end
-
-	CharacterServicesCharacterSelector:Show();
-	CharacterServicesCharacterSelector:UpdateDisplay(characterSelectorCallback);
-end
-
-function PCTCharacterSelectBlock:OnHide()
-	CharacterServicesCharacterSelector:ResetState(self:GetSelectedCharacterIndex());
-end
-
-function PCTCharacterSelectBlock:OnAdvance()
-	CharacterSelect_SetScrollEnabled(false);
-	CharacterServicesCharacterSelector:Hide();
-
-	local selectedButtonIndex = math.min(self:GetSelectedCharacterIndex(), MAX_CHARACTERS_DISPLAYED);
-	local numDisplayedCharacters = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
-
-	for buttonIndex = 1, numDisplayedCharacters do
-		if (buttonIndex ~= selectedButtonIndex) then
-			CharacterSelect_SetCharacterButtonEnabled(buttonIndex, false);
-		end
-	end
-end
-
-function PCTCharacterSelectBlock:IsFinished(wasFromRewind)
-	return self:GetResult().selectedCharacterGUID ~= nil;
-end
-
-function PCTCharacterSelectBlock:SaveResult(guid, characterButtonID)
-	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButtonID };
-end
-
-function PCTCharacterSelectBlock:GetResult()
-	return self.results or {};
-end
-
-function PCTCharacterSelectBlock:GetSelectedCharacterIndex()
-	return self:GetResult().characterButtonID or CharacterSelect.selectedIndex;
-end
-
-function PCTCharacterSelectBlock:FormatResult()
-	local result = self:GetResult();
-	if result.selectedCharacterGUID then
-		local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
-		hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
-		isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
-		factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
-
-		return VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[classFilename].colorStr, name, experienceLevel, className);
-	end
-
-	return "";
+function PCTCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
+	local serviceInfo = { checkErrors = true };
+	local canTransferCharacter, errors, playerguid, characterServiceRequiresLogin = DoesClientThinkTheCharacterIsEligibleForPCT(characterID);
+	serviceInfo.isEligible = canTransferCharacter;
+	serviceInfo.errors = errors;
+	serviceInfo.playerguid = playerguid;
+	serviceInfo.requiresLogin = characterServiceRequiresLogin;
+	return serviceInfo;
 end
 
 TransferRealmEditboxMixin = {};
@@ -497,97 +383,15 @@ function PCTChoiceVerificationBlock:OnRewind()
 	CharSelectServicesFlowFrame:ClearErrorMessage();
 end
 
-PCTReviewChoicesBlock = {
-	AutoAdvance = false,
-	Back = true,
-	Next = false,
-	Finish = true,
-	HiddenStep = true,
-	SkipOnRewind = true,
-};
-
-function PCTReviewChoicesBlock:Initialize(results, wasFromRewind)
-
+local PCTAssignConfirmationBlock = CreateFromMixins(VASAssignConfirmationBlockBase);
+do
+	PCTAssignConfirmationBlock.dialogText = PCT_FLOW_FINISH_BODY_TEXT;
+	PCTAssignConfirmationBlock.dialogAcceptLabel = PCT_FLOW_FINISH_LABEL;
+	PCTAssignConfirmationBlock.dialogCancelLabel = PCT_FLOW_CANCEL_LABEL;
 end
 
-function PCTReviewChoicesBlock:GetResult()
-	return {};
-end
-
-function PCTReviewChoicesBlock:IsFinished()
-	return true;
-end
-
-PCTAssignConfirmationBlock = {
-	AutoAdvance = true,
-	Back = true,
-	Next = false,
-	Finish = false,
-	HiddenStep = true,
-	SkipOnRewind = true,
-};
-
-function PCTAssignConfirmationBlock:Initialize(results, wasFromRewind)
-	self.results = results;
-	self:ClearWarningState();
-	self.isInitialized = true;
-end
-
-function PCTAssignConfirmationBlock:IsFinished()
-	if not self.isInitialized then
-		return false;
-	end
-
-	local warningState = self:CheckFinishConfirmation(PCT_FLOW_FINISH_BODY_TEXT, PCT_FLOW_FINISH_LABEL, PCT_FLOW_CANCEL_LABEL);
-	if warningState == "accepted" then
-		local isValidationOnly = false;
-		RequestAssignPCTForResults(self.results, isValidationOnly);
-		self:ClearWarningState();
-		self.isInitialized = false;
-
-		return true;
-	elseif warningState == "declined" then
-		CharacterServicesMaster.flow:RequestRewind();
-		self.warningState = "rewind";
-	end
-
-	return false;
-end
-
-function PCTAssignConfirmationBlock:GetResult()
-	return {};
-end
-
--- HACK: Figuring out if this approach works, if it does, then refactor to be able to
-function PCTAssignConfirmationBlock:SetWarningAccepted(accepted)
-	if accepted == true then
-		self.warningState = "accepted";
-	elseif accepted == false then
-		self.warningState = "declined";
-	else
-		self.warningState = nil;
-	end
-
-	if accepted ~= nil then
-		CharacterServicesMaster_Update();
-	end
-end
-
-function PCTAssignConfirmationBlock:ClearWarningState()
-	self:SetWarningAccepted(nil);
-end
-
-function PCTAssignConfirmationBlock:GetWarningState()
-	return self.warningState or "unseen";
-end
-
-function PCTAssignConfirmationBlock:CheckFinishConfirmation(bodyText, acceptText, cancelText)
-	local warningState = self:GetWarningState();
-	if warningState == "unseen" then
-		CharacterServicesFlow_ShowFinishConfirmation(self, bodyText, acceptText, cancelText);
-	end
-
-	return warningState;
+function PCTAssignConfirmationBlock:RequestForResults(results, isValidationOnly)
+	RequestAssignPCTForResults(self.results, isValidationOnly);
 end
 
 PCTEndStep =
@@ -700,8 +504,6 @@ end
 
 PaidCharacterTransferFlow = Mixin(
 	{
-		Icon = "Interface\\Icons\\achievement_level_90",
-		Text = PCT_FLOW_TITLE,
 		FinishLabel = PCT_FLOW_FINISH_LABEL,
 		AutoCloseAfterFinish = true,
 
@@ -709,7 +511,7 @@ PaidCharacterTransferFlow = Mixin(
 			PCTCharacterSelectBlock,
 			PCTDestinationSelectBlock,
 			PCTChoiceVerificationBlock,
-			PCTReviewChoicesBlock,
+			CreateFromMixins(VASReviewChoicesBlockBase),
 			PCTAssignConfirmationBlock,
 			PCTEndStep,
 		},

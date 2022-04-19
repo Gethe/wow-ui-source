@@ -1436,6 +1436,12 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     end
 end
 
+function CharacterSelect_StartCustomizeForVAS(vasType, info)
+	CharacterCreateFrame:SetVASInfo(vasType, info);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+	GlueParent_SetScreen("charcreate");
+end
+
 function CharacterSelectScrollDown_OnClick()
     PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
     local numChars = GetNumCharacters();
@@ -2092,7 +2098,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 end
 
 ------------------------------------------------------------------
--- Fake API for VAS PCT tokens:
+-- API for VAS tokens:
 ------------------------------------------------------------------
 local function GetVASDistributions()
 	local distributions = C_CharacterServices.GetVASDistributions();
@@ -2104,9 +2110,15 @@ local function GetVASDistributions()
 	end
 
 	if GetNumCharacters() == 0 then
-		local pct = distributionsByVASType[Enum.ValueAddedServiceType.PaidCharacterTransfer];
-		if pct then
-			pct.tokenStatus = "noCharacters";
+		local needsNoCharactersStatus = {
+			Enum.ValueAddedServiceType.PaidCharacterTransfer,
+			Enum.ValueAddedServiceType.PaidFactionChange
+		};
+		for i, serviceType in ipairs(needsNoCharactersStatus) do
+			local distribution = distributionsByVASType[serviceType];
+			if distribution then
+				distribution.tokenStatus = "noCharacters";
+			end
 		end
 	end
 
@@ -2122,6 +2134,7 @@ local function GetVASTokenAlpha(vasTokenInfo)
 end
 
 local statusToTooltipLookup = {
+	-- [SO] TODO: Handle other types
 	review = PCT_TOKEN_TOOLTIP_STATUS_REVIEW,
 	noCharacters = PCT_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
 };
@@ -2185,8 +2198,8 @@ function CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo)
 	end
 end
 
--- NOTE: This is a stub/faked wrapper around the VAS services besides Boost.
--- Currently supporting PCT as a token, removing it from the store.
+-- NOTE: This is a wrapper around the VAS services besides Boost.
+-- Currently supporting PCT & PFC as a token, removing it from the store.
 function CharacterServicesMaster_UpdateVASButtons(displayOrder)
 	local upgradeInfo = GetVASDistributions();
 	for _, characterService in pairs(displayOrder) do
@@ -2325,6 +2338,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 	assert(data.vasType ~= nil);
 	if data.vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer  then
 		BeginFlow(PaidCharacterTransferFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange  then
+		BeginFlow(PaidFactionChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
