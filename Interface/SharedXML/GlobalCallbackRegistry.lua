@@ -4,8 +4,6 @@ function EventRegistry:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	self:SetUndefinedEventsAllowed(true);
 
-	self.frameEventRefCounts = {};
-
 	self.frameEventFrame = CreateFrame("Frame");
 	self.frameEventFrame:SetScript("OnEvent", function(frameEventFrame, event, ...)
 		self:TriggerEvent(event, ...);
@@ -17,22 +15,34 @@ end
 
 function EventRegistry:OnAttributeChanged(frameEvent, value)
 	self = self.registry;
-	self.frameEventRefCounts[frameEvent] = (self.frameEventRefCounts[frameEvent] or 0) + value;
 
-	if self.frameEventRefCounts[frameEvent] == 0 then
+	if value == 0 then
 		self.frameEventFrame:UnregisterEvent(frameEvent);
+	elseif value == 1 then
+		self.frameEventFrame:RegisterEvent(frameEvent);
 	end
 end
 
 function EventRegistry:RegisterFrameEvent(frameEvent)
-	self.frameEventFrame:SetAttribute(frameEvent, 1);
-	self.frameEventFrame:RegisterEvent(frameEvent);
+	self.frameEventFrame:SetAttribute(frameEvent, (self.frameEventFrame:GetAttribute(frameEvent) or 0) + 1);
 end
 
 function EventRegistry:UnregisterFrameEvent(frameEvent)
-	if self.frameEventRefCounts[frameEvent] ~= nil then
-		self.frameEventFrame:SetAttribute(frameEvent, -1);
+	local eventCount = self.frameEventFrame:GetAttribute(frameEvent) or 0;
+	if eventCount > 0 then
+		self.frameEventFrame:SetAttribute(frameEvent, eventCount - 1);
 	end
+end
+
+function EventRegistry:GetEventCounts(...)
+	local counts = {};
+	for i = 1, select("#", ...) do
+		local frameEvent = select(i, ...);
+		local count = self.frameEventFrame:GetAttribute(frameEvent) or "?";
+		table.insert(counts, ("%s : %s"):format(frameEvent, tostring(count)));
+	end
+
+	return table.concat(counts, "\n");
 end
 
 EventRegistry:OnLoad();

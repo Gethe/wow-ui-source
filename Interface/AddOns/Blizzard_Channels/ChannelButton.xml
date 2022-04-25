@@ -51,7 +51,7 @@
 	<Button name="ChannelButtonTemplate" mixin="ChannelButtonMixin" inherits="ChannelButtonBaseTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="Speaker" inherits="VoiceChatHeadsetTemplate">
-				<Size x="27" y="27"/>
+				<Size x="54" y="27"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-4"/>
 				</Anchors>

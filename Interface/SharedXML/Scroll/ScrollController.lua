@@ -36,7 +36,7 @@ end
 
 function ScrollDirectionMixin:SelectPointComponent(frame)
 	local index = self.isHorizontal and 4 or 5;
-	return select(index, frame:GetPoint("TOPLEFT"));
+	return select(index, frame:GetPointByName("TOPLEFT"));
 end
 
 ScrollControllerMixin = CreateFromMixins(ScrollDirectionMixin);

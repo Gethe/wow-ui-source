@@ -9,11 +9,11 @@
 		<DisabledFont style="GameFontDisableSmallLeft"/>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true"/>
 	</Button>
-	<Frame name="GlueContextMenuTemplate" inherits="TooltipBackdropTemplate" toplevel="true" frameStrata="FULLSCREEN_DIALOG" mixin="GlueContextMenuMixin" virtual="true">
+	<Frame name="GlueContextMenuTemplate" toplevel="true" frameStrata="FULLSCREEN_DIALOG" mixin="GlueContextMenuMixin" inherits="TooltipBackdropTemplate" virtual="true">
 		<Size x="180" y="50"/>
 		<Scripts>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<Frame name="GlueContextMenu" inherits="GlueContextMenuTemplate"/>
+	<Frame name="GlueContextMenu" inherits="GlueContextMenuTemplate" hidden="true"/>
 </Ui>

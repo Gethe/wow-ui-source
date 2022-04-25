@@ -1,3 +1,6 @@
+
+local forceinsecure = forceinsecure;
+
 local ADDON_NAME = ...;
 local DEFAULT_SAVED_VARS = { isShown = false, commandHistory = {}, messageHistory = {}, height = 300, fontHeight = 14 };
 local SAVED_VARS_VERSION = 3;
@@ -16,6 +19,7 @@ function DeveloperConsoleMixin:OnLoad()
 	self:RegisterEvent("CONSOLE_COLORS_CHANGED");
 	self:RegisterEvent("CONSOLE_FONT_SIZE_CHANGED");
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
+	self:RegisterEvent("SPELL_SCRIPT_ERROR");
 
 	self.MessageFrame:SetMaxLines(MAX_NUM_MESSAGE_HISTORY);
 
@@ -86,7 +90,7 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 			elseif Blizzard_Console_SavedVars.version < SAVED_VARS_VERSION then
 				if Blizzard_Console_SavedVars.version < 3 then
 					Blizzard_Console_SavedVars.fontHeight = DEFAULT_SAVED_VARS.fontHeight;
-				end 
+				end
 			end
 			Blizzard_Console_SavedVars.version = SAVED_VARS_VERSION;
 
@@ -124,6 +128,9 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 		self:SetFontHeight(fontHeight);
 	elseif event == "DEBUG_MENU_TOGGLED" then
 		self:UpdateAnchors();
+	elseif event == "SPELL_SCRIPT_ERROR" then
+		local spellID, scriptID, lastEditUser, errorMessage, callStack = ...;
+		self:AddMessage(errorMessage, Enum.ConsoleColorType.ErrorColor);
 	end
 end
 
@@ -135,7 +142,7 @@ function DeveloperConsoleMixin:AddMessage(message, colorType)
 	local r, g, b = color:GetRGB();
 
 	self:AddMessageInternal(message, r, g, b, colorType);
-	
+
 	table.insert(self.savedVars.messageHistory, { message, colorType });
 	self:UpdateScrollbar();
 end
@@ -197,10 +204,10 @@ end
 
 function DeveloperConsoleMixin:OnMouseWheel(delta)
 	if IsControlKeyDown() then
-		delta = delta * self.MessageFrame:GetPagingScrollAmount(); 
+		delta = delta * self.MessageFrame:GetPagingScrollAmount();
 	elseif IsShiftKeyDown() then
 		delta = delta * 10;
-	end 
+	end
 
 	self.MessageFrame:ScrollByAmount(delta);
 end
@@ -220,7 +227,7 @@ function DeveloperConsoleMixin:Toggle(shownRequested)
 			self.MessageFrame.CopyNoticeFrame.Anim:Stop();
 			self.MessageFrame.CopyNoticeFrame:Hide()
 		end
-	
+
 		self.Anim.Translation:SetOffset(0, self.savedVars.height);
 		self.Anim:Play(shownRequested);
 	end
@@ -298,13 +305,35 @@ function DeveloperConsoleMixin:StopDragResizing()
 	end
 end
 
+function DeveloperConsoleMixin:SetExecuteCommandOverrideFunction(func)
+	assert((func == nil) or (type(func) == 'function'), "param 'func' must be nil or a function");
+	self.ExecuteCommandOverrideFunc = func;
+end
+
+function DeveloperConsoleMixin:CheckExecuteOverrideCommand(text)
+	if self.ExecuteCommandOverrideFunc then
+		return self.ExecuteCommandOverrideFunc(text);
+	end
+
+	-- First return indicates override success, second is whether or not to add command history.
+	return false, true;
+end
+
 function DeveloperConsoleMixin:ExecuteCommand(text)
-	forceinsecure();
-	ConsoleExec(text, true);
+	forceinsecure(); -- Just to be safe
+
 	self:AddMessage(("> %s"):format(text:gsub("\n", " > ")), Enum.ConsoleColorType.InputColor);
 
-	self:AddToCommandHistory(text);
-	self:ResetCommandHistoryIndex();
+	local overrideSuccessful, addToCommandHistory = self:CheckExecuteOverrideCommand(text);
+
+	if not overrideSuccessful then
+		ConsoleExec(text, true);
+	end
+
+	if addToCommandHistory then
+		self:AddToCommandHistory(text);
+		self:ResetCommandHistoryIndex();
+	end
 end
 
 function DeveloperConsoleMixin:AddToCommandHistory(text)
@@ -407,7 +436,7 @@ do
 				self.Filters.ProgressBar:SetSmoothedValue(numMessages - i + 1);
 
 				local messageInfo = self.savedVars.messageHistory[i];
-			
+
 				local success, matched = pcall(Matches, text, messageInfo[1]);
 				if success and matched then
 					local message, colorType = unpack(messageInfo);
@@ -501,4 +530,18 @@ end
 
 function DeveloperConsoleMixin:HasSetCommandHistoryIndex()
 	return self.commandHistoryIndex ~= nil;
+end
+
+function BlizzardConsoleMessageFrame_OnHyperlinkClick(self, link, text, button)
+	local command = link:sub(2);
+	if IsShiftKeyDown() then
+		self:GetParent():InsertLinkedCommand(command);
+	else
+		forceinsecure();
+		ConsoleExec(command, true);
+		if button == "RightButton" then
+			self:GetParent():AddToCommandHistory(command);
+			self:GetParent():ResetCommandHistoryIndex();
+		end
+	end
 end

@@ -11,7 +11,7 @@ MAX_COD_AMOUNT = 10000;
 SEND_MAIL_TAB_LIST = {};
 SEND_MAIL_TAB_LIST[1] = "SendMailNameEditBox";
 SEND_MAIL_TAB_LIST[2] = "SendMailSubjectEditBox";
-SEND_MAIL_TAB_LIST[3] = "SendMailBodyEditBox";
+SEND_MAIL_TAB_LIST[3] = "MailEditBox";
 SEND_MAIL_TAB_LIST[4] = "SendMailMoneyGold";
 SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 
@@ -35,7 +35,7 @@ function MailFrame_OnLoad(self)
 	self:RegisterEvent("MAIL_UNLOCK_SEND_ITEMS");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	-- Set previous and next fields
-	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
+	MoneyInputFrame_SetPreviousFocus(SendMailMoney, MailEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
 	MoneyFrame_SetMaxDisplayWidth(SendMailMoneyFrame, 160);
 	MailFrame_UpdateTrialState(self);
@@ -770,7 +770,7 @@ function OpenMail_Reply()
 		subject = prefix..subject;
 	end
 	SendMailSubjectEditBox:SetText(subject)
-	SendMailBodyEditBox:SetFocus();
+	MailEditBox:GetEditBox():SetFocus();
 
 	-- Set the send mode so the work flow can change accordingly
 	SendMailFrame.sendMode = "reply";
@@ -858,7 +858,7 @@ function SendMailMailButton_OnClick(self)
 end
 
 function SendMailFrame_SendMail()
-	SendMail(SendMailNameEditBox:GetText(), SendMailSubjectEditBox:GetText(), SendMailBodyEditBox:GetText());
+	SendMail(SendMailNameEditBox:GetText(), SendMailSubjectEditBox:GetText(), MailEditBox:GetInputText());
 end
 
 function SendMailFrame_EnableSendMailButton()
@@ -968,12 +968,7 @@ function SendMailFrame_Update()
 	local taby = (icony + gapy1);
 	local scrollHeight = 249 - areay;
 
-	-- Resize the scroll frame
-	SendMailScrollFrame:SetHeight(scrollHeight);
-	SendMailScrollChildFrame:SetHeight(scrollHeight);
 	SendMailHorizontalBarLeft2:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", 2, 184 + areay);
-	SendScrollBarBackgroundTop:SetHeight(min(scrollHeight, 256));
-	SendScrollBarBackgroundTop:SetTexCoord(0, 0.484375, 0, min(scrollHeight, 256) / 256);
 	SendStationeryBackgroundLeft:SetHeight(min(scrollHeight, 256));
 	SendStationeryBackgroundLeft:SetTexCoord(0, 1.0, 0, min(scrollHeight, 256) / 256);
 	SendStationeryBackgroundRight:SetHeight(min(scrollHeight, 256));
@@ -1008,7 +1003,7 @@ function SendMailFrame_Reset()
 	SendMailNameEditBox:SetText("");
 	SendMailNameEditBox:SetFocus();
 	SendMailSubjectEditBox:SetText("");
-	SendMailBodyEditBox:SetText("");
+	MailEditBox:SetText("");
 	SendMailFrame_Update();
 	MoneyInputFrame_ResetMoney(SendMailMoney);
 	SendMailRadioButton_OnClick(1);
@@ -1243,4 +1238,13 @@ end
 
 function OpenAllMailMixin:IsItemBlacklisted(itemID)
 	return self.blacklistedItemIDs and self.blacklistedItemIDs[itemID];
+end
+
+function SendMailEditBox_OnLoad()
+	ScrollUtil.RegisterScrollBoxWithScrollBar(MailEditBox.ScrollBox, MailEditBoxScrollBar);
+	MailEditBox:RegisterCallback("OnTabPressed", SendMailEditBox_OnTabPressed, MailEditBox);
+end
+
+function SendMailEditBox_OnTabPressed(self)
+	EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
 end

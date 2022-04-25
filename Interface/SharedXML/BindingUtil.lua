@@ -105,7 +105,11 @@ function CreateKeyChordStringFromTable(keys, preventSort)
 	return table.concat(keys, "-");
 end
 
-function CreateKeyChordString(key)
+function CreateKeyChordString(key, ...)
+	return CreateKeyChordStringFromTable({ key, ... });
+end
+
+function CreateKeyChordStringUsingMetaKeyState(key)
 	local chord = {};
 	if IsAltKeyDown() then
 		table.insert(chord, "ALT");
@@ -120,7 +124,7 @@ function CreateKeyChordString(key)
 	end
 
 	if IsMetaKeyDown() then
-		 table.insert(chord, "META");
+		table.insert(chord, "META");
 	end
 
 	if not IsMetaKey(key) then
@@ -153,6 +157,10 @@ function GetBindingKeyForAction(action, useNotBound, useParentheses)
 	end
 
 	return key;
+end
+
+function KeybindFrames_InQuickKeybindMode()
+	return QuickKeybindFrame and QuickKeybindFrame:IsShown();
 end
 
 -- Gets the key string for the action and formats it into keyStringFormat, then formats

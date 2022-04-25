@@ -27,6 +27,7 @@ function MacroFrame_OnLoad(self)
 	MacroFrame_SetAccountMacros();
 	PanelTemplates_SetNumTabs(MacroFrame, 2);
 	PanelTemplates_SetTab(MacroFrame, 1);
+	EventRegistry:RegisterCallback("ClickBindingFrame.UpdateFrames", MacroFrame_Update, self);
 end
 
 function MacroFrame_OnShow(self)
@@ -126,6 +127,8 @@ function MacroFrame_Update()
 		end
 	end
 
+	local inClickBinding = InClickBindingMode();
+
 	-- Macro Details
 	if ( MacroFrame.selectedMacro ~= nil ) then
 		MacroFrame_ShowDetails();
@@ -136,14 +139,14 @@ function MacroFrame_Update()
 	end
 	
 	--Update New Button
-	if ( numMacros < MacroFrame.macroMax ) then
+	if ( numMacros < MacroFrame.macroMax and not inClickBinding ) then
 		MacroNewButton:Enable();
 	else
 		MacroNewButton:Disable();
 	end
 
 	-- Disable Buttons
-	if ( MacroPopupFrame:IsShown() ) then
+	if ( MacroPopupFrame:IsShown() or inClickBinding ) then
 		MacroEditButton:Disable();
 		MacroDeleteButton:Disable();
 	else
@@ -153,6 +156,28 @@ function MacroFrame_Update()
 
 	if ( not MacroFrame.selectedMacro ) then
 		MacroDeleteButton:Disable();
+	end
+
+	-- Add disabled tooltip if in click binding mode
+	local disabledInClickBinding = {
+		MacroEditButton,
+		MacroDeleteButton,
+		MacroNewButton,
+	};
+	local onEnterFunction, onLeaveFunction;
+	if ( inClickBinding ) then
+		onEnterFunction = function(button)
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+			GameTooltip:AddLine(CLICK_BINDING_BUTTON_DISABLED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			GameTooltip:Show();
+		end;
+		onLeaveFunction = function()
+			GameTooltip:Hide();
+		end;
+	end
+	for _, button in ipairs(disabledInClickBinding) do
+		button:SetScript("OnEnter", onEnterFunction);
+		button:SetScript("OnLeave", onLeaveFunction);
 	end
 end
 
@@ -168,6 +193,10 @@ function MacroButton_OnClick(self, button)
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
+
+	if InClickBindingMode() and ClickBindingFrame:HasNewSlot() then
+		ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Macro, MacroFrame.macroBase + self:GetID());
+	end
 end
 
 function MacroFrameSaveButton_OnClick()
@@ -342,7 +371,7 @@ function RefreshPlayerSpellIconInfo()
 	-- We need to avoid adding duplicate spellIDs from the spellbook tabs for your other specs.
 	local activeIcons = {};
 	
-	--[[for i = 1, GetNumSpellTabs() do
+	for i = 1, GetNumSpellTabs() do
 		local tab, tabTex, offset, numSpells, _ = GetSpellTabInfo(i);
 		offset = offset + 1;
 		local tabEnd = offset + numSpells;
@@ -370,7 +399,7 @@ function RefreshPlayerSpellIconInfo()
 				end
 			end
 		end
-	end]]
+	end
 
 	MACRO_ICON_FILENAMES = { "INV_MISC_QUESTIONMARK" };
 	for fileDataID in pairs(activeIcons) do
@@ -378,9 +407,9 @@ function RefreshPlayerSpellIconInfo()
 	end
 
 	GetLooseMacroIcons( MACRO_ICON_FILENAMES );
-	-- GetLooseMacroItemIcons( MACRO_ICON_FILENAMES );
+	GetLooseMacroItemIcons( MACRO_ICON_FILENAMES );
 	GetMacroIcons( MACRO_ICON_FILENAMES );
-	-- GetMacroItemIcons( MACRO_ICON_FILENAMES );
+	GetMacroItemIcons( MACRO_ICON_FILENAMES );
 end
 
 function GetSpellorMacroIconInfo(index)

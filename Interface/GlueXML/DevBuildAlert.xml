@@ -1,19 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="DevBuildAlert.lua"/>
-	<Frame name="DevBuildAlert" inherits="BackdropTemplate" setAllPoints="true" frameStrata="DIALOG" toplevel="true" parent="AccountLogin" hidden="true">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-		</KeyValues>
-		<Size>
-			<AbsDimension x="400" y="325"/>
-		</Size>
+	<Frame name="DevBuildAlert" setAllPoints="true" frameStrata="DIALOG" toplevel="true" parent="AccountLogin" hidden="true">
+		<Size x="400" y="325"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="410" y="-25"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="410" y="-25"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -25,6 +16,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-46"/>
@@ -43,9 +35,7 @@
 				</Scripts>
 				<ScrollChild>
 					<SimpleHTML parentKey="Text" name="$parentText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
-						<Size>
-							<AbsDimension x="300" y="10"/>
-						</Size>
+						<Size x="300" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>

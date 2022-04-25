@@ -1,128 +1,40 @@
-OribosScrollBarButtonScriptsMixin = {};
+ScrollBarButtonBehaviorMixin = {};
 
-function OribosScrollBarButtonScriptsMixin:OnEnter()
-	self.Enter:Show();
-end
-
-function OribosScrollBarButtonScriptsMixin:OnLeave()
-	self.Enter:Hide();
-end
-
-function OribosScrollBarButtonScriptsMixin:OnMouseDown()
+function ScrollBarButtonBehaviorMixin:OnEnter()
 	if self:IsEnabled() then
-		self.Down:Show();
+		self.over = true;
+		return true;
 	end
+	return false;
 end
 
-function OribosScrollBarButtonScriptsMixin:OnMouseUp()
-	self.Down:Hide();
-end
-
-function OribosScrollBarButtonScriptsMixin:OnEnable()
-	self:DesaturateHierarchy(0);
-end
-
-function OribosScrollBarButtonScriptsMixin:OnDisable()
-	self:DesaturateHierarchy(1);
-end
-
-WowScrollBarStepperButtonScriptsMixin = {};
-
-function WowScrollBarStepperButtonScriptsMixin:OnEnter()
-	self.Overlay:SetAtlas(self.overTexture, TextureKitConstants.UseAtlasSize);
-	self.Overlay:Show();
-end
-
-function WowScrollBarStepperButtonScriptsMixin:OnLeave()
-	self.Overlay:Hide();
-end
-
-function WowScrollBarStepperButtonScriptsMixin:OnMouseDown()
+function ScrollBarButtonBehaviorMixin:OnLeave()
 	if self:IsEnabled() then
-		self.Texture:SetAtlas(self.downTexture, TextureKitConstants.UseAtlasSize);
-		self.Texture:AdjustPointsOffset(-1, 0);
-		self.Overlay:AdjustPointsOffset(-1, -1);
+		self.over = nil;
+		return true;
 	end
+	return false;
 end
 
-function WowScrollBarStepperButtonScriptsMixin:OnMouseUp()
+function ScrollBarButtonBehaviorMixin:OnMouseDown()
 	if self:IsEnabled() then
-		self.Texture:SetAtlas(self.normalTexture, TextureKitConstants.UseAtlasSize);
-		self.Texture:AdjustPointsOffset(1, 0);
-		self.Overlay:AdjustPointsOffset(1, 1);
+		self.down = true;
+		return true;
 	end
+	return false;
 end
 
-function WowScrollBarStepperButtonScriptsMixin:OnDisable()
-	self.Texture:SetAtlas(self.disabledTexture, TextureKitConstants.UseAtlasSize);
-	self.Texture:ClearPointsOffset();
-end
-
-function WowScrollBarStepperButtonScriptsMixin:OnEnable()
-	self.Texture:SetAtlas(self.normalTexture, TextureKitConstants.UseAtlasSize);
-end
-
-function WowScrollBarStepperButtonScriptsMixin:OnDisable()
-	self.Texture:SetAtlas(self.disabledTexture, TextureKitConstants.UseAtlasSize);
-end
-
-WowScrollBarThumbButtonScriptsMixin = {};
-
-function WowScrollBarThumbButtonScriptsMixin:OnLoad()
-	self:ApplyNormalAtlas();
-end
-
-function WowScrollBarThumbButtonScriptsMixin:OnEnter()
-	self.Begin:SetAtlas(self.overBeginTexture, TextureKitConstants.UseAtlasSize);
-	self.End:SetAtlas(self.overEndTexture, TextureKitConstants.UseAtlasSize);
-	self.Middle:SetAtlas(self.overMiddleTexture, TextureKitConstants.UseAtlasSize);
-end
-
-function WowScrollBarThumbButtonScriptsMixin:ApplyNormalAtlas()
-	self.Begin:SetAtlas(self.normalBeginTexture, TextureKitConstants.UseAtlasSize);
-	self.End:SetAtlas(self.normalEndTexture, TextureKitConstants.UseAtlasSize);
-	self.Middle:SetAtlas(self.normalMiddleTexture, TextureKitConstants.UseAtlasSize);
-end
-
-function WowScrollBarThumbButtonScriptsMixin:OnLeave()
-	self:ApplyNormalAtlas();
-end
-
-function WowScrollBarThumbButtonScriptsMixin:OnEnable()
-	self:ApplyNormalAtlas();
-end
-
-function WowScrollBarThumbButtonScriptsMixin:OnDisable()
-	self.Begin:SetAtlas(self.disabledBeginTexture, TextureKitConstants.UseAtlasSize);
-	self.End:SetAtlas(self.disabledEndTexture, TextureKitConstants.UseAtlasSize);
-	self.Middle:SetAtlas(self.disabledMiddleTexture, TextureKitConstants.UseAtlasSize);
-end
-
-function WowScrollBarThumbButtonScriptsMixin:OnSizeChanged(width, height)
-	local info = C_Texture.GetAtlasInfo(self.Middle:GetAtlas());
-	if self.isHorizontal then
-		self.Middle:SetWidth(width);
-		local u = width / info.width;
-		self.Middle:SetTexCoord(0, u, 0, 1);
-	else
-		self.Middle:SetHeight(height);
-		local v = height / info.height;
-		self.Middle:SetTexCoord(0, 1, 0, v);
+function ScrollBarButtonBehaviorMixin:OnMouseUp()
+	if self:IsEnabled() then
+		self.down = nil;
+		return true;
 	end
+	return false;
 end
 
-WowTrimScrollBarMixin = {};
-
-function WowTrimScrollBarMixin:OnLoad()
-	ScrollBarMixin.OnLoad(self);
-
-	if self.hideBackground then
-		self.Background:Hide();
-	end
-	
-	if self.trackAlpha then
-		self.Track:SetAlpha(self.trackAlpha);
-	end
+function ScrollBarButtonBehaviorMixin:OnDisable()
+	self.over = nil;
+	self.down = nil;
 end
 
 ScrollingEditBoxMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -143,19 +55,21 @@ function ScrollingEditBoxMixin:OnLoad()
 	local scrollBox = self:GetScrollBox();
 	scrollBox:SetAlignmentOverlapIgnored(true);
 
-	local fontHeight = 10;
+	self:SetInterpolateScroll(self.canInterpolateScroll);
+
 	local editBox = self:GetEditBox();
-	if self.fontName then
-		editBox:SetFontObject(self.fontName);
-		fontHeight = editBox:GetFontHeight();
+	assert(self.fontName);
+	editBox.fontName = self.fontName;
+
+	if self.defaultFontName then
+		editBox.defaultFontName = self.defaultFontName;
 	end
+
+	editBox:SetFontObject(self.fontName);
+	local fontHeight = editBox:GetFontHeight();
 	
 	if self.maxLetters then
 		editBox:SetMaxLetters(self.maxLetters);
-	end
-
-	if self.textColor then
-		self:SetTextColor(self.textColor);
 	end
 
 	if self.defaultText then
@@ -174,6 +88,11 @@ function ScrollingEditBoxMixin:OnLoad()
 	editBox:RegisterCallback("OnEditFocusGained", self.OnEditBoxFocusGained, self);
 	editBox:RegisterCallback("OnEditFocusLost", self.OnEditBoxFocusLost, self);
 	editBox:RegisterCallback("OnMouseUp", self.OnEditBoxMouseUp, self);
+end
+
+function ScrollingEditBoxMixin:SetInterpolateScroll(canInterpolateScroll)
+	local scrollBox = self:GetScrollBox();
+	scrollBox:SetInterpolateScroll(canInterpolateScroll);
 end
 
 function ScrollingEditBoxMixin:OnShow()
@@ -204,6 +123,10 @@ function ScrollingEditBoxMixin:GetEditBox()
 	return self:GetScrollBox().EditBox;
 end
 
+function ScrollingEditBoxMixin:SetFocus()
+	self:GetEditBox():SetFocus();
+end
+
 function ScrollingEditBoxMixin:SetFontObject(fontName)
 	local editBox = self:GetEditBox();
 	editBox:SetFontObject(fontName);
@@ -231,14 +154,14 @@ function ScrollingEditBoxMixin:SetText(text)
 	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
+function ScrollingEditBoxMixin:SetDefaultTextEnabled(enabled)
+	local editBox = self:GetEditBox();
+	editBox:SetDefaultTextEnabled(enabled);
+end
+
 function ScrollingEditBoxMixin:SetDefaultText(defaultText)
 	local editBox = self:GetEditBox();
 	editBox:ApplyDefaultText(defaultText);
-end
-
-function ScrollingEditBoxMixin:SetTextColor(color)
-	local editBox = self:GetEditBox();
-	editBox:ApplyTextColor(color);
 end
 
 function ScrollingEditBoxMixin:GetInputText()
@@ -254,6 +177,11 @@ end
 function ScrollingEditBoxMixin:ClearFocus()
 	local editBox = self:GetEditBox();
 	editBox:ClearFocus();
+end
+
+function ScrollingEditBoxMixin:SetEnabled(enabled)
+	local editBox = self:GetEditBox();
+	editBox:SetEnabled(enabled);
 end
 
 function ScrollingEditBoxMixin:OnEditBoxTabPressed(editBox)
@@ -398,11 +326,6 @@ end
 
 function ScrollingFontMixin:ClearText()
 	self:SetText("");
-end
-
-function ScrollingFontMixin:SetTextColor(color)
-	local fontString = self:GetFontString();
-	fontString:SetTextColor(color.r, color.g, color.b);
 end
 
 function ScrollingFontMixin:SetFontObject(fontName)

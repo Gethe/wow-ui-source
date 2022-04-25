@@ -11,7 +11,6 @@ end
 Import("IsOnGlueScreen");
 Import("GetPhysicalScreenSize");
 Import("GetScreenDPIScale");
-Import("ConvertPixelsToUI");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens

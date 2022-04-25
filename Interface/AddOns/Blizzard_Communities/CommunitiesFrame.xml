@@ -141,7 +141,7 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
-				<Size x="30" y="30"/>
+				<Size x="60" y="30"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-15" y="-26"/>
 				</Anchors>

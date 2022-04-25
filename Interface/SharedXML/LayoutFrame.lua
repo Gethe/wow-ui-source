@@ -296,7 +296,7 @@ end
 ResizeLayoutMixin = CreateFromMixins(BaseLayoutMixin);
 
 local function GetExtents(childFrame, left, right, top, bottom, layoutFrameScale)
-	local frameLeft, frameBottom, frameWidth, frameHeight = GetUnscaledFrameRect(childFrame, layoutFrameScale);
+	local frameLeft, frameBottom, frameWidth, frameHeight, defaulted = GetUnscaledFrameRect(childFrame, layoutFrameScale);
 	local frameRight = frameLeft + frameWidth;
 	local frameTop = frameBottom + frameHeight;
 
@@ -305,7 +305,7 @@ local function GetExtents(childFrame, left, right, top, bottom, layoutFrameScale
 	top = top and math.max(frameTop, top) or frameTop;
 	bottom = bottom and math.min(frameBottom, bottom) or frameBottom;
 
-	return left, right, top, bottom;
+	return left, right, top, bottom, defaulted;
 end
 
 local function GetSize(desired, fixed, minimum, maximum)
@@ -326,14 +326,16 @@ function ResizeLayoutMixin:Layout()
 		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
 	end
 
-	local left, right, top, bottom;
+	local left, right, top, bottom, defaulted;
 	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
 		if IsLayoutFrame(child) then
 			child:Layout();
 		end
 
-		left, right, top, bottom = GetExtents(child, left, right, top, bottom, layoutFrameScale);
+		local l, r, t, b, d = GetExtents(child, left, right, top, bottom, layoutFrameScale);
+		left, right, top, bottom = l, r, t, b;
+		defaulted = defaulted or d;
 	end
 
 	if left and right and top and bottom then

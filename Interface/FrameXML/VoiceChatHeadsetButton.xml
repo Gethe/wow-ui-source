@@ -37,10 +37,26 @@
 	</Button>
 
 	<Frame name="VoiceChatHeadsetTemplate" mixin="VoiceChatHeadsetMixin" virtual="true">
-		<Size x="27" y="27"/>
+		<Size x="54" y="27"/>
 		<Frames>
-			<Frame parentKey="PendingDots" inherits="VoiceChatDotsTemplate" setAllPoints="true" />
-			<Button parentKey="Button" inherits="VoiceChatHeadsetButtonTemplate" setAllPoints="true" />
+			<Frame parentKey="PendingDots" inherits="VoiceChatDotsTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Button" inherits="VoiceChatHeadsetButtonTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Transcription" inherits="VoiceChatTranscriptionTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

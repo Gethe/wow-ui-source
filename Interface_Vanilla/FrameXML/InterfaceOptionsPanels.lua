@@ -1760,9 +1760,13 @@ end
 AccessibilityPanelOptions = {
 	enableMovePad = { text = "MOVE_PAD" },
     movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
-	colorblindMode = { text = "USE_COLORBLIND_MODE" },
-	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
-	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+	motionSickness = { text = "MOTION_SICKNESS_DROPDOWN" },
+	shakeStrengthCamera = { text = "ADJUST_MOTION_SICKNESS_SHAKE" },
+	speechToText = { text = "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" },
+	textToSpeech = { text = "ENABLE_TEXT_TO_SPEECH" },
+	remoteTextToSpeech = { text = "ENABLE_REMOTE_TEXT_TO_SPEECH" },
+	questTextContrast = { text = "ENABLE_QUEST_TEXT_CONTRAST" },
+	overrideScreenFlash = { text = "OVERRIDE_SCREEN_FLASH" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)
@@ -1777,7 +1781,349 @@ function InterfaceOptionsAccessibilityPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, event, ...)
+function InterfaceOptionsAccessibilityPanelSpeechToTextCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "speechToText";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self:SetShown(C_VoiceChat.IsTranscriptionAllowed());
+end
+
+function InterfaceOptionsAccessibilityPanelTextToSpeechCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "textToSpeech";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	if not C_VoiceChat.IsTranscriptionAllowed() then
+		local parent = self:GetParent();
+		self:SetPoint("TOPLEFT", parent.SpeechToTextCheckbox, "TOPLEFT", 0);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnLoad(self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
+end
+
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "VARIABLES_LOADED" or
+		(event == "CVAR_UPDATE" and arg1 == "ENABLE_TEXT_TO_SPEECH") ) then
+		self:SetEnabled(GetCVarBool("textToSpeech"));
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnClick(self)
+	ToggleTextToSpeechFrame();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "remoteTextToSpeech";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED");
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnShow(self)
+	InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnEvent(self, event, ...)
+	if event == "VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED" then
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self)
+	local parent = self:GetParent();
+	local speakForMeAllowed = C_VoiceChat.IsSpeakForMeAllowed();
+	self:SetShown(speakForMeAllowed);
+	parent.RemoteTextToSpeechVoiceDropdown:SetShown(speakForMeAllowed);
+	parent.RemoteTextToSpeechVoicePlaySample:SetShown(speakForMeAllowed);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize()
+	local selectedValue = tonumber(GetCVar("remoteTextToSpeechVoice"));
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnClick;
+
+	for index, voice in ipairs(C_VoiceChat.GetRemoteTtsVoices()) do
+		info.text = VOICE_GENERIC_FORMAT:format(voice.voiceID);
+		info.value = voice.voiceID;
+		info.checked = voice.voiceID == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self)
+	local value = GetCVar("remoteTextToSpeechVoice");
+	UIDropDownMenu_SetText(self, VOICE_GENERIC_FORMAT:format(value));
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self)
+	if ( C_VoiceChat.IsSpeakForMeActive() ) then
+		UIDropDownMenu_EnableDropDown(self);
+	else
+		UIDropDownMenu_DisableDropDown(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnClick(self)
+	SetCVar("remoteTextToSpeechVoice", self.value);
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown, self.value);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		UIDropDownMenu_SetWidth(self, 160);
+		UIDropDownMenu_SetInitializeFunction(self, InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize);
+		
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self);
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
+
+		self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
+		self:RegisterEvent("VARIABLES_LOADED");
+
+	elseif ( event == "VARIABLES_LOADED" or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnLoad(self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnEvent(self, event, ...)
+	if ( event == "VARIABLES_LOADED" or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
+		self:SetEnabled(C_VoiceChat.IsSpeakForMeActive());
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick(self)
+	C_VoiceChat.SpeakRemoteTextSample(TEXT_TO_SPEECH_SAMPLE_TEXT);
+end
+
+local cameraKeepCharacterCentered = "CameraKeepCharacterCentered";
+local cameraReduceUnexpectedMovement = "CameraReduceUnexpectedMovement";
+local motionSicknessOptions = {
+	{ text = MOTION_SICKNESS_CHARACTER_CENTERED, [cameraKeepCharacterCentered] = "1", [cameraReduceUnexpectedMovement] = "0" },
+	{ text = MOTION_SICKNESS_REDUCE_CAMERA_MOTION, [cameraKeepCharacterCentered] = "0", [cameraReduceUnexpectedMovement] = "1" },
+	{ text = MOTION_SICKNESS_BOTH, [cameraKeepCharacterCentered] = "1", [cameraReduceUnexpectedMovement] = "1" },
+	{ text = MOTION_SICKNESS_NONE, [cameraKeepCharacterCentered] = "0", [cameraReduceUnexpectedMovement] = "0" },
+}
+
+local function GetMotionSicknessSelected()
+	local SelectedcameraKeepCharacterCentered = GetCVar(cameraKeepCharacterCentered);
+	local SelectedcameraReduceUnexpectedMovement = GetCVar(cameraReduceUnexpectedMovement);
+
+	for option, cvars in pairs(motionSicknessOptions) do
+		if ( cvars[cameraKeepCharacterCentered] == SelectedcameraKeepCharacterCentered and cvars[cameraReduceUnexpectedMovement] == SelectedcameraReduceUnexpectedMovement ) then
+			return option;
+		end
+	end
+end
+
+
+function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.value = GetMotionSicknessSelected();
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, self.value);
+
+		self.SetValue =
+			function (self, value)
+				self.value = value;
+				BlizzardOptionsPanel_SetCVarSafe(cameraKeepCharacterCentered, motionSicknessOptions[value][cameraKeepCharacterCentered]);
+				BlizzardOptionsPanel_SetCVarSafe(cameraReduceUnexpectedMovement, motionSicknessOptions[value][cameraReduceUnexpectedMovement]);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end
+
+		self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelMotionSicknessDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnClick;
+
+	for key, value in ipairs(motionSicknessOptions) do
+		info.text = value.text;
+		info.value = key;
+		info.checked = key == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelMotionSicknessDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelMotionSicknessDropdown:SetValue(self.value);
+end
+
+local shakeStrengthCamera = "ShakeStrengthCamera";
+local shakeStrengthUI = "ShakeStrengthUI";
+local shakeIntensityOptions = {
+	{ text= SHAKE_INTENSITY_NONE, [shakeStrengthCamera] = "0", [shakeStrengthUI] = "0" },
+	{ text = SHAKE_INTENSITY_REDUCED, [shakeStrengthCamera] = ".25", [shakeStrengthUI] = ".25" },
+	{ text = SHAKE_INTENSITY_FULL, [shakeStrengthCamera] = "1", [shakeStrengthUI] = "1" },
+}
+
+function GetShakeIntensitySelected()
+	local intensity = GetCVar(shakeStrengthCamera);
+
+	for option, cvar in pairs(shakeIntensityOptions) do
+		if ( intensity == cvar[shakeStrengthCamera] ) then
+			return option;
+		end
+	end
+
+	return -1;
+end
+
+function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.value = GetShakeIntensitySelected();
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, self.value);
+
+		self.SetValue =
+			function (self, value)
+				self.value = value;
+
+				BlizzardOptionsPanel_SetCVarSafe(shakeStrengthCamera, shakeIntensityOptions[self.value][shakeStrengthCamera]);
+				BlizzardOptionsPanel_SetCVarSafe(shakeStrengthUI, shakeIntensityOptions[self.value][shakeStrengthUI]);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end
+
+		self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelShakeIntensityDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick;
+
+	for key, value in ipairs(shakeIntensityOptions) do
+		info.text = value.text;
+		info.value = key;
+		info.checked = key == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelShakeIntensityDropdown:SetValue(self.value);
+end
+
+local cursorSizeOptions = {
+	{ text= DEFAULT, value = -1 },
+	{ text= "32x32", value = 0 },
+	{ text= "48x48", value = 1 },
+	{ text= "64x64", value = 2 },
+	{ text= "96x96", value = 3 },
+	{ text= "128x128", value = 4 },
+};
+
+function GetCursorSizeSelected()
+	local value = tonumber(GetCVar("cursorSizePreferred"));
+	for index, option in ipairs(cursorSizeOptions) do
+		if value == option.value then
+			return value;
+		end
+	end
+
+	return -1;
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnLoad(self)
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self.value = GetCursorSizeSelected();
+	self.oldValue = value;
+
+	UIDropDownMenu_SetWidth(self, 130);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+
+	self.SetValue =
+		function (self, value)
+			self.value = value;
+
+			BlizzardOptionsPanel_SetCVarSafe("cursorSizePreferred", value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+		end
+
+	self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelCursorSizeDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnClick;
+
+	for index, option in ipairs(cursorSizeOptions) do
+		info.text = option.text;
+		info.value = option.value;
+		info.checked = option.value == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelCursorSizeDropdown:SetValue(self.value);
+end
+
+ColorblindPanelOptions = {
+	colorblindMode = { text = "USE_COLORBLIND_MODE" },
+	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
+	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+}
+
+function InterfaceOptionsColorblindPanel_OnLoad(self)
+	self.name = "   "..COLORBLIND_MODE_TAB;
+	self.options = ColorblindPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsAccessibilityPanel_OnEvent);
+end
+
+function InterfaceOptionsColorblindPanel__OnEvent(self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.cvar = "colorblindSimulator";
 
@@ -1787,7 +2133,7 @@ function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, eve
 		self.oldValue = value;
 
 		UIDropDownMenu_SetWidth(self, 130);
-		UIDropDownMenu_Initialize(self,InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
+		UIDropDownMenu_Initialize(self,InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, value);
 
 		function self:SetValue(value)
@@ -1796,9 +2142,9 @@ function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, eve
 			UIDropDownMenu_SetSelectedValue(self, value);
 
 			if self.value == 0 then
-				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Disable();
+				InterfaceOptionsColorblindPanelColorblindStrengthSlider:Disable();
 			else
-				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Enable();
+				InterfaceOptionsColorblindPanelColorblindStrengthSlider:Enable();
 			end
 		end
 
@@ -1807,14 +2153,14 @@ function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, eve
 		end
 
 		function self:RefreshValue()
-			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
+			UIDropDownMenu_Initialize(self, InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize);
 			UIDropDownMenu_SetSelectedValue(self, self.value);
 		end
 
 		self:UnregisterEvent(event);
 
 		-- create and set colorblind item quality display string
-		local self = InterfaceOptionsAccessibilityPanel;
+		local self = InterfaceOptionsColorblindPanel;
 		local qualityIdTable = {2,3,4,5}; -- UNCOMMON, RARE, EPIC, LEGENDARY
 		local examples = self.ColorblindFilterExamples;
 		for i = 1, #qualityIdTable do
@@ -1832,11 +2178,11 @@ function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, eve
 	end
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelColorFilterDropDown);
+function InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsColorblindPanelColorFilterDropDown);
 	local info = UIDropDownMenu_CreateInfo();
 
-	info.func = InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick;
+	info.func = InterfaceOptionsColorblindPanelColorFilterDropDown_OnClick;
 
 	info.text = COLORBLIND_OPTION_NONE;
 	info.value = 0;
@@ -1859,8 +2205,8 @@ function InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick(self)
-	InterfaceOptionsAccessibilityPanelColorFilterDropDown:SetValue(self.value);
+function InterfaceOptionsColorblindPanelColorFilterDropDown_OnClick(self)
+	InterfaceOptionsColorblindPanelColorFilterDropDown:SetValue(self.value);
 end
 
 function InterfaceOptions_CombatTextComboPoints(combatTextEnabled)

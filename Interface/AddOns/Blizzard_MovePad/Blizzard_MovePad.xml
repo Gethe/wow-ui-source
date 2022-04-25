@@ -7,14 +7,14 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="MovePadFrame" inherits="TooltipBackdropTemplate" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND">
-		<KeyValues>
-			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
-		</KeyValues>
+	<Frame name="MovePadFrame" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
 		<Size x="126" y="124" />
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-90" y="-180"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
+		</KeyValues>
 		<Frames>
 			<CheckButton name="MovePadLock">
 				<Size x="32" y="32"/>
@@ -216,7 +216,7 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart>
