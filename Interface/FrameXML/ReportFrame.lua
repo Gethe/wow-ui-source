@@ -18,6 +18,7 @@ function ReportFrameMixin:OnHide()
 	self.minorCategoryFlags:ClearAll();
 	self.Comment.EditBox:SetText("");
 	self:Layout(); 
+	Enable_BagButtons();
 end
 
 function ReportFrameMixin:OnEvent(event, ...)
@@ -45,8 +46,70 @@ function ReportFrameMixin:SetupDropdownByReportType(reportType)
 	self.ReportingMajorCategoryDropdown:Show(); 
 end
 
-function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport) 
-	if(not reportInfo) then 
+do
+	local function EnumerateTaintedKeysTable(attributeTable)
+		local pairsIterator, enumerateTable, initialIteratorKey = securecallfunction(pairs, attributeTable);
+		local function IteratorFunction(tbl, key)
+			return securecallfunction(pairsIterator, tbl, key);
+		end
+
+		return IteratorFunction, enumerateTable, initialIteratorKey;
+	end
+
+	local SanitizableTypeSet = {
+		["string"] = true,
+		["number"] = true,
+		["boolean"] = true,
+	};
+
+	local function CopyTableWithCleanedPairs(attributeTable, shouldRecurse)
+		local cleanedTable = {};
+		for key, value in EnumerateTaintedKeysTable(attributeTable) do
+			if type(key) == "string" then
+				local valueType = type(value);
+				if SanitizableTypeSet[valueType] then
+					cleanedTable[key] = value;
+				elseif shouldRecurse and (valueType == "table") then
+					local shouldSubRecurse = false;
+					cleanedTable[key] = CopyTableWithCleanedPairs(value, shouldSubRecurse);
+				end
+			end
+		end
+
+		return cleanedTable;
+	end
+
+	function ReportFrameMixin:OnAttributeChanged(attribute, data)
+		if (attribute == "initiate_report") then
+			local shouldRecurse = true;
+			data = CopyTableWithCleanedPairs(data, shouldRecurse);
+
+			if (not data.reportInfo) then
+				return;
+			end
+
+			local shouldRecurse = true;
+			data = CopyTableWithCleanedPairs(data, shouldRecurse);
+
+			local reportInfo = Mixin(CopyTableWithCleanedPairs(data.reportInfo), ReportInfoMixin);
+			local playerName = data.playerName;
+			local playerLocation = data.playerLocation and Mixin(CopyTableWithCleanedPairs(data.playerLocation), PlayerLocationMixin) or nil;
+			local isBnetReport = data.isBnetReport;
+			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport);
+		end
+	end
+end
+
+function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport)
+	self:SetAttribute("initiate_report", {
+		reportInfo = reportInfo,
+		playerName = playerName,
+		playerLocation = playerLocation,
+		isBnetReport = isBnetReport,
+	});
+end
+
+function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport) 	if(not reportInfo) then 
 		return;
 	end 
 
@@ -70,6 +133,7 @@ function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation,
 	self.MinorReportDescription:Hide();
 	self.ReportButton:UpdateButtonState(); 
 	self:Layout(); 
+	Disable_BagButtons(); 
 end		
 
 function ReportFrameMixin:ReportByType(reportType) 
@@ -79,7 +143,23 @@ end
 function ReportFrameMixin:CanDisplayMinorCategory(minorCategory) 
 	if (minorCategory == Enum.ReportMinorCategory.BTag and not self.isBnetReport) then 
 		return false; 
-	end 
+	elseif (minorCategory == Enum.ReportMinorCategory.GuildName) then 
+		if(self.reportInfo.clubFinderGUID) then 
+			local clubFinderType = C_ClubFinder.GetClubTypeFromFinderGUID(self.reportInfo.clubFinderGUID);
+			return clubFinderType and clubFinderType == Enum.ClubFinderRequestType.Guild;
+		else 
+			local playerLocationGUID =  self.reportPlayerLocation and self.reportPlayerLocation:GetGUID() or nil;
+			local reportedPlayer = playerLocationGUID and playerLocationGUID or self.reportInfo.reportTarget; 
+			return C_PlayerInfo.IsPlayerInGuildFromGUID(reportedPlayer);
+		end 
+	elseif (self.reportInfo.reportType == Enum.ReportType.ClubFinderPosting and minorCategory == Enum.ReportMinorCategory.Name) then 
+		if (self.reportInfo.clubFinderGUID) then 
+			local clubFinderType = C_ClubFinder.GetClubTypeFromFinderGUID(self.reportInfo.clubFinderGUID);
+			return clubFinderType and clubFinderType == Enum.ClubFinderRequestType.Community;
+		else 
+			return false; 
+		end
+	end		
 	return true; 
 end
 

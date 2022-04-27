@@ -163,6 +163,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetBids",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bids", Type = "table", InnerType = "BidInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBrowseResults",
 			Type = "Function",
 
@@ -500,6 +509,15 @@ local AuctionHouse =
 			Returns =
 			{
 				{ Name = "typeItemKey", Type = "ItemKey", Nilable = true },
+			},
+		},
+		{
+			Name = "GetOwnedAuctions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ownedAuctions", Type = "table", InnerType = "OwnedAuctionInfo", Nilable = false },
 			},
 		},
 		{
@@ -963,6 +981,15 @@ local AuctionHouse =
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_AUCTION_CREATED",
 			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseAuctionsExpired",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_AUCTIONS_EXPIRED",
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },

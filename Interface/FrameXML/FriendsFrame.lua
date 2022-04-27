@@ -477,8 +477,13 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = REPORT_PLAYER;
-		info.hasArrow = true;
-		info.func = nil;
+		info.func = function() 
+			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
+			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
+			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
+			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
+		end; 
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = BLOCK_INVITES;
@@ -491,32 +496,6 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 						end
 					end
 		UIDropDownMenu_AddButton(info, level)
-	else
-		if level == 2 then
-			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
-			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
-			info.text = REPORT_SPAMMING;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_SPAM, name, playerLocation);
-						end
-			UIDropDownMenu_AddButton(info, level)
-
-			info.text = REPORT_ABUSE;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_ABUSE, name, playerLocation);
-						end
-			UIDropDownMenu_AddButton(info, level)
-
-			info.text = REPORT_BAD_NAME;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, name, playerLocation);
-						end
-			UIDropDownMenu_AddButton(info, level)
-			info.notCheckable = false;
-		end
 	end
 end
 

@@ -208,12 +208,19 @@ GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
 	button1 = DONE,
 	button2 = CANCEL,
 	OnAccept = function()
-		local data = GlueDialog.data;
-		local noIsValidateOnly = false;
-		C_CharacterServices.AssignPFCDistribution(data.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+		CharacterCreateFrame:BeginVASTransaction();
 	end,
 	OnCancel = function()
 		CharacterCreateFrame:UpdateForwardButton();
+	end,
+}
+
+GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+	OnAccept = function ()
+		CharacterCreateFrame:Exit();
 	end,
 }
 

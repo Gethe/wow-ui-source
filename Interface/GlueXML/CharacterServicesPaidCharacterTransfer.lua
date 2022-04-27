@@ -12,27 +12,6 @@ local function RequestAssignPCTForResults(results, isValidationOnly)
 	);
 end
 
-local function IsAssignmentValid(storeError, vasPurchaseResult, characterGUID)
-	if storeError == 0 and vasPurchaseResult == 0 then
-		return true;
-	end
-
-	local msgTable = {};
-
-	if vasPurchaseResult ~= 0 then
-		local character = C_StoreSecure.GetCharacterInfoByGUID(characterGUID);
-		local msg = VASErrorData_GetMessage(vasPurchaseResult, character);
-		table.insert(msgTable, msg);
-	end
-
-	if storeError ~= 0 then
-		local _, msg = StoreErrorData_GetMessage(storeError);
-		table.insert(msgTable, msg);
-	end
-
-	return false, table.concat(msgTable, "\n");
-end
-
 local PCTCharacterSelectBlock = CreateFromMixins(VASCharacterSelectBlockBase);
 do
 	PCTCharacterSelectBlock.FrameName = "PCTCharacterSelect";
@@ -328,59 +307,10 @@ function PCTDestinationSelectBlock:FormatResult()
 	return table.concat(formattedResult, "\n");
 end
 
-PCTChoiceVerificationBlock =
-{
-	Back = true,
-	Next = false,
-	Finish = false,
-	HiddenStep = true,
-	SkipOnRewind = true,
-};
+local PCTChoiceVerificationBlock = CreateFromMixins(VASChoiceVerificationBlockBase);
 
-function PCTChoiceVerificationBlock:Initialize(results, wasFromRewind)
-	self.results = results; -- Store the results so we can use them when we get a response to the validation request.
-	self.isAssignmentValid = false;
-
-	if not wasFromRewind then
-		EventRegistry:RegisterFrameEvent("ASSIGN_VAS_RESPONSE");
-		EventRegistry:RegisterCallback("ASSIGN_VAS_RESPONSE", self.OnAssignVASResponse, self);
-
-		local isValidationOnly = true;
-		local hadError = RequestAssignPCTForResults(results, isValidationOnly);
-		if hadError then
-			local msg = select(2, StoreErrorData_GetMessage(Enum.StoreError.Other));
-			CharSelectServicesFlowFrame:SetErrorMessage(msg);
-		end
-	end
-end
-
-function PCTChoiceVerificationBlock:OnAssignVASResponse(token, storeError, vasPurchaseResult)
-	EventRegistry:UnregisterFrameEvent("ASSIGN_VAS_RESPONSE");
-	EventRegistry:UnregisterCallback("ASSIGN_VAS_RESPONSE", self);
-
-	local errorMsg;
-	self.isAssignmentValid, errorMsg = IsAssignmentValid(storeError, vasPurchaseResult, self.results.selectedCharacterGUID);
-
-	if self.isAssignmentValid then
-		CharacterServicesMaster_Advance();
-	else
-		CharSelectServicesFlowFrame:SetErrorMessage(errorMsg);
-		CharacterServicesMaster_Update();
-	end
-end
-
-function PCTChoiceVerificationBlock:IsFinished()
-	return self.isAssignmentValid;
-end
-
-function PCTChoiceVerificationBlock:GetResult()
-	-- Needs to return all results thus far? Or can this just return its own little block of sucess/failure?
-	return { isAssignmentValid = self.isAssignmentValid };
-end
-
-function PCTChoiceVerificationBlock:OnRewind()
-	self.isAssignmentValid = false;
-	CharSelectServicesFlowFrame:ClearErrorMessage();
+function PCTChoiceVerificationBlock:RequestAssignVASForResults(results, isValidationOnly)
+	return RequestAssignPCTForResults(results, isValidationOnly);
 end
 
 local PCTAssignConfirmationBlock = CreateFromMixins(VASAssignConfirmationBlockBase);
@@ -443,17 +373,7 @@ function PCTEndStep:OnStoreVASPurchaseError()
 	EventRegistry:UnregisterFrameEvent("STORE_VAS_PURCHASE_ERROR");
 	EventRegistry:UnregisterCallback("STORE_VAS_PURCHASE_ERROR", self);
 
-	local errors = C_StoreSecure.GetVASErrors();
-	local msgTable = {};
-
-	local character = C_StoreSecure.GetCharacterInfoByGUID(self.results.selectedCharacterGUID);
-	for index, errorID in ipairs(errors) do
-		local error = VASErrorData_GetMessage(errorID, character);
-		table.insert(msgTable, error);
-	end
-
-	local displayMsg = table.concat(msgTable, "\n");
-	displayMsg = (displayMsg ~= "") and displayMsg or BLIZZARD_STORE_VAS_ERROR_OTHER;
+	local displayMsg = VASErrorData_GetCombinedMessage(self.results.selectedCharacterGUID);
 
 	CharSelectServicesFlowFrame:SetErrorMessage(displayMsg);
 	CharacterServicesMaster_Update();

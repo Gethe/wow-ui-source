@@ -213,7 +213,7 @@ end
 UnitPopupIgnoreButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupIgnoreButtonMixin:GetText()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	return C_FriendList.IsIgnored(dropdownMenu.name) and IGNORE_REMOVE or IGNORE;
+	return C_FriendList.IsOnIgnoredList(dropdownMenu.name) and IGNORE_REMOVE or IGNORE;
 end 
 
 function UnitPopupIgnoreButtonMixin:CanShow()

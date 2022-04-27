@@ -8,6 +8,27 @@ function CheckAddVASErrorCode(errorTable, errorCode, requirementPassed)
 	CheckAddVASErrorString(errorTable, VASErrorData_GetMessage(errorCode), requirementPassed);
 end
 
+function IsVASAssignmentValid(storeError, vasPurchaseResult, characterGUID)
+	if storeError == 0 and vasPurchaseResult == 0 then
+		return true;
+	end
+
+	local msgTable = {};
+
+	if vasPurchaseResult ~= 0 then
+		local character = C_StoreSecure.GetCharacterInfoByGUID(characterGUID);
+		local msg = VASErrorData_GetMessage(vasPurchaseResult, character);
+		table.insert(msgTable, msg);
+	end
+
+	if storeError ~= 0 then
+		local _, msg = StoreErrorData_GetMessage(storeError);
+		table.insert(msgTable, msg);
+	end
+
+	return false, table.concat(msgTable, "\n");
+end
+
 VASReviewChoicesBlockBase = {
 	AutoAdvance = false,
 	Back = true,
@@ -203,4 +224,77 @@ function VASCharacterSelectBlockBase:FormatResult()
 	end
 
 	return "";
+end
+
+VASChoiceVerificationBlockBase =
+{
+	Back = true,
+	Next = false,
+	Finish = false,
+	HiddenStep = true,
+	SkipOnRewind = true,
+};
+
+function VASChoiceVerificationBlockBase:Initialize(results, wasFromRewind)
+	self.results = results; -- Store the results so we can use them when we get a response to the validation request.
+	self.isAssignmentValid = false;
+
+	if not wasFromRewind then
+		EventRegistry:RegisterFrameEvent("ASSIGN_VAS_RESPONSE");
+		EventRegistry:RegisterCallback("ASSIGN_VAS_RESPONSE", self.OnAssignVASResponse, self);
+
+		local isValidationOnly = true;
+		local hadError = self:RequestAssignVASForResults(results, isValidationOnly);
+		if hadError then
+			local msg = select(2, StoreErrorData_GetMessage(Enum.StoreError.Other));
+			CharSelectServicesFlowFrame:SetErrorMessage(msg);
+		end
+	end
+end
+
+function VASChoiceVerificationBlockBase:OnAssignVASResponse(token, storeError, vasPurchaseResult)
+	self:UnregisterHandlers();
+
+	local errorMsg;
+	self.isAssignmentValid, errorMsg = IsVASAssignmentValid(storeError, vasPurchaseResult, self.results.selectedCharacterGUID);
+
+	if self.isAssignmentValid then
+		CharacterServicesMaster_Advance();
+	else
+		CharSelectServicesFlowFrame:SetErrorMessage(errorMsg);
+		CharacterServicesMaster_Update();
+	end
+end
+
+function VASChoiceVerificationBlockBase:IsFinished()
+	return self.isAssignmentValid;
+end
+
+function VASChoiceVerificationBlockBase:GetResult()
+	-- Needs to return all results thus far? Or can this just return its own little block of sucess/failure?
+	return { isAssignmentValid = self.isAssignmentValid };
+end
+
+function VASChoiceVerificationBlockBase:UnregisterHandlers()
+	EventRegistry:UnregisterFrameEvent("ASSIGN_VAS_RESPONSE");
+	EventRegistry:UnregisterCallback("ASSIGN_VAS_RESPONSE", self);
+end
+
+function VASChoiceVerificationBlockBase:OnRewind()
+	self.isAssignmentValid = false;
+	CharSelectServicesFlowFrame:ClearErrorMessage();
+	self:UnregisterHandlers();
+end
+
+function VASChoiceVerificationBlockBase:OnHide()
+	self:UnregisterHandlers();
+end
+
+function VASChoiceVerificationBlockBase:OnAdvance()
+	self:UnregisterHandlers();
+end
+
+-- Override
+function VASChoiceVerificationBlockBase:RequestAssignVASForResults(results, isValidationOnly)
+
 end

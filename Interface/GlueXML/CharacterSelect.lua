@@ -2134,9 +2134,8 @@ local function GetVASTokenAlpha(vasTokenInfo)
 end
 
 local statusToTooltipLookup = {
-	-- [SO] TODO: Handle other types
-	review = PCT_TOKEN_TOOLTIP_STATUS_REVIEW,
-	noCharacters = PCT_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
+	review = VAS_TOKEN_TOOLTIP_STATUS_REVIEW,
+	noCharacters = VAS_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
 };
 
 local function GetVASTokenStatusTooltip(vasTokenInfo)

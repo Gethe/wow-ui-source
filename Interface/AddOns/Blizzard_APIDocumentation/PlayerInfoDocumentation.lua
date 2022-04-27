@@ -132,6 +132,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsPlayerInGuildFromGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "IsInGuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerNPERestricted",
 			Type = "Function",
 

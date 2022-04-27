@@ -392,6 +392,23 @@ function VASErrorData_GetMessage(errorCode, character)
 	return "";
 end
 
+function VASErrorData_GetCombinedMessage(characterGUID)
+	local errors = C_StoreSecure.GetVASErrors();
+
+	local msgTable = {};
+
+	local character = C_StoreSecure.GetCharacterInfoByGUID(characterGUID);
+	for index, errorID in ipairs(errors) do
+		local error = VASErrorData_GetMessage(errorID, character);
+		table.insert(msgTable, error);
+	end
+
+	local displayMsg = table.concat(msgTable, "\n");
+	displayMsg = (displayMsg ~= "") and displayMsg or BLIZZARD_STORE_VAS_ERROR_OTHER;
+
+	return displayMsg;
+end
+
 function StoreErrorData_GetMessage(errorCode)
 	local info = storeErrorData[errorCode];
 	if not info then

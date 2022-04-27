@@ -229,6 +229,8 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 			info.text = sortedDungeons[i].mapName;
 			info.isTitle = 1;
 			info.notCheckable = 1;
+			info.icon = nil;
+			info.iconXOffset = nil;
 			info.tooltipOnButton = nil;
 			UIDropDownMenu_AddButton(info);
 			info.notCheckable = nil;
@@ -273,12 +275,23 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 			info.value = sortedDungeons[i].id;
 			info.isTitle = nil;
 			info.func = nil;
+			info.icon = nil; 
+			info.iconXOffset = nil;
+			local modifiedInstanceTooltipText = "";
+			if(sortedDungeons[i].mapID) then 
+				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(sortedDungeons[i].mapID)
+				if (modifiedInstanceInfo) then 
+					info.icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
+					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
+				end
+				info.iconXOffset = -6;
+			end 
 			info.disabled = 1;
 			info.checked = nil;
 			info.tooltipWhileDisabled = 1;
 			info.tooltipOnButton = 1;
 			info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-			info.tooltipText = LFGConstructDeclinedMessage(sortedDungeons[i].id);
+			info.tooltipText = LFGConstructDeclinedMessage(sortedDungeons[i].id) .. modifiedInstanceTooltipText; 
 			UIDropDownMenu_AddButton(info);
 		end
 	end

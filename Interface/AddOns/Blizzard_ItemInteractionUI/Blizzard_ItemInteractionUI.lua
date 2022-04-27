@@ -79,7 +79,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
 local FrameSpecificDefaults = {
 	itemSlotOffsetY = 0,
 	glowOverLayOffsetY = 0,
-	descriptionOffset = 45,
+	descriptionOffset = -65,
 	tutorialBitFlag = nil,
 };
 
@@ -87,17 +87,18 @@ local FrameSpecificOverrides = {
 	[Enum.UIItemInteractionType.CleanseCorruption] = {
 		tutorialBitFlag = LE_FRAME_TUTORIAL_CORRUPTION_CLEANSER,
 		glowOverLayOffsetY = 7,
+		descriptionOffset = -74,
 	},
 
 	[Enum.UIItemInteractionType.RunecarverScrapping] = {
 		tutorialBitFlag = LE_FRAME_TUTORIAL_RUNECARVER_SCRAPPING,
 		itemSlotOffsetY = 15,
-		descriptionOffset = 72,
+		descriptionOffset = -67,
 	},
 
 	[Enum.UIItemInteractionType.ItemConversion] = {
-		itemSlotOffsetY = 15,
-		descriptionOffset = 60,
+		itemSlotOffsetY = 17,
+		descriptionOffset = -74,
 	},
 };
 
@@ -351,7 +352,7 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 	end
 
 	self.Description:ClearAllPoints();
-	self.Description:SetPoint("BOTTOM", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
+	self.Description:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
 end
 
 -- The 9.2 "Item Conversion" interaction requires two currencies from the player: A flat cost of 1 "Charge" and an extended currency cost of X "Cosmic Flux" depending on the armor slot (gloves, legs, etc)	

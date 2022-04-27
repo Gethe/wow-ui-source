@@ -58,6 +58,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CHAR_CREATE_BEGIN_ANIMATIONS");
 	self:RegisterEvent("CHAR_CREATE_ANIM_KIT_FINISHED");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
+	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -156,6 +158,11 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:OnDisplaySizeChanged();
+	elseif event == "STORE_VAS_PURCHASE_ERROR" then
+		self:OnStoreVASPurchaseError();
+	elseif event == "ASSIGN_VAS_RESPONSE" then
+		local token, storeError, vasPurchaseResult = ...;
+		self:OnAssignVASResponse(token, storeError, vasPurchaseResult);
 	end
 
 	if showError then
@@ -237,7 +244,33 @@ end
 
 function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
-	self.vasInfo = nil;
+	self.vasInfo = nil;	
+end
+
+function CharacterCreateMixin:BeginVASTransaction()
+	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		local noIsValidateOnly = false;
+		C_CharacterServices.AssignPFCDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+	end
+end
+
+function CharacterCreateMixin:OnStoreVASPurchaseError()
+	if self.vasType then
+		local displayMsg = VASErrorData_GetCombinedMessage(self.vasInfo.selectedCharacterGUID);
+		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg);
+	end
+end
+
+function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchaseResult)
+	if self.vasType then
+		local purchaseComplete, errorMsg = IsVASAssignmentValid(storeError, vasPurchaseResult, self.vasInfo.selectedCharacterGUID);
+		if purchaseComplete then
+			CharacterSelect.selectGuid = self.vasInfo.selectedCharacterGUID;
+			CharacterCreateFrame:Exit();
+		else
+			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg);
+		end
+	end
 end
 
 function CharacterCreateMixin:HasService()
@@ -494,12 +527,16 @@ function CharacterCreateMixin:NavBack()
 				CharacterUpgrade_ResetBoostData();
 			end
 
-			CharacterSelect.backFromCharCreate = true;
-			GlueParent_SetScreen("charselect");
+			self:Exit();
 		end
 	else
 		self:UpdateMode(-1);
 	end
+end
+
+function CharacterCreateMixin:Exit()
+	CharacterSelect.backFromCharCreate = true;
+	GlueParent_SetScreen("charselect");
 end
 
 local function SortBlockers(a, b)
@@ -551,7 +588,7 @@ function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
 	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
-		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE", nil, self.vasInfo);
+		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);

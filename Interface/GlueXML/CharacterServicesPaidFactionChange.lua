@@ -1,3 +1,12 @@
+local function RequestAssignPFCForResults(results, isValidationOnly)
+	local currentRealmAddress = select(5, GetServerName());
+	return C_CharacterServices.AssignPFCDistribution(
+		results.selectedCharacterGUID,
+		"",
+		isValidationOnly
+	);
+end
+
 local factionColors = {
 	Alliance = CreateColor(0, 0.439, 0.867),
 	Horde = CreateColor(1, 0, 0);
@@ -39,13 +48,12 @@ end
 local function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
 	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
 	local errors = {};
---[[
-	[SO] TODO: Check errors
+
 	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
 	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
 	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, C_StoreSecure.IsVASEligibleCharacterGUID(playerguid));
-]]--
+
 	local canTransfer = #errors == 0;
 	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
 end
@@ -58,6 +66,12 @@ function PFCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
 	serviceInfo.playerguid = playerguid;
 	serviceInfo.requiresLogin = characterServiceRequiresLogin;
 	return serviceInfo;
+end
+
+local PFCChoiceVerificationBlock = CreateFromMixins(VASChoiceVerificationBlockBase);
+
+function PFCChoiceVerificationBlock:RequestAssignVASForResults(results, isValidationOnly)
+	return RequestAssignPFCForResults(results, isValidationOnly);
 end
 
 local PFCAssignConfirmationBlock = CreateFromMixins(VASAssignConfirmationBlockBase)
@@ -97,6 +111,7 @@ PaidFactionChangeFlow = Mixin(
 		Steps = {
 			PFCCharacterSelectBlock,
 			CreateFromMixins(VASReviewChoicesBlockBase),
+			PFCChoiceVerificationBlock,
 			PFCAssignConfirmationBlock,
 			PFCEndStep,
 		},
@@ -112,9 +127,7 @@ function PaidFactionChangeFlow:Initialize(controller)
 	EventRegistry:RegisterFrameEvent("STORE_CHARACTER_LIST_RECEIVED");
 	EventRegistry:RegisterCallback("STORE_CHARACTER_LIST_RECEIVED", self.OnStoreCharacterListReceived, self);
 
-	-- [SO] TODO - Does this need handling?
-	-- Using PaidCharacterTransfer for now otherwise the character selector doesn't show
-	C_StoreGlue.RequestStoreCharacterListForVasType(Enum.ValueAddedServiceType.PaidCharacterTransfer);
+	C_StoreGlue.RequestStoreCharacterListForVasType(Enum.ValueAddedServiceType.PaidFactionChange);
 end
 
 function PaidFactionChangeFlow:OnStoreCharacterListReceived()

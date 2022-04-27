@@ -3332,7 +3332,7 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 	{
 		text = LFG_LIST_REPORT_PLAYER,
 		notCheckable = true,
-		func = function(_, id, applicantName) LFGList_ReportApplicant(id, applicantName) end,
+		func = function(_, applicantID, applicantName) LFGList_ReportApplicant(applicantID, applicantName) end,
 	},
 	{
 		text = IGNORE_PLAYER,

@@ -161,6 +161,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnAttributeChanged method="OnAttributeChanged"/>
 		</Scripts>
 	</Frame>
 </Ui>
