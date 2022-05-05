@@ -2191,7 +2191,7 @@ function WardrobeItemsCollectionMixin:RefreshVisualsList()
 	if self.transmogLocation:IsIllusion() then
 		self.visualsList = C_TransmogCollection.GetIllusions();
 	else
-		self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory);
+		self.visualsList = C_TransmogCollection.GetCategoryAppearances(self.activeCategory, self.transmogLocation);
 
 	end
 	self:FilterVisuals();
@@ -2206,7 +2206,7 @@ end
 function WardrobeItemsCollectionMixin:GetAnAppearanceSourceFromVisual(visualID, mustBeUsable)
 	local sourceID = self:GetChosenVisualSource(visualID);
 	if ( sourceID == Constants.Transmog.NoTransmogID ) then
-		local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, self.activeCategory);
+		local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, self.activeCategory, self.transmogLocation);
 		for i = 1, #sources do
 			-- first 1 if it doesn't have to be usable
 			if ( not mustBeUsable or self:IsAppearanceUsableForActiveCategory(sources[i]) ) then
@@ -2276,7 +2276,7 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 	if ( not self.tooltipVisualID ) then
 		return;
 	end
-	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.tooltipVisualID, self.activeCategory);
+	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.tooltipVisualID, self.activeCategory, self.transmogLocation);
 	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);
 	self:GetParent():SetAppearanceTooltip(self, sources, chosenSourceID);
 end
@@ -2401,7 +2401,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 			local name;
 			name, link = C_TransmogCollection.GetIllusionStrings(self.visualInfo.sourceID);
 		else
-			local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.visualInfo.visualID, itemsCollectionFrame:GetActiveCategory());
+			local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.visualInfo.visualID, itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame.transmogLocation);
 			if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 				local index = CollectionWardrobeUtil.GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 				link = WardrobeCollectionFrame:GetAppearanceItemHyperlink(sources[index]);
@@ -2602,15 +2602,19 @@ function WardrobeItemsCollectionMixin:SetChosenVisualSource(visualID, sourceID)
 end
 
 function WardrobeItemsCollectionMixin:ValidateChosenVisualSources()
+	local collections = not C_Transmog.IsAtTransmogNPC();
 	for visualID, sourceID in pairs(self.chosenVisualSources) do
 		if ( sourceID ~= Constants.Transmog.NoTransmogID ) then
 			local keep = false;
-			local sources = C_TransmogCollection.GetAppearanceSources(visualID, self.activeCategory);
+			local sources = C_TransmogCollection.GetAppearanceSources(visualID, self.activeCategory, self.transmogLocation);
 			if ( sources ) then
 				for i = 1, #sources do
 					if ( sources[i].sourceID == sourceID ) then
-						if ( sources[i].isCollected and not sources[i].useError ) then
-							keep = true;
+						if ( sources[i].isCollected) then
+							-- hot recheck errors are temporary failures (spec, player condition, etc.), and shouldn't exclude things from collections
+							if ( not sources[i].useError or (collections and sources[i].useErrorType == Enum.TransmogUseErrorType.HotRecheckFailed)) then 
+								keep = true;
+							end
 						end
 						break;
 					end
@@ -2646,7 +2650,7 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 	UIDropDownMenu_AddButton(info);
 
 	local headerInserted = false;
-	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceID, WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory());
+	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceID, WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory(), WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation);
 	local chosenSourceID = WardrobeCollectionFrame.ItemsCollectionFrame:GetChosenVisualSource(appearanceID);
 	info.func = WardrobeCollectionFrameModelDropDown_SetSource;
 	for i = 1, #sources do
@@ -2692,7 +2696,7 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 	local set = (value == 1);
 	if ( set and not confirmed ) then
 		local allSourcesConditional = true;
-		local sources = C_TransmogCollection.GetAppearanceSources(visualID, WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory());
+		local sources = C_TransmogCollection.GetAppearanceSources(visualID, WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory(), WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation);
 		for i, sourceInfo in ipairs(sources) do
 			local info = C_TransmogCollection.GetAppearanceInfoBySource(sourceInfo.sourceID);
 			if ( info.sourceIsCollectedPermanent ) then

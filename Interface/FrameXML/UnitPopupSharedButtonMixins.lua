@@ -899,9 +899,6 @@ end
 
 function UnitPopupReportGroupMemberButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if(UnitInBattleground(dropdownMenu.unit) or IsInActiveWorldPVP(dropdownMenu.unit)) then 
-		return false; 
-	end 
 	return UnitPopupReportButtonMixin.CanShow(self);
 end 
 

@@ -46,59 +46,7 @@ function ReportFrameMixin:SetupDropdownByReportType(reportType)
 	self.ReportingMajorCategoryDropdown:Show(); 
 end
 
-do
-	local function EnumerateTaintedKeysTable(attributeTable)
-		local pairsIterator, enumerateTable, initialIteratorKey = securecallfunction(pairs, attributeTable);
-		local function IteratorFunction(tbl, key)
-			return securecallfunction(pairsIterator, tbl, key);
-		end
 
-		return IteratorFunction, enumerateTable, initialIteratorKey;
-	end
-
-	local SanitizableTypeSet = {
-		["string"] = true,
-		["number"] = true,
-		["boolean"] = true,
-	};
-
-	local function CopyTableWithCleanedPairs(attributeTable, shouldRecurse)
-		local cleanedTable = {};
-		for key, value in EnumerateTaintedKeysTable(attributeTable) do
-			if type(key) == "string" then
-				local valueType = type(value);
-				if SanitizableTypeSet[valueType] then
-					cleanedTable[key] = value;
-				elseif shouldRecurse and (valueType == "table") then
-					local shouldSubRecurse = false;
-					cleanedTable[key] = CopyTableWithCleanedPairs(value, shouldSubRecurse);
-				end
-			end
-		end
-
-		return cleanedTable;
-	end
-
-	function ReportFrameMixin:OnAttributeChanged(attribute, data)
-		if (attribute == "initiate_report") then
-			local shouldRecurse = true;
-			data = CopyTableWithCleanedPairs(data, shouldRecurse);
-
-			if (not data.reportInfo) then
-				return;
-			end
-
-			local shouldRecurse = true;
-			data = CopyTableWithCleanedPairs(data, shouldRecurse);
-
-			local reportInfo = Mixin(CopyTableWithCleanedPairs(data.reportInfo), ReportInfoMixin);
-			local playerName = data.playerName;
-			local playerLocation = data.playerLocation and Mixin(CopyTableWithCleanedPairs(data.playerLocation), PlayerLocationMixin) or nil;
-			local isBnetReport = data.isBnetReport;
-			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport);
-		end
-	end
-end
 
 function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport)
 	self:SetAttribute("initiate_report", {
@@ -230,17 +178,24 @@ function ReportingMajorCategoryDropdownInitialize(self)
 	end
 		
 	local info = UIDropDownMenu_CreateInfo();
+	local selectedMajorType = self:GetParent().selectedMajorType; 
 	for _, majorType in ipairs(reportOptions) do 
 		local reportText = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
 		if(reportText) then 
 			info.text = reportText; 
 			info.value = majorType; 
 			info.func = function() self:ValueSelected(self.reportType, majorType); end; 
+			info.checked = function() return selectedMajorType == majorType; end; 
 			UIDropDownMenu_AddButton(info);
 		end		
 	end
-	self.Text:SetJustifyH("LEFT");
-	UIDropDownMenu_SetText(self, REPORTING_MAKE_SELECTION);
+	self.Text:SetJustifyH("LEFT"); 
+	if (selectedMajorType) then 
+		local selectedText = _G[C_ReportSystem.GetMajorCategoryString(selectedMajorType)];
+		UIDropDownMenu_SetText(self, selectedText);
+	else 
+		UIDropDownMenu_SetText(self, REPORTING_MAKE_SELECTION);
+	end 
 end
 
 function ReportingMajorCategoryDropdownMixin:ValueSelected(reportType, majorType)
@@ -405,3 +360,61 @@ function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCate
 	self.majorCategory = majorCategory; 
 	self.minorCategoryFlags = minorCategoryFlags; 
 end	
+
+do
+	local securecallfunction = securecallfunction;
+	local type = type;
+	local pairs = pairs;
+	local Mixin = Mixin;
+	local ReportInfoMixin = ReportInfoMixin;
+	local PlayerLocationMixin = PlayerLocationMixin;
+
+	local function EnumerateTaintedKeysTable(attributeTable)
+		local pairsIterator, enumerateTable, initialIteratorKey = securecallfunction(pairs, attributeTable);
+		local function IteratorFunction(tbl, key)
+			return securecallfunction(pairsIterator, tbl, key);
+		end
+
+		return IteratorFunction, enumerateTable, initialIteratorKey;
+	end
+
+	local SanitizableTypeSet = {
+		["string"] = true,
+		["number"] = true,
+		["boolean"] = true,
+	};
+
+	local function CopyTableWithCleanedPairs(attributeTable, shouldRecurse)
+		local cleanedTable = {};
+		for key, value in EnumerateTaintedKeysTable(attributeTable) do
+			if type(key) == "string" then
+				local valueType = type(value);
+				if SanitizableTypeSet[valueType] then
+					cleanedTable[key] = value;
+				elseif shouldRecurse and (valueType == "table") then
+					local shouldSubRecurse = false;
+					cleanedTable[key] = CopyTableWithCleanedPairs(value, shouldSubRecurse);
+				end
+			end
+		end
+
+		return cleanedTable;
+	end
+
+	function ReportFrameMixin:OnAttributeChanged(attribute, data)
+		if (attribute == "initiate_report") then
+			local shouldRecurse = true;
+			data = CopyTableWithCleanedPairs(data, shouldRecurse);
+
+			if (not data.reportInfo) then
+				return;
+			end
+
+			local reportInfo = Mixin(data.reportInfo, ReportInfoMixin);
+			local playerName = data.playerName;
+			local playerLocation = data.playerLocation and Mixin(data.playerLocation, PlayerLocationMixin) or nil;
+			local isBnetReport = data.isBnetReport;
+			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport);
+		end
+	end
+end

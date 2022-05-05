@@ -373,9 +373,9 @@
 						end
 					</OnClick>
 					<OnEnter>
-						if ( self.tooltip ) then
+						if ( self.disabledTooltip ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+							GameTooltip:SetText(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>

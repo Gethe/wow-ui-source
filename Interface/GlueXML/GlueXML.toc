@@ -123,6 +123,7 @@ CharacterServices.xml
 CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
+SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
 ..\SharedXML\OptionsFrameTemplates.xml

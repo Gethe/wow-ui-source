@@ -333,6 +333,24 @@ local Item =
 			},
 		},
 		{
+			Name = "GetLimitedCurrencyItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "maxQuantity", Type = "number", Nilable = false },
+				{ Name = "totalEarned", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetStackCount",
 			Type = "Function",
 

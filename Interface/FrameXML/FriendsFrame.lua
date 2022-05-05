@@ -2483,7 +2483,7 @@ function TravelPassButton_OnEnter(self)
 	GameTooltip:SetText(inviteTypeToButtonText[inviteType], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	
 	if ( inviteTypeIsCrossFaction[inviteType] and factionName ) then
-		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(factionName), nil, nil, nil, true);
+		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName]), nil, nil, nil, true);
 	end
 
 	if ( restriction == INVITE_RESTRICTION_NONE ) then

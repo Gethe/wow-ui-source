@@ -200,6 +200,7 @@ ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
+GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 InputConstantsDocumentation.lua

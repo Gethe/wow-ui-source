@@ -152,7 +152,7 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" text="COMMUNITIES_EDIT_DIALOG_CROSS_FACTION" justifyH="LEFT" inherits="GameFontHighlight">
-							<Size x="200" y="32"/>
+							<Size x="125" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.CheckButton" x="35" y="0"/>
 							</Anchors>

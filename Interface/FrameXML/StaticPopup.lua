@@ -317,6 +317,23 @@ StaticPopupDialogs["CONFIRM_PURCHASE_NONREFUNDABLE_ITEM"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["CONFIRM_PURCHASE_ITEM_DELAYED"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		BuyMerchantItem(MerchantFrame.itemIndex, MerchantFrame.count);
+	end,
+	OnShow = function(self, data)
+		self.text:SetText(data.confirmationText);
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	showAlert = 1,
+	hasItemFrame = 1,
+	acceptDelay = 5,
+}
+
 StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	text = CONFIRM_UPGRADE_ITEM,
 	button1 = YES,

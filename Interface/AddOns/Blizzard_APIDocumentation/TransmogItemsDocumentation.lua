@@ -190,7 +190,8 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
-				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
+				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = false },
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -220,6 +221,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -239,6 +241,20 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCategoryForItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "collectionCategory", Type = "TransmogCollectionType", Nilable = false },
 			},
 		},
 		{

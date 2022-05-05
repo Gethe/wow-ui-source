@@ -86,6 +86,7 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 
 	self.ButtonPools:ReleaseAll();
 
+	self.initialSelectedCharacterIndex = GetCharacterSelection();
 	CharacterSelect.selectedIndex = -1;
 	UpdateCharacterSelection(CharacterSelect);
 
@@ -176,7 +177,7 @@ function CharacterServicesCharacterSelectorMixin:HasAnyEligibleCharacter()
 	return self.GlowBox:IsShown();
 end
 
-function CharacterServicesCharacterSelectorMixin:ResetState(selectedCharacterIndex)
+function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	self:Hide();
 	CharacterSelect_SetScrollEnabled(true);
 
@@ -191,11 +192,14 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedCharacterInd
 	end
 
 	UpdateCharacterList(true);
-
-	if selectedCharacterIndex and selectedCharacterIndex > 0 and selectedCharacterIndex <= MAX_CHARACTERS_DISPLAYED then
+	local selectedCharacterIndex;
+	if selectedButtonIndex and selectedButtonIndex > 0 then
+		selectedCharacterIndex = selectedButtonIndex + CHARACTER_LIST_OFFSET;
+	else
+		selectedCharacterIndex = self.initialSelectedCharacterIndex;
+	end
+	if selectedCharacterIndex and selectedCharacterIndex > 0 then
 		CharacterSelect.selectedIndex = selectedCharacterIndex;
-		local button = _G["CharSelectCharacterButton"..selectedCharacterIndex];
-		CharacterSelectButton_OnClick(button);
-		button.selection:Show();
+		UpdateCharacterSelection(CharacterSelect);
 	end
 end

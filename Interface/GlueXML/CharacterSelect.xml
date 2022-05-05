@@ -1808,6 +1808,11 @@
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
+						<Scripts>
+							<OnFinished>
+								CharacterServicesMaster_UpdateServiceButton();
+							</OnFinished>
+						</Scripts>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>

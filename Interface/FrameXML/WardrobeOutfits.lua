@@ -342,10 +342,10 @@ function WardrobeOutfitFrameMixin:StartOutfitSave(popupDropDown, outfitID)
 	self:EvaluateAppearances();
 end
 
-function WardrobeOutfitFrameMixin:EvaluateAppearance(appearanceID)
+function WardrobeOutfitFrameMixin:EvaluateAppearance(appearanceID, category, transmogLocation)
 	local preferredAppearanceID, hasAllData, canCollect;
 	if self.popupDropDown:ShouldReplaceInvalidSources() then
-		preferredAppearanceID, hasAllData, canCollect = CollectionWardrobeUtil.GetPreferredSourceID(appearanceID);
+		preferredAppearanceID, hasAllData, canCollect = CollectionWardrobeUtil.GetPreferredSourceID(appearanceID, nil, category, transmogLocation);
 	else
 		preferredAppearanceID = appearanceID;
 		hasAllData, canCollect = CollectionWardrobeUtil.PlayerCanCollectSource(appearanceID);
@@ -383,7 +383,9 @@ function WardrobeOutfitFrameMixin:EvaluateAppearances()
 				end
 			end
 			if isValidAppearance then
-				local preferredAppearanceID, isInvalidAppearance = self:EvaluateAppearance(appearanceID);
+				local transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+				local category = C_TransmogCollection.GetCategoryForItem(appearanceID);
+				local preferredAppearanceID, isInvalidAppearance = self:EvaluateAppearance(appearanceID, category, transmogLocation);
 				if isInvalidAppearance then
 					isValidAppearance = false;
 				else
@@ -391,7 +393,9 @@ function WardrobeOutfitFrameMixin:EvaluateAppearances()
 				end
 				-- secondary check
 				if itemTransmogInfo.secondaryAppearanceID ~= Constants.Transmog.NoTransmogID and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
-					local secondaryPreferredAppearanceID, secondaryIsInvalidAppearance = self:EvaluateAppearance(itemTransmogInfo.secondaryAppearanceID);
+					local secondaryTransmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Secondary);
+					local secondaryCategory = C_TransmogCollection.GetCategoryForItem(itemTransmogInfo.secondaryAppearanceID);
+					local secondaryPreferredAppearanceID, secondaryIsInvalidAppearance = self:EvaluateAppearance(itemTransmogInfo.secondaryAppearanceID, secondaryCategory, secondaryTransmogLocation);
 					if secondaryIsInvalidAppearance then
 						-- secondary is invalid, clear it
 						itemTransmogInfo.secondaryAppearanceID = Constants.Transmog.NoTransmogID;

@@ -422,9 +422,9 @@ function RaidFinderFrameFindRaidButton_Update()
 
 	if ( lfgListDisabled ) then
 		RaidFinderFrameFindRaidButton:Disable();
-		RaidFinderFrameFindRaidButton.tooltip = lfgListDisabled;
+		RaidFinderFrameFindRaidButton.disabledTooltip = lfgListDisabled;
 	else
-		RaidFinderFrameFindRaidButton.tooltip = nil;
+		RaidFinderFrameFindRaidButton.disabledTooltip = nil;
 	end
 
 	--Update the backfill enable state

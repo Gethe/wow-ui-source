@@ -15,6 +15,11 @@ FACTION_LABELS = {
 	[1] = FACTION_ALLIANCE,
 };
 
+FACTION_LABELS_FROM_STRING = {
+	["Horde"] = FACTION_HORDE, 
+	["Alliance"] = FACTION_ALLIANCE,
+}
+
 -- If you add a class here, you also need to add it to RAID_CLASS_COLORS, CHARCREATE_CLASS_INFO, and maybe to ALT_MANA_BAR_PAIR_DISPLAY_INFO
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},

@@ -2769,10 +2769,10 @@ ChatFrame_ImportAllListsToHash();
 ChatFrame_ImportEmoteTokensToHash();
 
 function ChatFrame_AddMessage(self, ...)
-	ScrollingMessageFrameMixin.AddMessage(self, ...)
+	self.BaseAddMessage(self, ...);
 
 	if ( self.addMessageObserver ) then
-		self.addMessageObserver(self, ...)
+		self.addMessageObserver(self, ...);
 	end
 end
 
@@ -2811,6 +2811,9 @@ function ChatFrame_OnLoad(self)
 
 	self.defaultLanguage = GetDefaultLanguage(); --If PLAYER_ENTERING_WORLD hasn't been called yet, this is nil, but it'll be fixed whent he event is fired.
 	self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
+
+	-- Hook orginal AddMessage function for use in override function in order to keep calls secure
+	self.BaseAddMessage = self.AddMessage;
 	self.AddMessage = ChatFrame_AddMessage;
 end
 
