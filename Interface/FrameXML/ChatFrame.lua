@@ -104,6 +104,7 @@ ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGen
 ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -241,6 +242,9 @@ ChatTypeGroup["PET_INFO"] = {
 };
 ChatTypeGroup["COMBAT_MISC_INFO"] = {
 	"CHAT_MSG_COMBAT_MISC_INFO";
+};
+ChatTypeGroup["ACHIEVEMENT"] = {
+	"CHAT_MSG_ACHIEVEMENT";
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -2323,6 +2327,10 @@ end
 		Calendar_Toggle();
 	end
 end]]
+
+SlashCmdList["ACHIEVEMENTUI"] = function(msg)
+	ToggleAchievementFrame();
+end
 
 -- easier method to turn on/off errors for macros
 SlashCmdList["UI_ERRORS_OFF"] = function(msg)

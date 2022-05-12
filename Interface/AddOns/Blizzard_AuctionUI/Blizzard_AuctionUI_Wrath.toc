@@ -1,0 +1,5 @@
+## Title: Blizzard Auction UI
+## LoadOnDemand: 1
+..\..\..\Interface_TBC\AddOns\Blizzard_AuctionUI\Blizzard_AuctionData.lua
+..\..\..\Interface_TBC\AddOns\Blizzard_AuctionUI\Blizzard_AuctionUI.xml
+Localization.lua

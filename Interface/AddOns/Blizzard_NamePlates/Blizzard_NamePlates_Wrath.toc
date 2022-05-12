@@ -1,0 +1,4 @@
+## Title: Blizzard NamePlates
+## LoadOnDemand: 0
+
+..\..\..\Interface_TBC\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.xml

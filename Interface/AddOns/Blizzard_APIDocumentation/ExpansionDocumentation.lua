@@ -48,6 +48,7 @@ local Expansion =
 			Arguments =
 			{
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
+				{ Name = "desiredReleaseType", Type = "number", Nilable = false },
 			},
 
 			Returns =

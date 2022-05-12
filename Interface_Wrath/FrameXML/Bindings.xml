@@ -937,7 +937,7 @@
 		ToggleCharacter("SkillFrame");
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
-		ToggleCharacter("PVPFrame");
+		TogglePVPFrame();
 	</Binding>
 
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
@@ -968,6 +968,12 @@
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
 	</Binding>
+  <Binding name="TOGGLEACHIEVEMENT" category="BINDING_HEADER_INTERFACE">
+		ToggleAchievementFrame();
+	</Binding>
+	<Binding name="TOGGLESTATISTICS" category="BINDING_HEADER_INTERFACE">
+		ToggleAchievementFrame(1);
+	</Binding>
 
 	<Binding name="TOGGLESOCIAL" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame();
@@ -990,7 +996,7 @@
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleChannelFrame();
 	</Binding>
-
+	
   <!-- Misc header="MISC" -->
 	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
 		SpellStopCasting();
@@ -1064,6 +1070,13 @@
 	</Binding>
 
 	<!-- Debug function key bindings -->
+	<Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ReloadUI();
+	</Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
 	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>

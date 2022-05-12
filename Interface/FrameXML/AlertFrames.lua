@@ -417,6 +417,8 @@ AlertFrameMixin = {};
 function AlertFrameMixin:OnLoad()
 	AlertContainerMixin.OnLoad(self);
 
+	--self:RegisterEvent("CRITERIA_EARNED");		need to investigate what alerts criteria updates send out and whether or not they are directly related to the achievement system... tbd
+	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 end
 

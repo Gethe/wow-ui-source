@@ -150,11 +150,11 @@ ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CurrencyConstantsDocumentation.lua
 DamageConstantsDocumentation.lua
+GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
-ItemLocationSharedDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
@@ -166,10 +166,12 @@ PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
 ProfessionConstantsDocumentation.lua
+PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+ReportSystemConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua

@@ -1,0 +1,4 @@
+## Title: Blizzard Craft UI
+## LoadOnDemand: 1
+..\..\..\Interface_TBC\AddOns\Blizzard_CraftUI\Blizzard_CraftUI.xml
+Localization.lua

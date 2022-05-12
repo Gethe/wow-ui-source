@@ -171,6 +171,7 @@ FadingFrame.xml
 ZoneText.xml
 UnitFrame.xml
 Cooldown.xml
+MainMenuBarMicroButtons.xml
 ActionBarController.xml
 ..\..\Interface_TBC\FrameXML\StanceBar.xml
 TutorialFrame.xml
@@ -182,9 +183,17 @@ CombatFeedback.xml
 ..\..\Interface_TBC\FrameXML\CastingBarFrame.xml
 VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
+ReportFrame.xml
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
-..\..\Interface_TBC\FrameXML\UnitPopup.xml
+UnitPopupSharedUtils.lua
+UnitPopupUtils.lua
+UnitPopupShared.xml
+UnitPopupSharedMenus.lua
+UnitPopupSharedButtonMixins.lua
+..\..\Interface_TBC\FrameXML\UnitPopupButtons.lua
+..\..\Interface_TBC\FrameXML\UnitPopupMenus.lua
+..\..\Interface_TBC\FrameXML\UnitPopup.lua
 HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml
@@ -257,6 +266,7 @@ ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
+..\SharedXML\ArenaUtil.lua
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
 PVPFrame.xml

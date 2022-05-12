@@ -1,0 +1,92 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AlternatePowerBar.lua"/>
+	<StatusBar name="AlternatePowerBarTemplate" inherits="TextStatusBar" virtual="true">
+		<Size>
+			<AbsDimension x="78" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground">
+					<Size>
+						<AbsDimension x="78" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
+					<Size>
+						<AbsDimension x="97" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.0234375" right="0.6875" top="1.0" bottom="0.0"/>
+				</Texture>
+				<FontString name="$parentText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="AlternatePowerBar_OnLoad"/>
+			<OnEvent>
+				AlternatePowerBar_OnEvent(self, event, ...);
+				TextStatusBar_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				AlternatePowerBar_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnMouseUp>
+				self:GetParent():Click(button);
+			</OnMouseUp>
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="0" g="0" b="1.0"/>
+	</StatusBar>
+	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--Primarily for Druids in forms (at the moment)-->
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="114" y="23"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</StatusBar>
+	<!--StatusBar name="PlayerFrameAlternateEnergyBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="114" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>`
+		<Scripts>
+			<OnLoad>
+				self.powerName = "ENERGY";
+				self.powerIndex = 3;
+				AlternatePowerBar_OnLoad(self);
+				_G[self:GetName().."Border"]:SetTexCoord(0.0234375, 0.6875, 0.0, 1.0);
+				_G[self:GetName().."Border"]:SetPoint("TOPLEFT", -10, 4)
+			</OnLoad>
+		</Scripts>
+	</StatusBar-->
+</Ui>

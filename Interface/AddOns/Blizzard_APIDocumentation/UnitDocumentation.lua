@@ -6,6 +6,20 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "IsPlayerInGuildFromGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "IsInGuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 
@@ -489,6 +503,25 @@ local Unit =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "RunePowerUpdate",
+			Type = "Event",
+			LiteralName = "RUNE_POWER_UPDATE",
+			Payload =
+			{
+				{ Name = "runeIndex", Type = "number", Nilable = false },
+				{ Name = "added", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "RuneTypeUpdate",
+			Type = "Event",
+			LiteralName = "RUNE_TYPE_UPDATE",
+			Payload =
+			{
+				{ Name = "runeIndex", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1048,9 +1081,9 @@ local Unit =
 		{
 			Name = "PowerType",
 			Type = "Enumeration",
-			NumValues = 22,
+			NumValues = 26,
 			MinValue = -2,
-			MaxValue = 19,
+			MaxValue = 23,
 			Fields =
 			{
 				{ Name = "HealthCost", Type = "PowerType", EnumValue = -2 },
@@ -1074,7 +1107,11 @@ local Unit =
 				{ Name = "ArcaneCharges", Type = "PowerType", EnumValue = 16 },
 				{ Name = "Fury", Type = "PowerType", EnumValue = 17 },
 				{ Name = "Pain", Type = "PowerType", EnumValue = 18 },
-				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 19 },
+				{ Name = "Essence", Type = "PowerType", EnumValue = 19 },
+				{ Name = "RuneBlood", Type = "PowerType", EnumValue = 20 },
+				{ Name = "RuneFrost", Type = "PowerType", EnumValue = 21 },
+				{ Name = "RuneUnholy", Type = "PowerType", EnumValue = 22 },
+				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 23 },
 			},
 		},
 	},

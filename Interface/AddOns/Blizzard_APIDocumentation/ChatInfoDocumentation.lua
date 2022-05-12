@@ -170,17 +170,6 @@ local ChatInfo =
 			},
 		},
 		{
-			Name = "ReportPlayer",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "complaintType", Type = "string", Nilable = false },
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
-				{ Name = "comment", Type = "string", Nilable = true },
-			},
-		},
-		{
 			Name = "ReportServerLag",
 			Type = "Function",
 		},

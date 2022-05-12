@@ -29,7 +29,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture>
+				<Texture parentKey="Backdrop">
 					<Anchors>
 						<Anchor point="TOPLEFT" y="-3"/>
 						<Anchor point="BOTTOMRIGHT" y="3"/>

@@ -160,6 +160,11 @@ local PvpInfo =
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
 		},
 		{
+			Name = "PvpRatedStatsUpdate",
+			Type = "Event",
+			LiteralName = "PVP_RATED_STATS_UPDATE",
+		},
+		{
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",
@@ -202,15 +207,16 @@ local PvpInfo =
 		{
 			Name = "BrawlType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "None", Type = "BrawlType", EnumValue = 0 },
 				{ Name = "Battleground", Type = "BrawlType", EnumValue = 1 },
 				{ Name = "Arena", Type = "BrawlType", EnumValue = 2 },
 				{ Name = "LFG", Type = "BrawlType", EnumValue = 3 },
+				{ Name = "SoloShuffle", Type = "BrawlType", EnumValue = 4 },
 			},
 		},
 		{

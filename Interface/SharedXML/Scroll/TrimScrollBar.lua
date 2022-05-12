@@ -6,6 +6,10 @@ function WowTrimScrollBarMixin:OnLoad()
 	if self.hideBackground then
 		self.Background:Hide();
 	end
+
+	if self.backdropAlpha then
+		self.Backdrop:SetAlpha(self.backdropAlpha);
+	end
 	
 	if self.trackAlpha then
 		self.Track:SetAlpha(self.trackAlpha);

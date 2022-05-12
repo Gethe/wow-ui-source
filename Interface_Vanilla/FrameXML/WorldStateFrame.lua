@@ -119,7 +119,7 @@ function WorldStateScoreFrame_Update()
 
 	local scoreButton, columnButtonIcon;
 	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, honorLevel;
-	local teamName, teamRating, newTeamRating, teamMMR;
+	local teamRating, newTeamRating, teamMMR;
 	local index;
 	local columnData;
 
@@ -206,7 +206,7 @@ function WorldStateScoreFrame_Update()
 			scoreButton.rankButton.tooltip = rankName;
 			scoreButton.killingBlows:SetText(killingBlows);
 			teamDataFailed = 0;
-			teamName, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
+			_, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
 
 			if ( not teamRating ) then
 				teamDataFailed = 1;

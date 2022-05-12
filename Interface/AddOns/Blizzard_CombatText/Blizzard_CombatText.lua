@@ -563,7 +563,7 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText:UnregisterEvent("UNIT_POWER_UPDATE");
 		CombatText:UnregisterEvent("PLAYER_REGEN_DISABLED");
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
-		--CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
+		CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
 		--CombatText:UnregisterEvent("UNIT_ENTERED_VEHICLE");
 		--CombatText:UnregisterEvent("UNIT_EXITING_VEHICLE");
 		return;
@@ -579,7 +579,7 @@ function CombatText_UpdateDisplayedMessages()
 	CombatText:RegisterEvent("UNIT_POWER_UPDATE");
 	CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
 	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
-	--CombatText:RegisterEvent("RUNE_POWER_UPDATE");
+	CombatText:RegisterEvent("RUNE_POWER_UPDATE");
 	--CombatText:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	--CombatText:RegisterEvent("UNIT_EXITING_VEHICLE");
 

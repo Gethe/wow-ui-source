@@ -171,6 +171,7 @@ FadingFrame.xml
 ZoneText.xml
 UnitFrame.xml
 Cooldown.xml
+MainMenuBarMicroButtons.xml
 ActionBarController.xml
 ..\..\Interface_Vanilla\FrameXML\StanceBar.xml
 TutorialFrame.xml
@@ -184,7 +185,15 @@ VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
-..\..\Interface_Vanilla\FrameXML\UnitPopup.xml
+ReportFrame.xml
+UnitPopupSharedUtils.lua
+UnitPopupUtils.lua
+UnitPopupShared.xml
+UnitPopupSharedMenus.lua
+UnitPopupSharedButtonMixins.lua
+..\..\Interface_Vanilla\FrameXML\UnitPopupButtons.lua
+..\..\Interface_Vanilla\FrameXML\UnitPopupMenus.lua
+..\..\Interface_Vanilla\FrameXML\UnitPopup.lua
 HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml

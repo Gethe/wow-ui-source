@@ -67,6 +67,16 @@ local PaperDollInfo =
 	Events =
 	{
 		{
+			Name = "ActiveTalentGroupChanged",
+			Type = "Event",
+			LiteralName = "ACTIVE_TALENT_GROUP_CHANGED",
+			Payload =
+			{
+				{ Name = "changedTo", Type = "number", Nilable = false },
+				{ Name = "changedFrom", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CharacterPointsChanged",
 			Type = "Event",
 			LiteralName = "CHARACTER_POINTS_CHANGED",
@@ -119,6 +129,11 @@ local PaperDollInfo =
 			LiteralName = "PET_SPELL_POWER_UPDATE",
 		},
 		{
+			Name = "PetTalentUpdate",
+			Type = "Event",
+			LiteralName = "PET_TALENT_UPDATE",
+		},
+		{
 			Name = "PlayerAvgItemLevelUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_AVG_ITEM_LEVEL_UPDATE",
@@ -131,6 +146,35 @@ local PaperDollInfo =
 			{
 				{ Name = "equipmentSlot", Type = "number", Nilable = false },
 				{ Name = "hasCurrent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerTalentUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_TALENT_UPDATE",
+		},
+		{
+			Name = "PreviewPetTalentPointsChanged",
+			Type = "Event",
+			LiteralName = "PREVIEW_PET_TALENT_POINTS_CHANGED",
+			Payload =
+			{
+				{ Name = "talentIndex", Type = "number", Nilable = false },
+				{ Name = "tabIndex", Type = "number", Nilable = false },
+				{ Name = "groupIndex", Type = "number", Nilable = false },
+				{ Name = "points", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PreviewTalentPointsChanged",
+			Type = "Event",
+			LiteralName = "PREVIEW_TALENT_POINTS_CHANGED",
+			Payload =
+			{
+				{ Name = "talentIndex", Type = "number", Nilable = false },
+				{ Name = "tabIndex", Type = "number", Nilable = false },
+				{ Name = "groupIndex", Type = "number", Nilable = false },
+				{ Name = "points", Type = "number", Nilable = false },
 			},
 		},
 		{
