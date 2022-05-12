@@ -1,0 +1,1284 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MailFrame.lua"/>
+	<CheckButton name="SendMailRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SendMailRadioButton_OnClick(self:GetID());
+				SendMailFrame_CanSend();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Frame name="MailItemTemplate" virtual="true">
+		<Size x="305" y="45"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\MailFrame\MailItemBorder">
+					<Size x="42" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1640625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture file="Interface\MailFrame\MailItemBorder">
+					<Size x="263" y="48"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1640625" right="1.0" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture>
+					<Size x="322" y="2"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
+					</Anchors>
+					<Color r="0.33" g="0.16" b="0" a=".3"/>
+				</Texture>
+				<FontString name="$parentSender" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="47" y="-4"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubject" inherits="GameFontHighlightSmall" justifyV="TOP" justifyH="LEFT">
+					<Size x="248" y="18"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSender" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentExpireTime">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if ( not self.tooltip ) then
+							return;
+						end
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(self.tooltip);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+				<NormalFont style="GameFontHighlightSmallRight"/>
+				<PushedTextOffset>
+					<AbsDimension x="0" y="0"/> 
+				</PushedTextOffset>
+			</Button>
+			<CheckButton parentKey="Button" name="$parentButton" hidden="true">
+				<Size x="37" y="37"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentSlot" file="Interface\Buttons\UI-EmptySlot-White">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" name="$parentIcon">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" name="$parentIconBorder" file="Interface\Common\WhiteIconFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentCOD" inherits="GameFontHighlightSmall" text="CASH_ON_DELIVERY">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentCODBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+							<Size x="34" y="12"/>
+							<Color r="0" g="0" b="0" a="0.4"/>
+						</Texture>
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconOverlay" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterEvent("MAIL_INBOX_UPDATE");
+					</OnLoad>
+					<OnEvent>
+						if (GetMouseFocus() == self) then
+							InboxFrame_Update();
+							InboxFrameItem_OnEnter(self);
+						end
+					</OnEvent>
+					<OnClick>
+						local modifiedClick = IsModifiedClick("MAILAUTOLOOTTOGGLE");
+						if ( modifiedClick ) then
+							InboxFrame_OnModifiedClick(self, self.index);
+						else
+							InboxFrame_OnClick(self, self.index);
+						end
+					</OnClick>
+					<OnEnter>
+						InboxFrameItem_OnEnter(self, motion);
+					</OnEnter>
+					<OnUpdate>
+						if ( GameTooltip:IsOwned(self) ) then
+							InboxFrameItem_OnEnter(self);
+						end
+					</OnUpdate>
+					<OnLeave>
+						GameTooltip_Hide();
+						SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
+					</OnLeave>
+				</Scripts>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+				<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+			</CheckButton>
+		</Frames>
+	</Frame>
+
+	<Button name="SendMailAttachment" parentArray="SendMailAttachments" virtual="true">
+		<Size x="37" y="37"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Buttons\UI-Slot-Background">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+					</Anchors>
+					<TexCoords left="0" right="0.640625" top="0" bottom="0.640625"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Count" name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				SendMailAttachmentButton_OnClick(self, button, down);
+			</OnClick>
+			<OnDragStart>
+				SendMailAttachmentButton_OnClick(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				SendMailAttachmentButton_OnClick(self);
+			</OnReceiveDrag>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnEnter>
+				SendMailAttachment_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip_Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+	</Button>
+	<Button name="OpenMailAttachment" parentArray="OpenMailAttachments" inherits="ItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("MAIL_INBOX_UPDATE");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEvent>
+				--GameTooltip:Hide();
+				if ( GameTooltip:IsOwned(self) ) then
+					local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(InboxFrame.openMailID, self:GetID());
+					if(speciesID and speciesID > 0) then
+						BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+					end
+					GameTooltip:Show();
+				end
+			</OnEvent>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					HandleModifiedItemClick(GetInboxItemLink(InboxFrame.openMailID, self:GetID()));
+				else
+					OpenMailAttachment_OnClick(self, self:GetID());
+				end
+			</OnClick>
+			<OnEnter>
+				OpenMailAttachment_OnEnter(self, self:GetID());
+			</OnEnter>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(self) ) then
+					OpenMailAttachment_OnEnter(self, self:GetID());
+				end
+			</OnUpdate>
+			<OnLeave>
+				GameTooltip_Hide();
+				SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+	</Button>
+	<Frame name="MailFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture file="Interface\MailFrame\Mail-Icon">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTrialError" inherits="GameFontNormal" text="TRIAL_RESTRICTED" parentKey="trialError" hidden="true">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="20" y="-30"/>
+					</Anchors>
+					<Color r="1.0" g="0.1" b="0.1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+<!-- Inbox -->
+			<Frame name="InboxFrame">
+				<Size x="384" y="512"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="InboxFrameBg" file="Interface\MailFrame\UI-MailFrameBG">
+							<Size x="512" y="512"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="7" y="-62"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="InboxTitleText" inherits="GameFontNormal" text="INBOX">
+							<Size x="224" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="245"/>
+							</Anchors>
+						</FontString>
+						<FontString name="InboxCurrentPage" inherits="GameFontNormal">
+							<Size x="192" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="-14" y="96"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="InboxTooMuchMail" hidden="true" enableMouse="true">
+						<Size x="384" y="32"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-25"/>
+						</Anchors>					
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormal" text="INBOX_TOO_MUCH_MAIL">
+									<Anchors>
+										<Anchor point="CENTER" x="16" y="0"/>
+									</Anchors>
+									<Color r="1.0" g="0.1" b="0.1" a="1.0"/>
+								</FontString>									
+								<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="0" y="-2"/>
+									</Anchors>
+								</Texture>						
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetWidth(InboxTooMuchMailText:GetWidth() + 32);
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(INBOX_TOO_MUCH_MAIL_TOOLTIP);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>				
+					<Frame name="MailItem1" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="13" y="-70"/>
+						</Anchors>
+					</Frame>
+					<Frame name="MailItem2" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MailItem1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="MailItem3" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MailItem2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="MailItem4" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MailItem3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="MailItem5" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MailItem4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="MailItem6" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MailItem5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="MailItem7" inherits="MailItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MailItem6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Button name="InboxPrevPageButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="30" y="114"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:Disable();
+							</OnLoad>
+							<OnClick function="InboxPrevPage"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="InboxNextPageButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="305" y="114"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:Disable();
+							</OnLoad>
+							<OnClick function="InboxNextPage"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="OpenAllMail" text="OPEN_ALL_MAIL_BUTTON" inherits="UIPanelButtonTemplate" mixin="OpenAllMailMixin">
+						<Size x="120" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="-21" y="114"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+							<OnUpdate method="OnUpdate"/>
+							<OnHide method="OnHide"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+<!-- Send Mail -->
+			<Frame name="SendMailFrame" hidden="true">
+				<Size x="384" y="512"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="SendMailTitleText" inherits="GameFontNormal" text="SENDMAIL">
+							<Size x="224" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="245"/>
+							</Anchors>
+						</FontString>
+						<FontString name="SendMailErrorText" inherits="GameFontRedSmall" hidden="true">
+							<Size x="0" y="10"/>
+						</FontString>
+						<Texture name="SendMailErrorCoin" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+							<Size x="10" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SendMailErrorText" relativePoint="RIGHT" x="1" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="SendMailHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size x="256" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-337"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size x="75" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SendMailHorizontalBarLeft" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+						</Texture>
+						<Texture name="SendMailHorizontalBarLeft2" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size x="256" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-251"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size x="75" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SendMailHorizontalBarLeft2" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="MailEditBox" inherits="ScrollingEditBoxTemplate">
+						<Size x="268" y="190"/>
+						<!--<Size x="296" y="257"/>-->
+						<Anchors>
+							<Anchor point="TOPLEFT" x="28" y="-93"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="maxLetters" value="500" type="number"/>
+							<KeyValue key="fontName" value="MailTextFontNormal" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnMouseUp>
+								MailEditBox:GetEditBox():SetFocus();
+								if ( CursorHasItem() ) then
+								SendMailAttachmentButton_OnDropAny();
+								end
+							</OnMouseUp>
+						</Scripts>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="SendStationeryBackgroundLeft">
+									<Size x="252" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-20" y="11"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SendStationeryBackgroundRight">
+									<Size x="64" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SendStationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<EventFrame name="MailEditBoxScrollBar" inherits="WowClassicScrollBar">
+						<Anchors>
+							<Anchor relativeTo="MailEditBox" point="TOPLEFT" relativePoint="TOPRIGHT" x="7" y="14"/>
+							<Anchor relativeTo="MailEditBox" point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="7" y="0"/>
+						</Anchors>
+					</EventFrame>
+					<EditBox name="SendMailNameEditBox" letters="77" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
+						<Size x="109" y="25"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="90" y="-30"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="MAIL_TO_LABEL" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-12" y="0"/>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+									<Size x="8" y="20"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-8" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+									<Size x="100" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+									<Size x="8" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.MAIL.include, AUTOCOMPLETE_LIST.MAIL.exclude);
+								self.addHighlightedText = true;
+								self.autoCompleteContext = "mail";
+							</OnLoad>
+							<OnTabPressed>
+								if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
+									EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
+								end
+							</OnTabPressed>
+							<OnEditFocusLost>
+								AutoCompleteEditBox_OnEditFocusLost(self);
+								EditBox_ClearHighlight(self)
+							</OnEditFocusLost>
+							<OnEnterPressed>
+								if ( not AutoCompleteEditBox_OnEnterPressed(self) ) then
+									SendMailSubjectEditBox:SetFocus();
+								end
+							</OnEnterPressed>
+							<OnEscapePressed>
+								if ( not AutoCompleteEditBox_OnEscapePressed(self) ) then
+									EditBox_ClearFocus(self);
+								end
+							</OnEscapePressed>
+							<OnTextChanged>
+								AutoCompleteEditBox_OnTextChanged(self, userInput);
+								SendMailFrame_CanSend(self);
+							</OnTextChanged>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+					<Frame name="SendMailCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-50" y="-34"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="SEND_MAIL_COST">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-3" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "STATIC");
+								MoneyFrame_Update("SendMailCostMoneyFrame", GetSendMailPrice());	
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<EditBox name="SendMailSubjectEditBox" letters="64" historyLines="0" autoFocus="false">
+						<Size x="220" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SendMailNameEditBox" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="MAIL_SUBJECT_LABEL" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-12" y="0"/>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+									<Size x="8" y="20"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-8" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+									<Size x="221" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+									<Size x="8" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTabPressed>
+								EditBox_HandleTabbing(self, SEND_MAIL_TAB_LIST);
+							</OnTabPressed>
+							<OnEnterPressed>
+								MailEditBox:SetFocus();
+							</OnEnterPressed>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnTextChanged function="SendMailFrame_CanSend"/>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+					<Button name="SendMailAttachment1" inherits="SendMailAttachment" id="1"/>
+					<Button name="SendMailAttachment2" inherits="SendMailAttachment" id="2"/>
+					<Button name="SendMailAttachment3" inherits="SendMailAttachment" id="3"/>
+					<Button name="SendMailAttachment4" inherits="SendMailAttachment" id="4"/>
+					<Button name="SendMailAttachment5" inherits="SendMailAttachment" id="5"/>
+					<Button name="SendMailAttachment6" inherits="SendMailAttachment" id="6"/>
+					<Button name="SendMailAttachment7" inherits="SendMailAttachment" id="7"/>
+					<Button name="SendMailAttachment8" inherits="SendMailAttachment" id="8"/>
+					<Button name="SendMailAttachment9" inherits="SendMailAttachment" id="9"/>
+					<Button name="SendMailAttachment10" inherits="SendMailAttachment" id="10"/>
+					<Button name="SendMailAttachment11" inherits="SendMailAttachment" id="11"/>
+					<Button name="SendMailAttachment12" inherits="SendMailAttachment" id="12"/>
+					<Button name="SendMailAttachment13" inherits="SendMailAttachment" id="13"/>
+					<Button name="SendMailAttachment14" inherits="SendMailAttachment" id="14"/>
+					<Button name="SendMailAttachment15" inherits="SendMailAttachment" id="15"/>
+					<Button name="SendMailAttachment16" inherits="SendMailAttachment" id="16"/>
+					<Frame name="SendMailMoneyButton">
+						<Size x="37" y="37"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="15" y="125"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="SendMailMoneyText" inherits="GameFontNormalSmall" text="SEND_MONEY">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="-5"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="SendMailMoney" inherits="MoneyInputFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="SendMailMoneyText" relativePoint="BOTTOMLEFT" x="5" y="-3"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										MoneyInputFrame_SetOnValueChangedFunc(self, SendMailFrame_CanSend);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+							<CheckButton name="SendMailSendMoneyButton" inherits="SendMailRadioButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="SendMailMoney" relativePoint="TOPRIGHT" x="0" y="12"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										_G[self:GetName().."Text"]:SetText(SEND_MONEY);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="SendMailCODButton" inherits="SendMailRadioButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="SendMailSendMoneyButton" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										_G[self:GetName().."Text"]:SetText(COD);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+						</Frames>
+					</Frame>
+					<Frame name="SendMailMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="4" y="92"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="170" y="115"/>
+						</Anchors>
+					</Frame>
+					<Frame name="SendMailMoneyBg" inherits="ThinGoldEdgeTemplate" >
+						<Size x="120" y="30"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="166" y="113"/>
+							<Anchor point="BOTTOMLEFT" x="7" y="94"/>
+						</Anchors>
+					</Frame>
+					<Frame name="SendMailMoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="175" y="96"/>
+						</Anchors>
+					</Frame>
+					<Button name="SendMailCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-53" y="92"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(MailFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="SendMailMailButton" inherits="UIPanelButtonTemplate" text="SEND_LABEL">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="SendMailCancelButton" relativePoint="LEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="SendMailMailButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame name="$parentLockSendMail" hidden="true" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SendMailAttachment1" relativePoint="TOPLEFT" x="-15" y="5"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="SendMailCancelButton" relativePoint="BOTTOMRIGHT" x="2" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.7"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(SendMailMoneyFrame:GetFrameLevel() + 3);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SendMailErrorText:SetPoint("BOTTOMLEFT", "SendMailMoneyText", "TOPLEFT", 0, 2);
+						SendMailRadioButton_OnClick(self, 1);
+						SendMailEditBox_OnLoad();
+					</OnLoad>
+					<OnShow>
+						if ( ENABLE_COLORBLIND_MODE == "1" ) then
+							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR_COLORBLIND, MAX_COD_AMOUNT, GOLD_AMOUNT_SYMBOL);
+						else
+							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR, MAX_COD_AMOUNT);
+						end
+						SendMailNameEditBox:SetFocus();
+					</OnShow>
+					<OnMouseUp>
+						if ( CursorHasItem() ) then
+							SendMailAttachmentButton_OnDropAny();
+						end
+					</OnMouseUp> 
+				</Scripts>
+			</Frame>
+			<Button name="MailFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="INBOX">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="14" y="-30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MailFrameTab_OnClick(self, 1);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MailFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="SENDMAIL">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MailFrameTab1" relativePoint="RIGHT" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MailFrameTab_OnClick(self, 2);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="MailFrame_OnLoad"/>
+			<OnEvent function="MailFrame_OnEvent"/>
+			<OnHide>
+				CloseMail();
+				HideUIPanel(OpenMailFrame);
+				MailEditBox:SetText("");
+				SendMailNameEditBox:SetText("");
+				SendMailSubjectEditBox:SetText("");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+				SetSendMailShowing(false);
+			</OnHide>
+			<OnMouseWheel function="MailFrame_OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+<!-- Open Mail -->
+	<Frame name="OpenMailFrame" toplevel="true" hidden="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="InboxFrame" relativePoint="TOPRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="OpenMailFrameIcon" file="Interface\MailFrame\Mail-Icon">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="OpenMailTitleText" inherits="GameFontNormal" text="OPENMAIL">
+					<Size x="224" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER" x="6" y="202"/>
+					</Anchors>
+				</FontString>
+				<FontString name="OpenMailAttachmentText" inherits="GameFontHighlightSmall" text="TAKE_ATTACHMENTS">
+					<Size x="0" y="0"/>
+				</FontString>
+				<FontString name="OpenMailSenderLabel" inherits="GameFontHighlight" text="FROM">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="105" y="-33"/>
+					</Anchors>
+				</FontString>
+				<FontString name="OpenMailSubjectLabel" inherits="GameFontHighlight" text="MAIL_SUBJECT_LABEL">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="105" y="-55"/>
+					</Anchors>
+				</FontString>
+				<FontString name="OpenMailSubject" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
+					<Size x="225" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="OpenMailSubjectLabel" relativePoint="TOPRIGHT" x="5" y="-4"/>
+					</Anchors>
+				</FontString>
+				<Texture name="OpenMailHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="256" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-390"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="75" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="OpenMailHorizontalBarLeft" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="OpenMailReportSpamButton" inherits="UIPanelButtonTemplate" text="REPORT_SPAM">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="OpenMailFrame" x="-12" y="-32"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="OpenMail_ReportSpam"/>
+				</Scripts>
+			</Button>
+			<Frame name="OpenMailSender">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpenMailSenderLabel" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="OpenMailReportSpamButton" relativePoint="BOTTOMLEFT" x="-5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" />
+								<Anchor point="RIGHT" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.Name:IsTruncated() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.Name:GetText());
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<ScrollFrame name="OpenMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="296" y="257"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-84"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="OpenScrollBarBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="OpenStationeryBackgroundLeft">
+							<Size x="252" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="OpenStationeryBackgroundRight">
+							<Size x="64" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="OpenStationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame name="OpenMailScrollChildFrame">
+						<Size x="296" y="255"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<SimpleHTML name="OpenMailBodyText" inherits="InlineHyperlinkFrameTemplate">
+								<Size x="276" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-10"/>
+								</Anchors>
+								<FontString inherits="MailTextFontNormal" nonspacewrap="true" justifyH="LEFT"/>
+							</SimpleHTML>
+							<Frame name="OpenMailInvoiceFrame" setAllPoints="true">
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="OpenMailInvoiceItemLabel" inherits="InvoiceTextFontNormal" text="ITEM_SOLD_COLON">
+											<Size>
+												<AbsDimension x="240" y="0"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="30" y="-35"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoicePurchaser" inherits="InvoiceTextFontNormal" text="PURCHASED_BY_COLON">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="OpenMailInvoiceItemLabel" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="0" y="-5"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceBuyMode" inherits="InvoiceTextFontSmall">
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="OpenMailInvoicePurchaser" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceSalePrice" inherits="InvoiceTextFontNormal" text="SALE_PRICE_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT">
+													<Offset>
+														<AbsDimension x="125" y="-26"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceDeposit" inherits="InvoiceTextFontNormal" text="DEPOSIT_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceHouseCut" inherits="InvoiceTextFontNormal" text="AUCTION_HOUSE_CUT_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceAmountReceived" inherits="InvoiceTextFontNormal" text="AMOUNT_RECEIVED_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="-13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="OpenMailArithmeticLine" file="Interface\MailFrame\UI-MailFrame-InvoiceLine">
+											<Size>
+												<AbsDimension x="256" y="32"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOP" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="9"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="OpenMailInvoiceNotYetSent" inherits="InvoiceTextFontNormal" text="AUCTION_INVOICE_FUNDS_NOT_YET_SENT">
+											<Anchors>
+												<Anchor point="CENTER" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT" x="128" y="-90"/>
+											</Anchors>
+										</FontString>
+										<FontString name="OpenMailInvoiceMoneyDelay" inherits="InvoiceTextFontNormal">
+											<Anchors>
+												<Anchor point="CENTER" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT" x="128" y="-103"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame name="OpenMailTransactionAmountMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceAmountReceived" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="OpenMailDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="InvoiceTextFontNormal" text="+">
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="-5" y="0"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="OpenMailHouseCutMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="InvoiceTextFontNormal" text="-">
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="-5" y="0"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="OpenMailSalePriceMoneyFrame" inherits="SmallMoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="130" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "AUCTION");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="OpenMailLetterButton" inherits="ItemButtonTemplate">
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						OpenMailFrame.updateButtonPositions = false;
+						TakeInboxTextItem(InboxFrame.openMailID);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MAIL_LETTER_TOOLTIP);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="OpenMailAttachmentButton1" inherits="OpenMailAttachment" id="1"/>
+			<Button name="OpenMailAttachmentButton2" inherits="OpenMailAttachment" id="2"/>
+			<Button name="OpenMailAttachmentButton3" inherits="OpenMailAttachment" id="3"/>
+			<Button name="OpenMailAttachmentButton4" inherits="OpenMailAttachment" id="4"/>
+			<Button name="OpenMailAttachmentButton5" inherits="OpenMailAttachment" id="5"/>
+			<Button name="OpenMailAttachmentButton6" inherits="OpenMailAttachment" id="6"/>
+			<Button name="OpenMailAttachmentButton7" inherits="OpenMailAttachment" id="7"/>
+			<Button name="OpenMailAttachmentButton8" inherits="OpenMailAttachment" id="8"/>
+			<Button name="OpenMailAttachmentButton9" inherits="OpenMailAttachment" id="9"/>
+			<Button name="OpenMailAttachmentButton10" inherits="OpenMailAttachment" id="10"/>
+			<Button name="OpenMailAttachmentButton11" inherits="OpenMailAttachment" id="11"/>
+			<Button name="OpenMailAttachmentButton12" inherits="OpenMailAttachment" id="12"/>
+			<Button name="OpenMailAttachmentButton13" inherits="OpenMailAttachment" id="13"/>
+			<Button name="OpenMailAttachmentButton14" inherits="OpenMailAttachment" id="14"/>
+			<Button name="OpenMailAttachmentButton15" inherits="OpenMailAttachment" id="15"/>
+			<Button name="OpenMailAttachmentButton16" inherits="OpenMailAttachment" id="16"/>
+			<Button name="OpenMailMoneyButton" inherits="ItemButtonTemplate">
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("MAIL_INBOX_UPDATE");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnEvent>
+						--GameTooltip:Hide();
+						if ( GameTooltip:IsOwned(self) ) then
+							if ( OpenMailFrame.money ) then
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								SetTooltipMoney(GameTooltip, OpenMailFrame.money);
+								GameTooltip:Show();
+							end
+						end
+					</OnEvent>
+					<OnClick>
+						OpenMailFrame.updateButtonPositions = false;
+						TakeInboxMoney(InboxFrame.openMailID);
+					</OnClick>
+					<OnEnter>
+						if ( OpenMailFrame.money ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							SetTooltipMoney(GameTooltip, OpenMailFrame.money);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="OpenMailCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="HideParentPanel"/>
+				</Scripts>
+			</Button>
+			<Button name="OpenMailDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
+				<Size x="82" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="OpenMailCancelButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="OpenMail_Delete"/>
+				</Scripts>
+			</Button>
+			<Button name="OpenMailReplyButton" inherits="UIPanelButtonTemplate" text="REPLY_MESSAGE">
+				<Size x="82" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="OpenMailDeleteButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="OpenMail_Reply"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				HideUIPanel(GetUIPanel("center"));
+				HideUIPanel(GetUIPanel("right"));
+			</OnShow>
+			<OnHide function="OpenMailFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>
+

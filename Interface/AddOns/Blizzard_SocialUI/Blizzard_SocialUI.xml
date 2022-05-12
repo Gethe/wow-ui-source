@@ -1,0 +1,491 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SocialUI.lua"/>
+	<Script file="Blizzard_SocialUIInbound.lua" />
+
+	<ScopedModifier forbidden="true">
+	
+	<Button name="SocialShareButton" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="42" y="43"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Icon" atlas="WoWShare-AchievementIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="WoWShare-AddButton-Up" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="QualityBorder" atlas="WoWShare-ItemQualityBorder" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="1" a="1" />
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="WoWShare-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Plus" atlas="WoWShare-Plus" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown function="SharedButton_OnMouseDown"/>
+			<OnMouseUp function="SharedButton_OnMouseUp"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="SocialScreenshotTooltip" parent="UIParent" inherits="TooltipBackdropTemplate" hidden="true" frameStrata="TOOLTIP" clampedToScreen="true">
+		<Size x="258" y="194"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1.0" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge"  text="SOCIAL_SCREENSHOT_PREFILL_TOOLTIP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Image">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-36"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Texture name="DarkRect" hidden="true" virtual="true">
+		<Color r="0" g="0" b="0" a="0.5"/>
+	</Texture>
+
+	<Frame name="CornerDragFrame" virtual="true">
+		<Size x="20" y="20"/>
+		<Scripts>
+			<OnEnter function="SocialScreenshotCrop_Resize_OnEnter"/>
+			<OnLeave function="SocialScreenshotCrop_Resize_OnLeave"/>
+			<OnMouseDown function="SocialScreenshotCrop_Resize_OnMouseDown"/>
+			<OnMouseUp function="SocialScreenshotCrop_Resize_OnMouseUp"/>
+		</Scripts>
+		<!--
+		<KeyValues>
+			<KeyValue key="corner" value="TOPLEFT" type="string"/>
+		</KeyValues>
+		-->
+	</Frame>
+	
+	<Frame name="CropFrameTemplate" toplevel="true" movable="true" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BorderTopLeft" atlas="Crop-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BorderTopRight" atlas="Crop-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BorderBottomRight" atlas="Crop-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BorderBottomLeft" atlas="Crop-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				
+				<Texture parentKey="BorderLeftMiddle" atlas="Crop-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderRightMiddle" atlas="Crop-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BorderBottomRight" relativePoint="TOP"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BorderTopMiddle" atlas="Crop-Top" useAtlasSize="true">
+					<Anchors>								
+						<Anchor point="RIGHT" relativeKey="$parent.BorderTopRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.BorderTopLeft" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomMiddle" atlas="Crop-Top" useAtlasSize="true">
+					<Anchors>								
+						<Anchor point="RIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TopLeftDragFrame" inherits="CornerDragFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="corner" value="TOPLEFT" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="BottomLeftDragFrame" inherits="CornerDragFrame">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="corner" value="BOTTOMLEFT" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="TopRightDragFrame" inherits="CornerDragFrame">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="corner" value="TOPRIGHT" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="BottomRightDragFrame" inherits="CornerDragFrame">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="corner" value="BOTTOMRIGHT" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter function="SocialScreenshotCrop_Move_OnEnter"/>
+			<OnLeave function="SocialScreenshotCrop_Move_OnLeave"/>
+			<OnMouseDown function="SocialScreenshotCrop_Move_OnMouseDown"/>
+			<OnMouseUp function="SocialScreenshotCrop_Move_OnMouseUp"/>
+		</Scripts>
+	</Frame>
+	
+	<OffScreenFrame name="OffScreenFrame" hidden="true">
+		<Size x="1024" y="1024"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" />
+			<Anchor point="BOTTOMRIGHT" />
+		</Anchors>
+		<Frames>
+			<Button name="$parentAchievement" hidden="true" parentKey="Achievement" inherits="AchievementTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Size x="496" y="142"/>
+			</Button>
+			<GameTooltip name="$parentItemTooltip" hidden="true" parentKey="ItemTooltip" inherits="GameTooltipTemplate" clampedToScreen="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+				</Anchors>
+			</GameTooltip>
+		</Frames>
+	</OffScreenFrame>
+	
+	<Frame name="SocialPostFrame" hidden="true" parent="UIParent" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" inherits="BasicFrameTemplate">
+		<Size x="388" y="190"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- Header text/icon -->
+				<FontString parentKey="Title" inherits="GameFontNormal" text="SOCIAL_TWITTER_POST_TITLE">
+					<Anchors>
+						<Anchor point="TOP" x="-12" y="-5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ShareIcon" atlas="WoWShare-ChatIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EdgeArt-Left" atlas="WoWShare-EdgeArt" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="2"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="EdgeArt-Right" atlas="WoWShare-EdgeArt" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="DragBar">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-24"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						self:GetParent():StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						self:GetParent():StopMovingOrSizing();
+					</OnDragStop>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ImageFrame" hidden="true">
+				<Size x="640" y="450"/>
+				<Anchors>
+					<Anchor point="TOP" x="-1" y="-32"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="HorizontalBar" inherits="HorizontalBarTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="14"/>
+							<Anchor point="LEFT"  x="-11" y="0"/>
+							<Anchor point="RIGHT"  x="10" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="BorderFrame" inherits="InsetFrameTemplate4">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-11" y="10"/>
+							<Anchor point="BOTTOMRIGHT" x="12" y="13"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="TextureFrame" inherits="InsetFrameTemplate3">
+						<Size x="640" y="400"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="24"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="0">
+								<Texture parentKey="Texture" alphaMode="DISABLE">>
+ 									<Anchors>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
+										<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="DarkLeft" inherits="DarkRect">
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="DarkRight" inherits="DarkRect">
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="DarkTop" inherits="DarkRect">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.DarkLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.DarkRight" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="DarkBottom" inherits="DarkRect">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.DarkLeft" relativePoint="BOTTOMRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.DarkRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="CropFrame" inherits="CropFrameTemplate">
+							</Frame>
+						</Frames>
+					</Frame>
+					<Button parentKey="RemoveImageButton" inherits="UIPanelButtonTemplate" text="SOCIAL_SCREENSHOT_REMOVE_BUTTON">
+						<Size x="160" y="21"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="0" y="22"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
+							<OnClick function="SocialRemoveImageButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CropScreenshotButton" inherits="UIPanelButtonTemplate" text="SOCIAL_SCREENSHOT_CROP_BUTTON">
+						<Size x="80" y="21"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="0" y="22"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
+							<OnClick function="SocialCropScreenshotButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CropCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL" hidden="true">
+						<Size x="80" y="21"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="22"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
+							<OnClick function="SocialCropCancelButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CropSaveButton" inherits="UIPanelButtonTemplate" text="SOCIAL_SCREENSHOT_CROP_SAVE_BUTTON" hidden="true">
+						<Size x="140" y="21"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.CropCancelButton" relativePoint="LEFT" x="-10" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
+							<OnClick function="SocialCropSaveButton_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow> PlaySound(SOUNDKIT.IG_MAINMENU_OPEN); </OnShow>
+					<OnHide> PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); </OnHide>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BorderFrame" inherits="InsetFrameTemplate4">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="1" y="1"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="167"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame name="$parentMessageFrame" parentKey="SocialMessageFrame" inherits="InputScrollFrameTemplate">	
+				<Size x="348" y="92"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="62"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="560" type="number"/>
+					<KeyValue key="instructions" value="SOCIAL_TWITTER_COMPOSE_NEW_TWEET" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="DarkBox" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="1" />
+								<Anchor point="BOTTOMRIGHT" x="3" y="-2" />
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.7" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="SocialMessageFrame_OnLoad"/>
+				</Scripts>
+			</ScrollFrame>
+			<!-- Screenshot, Achievement, and Item buttons -->
+			<Button parentKey="ScreenshotButton" inherits="SocialShareButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SocialMessageFrame" relativePoint="BOTTOMLEFT" x="-6" y="-11"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SocialScreenshotButton_OnClick"/>
+					<OnEnter function="SocialScreenshotButton_OnEnter"/>
+					<OnLeave function="SocialScreenshotButton_OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="AchievementButton" inherits="SocialShareButton">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ScreenshotButton" relativePoint="RIGHT" x="7" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SocialAchievementButton_OnClick"/>
+					<OnEnter function="SocialAchievementButton_OnEnter"/>
+					<OnLeave function="SocialAchievementButton_OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ItemButton" inherits="SocialShareButton">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.AchievementButton" relativePoint="RIGHT" x="7" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SocialItemButton_OnClick"/>
+					<OnEnter function="SocialItemButton_OnEnter"/>
+					<OnLeave function="SocialItemButton_OnLeave"/>
+				</Scripts>
+			</Button>
+			<!-- Post tweet button -->
+			<Button parentKey="PostButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_POST_BUTTON" motionScriptsWhileDisabled="true">
+				<Size x="100" y="27"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SocialMessageFrame" relativePoint="BOTTOMRIGHT" x="7" y="-29"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>						
+						</Texture>						
+						<FontString parentKey="CharsLeftString" inherits="GameFontNormalLarge" text="280">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-10" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local fontString = self:GetFontString();
+						-- 4 pixel space between icon and text
+						fontString:SetPoint("CENTER", (self.Logo:GetWidth() + 4) / 2, 0);
+						self.Logo:ClearAllPoints();
+						self.Logo:SetPoint("RIGHT", fontString, "LEFT", -4, 0);
+					</OnLoad>
+					<OnClick function="SocialPostButton_OnClick"/>
+					<OnEnter function="SocialPostButton_OnEnter"/>
+					<OnLeave function="SocialPostButton_OnLeave"/>
+					<OnMouseUp>
+						if ( self:IsEnabled() ) then
+							self.Logo:SetPoint("RIGHT", self:GetFontString(), "LEFT", -4, 0);
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if ( self:IsEnabled() ) then
+							self.Logo:SetPoint("RIGHT", self:GetFontString(), "LEFT", -2, -1);
+						end
+					</OnMouseDown>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="SocialPostFrame_OnLoad"/>
+			<OnEvent function="SocialPostFrame_OnEvent"/>
+			<OnShow function="SocialPostFrame_OnShow"/>
+			<OnHide function="SocialPostFrame_OnHide"/>
+			<OnAttributeChanged function="SocialPostFrame_OnAttributeChanged" />
+ 		</Scripts>
+	</Frame>
+	</ScopedModifier>
+ </Ui>

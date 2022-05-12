@@ -1,0 +1,6 @@
+## Title: Blizzard Behavioral Messaging
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_GMChatUI
+Blizzard_BehavioralMessaging.xml
+Blizzard_Register.lua

@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="GlowEmitter.lua" />
+
+	<Frame name="GlowEmitterTemplate" mixin="GlowEmitterMixin" virtual="true">
+		<Size y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" atlas="newplayertutorial-greenglow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="newplayertutorial-greenglow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="newplayertutorial-greenglow-redbutton-middle" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration="1" order="1" smoothing="IN"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="1" order="2" smoothing="IN"/>
+			</AnimationGroup>
+			
+			<AnimationGroup parentKey="FaintFadeAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha fromAlpha=".7" toAlpha="1" duration="1" order="1" smoothing="IN"/>
+				<Alpha fromAlpha="1" toAlpha=".7" duration="1" order="2" smoothing="IN"/>
+			</AnimationGroup>
+
+			<AnimationGroup parentKey="NPE_RedButton_GreenGlow" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
+				<Alpha fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

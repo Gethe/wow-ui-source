@@ -1,0 +1,307 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TableInspector.lua"/>
+
+	<Frame name="TableAttributeDisplayTemplate" parent="UIParent" mixin="TableInspectorMixin" movable="true" clampedToScreen="true" hidden="true" frameStrata="DIALOG" toplevel="true" virtual="true">
+		<Size x="500" y="400"/>
+		<Anchors>
+			<Anchor point="LEFT" x="64" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TitleBG" file="Interface\PaperDollInfoFrame\UI-GearManager-Title-Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="9" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-28" y="-24"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DialogBG" file="Interface\Tooltips\UI-Tooltip-Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-24"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="8"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".75"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="TopLeft" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.501953125" right="0.625" top="0" bottom="1"/>
+				</Texture>			
+				<Texture parentKey="TopRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Top" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="0" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.25" right="0.369140625" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BottomLeft" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.751953125" right="0.875" top="0" bottom="1"/>
+				</Texture>			
+				<Texture parentKey="BottomRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="0" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.376953125" right="0.498046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Left" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.001953125" right="0.125" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
+					<Size x="64" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1171875" right="0.2421875" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="OpenParentButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayParentButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-CollapseButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-CollapseButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="NavigateBackwardButton">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OpenParentButton" relativePoint="RIGHT" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayNavigateBackwardButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Glues\Common\Glue-LeftArrow-Button-Up"/>
+				<PushedTexture file="Interface\Glues\Common\Glue-LeftArrow-Button-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
+				<HighlightTexture file="Interface\Glues\Common\Glue-LeftArrow-Button-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="NavigateForwardButton">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NavigateBackwardButton" relativePoint="RIGHT" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayNavigateForwardButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Glues\Common\Glue-RightArrow-Button-Up"/>
+				<PushedTexture file="Interface\Glues\Common\Glue-RightArrow-Button-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
+				<HighlightTexture file="Interface\Glues\Common\Glue-RightArrow-Button-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="DuplicateButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NavigateForwardButton" relativePoint="RIGHT" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayDuplicateButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<CheckButton parentKey="VisibilityButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" x="20" y="-44"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Label" inherits="GameFontWhite" text="Show">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayVisibilityButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+			</CheckButton>
+			<CheckButton parentKey="HighlightButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.VisibilityButton.Label" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Label" inherits="GameFontWhite" text="Highlight">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayHighlightButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+			</CheckButton>
+			<CheckButton parentKey="DynamicUpdateButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HighlightButton.Label" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Label" inherits="GameFontWhite" text="Dynamic Updates">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick function="TableAttributeDisplayDynamicUpdateButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+			</CheckButton>
+			<EditBox parentKey="FilterBox" inherits="SearchBoxTemplate" autoFocus="false" bytes="64">
+				<Size x="130" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DynamicUpdateButton.Label" relativePoint="RIGHT" x="12" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnterPressed function="TableInspectorFilterBox_OnEnterPressed"/>
+					<OnTextChanged inherit="prepend" function="TableInspectorFilterBox_OnTextChanged"/>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="2" y="1"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="TitleButton" inherits="TruncatedTooltipScriptTemplate">
+				<Size x="375" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TitleBG"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TitleBG"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormal">
+							<Size x="375" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.DuplicateButton" relativePoint="RIGHT" x="4"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Highlight" setAllPoints="true" hidden="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture file="Interface\Buttons\UI-ListBox-Highlight" setAllPoints="true">
+									<Color r="1" g="1" b="1" a="0.4"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						local parent = self:GetParent();
+						parent.moving = true;
+						parent:StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						local parent = self:GetParent();
+						parent.moving = nil;
+						parent:StopMovingOrSizing();
+					</OnDragStop>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="LinesScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="430" y="300"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-70"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.scrollBarHideable = 1;
+						self.ScrollBar.scrollStep = 24;
+						ScrollFrame_OnLoad(self);
+						ScrollFrame_OnScrollRangeChanged(self);
+					</OnLoad>
+				</Scripts>
+				<ScrollChild>
+					<Frame parentKey="LinesContainer">
+						<Size x="300" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Frame parentKey="ScrollFrameArt" inherits="TooltipBorderBackdropTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LinesScrollFrame" x="0" y="6"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LinesScrollFrame.ScrollBar" x="6" y="-22"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="FrameHighlight" inherits="FrameHighlightTemplate"/>
+		</Frames>
+	</Frame>
+	
+	<Frame name="TableAttributeDisplay" inherits="TableAttributeDisplayTemplate">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

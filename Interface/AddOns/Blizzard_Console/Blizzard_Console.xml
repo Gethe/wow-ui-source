@@ -1,0 +1,336 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="DeveloperConsoleBackgroundTemplate" virtual="true" useParentLevel="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="-1" y="2" />
+			<Anchor point="BOTTOMRIGHT" x="1" y="-2" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Color r=".1" g=".1" b=".1" a=".8"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BorderTop">
+					<Size y="1" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="-1" y="0" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="TOPRIGHT" x="1" y="0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<Texture parentKey="BorderBottom">
+					<Size y="1" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="-1" y="0" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="1" y="0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="DeveloperConsole" flattenRenderLayers="true" enableMouse="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="9000" hidden="true" mixin="DeveloperConsoleMixin">
+		<Anchors>
+			<Anchor point="TOPLEFT" />
+			<Anchor point="TOPRIGHT" />
+		</Anchors>
+
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Alpha fromAlpha="1" toAlpha=".5" duration=".125" order="1"/>
+				<Translation parentKey="Translation" duration=".125" order="1" />
+				<Alpha childKey="MessageFrame" fromAlpha="1" toAlpha="0" duration=".125" order="1"/>
+				<Scripts>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent:SetShown(parent.savedVars.isShown);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+
+		<Frames>
+			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+				<Size y="20" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Frames>
+					<Frame name="Background" inherits="DeveloperConsoleBackgroundTemplate" />
+				</Frames>
+				<Scripts>
+					<OnUpdate>
+						self:GetParent():OnEditBoxUpdate();
+					</OnUpdate>
+					<OnTextChanged>
+						local text = self:GetText();
+						self:GetParent():OnEditBoxTextChanged(text);
+						self.ClearTextButton:SetShown(#text > 0);
+					</OnTextChanged>
+					<OnEscapePressed>
+						self:GetParent():OnEscapePressed();
+					</OnEscapePressed>
+					<OnEnterPressed>
+						if IsShiftKeyDown() then
+							self:Insert("\n");
+						else
+							local text = self:GetText();
+							if text and #text > 0 then
+								self:GetParent():ExecuteCommand(self:GetText());
+								self:SetText("");
+							end
+						end
+					</OnEnterPressed>
+					<OnTabPressed>
+						self:GetParent():OnEditBoxTabPressed();
+					</OnTabPressed>
+					<OnKeyDown>
+						if key == "UP" or key == "DOWN" then
+							self:GetParent():OnEditBoxArrowPressed(key);
+						elseif key == "PAGEUP" then
+							self:GetParent():OnEditBoxPageUpPressed();
+						elseif key == "PAGEDOWN" then
+							self:GetParent():OnEditBoxPageDownPressed();
+						end
+					</OnKeyDown>
+					<OnCursorChanged>
+						self:GetParent():OnEditBoxCursorChanged(self:GetText());
+					</OnCursorChanged>
+				</Scripts>
+				<FontString inherits="ConsoleFontNormal">
+					<Color r="0.5" g="0.77" b="1.0"/>
+				</FontString>
+				<Frames>
+					<Button parentKey="ClearTextButton" hidden="true" inherits="UIPanelCloseButtonNoScripts" alpha=".5">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="RIGHT" x="-10" y="0" />
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():SetText("");
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</EditBox>
+
+			<Frame parentKey="Filters">
+				<Size y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+					<Anchor point="TOPRIGHT" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FilterLabel" inherits="NumberFont_Shadow_Med" text="Filter: ">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-400" />
+								<Anchor point="BOTTOMRIGHT" x="-400" />
+							</Anchors>
+							<Color r=".5" g="1" b=".5"/>
+						</FontString>
+
+						<Texture parentKey="BorderLeft">
+							<Size x="1" />
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.FilterLabel" relativePoint="TOPLEFT" x="-2" y="2" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FilterLabel" relativePoint="BOTTOMLEFT" x="-2" y="-2" />
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="Background" inherits="DeveloperConsoleBackgroundTemplate" />
+
+					<StatusBar parentKey="ProgressBar" drawLayer="BORDER" useParentLevel="true" mixin="SmoothStatusBarMixin" alpha="0">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT" />
+							<Anchor point="BOTTOMRIGHT" y="-1" />
+						</Anchors>
+						<Animations>
+							<AnimationGroup parentKey="FadeAnim" setToFinalAlpha="true">
+								<Alpha fromAlpha="0" toAlpha="1" duration=".75" startDelay=".5" order="1"/>
+							</AnimationGroup>
+						</Animations>
+						<BarTexture>
+							<Color r="0" g=".5" b=".7" a=".2"/>
+						</BarTexture>
+					</StatusBar>
+					
+					<EditBox parentKey="EditBox" autoFocus="false">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FilterLabel" relativePoint="TOPRIGHT" x="2" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<Scripts>
+							<OnTextChanged>
+								local text = self:GetText();
+								self:GetParent():GetParent():OnFilterEditBoxTextChanged(text);
+								self.ClearTextButton:SetShown(#text > 0);
+							</OnTextChanged>
+
+							<OnEscapePressed>
+								if self:GetText() and #self:GetText() > 0 then
+									self:SetText("");
+									return;
+								end
+								self:GetParent():GetParent():OnEscapePressed();
+							</OnEscapePressed>
+							<OnEnterPressed>
+								self:GetParent():GetParent().EditBox:SetFocus();
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="ConsoleFontNormal">
+							<Color r=".5" g="1" b=".5"/>
+						</FontString>
+						<Frames>
+							<Button parentKey="ClearTextButton" hidden="true" inherits="UIPanelCloseButtonNoScripts" alpha=".5">
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="0" />
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():SetText("");
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</EditBox>
+				</Frames>
+			</Frame>
+			
+			<ScrollingMessageFrame parentKey="MessageFrame" enableMouseClicks="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Filters" relativePoint="BOTTOMLEFT" x="0" y="-4" />
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Filters" relativePoint="BOTTOMRIGHT" x="-15" y="-4" />
+					
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.EditBox" relativePoint="TOPLEFT" x="0" y="4" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.EditBox" relativePoint="TOPRIGHT" x="-15" y="4" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1" y="2" />
+								<Anchor point="BOTTOMRIGHT" x="1" y="-2" />
+							</Anchors>
+							<Color r=".1" g=".1" b=".1" a=".8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="CopyNoticeFrame" frameLevel="9800" hidden="true">
+						<Size y="75" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Label" inherits="SystemFont_Shadow_Large">
+									<Color r="1" g="1" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim">
+								<Alpha fromAlpha="0" toAlpha="1" duration=".25" order="1"/>
+								<Alpha fromAlpha="1" toAlpha="0" startDelay="1" duration=".5" order="2"/>
+
+								<Scripts>
+									<OnFinished>
+										self:GetParent():Hide();
+									</OnFinished>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Slider parentKey="ScrollBar" frameLevel="9500" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1">
+						<Size x="15" y="0"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="15" y="8"/>
+							<Anchor point="BOTTOMRIGHT" x="15" y="-8" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="1" y="-7" />
+										<Anchor point="BOTTOMRIGHT" x="0" y="7" />
+									</Anchors>
+									<Color r=".1" g=".1" b=".1" a=".8"/>
+								</Texture>
+								<Texture parentKey="BorderLeft">
+									<Size x="1" />
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="0" y="0" />
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="0" />
+									</Anchors>
+									<Color r="1" g="1" b="1" a="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnValueChanged>
+								if userInput then
+									local min, max = self:GetMinMaxValues();
+									self:GetParent():SetScrollOffset(max - value);
+								end
+							</OnValueChanged>
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-ScrollBar-Knob">
+							<Size x="24" y="24"/>
+							<TexCoords left="0.05" right="0.95" top="0.05" bottom="0.95"/>
+						</ThumbTexture>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetFading(false);
+						self:SetFontObject(ConsoleFontSmall);
+						self:SetJustifyH("LEFT");
+						self:SetHyperlinksEnabled(true);
+						self:SetTextCopyable(true);
+					</OnLoad>
+					<OnHyperlinkClick function="BlizzardConsoleMessageFrame_OnHyperlinkClick"/>
+				</Scripts>
+			</ScrollingMessageFrame>
+
+			<Frame parentKey="AutoComplete" inherits="DeveloperConsoleAutoCompleteTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="-8" />
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="ResizeButton" frameLevel="9500">
+				<Size x="48" y="7"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						self:GetParent():StartDragResizing();
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():StopDragResizing();
+					</OnMouseUp>
+				</Scripts>
+				<NormalTexture file="Interface\RaidFrame\Raid-Move-Down" />
+				<HighlightTexture file="Interface\RaidFrame\Raid-Move-Down" alphaMode="ADD" />
+			</Button>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+			<OnMouseWheel method="OnMouseWheel" />
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,4 +1,0 @@
-## Title: Blizzard Trade Skill UI
-## LoadOnDemand: 1
-Blizzard_TradeSkillUI.xml
-Localization.lua

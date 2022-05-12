@@ -1,5 +1,0 @@
-## Title: Blizzard WoW Token UI
-## LoadOnDemand: 0
-..\..\SharedXML\SecureCurrencyUtil.lua
-Blizzard_WowTokenUI.xml
-Blizzard_WowTokenUIInsecure.xml

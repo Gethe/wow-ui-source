@@ -1,0 +1,239 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<CheckButton name="MovePadCheckboxTemplate" inherits="UIPanelSquareButton" virtual="true">
+		<Size x="38" y="38" />
+		<CheckedTexture file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD">
+			<TexCoords left="0.1" right="0.9" top="0.1" bottom="0.9"/>
+		</CheckedTexture>
+	</CheckButton>
+
+	<Frame name="MovePadFrame" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+		<Size x="126" y="124" />
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-90" y="-180"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton name="MovePadLock">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\LockButton-Border"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetChecked(false);
+						MovePadFrame.canMove = false;
+					</OnLoad>
+					<OnClick>
+						MovePadFrame.canMove = self:GetChecked();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\LockButton-Locked-Up"/>
+				<PushedTexture file="Interface\Buttons\LockButton-Unlocked-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\LockButton-Unlocked-Up"/>
+			</CheckButton>
+			<CheckButton name="MovePadForward" inherits="MovePadCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SquareButton_SetIcon(self, "UP");
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+					<OnClick>
+						local start = self:GetChecked();
+						if ( MovePadStrafeLeft:GetChecked() ) then
+							StrafeLeftStop();
+							MovePadStrafeLeft:SetChecked(false);
+							start = true;
+						end
+						if ( MovePadStrafeRight:GetChecked() ) then
+							StrafeRightStop();
+							MovePadStrafeRight:SetChecked(false);
+							start = true;
+						end
+						if ( start ) then
+							MovePadBackward:SetChecked(false);
+							MoveBackwardStop();
+							MoveForwardStart();
+							self:SetChecked(true);
+						else
+							MoveForwardStop();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Button name="MovePadJump" inherits="UIPanelSquareButton">
+				<Size x="38" y="38" />
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MovePadForward" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.icon:SetTexture("Interface\\Buttons\\JumpUpArrow");
+						self.icon:SetTexCoord(0,1,0,1);
+						self.icon:SetSize(18,18);
+					</OnLoad>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self.icon:SetPoint("CENTER", -1, -1);
+						end
+
+						RunBinding("JUMP", "down");
+					</OnMouseDown>
+					<OnMouseUp>
+						self.icon:SetPoint("CENTER", 0, 0);
+						RunBinding("JUMP", "up");
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<CheckButton name="MovePadRotateLeft" inherits="MovePadCheckboxTemplate">
+				<Size x="38" y="38" />
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MovePadForward" relativePoint="LEFT" x="0" y="-38"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.icon:SetTexture("Interface\\Buttons\\UI-RotationLeft-Button-Up");
+						self.icon:SetTexCoord(0,1,0,1);
+						self.icon:SetSize(35,35);
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							MovePadRotateRight:SetChecked(false);
+							TurnRightStop();
+							TurnLeftStart();
+						else
+							TurnLeftStop();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadRotateRight" inherits="MovePadCheckboxTemplate">
+				<Size x="38" y="38" />
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MovePadForward" relativePoint="RIGHT" x="0" y="-38"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.icon:SetTexture("Interface\\Buttons\\UI-RotationRight-Button-Up");
+						self.icon:SetTexCoord(0,1,0,1);
+						self.icon:SetSize(35,35);
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							MovePadRotateLeft:SetChecked(false);
+							TurnLeftStop();
+							TurnRightStart();
+						else
+							TurnRightStop();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadBackward" inherits="MovePadCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MovePadJump" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SquareButton_SetIcon(self, "DOWN");
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+					<OnClick>
+						local start = self:GetChecked();
+						if ( MovePadStrafeLeft:GetChecked() ) then
+							StrafeLeftStop();
+							MovePadStrafeLeft:SetChecked(false);
+							start = true;
+						end
+						if ( MovePadStrafeRight:GetChecked() ) then
+							StrafeRightStop();
+							MovePadStrafeRight:SetChecked(false);
+							start = true;
+						end
+						if ( start ) then
+							MovePadForward:SetChecked(false);
+							MoveForwardStop();
+							MoveBackwardStart();
+							self:SetChecked(true);
+						else
+							MoveBackwardStop();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadStrafeLeft" inherits="MovePadCheckboxTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MovePadForward" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SquareButton_SetIcon(self, "LEFT");
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							MovePadStrafeRight:SetChecked(false);
+							StrafeRightStop();
+							StrafeLeftStart();
+						else
+							StrafeLeftStop();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadStrafeRight" inherits="MovePadCheckboxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MovePadForward" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SquareButton_SetIcon(self, "RIGHT");
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							MovePadStrafeLeft:SetChecked(false);
+							StrafeLeftStop();
+							StrafeRightStart();
+						else
+							StrafeRightStop();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				if( self.canMove ) then
+					self.moving = true;
+					self:SetFrameStrata("DIALOG");
+					self:StartMoving();
+				end
+			</OnDragStart>
+			<OnDragStop>
+				if( self.canMove and self.moving ) then
+					self.moving = false;
+					self:StopMovingOrSizing();
+					self:SetFrameStrata("BACKGROUND");
+					ValidateFramePosition(self, 25);
+				end
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+</Ui>

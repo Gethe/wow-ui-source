@@ -1,0 +1,106 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="..\..\..\Interface\AddOns\Blizzard_CombatLog\Localization.lua"/>
+	<Script file="Blizzard_CombatLog.lua"/>
+
+	<Frame name="CombatLogDropDown" inherits="UIDropDownMenuTemplate"/>
+	<Button name="CombatLogQuickButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="0" y="20"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				Blizzard_CombatLog_QuickButton_OnClick(self:GetID());
+			</OnClick>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_AddNewbieTip(self, self.tooltip, 1.0, 1.0, 1.0, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalFont style="GameFontDisable"/>
+		<HighlightFont style="GameFontHighlight"/>
+	</Button>
+	<Frame name="CombatLogQuickButtonFrame_Custom" parent="ChatFrame2" hidden="false">
+		<Size>
+			<AbsDimension x="65" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="ChatFrame2" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0" a="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentProgressBar" hidden="true">
+				<Size>
+					<AbsDimension x="195" y="4"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.0" g="1.0" b="0.3"/>
+			</StatusBar>
+			<Button name="$parentAdditionalFilterButton">
+				<Size>
+					<AbsDimension x="28" y="28"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="6" right="6" top="7" bottom="7"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						EasyMenu(Blizzard_CombatLog_CreateFilterMenu(), CombatLogDropDown, "cursor", nil, nil, "MENU");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip_AddNewbieTip(self, ADDITIONAL_FILTERS, 1.0, 1.0, 1.0);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
+				<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="Blizzard_CombatLog_Update_QuickButtons"/>
+			<OnLoad function="Blizzard_CombatLog_QuickButtonFrame_OnLoad"/>
+			<OnEvent function="Blizzard_CombatLog_QuickButtonFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>
