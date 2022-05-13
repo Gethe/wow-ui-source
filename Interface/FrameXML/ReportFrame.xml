@@ -17,7 +17,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</CheckButton>
-	<Frame name="ReportFrame" mixin="ReportFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
+	<Frame name="ReportFrame" mixin="ReportFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" toplevel="true" enableMouse="true" frameStrata="DIALOG">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="400" type="number"/>
 			<KeyValue key="minimumHeight" value="190" type="number"/>

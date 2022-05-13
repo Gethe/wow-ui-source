@@ -181,7 +181,7 @@ GameTime.xml
 BuffFrame.xml
 LowHealthFrame.xml
 CombatFeedback.xml
-..\..\Interface_TBC\FrameXML\CastingBarFrame.xml
+..\..\Interface_Wrath\FrameXML\CastingBarFrame.xml
 VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 ReportFrame.xml

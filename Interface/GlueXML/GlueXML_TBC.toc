@@ -75,6 +75,7 @@ GlueContextMenu.xml
 
 ##New stuff!!!
 GlueAddons.lua
+GlueParentUtil.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml

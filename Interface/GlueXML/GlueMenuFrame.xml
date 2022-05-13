@@ -6,7 +6,7 @@
 			<AbsInset left="0" right="0" top="5" bottom="5"/>
 		</HitRectInsets>
 	</Button>
-	<Frame name="GlueMenuFrame" inherits="GlueModalFrameTemplate, BackdropTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
+	<Frame name="GlueMenuFrame" inherits="BackdropTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 		</KeyValues>
@@ -84,5 +84,9 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnShow function="GlueMenuFrame_OnShow"/>
+			<OnHide function="GlueMenuFrame_OnHide"/>
+		</Scripts>
 	</Frame>
 </Ui>
